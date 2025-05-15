@@ -18,6 +18,11 @@ export const knownKeys = new Set([
   'productId',
   'productName',
   'product',
+  'created',
+  'createdBy',
+  'modified',
+  'modifiedBy',
+  'name',
 ])
 
 export const DeviceConfigCustomCellRender: CustomCellConfig[] = [

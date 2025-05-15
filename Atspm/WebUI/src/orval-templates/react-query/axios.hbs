@@ -1,0 +1,20 @@
+{{#*inline "imports"}}
+import { AxiosRequestConfig } from 'axios';
+import { useQuery, UseQueryOptions } from 'react-query';
+{{/inline}}
+{{> imports}}
+{{#each operations}}
+export const {{operationName}} = (
+  {{#if hasParams}}params: {{paramsType}}, {{/if}}
+  options?: AxiosRequestConfig
+) => {
+  return customInstance<{{responseType}}>({
+    url: `{{{path}}}`,
+    method: '{{method}}',
+    {{#if hasParams}}params,{{/if}}
+    {{#if hasBody}}data: body,{{/if}}
+    ...options,
+    baseUrl: '{{operation.baseUrl}}',
+  });
+};
+{{/each}}

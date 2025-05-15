@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2025 Utah Departement of Transportation
 // for EventLogUtility - %Namespace%/Program.cs
 // 

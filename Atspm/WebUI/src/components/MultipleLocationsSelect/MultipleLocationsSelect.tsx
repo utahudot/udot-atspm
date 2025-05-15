@@ -1,7 +1,6 @@
-import { useGetLocationLocationsForSearch } from '@/api/config/aTSPMConfigurationApi'
 import {
-  getLocationApproachesFromKey,
-  useGetLocationLocationsForSearch,
+  getLocationFromKey,
+  useGetLocationLatestVersionOfAllLocations,
   useGetRoute,
 } from '@/api/config/aTSPMConfigurationApi'
 import {
@@ -11,8 +10,7 @@ import {
 import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
-import { useGetRoutes } from '@/features/routes/api'
-import AddIcon from '@mui/icons-material/Add'
+import { ChevronRight } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -37,8 +35,8 @@ const MultipleLocationsSelect = ({
   selectedLocations,
   setLocations,
 }: MultipleLocationsSelectProps) => {
-  const { data: routesData } = useGetRoutes()
-  const { data: locationsData } = useGetLocationLocationsForSearch()
+  const { data: routesData } = useGetRoute({ expand: 'routeLocations' })
+  const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
 
   const routes = useMemo(() => routesData?.value || [], [routesData])
   const locations = useMemo(
@@ -73,7 +71,7 @@ const MultipleLocationsSelect = ({
     setSelectedRoute(route)
   }
 
-  const onAddRoute = () => {
+  const onAddRoute = async () => {
     if (!selectedRoute?.routeLocations) return
 
     const routeLocs = selectedRoute.routeLocations
@@ -85,16 +83,25 @@ const MultipleLocationsSelect = ({
       (loc) => !selectedLocations.some((sel) => sel.id === loc.id)
     )
     if (newLocations.length > 0) {
-      setLocations([...selectedLocations, ...newLocations])
+      const locationwithApproaches =
+        await getLocationWithApproaches(newLocations)
+      if (locationwithApproaches) {
+        setLocations([...selectedLocations, ...locationwithApproaches])
+      }
     }
   }
 
-  const onAddLocation = () => {
+  const onAddLocation = async () => {
     if (
       selectedLocation &&
       !selectedLocations.some((loc) => loc.id === selectedLocation.id)
     ) {
-      setLocations([...selectedLocations, selectedLocation])
+      const locationwithApproaches = await getLocationWithApproaches([
+        selectedLocation,
+      ])
+      if (locationwithApproaches) {
+        setLocations([...selectedLocations, locationwithApproaches[0]])
+      }
     }
   }
 
@@ -136,9 +143,10 @@ const MultipleLocationsSelect = ({
         </FormControl>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          endIcon={<ChevronRight />}
           onClick={onAddRoute}
           sx={{ ml: 2, width: 100 }}
+          disabled={!selectedRoute?.routeLocations}
         >
           Add
         </Button>
@@ -161,9 +169,10 @@ const MultipleLocationsSelect = ({
         </Box>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          endIcon={<ChevronRight />}
           onClick={onAddLocation}
           sx={{ ml: 2 }}
+          disabled={!selectedLocation}
         >
           Add
         </Button>
@@ -185,20 +194,11 @@ const MultipleLocationsSelect = ({
 
 export default MultipleLocationsSelect
 
-const addApproachesToLocations = async (locations: Location[]) => {
-  const updatedLocations = await Promise.all(
-    locations.map(async (loc) => {
-      try {
-        const approaches = await getLocationApproachesFromKey(loc.id)
-        return { ...loc, approaches: approaches.value, designatedPhases: [] }
-      } catch (error) {
-        console.error(
-          `Failed to fetch approaches for location ${loc.id}:`,
-          error
-        )
-        return { ...loc, approaches: [] }
-      }
-    })
+export const getLocationWithApproaches = async (locations: Location[]) => {
+  const locationsWithApproaches = await Promise.all(
+    locations
+      .filter((loc) => loc?.id)
+      .map((loc) => getLocationFromKey(loc.id, { expand: 'approaches' }))
   )
-  return updatedLocations
+  return locationsWithApproaches.map((res) => res.value[0])
 }

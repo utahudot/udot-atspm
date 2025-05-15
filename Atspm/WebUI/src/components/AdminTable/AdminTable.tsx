@@ -1,8 +1,8 @@
-import { useSidebarStore } from '@/stores/sidebar'
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { useSidebarStore } from "@/stores/sidebar";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   Box,
   Button,
@@ -20,36 +20,36 @@ import {
   TableSortLabel,
   Typography,
   useTheme,
-} from '@mui/material'
-import React, { ReactElement, cloneElement, useState } from 'react'
+} from "@mui/material";
+import React, { ReactElement, cloneElement, useState } from "react";
 
 interface HasId {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 interface DeleteModalProps<T> {
-  id: number
-  name: string
-  selectedRow: T
-  open: boolean
-  onClose?: () => void
+  id: number;
+  name: string;
+  selectedRow: T;
+  open: boolean;
+  onClose?: () => void;
 }
 interface EditModalProps<T> {
-  id: number
-  data: T | null
-  open: boolean
-  onClose?: () => void
+  id: number;
+  data: T | null;
+  open: boolean;
+  onClose?: () => void;
 }
 
 interface CreateModalProps {
-  open: boolean
-  onClose?: () => void
+  open: boolean;
+  onClose?: () => void;
 }
 
 interface CustomCellConfig {
-  headerKey: string
-  component: (value: any, row: any) => React.ReactNode
+  headerKey: string;
+  component: (value: any, row: any) => React.ReactNode;
 }
 
 interface AdminChartProps<T extends HasId> {
@@ -67,7 +67,7 @@ interface AdminChartProps<T extends HasId> {
   customCellRender?: CustomCellConfig[]
 }
 
-type Order = 'asc' | 'desc'
+type Order = "asc" | "desc";
 
 const AdminTable = <T extends HasId>({
   headers,
@@ -83,61 +83,61 @@ const AdminTable = <T extends HasId>({
   createModal,
   customCellRender,
 }: AdminChartProps<T>) => {
-  const theme = useTheme()
-  const { isSidebarOpen } = useSidebarStore()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [selectedRow, setSelectedRow] = useState<T | null>(null)
-  const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<string>('id')
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const theme = useTheme();
+  const { isSidebarOpen } = useSidebarStore();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRow, setSelectedRow] = useState<T | null>(null);
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<string>("id");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, item: T) => {
-    setAnchorEl(event.currentTarget)
-    setSelectedRow(item)
-  }
+    setAnchorEl(event.currentTarget);
+    setSelectedRow(item);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-    setSelectedRow(null)
-    setIsDeleteModalOpen(false)
-    setIsEditModalOpen(false)
-    setIsCreateModalOpen(false)
-  }
+    setAnchorEl(null);
+    setSelectedRow(null);
+    setIsDeleteModalOpen(false);
+    setIsEditModalOpen(false);
+    setIsCreateModalOpen(false);
+  };
 
   const handleEditClick = () => {
     if (customEditFunction) {
-      customEditFunction(selectedRow)
+      customEditFunction(selectedRow);
     } else {
-      setIsEditModalOpen(true)
+      setIsEditModalOpen(true);
     }
-  }
+  };
 
   const handleDeleteClick = () => {
-    setIsDeleteModalOpen(true)
-  }
+    setIsDeleteModalOpen(true);
+  };
 
   const handleRequestSort = (property: string) => {
-    const isAsc = orderBy === property && order === 'asc'
-    setOrder(isAsc ? 'desc' : 'asc')
-    setOrderBy(property)
-  }
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   const sortedData = data.sort((a, b) => {
-    let aValue = a[orderBy as keyof T] as string | number
-    let bValue = b[orderBy as keyof T] as string | number
+    let aValue = a[orderBy as keyof T] as string | number;
+    let bValue = b[orderBy as keyof T] as string | number;
 
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      aValue = aValue.toLowerCase()
-      bValue = bValue.toLowerCase()
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
     }
 
-    if (orderBy === '') return 0
-    if (aValue < bValue) return order === 'asc' ? -1 : 1
-    if (aValue > bValue) return order === 'asc' ? 1 : -1
-    return 0
-  })
+    if (orderBy === "") return 0;
+    if (aValue < bValue) return order === "asc" ? -1 : 1;
+    if (aValue > bValue) return order === "asc" ? 1 : -1;
+    return 0;
+  });
 
   let deleteModalWithId
   if (deleteModal) {
@@ -156,27 +156,27 @@ const AdminTable = <T extends HasId>({
       data: selectedRow,
       open: isEditModalOpen,
       onClose: handleClose,
-    })
+    });
   }
 
-  let createModalWithProps
+  let createModalWithProps;
 
   if (createModal) {
     createModalWithProps = cloneElement(createModal, {
       open: isCreateModalOpen,
       onClose: handleClose,
-    })
+    });
   }
 
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: '375px',
+        display: "flex",
+        flexDirection: "column",
+        minWidth: "375px",
         marginTop: -4,
-        [theme.breakpoints.up('md')]: {
-          maxWidth: isSidebarOpen ? 'calc(100vw - 340px)' : '100%',
+        [theme.breakpoints.up("md")]: {
+          maxWidth: isSidebarOpen ? "calc(100vw - 340px)" : "100%",
         },
       }}
     >
@@ -199,7 +199,7 @@ const AdminTable = <T extends HasId>({
       <Box>
         <TableContainer
           component={Paper}
-          sx={{ maxHeight: 'calc(100vh - 190px)' }}
+          sx={{ maxHeight: "calc(100vh - 190px)" }}
         >
           <Table stickyHeader size="small">
             <TableHead>
@@ -208,11 +208,11 @@ const AdminTable = <T extends HasId>({
                   <TableCell
                     key={header}
                     sortDirection={orderBy === header ? order : false}
-                    sx={{ backgroundColor: '#dae5f0' }}
+                    sx={{ backgroundColor: "#dae5f0" }}
                   >
                     <TableSortLabel
                       active={orderBy === header}
-                      direction={orderBy === header ? order : 'asc'}
+                      direction={orderBy === header ? order : "asc"}
                       onClick={() => handleRequestSort(header)}
                     >
                       {header}
@@ -223,10 +223,10 @@ const AdminTable = <T extends HasId>({
                   <TableCell
                     sx={{
                       width: 100,
-                      textAlign: 'right',
-                      position: 'sticky',
+                      textAlign: "right",
+                      position: "sticky",
                       top: 0,
-                      backgroundColor: '#dae5f0',
+                      backgroundColor: "#dae5f0",
                     }}
                   >
                     Actions
@@ -240,7 +240,7 @@ const AdminTable = <T extends HasId>({
                   {headerKeys.map((header) => {
                     const customRenderer = customCellRender?.find(
                       (config) => config.headerKey === header
-                    )
+                    );
 
                     return (
                       <TableCell key={header} sx={{ height: '53px' }}>
@@ -251,10 +251,10 @@ const AdminTable = <T extends HasId>({
                             )
                           : (row[header as keyof T] as string | number)}
                       </TableCell>
-                    )
+                    );
                   })}
                   {(hasEditPrivileges || hasDeletePrivileges) && (
-                    <TableCell sx={{ width: 100, textAlign: 'right' }}>
+                    <TableCell sx={{ width: 100, textAlign: "right" }}>
                       <IconButton
                         aria-label="more"
                         aria-controls="actions-menu"
@@ -305,7 +305,7 @@ const AdminTable = <T extends HasId>({
       {isEditModalOpen && editModalWithId}
       {isCreateModalOpen && createModalWithProps}
     </Box>
-  )
-}
+  );
+};
 
-export default AdminTable
+export default AdminTable;

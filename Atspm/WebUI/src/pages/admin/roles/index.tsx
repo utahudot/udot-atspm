@@ -85,7 +85,7 @@ const RolesAdmin = () => {
 
   const HandleDeleteRole = async (roleName: string) => {
     if (protectedRoles.includes(roleName)) {
-      return
+      return;
     }
     try {
       await deleteMutation({ roleName })
@@ -98,8 +98,8 @@ const RolesAdmin = () => {
   }
 
   const HandleEditRole = async (roleData: {
-    roleName: string
-    claims: string[]
+    roleName: string;
+    claims: string[];
   }) => {
     try {
       await editMutation({
@@ -118,8 +118,8 @@ const RolesAdmin = () => {
   }
 
   const HandleCreateRole = async (roleData: {
-    roleName: string
-    claims: string[]
+    roleName: string;
+    claims: string[];
   }) => {
     try {
       await createMutation({
@@ -131,7 +131,7 @@ const RolesAdmin = () => {
         await editMutation({
           roleName: roleData.roleName,
           claims: roleData.claims,
-        })
+        });
       }
       refetchRoles()
       addNotification({
@@ -145,23 +145,23 @@ const RolesAdmin = () => {
   }
 
   if (pageAccess.isLoading) {
-    return
+    return;
   }
 
   const onModalClose = () => {
     //do something?? potentially just delete
-  }
+  };
 
   if (isLoading) {
     return (
       <Backdrop open>
         <CircularProgress color="inherit" />
       </Backdrop>
-    )
+    );
   }
 
   if (!roles) {
-    return <div>Error returning data</div>
+    return <div>Error returning data</div>;
   }
 
   const customRoleFilteredData = roles
@@ -240,7 +240,7 @@ const RolesAdmin = () => {
         }
       />
     </ResponsivePageLayout>
-  )
-}
+  );
+};
 
-export default RolesAdmin
+export default RolesAdmin;

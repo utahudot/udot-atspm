@@ -16,9 +16,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.ATSPM.ConfigApi.DTO;
 
 namespace Utah.Udot.Atspm.ConfigApi.Services
 {

@@ -1,23 +1,27 @@
-import { Detector } from '@/api/config/aTSPMConfigurationApi.schemas'
-import EditableTableCell from '@/features/locations/components/editableTableCell/EditableTableCell'
-import CommentCell from '@/features/locations/components/editDetector/CommentCell'
-import DateAddedCell from '@/features/locations/components/editDetector/DateAddedCell'
-import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
-import HardwareTypeCell from '@/features/locations/components/editDetector/HardwareTypeCell'
-import LaneTypeCell from '@/features/locations/components/editDetector/LaneTypeCell'
-import MovementTypeCell from '@/features/locations/components/editDetector/MovementTypeCell'
+import {
+  useGetDetectionType,
+  useGetLocationType,
+} from '@/api/config/aTSPMConfigurationApi'
+import CalendarCell from '@/features/locations/components/Cell/CalendarCell'
+import CommentCell from '@/features/locations/components/Cell/CommentCell'
+import { MultiSelectCell } from '@/features/locations/components/Cell/MultiSelectCell'
+import SelectCell from '@/features/locations/components/Cell/SelectCell'
+import { TextCell } from '@/features/locations/components/Cell/TextCell'
+import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
+import {
+  hardwareTypeOptions,
+  laneTypeOptions,
+  movementTypeOptions,
+} from '@/features/locations/components/editDetector/selectOptions'
 import {
   ConfigApproach,
   useLocationStore,
 } from '@/features/locations/components/editLocation/locationStore'
-import DeleteIcon from '@mui/icons-material/Delete'
+import { DetectionType } from '@/features/locations/types'
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
+  alpha,
+  Avatar,
+  AvatarGroup,
   Paper,
   Table,
   TableBody,
@@ -25,214 +29,371 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
+  useTheme,
 } from '@mui/material'
-import { memo, useCallback, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-function EditDetectors({ approach }: { approach: ConfigApproach }) {
-  const approachErrors = useLocationStore((state) => {
-    if (!state.errors) return {}
-    const obj: Record<string, { error: string; id: string }> = {}
-    approach.detectors.forEach((d) => {
-      if (state.errors![String(d.id)]) {
-        obj[String(d.id)] = state.errors![String(d.id)]
-      }
+interface EditDetectorsProps {
+  approach: ConfigApproach
+  deleteMode: boolean
+  onSelectionChange?: (ids: number[]) => void
+}
+
+const EditDetectors = ({
+  approach,
+  deleteMode,
+  onSelectionChange,
+}: EditDetectorsProps) => {
+  const theme = useTheme()
+  const errorColor = theme.palette.error.main
+  const successColor = theme.palette.success.main
+  const innerErrorBg = alpha(errorColor, 0.2)
+  const innerSuccessBg = alpha(successColor, 0.2)
+
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
+  useEffect(() => {
+    if (!deleteMode) setSelectedIds([])
+  }, [deleteMode])
+
+  const handleRowClick = (id: number) => {
+    if (!deleteMode) return
+    setSelectedIds((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id]
+      onSelectionChange?.(next)
+      return next
     })
-    return obj
-  })
+  }
 
-  const approachWarnings = useLocationStore((state) => {
-    if (!state.warnings) return {}
-    const obj: Record<string, { warning: string; id: string }> = {}
-    approach.detectors.forEach((d) => {
-      if (state.warnings![String(d.id)]) {
-        obj[String(d.id)] = state.warnings![String(d.id)]
-      }
-    })
-    return obj
-  })
+  const { updateDetector, errors, setErrors, warnings, location, channelMap } =
+    useLocationStore((s) => ({
+      updateDetector: s.updateDetector,
+      errors: s.errors,
+      setErrors: s.setErrors,
+      warnings: s.warnings,
+      location: s.location,
+      channelMap: s.channelMap,
+    }))
 
-  const updateDetector = useLocationStore((s) => s.updateDetector)
-  const deleteDetector = useLocationStore((s) => s.deleteDetector)
+  const { data: dtData } = useGetDetectionType()
+  const { data: ltData } = useGetLocationType()
+  const detectionTypes = useMemo(
+    () => (dtData?.value ?? []) as DetectionType[],
+    [dtData]
+  )
+  const locationType = ltData?.value?.find(
+    (t) => t.id === location?.locationTypeId
+  )
+  const detectionOptions = useMemo(
+    () =>
+      detectionTypes
+        .filter((d) => {
+          if (locationType?.name === 'Intersection')
+            return ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP'].includes(
+              d.abbreviation
+            )
+          if (locationType?.name === 'Ramp')
+            return ['P', 'D', 'IQ', 'EQ'].includes(d.abbreviation)
+          return true
+        })
+        .map((d) => ({ value: d.abbreviation, label: d.description })),
+    [detectionTypes, locationType]
+  )
 
-  const [modalOpen, setModalOpen] = useState(false)
-  const [selectedDetectorId, setSelectedDetectorId] = useState<number>()
-
-  const handleConfirmDelete = useCallback(() => {
-    if (!selectedDetectorId) return
-    deleteDetector(selectedDetectorId)
-    setModalOpen(false)
-  }, [selectedDetectorId, deleteDetector])
+  const detectors = approach.detectors
+  const rowCount = detectors.length + 1
+  const colCount = 13
 
   return (
-    <>
-      <TableContainer component={Paper}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell colSpan={9} />
-              <TableCell colSpan={2} align="center">
-                <Typography variant="caption" fontStyle="italic">
-                  Advanced Count Only
-                </Typography>
-              </TableCell>
-              <TableCell colSpan={2} align="center">
-                <Typography variant="caption" fontStyle="italic">
-                  Advanced Speed Only
-                </Typography>
-              </TableCell>
-              <TableCell />
-            </TableRow>
-            <TableRow>
-              <TableCell>Channel</TableCell>
-              <TableCell>Detection Types</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>Latency Correction</TableCell>
-              <TableCell>Lane Number</TableCell>
-              <TableCell>Movement Type</TableCell>
-              <TableCell>Lane Type</TableCell>
-              <TableCell>Date Added</TableCell>
-              <TableCell>Comments</TableCell>
-              <TableCell>Distance to Stop Bar</TableCell>
-              <TableCell>Decision Point</TableCell>
-              <TableCell>Minimum Speed Filter</TableCell>
-              <TableCell>Movement Delay</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {approach.detectors.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={15}>
-                  <Typography variant="h6" align="center">
-                    No detectors added
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-            {approach.detectors.map((det) => (
-              <TableRow
-                key={det.id}
-                sx={{
-                  backgroundColor: det.isNew
-                    ? 'rgba(100, 210, 100, 0.3)'
-                    : 'white',
-                }}
+    <TableContainer component={Paper}>
+      <Table stickyHeader aria-label="detector table">
+        <TableHead>
+          <TableRow>
+            <TableCell colSpan={9} sx={{ py: 1 }} />
+            <TableCell colSpan={2} align="center" sx={{ py: 1 }}>
+              <Typography variant="caption" fontStyle="italic">
+                Advanced Count Only
+              </Typography>
+            </TableCell>
+            <TableCell colSpan={2} align="center" sx={{ py: 1 }}>
+              <Typography variant="caption" fontStyle="italic">
+                Advanced Speed Only
+              </Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            {[
+              'Channel',
+              'Detection Types',
+              'Hardware',
+              'Latency Correction',
+              'Lane Number',
+              'Movement Type',
+              'Lane Type',
+              'Date Added',
+              'Comments',
+              'Distance to Stop Bar',
+              'Decision Point',
+              'Minimum Speed Filter',
+              'Movement Delay',
+            ].map((h, i) => (
+              <TableCell
+                key={i}
+                sx={{ py: 1, fontSize: '12px', pl: i === 0 ? 1 : 0 }}
               >
-                <EditableTableCell
-                  value={det.detectorChannel}
-                  onUpdate={(val) =>
-                    updateDetector(
-                      det.id,
-                      'detectorChannel',
-                      parseInt(val as string)
-                    )
-                  }
-                  error={approachErrors[String(det.id)]?.error}
-                  warning={approachWarnings[String(det.id)]?.warning}
-                />
-                <DetectionTypesCell
-                  detector={det as Detector}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'detectionTypes', val)
-                  }
-                />
-                <HardwareTypeCell
-                  value={det.detectionHardware}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'detectionHardware', val)
-                  }
-                />
-                <EditableTableCell
-                  value={det.latencyCorrection}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'latencyCorrection', val)
-                  }
-                />
-                <EditableTableCell
-                  value={det.laneNumber}
-                  onUpdate={(val) => updateDetector(det.id, 'laneNumber', val)}
-                />
-                <MovementTypeCell
-                  value={det.movementType}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'movementType', val)
-                  }
-                />
-                <LaneTypeCell
-                  value={det.laneType}
-                  onUpdate={(val) => updateDetector(det.id, 'laneType', val)}
-                />
-                <DateAddedCell
-                  value={det.dateAdded}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'dateAdded', val.toISOString())
-                  }
-                />
-                <CommentCell detector={det as Detector} />
-                <EditableTableCell
-                  value={det.distanceFromStopBar}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'distanceFromStopBar', val)
-                  }
-                />
-                <EditableTableCell
-                  value={det.decisionPoint}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'decisionPoint', val)
-                  }
-                />
-                <EditableTableCell
-                  value={det.minSpeedFilter}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'minSpeedFilter', val)
-                  }
-                />
-                <EditableTableCell
-                  value={det.movementDelay}
-                  onUpdate={(val) =>
-                    updateDetector(det.id, 'movementDelay', val)
-                  }
-                />
-                <TableCell align="center">
-                  <IconButton
-                    color="error"
-                    onClick={() => {
-                      setSelectedDetectorId(det.id)
-                      setModalOpen(true)
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+                {h}
+              </TableCell>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </TableRow>
+        </TableHead>
 
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Delete Detector</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete this detector?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setModalOpen(false)} variant="outlined">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            variant="contained"
-            color="error"
-          >
-            Delete Detector
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+        <TableBody>
+          {detectors.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={colCount} sx={{ textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  No detectors found
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            detectors.map((det, i) => {
+              const rowIdx = i + 1
+              const isSelected = selectedIds.includes(det.id)
+              const outline = isSelected
+                ? `2px solid ${errorColor}`
+                : det.isNew
+                  ? `2px solid ${successColor}`
+                  : undefined
+
+              return (
+                <TableRow
+                  key={det.id}
+                  sx={{
+                    position: 'relative',
+                    cursor: deleteMode ? 'pointer' : 'default',
+                    caretColor: 'transparent',
+                    outline,
+                    outlineOffset: outline ? '-2px' : undefined,
+                    borderRadius: outline ? 1 : undefined,
+                    bgcolor: isSelected
+                      ? innerErrorBg
+                      : det.isNew
+                        ? innerSuccessBg
+                        : undefined,
+                  }}
+                >
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={0}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.detectorChannel}
+                    onUpdate={(v) => {
+                      updateDetector(det.id, 'detectorChannel', v)
+                      // recompute channel errors for all detectors
+                      const { isValid, errors: channelErrors } =
+                        hasUniqueDetectorChannels(channelMap)
+                      // preserve non-channel errors
+                      const prev = errors || {}
+                      const nonChannel = Object.fromEntries(
+                        Object.entries(prev).filter(
+                          ([key]) => !channelMap.has(Number(key))
+                        )
+                      )
+                      if (!isValid) {
+                        setErrors({ ...nonChannel, ...channelErrors })
+                      } else {
+                        setErrors(
+                          Object.keys(nonChannel).length ? nonChannel : null
+                        )
+                      }
+                    }}
+                    error={errors && errors[det.id]}
+                    warning={warnings && warnings[det.id]}
+                  />
+                  <MultiSelectCell<string>
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={1}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.detectionTypes.map((dt) => dt.abbreviation)}
+                    options={detectionOptions}
+                    onUpdate={(abbrs) => {
+                      const types = detectionTypes.filter((d) =>
+                        abbrs.includes(d.abbreviation)
+                      )
+                      updateDetector(det.id, 'detectionTypes', types)
+                    }}
+                    renderValue={(selected) => (
+                      <AvatarGroup max={12}>
+                        {detectionOptions.map((d) =>
+                          selected.includes(d.value) ? (
+                            <Tooltip key={d.value} title={d.label}>
+                              <Avatar
+                                sx={{
+                                  bgcolor: theme.palette.primary.main,
+                                  width: 26,
+                                  height: 26,
+                                  fontSize: '11px',
+                                }}
+                              >
+                                {d.value}
+                              </Avatar>
+                            </Tooltip>
+                          ) : (
+                            <Avatar
+                              key={d.value}
+                              sx={{
+                                bgcolor: theme.palette.grey[400],
+                                width: 26,
+                                height: 26,
+                                fontSize: '11px',
+                              }}
+                            >
+                              {d.value}
+                            </Avatar>
+                          )
+                        )}
+                      </AvatarGroup>
+                    )}
+                  />
+                  <SelectCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={2}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    options={hardwareTypeOptions}
+                    value={det.detectionHardware}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'detectionHardware', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={3}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.latencyCorrection}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'latencyCorrection', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={4}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.laneNumber}
+                    onUpdate={(v) => updateDetector(det.id, 'laneNumber', v)}
+                  />
+                  <SelectCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={5}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    options={movementTypeOptions}
+                    value={det.movementType}
+                    onUpdate={(v) => updateDetector(det.id, 'movementType', v)}
+                  />
+                  <SelectCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={6}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    options={laneTypeOptions}
+                    value={det.laneType}
+                    onUpdate={(v) => updateDetector(det.id, 'laneType', v)}
+                  />
+                  <CalendarCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={7}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.dateAdded}
+                    onUpdate={(v) => updateDetector(det.id, 'dateAdded', v)}
+                  />
+                  <CommentCell
+                    approachId={approach.id}
+                    detector={det}
+                    row={rowIdx}
+                    col={8}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={9}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.distanceFromStopBar}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'distanceFromStopBar', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={10}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.decisionPoint}
+                    onUpdate={(v) => updateDetector(det.id, 'decisionPoint', v)}
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={11}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.minSpeedFilter}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'minSpeedFilter', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={12}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.movementDelay}
+                    onUpdate={(v) => updateDetector(det.id, 'movementDelay', v)}
+                  />
+                  {deleteMode && (
+                    <TableCell
+                      colSpan={colCount}
+                      onClick={() => handleRowClick(det.id)}
+                      sx={{
+                        p: 0,
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 1,
+                        bgcolor: 'transparent',
+                        cursor: 'pointer',
+                      }}
+                    />
+                  )}
+                </TableRow>
+              )
+            })
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }
 
-export default memo(EditDetectors)
+export default EditDetectors

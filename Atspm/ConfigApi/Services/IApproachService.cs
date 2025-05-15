@@ -15,7 +15,7 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.ATSPM.ConfigApi.DTO;
 
 namespace Utah.Udot.Atspm.ConfigApi.Services
 {

@@ -244,7 +244,10 @@ export interface TurningMovementCountsResult {
 
 export interface TransitSignalPriorityOptions {
   dates?: string[] | null;
+  end?: string;
+  locationIdentifier?: string | null;
   locationsAndPhases?: LocationPhases[] | null;
+  start?: string;
 }
 
 export interface TransitSignalPhase {

@@ -1,4 +1,3 @@
-import { useGetDetectionType } from '@/api/config/aTSPMConfigurationApi'
 import { DetectionType, Detector } from '@/features/locations/types'
 import {
   Avatar,
@@ -16,29 +15,26 @@ import React, { useState } from 'react'
 
 interface DetectionTypesProps {
   detector: Detector
+  detectionTypes: DetectionType[]
   onUpdate?: (newDetectionTypes: DetectionType[]) => void
   readonly?: boolean
 }
 
 const DetectionTypesCell = ({
   detector,
+  detectionTypes,
   onUpdate,
-  readonly,
+  readonly = false,
 }: DetectionTypesProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const theme = useTheme()
-
-  const { data } = useGetDetectionType()
-
-  const detectionTypes = data?.value?.filter(
-    (d) => d.abbreviation !== 'B' && d.abbreviation !== 'NA'
-  ) as unknown as DetectionType[]
 
   const valueAbbreviations = new Set(
     detector.detectionTypes?.map((dt) => dt.abbreviation)
   )
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (readonly) return
     setAnchorEl(event.currentTarget)
   }
 
@@ -47,27 +43,26 @@ const DetectionTypesCell = ({
   }
 
   const handleSelect = (abbreviation: string) => {
-    const selectedOption = Object.values(detectionTypes).find(
+    if (!onUpdate) return
+    const selectedOption = detectionTypes.find(
       (option) => option.abbreviation === abbreviation
     )
-    if (selectedOption) {
-      const isSelected = valueAbbreviations.has(abbreviation)
-      const newDetectionTypes = isSelected
-        ? detector.detectionTypes.filter(
-            (dt) => dt.abbreviation !== abbreviation
-          )
-        : [...detector.detectionTypes, selectedOption]
-
-      if (onUpdate) onUpdate(newDetectionTypes)
-    }
+    if (!selectedOption) return
+    const isSelected = valueAbbreviations.has(abbreviation)
+    const newDetectionTypes = isSelected
+      ? detector.detectionTypes.filter((dt) => dt.abbreviation !== abbreviation)
+      : [...detector.detectionTypes, selectedOption]
+    onUpdate(newDetectionTypes)
   }
-
-  if (!detectionTypes) return null
 
   return (
     <TableCell
-      sx={{ p: readonly ? 0 : '', border: readonly ? 'none' : '' }}
       component={readonly ? 'div' : 'td'}
+      sx={{
+        p: readonly ? 0 : undefined,
+        border: readonly ? 'none' : undefined,
+        py: 1,
+      }}
     >
       <Box
         sx={{
@@ -93,9 +88,6 @@ const DetectionTypesCell = ({
                   WebkitPrintColorAdjust: 'exact',
                   printColorAdjust: 'exact',
                 }}
-                slotProps={{
-                  width: { style: { width: 26, height: 26, fontSize: '11px' } },
-                }}
               >
                 {option.abbreviation}
               </Avatar>
@@ -109,7 +101,7 @@ const DetectionTypesCell = ({
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {Object.values(detectionTypes).map((option) => (
+          {detectionTypes.map((option) => (
             <MenuItem
               key={option.id}
               onClick={() => handleSelect(option.abbreviation)}

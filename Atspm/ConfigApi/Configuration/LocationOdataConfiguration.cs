@@ -81,6 +81,21 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         var g = model.Collection.Function("GetDetectionTypeCount");
                         g.ReturnsCollectionFromEntitySet<DetectionTypeGroup>("DetectionTypeGroups");
 
+
+                        var h = model.Action("SaveTemplatedLocation").ReturnsFromEntitySet<Location>("Location"); ;
+                        //var h = model.Collection.Function("SaveTemplatedLocation");
+                        //h.Parameter<TemplateLocationDto>("templateLocationDto");
+                        h.Parameter<string>("locationIdentifier");
+                        h.Parameter<double>("latitude");
+                        h.Parameter<double>("longitude");
+                        h.Parameter<string>("primaryName");
+                        h.Parameter<string>("secondaryName");
+                        h.Parameter<string>("note");
+                        h.CollectionParameter<Device>("devices");
+
+
+                        var j = model.Action("DeleteAllVersions");
+
                         var detectionTypeGroup = builder.EntitySet<DetectionTypeGroup>("DetectionTypeGroups").EntityType;
                         detectionTypeGroup.Property(d => d.Id).IsRequired();
                         detectionTypeGroup.Property(d => d.Count).IsRequired();

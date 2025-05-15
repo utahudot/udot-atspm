@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             string locationIdentifier,
             string LocationDescription)
         {
-            //var plans = planService.GetBasicPlans(_options.Start, _options.End, LocationIdentifier, plans);
+            //var plans = planService.GetBasicPlans(options.Start, options.End, LocationIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 

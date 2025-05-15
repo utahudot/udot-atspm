@@ -55,14 +55,13 @@ namespace Utah.Udot.Atspm.Business.Common
 
             ActivationsDuringRed = detectorActivations.Where
                 //detStart AFTER redStart and Before red+AnalaysTime
-                (d => d.DetectorOn >= RedEvent && d.DetectorOn < redPeriodToAnalyze
-                || d.DetectorOn >= RedEvent && d.DetectorOff > redPeriodToAnalyze
+                (d => (d.DetectorOn >= RedEvent && d.DetectorOn < redPeriodToAnalyze)
 
                       //detOff After redStart and Before red+AnalaysTime
-                      || d.DetectorOff >= RedEvent && d.DetectorOff < redPeriodToAnalyze
+                      || (d.DetectorOff >= RedEvent && d.DetectorOff < redPeriodToAnalyze)
 
                       //DetStart BEFORE redStart and detOff after cycleEnd
-                      || d.DetectorOn <= RedEvent && d.DetectorOff >= redPeriodToAnalyze).OrderBy(d => d.DetectorOn).ToList();
+                      || (d.DetectorOn <= RedEvent && d.DetectorOff >= redPeriodToAnalyze)).OrderBy(d => d.DetectorOn).ToList();
             if (ActivationsDuringRed.Count == 0)
             {
                 RedOccupancyTimeInMilliseconds = CheckForDetectorActivationBiggerThanPeriod(RedEvent, redPeriodToAnalyze, detectorActivations);

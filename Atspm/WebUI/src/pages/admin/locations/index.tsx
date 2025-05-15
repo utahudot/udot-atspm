@@ -4,7 +4,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
-import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
+import { sortApproachesAndDetectors } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import LocationEditor from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
@@ -18,7 +18,7 @@ export async function getLocation(locationId: number) {
   })
   if (locationResponse?.value?.length) {
     const newestLocation = locationResponse.value[0]
-    newestLocation.approaches = sortApproachesByPhaseNumber(
+    newestLocation.approaches = sortApproachesAndDetectors(
       newestLocation.approaches
     )
     return newestLocation
@@ -32,6 +32,7 @@ const LocationsAdmin = () => {
 
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   const handleSetLocation = useCallback(
     async (selectedLocation: Location | null) => {
@@ -44,13 +45,17 @@ const LocationsAdmin = () => {
     [setLocation]
   )
 
+  const handleOpenWizard = () => {
+    setIsWizardOpen(true)
+  }
+
   const openNewLocationModal = useCallback(() => setModalOpen(true), [])
   const closeModal = useCallback(() => setModalOpen(false), [])
 
   if (pageAccess.isLoading) return null
 
   return (
-    <ResponsivePageLayout title="Manage Locations">
+    <ResponsivePageLayout title="Manage Locations" useFullWidth>
       <AddButton
         label="New Location"
         onClick={openNewLocationModal}
@@ -68,6 +73,7 @@ const LocationsAdmin = () => {
         <NewLocationModal
           closeModal={closeModal}
           setLocation={handleSetLocation}
+          onCreatedFromTemplate={handleOpenWizard}
         />
       )}
     </ResponsivePageLayout>

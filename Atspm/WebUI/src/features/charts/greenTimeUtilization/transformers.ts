@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createDisplayProps,
   createGrid,
   createLegend,
@@ -42,7 +43,6 @@ import {
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
 import {
-  DataZoomComponentOption,
   EChartsOption,
   VisualMapComponentOption,
   XAXisComponentOption,
@@ -78,8 +78,6 @@ function transformData(data: RawGreenTimeUtilizationData) {
     plans,
   } = data
 
-  // const xAxisBinSize = 15 // TODO: These should be passed by api
-  // const yAxisBinSize = 3
   const titleHeader = `Green Time Utilization\n${data.locationDescription} - ${data.approachDescription}`
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
@@ -115,32 +113,14 @@ function transformData(data: RawGreenTimeUtilizationData) {
     ChartType.GreenTimeUtilization
   )
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
       orient: 'vertical',
       right: 190,
-      filterMode: 'none',
-      minSpan: 0.2,
       yAxisIndex: [0, 1],
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
-    // {
-    //   type: 'inside',
-    //   orient: 'vertical',
-    //   filterMode: 'none',
-    //   minSpan: 0.2,
-    // },
-  ]
+  ])
 
   const maxStackHeight = Math.max(...bins.map((bin) => bin.y))
   const amountOfVehiclesThrough = transformBins(bins)

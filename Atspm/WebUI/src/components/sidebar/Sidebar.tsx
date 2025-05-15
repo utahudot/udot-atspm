@@ -5,7 +5,6 @@ import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
-import ForkLeftIcon from '@mui/icons-material/ForkLeft'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
 import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
@@ -91,11 +90,11 @@ export default function Sidebar() {
               text={'Link Pivot'}
               url={'/link-pivot'}
             />
-            {hasLTGRPermission && (
-              <NavItem
-                icon={<ForkLeftOutlinedIcon />}
-                text={'Left Turn Gap Report'}
-                url={'/left-turn-gap-report'}
+            {reportsList.length > 0 && (
+              <NavItemWithSubMenu
+                icon={<DescriptionOutlinedIcon />}
+                text="Reports"
+                subItems={reportsList}
               />
             )}
             <NavItem

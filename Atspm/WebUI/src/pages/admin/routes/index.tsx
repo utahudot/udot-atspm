@@ -1,32 +1,33 @@
 import { navigateToPage } from '@/utils/routes'
 
+import {
+  useDeleteRouteFromKey,
+  useGetRoute,
+  usePostRoute,
+} from '@/api/config/aTSPMConfigurationApi'
+import { Route } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { useCreateData } from '@/features/generic/api/createData'
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
-import { useDeleteRoute } from '@/features/routes/api'
-import { useGetRoute } from '@/features/routes/api/getRoutes'
 import CreateRouteModal from '@/features/routes/components/CreateRouteModal'
-import { Route } from '@/features/routes/types'
+import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
-
-const apiCall = 'Route'
 
 const RoutesAdmin = () => {
   const pageAccess = useViewPage(PageNames.Routes)
-
+  const { addNotification } = useNotificationStore()
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDeleteClaim = useUserHasClaim(
     'LocationConfiguration:Delete'
   )
 
-  const { mutateAsync: createRoute } = useCreateData({ apiCall })
-  const { mutateAsync: deleteRoute } = useDeleteRoute()
+  const { mutateAsync: createRoute } = usePostRoute()
+  const { mutateAsync: deleteRoute } = useDeleteRouteFromKey()
 
   const { data: routeData, isLoading, refetch: refetchRoutes } = useGetRoute()
   const routes = routeData?.value
@@ -40,22 +41,20 @@ const RoutesAdmin = () => {
     try {
       const newRoute = await createRoute({
         data: { id, name },
-        apiCall,
       })
       navigateToPage(`/admin/routes/${newRoute.id}/edit`)
+      addNotification({
+        title: 'Route Created',
+        type: 'success',
+      })
 
       refetchRoutes()
     } catch (error) {
       console.error('Mutation Error:', error)
-    }
-  }
-
-  const HandleDeleteRoute = async (id: Route) => {
-    try {
-      await deleteRoute(id)
-      refetchRoutes()
-    } catch (error) {
-      console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error Creating Route',
+      })
     }
   }
 
@@ -69,6 +68,23 @@ const RoutesAdmin = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
     )
+  }
+
+  const HandleDeleteRoute = async (id: number) => {
+    try {
+      await deleteRoute({ key: id })
+      refetchRoutes()
+      addNotification({
+        title: 'Route Deleted',
+        type: 'success',
+      })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error Deleting Route',
+      })
+    }
   }
 
   const onModalClose = () => {

@@ -101,7 +101,7 @@ function transformData(data: RawTurningMovementCountsData) {
   const grid = createGrid({
     top: 180,
     left: 70,
-    right: 150,
+    right: 180,
   })
 
   const legendData = [] as { name: string; icon: string }[]
@@ -120,7 +120,14 @@ function transformData(data: RawTurningMovementCountsData) {
     ],
   })
 
-  const dataZoom = createDataZoom()
+  const dataZoom = createDataZoom([
+    {
+      type: 'slider',
+      orient: 'vertical',
+      right: 140,
+      yAxisIndex: 0,
+    },
+  ])
 
   const toolbox = createToolbox(
     {

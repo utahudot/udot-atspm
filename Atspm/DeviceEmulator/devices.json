@@ -1,0 +1,2402 @@
+[
+  {
+    "DeviceIdentifier": "FTP-001",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-001",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-002",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-002",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-003",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-003",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-004",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-004",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-005",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-005",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-006",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-006",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-007",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-007",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-008",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-008",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-009",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-009",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-010",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-010",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-011",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-011",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-012",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-012",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-013",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-013",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-014",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-014",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-015",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-015",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-016",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-016",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-017",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-017",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-018",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-018",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-019",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-019",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-020",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-020",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-021",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-021",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-022",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-022",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-023",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-023",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-024",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-024",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-025",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-025",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-026",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-026",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-027",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-027",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-028",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-028",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-029",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-029",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-030",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-030",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-031",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-031",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-032",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-032",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-033",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-033",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-034",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-034",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-035",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-035",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-036",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-036",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-037",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-037",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-038",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-038",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-039",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-039",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-040",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-040",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-041",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-041",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-042",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-042",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-043",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-043",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-044",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-044",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-045",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-045",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-046",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-046",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-047",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-047",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-048",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-048",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-049",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-049",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-050",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-050",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-051",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-051",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-052",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-052",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-053",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-053",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-054",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-054",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-055",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-055",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-056",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-056",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-057",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-057",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-058",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-058",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-059",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-059",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-060",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-060",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-061",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-061",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-062",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-062",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-063",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-063",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-064",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-064",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-065",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-065",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-066",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-066",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-067",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-067",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-068",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-068",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-069",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-069",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-070",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-070",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-071",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-071",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-072",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-072",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-073",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-073",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-074",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-074",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-075",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-075",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-076",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-076",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-077",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-077",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-078",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-078",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-079",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-079",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-080",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-080",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-081",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-081",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-082",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-082",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-083",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-083",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-084",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-084",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-085",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-085",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-086",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-086",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-087",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-087",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-088",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-088",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-089",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-089",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-090",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-090",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-091",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-091",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-092",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-092",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-093",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-093",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-094",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-094",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-095",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-095",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "FTP-096",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-096",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-097",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-097",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-098",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-098",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-099",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-099",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "FTP-100",
+    "Protocol": "ftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 21,
+    "LogDirectory": "/data/FTP-100",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-001",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-001",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-002",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-002",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-003",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-003",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-004",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-004",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-005",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-005",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-006",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-006",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-007",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-007",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-008",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-008",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-009",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-009",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-010",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-010",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-011",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-011",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-012",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-012",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-013",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-013",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-014",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-014",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-015",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-015",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-016",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-016",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-017",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-017",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-018",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-018",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-019",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-019",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-020",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-020",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-021",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-021",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-022",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-022",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-023",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-023",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-024",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-024",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-025",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-025",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-026",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-026",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-027",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-027",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-028",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-028",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-029",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-029",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-030",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-030",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-031",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-031",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-032",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-032",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-033",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-033",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-034",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-034",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-035",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-035",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-036",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-036",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-037",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-037",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-038",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-038",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-039",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-039",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-040",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-040",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-041",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-041",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-042",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-042",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-043",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-043",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-044",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-044",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-045",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-045",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-046",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-046",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-047",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-047",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-048",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-048",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-049",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-049",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-050",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-050",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-051",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-051",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-052",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-052",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-053",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-053",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-054",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-054",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-055",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-055",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-056",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-056",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-057",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-057",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-058",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-058",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-059",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-059",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-060",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-060",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-061",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-061",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-062",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-062",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-063",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-063",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-064",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-064",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-065",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-065",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-066",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-066",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-067",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-067",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-068",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-068",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-069",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-069",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-070",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-070",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-071",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-071",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-072",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-072",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-073",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-073",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-074",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-074",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-075",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-075",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-076",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-076",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-077",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-077",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-078",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-078",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-079",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-079",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-080",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-080",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-081",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-081",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-082",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-082",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-083",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-083",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-084",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-084",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-085",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-085",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-086",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-086",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-087",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-087",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-088",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-088",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-089",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-089",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-090",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-090",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-091",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-091",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-092",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-092",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-093",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-093",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-094",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-094",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-095",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-095",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "SFTP-096",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-096",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-097",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-097",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-098",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-098",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-099",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-099",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "SFTP-100",
+    "Protocol": "sftp",
+    "IpAddress": "127.0.0.1",
+    "Port": 22,
+    "LogDirectory": "/data/SFTP-100",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-001",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-001",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-002",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-002",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-003",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-003",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-004",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-004",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-005",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-005",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-006",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-006",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-007",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-007",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-008",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-008",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-009",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-009",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-010",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-010",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-011",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-011",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-012",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-012",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-013",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-013",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-014",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-014",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-015",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-015",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-016",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-016",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-017",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-017",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-018",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-018",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-019",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-019",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-020",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-020",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-021",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-021",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-022",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-022",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-023",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-023",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-024",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-024",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-025",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-025",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-026",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-026",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-027",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-027",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-028",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-028",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-029",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-029",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-030",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-030",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-031",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-031",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-032",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-032",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-033",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-033",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-034",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-034",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-035",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-035",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-036",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-036",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-037",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-037",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-038",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-038",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-039",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-039",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-040",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-040",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-041",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-041",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-042",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-042",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-043",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-043",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-044",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-044",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-045",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-045",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-046",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-046",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-047",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-047",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-048",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-048",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-049",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-049",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-050",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-050",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-051",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-051",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-052",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-052",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-053",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-053",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-054",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-054",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-055",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-055",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-056",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-056",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-057",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-057",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-058",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-058",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-059",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-059",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-060",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-060",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-061",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-061",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-062",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-062",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-063",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-063",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-064",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-064",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-065",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-065",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-066",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-066",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-067",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-067",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-068",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-068",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-069",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-069",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-070",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-070",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-071",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-071",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-072",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-072",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-073",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-073",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-074",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-074",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-075",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-075",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-076",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-076",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-077",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-077",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-078",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-078",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-079",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-079",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-080",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-080",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-081",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-081",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-082",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-082",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-083",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-083",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-084",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-084",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-085",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-085",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-086",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-086",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-087",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-087",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-088",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-088",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-089",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-089",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-090",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-090",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-091",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-091",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-092",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-092",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-093",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-093",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-094",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-094",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-095",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-095",
+    "UseCompression": true
+  },
+  {
+    "DeviceIdentifier": "HTTP-096",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-096",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-097",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-097",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-098",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-098",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-099",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-099",
+    "UseCompression": false
+  },
+  {
+    "DeviceIdentifier": "HTTP-100",
+    "Protocol": "http",
+    "IpAddress": "127.0.0.1",
+    "Port": 80,
+    "LogDirectory": "/data/HTTP-100",
+    "UseCompression": true
+  }
+]

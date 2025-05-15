@@ -252,6 +252,7 @@ export function createYAxis(
     type: 'value',
     nameLocation: 'middle',
     nameGap: 40,
+    min: 0,
     alignTicks: true,
     axisLabel: {
       formatter: (val) => {
@@ -291,23 +292,53 @@ export function createXAxis(start?: string, end?: string) {
   return xAxis
 }
 
-export function createDataZoom() {
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'none',
-      show: true,
-      minSpan: 0.2,
-    },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      show: true,
-      minSpan: 0.2,
-    },
+export function createDataZoom(
+  overrides?: DataZoomComponentOption[]
+): DataZoomComponentOption[] {
+  const commonDefaults = {
+    filterMode: 'none',
+    show: true,
+    minSpan: 0.2,
+  } as const
+
+  // our two “built-in” defaults
+  const base: DataZoomComponentOption[] = [
+    { type: 'slider', ...commonDefaults }, // horizontal
+    { type: 'inside', ...commonDefaults }, // drag/scroll
   ]
 
-  return dataZoom
+  if (!overrides || overrides.length === 0) {
+    return base
+  }
+
+  // 1) Merge any overrides for the two built-ins
+  const mergedBase = base.map((def) => {
+    const match = overrides.find(
+      (o) =>
+        o.type === def.type &&
+        (o.orient ?? 'horizontal') === (def.orient ?? 'horizontal')
+    )
+    return match ? { ...def, ...match } : def
+  })
+
+  // 2) Extras = overrides that didn’t match those two
+  //    For a vertical-slider override, fold in the shared defaults only
+  const extras = overrides
+    .filter(
+      (o) =>
+        !base.some(
+          (def) =>
+            o.type === def.type &&
+            (o.orient ?? 'horizontal') === (def.orient ?? 'horizontal')
+        )
+    )
+    .map((o) =>
+      o.type === 'slider' && (o.orient ?? 'horizontal') === 'vertical'
+        ? { orient: 'vertical' as const, ...commonDefaults, ...o }
+        : o
+    )
+
+  return [...mergedBase, ...extras]
 }
 
 export function formatExportFileName(
@@ -317,13 +348,11 @@ export function formatExportFileName(
 ) {
   // Clean the title
   const cleanedTitle = title
-    .replace(/#/g, '') // Remove the pound sign
-    .replace(/-/g, '_') // Replace hyphens with underscores
-    .replace(/&/g, '_') // Replace '&' with underscores
-    .replace(/ /g, '_') // Replace spaces with underscores
-    .replace(/[:/]/g, '_') // Replace ':' and '/' with underscores
-    .replace(/_+/g, '_') // Replace multiple underscores with a single underscore
-    .replace(/^_+|_+$/g, '') // Remove leading or trailing underscores
+    .normalize('NFKC')
+    .replace(/[#&:\-/ ]/g, '_')
+    .split('_')
+    .filter((s) => s.length > 0)
+    .join('_')
 
   return (
     cleanedTitle +

@@ -165,10 +165,11 @@ const About = () => {
           marginBottom: 4,
           maxWidth: '740px',
           marginX: 'auto',
+          position: 'relative', // for positioning version box
           textAlign: 'center',
         }}
       >
-        <Typography variant="h2" gutterBottom>
+        <Typography variant="h2" sx={{ mt: 4 }} gutterBottom>
           About ATSPM
         </Typography>
         <Typography variant="subtitle1" paragraph>
@@ -186,6 +187,24 @@ const About = () => {
         >
           Learn more
         </Button>
+
+        {/* Version info block */}
+        <Paper
+          variant="outlined"
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            textAlign: 'right',
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            color: 'text.secondary',
+            backgroundColor: 'background.default',
+            p: 1,
+          }}
+        >
+          ATSPM version 5.0
+        </Paper>
       </Paper>
       <Box marginBottom={2} textAlign={'center'}>
         <Typography variant="h3" fontStyle="italic">

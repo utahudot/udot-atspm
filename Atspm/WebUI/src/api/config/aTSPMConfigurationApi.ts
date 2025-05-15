@@ -19,6 +19,7 @@ import type {
   Approach,
   ApproachDto,
   Area,
+  DeleteLocationAllVersionsFromKeyParams,
   DeleteLocationSetLocationTodFromKeyParams,
   DetectionType,
   DetectionTypeGroup,
@@ -57,6 +58,49 @@ import type {
   GetDetectorDetectorCommentsFromKeyParams,
   GetDetectorFromKeyParams,
   GetDetectorParams,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams,
   GetDeviceActiveDevicesByLocationFromLocationIdParams,
   GetDeviceActiveDevicesCountParams,
   GetDeviceConfigurationCountParams,
@@ -100,6 +144,8 @@ import type {
   GetLocationLatestVersionOfLocationFromIdentifierParams,
   GetLocationLocationsForSearchParams,
   GetLocationParams,
+  GetLocationSaveTemplatedLocationFromKeyParams,
+  GetLocationSyncLocationFromKeyParams,
   GetLocationTypeCountParams,
   GetLocationTypeFromKeyParams,
   GetLocationTypeLocationsCountFromKeyParams,
@@ -113,12 +159,18 @@ import type {
   GetMeasureOptionCountParams,
   GetMeasureOptionFromKeyParams,
   GetMeasureOptionParams,
+  GetMeasureOptionPresetCountParams,
+  GetMeasureOptionPresetFromKeyParams,
+  GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  GetMeasureOptionPresetParams,
   GetMeasureTypeCountParams,
   GetMeasureTypeDetectionTypesCountFromKeyParams,
   GetMeasureTypeDetectionTypesFromKeyParams,
   GetMeasureTypeFromKeyParams,
   GetMeasureTypeMeasureCommentsCountFromKeyParams,
   GetMeasureTypeMeasureCommentsFromKeyParams,
+  GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  GetMeasureTypeMeasureOptionPresetsFromKeyParams,
   GetMeasureTypeParams,
   GetMenuItemsCountParams,
   GetMenuItemsFromKeyParams,
@@ -156,9 +208,11 @@ import type {
   GetWatchDogIgnoreEventParams,
   Jurisdiction,
   Location,
+  LocationSaveTemplatedLocationParameters,
   LocationType,
   MeasureComment,
   MeasureOption,
+  MeasureOptionPreset,
   MeasureType,
   MenuItem,
   PatchApproachFromKeyParams,
@@ -175,6 +229,7 @@ import type {
   PatchLocationTypeFromKeyParams,
   PatchMeasureCommentFromKeyParams,
   PatchMeasureOptionFromKeyParams,
+  PatchMeasureOptionPresetFromKeyParams,
   PatchMeasureTypeFromKeyParams,
   PatchMenuItemsFromKeyParams,
   PatchProductFromKeyParams,
@@ -198,6 +253,7 @@ import type {
   PostLocationTypeParams,
   PostMeasureCommentParams,
   PostMeasureOptionParams,
+  PostMeasureOptionPresetParams,
   PostMeasureTypeParams,
   PostMenuItemsParams,
   PostProductParams,
@@ -222,6 +278,7 @@ import type {
   PutLocationTypeFromKeyParams,
   PutMeasureCommentFromKeyParams,
   PutMeasureOptionFromKeyParams,
+  PutMeasureOptionPresetFromKeyParams,
   PutMeasureTypeFromKeyParams,
   PutMenuItemsFromKeyParams,
   PutProductFromKeyParams,
@@ -237,6 +294,7 @@ import type {
   RouteDto,
   RouteLocation,
   SearchLocation,
+  TemplateLocationModifiedDto,
   UpsertApproachApproachParams,
   UpsertRouteRouteParams,
   VersionHistory,
@@ -596,6 +654,79 @@ export const useGetApproachApproachDtoFromId = <
   return query
 }
 
+export const getApproach = (
+  params?: GetApproachParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Approach[]>({
+    url: `/Approach`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetApproachQueryKey = (params?: GetApproachParams) => {
+  return [`/Approach`, ...(params ? [params] : [])] as const
+}
+
+export const getGetApproachQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApproach>>,
+  TError = void,
+>(
+  params?: GetApproachParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproach>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetApproachQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApproach>>> = ({
+    signal,
+  }) => getApproach(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApproach>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetApproachQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApproach>>
+>
+export type GetApproachQueryError = void
+
+export const useGetApproach = <
+  TData = Awaited<ReturnType<typeof getApproach>>,
+  TError = void,
+>(
+  params?: GetApproachParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproach>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApproachQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postApproach = (
   approach: Approach,
   params?: PostApproachParams
@@ -664,33 +795,32 @@ export const usePostApproach = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getApproach = (
-  params?: GetApproachParams,
+export const getApproachCount = (
+  params?: GetApproachCountParams,
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/Approach`,
+    url: `/Approach/$count`,
     method: 'GET',
     params,
     signal,
   })
 }
 
-export const getGetApproachQueryKey = (params?: GetApproachParams) => {
-  return [`/Approach`, ...(params ? [params] : [])] as const
+export const getGetApproachCountQueryKey = (
+  params?: GetApproachCountParams
+) => {
+  return [`/Approach/$count`, ...(params ? [params] : [])] as const
 }
 
-export const getGetApproachQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApproach>>,
+export const getGetApproachCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApproachCount>>,
   TError = void,
 >(
-  params?: GetApproachParams,
+  params?: GetApproachCountParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApproach>>,
+      Awaited<ReturnType<typeof getApproachCount>>,
       TError,
       TData
     >
@@ -698,41 +828,38 @@ export const getGetApproachQueryOptions = <
 ) => {
   const { query: queryOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetApproachQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getGetApproachCountQueryKey(params)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApproach>>> = ({
-    signal,
-  }) => getApproach(params, signal)
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApproachCount>>
+  > = ({ signal }) => getApproachCount(params, signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApproach>>,
+    Awaited<ReturnType<typeof getApproachCount>>,
     TError,
     TData
   > & { queryKey: QueryKey }
 }
 
-export type GetApproachQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApproach>>
+export type GetApproachCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApproachCount>>
 >
-export type GetApproachQueryError = void
+export type GetApproachCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetApproach = <
-  TData = Awaited<ReturnType<typeof getApproach>>,
+export const useGetApproachCount = <
+  TData = Awaited<ReturnType<typeof getApproachCount>>,
   TError = void,
 >(
-  params?: GetApproachParams,
+  params?: GetApproachCountParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApproach>>,
+      Awaited<ReturnType<typeof getApproachCount>>,
       TError,
       TData
     >
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetApproachQueryOptions(params, options)
+  const queryOptions = getGetApproachCountQueryOptions(params, options)
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -743,137 +870,6 @@ export const useGetApproach = <
   return query
 }
 
-export const patchApproachFromKey = (
-  key: number,
-  approach: Approach,
-  params?: PatchApproachFromKeyParams
-) => {
-  return configRequest<void>({
-    url: `/Approach/${key}`,
-    method: 'PATCH',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: approach,
-    params,
-  })
-}
-
-export const getPatchApproachFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchApproachFromKey>>,
-    TError,
-    { key: number; data: Approach; params?: PatchApproachFromKeyParams },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof patchApproachFromKey>>,
-  TError,
-  { key: number; data: Approach; params?: PatchApproachFromKeyParams },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchApproachFromKey>>,
-    { key: number; data: Approach; params?: PatchApproachFromKeyParams }
-  > = (props) => {
-    const { key, data, params } = props ?? {}
-
-    return patchApproachFromKey(key, data, params)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PatchApproachFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchApproachFromKey>>
->
-export type PatchApproachFromKeyMutationBody = Approach
-export type PatchApproachFromKeyMutationError = unknown
-
-export const usePatchApproachFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchApproachFromKey>>,
-    TError,
-    { key: number; data: Approach; params?: PatchApproachFromKeyParams },
-    TContext
-  >
-}) => {
-  const mutationOptions = getPatchApproachFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-export const deleteApproachFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Approach/${key}`,
-    method: 'DELETE',
-  })
-}
-
-export const getDeleteApproachFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteApproachFromKey>>,
-    TError,
-    { key: number },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteApproachFromKey>>,
-  TError,
-  { key: number },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteApproachFromKey>>,
-    { key: number }
-  > = (props) => {
-    const { key } = props ?? {}
-
-    return deleteApproachFromKey(key)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type DeleteApproachFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteApproachFromKey>>
->
-
-export type DeleteApproachFromKeyMutationError = unknown
-
-export const useDeleteApproachFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteApproachFromKey>>,
-    TError,
-    { key: number },
-    TContext
-  >
-}) => {
-  const mutationOptions = getDeleteApproachFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-/**
- * @summary object with key from oData query.
- */
 export const getApproachFromKey = (
   key: number,
   params?: GetApproachFromKeyParams,
@@ -934,9 +930,6 @@ export type GetApproachFromKeyQueryResult = NonNullable<
 >
 export type GetApproachFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetApproachFromKey = <
   TData = Awaited<ReturnType<typeof getApproachFromKey>>,
   TError = void,
@@ -1031,85 +1024,129 @@ export const usePutApproachFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getApproachCount = (
-  params?: GetApproachCountParams,
-  signal?: AbortSignal
+export const patchApproachFromKey = (
+  key: number,
+  approach: Approach,
+  params?: PatchApproachFromKeyParams
 ) => {
-  return configRequest<Approach[]>({
-    url: `/Approach/$count`,
-    method: 'GET',
+  return configRequest<void>({
+    url: `/Approach/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: approach,
     params,
-    signal,
   })
 }
 
-export const getGetApproachCountQueryKey = (
-  params?: GetApproachCountParams
-) => {
-  return [`/Approach/$count`, ...(params ? [params] : [])] as const
-}
-
-export const getGetApproachCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApproachCount>>,
-  TError = void,
->(
-  params?: GetApproachCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApproachCount>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey = queryOptions?.queryKey ?? getGetApproachCountQueryKey(params)
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApproachCount>>
-  > = ({ signal }) => getApproachCount(params, signal)
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApproachCount>>,
+export const getPatchApproachFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchApproachFromKey>>,
     TError,
-    TData
-  > & { queryKey: QueryKey }
+    { key: number; data: Approach; params?: PatchApproachFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchApproachFromKey>>,
+  TError,
+  { key: number; data: Approach; params?: PatchApproachFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchApproachFromKey>>,
+    { key: number; data: Approach; params?: PatchApproachFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchApproachFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
 }
 
-export type GetApproachCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApproachCount>>
+export type PatchApproachFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchApproachFromKey>>
 >
-export type GetApproachCountQueryError = void
+export type PatchApproachFromKeyMutationBody = Approach
+export type PatchApproachFromKeyMutationError = unknown
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetApproachCount = <
-  TData = Awaited<ReturnType<typeof getApproachCount>>,
-  TError = void,
->(
-  params?: GetApproachCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApproachCount>>,
-      TError,
-      TData
-    >
+export const usePatchApproachFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchApproachFromKey>>,
+    TError,
+    { key: number; data: Approach; params?: PatchApproachFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPatchApproachFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+export const deleteApproachFromKey = (key: number) => {
+  return configRequest<void>({ url: `/Approach/${key}`, method: 'DELETE' })
+}
+
+export const getDeleteApproachFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApproachFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApproachFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApproachFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteApproachFromKey(key)
   }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetApproachCountQueryOptions(params, options)
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
+  return { mutationFn, ...mutationOptions }
+}
 
-  query.queryKey = queryOptions.queryKey
+export type DeleteApproachFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApproachFromKey>>
+>
 
-  return query
+export type DeleteApproachFromKeyMutationError = unknown
+
+export const useDeleteApproachFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApproachFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions = getDeleteApproachFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
 }
 
 /**
@@ -1303,6 +1340,63 @@ export const useGetAreaLocationsCountFromKey = <
   return query
 }
 
+export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
+  return configRequest<Area[]>({ url: `/Area`, method: 'GET', params, signal })
+}
+
+export const getGetAreaQueryKey = (params?: GetAreaParams) => {
+  return [`/Area`, ...(params ? [params] : [])] as const
+}
+
+export const getGetAreaQueryOptions = <
+  TData = Awaited<ReturnType<typeof getArea>>,
+  TError = void,
+>(
+  params?: GetAreaParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getArea>>, TError, TData>
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetAreaQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getArea>>> = ({
+    signal,
+  }) => getArea(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getArea>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetAreaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getArea>>
+>
+export type GetAreaQueryError = void
+
+export const useGetArea = <
+  TData = Awaited<ReturnType<typeof getArea>>,
+  TError = void,
+>(
+  params?: GetAreaParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getArea>>, TError, TData>
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetAreaQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postArea = (area: Area, params?: PostAreaParams) => {
   return configRequest<void>({
     url: `/Area`,
@@ -1365,64 +1459,69 @@ export const usePostArea = <TError = unknown, TContext = unknown>(options?: {
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
+export const getAreaCount = (
+  params?: GetAreaCountParams,
+  signal?: AbortSignal
+) => {
   return configRequest<Area[]>({
-    url: `/Area`,
+    url: `/Area/$count`,
     method: 'GET',
     params,
     signal,
   })
 }
 
-export const getGetAreaQueryKey = (params?: GetAreaParams) => {
-  return [`/Area`, ...(params ? [params] : [])] as const
+export const getGetAreaCountQueryKey = (params?: GetAreaCountParams) => {
+  return [`/Area/$count`, ...(params ? [params] : [])] as const
 }
 
-export const getGetAreaQueryOptions = <
-  TData = Awaited<ReturnType<typeof getArea>>,
+export const getGetAreaCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAreaCount>>,
   TError = void,
 >(
-  params?: GetAreaParams,
+  params?: GetAreaCountParams,
   options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getArea>>, TError, TData>
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreaCount>>,
+      TError,
+      TData
+    >
   }
 ) => {
   const { query: queryOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetAreaQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getGetAreaCountQueryKey(params)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getArea>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAreaCount>>> = ({
     signal,
-  }) => getArea(params, signal)
+  }) => getAreaCount(params, signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getArea>>,
+    Awaited<ReturnType<typeof getAreaCount>>,
     TError,
     TData
   > & { queryKey: QueryKey }
 }
 
-export type GetAreaQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getArea>>
+export type GetAreaCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAreaCount>>
 >
-export type GetAreaQueryError = void
+export type GetAreaCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetArea = <
-  TData = Awaited<ReturnType<typeof getArea>>,
+export const useGetAreaCount = <
+  TData = Awaited<ReturnType<typeof getAreaCount>>,
   TError = void,
 >(
-  params?: GetAreaParams,
+  params?: GetAreaCountParams,
   options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getArea>>, TError, TData>
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreaCount>>,
+      TError,
+      TData
+    >
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetAreaQueryOptions(params, options)
+  const queryOptions = getGetAreaCountQueryOptions(params, options)
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -1431,6 +1530,160 @@ export const useGetArea = <
   query.queryKey = queryOptions.queryKey
 
   return query
+}
+
+export const getAreaFromKey = (
+  key: number,
+  params?: GetAreaFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Area>({
+    url: `/Area/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetAreaFromKeyQueryKey = (
+  key: number,
+  params?: GetAreaFromKeyParams
+) => {
+  return [`/Area/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetAreaFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAreaFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetAreaFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreaFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAreaFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAreaFromKey>>> = ({
+    signal,
+  }) => getAreaFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAreaFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetAreaFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAreaFromKey>>
+>
+export type GetAreaFromKeyQueryError = void
+
+export const useGetAreaFromKey = <
+  TData = Awaited<ReturnType<typeof getAreaFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetAreaFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreaFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetAreaFromKeyQueryOptions(key, params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putAreaFromKey = (
+  key: number,
+  area: Area,
+  params?: PutAreaFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/Area/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: area,
+    params,
+  })
+}
+
+export const getPutAreaFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putAreaFromKey>>,
+    TError,
+    { key: number; data: Area; params?: PutAreaFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putAreaFromKey>>,
+  TError,
+  { key: number; data: Area; params?: PutAreaFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putAreaFromKey>>,
+    { key: number; data: Area; params?: PutAreaFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putAreaFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutAreaFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putAreaFromKey>>
+>
+export type PutAreaFromKeyMutationBody = Area
+export type PutAreaFromKeyMutationError = unknown
+
+export const usePutAreaFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putAreaFromKey>>,
+    TError,
+    { key: number; data: Area; params?: PutAreaFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPutAreaFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
 }
 
 export const patchAreaFromKey = (
@@ -1559,249 +1812,10 @@ export const useDeleteAreaFromKey = <
 }
 
 /**
- * @summary object with key from oData query.
- */
-export const getAreaFromKey = (
-  key: number,
-  params?: GetAreaFromKeyParams,
-  signal?: AbortSignal
-) => {
-  return configRequest<Area>({
-    url: `/Area/${key}`,
-    method: 'GET',
-    params,
-    signal,
-  })
-}
-
-export const getGetAreaFromKeyQueryKey = (
-  key: number,
-  params?: GetAreaFromKeyParams
-) => {
-  return [`/Area/${key}`, ...(params ? [params] : [])] as const
-}
-
-export const getGetAreaFromKeyQueryOptions = <
-  TData = Awaited<ReturnType<typeof getAreaFromKey>>,
-  TError = void,
->(
-  key: number,
-  params?: GetAreaFromKeyParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getAreaFromKey>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGetAreaFromKeyQueryKey(key, params)
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAreaFromKey>>> = ({
-    signal,
-  }) => getAreaFromKey(key, params, signal)
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!key,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getAreaFromKey>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetAreaFromKeyQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getAreaFromKey>>
->
-export type GetAreaFromKeyQueryError = void
-
-/**
- * @summary object with key from oData query.
- */
-export const useGetAreaFromKey = <
-  TData = Awaited<ReturnType<typeof getAreaFromKey>>,
-  TError = void,
->(
-  key: number,
-  params?: GetAreaFromKeyParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getAreaFromKey>>,
-      TError,
-      TData
-    >
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetAreaFromKeyQueryOptions(key, params, options)
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
-}
-
-export const putAreaFromKey = (
-  key: number,
-  area: Area,
-  params?: PutAreaFromKeyParams
-) => {
-  return configRequest<void>({
-    url: `/Area/${key}`,
-    method: 'PUT',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: area,
-    params,
-  })
-}
-
-export const getPutAreaFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putAreaFromKey>>,
-    TError,
-    { key: number; data: Area; params?: PutAreaFromKeyParams },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putAreaFromKey>>,
-  TError,
-  { key: number; data: Area; params?: PutAreaFromKeyParams },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putAreaFromKey>>,
-    { key: number; data: Area; params?: PutAreaFromKeyParams }
-  > = (props) => {
-    const { key, data, params } = props ?? {}
-
-    return putAreaFromKey(key, data, params)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PutAreaFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putAreaFromKey>>
->
-export type PutAreaFromKeyMutationBody = Area
-export type PutAreaFromKeyMutationError = unknown
-
-export const usePutAreaFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putAreaFromKey>>,
-    TError,
-    { key: number; data: Area; params?: PutAreaFromKeyParams },
-    TContext
-  >
-}) => {
-  const mutationOptions = getPutAreaFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-/**
- * @summary Collection of objects from oData query.
- */
-export const getAreaCount = (
-  params?: GetAreaCountParams,
-  signal?: AbortSignal
-) => {
-  return configRequest<Area[]>({
-    url: `/Area/$count`,
-    method: 'GET',
-    params,
-    signal,
-  })
-}
-
-export const getGetAreaCountQueryKey = (params?: GetAreaCountParams) => {
-  return [`/Area/$count`, ...(params ? [params] : [])] as const
-}
-
-export const getGetAreaCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof getAreaCount>>,
-  TError = void,
->(
-  params?: GetAreaCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getAreaCount>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey = queryOptions?.queryKey ?? getGetAreaCountQueryKey(params)
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAreaCount>>> = ({
-    signal,
-  }) => getAreaCount(params, signal)
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getAreaCount>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetAreaCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getAreaCount>>
->
-export type GetAreaCountQueryError = void
-
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetAreaCount = <
-  TData = Awaited<ReturnType<typeof getAreaCount>>,
-  TError = void,
->(
-  params?: GetAreaCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getAreaCount>>,
-      TError,
-      TData
-    >
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetAreaCountQueryOptions(params, options)
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
-}
-
-/**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 export const getDetectionTypeDetectorsFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -1814,7 +1828,7 @@ export const getDetectionTypeDetectorsFromKey = (
 }
 
 export const getGetDetectionTypeDetectorsFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams
 ) => {
   return [
@@ -1827,7 +1841,7 @@ export const getGetDetectionTypeDetectorsFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1871,7 +1885,7 @@ export const useGetDetectionTypeDetectorsFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1900,7 +1914,7 @@ export const useGetDetectionTypeDetectorsFromKey = <
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 export const getDetectionTypeDetectorsCountFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -1913,7 +1927,7 @@ export const getDetectionTypeDetectorsCountFromKey = (
 }
 
 export const getGetDetectionTypeDetectorsCountFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams
 ) => {
   return [
@@ -1926,7 +1940,7 @@ export const getGetDetectionTypeDetectorsCountFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1970,7 +1984,7 @@ export const useGetDetectionTypeDetectorsCountFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1999,7 +2013,7 @@ export const useGetDetectionTypeDetectorsCountFromKey = <
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 export const getDetectionTypeMeasureTypesFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -2012,7 +2026,7 @@ export const getDetectionTypeMeasureTypesFromKey = (
 }
 
 export const getGetDetectionTypeMeasureTypesFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams
 ) => {
   return [
@@ -2025,7 +2039,7 @@ export const getGetDetectionTypeMeasureTypesFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2069,7 +2083,7 @@ export const useGetDetectionTypeMeasureTypesFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2098,7 +2112,7 @@ export const useGetDetectionTypeMeasureTypesFromKey = <
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 export const getDetectionTypeMeasureTypesCountFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -2111,7 +2125,7 @@ export const getDetectionTypeMeasureTypesCountFromKey = (
 }
 
 export const getGetDetectionTypeMeasureTypesCountFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams
 ) => {
   return [
@@ -2124,7 +2138,7 @@ export const getGetDetectionTypeMeasureTypesCountFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2169,7 +2183,7 @@ export const useGetDetectionTypeMeasureTypesCountFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2194,9 +2208,6 @@ export const useGetDetectionTypeMeasureTypesCountFromKey = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDetectionType = (
   params?: GetDetectionTypeParams,
   signal?: AbortSignal
@@ -2248,9 +2259,6 @@ export type GetDetectionTypeQueryResult = NonNullable<
 >
 export type GetDetectionTypeQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDetectionType = <
   TData = Awaited<ReturnType<typeof getDetectionType>>,
   TError = void,
@@ -2275,9 +2283,6 @@ export const useGetDetectionType = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postDetectionType = (
   detectionType: DetectionType,
   params?: PostDetectionTypeParams
@@ -2330,9 +2335,6 @@ export type PostDetectionTypeMutationResult = NonNullable<
 export type PostDetectionTypeMutationBody = DetectionType
 export type PostDetectionTypeMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostDetectionType = <
   TError = unknown,
   TContext = unknown,
@@ -2349,9 +2351,6 @@ export const usePostDetectionType = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDetectionTypeCount = (
   params?: GetDetectionTypeCountParams,
   signal?: AbortSignal
@@ -2404,9 +2403,6 @@ export type GetDetectionTypeCountQueryResult = NonNullable<
 >
 export type GetDetectionTypeCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDetectionTypeCount = <
   TData = Awaited<ReturnType<typeof getDetectionTypeCount>>,
   TError = void,
@@ -2431,9 +2427,6 @@ export const useGetDetectionTypeCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getDetectionTypeFromKey = (
   key: string,
   params?: GetDetectionTypeFromKeyParams,
@@ -2494,9 +2487,6 @@ export type GetDetectionTypeFromKeyQueryResult = NonNullable<
 >
 export type GetDetectionTypeFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetDetectionTypeFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeFromKey>>,
   TError = void,
@@ -2603,9 +2593,6 @@ export const usePutDetectionTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchDetectionTypeFromKey = (
   key: string,
   detectionType: DetectionType,
@@ -2671,9 +2658,6 @@ export type PatchDetectionTypeFromKeyMutationResult = NonNullable<
 export type PatchDetectionTypeFromKeyMutationBody = DetectionType
 export type PatchDetectionTypeFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchDetectionTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -2694,14 +2678,8 @@ export const usePatchDetectionTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteDetectionTypeFromKey = (key: string) => {
-  return configRequest<void>({
-    url: `/DetectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DetectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectionTypeFromKeyMutationOptions = <
@@ -2740,9 +2718,6 @@ export type DeleteDetectionTypeFromKeyMutationResult = NonNullable<
 
 export type DeleteDetectionTypeFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteDetectionTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -3156,9 +3131,361 @@ export const useGetDetectorDetectionTypesCountFromKey = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
+export const getDetectorRetrieveDetectionIdentifierBasedOnDetectionType = (
+  getDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBody:
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo,
+  params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+) => {
+  return configRequest<void>({
+    url: `/Detector/retrieveDetctionData`,
+    method: 'POST',
+    data: getDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBody,
+    params,
+  })
+}
+
+export const getGetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationOptions =
+  <TError = unknown, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+        >
+      >,
+      TError,
+      {
+        data:
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+        params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+      },
+      TContext
+    >
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+      >
+    >,
+    TError,
+    {
+      data:
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+      params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+    },
+    TContext
+  > => {
+    const { mutation: mutationOptions } = options ?? {}
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+        >
+      >,
+      {
+        data:
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+        params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+      }
+    > = (props) => {
+      const { data, params } = props ?? {}
+
+      return getDetectorRetrieveDetectionIdentifierBasedOnDetectionType(
+        data,
+        params
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+      >
+    >
+  >
+export type GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationBody =
+
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+export type GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationError =
+  unknown
+
+export const useGetDetectorRetrieveDetectionIdentifierBasedOnDetectionType = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+      >
+    >,
+    TError,
+    {
+      data:
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+      params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationOptions(
+      options
+    )
+
+  return useMutation(mutationOptions)
+}
+
 export const getDetector = (
   params?: GetDetectorParams,
   signal?: AbortSignal
@@ -3208,9 +3535,6 @@ export type GetDetectorQueryResult = NonNullable<
 >
 export type GetDetectorQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDetector = <
   TData = Awaited<ReturnType<typeof getDetector>>,
   TError = void,
@@ -3235,9 +3559,6 @@ export const useGetDetector = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postDetector = (
   detector: Detector,
   params?: PostDetectorParams
@@ -3290,9 +3611,6 @@ export type PostDetectorMutationResult = NonNullable<
 export type PostDetectorMutationBody = Detector
 export type PostDetectorMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostDetector = <
   TError = unknown,
   TContext = unknown,
@@ -3309,9 +3627,6 @@ export const usePostDetector = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDetectorCount = (
   params?: GetDetectorCountParams,
   signal?: AbortSignal
@@ -3363,9 +3678,6 @@ export type GetDetectorCountQueryResult = NonNullable<
 >
 export type GetDetectorCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDetectorCount = <
   TData = Awaited<ReturnType<typeof getDetectorCount>>,
   TError = void,
@@ -3390,9 +3702,6 @@ export const useGetDetectorCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getDetectorFromKey = (
   key: number,
   params?: GetDetectorFromKeyParams,
@@ -3453,9 +3762,6 @@ export type GetDetectorFromKeyQueryResult = NonNullable<
 >
 export type GetDetectorFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetDetectorFromKey = <
   TData = Awaited<ReturnType<typeof getDetectorFromKey>>,
   TError = void,
@@ -3550,9 +3856,6 @@ export const usePutDetectorFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchDetectorFromKey = (
   key: number,
   detector: Detector,
@@ -3606,9 +3909,6 @@ export type PatchDetectorFromKeyMutationResult = NonNullable<
 export type PatchDetectorFromKeyMutationBody = Detector
 export type PatchDetectorFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchDetectorFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -3625,14 +3925,8 @@ export const usePatchDetectorFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteDetectorFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Detector/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Detector/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectorFromKeyMutationOptions = <
@@ -3671,9 +3965,6 @@ export type DeleteDetectorFromKeyMutationResult = NonNullable<
 
 export type DeleteDetectorFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteDetectorFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -3690,9 +3981,6 @@ export const useDeleteDetectorFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDetectorComment = (
   params?: GetDetectorCommentParams,
   signal?: AbortSignal
@@ -3745,9 +4033,6 @@ export type GetDetectorCommentQueryResult = NonNullable<
 >
 export type GetDetectorCommentQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDetectorComment = <
   TData = Awaited<ReturnType<typeof getDetectorComment>>,
   TError = void,
@@ -3772,9 +4057,6 @@ export const useGetDetectorComment = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postDetectorComment = (
   detectorComment: DetectorComment,
   params?: PostDetectorCommentParams
@@ -3827,9 +4109,6 @@ export type PostDetectorCommentMutationResult = NonNullable<
 export type PostDetectorCommentMutationBody = DetectorComment
 export type PostDetectorCommentMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostDetectorComment = <
   TError = unknown,
   TContext = unknown,
@@ -3846,9 +4125,6 @@ export const usePostDetectorComment = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDetectorCommentCount = (
   params?: GetDetectorCommentCountParams,
   signal?: AbortSignal
@@ -3901,9 +4177,6 @@ export type GetDetectorCommentCountQueryResult = NonNullable<
 >
 export type GetDetectorCommentCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDetectorCommentCount = <
   TData = Awaited<ReturnType<typeof getDetectorCommentCount>>,
   TError = void,
@@ -3928,9 +4201,6 @@ export const useGetDetectorCommentCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getDetectorCommentFromKey = (
   key: number,
   params?: GetDetectorCommentFromKeyParams,
@@ -3991,9 +4261,6 @@ export type GetDetectorCommentFromKeyQueryResult = NonNullable<
 >
 export type GetDetectorCommentFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetDetectorCommentFromKey = <
   TData = Awaited<ReturnType<typeof getDetectorCommentFromKey>>,
   TError = void,
@@ -4108,9 +4375,6 @@ export const usePutDetectorCommentFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchDetectorCommentFromKey = (
   key: number,
   detectorComment: DetectorComment,
@@ -4176,9 +4440,6 @@ export type PatchDetectorCommentFromKeyMutationResult = NonNullable<
 export type PatchDetectorCommentFromKeyMutationBody = DetectorComment
 export type PatchDetectorCommentFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchDetectorCommentFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -4199,9 +4460,6 @@ export const usePatchDetectorCommentFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteDetectorCommentFromKey = (key: number) => {
   return configRequest<void>({
     url: `/DetectorComment/${key}`,
@@ -4245,9 +4503,6 @@ export type DeleteDetectorCommentFromKeyMutationResult = NonNullable<
 
 export type DeleteDetectorCommentFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteDetectorCommentFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -4463,9 +4718,6 @@ export const useGetDeviceActiveDevicesCount = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDevice = (params?: GetDeviceParams, signal?: AbortSignal) => {
   return configRequest<Device[]>({
     url: `/Device`,
@@ -4512,9 +4764,6 @@ export type GetDeviceQueryResult = NonNullable<
 >
 export type GetDeviceQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDevice = <
   TData = Awaited<ReturnType<typeof getDevice>>,
   TError = void,
@@ -4539,9 +4788,6 @@ export const useGetDevice = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postDevice = (device: Device, params?: PostDeviceParams) => {
   return configRequest<void>({
     url: `/Device`,
@@ -4591,9 +4837,6 @@ export type PostDeviceMutationResult = NonNullable<
 export type PostDeviceMutationBody = Device
 export type PostDeviceMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostDevice = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postDevice>>,
@@ -4607,9 +4850,6 @@ export const usePostDevice = <TError = unknown, TContext = unknown>(options?: {
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDeviceCount = (
   params?: GetDeviceCountParams,
   signal?: AbortSignal
@@ -4659,9 +4899,6 @@ export type GetDeviceCountQueryResult = NonNullable<
 >
 export type GetDeviceCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDeviceCount = <
   TData = Awaited<ReturnType<typeof getDeviceCount>>,
   TError = void,
@@ -4686,9 +4923,6 @@ export const useGetDeviceCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getDeviceFromKey = (
   key: number,
   params?: GetDeviceFromKeyParams,
@@ -4749,9 +4983,6 @@ export type GetDeviceFromKeyQueryResult = NonNullable<
 >
 export type GetDeviceFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetDeviceFromKey = <
   TData = Awaited<ReturnType<typeof getDeviceFromKey>>,
   TError = void,
@@ -4846,9 +5077,6 @@ export const usePutDeviceFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchDeviceFromKey = (
   key: number,
   device: Device,
@@ -4902,9 +5130,6 @@ export type PatchDeviceFromKeyMutationResult = NonNullable<
 export type PatchDeviceFromKeyMutationBody = Device
 export type PatchDeviceFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchDeviceFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -4921,9 +5146,6 @@ export const usePatchDeviceFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteDeviceFromKey = (key: number) => {
   return configRequest<void>({ url: `/Device/${key}`, method: 'DELETE' })
 }
@@ -4964,9 +5186,6 @@ export type DeleteDeviceFromKeyMutationResult = NonNullable<
 
 export type DeleteDeviceFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteDeviceFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -5273,9 +5492,6 @@ export const useGetDeviceConfigurationEventLogDecoders = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDeviceConfiguration = (
   params?: GetDeviceConfigurationParams,
   signal?: AbortSignal
@@ -5328,9 +5544,6 @@ export type GetDeviceConfigurationQueryResult = NonNullable<
 >
 export type GetDeviceConfigurationQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDeviceConfiguration = <
   TData = Awaited<ReturnType<typeof getDeviceConfiguration>>,
   TError = void,
@@ -5355,9 +5568,6 @@ export const useGetDeviceConfiguration = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postDeviceConfiguration = (
   deviceConfiguration: DeviceConfiguration,
   params?: PostDeviceConfigurationParams
@@ -5410,9 +5620,6 @@ export type PostDeviceConfigurationMutationResult = NonNullable<
 export type PostDeviceConfigurationMutationBody = DeviceConfiguration
 export type PostDeviceConfigurationMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostDeviceConfiguration = <
   TError = unknown,
   TContext = unknown,
@@ -5429,9 +5636,6 @@ export const usePostDeviceConfiguration = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDeviceConfigurationCount = (
   params?: GetDeviceConfigurationCountParams,
   signal?: AbortSignal
@@ -5484,9 +5688,6 @@ export type GetDeviceConfigurationCountQueryResult = NonNullable<
 >
 export type GetDeviceConfigurationCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDeviceConfigurationCount = <
   TData = Awaited<ReturnType<typeof getDeviceConfigurationCount>>,
   TError = void,
@@ -5514,9 +5715,6 @@ export const useGetDeviceConfigurationCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getDeviceConfigurationFromKey = (
   key: number,
   params?: GetDeviceConfigurationFromKeyParams,
@@ -5578,9 +5776,6 @@ export type GetDeviceConfigurationFromKeyQueryResult = NonNullable<
 >
 export type GetDeviceConfigurationFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetDeviceConfigurationFromKey = <
   TData = Awaited<ReturnType<typeof getDeviceConfigurationFromKey>>,
   TError = void,
@@ -5696,9 +5891,6 @@ export const usePutDeviceConfigurationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchDeviceConfigurationFromKey = (
   key: number,
   deviceConfiguration: DeviceConfiguration,
@@ -5764,9 +5956,6 @@ export type PatchDeviceConfigurationFromKeyMutationResult = NonNullable<
 export type PatchDeviceConfigurationFromKeyMutationBody = DeviceConfiguration
 export type PatchDeviceConfigurationFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchDeviceConfigurationFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -5788,9 +5977,6 @@ export const usePatchDeviceConfigurationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteDeviceConfigurationFromKey = (key: number) => {
   return configRequest<void>({
     url: `/DeviceConfiguration/${key}`,
@@ -5834,9 +6020,6 @@ export type DeleteDeviceConfigurationFromKeyMutationResult = NonNullable<
 
 export type DeleteDeviceConfigurationFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteDeviceConfigurationFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -6469,9 +6652,6 @@ export const useGetDirectionTypeOpposingDirectionsCountFromKey = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDirectionType = (
   params?: GetDirectionTypeParams,
   signal?: AbortSignal
@@ -6523,9 +6703,6 @@ export type GetDirectionTypeQueryResult = NonNullable<
 >
 export type GetDirectionTypeQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDirectionType = <
   TData = Awaited<ReturnType<typeof getDirectionType>>,
   TError = void,
@@ -6550,9 +6727,6 @@ export const useGetDirectionType = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postDirectionType = (
   directionType: DirectionType,
   params?: PostDirectionTypeParams
@@ -6605,9 +6779,6 @@ export type PostDirectionTypeMutationResult = NonNullable<
 export type PostDirectionTypeMutationBody = DirectionType
 export type PostDirectionTypeMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostDirectionType = <
   TError = unknown,
   TContext = unknown,
@@ -6624,9 +6795,6 @@ export const usePostDirectionType = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getDirectionTypeCount = (
   params?: GetDirectionTypeCountParams,
   signal?: AbortSignal
@@ -6679,9 +6847,6 @@ export type GetDirectionTypeCountQueryResult = NonNullable<
 >
 export type GetDirectionTypeCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetDirectionTypeCount = <
   TData = Awaited<ReturnType<typeof getDirectionTypeCount>>,
   TError = void,
@@ -6706,9 +6871,6 @@ export const useGetDirectionTypeCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getDirectionTypeFromKey = (
   key: string,
   params?: GetDirectionTypeFromKeyParams,
@@ -6769,9 +6931,6 @@ export type GetDirectionTypeFromKeyQueryResult = NonNullable<
 >
 export type GetDirectionTypeFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetDirectionTypeFromKey = <
   TData = Awaited<ReturnType<typeof getDirectionTypeFromKey>>,
   TError = void,
@@ -6878,9 +7037,6 @@ export const usePutDirectionTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchDirectionTypeFromKey = (
   key: string,
   directionType: DirectionType,
@@ -6946,9 +7102,6 @@ export type PatchDirectionTypeFromKeyMutationResult = NonNullable<
 export type PatchDirectionTypeFromKeyMutationBody = DirectionType
 export type PatchDirectionTypeFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchDirectionTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -6969,14 +7122,8 @@ export const usePatchDirectionTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteDirectionTypeFromKey = (key: string) => {
-  return configRequest<void>({
-    url: `/DirectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DirectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDirectionTypeFromKeyMutationOptions = <
@@ -7015,9 +7162,6 @@ export type DeleteDirectionTypeFromKeyMutationResult = NonNullable<
 
 export type DeleteDirectionTypeFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteDirectionTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -7032,6 +7176,61 @@ export const useDeleteDirectionTypeFromKey = <
   const mutationOptions = getDeleteDirectionTypeFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
+}
+
+export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
+  return configRequest<Faq[]>({ url: `/Faq`, method: 'GET', params, signal })
+}
+
+export const getGetFaqQueryKey = (params?: GetFaqParams) => {
+  return [`/Faq`, ...(params ? [params] : [])] as const
+}
+
+export const getGetFaqQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFaq>>,
+  TError = void,
+>(
+  params?: GetFaqParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getFaq>>, TError, TData>
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetFaqQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaq>>> = ({
+    signal,
+  }) => getFaq(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFaq>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetFaqQueryResult = NonNullable<Awaited<ReturnType<typeof getFaq>>>
+export type GetFaqQueryError = void
+
+export const useGetFaq = <
+  TData = Awaited<ReturnType<typeof getFaq>>,
+  TError = void,
+>(
+  params?: GetFaqParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getFaq>>, TError, TData>
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetFaqQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const postFaq = (faq: Faq, params?: PostFaqParams) => {
@@ -7096,62 +7295,69 @@ export const usePostFaq = <TError = unknown, TContext = unknown>(options?: {
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
+export const getFaqCount = (
+  params?: GetFaqCountParams,
+  signal?: AbortSignal
+) => {
   return configRequest<Faq[]>({
-    url: `/Faq`,
+    url: `/Faq/$count`,
     method: 'GET',
     params,
     signal,
   })
 }
 
-export const getGetFaqQueryKey = (params?: GetFaqParams) => {
-  return [`/Faq`, ...(params ? [params] : [])] as const
+export const getGetFaqCountQueryKey = (params?: GetFaqCountParams) => {
+  return [`/Faq/$count`, ...(params ? [params] : [])] as const
 }
 
-export const getGetFaqQueryOptions = <
-  TData = Awaited<ReturnType<typeof getFaq>>,
+export const getGetFaqCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFaqCount>>,
   TError = void,
 >(
-  params?: GetFaqParams,
+  params?: GetFaqCountParams,
   options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getFaq>>, TError, TData>
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getFaqCount>>,
+      TError,
+      TData
+    >
   }
 ) => {
   const { query: queryOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetFaqQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getGetFaqCountQueryKey(params)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaq>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaqCount>>> = ({
     signal,
-  }) => getFaq(params, signal)
+  }) => getFaqCount(params, signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getFaq>>,
+    Awaited<ReturnType<typeof getFaqCount>>,
     TError,
     TData
   > & { queryKey: QueryKey }
 }
 
-export type GetFaqQueryResult = NonNullable<Awaited<ReturnType<typeof getFaq>>>
-export type GetFaqQueryError = void
+export type GetFaqCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFaqCount>>
+>
+export type GetFaqCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetFaq = <
-  TData = Awaited<ReturnType<typeof getFaq>>,
+export const useGetFaqCount = <
+  TData = Awaited<ReturnType<typeof getFaqCount>>,
   TError = void,
 >(
-  params?: GetFaqParams,
+  params?: GetFaqCountParams,
   options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getFaq>>, TError, TData>
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getFaqCount>>,
+      TError,
+      TData
+    >
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetFaqQueryOptions(params, options)
+  const queryOptions = getGetFaqCountQueryOptions(params, options)
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -7160,6 +7366,160 @@ export const useGetFaq = <
   query.queryKey = queryOptions.queryKey
 
   return query
+}
+
+export const getFaqFromKey = (
+  key: number,
+  params?: GetFaqFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Faq>({
+    url: `/Faq/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetFaqFromKeyQueryKey = (
+  key: number,
+  params?: GetFaqFromKeyParams
+) => {
+  return [`/Faq/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetFaqFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFaqFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetFaqFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getFaqFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetFaqFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaqFromKey>>> = ({
+    signal,
+  }) => getFaqFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFaqFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetFaqFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFaqFromKey>>
+>
+export type GetFaqFromKeyQueryError = void
+
+export const useGetFaqFromKey = <
+  TData = Awaited<ReturnType<typeof getFaqFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetFaqFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getFaqFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetFaqFromKeyQueryOptions(key, params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putFaqFromKey = (
+  key: number,
+  faq: Faq,
+  params?: PutFaqFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/Faq/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: faq,
+    params,
+  })
+}
+
+export const getPutFaqFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putFaqFromKey>>,
+    TError,
+    { key: number; data: Faq; params?: PutFaqFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putFaqFromKey>>,
+  TError,
+  { key: number; data: Faq; params?: PutFaqFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putFaqFromKey>>,
+    { key: number; data: Faq; params?: PutFaqFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putFaqFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutFaqFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putFaqFromKey>>
+>
+export type PutFaqFromKeyMutationBody = Faq
+export type PutFaqFromKeyMutationError = unknown
+
+export const usePutFaqFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putFaqFromKey>>,
+    TError,
+    { key: number; data: Faq; params?: PutFaqFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPutFaqFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
 }
 
 export const patchFaqFromKey = (
@@ -7285,245 +7645,6 @@ export const useDeleteFaqFromKey = <
   const mutationOptions = getDeleteFaqFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
-}
-
-/**
- * @summary object with key from oData query.
- */
-export const getFaqFromKey = (
-  key: number,
-  params?: GetFaqFromKeyParams,
-  signal?: AbortSignal
-) => {
-  return configRequest<Faq>({
-    url: `/Faq/${key}`,
-    method: 'GET',
-    params,
-    signal,
-  })
-}
-
-export const getGetFaqFromKeyQueryKey = (
-  key: number,
-  params?: GetFaqFromKeyParams
-) => {
-  return [`/Faq/${key}`, ...(params ? [params] : [])] as const
-}
-
-export const getGetFaqFromKeyQueryOptions = <
-  TData = Awaited<ReturnType<typeof getFaqFromKey>>,
-  TError = void,
->(
-  key: number,
-  params?: GetFaqFromKeyParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getFaqFromKey>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGetFaqFromKeyQueryKey(key, params)
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaqFromKey>>> = ({
-    signal,
-  }) => getFaqFromKey(key, params, signal)
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!key,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getFaqFromKey>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetFaqFromKeyQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getFaqFromKey>>
->
-export type GetFaqFromKeyQueryError = void
-
-/**
- * @summary object with key from oData query.
- */
-export const useGetFaqFromKey = <
-  TData = Awaited<ReturnType<typeof getFaqFromKey>>,
-  TError = void,
->(
-  key: number,
-  params?: GetFaqFromKeyParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getFaqFromKey>>,
-      TError,
-      TData
-    >
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetFaqFromKeyQueryOptions(key, params, options)
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
-}
-
-export const putFaqFromKey = (
-  key: number,
-  faq: Faq,
-  params?: PutFaqFromKeyParams
-) => {
-  return configRequest<void>({
-    url: `/Faq/${key}`,
-    method: 'PUT',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: faq,
-    params,
-  })
-}
-
-export const getPutFaqFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putFaqFromKey>>,
-    TError,
-    { key: number; data: Faq; params?: PutFaqFromKeyParams },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putFaqFromKey>>,
-  TError,
-  { key: number; data: Faq; params?: PutFaqFromKeyParams },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putFaqFromKey>>,
-    { key: number; data: Faq; params?: PutFaqFromKeyParams }
-  > = (props) => {
-    const { key, data, params } = props ?? {}
-
-    return putFaqFromKey(key, data, params)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PutFaqFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putFaqFromKey>>
->
-export type PutFaqFromKeyMutationBody = Faq
-export type PutFaqFromKeyMutationError = unknown
-
-export const usePutFaqFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putFaqFromKey>>,
-    TError,
-    { key: number; data: Faq; params?: PutFaqFromKeyParams },
-    TContext
-  >
-}) => {
-  const mutationOptions = getPutFaqFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-/**
- * @summary Collection of objects from oData query.
- */
-export const getFaqCount = (
-  params?: GetFaqCountParams,
-  signal?: AbortSignal
-) => {
-  return configRequest<Faq[]>({
-    url: `/Faq/$count`,
-    method: 'GET',
-    params,
-    signal,
-  })
-}
-
-export const getGetFaqCountQueryKey = (params?: GetFaqCountParams) => {
-  return [`/Faq/$count`, ...(params ? [params] : [])] as const
-}
-
-export const getGetFaqCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof getFaqCount>>,
-  TError = void,
->(
-  params?: GetFaqCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getFaqCount>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey = queryOptions?.queryKey ?? getGetFaqCountQueryKey(params)
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaqCount>>> = ({
-    signal,
-  }) => getFaqCount(params, signal)
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getFaqCount>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetFaqCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getFaqCount>>
->
-export type GetFaqCountQueryError = void
-
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetFaqCount = <
-  TData = Awaited<ReturnType<typeof getFaqCount>>,
-  TError = void,
->(
-  params?: GetFaqCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getFaqCount>>,
-      TError,
-      TData
-    >
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetFaqCountQueryOptions(params, options)
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
 }
 
 /**
@@ -7724,6 +7845,79 @@ export const useGetJurisdictionLocationsCountFromKey = <
   return query
 }
 
+export const getJurisdiction = (
+  params?: GetJurisdictionParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Jurisdiction[]>({
+    url: `/Jurisdiction`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetJurisdictionQueryKey = (params?: GetJurisdictionParams) => {
+  return [`/Jurisdiction`, ...(params ? [params] : [])] as const
+}
+
+export const getGetJurisdictionQueryOptions = <
+  TData = Awaited<ReturnType<typeof getJurisdiction>>,
+  TError = void,
+>(
+  params?: GetJurisdictionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getJurisdiction>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetJurisdictionQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getJurisdiction>>> = ({
+    signal,
+  }) => getJurisdiction(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getJurisdiction>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetJurisdictionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getJurisdiction>>
+>
+export type GetJurisdictionQueryError = void
+
+export const useGetJurisdiction = <
+  TData = Awaited<ReturnType<typeof getJurisdiction>>,
+  TError = void,
+>(
+  params?: GetJurisdictionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getJurisdiction>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetJurisdictionQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postJurisdiction = (
   jurisdiction: Jurisdiction,
   params?: PostJurisdictionParams
@@ -7792,33 +7986,32 @@ export const usePostJurisdiction = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getJurisdiction = (
-  params?: GetJurisdictionParams,
+export const getJurisdictionCount = (
+  params?: GetJurisdictionCountParams,
   signal?: AbortSignal
 ) => {
   return configRequest<Jurisdiction[]>({
-    url: `/Jurisdiction`,
+    url: `/Jurisdiction/$count`,
     method: 'GET',
     params,
     signal,
   })
 }
 
-export const getGetJurisdictionQueryKey = (params?: GetJurisdictionParams) => {
-  return [`/Jurisdiction`, ...(params ? [params] : [])] as const
+export const getGetJurisdictionCountQueryKey = (
+  params?: GetJurisdictionCountParams
+) => {
+  return [`/Jurisdiction/$count`, ...(params ? [params] : [])] as const
 }
 
-export const getGetJurisdictionQueryOptions = <
-  TData = Awaited<ReturnType<typeof getJurisdiction>>,
+export const getGetJurisdictionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getJurisdictionCount>>,
   TError = void,
 >(
-  params?: GetJurisdictionParams,
+  params?: GetJurisdictionCountParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getJurisdiction>>,
+      Awaited<ReturnType<typeof getJurisdictionCount>>,
       TError,
       TData
     >
@@ -7826,41 +8019,39 @@ export const getGetJurisdictionQueryOptions = <
 ) => {
   const { query: queryOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetJurisdictionQueryKey(params)
+  const queryKey =
+    queryOptions?.queryKey ?? getGetJurisdictionCountQueryKey(params)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getJurisdiction>>> = ({
-    signal,
-  }) => getJurisdiction(params, signal)
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getJurisdictionCount>>
+  > = ({ signal }) => getJurisdictionCount(params, signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getJurisdiction>>,
+    Awaited<ReturnType<typeof getJurisdictionCount>>,
     TError,
     TData
   > & { queryKey: QueryKey }
 }
 
-export type GetJurisdictionQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getJurisdiction>>
+export type GetJurisdictionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getJurisdictionCount>>
 >
-export type GetJurisdictionQueryError = void
+export type GetJurisdictionCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetJurisdiction = <
-  TData = Awaited<ReturnType<typeof getJurisdiction>>,
+export const useGetJurisdictionCount = <
+  TData = Awaited<ReturnType<typeof getJurisdictionCount>>,
   TError = void,
 >(
-  params?: GetJurisdictionParams,
+  params?: GetJurisdictionCountParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getJurisdiction>>,
+      Awaited<ReturnType<typeof getJurisdictionCount>>,
       TError,
       TData
     >
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetJurisdictionQueryOptions(params, options)
+  const queryOptions = getGetJurisdictionCountQueryOptions(params, options)
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -7871,145 +8062,6 @@ export const useGetJurisdiction = <
   return query
 }
 
-export const patchJurisdictionFromKey = (
-  key: number,
-  jurisdiction: Jurisdiction,
-  params?: PatchJurisdictionFromKeyParams
-) => {
-  return configRequest<void>({
-    url: `/Jurisdiction/${key}`,
-    method: 'PATCH',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: jurisdiction,
-    params,
-  })
-}
-
-export const getPatchJurisdictionFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
-    TError,
-    {
-      key: number
-      data: Jurisdiction
-      params?: PatchJurisdictionFromKeyParams
-    },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
-  TError,
-  { key: number; data: Jurisdiction; params?: PatchJurisdictionFromKeyParams },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
-    { key: number; data: Jurisdiction; params?: PatchJurisdictionFromKeyParams }
-  > = (props) => {
-    const { key, data, params } = props ?? {}
-
-    return patchJurisdictionFromKey(key, data, params)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PatchJurisdictionFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchJurisdictionFromKey>>
->
-export type PatchJurisdictionFromKeyMutationBody = Jurisdiction
-export type PatchJurisdictionFromKeyMutationError = unknown
-
-export const usePatchJurisdictionFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
-    TError,
-    {
-      key: number
-      data: Jurisdiction
-      params?: PatchJurisdictionFromKeyParams
-    },
-    TContext
-  >
-}) => {
-  const mutationOptions = getPatchJurisdictionFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-export const deleteJurisdictionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Jurisdiction/${key}`,
-    method: 'DELETE',
-  })
-}
-
-export const getDeleteJurisdictionFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
-    TError,
-    { key: number },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
-  TError,
-  { key: number },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
-    { key: number }
-  > = (props) => {
-    const { key } = props ?? {}
-
-    return deleteJurisdictionFromKey(key)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type DeleteJurisdictionFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteJurisdictionFromKey>>
->
-
-export type DeleteJurisdictionFromKeyMutationError = unknown
-
-export const useDeleteJurisdictionFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
-    TError,
-    { key: number },
-    TContext
-  >
-}) => {
-  const mutationOptions = getDeleteJurisdictionFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-/**
- * @summary object with key from oData query.
- */
 export const getJurisdictionFromKey = (
   key: number,
   params?: GetJurisdictionFromKeyParams,
@@ -8070,9 +8122,6 @@ export type GetJurisdictionFromKeyQueryResult = NonNullable<
 >
 export type GetJurisdictionFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetJurisdictionFromKey = <
   TData = Awaited<ReturnType<typeof getJurisdictionFromKey>>,
   TError = void,
@@ -8171,86 +8220,137 @@ export const usePutJurisdictionFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getJurisdictionCount = (
-  params?: GetJurisdictionCountParams,
-  signal?: AbortSignal
+export const patchJurisdictionFromKey = (
+  key: number,
+  jurisdiction: Jurisdiction,
+  params?: PatchJurisdictionFromKeyParams
 ) => {
-  return configRequest<Jurisdiction[]>({
-    url: `/Jurisdiction/$count`,
-    method: 'GET',
+  return configRequest<void>({
+    url: `/Jurisdiction/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: jurisdiction,
     params,
-    signal,
   })
 }
 
-export const getGetJurisdictionCountQueryKey = (
-  params?: GetJurisdictionCountParams
-) => {
-  return [`/Jurisdiction/$count`, ...(params ? [params] : [])] as const
-}
-
-export const getGetJurisdictionCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof getJurisdictionCount>>,
-  TError = void,
->(
-  params?: GetJurisdictionCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getJurisdictionCount>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGetJurisdictionCountQueryKey(params)
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getJurisdictionCount>>
-  > = ({ signal }) => getJurisdictionCount(params, signal)
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getJurisdictionCount>>,
+export const getPatchJurisdictionFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
     TError,
-    TData
-  > & { queryKey: QueryKey }
+    {
+      key: number
+      data: Jurisdiction
+      params?: PatchJurisdictionFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
+  TError,
+  { key: number; data: Jurisdiction; params?: PatchJurisdictionFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
+    { key: number; data: Jurisdiction; params?: PatchJurisdictionFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchJurisdictionFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
 }
 
-export type GetJurisdictionCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getJurisdictionCount>>
+export type PatchJurisdictionFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchJurisdictionFromKey>>
 >
-export type GetJurisdictionCountQueryError = void
+export type PatchJurisdictionFromKeyMutationBody = Jurisdiction
+export type PatchJurisdictionFromKeyMutationError = unknown
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetJurisdictionCount = <
-  TData = Awaited<ReturnType<typeof getJurisdictionCount>>,
-  TError = void,
->(
-  params?: GetJurisdictionCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getJurisdictionCount>>,
-      TError,
-      TData
-    >
+export const usePatchJurisdictionFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchJurisdictionFromKey>>,
+    TError,
+    {
+      key: number
+      data: Jurisdiction
+      params?: PatchJurisdictionFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPatchJurisdictionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+export const deleteJurisdictionFromKey = (key: number) => {
+  return configRequest<void>({ url: `/Jurisdiction/${key}`, method: 'DELETE' })
+}
+
+export const getDeleteJurisdictionFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteJurisdictionFromKey(key)
   }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetJurisdictionCountQueryOptions(params, options)
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
+  return { mutationFn, ...mutationOptions }
+}
 
-  query.queryKey = queryOptions.queryKey
+export type DeleteJurisdictionFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteJurisdictionFromKey>>
+>
 
-  return query
+export type DeleteJurisdictionFromKeyMutationError = unknown
+
+export const useDeleteJurisdictionFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteJurisdictionFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions = getDeleteJurisdictionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
 }
 
 /**
@@ -8905,6 +9005,169 @@ export const useGetLocationCopyLocationToNewVersionFromKey = <
 }
 
 /**
+ * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const getLocationSyncLocationFromKey = (
+  key: number,
+  params?: GetLocationSyncLocationFromKeyParams
+) => {
+  return configRequest<TemplateLocationModifiedDto>({
+    url: `/Location/${key}/SyncLocation`,
+    method: 'POST',
+    params,
+  })
+}
+
+export const getGetLocationSyncLocationFromKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+    TError,
+    { key: number; params?: GetLocationSyncLocationFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+  TError,
+  { key: number; params?: GetLocationSyncLocationFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+    { key: number; params?: GetLocationSyncLocationFromKeyParams }
+  > = (props) => {
+    const { key, params } = props ?? {}
+
+    return getLocationSyncLocationFromKey(key, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GetLocationSyncLocationFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>
+>
+
+export type GetLocationSyncLocationFromKeyMutationError = void
+
+/**
+ * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const useGetLocationSyncLocationFromKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+    TError,
+    { key: number; params?: GetLocationSyncLocationFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetLocationSyncLocationFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const getLocationSaveTemplatedLocationFromKey = (
+  key: number,
+  locationSaveTemplatedLocationParameters: LocationSaveTemplatedLocationParameters,
+  params?: GetLocationSaveTemplatedLocationFromKeyParams
+) => {
+  return configRequest<Location>({
+    url: `/Location/${key}/SaveTemplatedLocation`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: locationSaveTemplatedLocationParameters,
+    params,
+  })
+}
+
+export const getGetLocationSaveTemplatedLocationFromKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+    TError,
+    {
+      key: number
+      data: LocationSaveTemplatedLocationParameters
+      params?: GetLocationSaveTemplatedLocationFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+  TError,
+  {
+    key: number
+    data: LocationSaveTemplatedLocationParameters
+    params?: GetLocationSaveTemplatedLocationFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+    {
+      key: number
+      data: LocationSaveTemplatedLocationParameters
+      params?: GetLocationSaveTemplatedLocationFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return getLocationSaveTemplatedLocationFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GetLocationSaveTemplatedLocationFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>
+>
+export type GetLocationSaveTemplatedLocationFromKeyMutationBody =
+  LocationSaveTemplatedLocationParameters
+export type GetLocationSaveTemplatedLocationFromKeyMutationError = void
+
+/**
+ * @summary Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const useGetLocationSaveTemplatedLocationFromKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+    TError,
+    {
+      key: number
+      data: LocationSaveTemplatedLocationParameters
+      params?: GetLocationSaveTemplatedLocationFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetLocationSaveTemplatedLocationFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
  * @summary Marks Utah.Udot.Atspm.Data.Models.Location to deleted
  */
 export const deleteLocationSetLocationTodFromKey = (
@@ -8970,6 +9233,76 @@ export const useDeleteLocationSetLocationTodFromKey = <
 }) => {
   const mutationOptions =
     getDeleteLocationSetLocationTodFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Marks Utah.Udot.Atspm.Data.Models.Location to deleted
+ */
+export const deleteLocationAllVersionsFromKey = (
+  key: string,
+  params?: DeleteLocationAllVersionsFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/Location/${key}/DeleteAllVersions`,
+    method: 'POST',
+    params,
+  })
+}
+
+export const getDeleteLocationAllVersionsFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteLocationAllVersionsFromKey>>,
+    TError,
+    { key: string; params?: DeleteLocationAllVersionsFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteLocationAllVersionsFromKey>>,
+  TError,
+  { key: string; params?: DeleteLocationAllVersionsFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteLocationAllVersionsFromKey>>,
+    { key: string; params?: DeleteLocationAllVersionsFromKeyParams }
+  > = (props) => {
+    const { key, params } = props ?? {}
+
+    return deleteLocationAllVersionsFromKey(key, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteLocationAllVersionsFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteLocationAllVersionsFromKey>>
+>
+
+export type DeleteLocationAllVersionsFromKeyMutationError = unknown
+
+/**
+ * @summary Marks Utah.Udot.Atspm.Data.Models.Location to deleted
+ */
+export const useDeleteLocationAllVersionsFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteLocationAllVersionsFromKey>>,
+    TError,
+    { key: string; params?: DeleteLocationAllVersionsFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getDeleteLocationAllVersionsFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
 }
@@ -9467,9 +9800,6 @@ export const useGetLocationLocationsForSearch = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getLocation = (
   params?: GetLocationParams,
   signal?: AbortSignal
@@ -9519,9 +9849,6 @@ export type GetLocationQueryResult = NonNullable<
 >
 export type GetLocationQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetLocation = <
   TData = Awaited<ReturnType<typeof getLocation>>,
   TError = void,
@@ -9546,9 +9873,6 @@ export const useGetLocation = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postLocation = (
   location: Location,
   params?: PostLocationParams
@@ -9601,9 +9925,6 @@ export type PostLocationMutationResult = NonNullable<
 export type PostLocationMutationBody = Location
 export type PostLocationMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostLocation = <
   TError = unknown,
   TContext = unknown,
@@ -9620,9 +9941,6 @@ export const usePostLocation = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getLocationCount = (
   params?: GetLocationCountParams,
   signal?: AbortSignal
@@ -9674,9 +9992,6 @@ export type GetLocationCountQueryResult = NonNullable<
 >
 export type GetLocationCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetLocationCount = <
   TData = Awaited<ReturnType<typeof getLocationCount>>,
   TError = void,
@@ -9701,9 +10016,6 @@ export const useGetLocationCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getLocationFromKey = (
   key: number,
   params?: GetLocationFromKeyParams,
@@ -9764,9 +10076,6 @@ export type GetLocationFromKeyQueryResult = NonNullable<
 >
 export type GetLocationFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetLocationFromKey = <
   TData = Awaited<ReturnType<typeof getLocationFromKey>>,
   TError = void,
@@ -9861,9 +10170,6 @@ export const usePutLocationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchLocationFromKey = (
   key: number,
   location: Location,
@@ -9917,9 +10223,6 @@ export type PatchLocationFromKeyMutationResult = NonNullable<
 export type PatchLocationFromKeyMutationBody = Location
 export type PatchLocationFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchLocationFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -9936,14 +10239,8 @@ export const usePatchLocationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Location/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Location/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationFromKeyMutationOptions = <
@@ -9982,9 +10279,6 @@ export type DeleteLocationFromKeyMutationResult = NonNullable<
 
 export type DeleteLocationFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteLocationFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -10199,9 +10493,6 @@ export const useGetLocationTypeLocationsCountFromKey = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getLocationType = (
   params?: GetLocationTypeParams,
   signal?: AbortSignal
@@ -10251,9 +10542,6 @@ export type GetLocationTypeQueryResult = NonNullable<
 >
 export type GetLocationTypeQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetLocationType = <
   TData = Awaited<ReturnType<typeof getLocationType>>,
   TError = void,
@@ -10278,9 +10566,6 @@ export const useGetLocationType = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postLocationType = (
   locationType: LocationType,
   params?: PostLocationTypeParams
@@ -10333,9 +10618,6 @@ export type PostLocationTypeMutationResult = NonNullable<
 export type PostLocationTypeMutationBody = LocationType
 export type PostLocationTypeMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostLocationType = <
   TError = unknown,
   TContext = unknown,
@@ -10352,9 +10634,6 @@ export const usePostLocationType = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getLocationTypeCount = (
   params?: GetLocationTypeCountParams,
   signal?: AbortSignal
@@ -10407,9 +10686,6 @@ export type GetLocationTypeCountQueryResult = NonNullable<
 >
 export type GetLocationTypeCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetLocationTypeCount = <
   TData = Awaited<ReturnType<typeof getLocationTypeCount>>,
   TError = void,
@@ -10434,9 +10710,6 @@ export const useGetLocationTypeCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getLocationTypeFromKey = (
   key: number,
   params?: GetLocationTypeFromKeyParams,
@@ -10497,9 +10770,6 @@ export type GetLocationTypeFromKeyQueryResult = NonNullable<
 >
 export type GetLocationTypeFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetLocationTypeFromKey = <
   TData = Awaited<ReturnType<typeof getLocationTypeFromKey>>,
   TError = void,
@@ -10598,9 +10868,6 @@ export const usePutLocationTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchLocationTypeFromKey = (
   key: number,
   locationType: LocationType,
@@ -10658,9 +10925,6 @@ export type PatchLocationTypeFromKeyMutationResult = NonNullable<
 export type PatchLocationTypeFromKeyMutationBody = LocationType
 export type PatchLocationTypeFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchLocationTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -10681,14 +10945,8 @@ export const usePatchLocationTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteLocationTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/LocationType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/LocationType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationTypeFromKeyMutationOptions = <
@@ -10727,9 +10985,6 @@ export type DeleteLocationTypeFromKeyMutationResult = NonNullable<
 
 export type DeleteLocationTypeFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteLocationTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -10945,9 +11200,6 @@ export const useGetMeasureCommentMeasureTypesCountFromKey = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMeasureComment = (
   params?: GetMeasureCommentParams,
   signal?: AbortSignal
@@ -11000,9 +11252,6 @@ export type GetMeasureCommentQueryResult = NonNullable<
 >
 export type GetMeasureCommentQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMeasureComment = <
   TData = Awaited<ReturnType<typeof getMeasureComment>>,
   TError = void,
@@ -11027,9 +11276,6 @@ export const useGetMeasureComment = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postMeasureComment = (
   measureComment: MeasureComment,
   params?: PostMeasureCommentParams
@@ -11082,9 +11328,6 @@ export type PostMeasureCommentMutationResult = NonNullable<
 export type PostMeasureCommentMutationBody = MeasureComment
 export type PostMeasureCommentMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostMeasureComment = <
   TError = unknown,
   TContext = unknown,
@@ -11101,9 +11344,6 @@ export const usePostMeasureComment = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMeasureCommentCount = (
   params?: GetMeasureCommentCountParams,
   signal?: AbortSignal
@@ -11156,9 +11396,6 @@ export type GetMeasureCommentCountQueryResult = NonNullable<
 >
 export type GetMeasureCommentCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMeasureCommentCount = <
   TData = Awaited<ReturnType<typeof getMeasureCommentCount>>,
   TError = void,
@@ -11183,9 +11420,6 @@ export const useGetMeasureCommentCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getMeasureCommentFromKey = (
   key: number,
   params?: GetMeasureCommentFromKeyParams,
@@ -11246,9 +11480,6 @@ export type GetMeasureCommentFromKeyQueryResult = NonNullable<
 >
 export type GetMeasureCommentFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetMeasureCommentFromKey = <
   TData = Awaited<ReturnType<typeof getMeasureCommentFromKey>>,
   TError = void,
@@ -11363,9 +11594,6 @@ export const usePutMeasureCommentFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchMeasureCommentFromKey = (
   key: number,
   measureComment: MeasureComment,
@@ -11431,9 +11659,6 @@ export type PatchMeasureCommentFromKeyMutationResult = NonNullable<
 export type PatchMeasureCommentFromKeyMutationBody = MeasureComment
 export type PatchMeasureCommentFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchMeasureCommentFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -11454,9 +11679,6 @@ export const usePatchMeasureCommentFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteMeasureCommentFromKey = (key: number) => {
   return configRequest<void>({
     url: `/MeasureComment/${key}`,
@@ -11500,9 +11722,6 @@ export type DeleteMeasureCommentFromKeyMutationResult = NonNullable<
 
 export type DeleteMeasureCommentFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteMeasureCommentFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -11519,9 +11738,6 @@ export const useDeleteMeasureCommentFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMeasureOption = (
   params?: GetMeasureOptionParams,
   signal?: AbortSignal
@@ -11573,9 +11789,6 @@ export type GetMeasureOptionQueryResult = NonNullable<
 >
 export type GetMeasureOptionQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMeasureOption = <
   TData = Awaited<ReturnType<typeof getMeasureOption>>,
   TError = void,
@@ -11600,9 +11813,6 @@ export const useGetMeasureOption = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postMeasureOption = (
   measureOption: MeasureOption,
   params?: PostMeasureOptionParams
@@ -11655,9 +11865,6 @@ export type PostMeasureOptionMutationResult = NonNullable<
 export type PostMeasureOptionMutationBody = MeasureOption
 export type PostMeasureOptionMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostMeasureOption = <
   TError = unknown,
   TContext = unknown,
@@ -11674,9 +11881,6 @@ export const usePostMeasureOption = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMeasureOptionCount = (
   params?: GetMeasureOptionCountParams,
   signal?: AbortSignal
@@ -11729,9 +11933,6 @@ export type GetMeasureOptionCountQueryResult = NonNullable<
 >
 export type GetMeasureOptionCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMeasureOptionCount = <
   TData = Awaited<ReturnType<typeof getMeasureOptionCount>>,
   TError = void,
@@ -11756,9 +11957,6 @@ export const useGetMeasureOptionCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getMeasureOptionFromKey = (
   key: number,
   params?: GetMeasureOptionFromKeyParams,
@@ -11819,9 +12017,6 @@ export type GetMeasureOptionFromKeyQueryResult = NonNullable<
 >
 export type GetMeasureOptionFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetMeasureOptionFromKey = <
   TData = Awaited<ReturnType<typeof getMeasureOptionFromKey>>,
   TError = void,
@@ -11928,9 +12123,6 @@ export const usePutMeasureOptionFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchMeasureOptionFromKey = (
   key: number,
   measureOption: MeasureOption,
@@ -11996,9 +12188,6 @@ export type PatchMeasureOptionFromKeyMutationResult = NonNullable<
 export type PatchMeasureOptionFromKeyMutationBody = MeasureOption
 export type PatchMeasureOptionFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchMeasureOptionFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -12019,14 +12208,8 @@ export const usePatchMeasureOptionFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteMeasureOptionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureOption/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureOption/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureOptionFromKeyMutationOptions = <
@@ -12065,9 +12248,6 @@ export type DeleteMeasureOptionFromKeyMutationResult = NonNullable<
 
 export type DeleteMeasureOptionFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteMeasureOptionFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -12080,6 +12260,651 @@ export const useDeleteMeasureOptionFromKey = <
   >
 }) => {
   const mutationOptions = getDeleteMeasureOptionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Retrieves a list of measure option preset types.
+ */
+export const getMeasureOptionPresetMeasureOptionPresetTypes = (
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<string[]>({
+    url: `/MeasureOptionPreset/GetMeasureOptionPresetTypes`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetMeasureOptionPresetTypesQueryKey = (
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams
+) => {
+  return [
+    `/MeasureOptionPreset/GetMeasureOptionPresetTypes`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureOptionPresetMeasureOptionPresetTypesQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+  >,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+      >,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureOptionPresetMeasureOptionPresetTypesQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>>
+  > = ({ signal }) =>
+    getMeasureOptionPresetMeasureOptionPresetTypes(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetMeasureOptionPresetTypesQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>>
+  >
+export type GetMeasureOptionPresetMeasureOptionPresetTypesQueryError = void
+
+/**
+ * @summary Retrieves a list of measure option preset types.
+ */
+export const useGetMeasureOptionPresetMeasureOptionPresetTypes = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+  >,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetMeasureOptionPresetMeasureOptionPresetTypesQueryOptions(
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const getMeasureOptionPreset = (
+  params?: GetMeasureOptionPresetParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureOptionPreset`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetQueryKey = (
+  params?: GetMeasureOptionPresetParams
+) => {
+  return [`/MeasureOptionPreset`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionPresetQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPreset>>
+  > = ({ signal }) => getMeasureOptionPreset(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPreset>>
+>
+export type GetMeasureOptionPresetQueryError = void
+
+export const useGetMeasureOptionPreset = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const postMeasureOptionPreset = (
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PostMeasureOptionPresetParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPostMeasureOptionPresetMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    TError,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+  TError,
+  { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return postMeasureOptionPreset(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostMeasureOptionPresetMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMeasureOptionPreset>>
+>
+export type PostMeasureOptionPresetMutationBody = MeasureOptionPreset
+export type PostMeasureOptionPresetMutationError = unknown
+
+export const usePostMeasureOptionPreset = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    TError,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPostMeasureOptionPresetMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+export const getMeasureOptionPresetCount = (
+  params?: GetMeasureOptionPresetCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureOptionPreset/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetCountQueryKey = (
+  params?: GetMeasureOptionPresetCountParams
+) => {
+  return [`/MeasureOptionPreset/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionPresetCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetCount>>
+  > = ({ signal }) => getMeasureOptionPresetCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPresetCount>>
+>
+export type GetMeasureOptionPresetCountQueryError = void
+
+export const useGetMeasureOptionPresetCount = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetCountQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const getMeasureOptionPresetFromKey = (
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams
+) => {
+  return [`/MeasureOptionPreset/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureOptionPresetFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>
+  > = ({ signal }) => getMeasureOptionPresetFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>
+>
+export type GetMeasureOptionPresetFromKeyQueryError = void
+
+export const useGetMeasureOptionPresetFromKey = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetFromKeyQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putMeasureOptionPresetFromKey = (
+  key: number,
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PutMeasureOptionPresetFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPutMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+  TError,
+  {
+    key: number
+    data: MeasureOptionPreset
+    params?: PutMeasureOptionPresetFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putMeasureOptionPresetFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>
+>
+export type PutMeasureOptionPresetFromKeyMutationBody = MeasureOptionPreset
+export type PutMeasureOptionPresetFromKeyMutationError = unknown
+
+export const usePutMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getPutMeasureOptionPresetFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+export const patchMeasureOptionPresetFromKey = (
+  key: number,
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PatchMeasureOptionPresetFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPatchMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+  TError,
+  {
+    key: number
+    data: MeasureOptionPreset
+    params?: PatchMeasureOptionPresetFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchMeasureOptionPresetFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PatchMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>
+>
+export type PatchMeasureOptionPresetFromKeyMutationBody = MeasureOptionPreset
+export type PatchMeasureOptionPresetFromKeyMutationError = unknown
+
+export const usePatchMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getPatchMeasureOptionPresetFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+export const deleteMeasureOptionPresetFromKey = (key: number) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getDeleteMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteMeasureOptionPresetFromKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>
+>
+
+export type DeleteMeasureOptionPresetFromKeyMutationError = unknown
+
+export const useDeleteMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getDeleteMeasureOptionPresetFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
 }
@@ -12483,8 +13308,215 @@ export const useGetMeasureTypeMeasureCommentsCountFromKey = <
 }
 
 /**
- * @summary Collection of objects from oData query.
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
  */
+export const getMeasureTypeMeasureOptionPresetsFromKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureType/${key}/measureOptionPresets`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams
+) => {
+  return [
+    `/MeasureType/${key}/measureOptionPresets`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>
+  > = ({ signal }) =>
+    getMeasureTypeMeasureOptionPresetsFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeMeasureOptionPresetsFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>
+>
+export type GetMeasureTypeMeasureOptionPresetsFromKeyQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const useGetMeasureTypeMeasureOptionPresetsFromKey = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureTypeMeasureOptionPresetsFromKeyQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const getMeasureTypeMeasureOptionPresetsCountFromKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureType/${key}/measureOptionPresets/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams
+) => {
+  return [
+    `/MeasureType/${key}/measureOptionPresets/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+      >,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>
+  > = ({ signal }) =>
+    getMeasureTypeMeasureOptionPresetsCountFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeMeasureOptionPresetsCountFromKeyQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>
+  >
+export type GetMeasureTypeMeasureOptionPresetsCountFromKeyQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const useGetMeasureTypeMeasureOptionPresetsCountFromKey = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryOptions(
+      key,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const getMeasureType = (
   params?: GetMeasureTypeParams,
   signal?: AbortSignal
@@ -12534,9 +13566,6 @@ export type GetMeasureTypeQueryResult = NonNullable<
 >
 export type GetMeasureTypeQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMeasureType = <
   TData = Awaited<ReturnType<typeof getMeasureType>>,
   TError = void,
@@ -12561,9 +13590,6 @@ export const useGetMeasureType = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postMeasureType = (
   measureType: MeasureType,
   params?: PostMeasureTypeParams
@@ -12616,9 +13642,6 @@ export type PostMeasureTypeMutationResult = NonNullable<
 export type PostMeasureTypeMutationBody = MeasureType
 export type PostMeasureTypeMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostMeasureType = <
   TError = unknown,
   TContext = unknown,
@@ -12635,9 +13658,6 @@ export const usePostMeasureType = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMeasureTypeCount = (
   params?: GetMeasureTypeCountParams,
   signal?: AbortSignal
@@ -12690,9 +13710,6 @@ export type GetMeasureTypeCountQueryResult = NonNullable<
 >
 export type GetMeasureTypeCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMeasureTypeCount = <
   TData = Awaited<ReturnType<typeof getMeasureTypeCount>>,
   TError = void,
@@ -12717,9 +13734,6 @@ export const useGetMeasureTypeCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getMeasureTypeFromKey = (
   key: number,
   params?: GetMeasureTypeFromKeyParams,
@@ -12780,9 +13794,6 @@ export type GetMeasureTypeFromKeyQueryResult = NonNullable<
 >
 export type GetMeasureTypeFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetMeasureTypeFromKey = <
   TData = Awaited<ReturnType<typeof getMeasureTypeFromKey>>,
   TError = void,
@@ -12881,9 +13892,6 @@ export const usePutMeasureTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchMeasureTypeFromKey = (
   key: number,
   measureType: MeasureType,
@@ -12937,9 +13945,6 @@ export type PatchMeasureTypeFromKeyMutationResult = NonNullable<
 export type PatchMeasureTypeFromKeyMutationBody = MeasureType
 export type PatchMeasureTypeFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchMeasureTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -12956,14 +13961,8 @@ export const usePatchMeasureTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteMeasureTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureTypeFromKeyMutationOptions = <
@@ -13002,9 +14001,6 @@ export type DeleteMeasureTypeFromKeyMutationResult = NonNullable<
 
 export type DeleteMeasureTypeFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteMeasureTypeFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -13021,9 +14017,6 @@ export const useDeleteMeasureTypeFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMenuItems = (
   params?: GetMenuItemsParams,
   signal?: AbortSignal
@@ -13073,9 +14066,6 @@ export type GetMenuItemsQueryResult = NonNullable<
 >
 export type GetMenuItemsQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMenuItems = <
   TData = Awaited<ReturnType<typeof getMenuItems>>,
   TError = void,
@@ -13100,9 +14090,6 @@ export const useGetMenuItems = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postMenuItems = (
   menuItem: MenuItem,
   params?: PostMenuItemsParams
@@ -13155,9 +14142,6 @@ export type PostMenuItemsMutationResult = NonNullable<
 export type PostMenuItemsMutationBody = MenuItem
 export type PostMenuItemsMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostMenuItems = <
   TError = unknown,
   TContext = unknown,
@@ -13174,9 +14158,6 @@ export const usePostMenuItems = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getMenuItemsCount = (
   params?: GetMenuItemsCountParams,
   signal?: AbortSignal
@@ -13229,9 +14210,6 @@ export type GetMenuItemsCountQueryResult = NonNullable<
 >
 export type GetMenuItemsCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetMenuItemsCount = <
   TData = Awaited<ReturnType<typeof getMenuItemsCount>>,
   TError = void,
@@ -13256,9 +14234,6 @@ export const useGetMenuItemsCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getMenuItemsFromKey = (
   key: number,
   params?: GetMenuItemsFromKeyParams,
@@ -13319,9 +14294,6 @@ export type GetMenuItemsFromKeyQueryResult = NonNullable<
 >
 export type GetMenuItemsFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetMenuItemsFromKey = <
   TData = Awaited<ReturnType<typeof getMenuItemsFromKey>>,
   TError = void,
@@ -13416,9 +14388,6 @@ export const usePutMenuItemsFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchMenuItemsFromKey = (
   key: number,
   menuItem: MenuItem,
@@ -13472,9 +14441,6 @@ export type PatchMenuItemsFromKeyMutationResult = NonNullable<
 export type PatchMenuItemsFromKeyMutationBody = MenuItem
 export type PatchMenuItemsFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchMenuItemsFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -13491,14 +14457,8 @@ export const usePatchMenuItemsFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteMenuItemsFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MenuItems/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MenuItems/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMenuItemsFromKeyMutationOptions = <
@@ -13537,9 +14497,6 @@ export type DeleteMenuItemsFromKeyMutationResult = NonNullable<
 
 export type DeleteMenuItemsFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteMenuItemsFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -13556,9 +14513,6 @@ export const useDeleteMenuItemsFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getProduct = (params?: GetProductParams, signal?: AbortSignal) => {
   return configRequest<Product[]>({
     url: `/Product`,
@@ -13605,9 +14559,6 @@ export type GetProductQueryResult = NonNullable<
 >
 export type GetProductQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetProduct = <
   TData = Awaited<ReturnType<typeof getProduct>>,
   TError = void,
@@ -13632,9 +14583,6 @@ export const useGetProduct = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postProduct = (product: Product, params?: PostProductParams) => {
   return configRequest<void>({
     url: `/Product`,
@@ -13684,9 +14632,6 @@ export type PostProductMutationResult = NonNullable<
 export type PostProductMutationBody = Product
 export type PostProductMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostProduct = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postProduct>>,
@@ -13700,9 +14645,6 @@ export const usePostProduct = <TError = unknown, TContext = unknown>(options?: {
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getProductCount = (
   params?: GetProductCountParams,
   signal?: AbortSignal
@@ -13752,9 +14694,6 @@ export type GetProductCountQueryResult = NonNullable<
 >
 export type GetProductCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetProductCount = <
   TData = Awaited<ReturnType<typeof getProductCount>>,
   TError = void,
@@ -13779,9 +14718,6 @@ export const useGetProductCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getProductFromKey = (
   key: number,
   params?: GetProductFromKeyParams,
@@ -13842,9 +14778,6 @@ export type GetProductFromKeyQueryResult = NonNullable<
 >
 export type GetProductFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetProductFromKey = <
   TData = Awaited<ReturnType<typeof getProductFromKey>>,
   TError = void,
@@ -13939,9 +14872,6 @@ export const usePutProductFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchProductFromKey = (
   key: number,
   product: Product,
@@ -13995,9 +14925,6 @@ export type PatchProductFromKeyMutationResult = NonNullable<
 export type PatchProductFromKeyMutationBody = Product
 export type PatchProductFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchProductFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -14014,14 +14941,8 @@ export const usePatchProductFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteProductFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Product/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Product/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteProductFromKeyMutationOptions = <
@@ -14060,9 +14981,6 @@ export type DeleteProductFromKeyMutationResult = NonNullable<
 
 export type DeleteProductFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteProductFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -14273,6 +15191,76 @@ export const useGetRegionLocationsCountFromKey = <
   return query
 }
 
+export const getRegion = (params?: GetRegionParams, signal?: AbortSignal) => {
+  return configRequest<Region[]>({
+    url: `/Region`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRegionQueryKey = (params?: GetRegionParams) => {
+  return [`/Region`, ...(params ? [params] : [])] as const
+}
+
+export const getGetRegionQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRegion>>,
+  TError = void,
+>(
+  params?: GetRegionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRegion>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetRegionQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegion>>> = ({
+    signal,
+  }) => getRegion(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRegion>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRegionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRegion>>
+>
+export type GetRegionQueryError = void
+
+export const useGetRegion = <
+  TData = Awaited<ReturnType<typeof getRegion>>,
+  TError = void,
+>(
+  params?: GetRegionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRegion>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRegionQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postRegion = (region: Region, params?: PostRegionParams) => {
   return configRequest<void>({
     url: `/Region`,
@@ -14335,30 +15323,30 @@ export const usePostRegion = <TError = unknown, TContext = unknown>(options?: {
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const getRegion = (params?: GetRegionParams, signal?: AbortSignal) => {
+export const getRegionCount = (
+  params?: GetRegionCountParams,
+  signal?: AbortSignal
+) => {
   return configRequest<Region[]>({
-    url: `/Region`,
+    url: `/Region/$count`,
     method: 'GET',
     params,
     signal,
   })
 }
 
-export const getGetRegionQueryKey = (params?: GetRegionParams) => {
-  return [`/Region`, ...(params ? [params] : [])] as const
+export const getGetRegionCountQueryKey = (params?: GetRegionCountParams) => {
+  return [`/Region/$count`, ...(params ? [params] : [])] as const
 }
 
-export const getGetRegionQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRegion>>,
+export const getGetRegionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRegionCount>>,
   TError = void,
 >(
-  params?: GetRegionParams,
+  params?: GetRegionCountParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRegion>>,
+      Awaited<ReturnType<typeof getRegionCount>>,
       TError,
       TData
     >
@@ -14366,41 +15354,38 @@ export const getGetRegionQueryOptions = <
 ) => {
   const { query: queryOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetRegionQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getGetRegionCountQueryKey(params)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegion>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegionCount>>> = ({
     signal,
-  }) => getRegion(params, signal)
+  }) => getRegionCount(params, signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRegion>>,
+    Awaited<ReturnType<typeof getRegionCount>>,
     TError,
     TData
   > & { queryKey: QueryKey }
 }
 
-export type GetRegionQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRegion>>
+export type GetRegionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRegionCount>>
 >
-export type GetRegionQueryError = void
+export type GetRegionCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetRegion = <
-  TData = Awaited<ReturnType<typeof getRegion>>,
+export const useGetRegionCount = <
+  TData = Awaited<ReturnType<typeof getRegionCount>>,
   TError = void,
 >(
-  params?: GetRegionParams,
+  params?: GetRegionCountParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRegion>>,
+      Awaited<ReturnType<typeof getRegionCount>>,
       TError,
       TData
     >
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetRegionQueryOptions(params, options)
+  const queryOptions = getGetRegionCountQueryOptions(params, options)
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -14409,6 +15394,160 @@ export const useGetRegion = <
   query.queryKey = queryOptions.queryKey
 
   return query
+}
+
+export const getRegionFromKey = (
+  key: number,
+  params?: GetRegionFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Region>({
+    url: `/Region/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRegionFromKeyQueryKey = (
+  key: number,
+  params?: GetRegionFromKeyParams
+) => {
+  return [`/Region/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetRegionFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRegionFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetRegionFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRegionFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetRegionFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getRegionFromKey>>
+  > = ({ signal }) => getRegionFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRegionFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRegionFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRegionFromKey>>
+>
+export type GetRegionFromKeyQueryError = void
+
+export const useGetRegionFromKey = <
+  TData = Awaited<ReturnType<typeof getRegionFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetRegionFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRegionFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRegionFromKeyQueryOptions(key, params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putRegionFromKey = (
+  key: number,
+  region: Region,
+  params?: PutRegionFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/Region/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: region,
+    params,
+  })
+}
+
+export const getPutRegionFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putRegionFromKey>>,
+    TError,
+    { key: number; data: Region; params?: PutRegionFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putRegionFromKey>>,
+  TError,
+  { key: number; data: Region; params?: PutRegionFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putRegionFromKey>>,
+    { key: number; data: Region; params?: PutRegionFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putRegionFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutRegionFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putRegionFromKey>>
+>
+export type PutRegionFromKeyMutationBody = Region
+export type PutRegionFromKeyMutationError = unknown
+
+export const usePutRegionFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putRegionFromKey>>,
+    TError,
+    { key: number; data: Region; params?: PutRegionFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPutRegionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
 }
 
 export const patchRegionFromKey = (
@@ -14534,245 +15673,6 @@ export const useDeleteRegionFromKey = <
   const mutationOptions = getDeleteRegionFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
-}
-
-/**
- * @summary object with key from oData query.
- */
-export const getRegionFromKey = (
-  key: number,
-  params?: GetRegionFromKeyParams,
-  signal?: AbortSignal
-) => {
-  return configRequest<Region>({
-    url: `/Region/${key}`,
-    method: 'GET',
-    params,
-    signal,
-  })
-}
-
-export const getGetRegionFromKeyQueryKey = (
-  key: number,
-  params?: GetRegionFromKeyParams
-) => {
-  return [`/Region/${key}`, ...(params ? [params] : [])] as const
-}
-
-export const getGetRegionFromKeyQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRegionFromKey>>,
-  TError = void,
->(
-  key: number,
-  params?: GetRegionFromKeyParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRegionFromKey>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGetRegionFromKeyQueryKey(key, params)
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getRegionFromKey>>
-  > = ({ signal }) => getRegionFromKey(key, params, signal)
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!key,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRegionFromKey>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetRegionFromKeyQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRegionFromKey>>
->
-export type GetRegionFromKeyQueryError = void
-
-/**
- * @summary object with key from oData query.
- */
-export const useGetRegionFromKey = <
-  TData = Awaited<ReturnType<typeof getRegionFromKey>>,
-  TError = void,
->(
-  key: number,
-  params?: GetRegionFromKeyParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRegionFromKey>>,
-      TError,
-      TData
-    >
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetRegionFromKeyQueryOptions(key, params, options)
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
-}
-
-export const putRegionFromKey = (
-  key: number,
-  region: Region,
-  params?: PutRegionFromKeyParams
-) => {
-  return configRequest<void>({
-    url: `/Region/${key}`,
-    method: 'PUT',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: region,
-    params,
-  })
-}
-
-export const getPutRegionFromKeyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putRegionFromKey>>,
-    TError,
-    { key: number; data: Region; params?: PutRegionFromKeyParams },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putRegionFromKey>>,
-  TError,
-  { key: number; data: Region; params?: PutRegionFromKeyParams },
-  TContext
-> => {
-  const { mutation: mutationOptions } = options ?? {}
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putRegionFromKey>>,
-    { key: number; data: Region; params?: PutRegionFromKeyParams }
-  > = (props) => {
-    const { key, data, params } = props ?? {}
-
-    return putRegionFromKey(key, data, params)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PutRegionFromKeyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putRegionFromKey>>
->
-export type PutRegionFromKeyMutationBody = Region
-export type PutRegionFromKeyMutationError = unknown
-
-export const usePutRegionFromKey = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putRegionFromKey>>,
-    TError,
-    { key: number; data: Region; params?: PutRegionFromKeyParams },
-    TContext
-  >
-}) => {
-  const mutationOptions = getPutRegionFromKeyMutationOptions(options)
-
-  return useMutation(mutationOptions)
-}
-
-/**
- * @summary Collection of objects from oData query.
- */
-export const getRegionCount = (
-  params?: GetRegionCountParams,
-  signal?: AbortSignal
-) => {
-  return configRequest<Region[]>({
-    url: `/Region/$count`,
-    method: 'GET',
-    params,
-    signal,
-  })
-}
-
-export const getGetRegionCountQueryKey = (params?: GetRegionCountParams) => {
-  return [`/Region/$count`, ...(params ? [params] : [])] as const
-}
-
-export const getGetRegionCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRegionCount>>,
-  TError = void,
->(
-  params?: GetRegionCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRegionCount>>,
-      TError,
-      TData
-    >
-  }
-) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey = queryOptions?.queryKey ?? getGetRegionCountQueryKey(params)
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegionCount>>> = ({
-    signal,
-  }) => getRegionCount(params, signal)
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRegionCount>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetRegionCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRegionCount>>
->
-export type GetRegionCountQueryError = void
-
-/**
- * @summary Collection of objects from oData query.
- */
-export const useGetRegionCount = <
-  TData = Awaited<ReturnType<typeof getRegionCount>>,
-  TError = void,
->(
-  params?: GetRegionCountParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRegionCount>>,
-      TError,
-      TData
-    >
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetRegionCountQueryOptions(params, options)
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
 }
 
 /**
@@ -15133,9 +16033,6 @@ export const useGetRouteRouteViewFromId = <
   return query
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getRoute = (params?: GetRouteParams, signal?: AbortSignal) => {
   return configRequest<Route[]>({
     url: `/Route`,
@@ -15178,9 +16075,6 @@ export type GetRouteQueryResult = NonNullable<
 >
 export type GetRouteQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetRoute = <
   TData = Awaited<ReturnType<typeof getRoute>>,
   TError = void,
@@ -15201,9 +16095,6 @@ export const useGetRoute = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postRoute = (route: Route, params?: PostRouteParams) => {
   return configRequest<void>({
     url: `/Route`,
@@ -15253,9 +16144,6 @@ export type PostRouteMutationResult = NonNullable<
 export type PostRouteMutationBody = Route
 export type PostRouteMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostRoute = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postRoute>>,
@@ -15269,9 +16157,6 @@ export const usePostRoute = <TError = unknown, TContext = unknown>(options?: {
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getRouteCount = (
   params?: GetRouteCountParams,
   signal?: AbortSignal
@@ -15321,9 +16206,6 @@ export type GetRouteCountQueryResult = NonNullable<
 >
 export type GetRouteCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetRouteCount = <
   TData = Awaited<ReturnType<typeof getRouteCount>>,
   TError = void,
@@ -15348,9 +16230,6 @@ export const useGetRouteCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getRouteFromKey = (
   key: number,
   params?: GetRouteFromKeyParams,
@@ -15411,9 +16290,6 @@ export type GetRouteFromKeyQueryResult = NonNullable<
 >
 export type GetRouteFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetRouteFromKey = <
   TData = Awaited<ReturnType<typeof getRouteFromKey>>,
   TError = void,
@@ -15508,9 +16384,6 @@ export const usePutRouteFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchRouteFromKey = (
   key: number,
   route: Route,
@@ -15564,9 +16437,6 @@ export type PatchRouteFromKeyMutationResult = NonNullable<
 export type PatchRouteFromKeyMutationBody = Route
 export type PatchRouteFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchRouteFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -15583,9 +16453,6 @@ export const usePatchRouteFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteRouteFromKey = (key: number) => {
   return configRequest<void>({ url: `/Route/${key}`, method: 'DELETE' })
 }
@@ -15626,9 +16493,6 @@ export type DeleteRouteFromKeyMutationResult = NonNullable<
 
 export type DeleteRouteFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteRouteFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -16199,9 +17063,6 @@ export const useGetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAA
     return query
   }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getRouteDistance = (
   params?: GetRouteDistanceParams,
   signal?: AbortSignal
@@ -16253,9 +17114,6 @@ export type GetRouteDistanceQueryResult = NonNullable<
 >
 export type GetRouteDistanceQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetRouteDistance = <
   TData = Awaited<ReturnType<typeof getRouteDistance>>,
   TError = void,
@@ -16280,9 +17138,6 @@ export const useGetRouteDistance = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postRouteDistance = (
   routeDistance: RouteDistance,
   params?: PostRouteDistanceParams
@@ -16335,9 +17190,6 @@ export type PostRouteDistanceMutationResult = NonNullable<
 export type PostRouteDistanceMutationBody = RouteDistance
 export type PostRouteDistanceMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostRouteDistance = <
   TError = unknown,
   TContext = unknown,
@@ -16354,9 +17206,6 @@ export const usePostRouteDistance = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getRouteDistanceCount = (
   params?: GetRouteDistanceCountParams,
   signal?: AbortSignal
@@ -16409,9 +17258,6 @@ export type GetRouteDistanceCountQueryResult = NonNullable<
 >
 export type GetRouteDistanceCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetRouteDistanceCount = <
   TData = Awaited<ReturnType<typeof getRouteDistanceCount>>,
   TError = void,
@@ -16436,9 +17282,6 @@ export const useGetRouteDistanceCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getRouteDistanceFromKey = (
   key: number,
   params?: GetRouteDistanceFromKeyParams,
@@ -16499,9 +17342,6 @@ export type GetRouteDistanceFromKeyQueryResult = NonNullable<
 >
 export type GetRouteDistanceFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetRouteDistanceFromKey = <
   TData = Awaited<ReturnType<typeof getRouteDistanceFromKey>>,
   TError = void,
@@ -16608,9 +17448,6 @@ export const usePutRouteDistanceFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchRouteDistanceFromKey = (
   key: number,
   routeDistance: RouteDistance,
@@ -16676,9 +17513,6 @@ export type PatchRouteDistanceFromKeyMutationResult = NonNullable<
 export type PatchRouteDistanceFromKeyMutationBody = RouteDistance
 export type PatchRouteDistanceFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchRouteDistanceFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -16699,14 +17533,8 @@ export const usePatchRouteDistanceFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteRouteDistanceFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteDistance/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteDistance/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteDistanceFromKeyMutationOptions = <
@@ -16745,9 +17573,6 @@ export type DeleteRouteDistanceFromKeyMutationResult = NonNullable<
 
 export type DeleteRouteDistanceFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteRouteDistanceFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -16764,9 +17589,6 @@ export const useDeleteRouteDistanceFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getRouteLocation = (
   params?: GetRouteLocationParams,
   signal?: AbortSignal
@@ -16818,9 +17640,6 @@ export type GetRouteLocationQueryResult = NonNullable<
 >
 export type GetRouteLocationQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetRouteLocation = <
   TData = Awaited<ReturnType<typeof getRouteLocation>>,
   TError = void,
@@ -16845,9 +17664,6 @@ export const useGetRouteLocation = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postRouteLocation = (
   routeLocation: RouteLocation,
   params?: PostRouteLocationParams
@@ -16900,9 +17716,6 @@ export type PostRouteLocationMutationResult = NonNullable<
 export type PostRouteLocationMutationBody = RouteLocation
 export type PostRouteLocationMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostRouteLocation = <
   TError = unknown,
   TContext = unknown,
@@ -16919,9 +17732,6 @@ export const usePostRouteLocation = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getRouteLocationCount = (
   params?: GetRouteLocationCountParams,
   signal?: AbortSignal
@@ -16974,9 +17784,6 @@ export type GetRouteLocationCountQueryResult = NonNullable<
 >
 export type GetRouteLocationCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetRouteLocationCount = <
   TData = Awaited<ReturnType<typeof getRouteLocationCount>>,
   TError = void,
@@ -17001,9 +17808,6 @@ export const useGetRouteLocationCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getRouteLocationFromKey = (
   key: number,
   params?: GetRouteLocationFromKeyParams,
@@ -17064,9 +17868,6 @@ export type GetRouteLocationFromKeyQueryResult = NonNullable<
 >
 export type GetRouteLocationFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetRouteLocationFromKey = <
   TData = Awaited<ReturnType<typeof getRouteLocationFromKey>>,
   TError = void,
@@ -17173,9 +17974,6 @@ export const usePutRouteLocationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchRouteLocationFromKey = (
   key: number,
   routeLocation: RouteLocation,
@@ -17241,9 +18039,6 @@ export type PatchRouteLocationFromKeyMutationResult = NonNullable<
 export type PatchRouteLocationFromKeyMutationBody = RouteLocation
 export type PatchRouteLocationFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchRouteLocationFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -17264,14 +18059,8 @@ export const usePatchRouteLocationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteRouteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteLocation/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteLocation/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteLocationFromKeyMutationOptions = <
@@ -17310,9 +18099,6 @@ export type DeleteRouteLocationFromKeyMutationResult = NonNullable<
 
 export type DeleteRouteLocationFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteRouteLocationFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -17329,9 +18115,6 @@ export const useDeleteRouteLocationFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getVersionHistory = (
   params?: GetVersionHistoryParams,
   signal?: AbortSignal
@@ -17384,9 +18167,6 @@ export type GetVersionHistoryQueryResult = NonNullable<
 >
 export type GetVersionHistoryQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetVersionHistory = <
   TData = Awaited<ReturnType<typeof getVersionHistory>>,
   TError = void,
@@ -17411,9 +18191,6 @@ export const useGetVersionHistory = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postVersionHistory = (
   versionHistory: VersionHistory,
   params?: PostVersionHistoryParams
@@ -17466,9 +18243,6 @@ export type PostVersionHistoryMutationResult = NonNullable<
 export type PostVersionHistoryMutationBody = VersionHistory
 export type PostVersionHistoryMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostVersionHistory = <
   TError = unknown,
   TContext = unknown,
@@ -17485,9 +18259,6 @@ export const usePostVersionHistory = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getVersionHistoryCount = (
   params?: GetVersionHistoryCountParams,
   signal?: AbortSignal
@@ -17540,9 +18311,6 @@ export type GetVersionHistoryCountQueryResult = NonNullable<
 >
 export type GetVersionHistoryCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetVersionHistoryCount = <
   TData = Awaited<ReturnType<typeof getVersionHistoryCount>>,
   TError = void,
@@ -17567,9 +18335,6 @@ export const useGetVersionHistoryCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getVersionHistoryFromKey = (
   key: number,
   params?: GetVersionHistoryFromKeyParams,
@@ -17630,9 +18395,6 @@ export type GetVersionHistoryFromKeyQueryResult = NonNullable<
 >
 export type GetVersionHistoryFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetVersionHistoryFromKey = <
   TData = Awaited<ReturnType<typeof getVersionHistoryFromKey>>,
   TError = void,
@@ -17747,9 +18509,6 @@ export const usePutVersionHistoryFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchVersionHistoryFromKey = (
   key: number,
   versionHistory: VersionHistory,
@@ -17815,9 +18574,6 @@ export type PatchVersionHistoryFromKeyMutationResult = NonNullable<
 export type PatchVersionHistoryFromKeyMutationBody = VersionHistory
 export type PatchVersionHistoryFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchVersionHistoryFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -17838,9 +18594,6 @@ export const usePatchVersionHistoryFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteVersionHistoryFromKey = (key: number) => {
   return configRequest<void>({
     url: `/VersionHistory/${key}`,
@@ -17884,9 +18637,6 @@ export type DeleteVersionHistoryFromKeyMutationResult = NonNullable<
 
 export type DeleteVersionHistoryFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteVersionHistoryFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -17903,9 +18653,6 @@ export const useDeleteVersionHistoryFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getWatchDogIgnoreEvent = (
   params?: GetWatchDogIgnoreEventParams,
   signal?: AbortSignal
@@ -17958,9 +18705,6 @@ export type GetWatchDogIgnoreEventQueryResult = NonNullable<
 >
 export type GetWatchDogIgnoreEventQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetWatchDogIgnoreEvent = <
   TData = Awaited<ReturnType<typeof getWatchDogIgnoreEvent>>,
   TError = void,
@@ -17985,21 +18729,12 @@ export const useGetWatchDogIgnoreEvent = <
   return query
 }
 
-/**
- * @summary Insert object of specified type
- */
 export const postWatchDogIgnoreEvent = (
-  watchDogIgnoreEvent: WatchDogIgnoreEvent,
   params?: PostWatchDogIgnoreEventParams
 ) => {
   return configRequest<void>({
     url: `/WatchDogIgnoreEvent`,
     method: 'POST',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: watchDogIgnoreEvent,
     params,
   })
 }
@@ -18011,24 +18746,24 @@ export const getPostWatchDogIgnoreEventMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postWatchDogIgnoreEvent>>,
     TError,
-    { data: WatchDogIgnoreEvent; params?: PostWatchDogIgnoreEventParams },
+    { params?: PostWatchDogIgnoreEventParams },
     TContext
   >
 }): UseMutationOptions<
   Awaited<ReturnType<typeof postWatchDogIgnoreEvent>>,
   TError,
-  { data: WatchDogIgnoreEvent; params?: PostWatchDogIgnoreEventParams },
+  { params?: PostWatchDogIgnoreEventParams },
   TContext
 > => {
   const { mutation: mutationOptions } = options ?? {}
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof postWatchDogIgnoreEvent>>,
-    { data: WatchDogIgnoreEvent; params?: PostWatchDogIgnoreEventParams }
+    { params?: PostWatchDogIgnoreEventParams }
   > = (props) => {
-    const { data, params } = props ?? {}
+    const { params } = props ?? {}
 
-    return postWatchDogIgnoreEvent(data, params)
+    return postWatchDogIgnoreEvent(params)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -18037,12 +18772,9 @@ export const getPostWatchDogIgnoreEventMutationOptions = <
 export type PostWatchDogIgnoreEventMutationResult = NonNullable<
   Awaited<ReturnType<typeof postWatchDogIgnoreEvent>>
 >
-export type PostWatchDogIgnoreEventMutationBody = WatchDogIgnoreEvent
+
 export type PostWatchDogIgnoreEventMutationError = unknown
 
-/**
- * @summary Insert object of specified type
- */
 export const usePostWatchDogIgnoreEvent = <
   TError = unknown,
   TContext = unknown,
@@ -18050,7 +18782,7 @@ export const usePostWatchDogIgnoreEvent = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postWatchDogIgnoreEvent>>,
     TError,
-    { data: WatchDogIgnoreEvent; params?: PostWatchDogIgnoreEventParams },
+    { params?: PostWatchDogIgnoreEventParams },
     TContext
   >
 }) => {
@@ -18059,9 +18791,6 @@ export const usePostWatchDogIgnoreEvent = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const getWatchDogIgnoreEventCount = (
   params?: GetWatchDogIgnoreEventCountParams,
   signal?: AbortSignal
@@ -18114,9 +18843,6 @@ export type GetWatchDogIgnoreEventCountQueryResult = NonNullable<
 >
 export type GetWatchDogIgnoreEventCountQueryError = void
 
-/**
- * @summary Collection of objects from oData query.
- */
 export const useGetWatchDogIgnoreEventCount = <
   TData = Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>,
   TError = void,
@@ -18144,9 +18870,6 @@ export const useGetWatchDogIgnoreEventCount = <
   return query
 }
 
-/**
- * @summary object with key from oData query.
- */
 export const getWatchDogIgnoreEventFromKey = (
   key: number,
   params?: GetWatchDogIgnoreEventFromKeyParams,
@@ -18208,9 +18931,6 @@ export type GetWatchDogIgnoreEventFromKeyQueryResult = NonNullable<
 >
 export type GetWatchDogIgnoreEventFromKeyQueryError = void
 
-/**
- * @summary object with key from oData query.
- */
 export const useGetWatchDogIgnoreEventFromKey = <
   TData = Awaited<ReturnType<typeof getWatchDogIgnoreEventFromKey>>,
   TError = void,
@@ -18242,17 +18962,11 @@ export const useGetWatchDogIgnoreEventFromKey = <
 
 export const putWatchDogIgnoreEventFromKey = (
   key: number,
-  watchDogIgnoreEvent: WatchDogIgnoreEvent,
   params?: PutWatchDogIgnoreEventFromKeyParams
 ) => {
   return configRequest<void>({
     url: `/WatchDogIgnoreEvent/${key}`,
     method: 'PUT',
-    headers: {
-      'Content-Type':
-        'application/json;odata.metadata=minimal;odata.streaming=true',
-    },
-    data: watchDogIgnoreEvent,
     params,
   })
 }
@@ -18264,36 +18978,24 @@ export const getPutWatchDogIgnoreEventFromKeyMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof putWatchDogIgnoreEventFromKey>>,
     TError,
-    {
-      key: number
-      data: WatchDogIgnoreEvent
-      params?: PutWatchDogIgnoreEventFromKeyParams
-    },
+    { key: number; params?: PutWatchDogIgnoreEventFromKeyParams },
     TContext
   >
 }): UseMutationOptions<
   Awaited<ReturnType<typeof putWatchDogIgnoreEventFromKey>>,
   TError,
-  {
-    key: number
-    data: WatchDogIgnoreEvent
-    params?: PutWatchDogIgnoreEventFromKeyParams
-  },
+  { key: number; params?: PutWatchDogIgnoreEventFromKeyParams },
   TContext
 > => {
   const { mutation: mutationOptions } = options ?? {}
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof putWatchDogIgnoreEventFromKey>>,
-    {
-      key: number
-      data: WatchDogIgnoreEvent
-      params?: PutWatchDogIgnoreEventFromKeyParams
-    }
+    { key: number; params?: PutWatchDogIgnoreEventFromKeyParams }
   > = (props) => {
-    const { key, data, params } = props ?? {}
+    const { key, params } = props ?? {}
 
-    return putWatchDogIgnoreEventFromKey(key, data, params)
+    return putWatchDogIgnoreEventFromKey(key, params)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -18302,7 +19004,7 @@ export const getPutWatchDogIgnoreEventFromKeyMutationOptions = <
 export type PutWatchDogIgnoreEventFromKeyMutationResult = NonNullable<
   Awaited<ReturnType<typeof putWatchDogIgnoreEventFromKey>>
 >
-export type PutWatchDogIgnoreEventFromKeyMutationBody = WatchDogIgnoreEvent
+
 export type PutWatchDogIgnoreEventFromKeyMutationError = unknown
 
 export const usePutWatchDogIgnoreEventFromKey = <
@@ -18312,11 +19014,7 @@ export const usePutWatchDogIgnoreEventFromKey = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof putWatchDogIgnoreEventFromKey>>,
     TError,
-    {
-      key: number
-      data: WatchDogIgnoreEvent
-      params?: PutWatchDogIgnoreEventFromKeyParams
-    },
+    { key: number; params?: PutWatchDogIgnoreEventFromKeyParams },
     TContext
   >
 }) => {
@@ -18326,9 +19024,6 @@ export const usePutWatchDogIgnoreEventFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Update object of specified type
- */
 export const patchWatchDogIgnoreEventFromKey = (
   key: number,
   watchDogIgnoreEvent: WatchDogIgnoreEvent,
@@ -18394,9 +19089,6 @@ export type PatchWatchDogIgnoreEventFromKeyMutationResult = NonNullable<
 export type PatchWatchDogIgnoreEventFromKeyMutationBody = WatchDogIgnoreEvent
 export type PatchWatchDogIgnoreEventFromKeyMutationError = unknown
 
-/**
- * @summary Update object of specified type
- */
 export const usePatchWatchDogIgnoreEventFromKey = <
   TError = unknown,
   TContext = unknown,
@@ -18418,9 +19110,6 @@ export const usePatchWatchDogIgnoreEventFromKey = <
   return useMutation(mutationOptions)
 }
 
-/**
- * @summary Delete object of specified type
- */
 export const deleteWatchDogIgnoreEventFromKey = (key: number) => {
   return configRequest<void>({
     url: `/WatchDogIgnoreEvent/${key}`,
@@ -18464,9 +19153,6 @@ export type DeleteWatchDogIgnoreEventFromKeyMutationResult = NonNullable<
 
 export type DeleteWatchDogIgnoreEventFromKeyMutationError = unknown
 
-/**
- * @summary Delete object of specified type
- */
 export const useDeleteWatchDogIgnoreEventFromKey = <
   TError = unknown,
   TContext = unknown,

@@ -42,14 +42,14 @@
 //        public ApproachVolumeData GetApproachVolumeData(
 //            List<Approach> primaryDirectionApproaches,
 //            List<Approach> opposingDirectionApproaches,
-//            ApproachVolumeOptions _options)
+//            ApproachVolumeOptions options)
 //        {
 //            var metricInfo = new MetricInfo();
-//            var primaryDirectionVolume = GetVolumeByDetection(primaryDirectionApproaches, _options);
-//            var opposingDirectionVolume = GetVolumeByDetection(opposingDirectionApproaches, _options);
-//            var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, _options.SelectedBinSize);
+//            var primaryDirectionVolume = GetVolumeByDetection(primaryDirectionApproaches, options);
+//            var opposingDirectionVolume = GetVolumeByDetection(opposingDirectionApproaches, options);
+//            var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, options.SelectedBinSize);
 //            SetVolumeMetrics(
-//                _options,
+//                options,
 //                primaryDirectionVolume,
 //                opposingDirectionVolume,
 //                combinedDirectionsVolumes,
@@ -67,35 +67,35 @@
 
 //        private VolumeCollection GetVolumeByDetection(
 //            List<Approach> approaches,
-//            ApproachVolumeOptions _options)
+//            ApproachVolumeOptions options)
 //        {
 //            var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(7))
 //                .Where(d => d.LaneTypeId == LaneTypes.V).ToList();
 
 //            var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
 //                                d.Approach.LocationId,
-//                                _options.Start,
-//                                _options.End,
+//                                options.Start,
+//                                options.End,
 //                                new List<int> { 82 },
 //                                d.DetectorChannel,
 //                                d.GetOffset(),
 //                                d.LatencyCorrection)).ToList();
 //            return new VolumeCollection(
-//                _options.Start,
-//                _options.End,
+//                options.Start,
+//                options.End,
 //                detectorEvents,
-//                _options.SelectedBinSize);
+//                options.SelectedBinSize);
 //        }
 
 //        public MetricInfo SetVolumeMetrics(
-//            ApproachVolumeOptions _options,
+//            ApproachVolumeOptions options,
 //            VolumeCollection primaryDirectionVolume,
 //            VolumeCollection opposingDirectionVolume,
 //            VolumeCollection combinedDirectionsVolumes,
 //            MetricInfo metricInfo
 //            )
 //        {
-//            int binSizeMultiplier = 60 / _options.SelectedBinSize;
+//            int binSizeMultiplier = 60 / options.SelectedBinSize;
 
 //            SetCombinedVolumeStatistics(
 //                binSizeMultiplier,
@@ -103,7 +103,7 @@
 //                opposingDirectionVolume,
 //                combinedDirectionsVolumes,
 //                metricInfo,
-//                _options.SelectedBinSize);
+//                options.SelectedBinSize);
 //            if (primaryDirectionVolume != null)
 //                SetPrimaryDirectionVolumeStatistics(
 //                    binSizeMultiplier,

@@ -81,7 +81,7 @@ const EditableTableCell = ({
           backgroundColor: `${actionColor(0.1)}`,
           position: 'relative',
           boxShadow: `inset 0 0 0 1px ${actionColor()}`,
-          overflow: 'visible',
+          paddingY: 1,
         }}
         aria-disabled={disabled || isLocked}
       >

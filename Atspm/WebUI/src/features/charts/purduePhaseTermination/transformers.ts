@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createGrid,
   createInfoString,
   createLegend,
@@ -42,11 +43,7 @@ import {
   formatChartDateTimeRange,
   triangleSvgSymbol,
 } from '@/features/charts/utils'
-import {
-  DataZoomComponentOption,
-  SeriesOption,
-  TooltipComponentOption,
-} from 'echarts'
+import { SeriesOption, TooltipComponentOption } from 'echarts'
 
 export default function transformPurduePhaseTerminationData(
   response: RawPurduePhaseTerminationResponse
@@ -110,29 +107,13 @@ function transformData(data: RawPurduePhaseTerminationData) {
 
   const tooltip = createTooltip()
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      minSpan: 0.2,
-    },
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
       orient: 'vertical',
       right: 190,
-      minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
-    // {
-    //   type: 'inside',
-    //   orient: 'vertical',
-    //   filterMode: 'none',
-    //   minSpan: 0.2,
-    // },
-  ]
+  ])
 
   const toolbox = createToolbox(
     {

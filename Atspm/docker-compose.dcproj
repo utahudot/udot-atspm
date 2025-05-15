@@ -6,8 +6,25 @@
     <ProjectGuid>0670b829-17b7-49f8-b8d0-6ea6ce136ecb</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="ngnix\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".env" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
-    <None Include="variables.env" />
+    <None Include="pure-ftpd.conf" />
+    <None Include="README.md" />
+    <None Include="frontend-env.txt" />
+    <None Include="nginx\certs\aspnetapp.pfx" />
+    <None Include="nginx\certs\privkey.pem" />
+    <None Include="nginx\certs\webui.crt" />
+    <None Include="nginx\certs\webui.key" />
+    <None Include="nginx\conf.d\default.conf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="nginx\nginx.conf\" />
   </ItemGroup>
 </Project>

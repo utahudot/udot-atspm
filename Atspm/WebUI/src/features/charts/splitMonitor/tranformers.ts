@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createDisplayProps,
   createGrid,
   createLegend,
@@ -42,7 +43,7 @@ import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
-import { DataZoomComponentOption, EChartsOption } from 'echarts'
+import { EChartsOption } from 'echarts'
 
 export default function transformSplitMonitorData(
   response: RawSplitMonitorResponse
@@ -120,34 +121,16 @@ function transformData(data: RawSplitMonitorData) {
     ],
   })
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
       orient: 'vertical',
       filterMode: 'none',
       right: 160,
-      endValue: 100, // todo - should use measure default or something
+      endValue: 100,
       yAxisIndex: 0,
-      minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
-    // {
-    //   type: 'inside',
-    //   orient: 'vertical',
-    //   filterMode: 'none',
-    //   yAxisIndex: 0,
-    //   minSpan: 0.2,
-    // },
-  ]
+  ])
 
   const toolbox = createToolbox(
     {

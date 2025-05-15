@@ -1,12 +1,12 @@
-import { useGetLocationAllVersionsOfLocationFromIdentifier } from '@/api/config/aTSPMConfigurationApi'
+import {
+  useDeleteLocationAllVersionsFromKey,
+  useDeleteLocationSetLocationTodFromKey,
+  useGetLocationAllVersionsOfLocationFromIdentifier,
+  useGetLocationCopyLocationToNewVersionFromKey,
+  useGetLocationType,
+} from '@/api/config/aTSPMConfigurationApi'
 import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import CustomSelect from '@/components/customSelect'
-import { useLocationTypes } from '@/features/locations/api'
-import {
-  useCopyLocationToNewVersion,
-  useDeleteVersion,
-  useSetLocationToBeDeleted,
-} from '@/features/locations/api/location'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { getLocationTypeConfig } from '@/features/locations/utils'
 import { getLocation } from '@/pages/admin/locations'
@@ -46,10 +46,11 @@ export default function EditLocationHeader() {
   const { addNotification } = useNotificationStore()
 
   const queryClient = useQueryClient()
-  const { data: locationTypeData } = useLocationTypes()
-  const { mutate: copyVersion } = useCopyLocationToNewVersion(location.id)
-  const { mutate: deleteVersion } = useDeleteVersion()
-  const { mutate: deleteLocation } = useSetLocationToBeDeleted(location.id)
+  const { data: locationTypeData } = useGetLocationType()
+  const { mutate: copyVersion } =
+    useGetLocationCopyLocationToNewVersionFromKey()
+  const { mutate: deleteVersion } = useDeleteLocationSetLocationTodFromKey()
+  const { mutate: deleteLocation } = useDeleteLocationAllVersionsFromKey()
 
   const { data: versionsData, refetch: fetchLocationVersions } =
     useGetLocationAllVersionsOfLocationFromIdentifier(
@@ -68,9 +69,9 @@ export default function EditLocationHeader() {
   if (!location) return null
 
   const updateLocationVersion = async (newLoc: Location | null) => {
-    if (!newLoc) return
-
-    setLocation(await getLocation(newLoc.id))
+    if (!newLoc?.id) return
+    const newLocation = await getLocation(newLoc.id)
+    setLocation(newLocation)
   }
 
   function buildDisplayName(loc: Location) {
@@ -116,38 +117,58 @@ export default function EditLocationHeader() {
   }
 
   const handleAddNewVersionConfirm = () => {
-    copyVersion(location.id, {
-      onSuccess: (newLoc) => {
-        updateLocationVersion(newLoc)
-        fetchLocationVersions()
-      },
-    })
+    copyVersion(
+      { key: location.id },
+      {
+        onSuccess: (newLoc) => {
+          updateLocationVersion(newLoc)
+          fetchLocationVersions()
+          addNotification({
+            type: 'success',
+            title: 'New Version Added',
+          })
+        },
+      }
+    )
     setOpenModal(false)
   }
 
   const handleDeleteCurrentVersionConfirm = () => {
-    deleteVersion(location.id, {
-      onSuccess: () => {
-        fetchLocationVersions()
-        updateLocationVersion(
-          locationVersions?.find((ver) => ver.id !== location.id) || null
-        )
-      },
-    })
+    deleteVersion(
+      { key: location.id },
+      {
+        onSuccess: () => {
+          fetchLocationVersions()
+          updateLocationVersion(
+            locationVersions?.find((ver) => ver.id !== location.id) || null
+          )
+          addNotification({
+            type: 'success',
+            title: 'Version Deleted',
+          })
+        },
+      }
+    )
     setOpenModal(false)
   }
 
   const handleDeleteLocationConfirm = () => {
-    deleteLocation(location.id, {
-      onSuccess: async () => {
-        updateLocationVersion(null)
-        addNotification({
-          type: 'error',
-          title: 'Location Deleted',
-        })
-        await queryClient.invalidateQueries()
-      },
-    })
+    if (!location?.locationIdentifier) return
+
+    deleteLocation(
+      { key: location?.locationIdentifier },
+      {
+        onSuccess: async () => {
+          updateLocationVersion(null)
+          setLocation(null)
+          addNotification({
+            type: 'success',
+            title: 'Location Deleted',
+          })
+          await queryClient.invalidateQueries()
+        },
+      }
+    )
     setOpenModal(false)
   }
 

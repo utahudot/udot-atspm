@@ -89,13 +89,14 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             IReadOnlyList<IndianaEvent> planEvents,
             bool usePermissivePhase)
         {
-            var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false).ToList();
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false);
+            var detectorEventsList = detectorEvents.IsNullOrEmpty() ? new List<IndianaEvent>() : detectorEvents.ToList();
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<short>() { 1, 8, 11 }).ToList();
             cycleEvents = cycleEvents.Where(c => c.EventParam == phaseDetail.PhaseNumber).ToList();
             GreenTimeUtilizationResult viewModel = greenTimeUtilizationService.GetChartData(
                 phaseDetail,
                 options,
-                detectorEvents,
+                detectorEventsList,
                 cycleEvents,
                 planEvents.ToList(),
                 controllerEventLogs.ToList()

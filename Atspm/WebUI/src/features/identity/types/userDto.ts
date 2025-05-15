@@ -15,11 +15,14 @@
 // limitations under the License.
 // #endregion
 interface UserDto {
+  userId:string
   firstName: string
   lastName: string
   agency: string
   phoneNumber: string
+  fullName:string,
+  userName:string,
   email: string
-  roles: string
+  roles: string[]
 }
 export default UserDto

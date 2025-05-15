@@ -157,6 +157,50 @@ export default function ApacheEChart({
     }
   }, [])
 
+  useEffect(() => {
+    const handleSaveAsImage = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        text: string
+      }>
+      const clickedChart = customEvent.detail.text
+      const currentChart = chartInstance.current
+      if (!clickedChart || !currentChart) return
+
+      const chartOptions = currentChart.getOption() as EChartsOption
+      if (chartOptions.title[0].text !== clickedChart) return
+
+      // Temporarily remove grouping to prevent all charts from saving
+      const originalGroup = currentChart.group
+      currentChart.group = ''
+
+      const imageURL = currentChart.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        backgroundColor: '#fff',
+      })
+      const link = document.createElement('a')
+      link.href = imageURL
+      link.download = `${clickedChart}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link) // Clean up
+
+      // Restore the group after saving
+      setTimeout(() => {
+        if (clickedChart) {
+          currentChart.group = originalGroup
+          console.log('🔄 Group restored:', originalGroup)
+        }
+      }, 100)
+    }
+
+    window.addEventListener('saveChartImage', handleSaveAsImage)
+
+    return () => {
+      window.removeEventListener('saveChartImage', handleSaveAsImage)
+    }
+  }, [])
+
   const handleActivate = () => {
     if (!isActive) {
       setActiveChart(id)

@@ -186,6 +186,10 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
                   'deviceIdentifier',
                   'location',
                   'deviceConfiguration',
+                  'created',
+                  'modified',
+                  'createdBy',
+                  'modifiedBy',
                 ].includes(key)
             )
             .map(([key, value]) => (
