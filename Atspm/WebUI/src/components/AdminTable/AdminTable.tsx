@@ -21,7 +21,8 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import React, { ReactElement, cloneElement, useMemo, useState } from 'react'
+import type { ReactElement } from 'react'
+import React, { cloneElement, useMemo, useState } from 'react'
 
 interface HasId {
   id: number
@@ -127,8 +128,8 @@ const AdminTable = <T extends HasId>({
   const sortedData = useMemo(
     () =>
       [...data].sort((a, b) => {
-        let aValue = a[orderBy as keyof T] as string | number
-        let bValue = b[orderBy as keyof T] as string | number
+        let aValue = a[orderBy] as string | number
+        let bValue = b[orderBy] as string | number
 
         if (typeof aValue === 'string' && typeof bValue === 'string') {
           aValue = aValue.toLowerCase()
@@ -256,11 +257,8 @@ const AdminTable = <T extends HasId>({
                         sx={{ height: '53px' }}
                       >
                         {customRenderer
-                          ? customRenderer.component(
-                              row[header as keyof T],
-                              row
-                            )
-                          : (row[header as keyof T] as string | number)}
+                          ? customRenderer.component(row[header], row)
+                          : (row[header] as string | number)}
                       </TableCell>
                     )
                   })}
@@ -301,7 +299,7 @@ const AdminTable = <T extends HasId>({
         {hasDeletePrivileges &&
           selectedRow &&
           !protectedFromDeleteItems?.includes(
-            selectedRow[headerKeys[0] as keyof T] as string
+            selectedRow[headerKeys[0]] as string
           ) && (
             <MenuItem onClick={handleDeleteClick}>
               <ListItemIcon>
