@@ -18,17 +18,14 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
-using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
@@ -130,7 +127,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             {
                 return NotFound(e.Message);
             }
-        }       
+        }
 
 
         /// <summary>

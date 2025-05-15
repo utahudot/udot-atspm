@@ -25,7 +25,7 @@ using Utah.Udot.NetStandardToolkit.Services;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Base class for controllers using general configuration policies
+    /// Base class for controllers that verify user is logged in
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -52,7 +52,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize()]
-        public override Task<IActionResult> Post([FromBody]T item)
+        public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
