@@ -91,7 +91,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         h.Parameter<string>("primaryName");
                         h.Parameter<string>("secondaryName");
                         h.Parameter<string>("note");
-                        h.CollectionParameter<Device>("devices");                        
+                        h.CollectionParameter<Device>("devices");
 
 
                         var j = model.Action("DeleteAllVersions");
