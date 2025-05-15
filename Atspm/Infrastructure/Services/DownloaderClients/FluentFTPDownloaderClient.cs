@@ -61,8 +61,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             _client.Credentials = credentials;
             _client.Config.ConnectTimeout = connectionTimeout;
             _client.Config.ReadTimeout = operationTimeout;
-
-            _client.Config.DataConnectionType = FtpDataConnectionType.PASV;
+             
 
             //https://github.com/robinrodricks/FluentFTP/wiki/Timeouts
             if (connectionProperties != null && connectionProperties.TryGetValue("DataConnectionConnectTimeout", out string v1) && int.TryParse(v1, out int r1))

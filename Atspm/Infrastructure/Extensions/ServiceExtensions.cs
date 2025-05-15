@@ -176,7 +176,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
-            services.AddScoped<IEventLogRepository, EventLogEFRepository>();
 
             return services;
         }
@@ -192,7 +191,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             services.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
             services.AddScoped<ISpeedEventLogRepository, SpeedEventLogEFRepository>();
-            services.AddScoped<IVisionCameraStatisticsEventLogRepository, VisionCameraStatisticsEventLogEFRepository>();
 
             return services;
         }
