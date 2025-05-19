@@ -49,13 +49,18 @@ interface LocationSlice {
 
 interface ApproachSlice {
   approaches: ConfigApproach[]
+  savedApproaches: ConfigApproach[] //used to check for unsaved changes
+  hasUnsavedChanges: () => boolean
   channelMap: Map<number, number>
 
   updateApproaches: (newApproaches: ConfigApproach[]) => void
   addApproach: () => void
   updateApproach: (updatedApproach: ConfigApproach) => void
+  updateSavedApproaches: (updatedApproach: ConfigApproach) => void
+  updateSavedApproachesFromCurrent: () => void
   copyApproach: (approach: ConfigApproach) => void
   deleteApproach: (approach: ConfigApproach) => void
+  resetStore: () => void
 
   addDetector: (approachId: number) => void
   updateDetector: (detectorId: number, name: string, val: unknown) => void
@@ -69,6 +74,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
     location: null,
     errors: null,
     warnings: null,
+    savedApproaches: [],
 
     setLocation: (location) => {
       const approachList = location?.approaches ?? []
@@ -87,8 +93,42 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
             }
           : null,
         approaches: approachList,
+        savedApproaches: JSON.parse(JSON.stringify(approachList)),
         channelMap: newMap,
       }))
+    },
+
+    hasUnsavedChanges: () => {
+      const { approaches, savedApproaches } = get()
+
+      if (approaches.length !== savedApproaches.length) return true
+
+      const prepareForComparison = (approach: ConfigApproach) => {
+        const { open, index, isNew, ...rest } = approach
+        return {
+          ...rest,
+          detectors: approach.detectors.map((detector) => {
+            const { isNew: detectorIsNew, ...detectorRest } = detector
+            return detectorRest
+          }),
+        }
+      }
+
+      for (let i = 0; i < approaches.length; i++) {
+        const current = approaches[i]
+        const saved = savedApproaches.find((sa) => sa.id === current.id)
+
+        if (!saved) return true
+
+        const preparedCurrent = prepareForComparison(current)
+        const preparedSaved = prepareForComparison(saved)
+
+        if (JSON.stringify(preparedCurrent) !== JSON.stringify(preparedSaved)) {
+          return true
+        }
+      }
+
+      return false
     },
 
     handleLocationEdit: (name, value) => {
@@ -124,6 +164,25 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       set({ approaches: copy })
     },
 
+    updateSavedApproaches: (updatedApproach) => {
+      const { savedApproaches } = get()
+      const idx = savedApproaches.findIndex((a) => a.id === updatedApproach.id)
+
+      if (idx === -1) {
+        set({ savedApproaches: [...savedApproaches, updatedApproach] })
+        return
+      }
+
+      const copy = [...savedApproaches]
+      copy[idx] = updatedApproach
+      set({ savedApproaches: copy })
+    },
+
+    updateSavedApproachesFromCurrent: () => {
+      const { approaches } = get()
+      set({ savedApproaches: JSON.parse(JSON.stringify(approaches)) })
+    },
+
     addApproach: () => {
       const { location, approaches } = get()
       const id = Math.round(Math.random() * 10000)
@@ -151,7 +210,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         protectedPhaseNumber: null,
       }
 
-      set({ approaches: [...approaches, newApproach] })
+      set({ approaches: [newApproach, ...approaches] })
     },
 
     copyApproach: (approach) => {
@@ -183,6 +242,17 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         }
       }
       set({ approaches: filtered })
+    },
+
+    resetStore: () => {
+      set({
+        location: null,
+        approaches: [],
+        savedApproaches: [],
+        channelMap: new Map(),
+        errors: null,
+        warnings: null,
+      })
     },
 
     addDetector: (approachId) => {
@@ -217,7 +287,6 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
 
     updateDetector: (detectorId, name, val) => {
       const { approaches, channelMap } = get()
-      if (val === '') val = null
 
       const updatedApproaches = approaches.map((approach) => {
         let found = false

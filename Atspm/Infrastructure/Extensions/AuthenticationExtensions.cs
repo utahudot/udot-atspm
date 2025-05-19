@@ -27,7 +27,6 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
-using Utah.Udot.NetStandardToolkit.Authentication;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -46,8 +45,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             //if (!host.HostingEnvironment.IsDevelopment())
             //{
-                services.AddAtspmAuthentication(host);
-                services.AddAtspmAuthorization();
+            services.AddAtspmAuthentication(host);
+            services.AddAtspmAuthorization();
             //}
 
             return services;

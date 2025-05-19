@@ -27,6 +27,7 @@ using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.ATSPM.ConfigApi.Utility;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
@@ -126,6 +127,8 @@ builder.Host
         s.AddScoped<IApproachService, ApproachService>();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
+
+        s.AddScoped<ILocationManager, LocationManager>();
     });
 
 var app = builder.Build();

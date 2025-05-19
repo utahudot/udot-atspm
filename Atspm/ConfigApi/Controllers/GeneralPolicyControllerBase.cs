@@ -33,21 +33,18 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class GeneralPolicyControllerBase<T, TKey>(IAsyncRepository<T> repository) : ConfigControllerBase<T, TKey>(repository) where T : AtspmConfigModelBase<TKey>
     {
         /// <inheritdoc/>
-        [Authorize(Policy = "CanViewGeneralConfigurations")]
         public override ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
             return base.Get(options);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanViewGeneralConfigurations")]
         public override ActionResult<T> Get(TKey key, ODataQueryOptions<T> options)
         {
             return base.Get(key, options);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanViewGeneralConfigurations")]
         protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
         {
             return base.GetNavigationProperty<TType>(key);
@@ -55,21 +52,21 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Post(T item)
+        public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Put(TKey key, T item)
+        public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Patch(TKey key, Delta<T> item)
+        public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
         }

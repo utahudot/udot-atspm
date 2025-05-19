@@ -88,78 +88,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         IReadOnlyList<Location> GetLocationsBetweenDates(string LocationIdentifier, DateTime startDate, DateTime endDate);
 
 
-        //ReadOnlyList<Location> GetLocationsForMetricType(int metricTypeId);
 
-        #region ExtensionMethods
-
-        //Location CopyLocationToNewVersion(int id);
-
-        //void SetLocationToDeleted(int id);
-
-        //void SetLocationToDeleted(string LocationId);
-
-        #endregion
-
-        #region Obsolete
-
-        //[Obsolete("This method isn't currently being used")]
-        //void AddList(List<Location> Locations);
-
-        //[Obsolete("Use the add in respository base class")]
-        //void AddOrUpdate(Location Location);
-
-        //[Obsolete("This method isn't currently being used")]
-        //int CheckVersionWithFirstDate(string LocationId);
-
-        //[Obsolete("Redundant to GetLatestVersionOfAllLocations")]
-        //IReadOnlyList<Location> EagerLoadAllLocations();
-
-        //[Obsolete("Not Required anymore")]
-        //bool Exists(string LocationId);
-
-        //[Obsolete("Redundant to GetLatestVersionOfAllLocations")]
-        //IReadOnlyList<Location> GetAllEnabledLocations();
-
-        //[Obsolete("Redundant to GetLatestVersionOfAllLocations")]
-        //IList<Location> GetAllLocations();
-
-        //[Obsolete("Use GetAllVersionsOfLocation")]
-        //IReadOnlyList<Location> GetAllVersionsOfLocationByLocationId(string LocationId);
-
-        //[Obsolete("This method isn't currently being used")]
-        //IReadOnlyList<Location> GetLatestVerionOfAllLocationsByControllerType(int ControllerTypeId);
-
-        //[Obsolete("Just get whole object")]
-        //string GetLocationDescription(string LocationId);
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //Location GetLatestVersionOfLocationByLocationId(string LocationId);
-
-        //[Obsolete("This should not be in respository")]
-        //IReadOnlyList<Pin> GetPinInfo();
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //string GetLocationLocation(string LocationId);
-
-        //[Obsolete("Use Lookup instead")]
-        //Location GetLocationVersionByVersionId(int versionId);
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //Location GetVersionOfLocationByDate(string LocationId, DateTime startDate);
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //Location GetVersionOfLocationByDateWithDetectionTypes(string LocationId, DateTime startDate);
-
-        //[Obsolete("Use SetLocationToDeleted")]
-        //void SetAllVersionsOfALocationToDeleted(string id);
-
-        //[Obsolete("Use SetLocationToDeleted")]
-        //void SetVersionToDeleted(int versionId);
-
-        #endregion
-
-        //IReadOnlyList<Location> GetLatestVersionOfAllLocationsForFtp();
-        //LocationFTPInfo GetLocationFTPInfoByID(string LocationId);
-        //List<LocationFTPInfo> GetLocationFTPInfoForAllFTPLocations();
+        Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate);
     }
 }

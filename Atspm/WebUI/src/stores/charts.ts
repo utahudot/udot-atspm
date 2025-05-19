@@ -24,12 +24,14 @@ interface ChartsStore {
   syncZoom: boolean
   setSyncZoom: (syncZoom: boolean) => void
 }
+
 export const useChartsStore = create<ChartsStore>((set) => ({
   activeChart: null,
   setActiveChart: (activeChart: number | string | null) => set({ activeChart }),
+
   yAxisMaxStore: null,
-  setYAxisMaxStore: (yAxisMaxStore: string | null) =>
-    set({ yAxisMaxStore }),
+  setYAxisMaxStore: (yAxisMaxStore: string | null) => set({ yAxisMaxStore }),
+
   syncZoom: false,
   setSyncZoom: (syncZoom: boolean) => set({ syncZoom }),
 }))

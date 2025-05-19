@@ -92,7 +92,7 @@ namespace Utah.Udot.Atspm.Business.SplitFail
             do
             {
                 var endTime = startTime.AddMinutes(15);
-                var cycles = splitFailPhaseData.Cycles.Where(c => c.StartTime >= startTime && c.StartTime <= endTime).ToList();
+                var cycles = splitFailPhaseData.Cycles.Where(c => c.StartTime >= startTime && c.StartTime < endTime).ToList();
                 splitFailPhaseData.Bins.Add(new SplitFailBin(startTime, endTime, cycles));
                 startTime = startTime.AddMinutes(15);
             } while (startTime < options.End);
@@ -173,7 +173,7 @@ namespace Utah.Udot.Atspm.Business.SplitFail
                 //TODO: Verify that this is not needed
                 //if (!events.Any())
                 //{
-                //    CheckForDetectorOnBeforeStart(_options, detector, splitFailPhaseData);
+                //    CheckForDetectorOnBeforeStart(options, detector, splitFailPhaseData);
                 //}
                 //else
                 //{

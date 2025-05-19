@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Configuration/MeasureOptionsConfiguration.cs
+// Copyright 2025 Utah Departement of Transportation
+// for Data - Utah.Udot.Atspm.Data.Configuration/MeasureOptionPresetConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 SerializationBinder = new AssemblySerializationBinder<AtspmOptionsBase>()
-            }), 
+            }),
             v => JsonConvert.DeserializeObject<AtspmOptionsBase>(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,

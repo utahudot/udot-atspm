@@ -1,40 +1,40 @@
-import AdminTable from '@/components/AdminTable/AdminTable'
-import DeleteModal from '@/components/AdminTable/DeleteModal'
-import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { useDeleteUser } from '@/features/identity/api/deleteUser'
-import { useEditUsers } from '@/features/identity/api/editUsers'
-import { useGetAllUsers } from '@/features/identity/api/getAllUsers'
-import UserModal from '@/features/identity/components/users/UserModal'
+import AdminTable from "@/components/AdminTable/AdminTable";
+import DeleteModal from "@/components/AdminTable/DeleteModal";
+import { ResponsivePageLayout } from "@/components/ResponsivePage";
+import { useDeleteUser } from "@/features/identity/api/deleteUser";
+import { useEditUsers } from "@/features/identity/api/editUsers";
+import { useGetAllUsers } from "@/features/identity/api/getAllUsers";
+import UserModal from "@/features/identity/components/users/UserModal";
 import {
   CustomCellConfig,
   UserRolesCell,
-} from '@/features/identity/components/users/UserRolesCell'
+} from "@/features/identity/components/users/UserRolesCell";
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
-} from '@/features/identity/pagesCheck'
-import UserDto from '@/features/identity/types/userDto'
-import { Backdrop, CircularProgress } from '@mui/material'
+} from "@/features/identity/pagesCheck";
+import UserDto from "@/features/identity/types/userDto";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const UsersAdmin = () => {
-  const pageAccess = useViewPage(PageNames.Users)
-  const hasUserEditClaim = useUserHasClaim('User:Edit')
-  const hasUserDeleteClaim = useUserHasClaim('User:Delete')
+  const pageAccess = useViewPage(PageNames.Users);
+  const hasUserEditClaim = useUserHasClaim("User:Edit");
+  const hasUserDeleteClaim = useUserHasClaim("User:Delete");
 
-  const { mutateAsync: deleteMutation } = useDeleteUser()
-  const { mutateAsync: editMutation } = useEditUsers()
+  const { mutateAsync: deleteMutation } = useDeleteUser();
+  const { mutateAsync: editMutation } = useEditUsers();
   const {
     data: allUserData,
     isLoading: usersIsLoading,
     refetch: refetchUsers,
-  } = useGetAllUsers()
+  } = useGetAllUsers();
 
-  const users = allUserData
+  const users = allUserData;
 
   const handleEditUser = async (userData) => {
     const { userId, firstName, lastName, agency, userName, email, roles } =
-      userData
+      userData;
     try {
       await editMutation({
         userId,
@@ -44,24 +44,24 @@ const UsersAdmin = () => {
         email: email.toLowerCase(),
         userName: userName.toLowerCase(),
         roles,
-      })
-      refetchUsers()
+      });
+      refetchUsers();
     } catch (error) {
-      console.error('Mutation Error:', error)
+      console.error("Mutation Error:", error);
     }
-  }
+  };
 
   const handleDeleteUser = async (id: number) => {
     try {
-      await deleteMutation(id)
-      refetchUsers()
+      await deleteMutation(id);
+      refetchUsers();
     } catch (error) {
-      console.error('Error deleting user:', error)
+      console.error("Error deleting user:", error);
     }
-  }
+  };
 
   if (pageAccess.isLoading) {
-    return
+    return;
   }
 
   const filteredData = users?.map((user) => {
@@ -74,32 +74,32 @@ const UsersAdmin = () => {
       agency: user.agency,
       email: user.email,
       roles: user.roles?.sort(),
-    }
-  })
+    };
+  });
 
-  const headers = ['Full Name', 'Username', 'Agency', 'Email', 'Roles']
-  const headerKeys = ['fullName', 'userName', 'agency', 'email', 'roles']
+  const headers = ["Full Name", "Username", "Agency", "Email", "Roles"];
+  const headerKeys = ["fullName", "userName", "agency", "email", "roles"];
 
   if (usersIsLoading) {
     return (
       <Backdrop open>
         <CircularProgress color="inherit" />
       </Backdrop>
-    )
+    );
   }
 
   if (!allUserData) {
-    return <div>Error returning data</div>
+    return <div>Error returning data</div>;
   }
 
   const customCellRender: CustomCellConfig[] = [
     {
-      headerKey: 'roles',
+      headerKey: "roles",
       component: (value: string, row: string[]) => (
         <UserRolesCell value={value} row={row} headerKey="roles" />
       ),
     },
-  ]
+  ];
 
   return (
     <ResponsivePageLayout title="Manage Users" noBottomMargin>
@@ -117,7 +117,7 @@ const UsersAdmin = () => {
         deleteModal={
           <DeleteModal
             id={0}
-            name={''}
+            name={""}
             deleteByKey="userId"
             objectType="User"
             deleteLabel={(selectedRow: UserDto) => selectedRow.fullName}
@@ -127,7 +127,7 @@ const UsersAdmin = () => {
         }
       />
     </ResponsivePageLayout>
-  )
-}
+  );
+};
 
-export default UsersAdmin
+export default UsersAdmin;
