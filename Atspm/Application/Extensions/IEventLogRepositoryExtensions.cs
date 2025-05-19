@@ -16,7 +16,6 @@
 #endregion
 
 using System.Collections;
-using System.Collections.Generic;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;

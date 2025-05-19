@@ -160,18 +160,18 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <summary>
         /// Marks <see cref="Location"/> to deleted
         /// </summary>
-        /// <param name="locationIdentifier">Identifier of <see cref="Location"/> to mark as deleted</param>
+        /// <param name="key">Identifier of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
         /// 
         [Authorize(Policy = "CanDeleteLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public async Task<IActionResult> DeleteAllVersions(string locationIdentifier)
+        public async Task<IActionResult> DeleteAllVersions(string key)
         {
             try
             {
-                await _locationManager.DeleteAllVersions(locationIdentifier);
+                await _locationManager.DeleteAllVersions(key);
 
                 return Ok();
             }
