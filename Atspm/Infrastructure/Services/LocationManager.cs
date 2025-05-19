@@ -1,10 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.NetStandardToolkit.Services;
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services/LocationManager.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services
 {
@@ -22,116 +33,70 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
 
         public LocationManager(ILocationRepository locations, IDeviceRepository devices)
         {
-            
+
         }
 
-        public Task CopyLocationToNewVersion(int key)
+        public async Task CopyLocationToNewVersion(int key)
         {
             var deviceIds = _devices.GetList()
                 .Where(w => w.LocationId == key)
                 .Select(s => s.Id)
                     .ToList();
-            var newLocation = await _repository.CopyLocationToNewVersion(key);
-            _deviceRepository.UpdateDevicesForNewVersion(deviceIds, newLocation.Id);
+            var newLocation = await _locations.CopyLocationToNewVersion(key);
+            _devices.UpdateDevicesForNewVersion(deviceIds, newLocation.Id);
         }
 
-        public Task DeleteAllVersions(string locationIdentifier)
+        public async Task DeleteAllVersions(string locationIdentifier)
         {
-            try
-            {
-                var versions = _repository.GetAllVersionsOfLocationWithDevices(key);
-                foreach (var version in versions)
-                {
-                    if (version.Devices != null)
-                    {
-                        foreach (var device in version.Devices)
-                        {
-                            _deviceRepository.Remove(device);
-                        }
-                    }
-                    await _repository.SetLocationToDeleted(version.Id);
-                }
-            }
-            catch (ArgumentException e)
-            {
-                return NotFound(e.Message);
-            }
+            var versions = _locations.GetList()
+                 .Include(i => i.Jurisdiction)
+                 .Include(i => i.Region)
+                 .Include(i => i.Devices)
+                 .FromSpecification(new LocationIdSpecification(locationIdentifier))
+                 .FromSpecification(new ActiveLocationSpecification())
+                 .ToList();
 
-            return Ok();
-        }
-
-        public Task SetLocationToDeleted(int key)
-        {
-            try
+            foreach (var version in versions)
             {
-                var location = await _repository.LookupAsync(key);
-                var versions = _repository.GetAllVersionsOfLocation(location.LocationIdentifier);
-                if (versions.Count() > 1)
+                if (version.Devices != null)
                 {
-                    //get the version previous to the one being deleted
-                    var previousVersion = versions.Where(w => w.Start < location.Start).OrderByDescending(o => o.Start).FirstOrDefault();
-                    if (previousVersion != null && location.Devices != null)
+                    foreach (var device in version.Devices)
                     {
-                        //assign the devices of the deleted version to the location id of the previous version
-                        foreach (var device in location.Devices)
-                        {
-                            device.LocationId = previousVersion.Id;
-                        }
+                        _devices.Remove(device);
                     }
                 }
-                else
+                await _locations.SetLocationToDeleted(version.Id);
+            }
+        }
+
+        public async Task SetLocationToDeleted(int key)
+        {
+            var location = await _locations.LookupAsync(key);
+            var versions = _locations.GetAllVersionsOfLocation(location.LocationIdentifier);
+            if (versions.Count() > 1)
+            {
+                //get the version previous to the one being deleted
+                var previousVersion = versions.Where(w => w.Start < location.Start).OrderByDescending(o => o.Start).FirstOrDefault();
+                if (previousVersion != null && location.Devices != null)
                 {
-                    if (location.Devices != null)
+                    //assign the devices of the deleted version to the location id of the previous version
+                    foreach (var device in location.Devices)
                     {
-                        foreach (var device in location.Devices)
-                        {
-                            _deviceRepository.Remove(device);
-                        }
+                        device.LocationId = previousVersion.Id;
                     }
                 }
-                await _repository.SetLocationToDeleted(key);
             }
-            catch (ArgumentException e)
+            else
             {
-                return NotFound(e.Message);
+                if (location.Devices != null)
+                {
+                    foreach (var device in location.Devices)
+                    {
+                        _devices.Remove(device);
+                    }
+                }
             }
-
-            return Ok();
-        }
-    }
-
-    public class Temp
-    {
-        //IReadOnlyList<Location> GetAllVersionsOfLocationWithDevices(string LocationIdentifier);
-        //Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate);
-
-        /// <inheritdoc/>
-        public IReadOnlyList<Location> GetAllVersionsOfLocationWithDevices(string LocationIdentifier)
-        {
-            var result = BaseQuery()
-                .Include(i => i.Devices)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
-                .FromSpecification(new ActiveLocationSpecification())
-                .ToList();
-
-            return result;
-        }
-
-
-        /// <inheritdoc/>
-        public Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate)
-        {
-            var result = BaseQuery()
-                .Include(l => l.Devices).ThenInclude(d => d.DeviceConfiguration).ThenInclude(d => d.Product)
-                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
-                .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
-                .Include(i => i.Areas)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
-                .Where(Location => Location.Start <= startDate)
-                .FromSpecification(new ActiveLocationSpecification())
-                .FirstOrDefault();
-
-            return result;
+            await _locations.SetLocationToDeleted(key);
         }
     }
 }

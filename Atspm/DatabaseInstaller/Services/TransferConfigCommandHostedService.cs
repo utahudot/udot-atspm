@@ -358,7 +358,7 @@ public class TransferConfigCommandHostedService : IHostedService
             return;
         }
         _logger.LogInformation("Adding Device Configurations");
-        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);      
+        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);
         _deviceConfigurationRepository.AddRange(deviceConfigurations);
         _logger.LogInformation("Device Configurations Added");
     }
@@ -420,7 +420,7 @@ public class TransferConfigCommandHostedService : IHostedService
                 {
                     _logger.LogError(ex.Message, $"Error importing approach {approach.Id}");
                 }
-                
+
             }
         }
     }
@@ -466,8 +466,8 @@ public class TransferConfigCommandHostedService : IHostedService
         var detectionTypeDetectors = ImportData<DetectionTypeDetector>(queries["DetectionTypeDetector"], columnMappings["DetectionTypeDetector"]);
 
         var detectors = ImportData<Detector>(queries["Detectors"], columnMappings["Detectors"]);
-        
-        
+
+
         if (_config.Delete)
         {
             const int batchSize = 5000;
@@ -507,7 +507,7 @@ public class TransferConfigCommandHostedService : IHostedService
             var detectorIds = _detectorRepository.GetList().Select(d => d.Id).ToList();
             var newDetectors = detectors.Where(d => !detectorIds.Contains(d.Id)).ToList();
             foreach (var detector in newDetectors)
-            {                
+            {
                 try
                 {
                     _detectorRepository.Add(detector);
@@ -516,7 +516,7 @@ public class TransferConfigCommandHostedService : IHostedService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message, $"Error importing detector {detector.DectectorIdentifier}");
-                }                
+                }
             }
         }
     }
@@ -571,7 +571,7 @@ public class TransferConfigCommandHostedService : IHostedService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message, $"Error importing location {location.LocationIdentifier}");
-                }                
+                }
             }
         }
     }

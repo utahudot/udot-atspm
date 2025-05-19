@@ -16,10 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.ApproachSpeed;
-using Utah.Udot.Atspm.Business.GreenTimeUtilization;
-using Utah.Udot.Atspm.Business.PhaseTermination;
 using Utah.Udot.Atspm.Business.SplitFail;
-using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
