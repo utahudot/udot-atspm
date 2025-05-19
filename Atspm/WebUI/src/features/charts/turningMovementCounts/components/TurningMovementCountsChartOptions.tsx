@@ -1,8 +1,10 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
+import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
 import { TurningMovementCountsChartOptionsDefaults } from '@/features/charts/turningMovementCounts/types'
 import { Default } from '@/features/charts/types'
-import { Alert, SelectChangeEvent } from '@mui/material'
-import { useState } from 'react'
+import { useChartsStore } from '@/stores/charts'
+import { SelectChangeEvent } from '@mui/material'
+import { useEffect, useState } from 'react'
 
 interface TurningMovementCountsChartOptionsProps {
   chartDefaults: TurningMovementCountsChartOptionsDefaults
@@ -17,6 +19,30 @@ export const TurningMovementCountsChartOptions = ({
 }: TurningMovementCountsChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 
+  const { setYAxisMaxStore } = useChartsStore()
+
+  const [yAxisMax, setYAxisMax] = useState<string | null>(
+    chartDefaults.yAxisDefault?.value
+  )
+
+  useEffect(() => {
+    setYAxisMaxStore(chartDefaults.yAxisDefault?.value)
+  }, [chartDefaults.yAxisDefault?.value, setYAxisMaxStore])
+
+  const updateYAxisDefault = (newYAxis: string) => {
+    setYAxisMax(newYAxis)
+
+    if (isMeasureDefaultView) {
+      handleChartOptionsUpdate({
+        value: newYAxis,
+        option: chartDefaults.yAxisDefault.option,
+        id: chartDefaults.yAxisDefault.id,
+      })
+    } else {
+      setYAxisMaxStore(newYAxis)
+    }
+  }
+
   const handleBinSizeChange = (event: SelectChangeEvent<string>) => {
     const newBinSize = event.target.value
     setBinSize(newBinSize)
@@ -30,17 +56,16 @@ export const TurningMovementCountsChartOptions = ({
 
   return (
     <>
-      {binSize === undefined ? (
-        <Alert severity="error" sx={{ mt: 1 }}>
-          Bin Size default value not found.
-        </Alert>
-      ) : (
-        <BinSizeDropdown
-          value={binSize}
-          handleChange={handleBinSizeChange}
-          id="turning-movement-counts"
-        />
-      )}
+      <BinSizeDropdown
+        value={binSize}
+        handleChange={handleBinSizeChange}
+        id="turning-movement-counts"
+      />
+      <YAxisDefaultInput
+        value={yAxisMax}
+        handleChange={updateYAxisDefault}
+        isMeasureDefaultView={isMeasureDefaultView}
+      />
     </>
   )
 }

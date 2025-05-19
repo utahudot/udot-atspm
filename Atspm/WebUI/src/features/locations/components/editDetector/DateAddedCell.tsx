@@ -17,7 +17,7 @@ function DateAddedCell({ value, onUpdate }: DateAddedCellProps) {
   }
 
   return (
-    <TableCell sx={{ minWidth: '170px' }}>
+    <TableCell sx={{ minWidth: '160px', paddingY: 1 }}>
       <DatePicker
         slotProps={{
           textField: { inputProps: { 'aria-label': 'date-added' } },

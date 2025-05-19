@@ -23,7 +23,7 @@ using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
-    public class WatchdogEmailService
+    public class WatchdogEmailService : IWatchdogEmailService
     {
         private readonly ILogger<WatchdogEmailService> logger;
         private readonly IEmailService mailService;

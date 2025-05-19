@@ -1,9 +1,11 @@
-import DirectionTypeCell from '@/features/locations/components/editApproach/DirectionTypeCell'
+import BooleanCell from '@/features/locations/components/Cell/BooleanCell'
+import SelectCell from '@/features/locations/components/Cell/SelectCell'
+import { TextCell } from '@/features/locations/components/Cell/TextCell'
+import { directionTypeOptions } from '@/features/locations/components/editDetector/selectOptions'
 import {
   ConfigApproach,
   useLocationStore,
 } from '@/features/locations/components/editLocation/locationStore'
-import EditableTableCell from '@/features/locations/components/editableTableCell'
 import {
   Divider,
   Paper,
@@ -22,12 +24,6 @@ interface EditApproachGridProps {
 }
 
 function EditApproachGrid({ approach }: EditApproachGridProps) {
-  /**
-   * Pull all needed state/functions from our single zustand store.
-   * - `location` so we can read top-level flags (like `pedsAre1to1`)
-   * - `errors` if we’re showing approach-level errors
-   * - `updateApproach` to save changes to this approach
-   */
   const { location, errors, updateApproach } = useLocationStore((state) => ({
     location: state.location,
     errors: state.errors,
@@ -43,118 +39,186 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
     [approach, updateApproach]
   )
 
+  const rowCount = approach.detectors?.length + 1 || 1
+  const colCount = 10
+
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="edit approach table">
+      <Table stickyHeader aria-label="edit approach table">
         <TableHead>
-          {/* Row with "Phase/Overlap" and "Overlap" headings */}
           <TableRow>
-            <TableCell colSpan={2} sx={{ borderBottom: 'none', pb: 0 }} />
+            <TableCell
+              colSpan={2}
+              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
+            />
             <TableCell
               colSpan={3}
               align="center"
-              sx={{ borderBottom: 'none', pb: 0 }}
+              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
             >
               <Divider>
-                <Typography variant="caption" fontStyle="italic">
+                <Typography
+                  variant="caption"
+                  fontStyle="italic"
+                  fontSize="12px"
+                >
                   Phase/Overlap
                 </Typography>
               </Divider>
             </TableCell>
-            <TableCell colSpan={2} sx={{ borderBottom: 'none', pb: 0 }} />
+            <TableCell
+              colSpan={2}
+              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
+            />
             <TableCell
               colSpan={3}
               align="center"
-              sx={{ borderBottom: 'none', pb: 0 }}
+              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
             >
               <Divider>
-                <Typography variant="caption" fontStyle="italic">
+                <Typography variant="caption" fontStyle="italic" fontSize={12}>
                   Overlap
                 </Typography>
               </Divider>
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell sx={{ minWidth: '100px' }}>Direction</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Description</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Protected</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Permissive</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Pedestrian</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>
-              Pedestrian Detectors
-            </TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>
-              Approach Speed (mph)
-            </TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Protected</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Permissive</TableCell>
-            <TableCell sx={{ minWidth: '100px' }}>Pedestrian</TableCell>
+            {[
+              'Direction',
+              'Description',
+              'Protected',
+              'Permissive',
+              'Pedestrian',
+              'Pedestrian Detectors',
+              'Approach Speed (mph)',
+              'Protected',
+              'Permissive',
+              'Pedestrian',
+            ].map((header, i) => (
+              <TableCell
+                key={i}
+                sx={{
+                  py: 1,
+                  fontSize: '12px',
+                  minWidth: '100px',
+                  maxWidth:
+                    header === 'Protected' || header === 'Permissive'
+                      ? '40px'
+                      : '100px',
+                }}
+              >
+                {header}
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
 
         <TableBody>
           <TableRow>
-            {/* Direction Cell */}
-            <DirectionTypeCell
+            <SelectCell
+              approachId={approach.id}
+              row={0}
+              col={0}
+              rowCount={rowCount}
+              colCount={colCount}
+              options={directionTypeOptions}
               value={approach.directionTypeId}
-              onUpdate={(val) => handleUpdate('directionTypeId', val)}
+              onUpdate={(v) => handleUpdate('directionTypeId', v)}
             />
 
-            {/* Description */}
-            <EditableTableCell
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={1}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.description}
-              onUpdate={(val) => handleUpdate('description', val)}
+              onUpdate={(v) => handleUpdate('description', v)}
             />
 
-            {/* Protected Phase */}
-            <EditableTableCell
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={2}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.protectedPhaseNumber}
-              onUpdate={(val) => handleUpdate('protectedPhaseNumber', val)}
-              error={errors?.protectedPhaseNumber?.error}
+              onUpdate={(v) => handleUpdate('protectedPhaseNumber', v)}
+              error={errors?.[approach.id]}
             />
 
-            {/* Permissive Phase */}
-            <EditableTableCell
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={3}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.permissivePhaseNumber}
-              onUpdate={(val) => handleUpdate('permissivePhaseNumber', val)}
+              onUpdate={(v) => handleUpdate('permissivePhaseNumber', v)}
             />
 
-            {/* Ped Phase */}
-            <EditableTableCell
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={4}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.pedestrianPhaseNumber}
-              onUpdate={(val) => handleUpdate('pedestrianPhaseNumber', val)}
-              lockable
-              isLocked={pedsAre1to1}
+              onUpdate={(v) => handleUpdate('pedestrianPhaseNumber', v)}
+              disabled={pedsAre1to1}
             />
 
-            {/* Ped Detectors */}
-            <EditableTableCell
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={5}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.pedestrianDetectors?.toString() || ''}
-              onUpdate={(val) =>
-                handleUpdate('pedestrianDetectors', val?.toString())
+              onUpdate={(v) =>
+                handleUpdate('pedestrianDetectors', v?.toString())
               }
-              lockable
-              isLocked={pedsAre1to1}
+              disabled={pedsAre1to1}
             />
 
-            {/* Approach Speed */}
-            <EditableTableCell
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={6}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.mph}
-              onUpdate={(val) => handleUpdate('mph', val)}
+              onUpdate={(v) => handleUpdate('mph', v)}
             />
 
-            {/* Overlaps */}
-            <EditableTableCell
+            <BooleanCell
+              approachId={approach.id}
+              row={0}
+              col={7}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.isProtectedPhaseOverlap}
-              onUpdate={(val) => handleUpdate('isProtectedPhaseOverlap', val)}
+              onUpdate={(v) => handleUpdate('isProtectedPhaseOverlap', v)}
             />
-            <EditableTableCell
+
+            <BooleanCell
+              approachId={approach.id}
+              row={0}
+              col={8}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.isPermissivePhaseOverlap}
-              onUpdate={(val) => handleUpdate('isPermissivePhaseOverlap', val)}
+              onUpdate={(v) => handleUpdate('isPermissivePhaseOverlap', v)}
             />
-            <EditableTableCell
+
+            <BooleanCell
+              approachId={approach.id}
+              row={0}
+              col={9}
+              rowCount={rowCount}
+              colCount={colCount}
               value={approach.isPedestrianPhaseOverlap}
-              onUpdate={(val) => handleUpdate('isPedestrianPhaseOverlap', val)}
+              onUpdate={(v) => handleUpdate('isPedestrianPhaseOverlap', v)}
             />
           </TableRow>
         </TableBody>

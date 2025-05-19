@@ -145,7 +145,7 @@ namespace Utah.Udot.Atspm.Business.SplitMonitor
             var phasePlans = new List<PlanSplitMonitorData>();
             foreach (var plan in phaseCollection.Plans)
             {
-                var cycles = phase.Cycles.Cycles.Where(x => x.StartTime >= plan.Start && x.EndTime < plan.End).ToList();
+                var cycles = phase.Cycles.Cycles.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
                 if (cycles.Any())
                 {
                     //var planCycleCount = Convert.ToDouble(cycles.Count());
@@ -196,6 +196,7 @@ namespace Utah.Udot.Atspm.Business.SplitMonitor
 
         private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double highCycleCounts, string planNumber)
         {
+            var test = Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6));
             if (planNumber != "254")
                 return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCounts : 0;
             else
@@ -204,6 +205,7 @@ namespace Utah.Udot.Atspm.Business.SplitMonitor
 
         private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double highCycleCount, string planNumber)
         {
+            var test = Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5));
             if (planNumber == "254")
                 return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount : 0;
             else

@@ -3,19 +3,17 @@ import { useEditUserInfo } from '@/features/identity/api/editUserInfo'
 import { useUserInfo } from '@/features/identity/api/getUserInfo'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  Alert,
   Box,
   Button,
   Link,
   Paper,
-  Snackbar,
   Tab,
   Tabs,
   TextField,
   Typography,
 } from '@mui/material'
-import { useEffect, useState, useRef } from 'react'
-import { SubmitHandler, useForm, Controller } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -41,7 +39,11 @@ const ProfilePage = () => {
   const [responseError, setResponseError] = useState(false)
   const initialProfileData = useRef<FormData | null>(null)
   const { mutate } = useEditUserInfo()
-  const { data: profileData, error: userError, isLoading } = useUserInfo({
+  const {
+    data: profileData,
+    error: userError,
+    isLoading,
+  } = useUserInfo({
     config: { enabled: true },
   })
   const {
@@ -212,9 +214,7 @@ const ProfilePage = () => {
           >
             {isEditing ? 'Save' : 'Edit'}
           </Button>
-          {isEditing && (
-            <Button onClick={handleCancel}>Cancel</Button>
-          )}
+          {isEditing && <Button onClick={handleCancel}>Cancel</Button>}
         </Paper>
       )}
       {activeTab === 1 && (
@@ -236,33 +236,6 @@ const ProfilePage = () => {
           </Box>
         </Paper>
       )}
-
-      <Snackbar
-        open={submitted && responseSuccess}
-        onClose={() => setResponseSuccess(false)}
-      >
-        <Alert
-          elevation={6}
-          variant="filled"
-          severity="success"
-          onClose={() => setResponseSuccess(false)}
-        >
-          Profile Data Saved!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={submitted && responseError}
-        onClose={() => setResponseError(false)}
-      >
-        <Alert
-          elevation={6}
-          variant="filled"
-          severity="error"
-          onClose={() => setResponseError(false)}
-        >
-          Error Saving Profile
-        </Alert>
-      </Snackbar>
     </ResponsivePageLayout>
   )
 }

@@ -24,6 +24,7 @@ using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
@@ -40,11 +41,15 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class LocationController : LocationPolicyControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
+        private readonly ILocationManager _locationManager;
+
+        //HACK: ILocationManager is temporary
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository) : base(repository)
+        public LocationController(ILocationRepository repository, ILocationManager locationManager) : base(repository)
         {
             _repository = repository;
+            _locationManager = locationManager;
         }
 
         #region NavigationProperties
@@ -98,6 +103,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         #region Actions
 
+        //HACK: move this to LocationManagementController
+
         /// <summary>
         /// Copies <see cref="Location"/> and associated <see cref="Approach"/> to new version
         /// </summary>
@@ -112,13 +119,17 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                return Ok(await _repository.CopyLocationToNewVersion(key));
+                await _locationManager.CopyLocationToNewVersion(key);
+
+                return Ok();
             }
             catch (ArgumentException e)
             {
                 return NotFound(e.Message);
             }
         }
+
+        //HACK: move this to LocationManagementController
 
         /// <summary>
         /// Marks <see cref="Location"/> to deleted
@@ -134,14 +145,40 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                await _repository.SetLocationToDeleted(key);
+                await _locationManager.SetLocationToDeleted(key);
+
+                return Ok();
             }
             catch (ArgumentException e)
             {
                 return NotFound(e.Message);
             }
+        }
 
-            return Ok();
+        //HACK: move this to LocationManagementController
+
+        /// <summary>
+        /// Marks <see cref="Location"/> to deleted
+        /// </summary>
+        /// <param name="key">Identifier of <see cref="Location"/> to mark as deleted</param>
+        /// <returns></returns>
+        /// 
+        [Authorize(Policy = "CanDeleteLocationConfigurations")]
+        [HttpPost]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        public async Task<IActionResult> DeleteAllVersions(string key)
+        {
+            try
+            {
+                await _locationManager.DeleteAllVersions(key);
+
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         #endregion

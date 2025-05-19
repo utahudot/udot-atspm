@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/GeneralPolicyControllerBase.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/WatchdogPolicyControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,21 +55,21 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Post(T item)
+        public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Put(TKey key, T item)
+        public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Patch(TKey key, Delta<T> item)
+        public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
         }
