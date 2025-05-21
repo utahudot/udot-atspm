@@ -15,6 +15,8 @@
 // limitations under the License.
 #endregion
 
+using Confluent.Kafka;
+using Google.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -380,11 +382,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             switch (busType)
             {
                 case "Kafka":
-                    services.AddSingleton<IEventBusPublisher<RawSpeedPacket>, KafkaPublisher>();
+                    services.AddSingleton<IProducer<string, byte[]>>(sp =>
+                    {
+                        var cfg = sp.GetRequiredService<IOptions<KafkaConfiguration>>().Value;
+                        var producerConfig = new ProducerConfig
+                        {
+                            BootstrapServers = cfg.BootstrapServers,
+                            Acks = Acks.All,
+                            ClientId = cfg.ClientId
+                            // etc…
+                        };
+                        return new ProducerBuilder<string, byte[]>(producerConfig).Build();
+                    });
+                    // 2) register your publisher on top of that
+                    services.AddSingleton<IEventBusPublisher<EventBatchEnvelope>, KafkaPublisher>();
                     break;
 
                 case "PubSub":
-                    services.AddSingleton<IEventBusPublisher<RawSpeedPacket>, PubSubPublisher>();
+                    services.AddSingleton(sp =>
+                    {
+                        var cfg = sp.GetRequiredService<IOptions<PubSubConfiguration>>().Value;
+                        return PublisherClient.CreateAsync(
+                            new TopicName(cfg.ProjectId, cfg.TopicId)).Result;
+                    });
+                    // 2) register your publisher on top of that
+                    services.AddSingleton<IEventBusPublisher<EventBatchEnvelope>, PubSubPublisher>();
                     break;
 
                 default:

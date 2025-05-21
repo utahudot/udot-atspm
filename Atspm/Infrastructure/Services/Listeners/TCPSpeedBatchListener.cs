@@ -1,9 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Json;
+using System.Text;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Messaging;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 {
@@ -12,8 +17,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
     /// </summary>
     public class TCPSpeedBatchListener : IDisposable
     {
+        private EventListenerConfiguration _config;
         private readonly ITcpReceiver _receiver;
         private readonly ILogger<TCPSpeedBatchListener> _logger;
+        private readonly IDeviceRepository _deviceRepository;
         private readonly HttpClient _http;
         private readonly List<RawSpeedPacket> _batch = new();
         private readonly int _batchSize;
@@ -24,20 +31,22 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             ITcpReceiver tcpReceiver,
             IHttpClientFactory httpFactory,
             IOptions<EventListenerConfiguration> opts,
-            ILogger<TCPSpeedBatchListener> logger)
+            ILogger<TCPSpeedBatchListener> logger,
+            IDeviceRepository deviceRepository)
         {
-            var config = opts.Value;
+            _config = opts.Value;
             _receiver = tcpReceiver;
             _logger = logger;
+            _deviceRepository = deviceRepository;
             _http = httpFactory.CreateClient("IngestApi");
-            _batchSize = config.BatchSize;
+            _batchSize = _config.BatchSize;
 
             // schedule periodic flush
             _timer = new Timer(
                 _ => FlushAsync().GetAwaiter().GetResult(),
                 null,
-                TimeSpan.FromSeconds(config.IntervalSeconds),
-                TimeSpan.FromSeconds(config.IntervalSeconds)
+                TimeSpan.FromSeconds(_config.IntervalSeconds),
+                TimeSpan.FromSeconds(_config.IntervalSeconds)
             );
         }
 
@@ -92,21 +101,80 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
         private async Task SendBatchAsync(List<RawSpeedPacket> batch)
         {
+            if (batch == null || batch.Count == 0)
+            {
+                _logger.LogWarning("SendBatchAsync called with empty batch — skipping.");
+                return;
+            }
+
+            // 1) Group by SensorId
+            var groups = batch.GroupBy(p => p.SensorId).ToList();
+            var sensorIds = groups.Select(g => g.Key).ToList();
+
+            // 2) Load your device mappings
+            IDictionary<string, (string LocationIdentifier, int DeviceId)> mappings;
             try
             {
-                var resp = await _http.PostAsJsonAsync("api/v1/SpeedEvent", batch);
-                resp.EnsureSuccessStatusCode();
-                _logger.LogInformation("Posted {Count} TCP events successfully.", batch.Count);
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "HTTP error when posting TCP batch of {Count} events.", batch.Count);
+                mappings = _deviceRepository
+                    .GetList()
+                    .Where(d => d.DeviceType == DeviceTypes.SpeedSensor)
+                    .ToDictionary(
+                        d => d.DeviceIdentifier,
+                        d => (d.Location.LocationIdentifier, d.Id)
+                    );
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error in TCPSpeedBatchListener.SendBatchAsync");
+                _logger.LogError(ex, "Failed to load device mappings for sensors {SensorIds}", sensorIds);
+                return;
+            }
+
+            // 3) Build one envelope per sensor
+            var envelopes = groups
+                .Where(g => mappings.ContainsKey(g.Key))
+                .Select(g =>
+                {
+                    var (location, deviceId) = mappings[g.Key];
+                    return new EventBatchEnvelope
+                    {
+                        DataType = nameof(RawSpeedPacket),
+                        Start = g.Min(p => p.Timestamp),
+                        End = g.Max(p => p.Timestamp),
+                        LocationIdentifier = location,
+                        DeviceId = deviceId,
+                        Items = JToken.FromObject(g.ToList())
+                    };
+                })
+                .ToList();
+
+            if (envelopes.Count == 0)
+            {
+                _logger.LogWarning("No valid envelopes to send for sensors {SensorIds}", sensorIds);
+                return;
+            }
+
+            // 4) Serialize the *list* of envelopes and POST once
+            var json = JsonConvert.SerializeObject(envelopes);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var endpoint = _config.ApiEndPoint;    // e.g. "api/v1.0/EventLog"
+            var response = await _http.PostAsync(endpoint, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                _logger.LogError(
+                    "Data API returned {StatusCode} for batch {SensorIds}: {Reason}. Body: {Body}",
+                    (int)response.StatusCode, sensorIds, response.ReasonPhrase, body);
+            }
+            else
+            {
+                _logger.LogDebug(
+                    "Successfully posted {Count} envelopes for sensors {SensorIds}",
+                    envelopes.Count, sensorIds);
             }
         }
+
+
 
         public void Dispose()
         {

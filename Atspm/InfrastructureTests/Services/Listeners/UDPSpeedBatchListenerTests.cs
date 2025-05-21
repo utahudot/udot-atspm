@@ -14,7 +14,8 @@ using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
 using Microsoft.Extensions.Logging.Abstractions;
-using Utah.Udot.Atspm.Infrastructure.Messaging;  // for IUdpReceiver
+using Utah.Udot.Atspm.Infrastructure.Messaging;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;  // for IUdpReceiver
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
 {
@@ -65,13 +66,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
 
             var nullLogger = NullLogger<UDPSpeedBatchListener>.Instance;
 
+            // 3) Mock out IDeviceRepository
+            var deviceRepoMock = new Mock<IDeviceRepository>();
+
             // 3) Create the listener, injecting the fake receiver & http factory
             var options = Options.Create(GetConfig(batchSize: 2));
             var listener = new UDPSpeedBatchListener(
                 fakeReceiver.Object,
                 clientFactory.Object,
                 options,
-                nullLogger
+                nullLogger,
+                deviceRepoMock.Object
             );
             // 4) Act: enqueue two SpeedEvents → should trigger a POST
             listener.Enqueue(new RawSpeedPacket

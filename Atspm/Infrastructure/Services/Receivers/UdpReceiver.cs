@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,8 +12,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Receivers
     public class UdpReceiver : IUdpReceiver
     {
         private readonly Socket _socket;
-        public UdpReceiver(int port)
+        private readonly ILogger<UdpReceiver> _logger;
+
+        public UdpReceiver(int port, ILogger<UdpReceiver> logger)
         {
+            _logger = logger;
             // Specify IPv4, datagram (UDP) protocol
             _socket = new Socket(
                 AddressFamily.InterNetwork,
@@ -21,10 +25,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Receivers
             );
 
             _socket.Bind(new IPEndPoint(IPAddress.Any, port));
+            _logger.LogInformation("UDPReceiver bound and listening on port {Port}", port);
         }
 
         public async Task ReceiveAsync(Func<byte[], EndPoint, Task> onDatagram, CancellationToken ct)
         {
+            _logger.LogInformation("UdpReceiver awaiting incoming datagrams...");
             var buffer = new byte[65536];
             EndPoint ep = new IPEndPoint(IPAddress.Any, 0);
 

@@ -12,7 +12,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
 {
  
-        public class PubSubPublisher : IEventBusPublisher<RawSpeedPacket>
+        public class PubSubPublisher : IEventBusPublisher<EventBatchEnvelope>
         {
             private readonly PublisherClient _client;
 
@@ -22,12 +22,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
                 _client = PublisherClient.Create(topicName);
             }
 
-            public async Task PublishAsync(RawSpeedPacket msg, CancellationToken ct = default)
+        public async Task PublishAsync(EventBatchEnvelope msg, CancellationToken ct = default)
+        {
+            string json = JsonSerializer.Serialize(msg);
+
+            var pubsubMessage = new PubsubMessage
             {
-                string json = JsonSerializer.Serialize(msg);
-                // PubSub requires UTF8 bytes
-                await _client.PublishAsync(json);
-            }
+                Data = Google.Protobuf.ByteString.CopyFromUtf8(json),
+                // add your “key” here
+                Attributes =
+        {
+            { "LocationIdentifier", msg.LocationIdentifier }
         }
+            };
+
+            // publishes and returns the server‐assigned message ID
+            await _client.PublishAsync(pubsubMessage);
+        }
+    }
 
 }

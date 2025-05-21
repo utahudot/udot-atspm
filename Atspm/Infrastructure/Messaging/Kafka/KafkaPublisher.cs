@@ -5,7 +5,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Messaging.Kafka
 {
-    public class KafkaPublisher : IEventBusPublisher<RawSpeedPacket>, IDisposable
+    public class KafkaPublisher : IEventBusPublisher<EventBatchEnvelope>, IDisposable
     {
         private readonly IProducer<string, string> _producer;
         private readonly string _topic;
@@ -28,12 +28,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.Kafka
             _topic = opts.Value.Topic;
         }
 
-        public Task PublishAsync(RawSpeedPacket msg, CancellationToken ct = default)
+        public Task PublishAsync(EventBatchEnvelope msg, CancellationToken ct = default)
        => _producer.ProduceAsync(
             _topic,
             new Message<string, string>
             {
-                Key = msg.SensorId,
+                Key = msg.LocationIdentifier,
                 Value = JsonSerializer.Serialize(msg)
             },
             ct);

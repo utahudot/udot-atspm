@@ -1,44 +1,54 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Data;                                                   // your ConfigContext
+using Utah.Udot.Atspm.Data.Enums;                                              // DeviceTypes, etc.
+using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;    // IDeviceRepository, DeviceConfigurationEFRepository
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Microsoft.Extensions.Configuration;
+using SpeedEventEmitter.Services;                                              // Detector
 
-var host = Environment.GetEnvironmentVariable("EVENT_LISTENER_HOST") ?? "eventlistener";
-var port = int.Parse(Environment.GetEnvironmentVariable("EVENT_LISTENER_PORT") ?? "10088");
-var protocol = Environment.GetEnvironmentVariable("EMITTER_PROTOCOL") ?? "udp";
-var interval = int.Parse(Environment.GetEnvironmentVariable("EMITTER_INTERVAL_MS") ?? "100");
-
-// allow either a single sensor or a comma-separated list
-var rawSensors = (Environment.GetEnvironmentVariable("EMITTER_SENSORS") ?? "D01")
-                   .Split(',', StringSplitOptions.RemoveEmptyEntries);
-var rand = new Random();
-
-Console.WriteLine($"Emitter starting → {protocol.ToUpper()} → {host}:{port} @ {interval}ms");
-Console.WriteLine($"Using sensors: {string.Join(", ", rawSensors)}");
-
-while (true)
+namespace SpeedEventEmitter
 {
-    // pick a random sensor from the list
-    var sensorId = rawSensors[rand.Next(rawSensors.Length)];
-    var tick = DateTime.UtcNow.Ticks;
-
-    // raw packet only needs SensorId,Ticks,Mph,Kph
-    var mph = rand.Next(20, 80);
-    var kph = (int)(mph * 1.609);
-    var msg = $"{sensorId},{tick},{mph},{kph}";
-    var data = Encoding.UTF8.GetBytes(msg);
-
-    if (protocol.Equals("udp", StringComparison.OrdinalIgnoreCase))
+    public class Program
     {
-        using var udp = new UdpClient();
-        await udp.SendAsync(data, data.Length, host, port);
-    }
-    else
-    {
-        using var tcp = new TcpClient();
-        await tcp.ConnectAsync(host, port);
-        await tcp.GetStream().WriteAsync(data, 0, data.Length);
+        public static async Task Main(string[] args)
+        {
+            await Host.CreateDefaultBuilder(args)
+                 .ConfigureAppConfiguration((hostingCtx, config) =>
+                 {
+                     config.AddUserSecrets<Program>(optional: true);
+                 })
+                // 3) Finally, let command-line args trump everything
+                .ConfigureAppConfiguration((hostingCtx, config) =>
+                {
+                    config.AddCommandLine(args);
+                })
+                .ConfigureServices((ctx, services) =>
+                {
+                    // --- logging & configuration ---
+                    services.AddLogging(cfg => cfg.AddConsole());
+
+                    // --- EF Core DbContext for your config store ---
+                    services.AddAtspmDbContext(ctx);
+                    services.AddAtspmEFConfigRepositories();
+
+                    // --- emitter hosted service ---
+                    services.AddHostedService<SpeedEmitterService>();
+                    //services.AddHostedService<TestDataSeederService>();
+                })
+                .RunConsoleAsync();
+        }
     }
 
-    await Task.Delay(interval);
+    
 }

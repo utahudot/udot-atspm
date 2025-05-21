@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers; // UDPSpeedBatchListener
 
@@ -36,15 +38,25 @@ var host = Host.CreateDefaultBuilder(args)
 
         // add this handler to skip SSL validation for testing
         .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-         {
-             ServerCertificateCustomValidationCallback =
+        {
+            ServerCertificateCustomValidationCallback =
                 HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-         });
+        });
+
+        services.AddAtspmDbContext(context);
+        services.AddAtspmEFConfigRepositories();
 
         services.AddSingleton<IUdpReceiver>(sp =>
-            new UdpReceiver(sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.UdpPort));
+            new UdpReceiver(
+                sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.UdpPort,
+                sp.GetRequiredService<ILogger<UdpReceiver>>()
+                ));
         services.AddSingleton<ITcpReceiver>(sp =>
-            new TcpReceiver(sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.TcpPort));
+            new TcpReceiver(
+                sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.TcpPort,
+                sp.GetRequiredService<ILogger<TcpReceiver>>()
+            ));
+
 
         services.AddSingleton<UDPSpeedBatchListener>();
         services.AddSingleton<TCPSpeedBatchListener>();

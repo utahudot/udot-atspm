@@ -6,6 +6,11 @@
         /// The URL of your DataApi ingest endpoint, e.g. "https://dataapi:5001/"
         /// </summary>
         public string ApiBaseUrl { get; set; } = default!;
+        
+        /// <summary>
+        /// The URL of your DataApi ingest endpoint, e.g. "https://dataapi:5001/"
+        /// </summary>
+        public string ApiEndPoint { get; set; } = default!;
 
         /// <summary>
         /// How many events to buffer before POSTing.
