@@ -16,6 +16,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services
 {
