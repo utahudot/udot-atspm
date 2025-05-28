@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices

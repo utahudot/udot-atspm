@@ -18,7 +18,7 @@
 using System.Text;
 using Utah.Udot.Atspm.Data.Enums;
 
-namespace Utah.Udot.Atspm.ValueObjects
+namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
     /// Options for querying which <see cref="Device"/> to query.

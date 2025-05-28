@@ -17,10 +17,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.Atspm.ValueObjects;
 
-namespace Utah.Udot.Atspm.Extensions
+namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
     /// <summary>
     /// Extensions for <see cref="IDeviceRepository"/>
