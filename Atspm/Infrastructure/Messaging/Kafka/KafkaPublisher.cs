@@ -5,7 +5,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Messaging.Kafka
 {
-    public class KafkaPublisher : IEventBusPublisher<EventBatchEnvelope>, IDisposable
+    public class KafkaPublisher : IEventPublisher<EventBatchEnvelope>, IDisposable
     {
         private readonly IProducer<string, string> _producer;
         private readonly string _topic;
@@ -39,5 +39,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.Kafka
             ct);
 
         public void Dispose() => _producer.Dispose();
+
+        Task IEventPublisher<EventBatchEnvelope>.PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

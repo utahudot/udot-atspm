@@ -14,7 +14,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging
         public string LocationIdentifier { get; set; }
 
         [Required]
-        public int DeviceId { get; internal set; }
+        public int DeviceId { get; set; }
 
         [Required]
         public string DataType { get; set; }

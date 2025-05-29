@@ -12,7 +12,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
 {
  
-        public class PubSubPublisher : IEventBusPublisher<EventBatchEnvelope>
+        public class PubSubPublisher : IEventPublisher<EventBatchEnvelope>
         {
             private readonly PublisherClient _client;
 
@@ -38,6 +38,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
 
             // publishes and returns the server‐assigned message ID
             await _client.PublishAsync(pubsubMessage);
+        }
+
+        Task IEventPublisher<EventBatchEnvelope>.PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, CancellationToken ct)
+        {
+            throw new NotImplementedException();
         }
     }
 

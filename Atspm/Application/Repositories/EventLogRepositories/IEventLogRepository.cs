@@ -25,6 +25,12 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
     /// </summary>
     public interface IEventLogRepository : IAsyncRepository<CompressedEventLogBase>
     {
+
+        /// <summary>
+        /// Insert or update a compressed batch of type T, merging its Data without duplicates.
+        /// </summary>
+        Task<T> UpsertAsync<T>(T input) where T : CompressedEventLogBase;
+
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
         /// </summary>

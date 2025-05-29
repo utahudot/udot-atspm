@@ -9,6 +9,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Messaging;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Services;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 {
@@ -21,24 +22,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         private readonly IUdpReceiver _receiver;
         private readonly ILogger<UDPSpeedBatchListener> _logger;
         private readonly IDeviceRepository _deviceRepository;
-        private readonly HttpClient _http;
-        private readonly List<RawSpeedPacket> _batch = new();
+        private readonly IEventPublisher<EventBatchEnvelope> _eventPublisher;
+        private readonly List<SpeedEvent> _batch = new();
         private readonly int _batchSize;
         private readonly Timer _timer;
         private readonly object _lock = new();
 
         public UDPSpeedBatchListener(
             IUdpReceiver udpReceiver,
-            IHttpClientFactory httpFactory,
             IOptions<EventListenerConfiguration> opts,
             ILogger<UDPSpeedBatchListener> logger,
-            IDeviceRepository deviceRepository)
+            IDeviceRepository deviceRepository,
+            IEventPublisher<EventBatchEnvelope> eventPublisher)
         {
             _config = opts.Value;
             _receiver = udpReceiver;
             _logger = logger;
             _deviceRepository = deviceRepository;
-            _http = httpFactory.CreateClient("IngestApi");
+            _eventPublisher = eventPublisher;
             _batchSize = _config.BatchSize;
 
             // schedule periodic flush
@@ -57,24 +58,32 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         {
             return _receiver.ReceiveAsync(async (buffer, endpoint) =>
             {
-                var speedEvent = RawSpeedPacketParser.Parse(buffer, endpoint.ToString());
-                Enqueue(speedEvent);
+                try
+                {
+                    var speedEvent = RawSpeedPacketParser.Parse(buffer, endpoint.ToString());
+                    Enqueue(speedEvent);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to parse incoming packet from {Endpoint}", endpoint);
+                }
             }, ct);
         }
+
 
         /// <summary>
         /// Adds an event to the batch and sends when batch size is reached.
         /// </summary>
-        public void Enqueue(RawSpeedPacket msg)
+        public void Enqueue(SpeedEvent msg)
         {
-            List<RawSpeedPacket>? toSend = null;
+            List<SpeedEvent>? toSend = null;
 
             lock (_lock)
             {
                 _batch.Add(msg);
                 if (_batch.Count >= _batchSize)
                 {
-                    toSend = new List<RawSpeedPacket>(_batch);
+                    toSend = new List<SpeedEvent>(_batch);
                     _batch.Clear();
                 }
             }
@@ -85,12 +94,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
         private async Task FlushAsync()
         {
-            List<RawSpeedPacket>? toSend = null;
+            List<SpeedEvent>? toSend = null;
             lock (_lock)
             {
                 if (_batch.Count > 0)
                 {
-                    toSend = new List<RawSpeedPacket>(_batch);
+                    toSend = new List<SpeedEvent>(_batch);
                     _batch.Clear();
                 }
             }
@@ -99,7 +108,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 await SendBatchAsync(toSend);
         }
 
-        private async Task SendBatchAsync(List<RawSpeedPacket> batch)
+        private async Task SendBatchAsync(List<SpeedEvent> batch)
         {
             if (batch == null || batch.Count == 0)
             {
@@ -108,7 +117,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             }
 
             // 1) Group by SensorId
-            var groups = batch.GroupBy(p => p.SensorId).ToList();
+            var groups = batch.GroupBy(p => p.DetectorId).ToList();
             var sensorIds = groups.Select(g => g.Key).ToList();
 
             // 2) Load mappings
@@ -140,7 +149,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                     var (location, deviceId) = mappings[g.Key];
                     return new EventBatchEnvelope
                     {
-                        DataType = nameof(RawSpeedPacket),
+                        DataType = nameof(SpeedEvent),
                         Start = g.Min(p => p.Timestamp),
                         End = g.Max(p => p.Timestamp),
                         LocationIdentifier = location,
@@ -150,48 +159,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 })
                 .ToList();
 
-            if (envelopes.Count == 0)
-            {
-                _logger.LogWarning(
-                    "No valid envelopes to send for sensors {SensorIds}", sensorIds);
-                return;
-            }
+            if (!envelopes.Any()) return;
 
-            // 4) Serialize the entire list and POST once
-            var json = JsonConvert.SerializeObject(envelopes);
-            using var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var endpoint = _config.ApiEndPoint;    // e.g. "api/v1.0/EventLog"
-            HttpResponseMessage response;
-
+            // 4) Bulk-publish all envelopes in one call
             try
             {
-                response = await _http.PostAsync(endpoint, content);
+                await _eventPublisher.PublishAsync(envelopes, CancellationToken.None);
+                _logger.LogInformation("Published {Count} UDP envelopes", envelopes.Count);
             }
-            catch (HttpRequestException httpEx)
+            catch (Exception ex)
             {
-                _logger.LogError(
-                    httpEx,
-                    "HTTP error posting batch for sensors {SensorIds}",
-                    sensorIds);
-                return;
-            }
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync();
-                _logger.LogError(
-                    "Data API returned {StatusCode} for sensors {SensorIds}: {Reason}. Body: {Body}",
-                    (int)response.StatusCode,
-                    sensorIds,
-                    response.ReasonPhrase,
-                    body);
-            }
-            else
-            {
-                _logger.LogDebug(
-                    "Successfully posted {Count} envelopes for sensors {SensorIds}",
-                    envelopes.Count,
-                    sensorIds);
+                _logger.LogError(ex, "Bulk publish failed for {Count} UDP envelopes", envelopes.Count);
             }
         }
 

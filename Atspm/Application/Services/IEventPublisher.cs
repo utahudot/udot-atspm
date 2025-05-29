@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Utah.Udot.Atspm.Services
 {
-    public interface IEventBusPublisher<T>
+    public interface IEventPublisher<T>
     {
         Task PublishAsync(T message, CancellationToken ct = default);
+
+        Task PublishAsync(IReadOnlyList<T> batch, CancellationToken ct = default);
     }
 }

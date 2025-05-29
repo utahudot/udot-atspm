@@ -5,6 +5,9 @@ using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers; // UDPSpeedBatchListener
 
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging((h, l) =>
     {
@@ -45,6 +48,8 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddAtspmDbContext(context);
         services.AddAtspmEFConfigRepositories();
+        services.AddAtspmEFEventLogRepositories();
+        services.AddEventPublishers(context);
 
         services.AddSingleton<IUdpReceiver>(sp =>
             new UdpReceiver(

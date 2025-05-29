@@ -301,6 +301,7 @@ services:
       EventListenerConfiguration__IntervalSeconds: "${EVENT_LISTENER_INTERVAL_SECONDS}"
       EventListenerConfiguration__UdpPort: "${EVENT_LISTENER_UDP_PORT}"
       EventListenerConfiguration__TcpPort: "${EVENT_LISTENER_TCP_PORT}"
+      Publisher__Type: "${Publisher_Type}"
     depends_on:
       dataapi:
         condition: service_started
