@@ -114,7 +114,7 @@ namespace SpeedEventEmitter.Services
                             throw new SocketException((int)SocketError.NotConnected);
                     }
 
-                    _log.LogDebug(
+                    _log.LogInformation(
                       "Sent {Protocol} packet [{Sensor}, {Mph}mph/{Kph}kph] at {Time}",
                       _protocol, sensorId, mph, kph, DateTime.UtcNow);
                 }

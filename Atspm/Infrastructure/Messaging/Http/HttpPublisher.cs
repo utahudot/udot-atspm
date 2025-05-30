@@ -20,7 +20,6 @@ public class HttpEnvelopePublisher
     {
         _client = client;
         _batchSize = opts.Value.BatchSize;
-        _flushInterval = TimeSpan.FromSeconds(opts.Value.IntervalSeconds);
         _endpoint = opts.Value.ApiEndPoint;    // e.g. "api/v1.0/EventLog"
 
         // start periodic flush

@@ -20,13 +20,12 @@ public class EventListenerWorker : BackgroundService
         _logger = logger;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("EventListenerWorker starting up.");
-        var udpTask = _udp.StartListeningAsync(stoppingToken);
-        var tcpTask = _tcp.StartListeningAsync(stoppingToken);
+        _ = Task.Run(() => _udp.StartListeningAsync(stoppingToken), stoppingToken);
+        _ = Task.Run(() => _tcp.StartListeningAsync(stoppingToken), stoppingToken);
 
-        await Task.WhenAll(udpTask, tcpTask);
-        _logger.LogInformation("EventListenerWorker shutting down.");
+        return Task.CompletedTask;
     }
 }

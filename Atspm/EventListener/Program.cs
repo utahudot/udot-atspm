@@ -7,43 +7,42 @@ using Utah.Udot.Atspm.Infrastructure.Services.Receivers; // UDPSpeedBatchListene
 
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+var isWindows = OperatingSystem.IsWindows();
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureLogging((h, l) =>
+    .UseContentRoot(AppContext.BaseDirectory) // works for services and Docker
+    .ConfigureAppConfiguration((context, config) =>
     {
-        if (OperatingSystem.IsWindows())
+        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        config.AddEnvironmentVariables(); // supports Docker env vars
+    })
+    .UseWindowsService() // harmless on Linux
+    .ConfigureLogging((context, logging) =>
+    {
+        logging.ClearProviders();
+        logging.AddConsole();
+
+        if (isWindows)
         {
-            l.AddEventLog(c =>
+            logging.AddEventLog(options =>
             {
-                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
-                c.LogName = "Atspm";
+                options.SourceName = "EventListenerService";
+                options.LogName = "Atspm";
             });
         }
-
-        //l.AddGoogle(new LoggingServiceOptions
-        //{
-        //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
-        //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
-        //});
     })
     .ConfigureServices((context, services) =>
     {
-        // 1) Bind batch options from config
+        // Your normal registrations
         services.Configure<EventListenerConfiguration>(context.Configuration.GetSection("EventListenerConfiguration"));
 
-        // 2) Register an HttpClient named "IngestApi" pointing at your DataApi
         services.AddHttpClient("IngestApi", (sp, client) =>
-          {
-              var cfg = sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value;
-              client.BaseAddress = new Uri(cfg.ApiBaseUrl);
-          })
-
-        // add this handler to skip SSL validation for testing
-        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
         {
-            ServerCertificateCustomValidationCallback =
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            var cfg = sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value;
+            client.BaseAddress = new Uri(cfg.ApiBaseUrl);
+        }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         });
 
         services.AddAtspmDbContext(context);
@@ -55,22 +54,19 @@ var host = Host.CreateDefaultBuilder(args)
             new UdpReceiver(
                 sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.UdpPort,
                 sp.GetRequiredService<ILogger<UdpReceiver>>()
-                ));
+            ));
         services.AddSingleton<ITcpReceiver>(sp =>
             new TcpReceiver(
                 sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.TcpPort,
                 sp.GetRequiredService<ILogger<TcpReceiver>>()
             ));
 
-
         services.AddSingleton<UDPSpeedBatchListener>();
         services.AddSingleton<TCPSpeedBatchListener>();
-
-
-        // 4) Host it as a background service
         services.AddHostedService<EventListenerWorker>();
     })
     .UseConsoleLifetime()
     .Build();
 
 await host.RunAsync();
+

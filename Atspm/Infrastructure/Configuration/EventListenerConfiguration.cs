@@ -18,11 +18,6 @@
         public int BatchSize { get; set; } = 50_000;
 
         /// <summary>
-        /// Maximum seconds to wait before flushing a partial batch.
-        /// </summary>
-        public int IntervalSeconds { get; set; } = 30;
-
-        /// <summary>
         /// The UDP port to listen on.
         /// </summary>
         public int UdpPort { get; set; } = 10088;

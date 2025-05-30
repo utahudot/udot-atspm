@@ -25,15 +25,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         private readonly IEventPublisher<EventBatchEnvelope> _eventPublisher;
         private readonly List<SpeedEvent> _batch = new();
         private readonly int _batchSize;
-        private readonly Timer _timer;
         private readonly object _lock = new();
 
         public UDPSpeedBatchListener(
-            IUdpReceiver udpReceiver,
-            IOptions<EventListenerConfiguration> opts,
-            ILogger<UDPSpeedBatchListener> logger,
-            IDeviceRepository deviceRepository,
-            IEventPublisher<EventBatchEnvelope> eventPublisher)
+      IUdpReceiver udpReceiver,
+      IOptions<EventListenerConfiguration> opts,
+      ILogger<UDPSpeedBatchListener> logger,
+      IDeviceRepository deviceRepository,
+      IEventPublisher<EventBatchEnvelope> eventPublisher)
         {
             _config = opts.Value;
             _receiver = udpReceiver;
@@ -41,39 +40,29 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             _deviceRepository = deviceRepository;
             _eventPublisher = eventPublisher;
             _batchSize = _config.BatchSize;
-
-            // schedule periodic flush
-            _timer = new Timer(
-                _ => FlushAsync().GetAwaiter().GetResult(),
-                null,
-                TimeSpan.FromSeconds(_config.IntervalSeconds),
-                TimeSpan.FromSeconds(_config.IntervalSeconds)
-            );
         }
 
-        /// <summary>
-        /// Starts receiving UDP messages.
-        /// </summary>
         public Task StartListeningAsync(CancellationToken ct)
         {
+            _logger.LogInformation("UDP listener starting on port {Port}", _config.UdpPort);
+            _logger.LogInformation("Batch size from config: {BatchSize}", _batchSize);
             return _receiver.ReceiveAsync(async (buffer, endpoint) =>
             {
                 try
                 {
                     var speedEvent = RawSpeedPacketParser.Parse(buffer, endpoint.ToString());
+
+                    _logger.LogDebug("Parsed packet from {Endpoint}: {Sensor}, {Mph}mph", endpoint, speedEvent.DetectorId, speedEvent.Mph);
+
                     Enqueue(speedEvent);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to parse incoming packet from {Endpoint}", endpoint);
+                    _logger.LogError(ex, "Failed to parse incoming UDP packet from {Endpoint}", endpoint);
                 }
             }, ct);
         }
 
-
-        /// <summary>
-        /// Adds an event to the batch and sends when batch size is reached.
-        /// </summary>
         public void Enqueue(SpeedEvent msg)
         {
             List<SpeedEvent>? toSend = null;
@@ -81,8 +70,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             lock (_lock)
             {
                 _batch.Add(msg);
+                _logger.LogDebug("Enqueued SpeedEvent [{Sensor}, {Mph}mph] — current batch size: {Size}", msg.DetectorId, msg.Mph, _batch.Count);
+
                 if (_batch.Count >= _batchSize)
                 {
+                    _logger.LogInformation("Batch size threshold reached. Sending batch of {Count} events.", _batch.Count);
                     toSend = new List<SpeedEvent>(_batch);
                     _batch.Clear();
                 }
@@ -95,10 +87,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         private async Task FlushAsync()
         {
             List<SpeedEvent>? toSend = null;
+
             lock (_lock)
             {
                 if (_batch.Count > 0)
                 {
+                    _logger.LogInformation("Flushing remaining batch of {Count} SpeedEvents.", _batch.Count);
                     toSend = new List<SpeedEvent>(_batch);
                     _batch.Clear();
                 }
@@ -116,11 +110,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 return;
             }
 
-            // 1) Group by SensorId
             var groups = batch.GroupBy(p => p.DetectorId).ToList();
             var sensorIds = groups.Select(g => g.Key).ToList();
 
-            // 2) Load mappings
             IDictionary<string, (string LocationIdentifier, int DeviceId)> mappings;
             try
             {
@@ -134,38 +126,50 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Failed to load device mappings for sensors {SensorIds}",
-                    sensorIds);
+                _logger.LogError(ex, "Failed to load device mappings for sensor IDs: {SensorIds}", sensorIds);
                 return;
             }
 
-            // 3) Build one envelope per sensor
-            var envelopes = groups
-                .Where(g => mappings.ContainsKey(g.Key))
-                .Select(g =>
+            var envelopes = new List<EventBatchEnvelope>();
+
+            foreach (var group in groups)
+            {
+                if (!mappings.TryGetValue(group.Key, out var map))
                 {
-                    var (location, deviceId) = mappings[g.Key];
-                    return new EventBatchEnvelope
+                    _logger.LogWarning("No mapping found for sensor ID {SensorId} — skipping this group", group.Key);
+                    continue;
+                }
+
+                try
+                {
+                    var envelope = new EventBatchEnvelope
                     {
                         DataType = nameof(SpeedEvent),
-                        Start = g.Min(p => p.Timestamp),
-                        End = g.Max(p => p.Timestamp),
-                        LocationIdentifier = location,
-                        DeviceId = deviceId,
-                        Items = JToken.FromObject(g.ToList())
+                        Start = group.Min(p => p.Timestamp),
+                        End = group.Max(p => p.Timestamp),
+                        LocationIdentifier = map.LocationIdentifier,
+                        DeviceId = map.DeviceId,
+                        Items = JToken.FromObject(group.ToList())
                     };
-                })
-                .ToList();
 
-            if (!envelopes.Any()) return;
+                    envelopes.Add(envelope);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to build envelope for sensor {SensorId}", group.Key);
+                }
+            }
 
-            // 4) Bulk-publish all envelopes in one call
+            if (!envelopes.Any())
+            {
+                _logger.LogWarning("No valid envelopes created from batch — skipping publish.");
+                return;
+            }
+
             try
             {
                 await _eventPublisher.PublishAsync(envelopes, CancellationToken.None);
-                _logger.LogInformation("Published {Count} UDP envelopes", envelopes.Count);
+                _logger.LogInformation("Published {Count} UDP envelopes for {SensorCount} sensors", envelopes.Count, envelopes.Select(e => e.DeviceId).Distinct().Count());
             }
             catch (Exception ex)
             {
@@ -173,10 +177,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             }
         }
 
-
         public void Dispose()
         {
-            _timer.Dispose();
+            _logger.LogInformation("Disposing UDP listener. Flushing batch and releasing socket.");
             FlushAsync().GetAwaiter().GetResult();
             _receiver.Dispose();
         }
