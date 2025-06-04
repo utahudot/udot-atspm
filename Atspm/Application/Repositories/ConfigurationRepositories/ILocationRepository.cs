@@ -103,6 +103,8 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         /// </returns>
         IReadOnlyList<Location> GetLocationsBetweenDates(string locationIdentifier, DateTime startDate, DateTime endDate);
 
+        IReadOnlyList<Location> GetAllVersionsOfLocationWithDevices(string locationIdentifier);
+
         /// <summary>
         /// Determines whether a <see cref="Location"/> exists for the specified identifier.
         /// </summary>

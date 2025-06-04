@@ -17,9 +17,12 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.ATSPM.ConfigApi.Models;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -61,6 +64,62 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public ActionResult<IEnumerable<DetectionType>> GetDetectionTypes([FromRoute] int key)
         {
             return GetNavigationProperty<IEnumerable<DetectionType>>(key);
+        }
+
+        [HttpPost("api/v1/Detector/retrieveDetectionData")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RetrieveDetectionZoneIdentifierBasedOnDetectionType(ODataActionParameters ourParams)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid model state.");
+            }
+
+            try
+            {
+                if (!ourParams.ContainsKey("IpAddress") || !ourParams.ContainsKey("port") || !ourParams.ContainsKey("detectionType") || !ourParams.ContainsKey("deviceId"))
+                {
+                    return BadRequest("Missing required parameters.");
+                }
+
+                string ipAddress = ourParams["IpAddress"].ToString();
+                string port = ourParams["port"].ToString();
+                string deviceId = ourParams["deviceId"].ToString();
+                if (!Enum.TryParse(ourParams["detectionType"].ToString(), out DeviceTypes detectionType))
+                {
+                    return BadRequest("Invalid detectionType value.");
+                }
+
+                if (detectionType == DeviceTypes.FIRCamera)
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        string url = $"http://{ipAddress}:{port}/api/v1/cameras/{deviceId}/zones";
+                        HttpResponseMessage response = await client.GetAsync(url);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var responseData = await response.Content.ReadFromJsonAsync<CameraZoneDetailsResponse>();
+                            List<String> availableCameraZoneNames = responseData.Zones.Select(i => i.Name).ToList();
+                            return Ok(availableCameraZoneNames.ToArray());
+                            //return Ok(responseData.Zones.ToArray());
+                        }
+                        return StatusCode((int)response.StatusCode, "Failed to retrieve data from the external service.");
+                    }
+                }
+
+                return Ok("Detection type not supported yet.");
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, $"External service request failed: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred: {e.Message}");
+            }
         }
 
         #endregion
