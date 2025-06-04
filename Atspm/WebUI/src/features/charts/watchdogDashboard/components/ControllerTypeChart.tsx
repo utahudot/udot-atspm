@@ -62,7 +62,7 @@ const ControllerTypeChart: React.FC<ControllerTypeChartProps> = ({
   return (
     <Paper sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-        <h2>Controller Type Breakdown</h2>
+        <h2>Device Type Breakdown</h2>
       </Box>
 
       <Box
