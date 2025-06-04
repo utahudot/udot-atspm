@@ -104,6 +104,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         }
 
         /// <inheritdoc/>
+        public IReadOnlyList<Location> GetAllVersionsOfLocationWithDevices(string LocationIdentifier)
+        {
+            var result = BaseQuery()
+                .Include(i => i.Devices)
+                .FromSpecification(new LocationIdentifierSpecification(LocationIdentifier))
+                .FromSpecification(new ActiveLocationSpecification())
+                .ToList();
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         public IReadOnlyList<Location> GetLatestVersionOfAllLocations()
         {
             var result = BaseQuery()
