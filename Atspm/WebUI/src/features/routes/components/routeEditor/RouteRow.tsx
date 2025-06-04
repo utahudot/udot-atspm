@@ -13,16 +13,14 @@ import {
   Tooltip,
   useTheme,
 } from '@mui/material'
-import React from 'react'
 
 interface RouteRowProps {
   link: RouteLocation
   index: number
   route: Route
   hasErrors: boolean
-  setHasErrors: React.Dispatch<React.SetStateAction<boolean>>
   handleDirectionUpdate: (updatedLink: RouteLocation) => void
-  handleDistanceChange: (link: RouteLocation, distance: number) => void
+  handleDistanceChange: (locationIdentifier: string, distance: number) => void
   onDeleteLinkClick: (linkId: string) => void
 }
 
@@ -31,7 +29,6 @@ const RouteRow = ({
   index,
   route,
   hasErrors,
-  setHasErrors,
   handleDirectionUpdate,
   handleDistanceChange,
   onDeleteLinkClick,
