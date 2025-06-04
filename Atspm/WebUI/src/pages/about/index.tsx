@@ -1,8 +1,11 @@
+import { useGetVersionHistory } from '@/api/config/aTSPMConfigurationApi'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
+import VersionHistoryDialog from '@/features/VersionHistory/VersionHistoryModal'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 
 const GridItem = ({ item }: { item: { path: string; title: string } }) => (
   <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
@@ -27,6 +30,24 @@ const GridItem = ({ item }: { item: { path: string; title: string } }) => (
 )
 
 const About = () => {
+  const [open, setOpen] = useState(false)
+
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
+  const { data: versionHistory, isLoading: versionHisotryIsLoading } =
+    useGetVersionHistory()
+
+  const getLatestVersionName = () => {
+    if (!versionHistory?.value || versionHistory.value.length === 0) return ''
+
+    const highest = versionHistory.value.reduce((prev, current) =>
+      current.version > prev.version ? current : prev
+    )
+
+    return highest.name?.trim() || `ATSPM version ${highest.version}`
+  }
+
   const academimcPartners = [
     {
       path: '/images/partners/purdue-university.png',
@@ -189,8 +210,8 @@ const About = () => {
         </Button>
 
         {/* Version info block */}
-        <Paper
-          variant="outlined"
+        <Box
+          onClick={handleOpen}
           sx={{
             position: 'absolute',
             top: 16,
@@ -201,10 +222,14 @@ const About = () => {
             color: 'text.secondary',
             backgroundColor: 'background.default',
             p: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            cursor: 'pointer',
+            zIndex: 1,
           }}
         >
-          ATSPM version 5.0
-        </Paper>
+          ATSPM {getLatestVersionName()}
+        </Box>
       </Paper>
       <Box marginBottom={2} textAlign={'center'}>
         <Typography variant="h3" fontStyle="italic">
@@ -269,6 +294,13 @@ const About = () => {
           <GridItem key={item.title} item={item} />
         ))}
       </Grid>
+
+      <VersionHistoryDialog
+        open={open}
+        onClose={handleClose}
+        data={versionHistory?.value ?? []}
+        isLoading={versionHisotryIsLoading}
+      />
     </ResponsivePageLayout>
   )
 }
