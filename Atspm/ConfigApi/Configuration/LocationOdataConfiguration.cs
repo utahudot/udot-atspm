@@ -21,6 +21,7 @@ using Microsoft.OData.ModelBuilder;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
@@ -90,6 +91,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         h.Parameter<string>("note");
                         h.CollectionParameter<Device>("devices");
 
+                        var i = model.Action("SyncLocation").ReturnsFromEntitySet<TemplateLocationModifiedDto>("templateLocationModifiedDto");
 
                         var j = model.Action("DeleteAllVersions");
 
