@@ -94,6 +94,7 @@ builder.Host
         s.AddAtspmEFConfigRepositories();
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
+        s.AddScoped<ISignalTemplateService, SignalTemplateService>();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
         s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();

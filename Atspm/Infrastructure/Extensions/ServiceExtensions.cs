@@ -157,6 +157,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IDeviceConfigurationRepository, DeviceConfigurationEFRepository>();
             services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDirectionTypeRepository, DirectionTypeEFRepository>();
+            services.AddScoped<IEventLogRepository, EventLogEFRepository>();
             services.AddScoped<IFaqRepository, FaqEFRepository>();
             services.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
             services.AddScoped<ILocationRepository, LocationEFRepository>();
