@@ -1,12 +1,12 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Business.PreemptServiceRequest/PreemptServiceRequestService.cs
+// Copyright 2025 Utah Departement of Transportation
+// for Application - Utah.Udot.Atspm.Business.TransitSignalPriorityRequest/TransitSignalPriorityService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
-// You may not use this file except in compliance with the License.
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,14 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
@@ -766,7 +764,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     .OrderByDescending(p => p.ProgrammedSplits.Count)
                     .First()
                     .ProgrammedSplits;
-                var tspPlan = new TransitSignalPriorityPlan { PlanNumber = Convert.ToInt32(planNumber)};
+                var tspPlan = new TransitSignalPriorityPlan { PlanNumber = Convert.ToInt32(planNumber) };
 
                 // Get all plans with the same plan number
                 var plansForNumber = plans.Where(p => p.PlanNumber == planNumber).ToList();
@@ -790,7 +788,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             PhaseNumber = phaseNumber,
                         });
                         continue;
-                    };
+                    }
+                    ;
 
                     //Still add phase to tsp even if not in programmed splits
                     double skippedCycles = maxCycleCount - cyclesForPhase.Count;
@@ -819,7 +818,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     }
 
                     var minTime = Math.Round(cyclesForPhase.Max(c => c.MinTime), 1);
-                    var minGreen = cyclesForPhase.OrderBy(c=> c.MinGreenDurationSeconds).First().MinGreenDurationSeconds;
+                    var minGreen = cyclesForPhase.OrderBy(c => c.MinGreenDurationSeconds).First().MinGreenDurationSeconds;
                     var yellow = cyclesForPhase.First().YellowDurationSeconds;
                     var redClearance = cyclesForPhase.First().RedDurationSeconds;
 

@@ -1,4 +1,21 @@
-﻿using DatabaseInstaller.Services;
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Commands/TransferDailyToHourlyEventLogsCommand.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using DatabaseInstaller.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;
@@ -7,7 +24,7 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace DatabaseInstaller.Commands
 {
-    public class TransferDailyToHourlyEventLogsCommand: Command, ICommandOption<TransferDailyToHourlyConfiguration>
+    public class TransferDailyToHourlyEventLogsCommand : Command, ICommandOption<TransferDailyToHourlyConfiguration>
     {
         public TransferDailyToHourlyEventLogsCommand() : base("transfer-daily-hourly", "Transfer logs daily compression to hourly compression")
         {
