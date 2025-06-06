@@ -1,31 +1,44 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 
 public class EventListenerWorker : BackgroundService
 {
-    private readonly UDPSpeedBatchListener _udp;
-    private readonly TCPSpeedBatchListener _tcp;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<EventListenerWorker> _logger;
 
-    public EventListenerWorker(
-        UDPSpeedBatchListener udp,
-        TCPSpeedBatchListener tcp,
-        ILogger<EventListenerWorker> logger)
+    public EventListenerWorker(IServiceScopeFactory scopeFactory, ILogger<EventListenerWorker> logger)
     {
-        _udp = udp;
-        _tcp = tcp;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("EventListenerWorker starting up.");
-        _ = Task.Run(() => _udp.StartListeningAsync(stoppingToken), stoppingToken);
-        _ = Task.Run(() => _tcp.StartListeningAsync(stoppingToken), stoppingToken);
 
-        return Task.CompletedTask;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var udp = scope.ServiceProvider.GetRequiredService<UDPSpeedBatchListener>();
+            var tcp = scope.ServiceProvider.GetRequiredService<TCPSpeedBatchListener>();
+
+            var udpTask = udp.StartListeningAsync(stoppingToken);
+            var tcpTask = tcp.StartListeningAsync(stoppingToken);
+
+            await Task.WhenAll(udpTask, tcpTask);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Fatal error in EventListenerWorker");
+            throw;
+        }
+
+        _logger.LogInformation("EventListenerWorker shutting down.");
     }
+
 }

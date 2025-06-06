@@ -61,12 +61,23 @@ var host = Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<ILogger<TcpReceiver>>()
             ));
 
-        services.AddSingleton<UDPSpeedBatchListener>();
-        services.AddSingleton<TCPSpeedBatchListener>();
+        services.AddScoped<UDPSpeedBatchListener>();
+        services.AddScoped<TCPSpeedBatchListener>();
         services.AddHostedService<EventListenerWorker>();
+
     })
     .UseConsoleLifetime()
     .Build();
 
-await host.RunAsync();
+try
+{
+    await host.RunAsync();
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Unhandled startup error:");
+    Console.WriteLine(ex.ToString());
+    throw; // re-throw so debugger catches it too
+}
+
 

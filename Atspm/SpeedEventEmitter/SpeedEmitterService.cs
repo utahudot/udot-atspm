@@ -91,24 +91,24 @@ namespace SpeedEventEmitter.Services
                             {
                                 using var tcp = new TcpClient();
                                 await tcp.ConnectAsync(_host, _port);
-                                await tcp.GetStream()
-                                          .WriteAsync(buffer, 0, buffer.Length, stoppingToken);
+
+                                // Shutdown send side after write
+                                var stream = tcp.GetStream();
+                                await stream.WriteAsync(buffer, 0, buffer.Length, stoppingToken);
+                                tcp.Client.Shutdown(SocketShutdown.Send);
+
                                 sent = true;
                             }
-                            catch (OperationCanceledException)
-                            {
-                                // cancellation requested — exit entire loop
-                                throw;
-                            }
-                            catch (Exception ex) when (attempt < 3)
+                            catch (SocketException ex)
                             {
                                 _log.LogWarning(
-                                  ex,
-                                  "TCP attempt {Attempt} failed for SensorId {Sensor}; retrying in 200ms",
-                                  attempt, sensorId);
+                                    ex,
+                                    "TCP attempt {Attempt} failed for SensorId {Sensor}; retrying in 200ms",
+                                    attempt, sensorId);
                                 await Task.Delay(200, stoppingToken);
                             }
                         }
+
 
                         if (!sent)
                             throw new SocketException((int)SocketError.NotConnected);

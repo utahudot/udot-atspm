@@ -22,19 +22,48 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Receivers
             _logger.LogInformation("TcpReceiver awaiting incoming connections...");
             while (!ct.IsCancellationRequested)
             {
+                _logger.LogInformation("Waiting for TCP connection...");
                 var client = await _listener.AcceptTcpClientAsync(ct);
+                _logger.LogInformation("TCP connection accepted from {RemoteEndPoint}", client.Client.RemoteEndPoint);
+
+
+                // Enable TCP KeepAlive
+     
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+
                 _ = Handle(client, onMessage, ct);
             }
         }
 
+
         private async Task Handle(TcpClient client, Func<byte[], EndPoint, Task> onMessage, CancellationToken ct)
         {
-            using var ms = new MemoryStream();
-            await client.GetStream().CopyToAsync(ms, ct);
-            var ep = client.Client.RemoteEndPoint!;
-            await onMessage(ms.ToArray(), ep);
-            client.Dispose();
+            try
+            {
+                using (client)
+                using (var stream = client.GetStream())
+                using (var ms = new MemoryStream())
+                {
+                    var buffer = new byte[1024];
+                    int bytesRead;
+
+                    // Read until the client closes the sending side (graceful shutdown)
+                    while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, ct)) > 0)
+                    {
+                        ms.Write(buffer, 0, bytesRead);
+                    }
+
+                    var ep = client.Client.RemoteEndPoint!;
+                    await onMessage(ms.ToArray(), ep);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling TCP client connection from {Remote}", client.Client.RemoteEndPoint);
+            }
         }
+
+
 
         public void Dispose() => _listener.Stop();
     }

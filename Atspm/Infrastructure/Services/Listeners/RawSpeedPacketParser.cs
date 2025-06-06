@@ -13,7 +13,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 throw new ArgumentException("Data packet is null or too short.", nameof(data));
             }
             // exactly your old logic, but return the DTO
-            var timestamp = DateTime.UtcNow;
+            var timestamp = DateTime.Now;
             var sensorId = Encoding.ASCII.GetString(data, 10, 6);
             var mph = data[8];
             var kph = data[9];
