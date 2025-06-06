@@ -15,8 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Business.AppoachDelay;
-
 namespace Utah.Udot.Atspm.Business.Common
 {
     public interface IChartDataService

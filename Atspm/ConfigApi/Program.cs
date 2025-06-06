@@ -27,6 +27,7 @@ using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.ATSPM.ConfigApi.Utility;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
@@ -120,13 +121,14 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
 
-        s.AddControllers();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
+
+        s.AddScoped<ILocationManager, LocationManager>();
     });
 
 var app = builder.Build();
@@ -155,10 +157,10 @@ app.UseSwaggerUI(o =>
     }
 });
 
-app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
+
 app.Run();

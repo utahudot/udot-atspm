@@ -17,11 +17,9 @@
 
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.PreemptService;
-using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.Common
@@ -250,10 +248,10 @@ namespace Utah.Udot.Atspm.Business.Common
 
             return cycles;
         }
-        
+
         public List<TransitSignalPriorityCycle> GetTransitSignalPriorityCycles(int phaseNumber, List<IndianaEvent> cycleEvents, List<IndianaEvent> terminationEvents, List<IndianaEvent> minGreenEvents)
         {
-            if(cycleEvents.IsNullOrEmpty()) return new List<TransitSignalPriorityCycle>();
+            if (cycleEvents.IsNullOrEmpty()) return new List<TransitSignalPriorityCycle>();
             var cycleEventsForPhase = cycleEvents.Where(c => c.EventParam == phaseNumber).OrderBy(c => c.Timestamp).ToList();
             var terminationEventsForPhase = terminationEvents.Where(c => c.EventParam == phaseNumber).ToList();
 
@@ -265,7 +263,7 @@ namespace Utah.Udot.Atspm.Business.Common
             {
                 if (cycleEvent.EventCode == (short)1)
                 {
-                    cycle = new TransitSignalPriorityCycle { GreenEvent = cycleEvent.Timestamp};
+                    cycle = new TransitSignalPriorityCycle { GreenEvent = cycleEvent.Timestamp };
                 }
 
                 if (cycle != null && cycleEvent.EventCode == 8)
@@ -281,7 +279,7 @@ namespace Utah.Udot.Atspm.Business.Common
                     cycle.EndRedClearanceEvent = cycleEvent.Timestamp;
                     cycle.PhaseNumber = cycleEvent.EventParam;
                     cycles.Add(cycle);
-                }                
+                }
             }
 
 
@@ -297,7 +295,7 @@ namespace Utah.Udot.Atspm.Business.Common
             return cycles;
 
 
-            
+
         }
 
         private static CycleSplitFail.TerminationType GetTerminationTypeBetweenStartAndEnd(DateTime start,

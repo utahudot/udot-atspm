@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.ATSPM.ConfigApi.DTO;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;

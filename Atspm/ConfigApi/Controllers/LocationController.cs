@@ -18,17 +18,15 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
-using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
@@ -43,13 +41,15 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class LocationController : LocationPolicyControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
-        private readonly IDeviceRepository _deviceRepository;
+        private readonly ILocationManager _locationManager;
+
+        //HACK: ILocationManager is temporary
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository, IDeviceRepository deviceRepository) : base(repository)
+        public LocationController(ILocationRepository repository, ILocationManager locationManager) : base(repository)
         {
             _repository = repository;
-            _deviceRepository = deviceRepository;
+            _locationManager = locationManager;
         }
 
         #region NavigationProperties
@@ -103,6 +103,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         #region Actions
 
+        //HACK: move this to LocationManagementController
+
         /// <summary>
         /// Copies <see cref="Location"/> and associated <see cref="Approach"/> to new version
         /// </summary>
@@ -117,12 +119,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                var deviceIds = _deviceRepository.GetList()
-                    .Where(w => w.LocationId == key)
-                    .Select(s => s.Id)
-                    .ToList();
-                var newLocation = await _repository.CopyLocationToNewVersion(key);
-                _deviceRepository.UpdateDevicesForNewVersion(deviceIds, newLocation.Id);
+                await _locationManager.CopyLocationToNewVersion(key);
 
                 return Ok();
             }
@@ -130,8 +127,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             {
                 return NotFound(e.Message);
             }
-        }       
+        }
 
+        //HACK: move this to LocationManagementController
 
         /// <summary>
         /// Marks <see cref="Location"/> to deleted
@@ -147,45 +145,22 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                var location = await _repository.LookupAsync(key);
-                var versions = _repository.GetAllVersionsOfLocation(location.LocationIdentifier);
-                if (versions.Count() > 1)
-                {
-                    //get the version previous to the one being deleted
-                    var previousVersion = versions.Where(w => w.Start < location.Start).OrderByDescending(o => o.Start).FirstOrDefault();
-                    if (previousVersion != null && location.Devices != null)
-                    {
-                        //assign the devices of the deleted version to the location id of the previous version
-                        foreach (var device in location.Devices)
-                        {
-                            device.LocationId = previousVersion.Id;
-                        }
-                    }
-                }
-                else
-                {
-                    if (location.Devices != null)
-                    {
-                        foreach (var device in location.Devices)
-                        {
-                            _deviceRepository.Remove(device);
-                        }
-                    }
-                }
-                await _repository.SetLocationToDeleted(key);
+                await _locationManager.SetLocationToDeleted(key);
+
+                return Ok();
             }
             catch (ArgumentException e)
             {
                 return NotFound(e.Message);
             }
-
-            return Ok();
         }
+
+        //HACK: move this to LocationManagementController
 
         /// <summary>
         /// Marks <see cref="Location"/> to deleted
         /// </summary>
-        /// <param name="key">Key of <see cref="Location"/> to mark as deleted</param>
+        /// <param name="key">Identifier of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
         /// 
         [Authorize(Policy = "CanDeleteLocationConfigurations")]
@@ -196,25 +171,14 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                var versions = _repository.GetAllVersionsOfLocationWithDevices(key);
-                foreach (var version in versions)
-                {
-                    if (version.Devices != null)
-                    {
-                        foreach (var device in version.Devices)
-                        {
-                            _deviceRepository.Remove(device);
-                        }
-                    }
-                    await _repository.SetLocationToDeleted(version.Id);
-                }
+                await _locationManager.DeleteAllVersions(key);
+
+                return Ok();
             }
             catch (ArgumentException e)
             {
                 return NotFound(e.Message);
             }
-
-            return Ok();
         }
 
         #endregion
