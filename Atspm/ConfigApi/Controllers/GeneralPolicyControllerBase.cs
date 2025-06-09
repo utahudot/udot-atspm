@@ -52,7 +52,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Post([FromBody]T item)
+        public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }

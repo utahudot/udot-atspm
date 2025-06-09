@@ -103,18 +103,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         }
 
         /// <inheritdoc/>
-        public IReadOnlyList<Location> GetAllVersionsOfLocationWithDevices(string LocationIdentifier)
-        {
-            var result = BaseQuery()
-                .Include(i => i.Devices)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
-                .FromSpecification(new ActiveLocationSpecification())
-                .ToList();
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public IReadOnlyList<Location> GetLatestVersionOfAllLocations()
         {
             var result = BaseQuery()
@@ -175,22 +163,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         }
 
         /// <inheritdoc/>
-        public Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate)
-        {
-            var result = BaseQuery()
-                .Include(l => l.Devices).ThenInclude(d => d.DeviceConfiguration).ThenInclude(d => d.Product)
-                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
-                .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
-                .Include(i => i.Areas)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
-                .Where(Location => Location.Start <= startDate)
-                .FromSpecification(new ActiveLocationSpecification())
-                .FirstOrDefault();
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public IReadOnlyList<Location> GetLatestVersionOfAllLocations(DateTime startDate)
         {
             var result = BaseQuery()
@@ -233,5 +205,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         }
 
         #endregion
+
+
+
+
+
+
+        /// <inheritdoc/>
+        public Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate)
+        {
+            var result = BaseQuery()
+                .Include(l => l.Devices).ThenInclude(d => d.DeviceConfiguration).ThenInclude(d => d.Product)
+                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
+                .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
+                .Include(i => i.Areas)
+                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .Where(Location => Location.Start <= startDate)
+                .FromSpecification(new ActiveLocationSpecification())
+                .FirstOrDefault();
+
+            return result;
+        }
     }
 }
