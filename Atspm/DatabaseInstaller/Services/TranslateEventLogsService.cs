@@ -16,7 +16,6 @@
 #endregion
 
 using DatabaseInstaller.Commands;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,25 +23,20 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Npgsql;
-using Org.BouncyCastle.Cms;
+using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Retry;
-using Polly;
-using System;
 using System.Data;
 using System.IO.Compression;
-using System.Text.Json.Nodes;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
-using Utah.Udot.Atspm.Extensions;
 
 namespace DatabaseInstaller.Services
 {
@@ -215,7 +209,7 @@ namespace DatabaseInstaller.Services
 
 
         private async Task InsertWithRetryAsync(CompressedEventLogs<IndianaEvent> indianaEvents, string locationId, DateTime date, CancellationToken token)
-        {            
+        {
             try
             {
                 using (var scope = _serviceProvider.CreateScope())

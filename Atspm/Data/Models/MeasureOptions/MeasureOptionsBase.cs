@@ -1,4 +1,21 @@
-﻿using System.Runtime.Serialization;
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for Data - Utah.Udot.Atspm.Data.Models.MeasureOptions/MeasureOptionsBase.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System.Runtime.Serialization;
 using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.NetStandardToolkit.Common;
 
@@ -95,7 +112,7 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
 
         public double ExtendStartStopSearch { get; set; }
         public bool ShowAllLanesInfo { get; set; }
-       // public string LocationIdentifier { get; set; }
+        // public string LocationIdentifier { get; set; }
     }
 
     public class GreenTimeUtilizationOptions : MeasureOptionsBase
@@ -149,7 +166,7 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int EndHour { get; set; }
         public int EndMinute { get; set; }
         public int[] DaysOfWeek { get; set; }
-       // public string LocationIdentifier { get; set; }
+        // public string LocationIdentifier { get; set; }
     }
 
     public class LeftTurnGapDataCheckOptions : MeasureOptionsBase
@@ -211,7 +228,7 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public bool ShowPercentDelay { get; set; }
         public bool ShowPedRecall { get; set; }
         public int PedRecallThreshold { get; set; }
-       // public string LocationIdentifier { get; set; }
+        // public string LocationIdentifier { get; set; }
     }
 
     public class PurduePhaseTerminationOptions : MeasureOptionsBase

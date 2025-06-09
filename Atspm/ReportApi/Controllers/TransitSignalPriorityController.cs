@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for ReportApi - Utah.Udot.Atspm.ReportApi.Controllers/PreemptServiceRequestController.cs
+// Copyright 2025 Utah Departement of Transportation
+// for ReportApi - Utah.Udot.Atspm.ReportApi.Controllers/TransitSignalPriorityController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Business.PreemptServiceRequest;
-using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
