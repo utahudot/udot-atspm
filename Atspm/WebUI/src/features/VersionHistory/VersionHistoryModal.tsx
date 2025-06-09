@@ -13,7 +13,7 @@ interface Version {
   id: number
   name: string
   date: string
-  version: number
+  version: string
   notes: string
   createdBy: string
   children?: Version[]
@@ -39,11 +39,9 @@ const td: React.CSSProperties = {
   padding: '8px',
 }
 
-const renderVersionRow = (version: Version, isChild = false) => (
+const renderVersionRow = (version: Version) => (
   <tr key={version.id}>
-    <td style={{ ...td, paddingLeft: isChild ? '32px' : '8px' }}>
-      {version.version}
-    </td>
+    <td style={td}>{version.version}</td>
     <td style={td}>{version.name}</td>
     <td style={td}>{new Date(version.date).toLocaleDateString()}</td>
     <td style={td}>{version.notes}</td>
@@ -93,14 +91,9 @@ const VersionHistoryDialog: React.FC<Props> = ({
                 </tr>
               </thead>
               <tbody>
-                {data.map((version) => (
-                  <React.Fragment key={version.id}>
-                    {renderVersionRow(version)}
-                    {version.children?.map((child) =>
-                      renderVersionRow(child, true)
-                    )}
-                  </React.Fragment>
-                ))}
+                {[...new Map(data.map((item) => [item.id, item])).values()].map(
+                  renderVersionRow
+                )}
               </tbody>
             </table>
           </Box>

@@ -41,11 +41,21 @@ const About = () => {
   const getLatestVersionName = () => {
     if (!versionHistory?.value || versionHistory.value.length === 0) return ''
 
-    const highest = versionHistory.value.reduce((prev, current) =>
-      current.version > prev.version ? current : prev
-    )
+    const latest = versionHistory.value.reduce((prev, current) => {
+      // Split versions into parts and compare numerically
+      const prevParts = prev.version.split('.').map(Number)
+      const currParts = current.version.split('.').map(Number)
 
-    return highest.name?.trim() || `ATSPM version ${highest.version}`
+      for (let i = 0; i < Math.max(prevParts.length, currParts.length); i++) {
+        const prevVal = prevParts[i] || 0
+        const currVal = currParts[i] || 0
+        if (currVal > prevVal) return current
+        if (currVal < prevVal) return prev
+      }
+      return current // If equal, take the last one
+    })
+
+    return latest.name?.trim() || `${latest.version}`
   }
 
   const academimcPartners = [
@@ -228,7 +238,7 @@ const About = () => {
             zIndex: 1,
           }}
         >
-          ATSPM {getLatestVersionName()}
+          {getLatestVersionName()}
         </Box>
       </Paper>
       <Box marginBottom={2} textAlign={'center'}>
