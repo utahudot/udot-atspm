@@ -22,6 +22,7 @@ using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
@@ -70,11 +71,15 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
             var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
             var devices = _repository.GetList().Where(device => deviceIdList.Contains(device.Id)).ToList();
-            var today = DateTime.Today;
-            var startDate = DateOnly.FromDateTime(today);
-            var endDate = DateOnly.FromDateTime(today);
-            DateTime start = startDate.ToDateTime(TimeOnly.MinValue);
-            DateTime end = endDate.ToDateTime(TimeOnly.MinValue);
+            //var today = DateTime.Today;
+            //var startDate = DateOnly.FromDateTime(today);
+            //var endDate = DateOnly.FromDateTime(today);
+            //DateTime start = startDate.ToDateTime(TimeOnly.MinValue);
+            //DateTime end = endDate.ToDateTime(TimeOnly.MinValue);
+
+            var now = DateTime.Now;
+            DateTime start = now.AddHours(-1); // Start from 1 hour ago
+            DateTime end = now; // Up to now
 
             List<DeviceEventDownload> devicesEventDownload = new List<DeviceEventDownload>();
 
