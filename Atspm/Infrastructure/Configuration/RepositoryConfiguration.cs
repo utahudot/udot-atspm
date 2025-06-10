@@ -15,6 +15,8 @@
 // limitations under the License.
 #endregion
 
+using System.Text;
+
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
@@ -31,5 +33,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// Connection string for the repository.
         /// </summary>
         public string ConnectionString { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Provider}|{ConnectionString}";
     }
 }

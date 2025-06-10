@@ -15,35 +15,96 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
     /// <summary>
     /// Hosted service for transferring event logs between repositories.
     /// </summary>
-    public class EventLogTransferHostedService : HostedServiceBase
+    /// <remarks>
+    /// Hosted service for transferring event logs between repositories.
+    /// </remarks>
+    /// <param name="log"></param>
+    /// <param name="serviceProvider"></param>
+    /// <param name="options"></param>
+    public class EventLogTransferHostedService(ILogger<EventAggregationHostedService> log, IServiceScopeFactory serviceProvider, IOptions<EventLogTransferOptions> options) : HostedServiceBase(log, serviceProvider)
     {
-        private readonly IOptions<EventLogTransferOptions> _options;
+        private readonly IOptions<EventLogTransferOptions> _options = options;
 
-        /// <summary>
-        /// Hosted service for transferring event logs between repositories.
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="serviceProvider"></param>
-        /// <param name="options"></param>
-        public EventLogTransferHostedService(ILogger<EventAggregationHostedService> log, IServiceScopeFactory serviceProvider, IOptions<EventLogTransferOptions> options) : base(log, serviceProvider)
-        {
-            _options = options;
-        }
-
-        public override Task Process(IServiceScope scope, CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public override async Task Process(IServiceScope scope, Stopwatch stopwatch, CancellationToken cancellationToken = default)
         {
             Console.WriteLine(_options.Value);
 
-            return Task.CompletedTask;
-        }
+            var temp = scope.ServiceProvider.GetKeyedService<EventLogContext>(nameof(EventLogTransferOptions.SourceRepository));
+
+            var total = await temp.CompressedEvents
+                .AsNoTracking()
+                .Where(w => w.Start >= _options.Value.StartDate && w.End <= _options.Value.EndDate)
+                .CountAsync(cancellationToken);
+
+            Console.WriteLine($"result count: {total}");
+
+            var batchSize = 1000;
+
+            for (int i = 0; i < Math.Ceiling((double)total / batchSize); i++)
+            {
+                var read = new TransformBlock<int, IEnumerable<CompressedEventLogBase>>(async i =>
+                {
+                    using (var s = scope.ServiceProvider.GetService<IServiceScopeFactory>().CreateAsyncScope())
+                    {
+                        using (var sourceContext = s.ServiceProvider.GetKeyedService<EventLogContext>(nameof(EventLogTransferOptions.SourceRepository)))
+                        {
+                            Console.WriteLine($"Retrieving Batch {i + 1} | {sourceContext.GetHashCode()}");
+
+                            var result = await sourceContext.CompressedEvents
+                                .AsNoTracking()
+                                .Where(w => w.Start >= _options.Value.StartDate && w.End <= _options.Value.EndDate)
+                                .OrderBy(o => o.LocationIdentifier).ThenBy(o => o.DeviceId).ThenBy(o => o.DataType).ThenBy(o => o.Start)
+                                .Skip(i * batchSize).Take(batchSize)
+                                .ToListAsync(cancellationToken);
+
+                            return result;
+                        }
+                    }
+                });
+
+                var write = new ActionBlock<IEnumerable<CompressedEventLogBase>>(async b =>
+                {
+                    using (var s = scope.ServiceProvider.GetService<IServiceScopeFactory>().CreateAsyncScope())
+                    {
+                        using (var destContext = s.ServiceProvider.GetKeyedService<EventLogContext>(nameof(EventLogTransferOptions.DestinationRepository)))
+                        {
+                            Console.WriteLine($"Writing Batch {i + 1} | {destContext.GetHashCode()}");
+
+                            foreach (var i in b)
+                            {
+                                await destContext.CompressedEvents.AddAsync(i);
+                            }
+
+                            Console.WriteLine($"Saving Batch {i + 1}");
+                            await destContext.SaveChangesAsync(cancellationToken);
+                        }
+                    }
+                });
+
+                read.LinkTo(write, new DataflowLinkOptions() { PropagateCompletion = true });
+
+                await read.SendAsync(i, cancellationToken);
+
+                read.Complete();
+
+                await write.Completion;
+
+                Console.WriteLine($"batch complete: {i + 1}");
+            }
+        }     
     }
 }
