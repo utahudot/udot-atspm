@@ -1,17 +1,32 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.NamingConventionBinder;
 using System.Text.RegularExpressions;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
+using Utah.Udot.Atspm.MySqlDatabaseProvider;
+using Utah.Udot.Atspm.OracleDatabaseProvider;
+using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
+using Utah.Udot.Atspm.SqlDatabaseProvider;
+using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
 
 namespace Utah.Udot.ATSPM.EventLogUtility.Commands
 {
-    public  class TransferLogsConsoleCommand : Command, ICommandOption
+    /// <summary>
+    /// Command for transferring event logs between repositories.
+    /// </summary>
+    public class TransferLogsConsoleCommand : Command, ICommandOption
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransferLogsConsoleCommand"/> class.
+        /// </summary>
         public TransferLogsConsoleCommand() : base("transfer", "Transfers event logs between repositories")
         {
             var values = typeof(EventLogModelBase).Assembly.GetTypes()
@@ -44,7 +59,12 @@ namespace Utah.Udot.ATSPM.EventLogUtility.Commands
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
+            SourceRepository.AddAlias("-sr");
+            DestinationRepository.AddAlias("-dr");
+
             AddArgument(DataTypeArgument);
+            AddGlobalOption(SourceRepository);
+            AddGlobalOption(DestinationRepository);
             AddGlobalOption(IncludeLocationOption);
             AddGlobalOption(ExcludeLocationOption);
             AddGlobalOption(Start);
@@ -53,6 +73,52 @@ namespace Utah.Udot.ATSPM.EventLogUtility.Commands
         }
 
         public Argument<string> DataTypeArgument { get; set; } = new Argument<string>("type", () => "all", "Event log data type to transfer");
+
+        public Option<RepositoryConfiguration> SourceRepository { get; set; } = new("--source-repository", description: "Source repository configuration for transferring logs. Use <Provider>|<ConnectionString>",
+            parseArgument: result =>
+        {
+            var value = result.Tokens.SingleOrDefault()?.Value;
+
+            if (value is null || !value.Contains('|'))
+            {
+                result.ErrorMessage = "Invalid format. Use <Provider>|<ConnectionString>";
+                return null;
+            }
+
+            var split = value.Split('|');
+
+            return new RepositoryConfiguration
+            {
+                Provider = split[0],
+                ConnectionString = split[1]
+            };
+        })
+        {
+            //IsRequired = true
+        };
+
+        public Option<RepositoryConfiguration> DestinationRepository { get; set; } = new("--destination-repository", description: "Destination repository configuration for transferring logs. Use <Provider>|<ConnectionString>",
+            parseArgument: result =>
+            {
+                var value = result.Tokens.SingleOrDefault()?.Value;
+
+                if (value is null || !value.Contains('|'))
+                {
+                    result.ErrorMessage = "Invalid format. Use <Provider>|<ConnectionString>";
+                    return null;
+                }
+
+                var split = value.Split('|');
+
+                return new RepositoryConfiguration
+                {
+                    Provider = split[0],
+                    ConnectionString = split[1]
+                };
+            })
+        {
+            //IsRequired = true
+        };
 
         public StartOption Start { get; set; } = new StartOption();
 
@@ -70,9 +136,8 @@ namespace Utah.Udot.ATSPM.EventLogUtility.Commands
 
             var binder = new ModelBinder<EventLogTransferOptions>();
 
-            //binder.BindMemberFromValue(b => b.SourceRepository, Start);
-            //binder.BindMemberFromValue(b => b.DestinationRepository, Start);
-
+            binder.BindMemberFromValue(b => b.SourceRepository, SourceRepository);
+            binder.BindMemberFromValue(b => b.DestinationRepository, DestinationRepository);
             binder.BindMemberFromValue(b => b.StartDate, Start);
             binder.BindMemberFromValue(b => b.EndDate, End);
             binder.BindMemberFromValue(b => b.IncludedLocations, IncludeLocationOption);
@@ -86,7 +151,60 @@ namespace Utah.Udot.ATSPM.EventLogUtility.Commands
                     binder.UpdateInstance(a, b);
                 });
 
+            services.AddKeyedScoped<EventLogContext>(nameof(EventLogTransferOptions.SourceRepository), (s, o) =>
+            {
+                var builder = DbProvider(s.GetService<IOptions<EventLogTransferOptions>>().Value.SourceRepository)
+                .EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment());
+                return new EventLogContext(builder.Options);
+            });
+
+            services.AddKeyedScoped<EventLogContext>(nameof(EventLogTransferOptions.DestinationRepository), (s, o) =>
+            {
+                var builder = DbProvider(s.GetService<IOptions<EventLogTransferOptions>>().Value.DestinationRepository)
+                .EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment());
+                return new EventLogContext(builder.Options);
+            });
+
             services.AddHostedService<EventLogTransferHostedService>();
+        }
+
+        private DbContextOptionsBuilder<EventLogContext> DbProvider(RepositoryConfiguration config)
+        {
+            var builder = new DbContextOptionsBuilder<EventLogContext>();
+            builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+            switch (config.Provider)
+            {
+                case SqlServerProvider.ProviderName:
+                    {
+                        return builder.UseSqlServer(config.ConnectionString, opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
+                    }
+
+                case PostgreSQLProvider.ProviderName:
+                    {
+                        return builder.UseNpgsql(config.ConnectionString, opt => opt.MigrationsAssembly(PostgreSQLProvider.Migration));
+                    }
+
+                case SqlLiteProvider.ProviderName:
+                    {
+                        return builder.UseSqlite(config.ConnectionString, opt => opt.MigrationsAssembly(SqlLiteProvider.Migration));
+                    }
+
+                case MySqlProvider.ProviderName:
+                    {
+                        return builder.UseMySql(ServerVersion.AutoDetect(config.ConnectionString), opt => opt.MigrationsAssembly(SqlLiteProvider.Migration));
+                    }
+
+                case OracleProvider.ProviderName:
+                    {
+                        return builder.UseOracle(config.ConnectionString, opt => opt.MigrationsAssembly(OracleProvider.Migration));
+                    }
+
+                default:
+                    {
+                        return builder.UseSqlServer(config.ConnectionString, opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
+                    }
+            }
         }
 
         public class DeviceIncludeCommandOption : Option<IEnumerable<int>>
