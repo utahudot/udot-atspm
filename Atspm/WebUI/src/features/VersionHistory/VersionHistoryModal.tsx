@@ -85,15 +85,15 @@ const VersionHistoryDialog: React.FC<Props> = ({
                 <tr>
                   <th style={th}>Version</th>
                   <th style={th}>Name</th>
-                  <th style={th}>Date</th>
+                  <th style={th}>Release Date</th>
                   <th style={th}>Notes</th>
                   <th style={th}>Created By</th>
                 </tr>
               </thead>
               <tbody>
-                {[...new Map(data.map((item) => [item.id, item])).values()].map(
-                  renderVersionRow
-                )}
+                {[...new Map(data.map((item) => [item.id, item])).values()]
+                  .reverse()
+                  .map(renderVersionRow)}
               </tbody>
             </table>
           </Box>
