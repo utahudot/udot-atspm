@@ -1,12 +1,10 @@
 import { useGetVersionHistory } from '@/api/config/aTSPMConfigurationApi'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import VersionHistoryDialog from '@/features/VersionHistory/VersionHistoryModal'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
-
 const GridItem = ({ item }: { item: { path: string; title: string } }) => (
   <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
     <Paper
@@ -30,11 +28,6 @@ const GridItem = ({ item }: { item: { path: string; title: string } }) => (
 )
 
 const About = () => {
-  const [open, setOpen] = useState(false)
-
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-
   const { data: versionHistory, isLoading: versionHisotryIsLoading } =
     useGetVersionHistory()
 
@@ -220,26 +213,35 @@ const About = () => {
         </Button>
 
         {/* Version info block */}
-        <Box
-          onClick={handleOpen}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            textAlign: 'right',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            color: 'text.secondary',
-            backgroundColor: 'background.default',
-            p: 1,
-            border: '1px solid',
-            borderColor: 'divider',
-            cursor: 'pointer',
-            zIndex: 1,
-          }}
+        <a
+          href="https://github.com/OpenSourceTransportation/Atspm/blob/main/CHANGELOG.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none' }}
         >
-          {getLatestVersionName()}
-        </Box>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 16,
+              left: 16,
+              textAlign: 'right',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              color: 'text.secondary',
+              backgroundColor: 'background.default',
+              p: 1,
+              border: '1px solid',
+              borderColor: 'divider',
+              cursor: 'pointer',
+              zIndex: 1,
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
+          >
+            {getLatestVersionName()}{' '}
+            <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
+          </Box>
+        </a>
       </Paper>
       <Box marginBottom={2} textAlign={'center'}>
         <Typography variant="h3" fontStyle="italic">
@@ -305,12 +307,12 @@ const About = () => {
         ))}
       </Grid>
 
-      <VersionHistoryDialog
+      {/* <VersionHistoryDialog
         open={open}
         onClose={handleClose}
         data={versionHistory?.value ?? []}
         isLoading={versionHisotryIsLoading}
-      />
+      /> */}
     </ResponsivePageLayout>
   )
 }
