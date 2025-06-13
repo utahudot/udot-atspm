@@ -1,26 +1,25 @@
 import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import OptionsWrapper from '@/components/OptionsWrapper'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import SelectDateTime from '@/components/selectTimeSpan'
 import { ResponseFormat, useEventLogs } from '@/features/data/api/getEventLogs'
-import SelectDataType from '@/features/data/components/selectDataType'
+import SelectDataType, {
+  DataTypeOption,
+} from '@/features/data/components/selectDataType'
 import { useGetAggData } from '@/features/data/exportData/api/getAggData'
 import SelectLocation from '@/features/locations/components/selectLocation'
 import useMissingDays from '@/hooks/useMissingDays'
 import Authorization from '@/lib/Authorization'
 import { dateToTimestamp } from '@/utils/dateTime'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import DownloadIcon from '@mui/icons-material/Download'
 import { LoadingButton } from '@mui/lab'
 import {
   Alert,
   Box,
-  Button,
-  ButtonGroup,
-  ClickAwayListener,
-  Grow,
-  MenuItem,
-  MenuList,
+  List,
+  ListItemButton,
+  ListItemText,
   Paper,
-  Popper,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
@@ -33,21 +32,21 @@ import {
   startOfTomorrow,
   startOfWeek,
 } from 'date-fns'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
-const options = ['csv', 'json', 'xml']
+const options = ['csv', 'json']
 
 const ExportData = () => {
   const theme = useTheme()
+
   const [location, setLocation] = useState<Location | null>(null)
   const [error, setError] = useState(false)
   const [startDateTime, setStartDateTime] = useState(startOfToday())
   const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
-  const [selectedDataType, setSelectedDataType] = useState<string | null>(
-    'All Raw Data'
-  )
-  const [isAllRawDataSelected, setIsAllRawDataSelected] =
-    useState<boolean>(true)
+  const [selectedOption, setSelectedOption] = useState<DataTypeOption>({
+    name: 'IndianaEvent',
+    type: 'raw',
+  })
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [downloadFormat, setDownloadFormat] = useState<ResponseFormat>('csv')
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -58,67 +57,40 @@ const ExportData = () => {
     endOfWeek(endOfMonth(startOfToday()))
   )
 
-  const [open, setOpen] = useState(false)
-  const anchorRef = useRef<HTMLDivElement>(null)
   const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
-
-  useEffect(() => {
-    setIsAllRawDataSelected(selectedDataType === 'All Raw Data')
-  }, [selectedDataType])
 
   const { refetch: refetchEventLogs } = useEventLogs({
     locationIdentifier: location?.locationIdentifier || '',
     start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
     end: isValid(endDateTime) ? dateToTimestamp(endDateTime) : '',
+    dataType: selectedOption.name,
     ResponseFormat: downloadFormat,
   })
 
   const { refetch: refetchAggData } = useGetAggData(
     location?.locationIdentifier,
-    selectedDataType,
+    selectedOption.name,
     isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
     isValid(endDateTime) ? dateToTimestamp(endDateTime) : ''
   )
 
   const missingDays = useMissingDays(
     location?.locationIdentifier ?? '',
-    'IndianaEvent',
+    selectedOption.name ?? '',
     calendarStartDate,
     calendarEndDate
+    // selectedOption.type === 'aggregation'
   )
 
   const handleStartDateTimeChange = (date: Date) => setStartDateTime(date)
   const handleEndDateTimeChange = (date: Date) => setEndDateTime(date)
-
-  const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    index: number
-  ) => {
-    setSelectedIndex(index)
-    setDownloadFormat(options[index] as ResponseFormat)
-    setOpen(false)
-  }
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen)
-  }
-
-  const handleClose = (event: Event) => {
-    if (
-      anchorRef.current &&
-      anchorRef.current.contains(event.target as HTMLElement)
-    ) {
-      return
-    }
-    setOpen(false)
-  }
 
   const downloadEventLogs = async () => {
     setIsDownloading(true)
     setError(false)
     try {
       let response, data
-      if (selectedDataType === 'All Raw Data') {
+      if (selectedOption.type === 'raw') {
         response = await refetchEventLogs()
         if (response.status === 'error') {
           setError(true)
@@ -132,10 +104,9 @@ const ExportData = () => {
 
       const filename = generateFilename(
         location,
-        selectedDataType,
+        selectedOption,
         startDateTime,
         endDateTime,
-        isAllRawDataSelected,
         downloadFormat
       )
 
@@ -182,10 +153,14 @@ const ExportData = () => {
             sx={{
               flexGrow: 1,
               minWidth: '350px',
-              padding: theme.spacing(3),
+              padding: 3,
             }}
           >
-            <SelectLocation location={location} setLocation={setLocation} />
+            <SelectLocation
+              location={location}
+              setLocation={setLocation}
+              mapHeight={'350px'}
+            />
           </Paper>
 
           <Box display="flex" sx={{ gap: '15px', flexWrap: 'wrap' }}>
@@ -203,7 +178,7 @@ const ExportData = () => {
                 views={['year', 'month', 'day']}
                 startDateTime={startDateTime}
                 endDateTime={endDateTime}
-                startDateOnly={isAllRawDataSelected}
+                startDateOnly={selectedOption.type === 'raw'}
                 changeStartDate={handleStartDateTimeChange}
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
@@ -216,87 +191,51 @@ const ExportData = () => {
               sx={{
                 minWidth: '23.188rem',
                 [theme.breakpoints.down('sm')]: { width: '100%' },
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
               }}
             >
               <SelectDataType
-                selectedDataType={selectedDataType}
-                setSelectedDataType={setSelectedDataType}
+                selectedDataType={selectedOption}
+                setSelectedDataType={setSelectedOption}
               />
+              <Box display="flex" flexDirection="column">
+                <OptionsWrapper header="Export Options">
+                  <Box sx={{ overflow: 'auto' }}>
+                    <List sx={{ marginTop: '-8px' }}>
+                      {options.map((opt, index) => (
+                        <ListItemButton
+                          key={opt}
+                          onClick={() => {
+                            setSelectedIndex(index)
+                            setDownloadFormat(opt as ResponseFormat)
+                          }}
+                          selected={selectedIndex === index}
+                        >
+                          <ListItemText primary={opt.toUpperCase()} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Box>
+                </OptionsWrapper>
+              </Box>
             </Box>
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', gap: '10px', mt: '10px', mb: '120px' }}>
-          <ButtonGroup
+          <LoadingButton
+            loadingPosition="start"
+            startIcon={<DownloadIcon />}
+            loading={isDownloading}
             variant="contained"
-            ref={anchorRef}
-            aria-label="split button"
+            onClick={downloadEventLogs}
             disabled={!location}
-            sx={{ height: '45px', mt: '20px' }}
           >
-            <LoadingButton
-              loadingPosition="start"
-              loading={isDownloading}
-              variant="contained"
-              onClick={downloadEventLogs}
-              disabled={!location}
-            >
-              Download {downloadFormat}
-            </LoadingButton>
-            <Button
-              size="small"
-              aria-controls={open ? 'split-button-menu' : undefined}
-              aria-expanded={open ? 'true' : undefined}
-              aria-label="select download format"
-              aria-haspopup="menu"
-              onClick={handleToggle}
-            >
-              <ArrowDropDownIcon />
-            </Button>
-          </ButtonGroup>
-          <Popper
-            sx={{ zIndex: 1300, pl: '140px' }}
-            open={open}
-            anchorEl={anchorRef.current}
-            transition
-            disablePortal
-            placement="bottom"
-            modifiers={[
-              {
-                name: 'preventOverflow',
-                options: {
-                  altAxis: true,
-                  altBoundary: true,
-                  tether: true,
-                  rootBoundary: 'document',
-                  padding: 8,
-                },
-              },
-            ]}
-          >
-            {({ TransitionProps }) => (
-              <Grow
-                {...TransitionProps}
-                style={{ transformOrigin: 'center top' }}
-              >
-                <Paper>
-                  <ClickAwayListener onClickAway={handleClose}>
-                    <MenuList id="split-button-menu" autoFocusItem>
-                      {options.map((option, index) => (
-                        <MenuItem
-                          key={option}
-                          selected={index === selectedIndex}
-                          onClick={(event) => handleMenuItemClick(event, index)}
-                        >
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
+            Download Data
+          </LoadingButton>
+
           {error && (
             <Box sx={{ ml: '1rem', mt: '19px', height: '48px' }}>
               <Alert severity="error">No Data Found</Alert>
@@ -360,17 +299,16 @@ const formatData = (data: any, type: string): string => {
 
 const generateFilename = (
   location: Location | null,
-  selectedDataType: string | null,
+  selectedDataType: DataTypeOption | null,
   start: Date,
   end: Date,
-  isAllRawData: boolean,
   downloadFormat: ResponseFormat
 ): string => {
   const startStr = dateToTimestamp(start)
   const endStr = dateToTimestamp(end)
-  const baseName = `${location?.locationIdentifier}_${selectedDataType?.replace(/\s+/g, '')}_${startStr}`
+  const baseName = `${location?.locationIdentifier}_${selectedDataType?.name.replace(/\s+/g, '')}_${startStr}`
 
-  return isAllRawData
+  return selectedDataType?.type === 'raw'
     ? `${baseName}.${downloadFormat}`
     : `${baseName}_${endStr}.${downloadFormat}`
 }

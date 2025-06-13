@@ -1,134 +1,87 @@
-//Data Type
-
-// import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import { useGetEventLogDataTypes } from '@/api/data/aTSPMLogDataApi'
+import OptionsWrapper from '@/components/OptionsWrapper'
 import {
   Box,
   Divider,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
-  Paper,
-  // TextField,
   Typography,
 } from '@mui/material'
-import Tooltip from '@mui/material/Tooltip'
-import { useState } from 'react'
-import { useGetAggDataTypes } from '../../exportData/api/getAggDataTypes'
+
+export interface DataTypeOption {
+  name: string
+  type: 'raw' | 'aggregation'
+}
 
 interface SelectDataTypeProps {
-  selectedDataType: string | null
-  setSelectedDataType: (dataType: string | null) => void
-  eventCodes: string | null
-  setEventCodes: (codes: string | null) => void
-  eventParams: string
-  setEventParams: (params: string) => void
-  start: Date
-  end: Date
-}
-
-const headerStyling = {
-  padding: '15px',
-  fontSize: '15px',
-  fontWeight:'bold',
-  borderRadius: '5px 5px 0 0',
-  width: '100%',
-  textAlign: 'center',
-}
-
-const commonPaperStyle = {
-  flexGrow: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'left',
-  paddingBottom: '30px',
-  marginBottom: '20px',
+  selectedDataType: DataTypeOption | null
+  setSelectedDataType: (dataType: DataTypeOption | null) => void
 }
 
 export const SelectDataType = ({
   selectedDataType,
   setSelectedDataType,
-  // eventCodes,
-  // setEventCodes,
-  // eventParams,
-  // setEventParams,
 }: SelectDataTypeProps) => {
-  const [isAllRawDataSelected, setIsAllRawDataSelected] =
-    useState<boolean>(true)
-  let dataWithRawData: string[] = []
+  // const { data: aggData, isLoading: aggLoading } = useGetAggDataTypes()
+  const { data: rawData, isLoading: rawLoading } = useGetEventLogDataTypes()
 
-  const { data: AggData, isLoading: dataTypeIsLoading } = useGetAggDataTypes()
-
-  if (AggData) {
-    dataWithRawData = ['All Raw Data', ...AggData]
+  // build a flat list of options, raw first, then aggregations
+  const dataTypes: DataTypeOption[] = []
+  if (rawData) {
+    dataTypes.push(...rawData.map((name) => ({ name, type: 'raw' })))
   }
+  // if (aggData) {
+  //   dataTypes.push(...aggData.map((name) => ({ name, type: 'aggregation' })))
+  // }
 
   const formatPascalCase = (option: string): string => {
-    // Check if the option is 'ApproachPcdAggregation'
     if (option === 'ApproachPcdAggregation') {
-      return 'Approach PCD';
+      return 'Approach PCD'
     }
-      let formatted = option.replace(/Aggregation/g, '');
-    
-    formatted = formatted.replace(/([a-z])([A-Z])/g, '$1 $2');
-    
-    return formatted;
-  };
-  const handleLabelSelect = (label: string) => {
-    setSelectedDataType(label)
-    setIsAllRawDataSelected(label === 'All Raw Data')
+    return option
+      .replace(/Aggregation$/, '')
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
   }
-  // const HandleEventCodes = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = event.target.value
-  //   // Allow only numbers and commas
-  //   if (/^[0-9,]*$/.test(value)) {
-  //     setEventCodes(value)
-  //   }
-  // }
-  // const HandleEventParams = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = event.target.value
-  //   // Allow only numbers and commas
-  //   if (/^[0-9,]*$/.test(value)) {
-  //     setEventParams(value)
-  //   }
-  // }
-  const renderDataTypes = () => {
-    let maxHeight = '600px';
-    return (
-      <Paper sx={{ ...commonPaperStyle, maxHeight }}>
-        <Typography sx={{ ...headerStyling }}>Data Type</Typography>
-        <Box
-          sx={{ maxHeight: maxHeight, overflow: 'auto', marginBottom: '-27px' }}
-        >
-          <List
-            sx={{ marginTop: '-8px' }}
-            component="nav"
-            aria-label="data aggregation labels"
-          >
-            {dataWithRawData?.map((label, index) => {
-              const listItems = [];
-  
-              // Always add the list item
-              listItems.push(
-                <ListItem
-                  button
-                  selected={selectedDataType === label}
-                  onClick={() => handleLabelSelect(label)}
-                  key={label}
-                >
-                  <ListItemText primary={formatPascalCase(label)} />
-                </ListItem>
-              );
-  
-              // Conditionally add the sticky divider after "All Raw Data"
-              if (label === "All Raw Data") {
-                listItems.push(
+
+  const handleSelect = (opt: DataTypeOption) => {
+    setSelectedDataType(opt)
+  }
+
+  const maxHeight = '600px'
+  return (
+    <Box display="flex" flexDirection="column">
+      <OptionsWrapper header="Data Types">
+        <Box sx={{ maxHeight, overflow: 'auto' }}>
+          <List sx={{ marginTop: '-8px' }}>
+            {/* <Divider
+              key="aggregations-divider"
+              sx={{
+                bgcolor: 'white',
+                px: '2rem',
+                pb: '.3rem',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
+              }}
+            >
+              <Typography variant="caption">Raw</Typography>
+            </Divider> */}
+            {dataTypes.map((opt, idx) => {
+              const nodes = []
+
+              // insert divider before the first aggregation
+              if (
+                opt.type === 'aggregation' &&
+                (idx === 0 || dataTypes[idx - 1].type !== 'aggregation')
+              ) {
+                nodes.push(
                   <Divider
                     key="aggregations-divider"
                     sx={{
                       bgcolor: 'white',
-                      paddingX: '2rem',
-                      paddingTop: '.5rem',
-                      paddingBottom: '.3rem',
+                      px: '2rem',
+                      pb: '.3rem',
                       position: 'sticky',
                       top: 0,
                       zIndex: 1,
@@ -136,98 +89,24 @@ export const SelectDataType = ({
                   >
                     <Typography variant="caption">Aggregations</Typography>
                   </Divider>
-                );
+                )
               }
-  
-              return listItems;
+
+              nodes.push(
+                <ListItemButton
+                  key={`${opt.type}:${opt.name}`}
+                  onClick={() => handleSelect(opt)}
+                  selected={selectedDataType?.name === opt.name}
+                >
+                  <ListItemText primary={formatPascalCase(opt.name)} />
+                </ListItemButton>
+              )
+
+              return nodes
             })}
           </List>
         </Box>
-      </Paper>
-    );
-  };
-  
-  // const allDataInputParams = () => {
-  //   const tooltipContent = (
-  //     <div>
-  //       <p>Leave blank for all Event Codes/Event Parameters</p>
-  //       <p>
-  //         To filter on a list of codes/params, use comma and/or dash. E.g.: 1,
-  //         3, 6-8, 10
-  //       </p>
-  //       <a
-  //         href="https://docs.lib.purdue.edu/jtrpdata/3/"
-  //         target="_blank"
-  //         rel="noopener noreferrer"
-  //         style={{ color: 'white', textDecoration: 'underline' }}
-  //       >
-  //         Indiana Hi Resolution Data Logger Enumerations
-  //       </a>
-  //     </div>
-  //   )
-
-  //   return (
-  //     <Paper
-  //       sx={{
-  //         ...commonPaperStyle,
-  //         display: 'flex',
-  //         flexDirection: 'column',
-  //         justifyContent: 'center', // Centers content vertically
-  //         alignItems: 'center', // Centers content horizontally
-  //         height: 'auto', // Adjust height as needed
-  //       }}
-  //     >
-  //       <Box
-  //         sx={{
-  //           display: 'flex',
-  //           flexDirection: 'column',
-  //           alignItems: 'center',
-  //           mt: 2,
-  //           // mb: 1, // Margin bottom for spacing between boxes
-  //         }}
-  //       >
-  //         <label htmlFor="evenCodesInput">
-  //           Event Codes
-  //           <Tooltip title={tooltipContent} arrow>
-  //             <HelpOutlineIcon style={{ fontSize: 16, marginLeft: 5 }} />
-  //           </Tooltip>
-  //         </label>
-  //         <TextField
-  //           id="evenCodesInput"
-  //           type="text"
-  //           value={eventCodes}
-  //           onChange={HandleEventCodes}
-  //           placeholder="Comma Separated List"
-  //           // sx={{...textFieldStyle}}
-  //         />
-  //       </Box>
-  //       <Box
-  //         sx={{
-  //           display: 'flex',
-  //           flexDirection: 'column',
-  //           alignItems: 'center',
-  //         }}
-  //       >
-  //         <label htmlFor="evenParamInput">Event Parameters</label>
-  //         <TextField
-  //           id="evenCodesInput"
-  //           type="text"
-  //           value={eventParams}
-  //           onChange={HandleEventParams}
-  //           placeholder="Comma Separated List"
-  //           // sx={{...textFieldStyle}}
-  //         />
-  //       </Box>
-  //     </Paper>
-  //   )
-  // }
-
-  return (
-    <Box>
-      <Box display="flex" flexDirection="column" sx={{ maxHeight: '600px' }}>
-        {renderDataTypes()}
-        {/* {isAllRawDataSelected && allDataInputParams()} */}
-      </Box>
+      </OptionsWrapper>
     </Box>
   )
 }
