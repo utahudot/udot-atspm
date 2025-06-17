@@ -1,10 +1,10 @@
-import { useGetVersionHistory } from '@/api/config/aTSPMConfigurationApi'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+
 const GridItem = ({ item }: { item: { path: string; title: string } }) => (
   <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
     <Paper
@@ -28,29 +28,6 @@ const GridItem = ({ item }: { item: { path: string; title: string } }) => (
 )
 
 const About = () => {
-  const { data: versionHistory, isLoading: versionHisotryIsLoading } =
-    useGetVersionHistory()
-
-  const getLatestVersionName = () => {
-    if (!versionHistory?.value || versionHistory.value.length === 0) return ''
-
-    const latest = versionHistory.value.reduce((prev, current) => {
-      // Split versions into parts and compare numerically
-      const prevParts = prev.version.split('.').map(Number)
-      const currParts = current.version.split('.').map(Number)
-
-      for (let i = 0; i < Math.max(prevParts.length, currParts.length); i++) {
-        const prevVal = prevParts[i] || 0
-        const currVal = currParts[i] || 0
-        if (currVal > prevVal) return current
-        if (currVal < prevVal) return prev
-      }
-      return current // If equal, take the last one
-    })
-
-    return latest.name?.trim() || `${latest.version}`
-  }
-
   const academimcPartners = [
     {
       path: '/images/partners/purdue-university.png',
@@ -189,10 +166,32 @@ const About = () => {
           marginBottom: 4,
           maxWidth: '740px',
           marginX: 'auto',
-          position: 'relative', // for positioning version box
           textAlign: 'center',
+          position: 'relative',
         }}
       >
+        {/* Version block in corner */}
+        <Paper
+          variant="outlined"
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            color: 'text.secondary',
+            backgroundColor: 'background.default',
+            px: 2,
+            py: 1,
+          }}
+        >
+          <span>ATSPM version: {process.env.version}</span>
+        </Paper>
+
+        {/* Main content */}
         <Typography variant="h2" sx={{ mt: 4 }} gutterBottom>
           About ATSPM
         </Typography>
@@ -202,47 +201,28 @@ const About = () => {
           traffic engineers to directly measure what previously could only be
           estimated and modeled.
         </Typography>
-        <Button
-          variant="contained"
-          href="/faq"
-          component={Link}
-          endIcon={<KeyboardDoubleArrowRightIcon />}
-          sx={{ marginTop: 2 }}
-        >
-          Learn more
-        </Button>
 
-        {/* Version info block */}
-        <a
-          href="https://github.com/OpenSourceTransportation/Atspm/blob/main/CHANGELOG.md"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 16,
-              left: 16,
-              textAlign: 'right',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
-              backgroundColor: 'background.default',
-              p: 1,
-              border: '1px solid',
-              borderColor: 'divider',
-              cursor: 'pointer',
-              zIndex: 1,
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
+        {/* FAQ and Changelog buttons */}
+        <Box display="flex" justifyContent="center" gap={2} mt={2}>
+          <Button
+            variant="contained"
+            href="/faq"
+            component={Link}
+            endIcon={<KeyboardDoubleArrowRightIcon />}
           >
-            {getLatestVersionName()}{' '}
-            <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
-          </Box>
-        </a>
+            View FAQs
+          </Button>
+          <Button
+            variant="outlined"
+            href="https://github.com/OpenSourceTransportation/Atspm/blob/main/CHANGELOG.md"
+            component={Link}
+            endIcon={<OpenInNewIcon />}
+          >
+            View Changelog
+          </Button>
+        </Box>
       </Paper>
+
       <Box marginBottom={2} textAlign={'center'}>
         <Typography variant="h3" fontStyle="italic">
           Presented by
@@ -306,13 +286,6 @@ const About = () => {
           <GridItem key={item.title} item={item} />
         ))}
       </Grid>
-
-      {/* <VersionHistoryDialog
-        open={open}
-        onClose={handleClose}
-        data={versionHistory?.value ?? []}
-        isLoading={versionHisotryIsLoading}
-      /> */}
     </ResponsivePageLayout>
   )
 }
