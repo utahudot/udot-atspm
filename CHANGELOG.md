@@ -1,39 +1,113 @@
-June 12, 2025_
+<!-- markdownlint-disable no-duplicate-header no-emphasis-as-heading no-inline-html -->
 
-A big thanks Avenue Consultants.
+# React Router Releases
 
-### `ATSPM V5.1.0`
+This page lists all releases/release notes for ATSPM. 
 
-### ReportApi
+<details>
+  <summary>Table of Contents</summary>
+  stuff
+</details>
 
-- [ReportAI] Lorem ipsum dolor sit amet, consectetur adipiscing elit (#53890) @SignalWizard23
-- [ReportEngine] Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (#53742) @RoadSyncDev
-- [ReportRenderer] Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat (#53681) @TrafficNerd42
+<!-- To add a new release, copy from this template:
 
-### ConfigApi
+# v5.X.Y
 
-- [ConfigAPI] Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur (#54001) @TrafficControlX
-- [SignalConfig] Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (#53945) @IntersectionOpt
+Date: YYY-MM-DD
 
-### DataApi
+### What's Changed
 
-- [DataExport] Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (#53577) @DataBridgeDev
-- [ExportScheduler] Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat (#53491) @MetricFlowAI
+#### Added - for new features
 
----
+#### Changed - for changes in existing functionality
 
-march 02, 2025_
+#### Deprecated - for soon-to-be removed features
 
-### `ATSPM V5.0`
+#### Removed - for now-removed features
 
-### ReportApi
+#### Fixed - for any bug fixes
 
-- [ReportAI] Lorem ipsum dolor sit amet, consectetur adipiscing elit (#51234) @TrafficNerd42
-- [SignalAnalytics] Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (#50987) @RoadSyncDev
-- [DataVisualizer] Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat (#50721) @SignalGuru99
+#### Security - for vulnerabilities fixed
 
-### ConfigApi
+-->
 
-- [ConfigAPI] Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur (#53412) @TrafficControlX
-- [SignalConfig] Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum (#53188) @IntersectionOpt
-- [ConfigSync] Lorem ipsum dolor sit amet, consectetur adipiscing elit (#52943) @SignalMetricsPro
+## v5.1.0
+Date: 2025-06-17
+
+### What's Changed
+
+In ATSPM 5.1, we have fixed various bugs affecting functionality and security, while also adding the Transit Signal Priority report.
+
+#### Added
+
+##### Reports Dropdown
+
+In the left drawer of the website, we have added a new tab called "Reports." The new "Transit Signal Priority" report and "Left Turn Gap" report can be found in this drop down.
+
+##### Transit Signal Priority
+
+The "Transit Signal Priority" report provides the ability to save report parameters to run for future use. The report generates a table with the following columns:
+
+  - Plan
+  - No. of Cycles
+  - Phase No. 
+  - Programmed Split (sec)
+  - TSP Max
+  - Max Reduction
+  - Max Extension
+  - Priority Min
+  - Priority Max
+  - Min Green
+  - Yellow
+  - Red Clearance
+  - Min Time
+  - 85th Percentile Split (sec)
+  - 50th Percentile Split (sec)
+  - Average Split (sec)
+  - Force Offs / Max Outs (%)
+  - Gap Outs (%)
+  - Skips (%)
+  - Result Notes
+  - Skips > 70% TSP Max
+  - Force Offs < 40% TSP Max
+  - Force Offs < 60% TSP Max
+  - Force Offs < 80% TSP Max
+
+To learn more about the TSP, visit the official ATSPM documentation [HERE](https://drive.google.com/file/d/12iPy2ncM7NOX_Dwuv4ZNTq3PFNeGihnV/view?usp=sharing).
+
+##### Y-Axis Max Setting
+
+We added the Y-Axis Max to some WHICH ONES of the charts as an option to manipulate.
+
+#### Changed
+
+##### Left Turn Gap
+
+The "Left Turn Gap" report is now included in the "Reports" dropdown in the left drawer of the main page.
+
+##### Red X's on Calendar
+
+#### Deprecated
+
+#### Removed
+
+#### Fixed
+
+#### Security
+
+## v5.0.0
+Date: ???
+
+### What's Changed
+
+#### Added
+
+#### Changed
+
+#### Deprecated
+
+#### Removed
+
+#### Fixed
+
+#### Security
