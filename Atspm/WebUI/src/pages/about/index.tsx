@@ -1,5 +1,6 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -165,10 +166,32 @@ const About = () => {
           marginBottom: 4,
           maxWidth: '740px',
           marginX: 'auto',
-          position: 'relative', // for positioning version box
           textAlign: 'center',
+          position: 'relative',
         }}
       >
+        {/* Version block in corner */}
+        <Paper
+          variant="outlined"
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            color: 'text.secondary',
+            backgroundColor: 'background.default',
+            px: 2,
+            py: 1,
+          }}
+        >
+          <span>ATSPM version: {process.env.version}</span>
+        </Paper>
+
+        {/* Main content */}
         <Typography variant="h2" sx={{ mt: 4 }} gutterBottom>
           About ATSPM
         </Typography>
@@ -178,34 +201,28 @@ const About = () => {
           traffic engineers to directly measure what previously could only be
           estimated and modeled.
         </Typography>
-        <Button
-          variant="contained"
-          href="/faq"
-          component={Link}
-          endIcon={<KeyboardDoubleArrowRightIcon />}
-          sx={{ marginTop: 2 }}
-        >
-          Learn more
-        </Button>
 
-        {/* Version info block */}
-        <Paper
-          variant="outlined"
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            textAlign: 'right',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            color: 'text.secondary',
-            backgroundColor: 'background.default',
-            p: 1,
-          }}
-        >
-          ATSPM version 5.0
-        </Paper>
+        {/* FAQ and Changelog buttons */}
+        <Box display="flex" justifyContent="center" gap={2} mt={2}>
+          <Button
+            variant="contained"
+            href="/faq"
+            component={Link}
+            endIcon={<KeyboardDoubleArrowRightIcon />}
+          >
+            View FAQs
+          </Button>
+          <Button
+            variant="outlined"
+            href="https://github.com/OpenSourceTransportation/Atspm/blob/main/CHANGELOG.md"
+            component={Link}
+            endIcon={<OpenInNewIcon />}
+          >
+            View Changelog
+          </Button>
+        </Box>
       </Paper>
+
       <Box marginBottom={2} textAlign={'center'}>
         <Typography variant="h3" fontStyle="italic">
           Presented by

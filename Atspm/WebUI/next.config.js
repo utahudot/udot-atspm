@@ -14,6 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
+const { version } = require('./package.json')
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -22,6 +24,9 @@ module.exports = withBundleAnalyzer({
   reactStrictMode: false,
   transpilePackages: ['react-leaflet'],
   output: 'standalone',
+  env: {
+    version,
+  },
   webpack: (config) => {
     config.experiments = { ...config.experiments, topLevelAwait: true }
     return config
