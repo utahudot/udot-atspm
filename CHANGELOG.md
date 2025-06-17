@@ -1,6 +1,6 @@
 <!-- markdownlint-disable no-duplicate-header no-emphasis-as-heading no-inline-html -->
 
-# React Router Releases
+# ATSPM
 
 This page lists all releases/release notes for ATSPM. 
 
@@ -17,17 +17,17 @@ Date: YYY-MM-DD
 
 ### What's Changed
 
-#### Added - for new features
+### Added - for new features
 
-#### Changed - for changes in existing functionality
+### Changed - for changes in existing functionality
 
-#### Deprecated - for soon-to-be removed features
+### Deprecated - for soon-to-be removed features
 
-#### Removed - for now-removed features
+### Removed - for now-removed features
 
-#### Fixed - for any bug fixes
+### Fixed - for any bug fixes
 
-#### Security - for vulnerabilities fixed
+### Security - for vulnerabilities fixed
 
 -->
 
@@ -38,13 +38,13 @@ Date: 2025-06-17
 
 In ATSPM 5.1, we have fixed various bugs affecting functionality and security, while also adding the Transit Signal Priority report.
 
-#### Added
+### Added
 
-##### Reports Dropdown
+#### Reports Dropdown
 
 In the left drawer of the website, we have added a new tab called "Reports." The new "Transit Signal Priority" report and "Left Turn Gap" report can be found in this drop down.
 
-##### Transit Signal Priority
+#### Transit Signal Priority
 
 The "Transit Signal Priority" report provides the ability to save report parameters to run for future use. The report generates a table with the following columns:
 
@@ -75,25 +75,25 @@ The "Transit Signal Priority" report provides the ability to save report paramet
 
 To learn more about the TSP, visit the official ATSPM documentation [HERE](https://drive.google.com/file/d/12iPy2ncM7NOX_Dwuv4ZNTq3PFNeGihnV/view?usp=sharing).
 
-##### Y-Axis Max Setting
+#### Y-Axis Max Setting
 
 We added the Y-Axis Max to some WHICH ONES of the charts as an option to manipulate.
 
-#### Changed
+### Changed
 
-##### Left Turn Gap
+#### Left Turn Gap
 
 The "Left Turn Gap" report is now included in the "Reports" dropdown in the left drawer of the main page.
 
-##### Red X's on Calendar
+#### Red X's on Calendar
 
-#### Deprecated
+### Deprecated
 
-#### Removed
+### Removed
 
-#### Fixed
+### Fixed
 
-#### Security
+### Security
 
 ## v5.0.0
 Date: ???
