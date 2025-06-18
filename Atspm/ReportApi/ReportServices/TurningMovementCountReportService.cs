@@ -71,17 +71,32 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 parameter.End.AddHours(12)).ToList();
             var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.LocationIdentifier, planEvents);
             var tasks = new List<Task<IEnumerable<TurningMovementCountsLanesResult>>>();
+
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
             {
-                tasks.Add(
-                    GetChartDataForLaneType(
-                    Location,
-                (LaneTypes)laneType,
-                    parameter,
-                    controllerEventLogs,
-                    plans.ToList())
-                    );
+                tasks.Add(Task.Run(async () =>
+                {
+                    try
+                    {
+                        var result = await GetChartDataForLaneType(
+                            Location,
+                            (LaneTypes)laneType,
+                            parameter,
+                            controllerEventLogs,
+                            plans.ToList()
+                        );
+
+                        return result ?? Enumerable.Empty<TurningMovementCountsLanesResult>();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log or handle the exception
+                        Console.WriteLine($"Error in laneType {laneType}: {ex.Message}");
+                        return Enumerable.Empty<TurningMovementCountsLanesResult>();
+                    }
+                }));
             }
+
             var results = await Task.WhenAll(tasks);
 
             var finalLaneResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();

@@ -10,23 +10,34 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
         {
             var memoryStream = (MemoryStream)stream;
             var rootStats = memoryStream.ToArray().FromEncodedJson<Root>().detections;
-            List<Detector> list = device.Location.Approaches.SelectMany(x => x.Detectors).ToList();
-            var response = rootStats.Select(visionCameraDetection =>
-            {
-                var matchingDetector = list.Where(x => x.DectectorIdentifier == visionCameraDetection.zoneName).FirstOrDefault();
-                var timestamp = visionCameraDetection.time;
-                short eventParam = (short)matchingDetector.DetectorChannel;
-                short eventCode = 82; //TODO I think this is correct, but need to verify
+            List<Detector> detectors = device.Location.Approaches.SelectMany(x => x.Detectors).ToList();
 
-                // Create and return the IndianaEvent
-                return new IndianaEvent
+            var response = rootStats
+                .SelectMany(visionCameraDetection =>
                 {
-                    LocationIdentifier = device.Location.LocationIdentifier,
-                    Timestamp = timestamp,
-                    EventCode = eventCode,
-                    EventParam = eventParam
-                };
-            });
+                    var matchingDetectors = detectors
+                        .Where(x => x.DectectorIdentifier == visionCameraDetection.zoneName)
+                        .ToList();
+
+                    if (!matchingDetectors.Any())
+                    {
+                        // No matching detectors, return empty result
+                        return Enumerable.Empty<IndianaEvent>();
+                    }
+
+                    var timestamp = visionCameraDetection.time;
+                    short eventCode = 82; // TODO: Confirm this code
+
+                    return matchingDetectors.Select(detector => new IndianaEvent
+                    {
+                        LocationIdentifier = device.Location.LocationIdentifier,
+                        Timestamp = timestamp,
+                        EventCode = eventCode,
+                        EventParam = (short)detector.DetectorChannel
+                    });
+                })
+                .ToList(); // If you want a concrete list
+
             return response;
         }
 
