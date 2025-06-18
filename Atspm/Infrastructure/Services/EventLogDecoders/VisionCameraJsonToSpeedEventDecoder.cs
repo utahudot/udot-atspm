@@ -10,25 +10,36 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
         {
             var memoryStream = (MemoryStream)stream;
             var rootStats = memoryStream.ToArray().FromEncodedJson<Root>().detections;
-            List<Detector> list = device.Location.Approaches.SelectMany(x => x.Detectors).ToList();
-            var response = rootStats.Select(visionCameraDetection =>
-            {
-                var matchingDetector = list.Where(x => x.DectectorIdentifier == visionCameraDetection.zoneName).FirstOrDefault();
-                var timestamp = visionCameraDetection.time;
-                string detectorId = matchingDetector.Id.ToString();
-                var mph = (int)visionCameraDetection.speed;
-                var kph = ConvertMphToKph(mph);
+            List<Detector> detectors = device.Location.Approaches.SelectMany(x => x.Detectors).ToList();
 
-                // Create and return the SpeedEvent
-                return new SpeedEvent
+            var response = rootStats
+                .SelectMany(visionCameraDetection =>
                 {
-                    LocationIdentifier = device.Location.LocationIdentifier,
-                    Timestamp = timestamp,
-                    DetectorId = detectorId,
-                    Mph = mph,
-                    Kph = kph
-                };
-            });
+                    var matchingDetectors = detectors
+                        .Where(x => x.DectectorIdentifier == visionCameraDetection.zoneName)
+                        .ToList();
+
+                    if (!matchingDetectors.Any())
+                    {
+                        // No matching detectors, return empty result
+                        return Enumerable.Empty<SpeedEvent>();
+                    }
+
+                    var timestamp = visionCameraDetection.time;
+                    var mph = (int)visionCameraDetection.speed;
+                    var kph = ConvertMphToKph(mph);
+
+                    return matchingDetectors.Select(detector => new SpeedEvent
+                    {
+                        LocationIdentifier = device.Location.LocationIdentifier,
+                        Timestamp = timestamp,
+                        DetectorId = detector.Id.ToString(),
+                        Mph = mph,
+                        Kph = kph
+                    });
+                })
+                .ToList();
+
             return response;
         }
 
