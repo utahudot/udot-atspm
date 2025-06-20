@@ -71,15 +71,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
             var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
             var devices = _repository.GetList().Where(device => deviceIdList.Contains(device.Id)).ToList();
-            //var today = DateTime.Today;
-            //var startDate = DateOnly.FromDateTime(today);
-            //var endDate = DateOnly.FromDateTime(today);
-            //DateTime start = startDate.ToDateTime(TimeOnly.MinValue);
-            //DateTime end = endDate.ToDateTime(TimeOnly.MinValue);
-
-            var now = DateTime.Now;
-            DateTime start = now.AddHours(-1); // Start from 1 hour ago
-            DateTime end = now; // Up to now
+            DateTime end = DateTime.Now.AddHours(1); // Set end time to one hour in the future to ensure we capture all events up to now
+            DateTime start = end.Date.AddDays(-1);
 
             List<DeviceEventDownload> devicesEventDownload = new List<DeviceEventDownload>();
 
@@ -95,6 +88,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 foreach (var device in devices)
                 {
                     var eventsPreWorkflow = eventLogRepository.GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
+
                     // Start the workflow
                     await Task.Run(async () =>
                     {
@@ -103,7 +97,15 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                         await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
                     });
                     var eventsPostWorkflow = eventLogRepository.GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
-                    var integer = 4;
+                    //var dataCountsAfter = eventLogRepository
+                    //    .GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id)
+                    //    .Select(e => new
+                    //    {
+                    //        Start = e.Start,
+                    //        End = e.End,
+                    //        DataCount = e.Data.Count()
+                    //    })
+                    //    .ToList();
                     var deviceDownload = new DeviceEventDownload
                     {
                         DeviceId = device.Id,
