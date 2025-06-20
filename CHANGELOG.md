@@ -77,7 +77,13 @@ To learn more about the TSP, visit the official ATSPM documentation [HERE](https
 
 #### Y-Axis Max Setting
 
-We added the Y-Axis Max to some WHICH ONES of the charts as an option to manipulate.
+We added the Y-Axis Max to the following charts as an option to manipulate.
+
+  - Pedestrian Delay
+  - Purdue Coordination Diagram
+  - Split Monitor
+  - Turning Movement Counts
+  - Yellow and Red Actuations
 
 ### Changed
 
