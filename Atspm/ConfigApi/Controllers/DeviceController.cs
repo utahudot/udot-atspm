@@ -123,7 +123,27 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                         {
                             var responseData = await response.Content.ReadFromJsonAsync<CameraDetailsResponse>();
                             List<String> availableCameraIds = responseData.Cameras.Select(i => i.Index).ToList();
-                            return Ok(availableCameraIds.ToArray());
+                            Dictionary<String, String> cameraDictionary = new Dictionary<String, String>();
+
+                            foreach (var cameraId in availableCameraIds)
+                            {
+                                string urlDeviceInfo = $"http://{ipAddress}:{port}/api/v1/cameras/{cameraId}/device-info";
+                                HttpResponseMessage responseDeviceInfo = await client.GetAsync(urlDeviceInfo);
+
+                                if (responseDeviceInfo.IsSuccessStatusCode)
+                                {
+                                    var responseObject = await responseDeviceInfo.Content.ReadFromJsonAsync<CameraSpecificDetailsInfo>();
+                                    String cameraName = responseObject.Name;
+                                    cameraDictionary.Add(cameraName, cameraId);
+                                }
+                                else
+                                {
+                                    var deviceId = responseData.Cameras.Where(boo => boo.Index.Equals(cameraId)).Select(thing => thing.DeviceId).First();
+                                    cameraDictionary.Add($"Camera-{deviceId}", cameraId);
+                                }
+                            }
+
+                            return Ok(cameraDictionary);
                         }
                         return StatusCode((int)response.StatusCode, "Failed to retrieve data from the external service.");
                     }

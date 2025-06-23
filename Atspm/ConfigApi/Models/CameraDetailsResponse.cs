@@ -31,6 +31,15 @@ namespace Utah.Udot.ATSPM.ConfigApi.Models
         public List<CameraDetailsInfo> Cameras { get; set; } = new();
     }
 
+    public class CameraSpecificDetailsInfo
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Model { get; set; }
+        public string FirmwareVersion { get; set; }
+        public string SerialNumber { get; set; }
+    }
+
     public class CameraZoneDetailsInfo
     {
         public string Id { get; set; }
