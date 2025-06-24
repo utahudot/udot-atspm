@@ -16,23 +16,25 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// Filters <see cref="IndianaEvent"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="45"/></item>
-    /// <item><see cref="90"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianCallRegistered"/></item>
+    /// <item><see cref="IndianaEnumerations.PedDetectorOn"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPedCalls : FilterEventCodeBase
+    public class FilteredPedCalls : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilteredPedCalls(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add(45);
-            filteredList.Add(90);
+            filteredList.Add((int)IndianaEnumerations.PedestrianCallRegistered);
+            filteredList.Add((int)IndianaEnumerations.PedDetectorOn);
         }
     }
 }
