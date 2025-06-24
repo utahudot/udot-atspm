@@ -3,6 +3,7 @@ import { useNotificationStore } from '@/stores/notifications'
 import { fetchRouteDistance } from '@/utils/fetchRouteDistance'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import {
+  CircularProgress,
   InputAdornment,
   OutlinedInput,
   Tooltip,
@@ -16,7 +17,7 @@ interface DistanceDisplayInputProps {
   hasErrors: boolean
   link: RouteLocation
   nextLink: RouteLocation
-  handleDistanceChange: (link: RouteLocation, distance: number) => void
+  handleDistanceChange: (locationIdentifier: string, distance: number) => void
 }
 
 const DistanceInput = ({
@@ -27,32 +28,37 @@ const DistanceInput = ({
 }: DistanceDisplayInputProps) => {
   const { addNotification } = useNotificationStore()
   const [rotate, setRotate] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const distance = event.target.value
-    handleDistanceChange(link, distance)
+    const numeric = Number(event.target.value)
+    handleDistanceChange(link.locationIdentifier, numeric)
   }
 
   const handleRecalculateClick = async () => {
-    setRotate((prevState) => !prevState)
-    if (nextLink) {
-      try {
-        const response = await fetchRouteDistance([link, nextLink])
-        if (response) {
-          const distance = Math.round(response.distance)
-          handleDistanceChange(link, distance)
-        } else {
-          addNotification({
-            type: 'error',
-            title: 'Error Calculating Distance',
-          })
-        }
-      } catch (error) {
+    if (!nextLink || loading) return
+
+    setRotate((prev) => !prev)
+    setLoading(true)
+
+    try {
+      const response = await fetchRouteDistance([link, nextLink])
+      if (response) {
+        const distance = Math.round(response.distance)
+        handleDistanceChange(link.locationIdentifier, distance)
+      } else {
         addNotification({
           type: 'error',
-          title: 'Error Calculating Distance',
+          title: 'Error calculating distance',
         })
       }
+    } catch {
+      addNotification({
+        type: 'error',
+        title: 'Error calculating distance',
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -68,21 +74,29 @@ const DistanceInput = ({
             onChange={handleInputChange}
             inputProps={{ 'aria-label': 'distance' }}
             endAdornment={<InputAdornment position="end">ft</InputAdornment>}
+            disabled={loading}
           />
-          <Tooltip title="Recalculate Distance">
-            <IconButton
-              size="small"
-              color="primary"
-              aria-label="recalculate distance"
-              onClick={handleRecalculateClick}
-            >
-              <RefreshIcon
-                sx={{
-                  transform: rotate ? 'rotate(360deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s',
-                }}
-              />
-            </IconButton>
+          <Tooltip title={loading ? 'Calculating…' : 'Recalculate Distance'}>
+            <span>
+              <IconButton
+                size="small"
+                color="primary"
+                aria-label="recalculate distance"
+                onClick={handleRecalculateClick}
+                disabled={loading}
+              >
+                {loading ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <RefreshIcon
+                    sx={{
+                      transform: rotate ? 'rotate(360deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.3s',
+                    }}
+                  />
+                )}
+              </IconButton>
+            </span>
           </Tooltip>
         </>
       ) : (

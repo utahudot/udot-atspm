@@ -45,6 +45,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
 
                         model.Property(p => p.Name).MaxLength = 64;
                         model.Property(p => p.Notes).MaxLength = 512;
+                        model.Property(p => p.Version).MaxLength = 64;
 
                         break;
                     }
