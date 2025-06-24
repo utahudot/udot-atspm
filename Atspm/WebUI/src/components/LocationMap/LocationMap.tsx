@@ -180,7 +180,7 @@ const LocationMap = ({
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',
-        minHeight: '400px',
+        minHeight: mapHeight || '400px',
         width: '100%',
       }}
       ref={setMapRef}

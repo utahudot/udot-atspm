@@ -42,7 +42,8 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasDefaultValue(DateTime.Now);
 
             builder.Property(e => e.Version)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(64);
 
             builder.HasOne(d => d.Parent).WithMany(m => m.Children).HasForeignKey(d => d.ParentId).OnDelete(DeleteBehavior.Restrict);
         }

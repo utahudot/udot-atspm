@@ -201,21 +201,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 var detectorsForDirection = Location.Approaches.Where(a => a.DirectionTypeId == direction).SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).ToList();
 
-                var movementTypesSorted = new List<MovementTypes> { MovementTypes.L, MovementTypes.T, MovementTypes.R };
+                var movementTypesSorted = new List<MovementTypes> { MovementTypes.L, MovementTypes.TL, MovementTypes.T, MovementTypes.TR, MovementTypes.R };
                 foreach (var movementType in movementTypesSorted)
                 {
                     var movementTypeDetectors = new List<Detector>();
-                    if (movementType == MovementTypes.T)
-                    {
-                        movementTypeDetectors = detectorsForDirection.Where(d =>
-                        d.MovementType == MovementTypes.T
-                        || d.MovementType == MovementTypes.TL
-                        || d.MovementType == MovementTypes.TR).ToList();
-                    }
-                    else
-                    {
-                        movementTypeDetectors = detectorsForDirection.Where(d => d.MovementType == movementType).ToList();
-                    }
+                   
+                    movementTypeDetectors = detectorsForDirection.Where(d => d.MovementType == movementType).ToList();
+                    
                     if (!movementTypeDetectors.IsNullOrEmpty())
                     {
                         tasks.Add(GetChartDataByMovementType(
