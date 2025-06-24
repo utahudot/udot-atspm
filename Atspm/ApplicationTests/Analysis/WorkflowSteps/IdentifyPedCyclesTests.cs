@@ -31,6 +31,7 @@ using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
@@ -101,7 +102,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         private IReadOnlyList<IndianaEvent> KeepFirstSequentialEvent(IEnumerable<IndianaEvent> events, IndianaEnumerations eventCode)
         {
             var sort = events.OrderBy(o => o.Timestamp).ToList();
-            
+
             return sort.Where((w, i) => i == 0 || w.EventCode != (int)eventCode || (w.EventCode == (int)eventCode && w.EventCode != sort[i - 1].EventCode)).ToList();
         }
 
@@ -146,6 +147,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                 .Where(w => w.BeginWalk > DateTime.MinValue)
                 .ToList();
 
+
             _output.WriteLine($"{results.Min(m => m.BeginWalk)} - {results.Max(m => m.BeginWalk)}");
 
             //foreach (var r in results)
@@ -168,43 +170,43 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                 f.PedCycles = results.Count(c => f.InRange(c.BeginWalk));
                 f.PedDelay = results.Where(c => f.InRange(c.BeginWalk)).Sum(s => s.PedDelay);
 
-                //these aren't working for all of them
-                f.MinPedDelay = results.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).DefaultIfEmpty(0).Min();
+                f.MinPedDelay = results.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).Where(w => w > 0).DefaultIfEmpty(0).Min();
                 f.MaxPedDelay = results.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).DefaultIfEmpty(0).Max();
 
+
                 f.PedRequests = input.Count(w => w.EventCode == 90 && f.InRange(w.Timestamp));
+
+                var imputedCalls = input.Where(w => w.EventCode == 90 || w.EventCode == 21 || w.EventCode == 67 || w.EventCode == 0).OrderBy(o => o.Timestamp).ToList();
+                f.ImputedPedCallsRegistered = imputedCalls.Where((w, i) => i > 0 && f.InRange(w.Timestamp) && w.EventCode == 90 && (imputedCalls[i - 1].EventCode == 21 || imputedCalls[i - 1].EventCode == 67 || imputedCalls[i - 1].EventCode == 0)).Count();
+
+
+
+                var uniquePedDetections = input
+                .Where(w => w.EventCode == 90)
+                .OrderBy(o => o.Timestamp)
+                .ToList();
+
+                f.UniquePedDetections = uniquePedDetections.SlidingWindow(2)
+                .Where(x => x[1].Timestamp - x[0].Timestamp > TimeSpan.FromSeconds(15))
+                .Count(w => f.InRange(w[1].Timestamp));
+
+
+
+                f.PedBeginWalkCount = input.Count(w => w.EventCode == 21 && f.InRange(w.Timestamp));
+
+
+                f.PedCallsRegisteredCount = input.Count(w => w.EventCode == 45 && f.InRange(w.Timestamp));
             });
 
+
+
             _output.WriteLine($"{tl.Segments.ToList().Count}");
+
             foreach (var r in tl.Segments.ToList())
             {
                 if (r.PedCycles > 0 || r.PedRequests > 0)
                     _output.WriteLine($"{r}");
             }
-
-            //foreach (var t in test)
-            //{
-            //    if (t.EventCode == 90)
-            //    {
-            //        var i = test.IndexOf(t);
-
-            //        if (i > 0 && i <= test.Count)
-            //        {
-            //            double delay = 0;
-
-            //            if (test[i - 1].EventCode == 21 && test[i + 1].EventCode == 22)
-            //                delay = 0;
-
-            //            if (test[i - 1].EventCode == 21 && test[i + 1].EventCode == 21)
-            //                delay = Math.Abs((test[i + 1].Timestamp - t.Timestamp).TotalSeconds);
-
-            //            if (test[i - 1].EventCode == 22 && test[i + 1].EventCode == 21)
-            //                delay = Math.Abs((test[i + 1].Timestamp - t.Timestamp).TotalSeconds);
-
-            //            _output.WriteLine($"{test[i - 1]} - {test[i]} - {test[i + 1]} : {delay}");
-            //        }
-            //    }
-            //}
 
 
             //var preFilter = KeepFirstSequentialEvent(filter, IndianaEnumerations.PedestrianBeginChangeInterval);

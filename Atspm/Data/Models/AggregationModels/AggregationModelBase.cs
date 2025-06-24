@@ -187,7 +187,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public override string ToString()
         {
             //return $"Start: {Start} PhaseNumber: {PhaseNumber}, PedCycles: {PedCycles}, PedDelay: {PedDelay}, MinPedDelay: {MinPedDelay}, MaxPedDelay: {MaxPedDelay}, ImputedPedCallsRegistered: {ImputedPedCallsRegistered}, UniquePedDetections: {UniquePedDetections}, PedBeginWalkCount: {PedBeginWalkCount}, PedCallsRegisteredCount: {PedCallsRegisteredCount}, PedRequests: {PedRequests} End: {End}";
-            return $"Start: {Start}, PedCycles: {PedCycles}, PedDelay: {PedDelay}, MinPedDelay: {MinPedDelay}, MaxPedDelay: {MaxPedDelay}, PedRequests: {PedRequests}, End: {End}";
+            return $"{PedCycles}-{PedDelay}-{MinPedDelay}-{MaxPedDelay}-{PedRequests}-{ImputedPedCallsRegistered}-{UniquePedDetections}-{PedBeginWalkCount}-{PedCallsRegisteredCount}";
         }
     }
 
