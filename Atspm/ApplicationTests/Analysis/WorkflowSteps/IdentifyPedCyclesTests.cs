@@ -111,6 +111,18 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(IdentifyPedCycles), "From File")]
         public void CalculateTotalVolumesIdentifyPedCyclesFromFileTest(Location config, List<IndianaEvent> input, object output)
         {
+            //90, 67, 68 params aren't for phase? btw, there are no 67's in test data
+            //how to get phase number?
+            //aggregation doesn't have approachid only phase number
+            //aggregation is int for peddelay and min max?
+            //aggregation all 15 min into bins or just the ones with data?
+            //if we are going to start on 22, then excel should be updated?
+            //if i use an attribute to organize events into phases, would that affect anything?
+            
+            
+            //var approaches = config.Approaches.ToLookup(l => l.ProtectedPhaseNumber);
+            
+            
             _output.WriteLine($"{config} - {input.Count(c => c.EventCode == 21)}");
 
             var filter = input
@@ -131,17 +143,30 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
                     var pedCycle = new PedCycle()
                     {
-                        PedDetected = x.Item.Timestamp
+                        PedDetectorOn = x.Item.Timestamp
                     };
 
-                    double delay = 0;
-
                     if (prev.EventCode == 21 && next.EventCode == 22)
+                    {
+                        pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = prev.Timestamp;
+                        pedCycle.End = next.Timestamp;
+                    }
+                        
                     else if (prev.EventCode == 21 && next.EventCode == 21)
+                    {
+                        pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = next.Timestamp;
+                        pedCycle.End = next.Timestamp;
+                    }
+                    
                     else if (prev.EventCode == 22 && next.EventCode == 21)
+                    {
+                        pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = next.Timestamp;
+                        pedCycle.End = next.Timestamp;
+                    }
+                    
                     return pedCycle;
                 })
                 .Where(w => w.BeginWalk > DateTime.MinValue)
@@ -164,9 +189,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             tl.Segments.ToList().ForEach(f =>
             {
-                //f.LocationIdentifier = config.LocationIdentifier;
-                //f.PhaseNumber = 2; // Assuming phase number 2 for pedestrian phases
-                //f.ApproachId = config.Approaches.FirstOrDefault()?.ApproachId ?? 0; // Assuming first approach
+                f.LocationIdentifier = config.LocationIdentifier;
+                f.PhaseNumber = 2;
                 f.PedCycles = results.Count(c => f.InRange(c.BeginWalk));
                 f.PedDelay = results.Where(c => f.InRange(c.BeginWalk)).Sum(s => s.PedDelay);
 
@@ -209,75 +233,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
 
 
-            //var preFilter = KeepFirstSequentialEvent(filter, IndianaEnumerations.PedestrianBeginChangeInterval);
-
-            //_output.WriteLine($"counts: {filter.Count} - {preFilter.Count} - {DateTime.MinValue}");
-
-            //preFilter = preFilter.Where(w => w.EventCode == 22).ToList();
-
-            //var test = preFilter
-            //    .Where((w, i) => i < preFilter.Count - 1 && w.EventCode == 22)
-            //    .Select((s, i) => new PedCycle()
-            //    {
-            //        Cycle = i + 1,
-            //        Start = preFilter[i].Timestamp,
-            //        BeginChangeInterval = preFilter[i + 1].Timestamp,
-            //        End = preFilter[i + 1].Timestamp
-            //    }).ToList();
-
-            //test.ForEach(f =>
-            //{
-            //    f.BeginWalk = filter.FirstOrDefault(w => w.EventCode == 21 && f.InRange(w.Timestamp)).Timestamp;
-
-            //    var peds = filter.Where(w => w.EventCode == 90 && f.InRange(w.Timestamp));
-
-            //    if (peds.Any())
-            //        f.PedDetected = peds.FirstOrDefault().Timestamp;
-            //});
-
-
-
-            //var test = filter
-            //    .Select((s, i) =>
-            //{
-            //    if (s.EventCode == 21)
-            //    {
-            //        cycle++;
-
-            //        var test = new PedCycle()
-            //        {
-            //            Cycle = cycle,
-            //            BeginWalk = s.Timestamp,
-            //        };
-
-            //        if (i < filter.Count - 1 && filter[i + 1].EventCode == 22)
-            //        {
-
-            //            test.BeginChangeInterval = filter[i + 1].Timestamp;
-            //        }
-
-            //        if (i < filter.Count - 2 && filter[i + 2].EventCode == 22)
-            //        {
-            //            test.BeginChangeInterval = filter[i + 2].Timestamp;
-            //        }
-
-            //        return test;
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-
-            //})
-            //    .Where(w => w != null)
-            //    .ToList();
-
-            //_output.WriteLine($"{test.Min(m => m.Cycle)} - {test.Max(m => m.Cycle)} --- {test.Count()}");
-
-            //foreach (var t in test.Where(w => w.Detected))
-            //{
-            //    _output.WriteLine($"{t}");
-            //}
 
 
 
