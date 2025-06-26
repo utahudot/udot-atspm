@@ -99,12 +99,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
         }
 
-        private IReadOnlyList<IndianaEvent> KeepFirstSequentialEvent(IEnumerable<IndianaEvent> events, IndianaEnumerations eventCode)
-        {
-            var sort = events.OrderBy(o => o.Timestamp).ToList();
-
-            return sort.Where((w, i) => i == 0 || w.EventCode != (int)eventCode || (w.EventCode == (int)eventCode && w.EventCode != sort[i - 1].EventCode)).ToList();
-        }
+        
 
         [Theory]
         [AnalysisTestData<IdentifyPedCyclesTestData>]
@@ -131,7 +126,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                 .ToList();
 
 
-            var test = KeepFirstSequentialEvent(filter, IndianaEnumerations.PedDetectorOn).ToList();
+            var test = filter.KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn).ToList();
 
             var results = test
                 .Select((t, index) => new { Item = t, Index = index })
