@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -69,7 +71,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
-        /// Tests the correct number of approaches are extracted from the test Location
+        /// Tests the correct number of approaches are extracted from the phaseEvents Location
         /// </summary>
         [Fact]
         [Trait(nameof(GroupApproachesByLocation), "Approaches")]
@@ -123,7 +125,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
-        /// Tests that only events with a LocationIdentifier matching the test Location are forwarded
+        /// Tests that only events with a LocationIdentifier matching the phaseEvents Location are forwarded
         /// </summary>
         [Fact]
         [Trait(nameof(GroupApproachesByLocation), "Location")]
@@ -148,6 +150,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             Assert.Equal(expected, actual);
         }
+
+        
+
+
+        
 
         [Fact]
         public async void Stuff()
@@ -191,61 +198,101 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             //if (att?.IndianaEventParamType == IndianaEventParamType.PhaseNumber &&
 
-            //var test = _testLocation.Approaches
-            //    .GroupJoin(testLogs,
+
+
+            var test = testLogs.GroupEventsByParamType();
+               
+            foreach (var k in test.Select(s => s.Key))
+            {
+                _output.WriteLine($"{k}");
+            }
+
+            //option 1
+            return _testLocation.Approaches
+       .Select(a =>
+           phaseEvents
+               .Where(p => p.EventParam == a.ProtectedPhaseNumber)
+               .Union(nonPhaseEvents)
+               .ToList());
+
+            //option 2
+            var phaseLookup = phaseEvents.ToLookup(p => p.EventParam);
+            return _testLocation.Approaches.Select(a =>
+                phaseLookup[a.ProtectedPhaseNumber].Union(nonPhaseEvents).ToList()
+            );
+
+
+
+
+            //var nonPhaseEvents = testLogs
+            //    .Where(t =>
+            //    Enum.IsDefined(typeof(IndianaEnumerations), (ushort)t.EventCode) &&
+            //    !(((IndianaEnumerations)t.EventCode)
+            //    .GetAttributeOfType<IndianaEventLayerAttribute>()?.IndianaEventParamType == IndianaEventParamType.PhaseNumber))
+            //    .ToList();
+
+            //var phaseEvents = testLogs
+            //    .Where(t =>
+            //    Enum.IsDefined(typeof(IndianaEnumerations), (ushort)t.EventCode) &&
+            //    (((IndianaEnumerations)t.EventCode)
+            //    .GetAttributeOfType<IndianaEventLayerAttribute>()?.IndianaEventParamType == IndianaEventParamType.PhaseNumber))
+            //    .ToList();
+
+            //_output.WriteLine($"a: {nonPhaseEvents.Count} b: {phaseEvents.Count} --- {testLogs.Count}");
+
+            //var joins = _testLocation.Approaches
+            //    .GroupJoin(phaseEvents,
             //    o => o.ProtectedPhaseNumber,
             //    i => i.EventParam,
             //    (o, i) => i)
             //    .ToList();
 
 
+            //foreach (var j in joins)
+            //{
+            //    _output.WriteLine($"before: {j.Count()}");
+
+            //    var yoda = j.Union(nonPhaseEvents);
+
+            //    _output.WriteLine($"after: {yoda.Count()}");
+            //}
 
 
 
-            var nonPhaseEvents = testLogs
-                .Where(t =>
-                Enum.IsDefined(typeof(IndianaEnumerations), (ushort)t.EventCode) &&
-                !(((IndianaEnumerations)t.EventCode)
-                .GetAttributeOfType<IndianaEventLayerAttribute>()?.IndianaEventParamType == IndianaEventParamType.PhaseNumber))
-                .ToList();
-
-            var test = testLogs
-                .Where(t =>
-                Enum.IsDefined(typeof(IndianaEnumerations), (ushort)t.EventCode) &&
-                (((IndianaEnumerations)t.EventCode)
-                .GetAttributeOfType<IndianaEventLayerAttribute>()?.IndianaEventParamType == IndianaEventParamType.PhaseNumber))
-                .ToList();
-
-
-            _output.WriteLine($"a: {nonPhaseEvents.Count} b: {test.Count} --- {testLogs.Count} | {eventCodes.Count}");
-
-            foreach (var n in nonPhaseEvents)
-            {
-                if (Enum.IsDefined(typeof(IndianaEnumerations), (ushort)n.EventCode))
-                {
-                    var en = (IndianaEnumerations)n.EventCode;
-                    var att = en.GetAttributeOfType<IndianaEventLayerAttribute>();
-
-                    _output.WriteLine($"nonPhaseEvents: {n} --- {att?.IndianaEventParamType}");
-                }
-            }
-
-            foreach (var n in test)
-            {
-                if (Enum.IsDefined(typeof(IndianaEnumerations), (ushort)n.EventCode))
-                {
-                    var en = (IndianaEnumerations)n.EventCode;
-                    var att = en.GetAttributeOfType<IndianaEventLayerAttribute>();
-
-                    _output.WriteLine($"nonPhaseEvents: {n} --- {att?.IndianaEventParamType}");
-                }
-            }
 
 
 
-            
 
-            //foreach (var t in test)
+            //foreach (var n in nonPhaseEvents)
+            //{
+            //    if (Enum.IsDefined(typeof(IndianaEnumerations), (ushort)n.EventCode))
+            //    {
+            //        var en = (IndianaEnumerations)n.EventCode;
+            //        var att = en.GetAttributeOfType<IndianaEventLayerAttribute>();
+
+            //        _output.WriteLine($"nonPhaseEvents: {n} --- {att?.IndianaEventParamType}");
+            //    }
+            //}
+
+            //foreach (var n in phaseEvents)
+            //{
+            //    if (Enum.IsDefined(typeof(IndianaEnumerations), (ushort)n.EventCode))
+            //    {
+            //        var en = (IndianaEnumerations)n.EventCode;
+            //        var att = en.GetAttributeOfType<IndianaEventLayerAttribute>();
+
+            //        _output.WriteLine($"nonPhaseEvents: {n} --- {att?.IndianaEventParamType}");
+            //    }
+            //}
+
+
+
+
+
+
+
+
+            //foreach (var t in phaseEvents)
             //{
             //    _output.WriteLine($"group");
 
