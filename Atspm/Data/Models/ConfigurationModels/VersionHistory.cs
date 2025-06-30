@@ -46,7 +46,7 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <summary>
         /// Version number
         /// </summary>
-        public int Version { get; set; }
+        public string Version { get; set; }
 
         /// <summary>
         /// Item parent id

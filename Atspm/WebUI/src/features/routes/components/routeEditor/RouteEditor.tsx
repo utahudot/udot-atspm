@@ -25,7 +25,7 @@ interface RouteEditorProps {
   hasErrors: boolean
   onAddRoute: () => void
   onDragEnd: (result: DropResult) => void
-  handleDistanceChange: (link: RouteLocation, distance: number) => void
+  handleDistanceChange: (locationIdentifier: string, distance: number) => void
   handleDirectionUpdate: (updatedLink: RouteLocation) => void
   handleDeleteLink: (link: RouteLocation) => void
   handleSaveRoute: () => void

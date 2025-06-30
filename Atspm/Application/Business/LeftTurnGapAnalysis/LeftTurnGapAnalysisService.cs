@@ -173,50 +173,50 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
 
 
                 if (!items.Any()) continue;
-                gaps1.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter1)));
-                gaps2.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter2)));
-                gaps3.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter3)));
-                gaps4.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter4)));
+                gaps1.Add(new DataPointForInt(lowerTimeLimit, items.Sum(x => x.GapCounter1)));
+                gaps2.Add(new DataPointForInt(lowerTimeLimit, items.Sum(x => x.GapCounter2)));
+                gaps3.Add(new DataPointForInt(lowerTimeLimit, items.Sum(x => x.GapCounter3)));
+                gaps4.Add(new DataPointForInt(lowerTimeLimit, items.Sum(x => x.GapCounter4)));
                 var localTotal = items.Sum(x => x.GapCounter1) + items.Sum(x => x.GapCounter2)
                                                                + items.Sum(x => x.GapCounter3) +
                                                                items.Sum(x => x.GapCounter4);
                 if (options.Gap5Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter5);
-                    gaps5.Add(new DataPointForInt(upperTimeLimit, sum));
+                    gaps5.Add(new DataPointForInt(lowerTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap6Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter6);
-                    gaps6.Add(new DataPointForInt(upperTimeLimit, sum));
+                    gaps6.Add(new DataPointForInt(lowerTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap7Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter7);
-                    gaps7.Add(new DataPointForInt(upperTimeLimit, sum));
+                    gaps7.Add(new DataPointForInt(lowerTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap8Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter8);
-                    gaps8.Add(new DataPointForInt(upperTimeLimit, sum));
+                    gaps8.Add(new DataPointForInt(lowerTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap9Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter9);
-                    gaps9.Add(new DataPointForInt(upperTimeLimit, sum));
+                    gaps9.Add(new DataPointForInt(lowerTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap10Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter10);
-                    gaps10.Add(new DataPointForInt(upperTimeLimit, sum));
+                    gaps10.Add(new DataPointForInt(lowerTimeLimit, sum));
                     localTotal += sum;
                 }
-                percentTurnableSeries.Add(new DataPointForDouble(upperTimeLimit, items.Average(x => x.PercentPhaseTurnable) * 100));
+                percentTurnableSeries.Add(new DataPointForDouble(lowerTimeLimit, items.Average(x => x.PercentPhaseTurnable) * 100));
 
                 if (localTotal > highestTotal)
                     highestTotal = localTotal;

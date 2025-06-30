@@ -444,20 +444,23 @@ namespace Utah.Udot.Atspm.TempExtensions
             double offset,
             double latencyCorrection)
         {
-            var result = events.Where(e =>
-            eventCodes.Contains(e.EventCode)
-            && e.EventParam == param
-            && e.Timestamp >= startTime
-            && e.Timestamp < endTime);
-
-            foreach (var item in result)
-            {
-                item.Timestamp = item.Timestamp.AddMilliseconds(offset);
-                item.Timestamp = item.Timestamp.AddSeconds(0 - latencyCorrection);
-            }
-
-            return result.ToList();
+            return events
+                .Where(e =>
+                    eventCodes.Contains(e.EventCode) &&
+                    e.EventParam == param &&
+                    e.Timestamp >= startTime &&
+                    e.Timestamp < endTime)
+                .Select(e => new IndianaEvent
+                {
+                    EventCode = e.EventCode,
+                    EventParam = e.EventParam,
+                    Timestamp = e.Timestamp
+                        .AddMilliseconds(offset)
+                        .AddSeconds(-latencyCorrection),
+                })
+                .ToList();
         }
+
 
         public static IReadOnlyList<IndianaEvent> GetEventsByEventCodes(
             this IEnumerable<IndianaEvent> events,
