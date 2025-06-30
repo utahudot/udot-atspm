@@ -21,26 +21,24 @@ import { DropResult } from '@hello-pangea/dnd'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import { Box, Button, Paper, TextField } from '@mui/material'
 import { useRouter } from 'next/router'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 
 const RouteAdmin = () => {
   const pageAccess = useViewPage(PageNames.Routes)
-
   const router = useRouter()
   const { id } = router.query
-
   const { addNotification } = useNotificationStore()
 
   const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
   const { data: route } = useGetRouteRouteViewFromId(id as unknown as number)
   const { data: routeDistancesData } = useGetRouteDistance()
   const { mutate: updateRoute } = useUpsertRouteRoute()
-
   const { data: directionTypes } = useConfigEnums(ConfigEnum.DirectionTypes)
 
   const [location, setLocation] = useState<Location | null>(null)
   const [routePolyline, setRoutePolyline] = useState<number[][]>([])
   const [updatedRoute, setUpdatedRoute] = useState<Route>()
+  const [hasLoaded, setHasLoaded] = useState(false)
   const [hasErrors, setHasErrors] = useState(false)
   const [routeDistances, setRouteDistances] = useState<RouteDistance[]>([])
 
@@ -52,65 +50,72 @@ const RouteAdmin = () => {
     }
   }, [routeDistancesData])
 
-  useEffect(() => {
-    if (!(route && locations && routeDistances) || pageAccess.isLoading) {
-      return
-    }
-
-    route.routeLocations.sort((a, b) => a.order - b.order)
-    setUpdatedRoute(route)
-    if (route.routeLocations.length >= 2) {
-      fetchRouteDistanceAndUpdatePolyline(route.routeLocations)
-    }
-  }, [route, locations, routeDistances, pageAccess.isLoading])
-
-  const fetchRouteDistanceAndUpdatePolyline = async (
-    routeLocations: RouteLocation[]
-  ) => {
-    if (routeLocations.length < 2) {
-      setRoutePolyline([])
-      return
-    }
-
-    try {
-      const polylineResponse = await fetchRouteDistance(routeLocations)
-      if (polylineResponse) {
-        setRoutePolyline(polylineResponse.shape)
+  const fetchRouteDistanceAndUpdatePolyline = useCallback(
+    async (routeLocations: RouteLocation[]) => {
+      if (routeLocations.length < 2) {
+        setRoutePolyline([])
+        return
       }
-    } catch (error) {
-      addNotification({
-        type: 'error',
-        title: 'Error fetching route distance',
-      })
+      try {
+        const polylineResponse = await fetchRouteDistance(routeLocations)
+        if (polylineResponse) {
+          setRoutePolyline(polylineResponse.shape)
+        }
+      } catch {
+        addNotification({
+          type: 'error',
+          title: 'Error fetching route distance',
+        })
+      }
+    },
+    [addNotification]
+  )
+
+  useEffect(() => {
+    if (hasLoaded) return
+
+    if (!route || !locations || !routeDistances || pageAccess.isLoading) {
+      return
     }
-  }
+
+    const sortedLocations = [...route.routeLocations].sort(
+      (a, b) => a.order - b.order
+    )
+    setUpdatedRoute({ ...route, routeLocations: sortedLocations })
+    setHasLoaded(true)
+
+    if (sortedLocations.length >= 2) {
+      fetchRouteDistanceAndUpdatePolyline(sortedLocations)
+    }
+  }, [
+    route,
+    locations,
+    routeDistances,
+    pageAccess.isLoading,
+    hasLoaded,
+    fetchRouteDistanceAndUpdatePolyline,
+  ])
 
   if (!updatedRoute || !locations || !routeDistances) {
-    return
+    return null
   }
 
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination || !updatedRoute) return
-
-    if (result.destination.index === result.source.index) return
+    if (!result.destination) return
 
     const items = Array.from(updatedRoute.routeLocations)
-    const [reorderedItem] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reorderedItem)
+    const [moved] = items.splice(result.source.index, 1)
+    items.splice(result.destination.index, 0, moved)
 
-    // Update the order property of each routeLocation based on the new order
-    const updatedItems = items.map((item, index) => ({
+    const reIndexed = items.map((item, idx) => ({
       ...item,
-      order: index,
+      order: idx,
     }))
 
-    let affectedIndices = [result.destination.index]
-
-    // Find the affected links based on the source and destination indices
+    let affectedIndices: number[] = [result.destination.index]
     if (result.destination.index > 0) {
       affectedIndices.push(result.destination.index - 1)
     }
-
     if (result.destination.index > result.source.index) {
       if (result.source.index > 0) {
         affectedIndices.push(result.source.index - 1)
@@ -118,43 +123,38 @@ const RouteAdmin = () => {
     } else {
       affectedIndices.push(result.source.index)
     }
+    affectedIndices = Array.from(new Set(affectedIndices))
 
-    // Ensure unique indices in case of overlap
-    affectedIndices = [...new Set(affectedIndices)]
-
-    // Update the distances for the affected links
-    affectedIndices.forEach((index) => {
-      const currentItem = updatedItems[index]
-      const nextItem = updatedItems[index + 1]
-
-      if (nextItem) {
-        const distance = findRouteDistance(
-          currentItem,
-          nextItem.locationIdentifier,
+    affectedIndices.forEach((i) => {
+      const curr = reIndexed[i]
+      const next = reIndexed[i + 1]
+      if (next) {
+        curr.nextLocationDistance = findRouteDistance(
+          curr,
+          next.locationIdentifier,
           routeDistances
         )
-        currentItem.nextLocationDistance = distance
       } else {
-        currentItem.nextLocationDistance = null
+        curr.nextLocationDistance = null
       }
     })
 
-    fetchRouteDistanceAndUpdatePolyline(updatedItems)
+    fetchRouteDistanceAndUpdatePolyline(reIndexed)
 
-    setUpdatedRoute((prevRoute) => ({
-      ...prevRoute,
-      routeLocations: updatedItems,
+    setUpdatedRoute((prev) => ({
+      ...prev!,
+      routeLocations: reIndexed,
     }))
   }
 
   const onAddRoute = () => {
     if (!location || !updatedRoute) return
-    const locationExists = updatedRoute.routeLocations.find(
+    const exists = updatedRoute.routeLocations.some(
       (link) => link.locationIdentifier === location.locationIdentifier
     )
-    if (locationExists) return
+    if (exists) return
 
-    const newRouteLocation = {
+    const newLink: RouteLocation = {
       routeId: updatedRoute.id,
       locationId: location.id,
       locationIdentifier: location.locationIdentifier,
@@ -175,150 +175,160 @@ const RouteAdmin = () => {
       nextLocationDistanceId: null,
     }
 
-    const updatedRouteLocations = [
-      ...updatedRoute.routeLocations,
-      newRouteLocation,
-    ]
-
-    setUpdatedRoute((prevRoute) => ({
-      ...prevRoute,
-      routeLocations: updatedRouteLocations,
+    const newList = [...updatedRoute.routeLocations, newLink]
+    setUpdatedRoute((prev) => ({
+      ...prev!,
+      routeLocations: newList,
     }))
-    fetchRouteDistanceAndUpdatePolyline(updatedRouteLocations)
+
+    fetchRouteDistanceAndUpdatePolyline(newList)
     setLocation(null)
   }
 
-  const handleDistanceChange = (link: RouteLocation, distance: number) => {
-    const routeLocationIndex = updatedRoute.routeLocations.findIndex(
-      (routeLocation) =>
-        routeLocation.locationIdentifier === link.locationIdentifier
-    )
+  const handleDistanceChange = (
+    locationIdentifier: string,
+    distance: number
+  ) => {
+    setUpdatedRoute((prevRoute) => {
+      if (!prevRoute) return prevRoute
 
-    if (routeLocationIndex === -1) return
+      // Find the index of the link:
+      const idx = prevRoute.routeLocations.findIndex(
+        (rl) => rl.locationIdentifier === locationIdentifier
+      )
+      if (idx === -1) return prevRoute
 
-    const nextLink = updatedRoute.routeLocations[routeLocationIndex + 1]
-    if (!nextLink) return // Ensure nextLink exists
+      const thisLink = prevRoute.routeLocations[idx]
+      const nextLink = prevRoute.routeLocations[idx + 1]
+      if (!nextLink) return prevRoute
 
-    // Find or create the routeDistance
-    let routeDistance = findRouteDistance(
-      link,
-      nextLink.locationIdentifier,
-      routeDistances
-    ) || {
-      locationIdentifierA: link.locationIdentifier,
-      locationIdentifierB: nextLink.locationIdentifier,
-      distance,
-    }
+      const existingDist = findRouteDistance(
+        thisLink,
+        nextLink.locationIdentifier,
+        routeDistances
+      )
+      const newDistObj = existingDist
+        ? existingDist.distance === distance
+          ? existingDist
+          : { ...existingDist, distance }
+        : {
+            locationIdentifierA: thisLink.locationIdentifier,
+            locationIdentifierB: nextLink.locationIdentifier,
+            distance,
+          }
 
-    // Update the routeDistance if it already exists
-    if (routeDistance.distance !== distance) {
-      routeDistance = { ...routeDistance, distance }
-    }
-
-    // Update the route locations
-    const updatedRouteLocations = updatedRoute.routeLocations.map(
-      (routeLocation, idx) => {
-        if (idx === routeLocationIndex) {
-          return { ...routeLocation, nextLocationDistance: routeDistance }
-        }
-        return routeLocation
+      if (!existingDist || existingDist.distance !== newDistObj.distance) {
+        setRouteDistances((prev) => {
+          const filtered = prev.filter(
+            (d) =>
+              !(
+                d.locationIdentifierA === newDistObj.locationIdentifierA &&
+                d.locationIdentifierB === newDistObj.locationIdentifierB
+              )
+          )
+          return [...filtered, newDistObj]
+        })
       }
-    )
 
-    setUpdatedRoute({ ...updatedRoute, routeLocations: updatedRouteLocations })
+      const newLocations = prevRoute.routeLocations.map((rl, i) =>
+        i === idx
+          ? {
+              ...rl,
+              nextLocationDistance: newDistObj,
+            }
+          : rl
+      )
+
+      return {
+        ...prevRoute,
+        routeLocations: newLocations,
+      }
+    })
   }
 
   const handleDirectionChange = (updatedLink: RouteLocation) => {
-    const updatedLinks = updatedRoute.routeLocations.map((routeLocation) => {
-      if (routeLocation.locationIdentifier === updatedLink.locationIdentifier) {
-        return updatedLink
-      }
-      return routeLocation
-    })
-    setUpdatedRoute({ ...updatedRoute, routeLocations: updatedLinks })
+    setUpdatedRoute((prev) => ({
+      ...prev,
+      routeLocations: prev!.routeLocations.map((rl) =>
+        rl.locationIdentifier === updatedLink.locationIdentifier
+          ? updatedLink
+          : rl
+      ),
+    }))
   }
 
   const handleDeleteLink = (link: RouteLocation) => {
-    // Find index of the link to be deleted
-    const index = updatedRoute.routeLocations.findIndex(
-      (routeLocation) =>
-        routeLocation.locationIdentifier === link.locationIdentifier
+    if (!updatedRoute) return
+    const idx = updatedRoute.routeLocations.findIndex(
+      (rl) => rl.locationIdentifier === link.locationIdentifier
     )
+    if (idx === -1) return
 
-    // If there is a preceding link, set its nextLocationDistance to null
-    if (index > 0) {
-      updatedRoute.routeLocations[index - 1].nextLocationDistance =
-        findRouteDistance(
-          updatedRoute.routeLocations[index - 1],
-          updatedRoute.routeLocations[index + 1]?.locationIdentifier,
-          routeDistances
-        )
+    // Update the previous link’s distance (if any) to skip over the deleted one:
+    if (idx > 0) {
+      const prevLink = updatedRoute.routeLocations[idx - 1]
+      const nextAfterDeleted = updatedRoute.routeLocations[idx + 1]
+      prevLink.nextLocationDistance = nextAfterDeleted
+        ? findRouteDistance(
+            prevLink,
+            nextAfterDeleted.locationIdentifier,
+            routeDistances
+          )
+        : null
     }
 
-    // Filter out the deleted link from the route
-    let updatedLinks = updatedRoute.routeLocations.filter(
-      (routeLocation) =>
-        routeLocation.locationIdentifier !== link.locationIdentifier
+    let filtered = updatedRoute.routeLocations.filter(
+      (rl) => rl.locationIdentifier !== link.locationIdentifier
+    )
+    // Decrement order on everything after the deleted index:
+    filtered = filtered.map((rl, i) =>
+      i >= idx ? { ...rl, order: rl.order - 1 } : rl
     )
 
-    // Decrement the order of all links after the deleted one
-    if (index < updatedRoute.routeLocations.length - 1) {
-      updatedLinks = updatedLinks.map((routeLocation, i) => {
-        if (i >= index) {
-          return { ...routeLocation, order: routeLocation.order - 1 }
-        }
-        return routeLocation
-      })
-    }
-
-    fetchRouteDistanceAndUpdatePolyline(updatedLinks)
-    setUpdatedRoute({ ...updatedRoute, routeLocations: updatedLinks })
+    fetchRouteDistanceAndUpdatePolyline(filtered)
+    setUpdatedRoute((prev) => ({
+      ...prev,
+      routeLocations: filtered,
+    }))
   }
 
-  const handleEditRouteName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setUpdatedRoute({ ...updatedRoute, name: value })
+  const handleEditRouteName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdatedRoute((prev) => ({
+      ...prev,
+      name: e.target.value,
+    }))
   }
 
   const handleSaveRoute = async () => {
     if (!updatedRoute || !updatedRoute.id) return
 
-    const hasErrors = updatedRoute.routeLocations.some(
-      (routeLocation, index) => {
-        const isNotLast = index !== updatedRoute.routeLocations.length - 1
-        const hasDistanceError =
-          isNotLast && !routeLocation.nextLocationDistance
-        const hasDirectionError =
-          !routeLocation.primaryDirectionId ||
-          !routeLocation.opposingDirectionId
-        return hasDistanceError || hasDirectionError
-      }
-    )
+    const hasErrorsLocal = updatedRoute.routeLocations.some((rl, i) => {
+      const notLast = i !== updatedRoute.routeLocations.length - 1
+      const missingDist = notLast && !rl.nextLocationDistance
+      const missingDir = !rl.primaryDirectionId || !rl.opposingDirectionId
+      return missingDist || missingDir
+    })
 
-    if (hasErrors) {
+    if (hasErrorsLocal) {
       setHasErrors(true)
       return
     }
     setHasErrors(false)
 
-    const clonedRoute = JSON.parse(JSON.stringify(updatedRoute)) as Route
-    clonedRoute.routeLocations.forEach((routeLocation) => {
-      routeLocation.primaryDirectionId =
-        directionTypes?.find(
-          (directionType) =>
-            directionType.name === routeLocation.primaryDirectionId
-        )?.value || null
-      routeLocation.opposingDirectionId =
-        directionTypes?.find(
-          (directionType) =>
-            directionType.name === routeLocation.opposingDirectionId
-        )?.value || null
+    const cloned: Route = JSON.parse(JSON.stringify(updatedRoute))
+    cloned.routeLocations.forEach((rl) => {
+      rl.primaryDirectionId =
+        directionTypes?.find((dt) => dt.name === rl.primaryDirectionId)
+          ?.value || null
+      rl.opposingDirectionId =
+        directionTypes?.find((dt) => dt.name === rl.opposingDirectionId)
+          ?.value || null
     })
 
     updateRoute(
-      { key: clonedRoute.id, data: clonedRoute },
+      { key: cloned.id, data: cloned },
       {
-        onSuccess: (savedRoute: Route) => {
+        onSuccess: (savedRoute) => {
           addNotification({
             type: 'success',
             title: 'Route saved successfully',
@@ -327,11 +337,11 @@ const RouteAdmin = () => {
           savedRoute.routeLocations.sort((a, b) => a.order - b.order)
           setUpdatedRoute(savedRoute)
         },
-        onError: (error) => {
+        onError: (err) => {
           addNotification({
             type: 'error',
             title: 'Error saving route',
-            message: error.message,
+            message: err.message,
           })
         },
       }
@@ -341,10 +351,10 @@ const RouteAdmin = () => {
   return (
     <Box>
       <Box
-        display={'flex'}
-        flexDirection={'column'}
-        width={'200px'}
-        alignItems={'start'}
+        display="flex"
+        flexDirection="column"
+        width="200px"
+        alignItems="start"
       >
         <Button
           onClick={() => navigateToPage('/admin/routes')}
@@ -372,7 +382,7 @@ const RouteAdmin = () => {
               ]
             }
             zoom={13}
-            mapHeight={'calc(100vh - 330px)'}
+            mapHeight="calc(100vh - 330px)"
           />
         </Paper>
         <RouteEditor
@@ -400,10 +410,9 @@ function findRouteDistance(
 ) {
   return (
     routeDistances.find(
-      (routeDistance) =>
-        routeLocation.locationIdentifier ===
-          routeDistance.locationIdentifierA &&
-        nextLocationIdentifier === routeDistance.locationIdentifierB
+      (rd) =>
+        routeLocation.locationIdentifier === rd.locationIdentifierA &&
+        nextLocationIdentifier === rd.locationIdentifierB
     ) || null
   )
 }

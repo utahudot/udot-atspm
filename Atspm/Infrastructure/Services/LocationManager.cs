@@ -34,7 +34,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
 
         public LocationManager(ILocationRepository locations, IDeviceRepository devices)
         {
-
+            _locations = locations ?? throw new ArgumentNullException(nameof(locations));
+            _devices = devices ?? throw new ArgumentNullException(nameof(devices));
         }
 
         public async Task CopyLocationToNewVersion(int key)
