@@ -50,7 +50,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             _testLocation = testLocation.TestLocation;
         }
 
-        [Fact()]
+        [Fact(Skip = "use to generate test files")]
         public async Task Stuff()
         {
             {
