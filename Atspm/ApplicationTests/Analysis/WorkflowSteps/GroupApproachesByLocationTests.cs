@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/GroupSignalsByApproachesTests.cs
+// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/GroupApproachesByLocationTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,10 +150,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             Assert.Equal(expected, actual);
         }
 
-        
 
 
-        
+
+
 
         [Fact]
         public async void Stuff()
@@ -201,25 +200,25 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
 
             var test = testLogs.GroupEventsByParamType();
-               
+
             foreach (var k in test.Select(s => s.Key))
             {
                 _output.WriteLine($"{k}");
             }
 
             //option 1
-       //     return _testLocation.Approaches
-       //.Select(a =>
-       //    phaseEvents
-       //        .Where(p => p.EventParam == a.ProtectedPhaseNumber)
-       //        .Union(nonPhaseEvents)
-       //        .ToList());
+            //     return _testLocation.Approaches
+            //.Select(a =>
+            //    phaseEvents
+            //        .Where(p => p.EventParam == a.ProtectedPhaseNumber)
+            //        .Union(nonPhaseEvents)
+            //        .ToList());
 
-       //     //option 2
-       //     var phaseLookup = phaseEvents.ToLookup(p => p.EventParam);
-       //     return _testLocation.Approaches.Select(a =>
-       //         phaseLookup[a.ProtectedPhaseNumber].Union(nonPhaseEvents).ToList()
-       //     );
+            //     //option 2
+            //     var phaseLookup = phaseEvents.ToLookup(p => p.EventParam);
+            //     return _testLocation.Approaches.Select(a =>
+            //         phaseLookup[a.ProtectedPhaseNumber].Union(nonPhaseEvents).ToList()
+            //     );
 
 
 

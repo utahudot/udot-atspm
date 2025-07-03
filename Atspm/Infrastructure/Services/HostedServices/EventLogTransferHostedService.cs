@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/EventAggregationHostedService.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/EventLogTransferHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -105,6 +105,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 Console.WriteLine($"batch complete: {i + 1}");
             }
-        }     
+        }
     }
 }

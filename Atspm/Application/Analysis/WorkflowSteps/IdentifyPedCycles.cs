@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/CalculateTotalVolumes.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/IdentifyPedCycles.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,12 +16,9 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Common;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
@@ -40,7 +37,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         }
     }
 
-    public class  PedCycle : StartEndRange
+    public class PedCycle : StartEndRange
     {
         public DateTime BeginWalk { get; set; }
         //public DateTime BeginChangeInterval { get; set; }
@@ -82,7 +79,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             //    if (att.IndianaEventParamType == IndianaEventParamType.PhaseNumber && )
             //    {
-                    
+
             //    }
             //}
 
