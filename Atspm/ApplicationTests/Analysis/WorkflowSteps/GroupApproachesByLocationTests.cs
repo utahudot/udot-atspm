@@ -208,18 +208,18 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
 
             //option 1
-            return _testLocation.Approaches
-       .Select(a =>
-           phaseEvents
-               .Where(p => p.EventParam == a.ProtectedPhaseNumber)
-               .Union(nonPhaseEvents)
-               .ToList());
+       //     return _testLocation.Approaches
+       //.Select(a =>
+       //    phaseEvents
+       //        .Where(p => p.EventParam == a.ProtectedPhaseNumber)
+       //        .Union(nonPhaseEvents)
+       //        .ToList());
 
-            //option 2
-            var phaseLookup = phaseEvents.ToLookup(p => p.EventParam);
-            return _testLocation.Approaches.Select(a =>
-                phaseLookup[a.ProtectedPhaseNumber].Union(nonPhaseEvents).ToList()
-            );
+       //     //option 2
+       //     var phaseLookup = phaseEvents.ToLookup(p => p.EventParam);
+       //     return _testLocation.Approaches.Select(a =>
+       //         phaseLookup[a.ProtectedPhaseNumber].Union(nonPhaseEvents).ToList()
+       //     );
 
 
 
