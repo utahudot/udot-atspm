@@ -16,27 +16,29 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// Filters <see cref="IndianaEvent"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="21"/></item>
-    /// <item><see cref="22"/></item>
-    /// <item><see cref="67"/></item>
-    /// <item><see cref="68"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginChangeInterval"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginClearance"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPedPhaseData : FilterEventCodeBase
+    public class FilteredPedPhaseData : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilteredPedPhaseData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add(21);
-            filteredList.Add(22);
-            filteredList.Add(67);
-            filteredList.Add(68);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginWalk);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginChangeInterval);
+            filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginWalk);
+            filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginClearance);
         }
     }
 }
