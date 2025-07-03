@@ -53,10 +53,16 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Aggregation
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("timestamp");
+
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType");
+                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType", "Start", "End");
 
                     b.ToTable("CompressedAggregations", t =>
                         {

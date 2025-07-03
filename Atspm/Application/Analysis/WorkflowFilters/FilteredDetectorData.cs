@@ -17,11 +17,12 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// Filters <see cref="IndianaEvent"/> workflow events to
     /// <list type="bullet">
     /// <item><see cref="IndianaEnumerations.VehicleDetectorOff"/></item>
     /// <item><see cref="IndianaEnumerations.VehicleDetectorOn"/></item>
