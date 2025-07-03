@@ -1,6 +1,6 @@
 #region license
 // Copyright 2025 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/CalculateTotalVolumesTests.cs
+// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/IdentifyPedCyclesTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
@@ -99,7 +96,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
         }
 
-        
+
 
         [Theory]
         [AnalysisTestData<IdentifyPedCyclesTestData>]
@@ -113,11 +110,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             //aggregation all 15 min into bins or just the ones with data?
             //if we are going to start on 22, then excel should be updated?
             //if i use an attribute to organize events into phases, would that affect anything?
-            
-            
+
+
             //var approaches = config.Approaches.ToLookup(l => l.ProtectedPhaseNumber);
-            
-            
+
+
             _output.WriteLine($"{config} - {input.Count(c => c.EventCode == 21)}");
 
             var filter = input
@@ -147,21 +144,21 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                         pedCycle.BeginWalk = prev.Timestamp;
                         pedCycle.End = next.Timestamp;
                     }
-                        
+
                     else if (prev.EventCode == 21 && next.EventCode == 21)
                     {
                         pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = next.Timestamp;
                         pedCycle.End = next.Timestamp;
                     }
-                    
+
                     else if (prev.EventCode == 22 && next.EventCode == 21)
                     {
                         pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = next.Timestamp;
                         pedCycle.End = next.Timestamp;
                     }
-                    
+
                     return pedCycle;
                 })
                 .Where(w => w.BeginWalk > DateTime.MinValue)
