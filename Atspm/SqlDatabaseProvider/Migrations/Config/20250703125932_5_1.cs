@@ -1,20 +1,4 @@
-﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for SqlDatabaseProvider - Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations/20250327174318_5_1.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -53,12 +37,22 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                 unicode: false,
                 nullable: true);
 
+            migrationBuilder.AlterColumn<string>(
+                name: "Version",
+                table: "VersionHistory",
+                type: "varchar(64)",
+                unicode: false,
+                maxLength: 64,
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Date",
                 table: "VersionHistory",
                 type: "datetime2",
                 nullable: false,
-                defaultValue: new DateTime(2025, 3, 27, 11, 43, 16, 934, DateTimeKind.Local).AddTicks(577),
+                defaultValue: new DateTime(2025, 7, 3, 6, 59, 30, 738, DateTimeKind.Local).AddTicks(4621),
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
                 oldDefaultValue: new DateTime(2025, 2, 27, 9, 29, 9, 10, DateTimeKind.Local).AddTicks(3603));
@@ -88,6 +82,19 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                 type: "varchar(max)",
                 unicode: false,
                 nullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Routes",
+                type: "varchar(100)",
+                unicode: false,
+                maxLength: 100,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "varchar(50)",
+                oldUnicode: false,
+                oldMaxLength: 50,
+                oldNullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
@@ -644,8 +651,8 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                     Name = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
                     Option = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MeasureTypeId = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Modified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     ModifiedBy = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
                 },
@@ -1351,34 +1358,34 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                 table: "MeasureOptions",
                 keyColumn: "Id",
                 keyValue: 116,
-                columns: new[] { "Created", "CreatedBy", "MeasureTypeId", "Modified", "ModifiedBy", "Option", "Value" },
-                values: new object[] { null, null, 37, null, null, "combineLanes", "FALSE" });
+                columns: new[] { "Created", "CreatedBy", "Modified", "ModifiedBy" },
+                values: new object[] { null, null, null, null });
 
             migrationBuilder.UpdateData(
                 table: "MeasureOptions",
                 keyColumn: "Id",
                 keyValue: 117,
-                columns: new[] { "Created", "CreatedBy", "MeasureTypeId", "Modified", "ModifiedBy", "Value" },
-                values: new object[] { null, null, 2, null, null, "100" });
+                columns: new[] { "Created", "CreatedBy", "Modified", "ModifiedBy" },
+                values: new object[] { null, null, null, null });
 
             migrationBuilder.UpdateData(
                 table: "MeasureOptions",
                 keyColumn: "Id",
                 keyValue: 118,
-                columns: new[] { "Created", "CreatedBy", "MeasureTypeId", "Modified", "ModifiedBy", "Value" },
-                values: new object[] { null, null, 6, null, null, "150" });
+                columns: new[] { "Created", "CreatedBy", "Modified", "ModifiedBy" },
+                values: new object[] { null, null, null, null });
 
             migrationBuilder.UpdateData(
                 table: "MeasureOptions",
                 keyColumn: "Id",
                 keyValue: 119,
-                columns: new[] { "Created", "CreatedBy", "MeasureTypeId", "Modified", "ModifiedBy", "Value" },
-                values: new object[] { null, null, 3, null, null, "180" });
+                columns: new[] { "Created", "CreatedBy", "Modified", "ModifiedBy" },
+                values: new object[] { null, null, null, null });
 
             migrationBuilder.InsertData(
                 table: "MeasureOptions",
                 columns: new[] { "Id", "Created", "CreatedBy", "MeasureTypeId", "Modified", "ModifiedBy", "Option", "Value" },
-                values: new object[] { 120, null, null, 11, null, null, "yAxisDefault", "20" });
+                values: new object[] { 120, null, null, 5, null, null, "yAxisDefault", "300" });
 
             migrationBuilder.UpdateData(
                 table: "MeasureType",
@@ -2020,6 +2027,16 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                 name: "ModifiedBy",
                 table: "Approaches");
 
+            migrationBuilder.AlterColumn<int>(
+                name: "Version",
+                table: "VersionHistory",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "varchar(64)",
+                oldUnicode: false,
+                oldMaxLength: 64);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Date",
                 table: "VersionHistory",
@@ -2028,35 +2045,20 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                 defaultValue: new DateTime(2025, 2, 27, 9, 29, 9, 10, DateTimeKind.Local).AddTicks(3603),
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValue: new DateTime(2025, 3, 27, 11, 43, 16, 934, DateTimeKind.Local).AddTicks(577));
+                oldDefaultValue: new DateTime(2025, 7, 3, 6, 59, 30, 738, DateTimeKind.Local).AddTicks(4621));
 
-            migrationBuilder.UpdateData(
-                table: "MeasureOptions",
-                keyColumn: "Id",
-                keyValue: 116,
-                columns: new[] { "MeasureTypeId", "Option", "Value" },
-                values: new object[] { 2, "yAxisDefault", "100" });
-
-            migrationBuilder.UpdateData(
-                table: "MeasureOptions",
-                keyColumn: "Id",
-                keyValue: 117,
-                columns: new[] { "MeasureTypeId", "Value" },
-                values: new object[] { 6, "150" });
-
-            migrationBuilder.UpdateData(
-                table: "MeasureOptions",
-                keyColumn: "Id",
-                keyValue: 118,
-                columns: new[] { "MeasureTypeId", "Value" },
-                values: new object[] { 3, "180" });
-
-            migrationBuilder.UpdateData(
-                table: "MeasureOptions",
-                keyColumn: "Id",
-                keyValue: 119,
-                columns: new[] { "MeasureTypeId", "Value" },
-                values: new object[] { 11, "20" });
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Routes",
+                type: "varchar(50)",
+                unicode: false,
+                maxLength: 50,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "varchar(100)",
+                oldUnicode: false,
+                oldMaxLength: 100,
+                oldNullable: true);
         }
     }
 }

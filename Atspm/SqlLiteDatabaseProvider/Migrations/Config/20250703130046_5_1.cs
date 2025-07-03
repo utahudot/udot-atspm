@@ -1,29 +1,12 @@
-﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for PostgreSQLDatabaseProvider - Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config/20250403181102_tsp.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
+namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 {
     /// <inheritdoc />
-    public partial class tsp : Migration
+    public partial class _5_1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,608 +14,618 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "WatchDogIgnoreEvents",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "WatchDogIgnoreEvents",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "WatchDogIgnoreEvents",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "WatchDogIgnoreEvents",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Version",
+                table: "VersionHistory",
+                type: "TEXT",
+                unicode: false,
+                maxLength: 64,
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "INTEGER");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Date",
                 table: "VersionHistory",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: false,
-                defaultValue: new DateTime(2025, 4, 3, 12, 11, 1, 914, DateTimeKind.Local).AddTicks(4508),
+                defaultValue: new DateTime(2025, 7, 3, 7, 0, 43, 975, DateTimeKind.Local).AddTicks(6286),
                 oldClrType: typeof(DateTime),
-                oldType: "timestamp",
-                oldDefaultValue: new DateTime(2025, 2, 27, 9, 24, 49, 960, DateTimeKind.Local).AddTicks(1714));
+                oldType: "TEXT",
+                oldDefaultValue: new DateTime(2025, 2, 27, 9, 30, 47, 162, DateTimeKind.Local).AddTicks(348));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "VersionHistory",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "VersionHistory",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "VersionHistory",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "VersionHistory",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Routes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Routes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Routes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Routes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "RouteLocations",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "RouteLocations",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "RouteLocations",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "RouteLocations",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "RouteDistances",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "RouteDistances",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "RouteDistances",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "RouteDistances",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Regions",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Regions",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Regions",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Regions",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Products",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Products",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Products",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Products",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "MenuItems",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "MenuItems",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "MenuItems",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "MenuItems",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "MeasureType",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "MeasureType",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "MeasureType",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "MeasureType",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "MeasureOptions",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "MeasureOptions",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "MeasureOptions",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "MeasureOptions",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "MeasureComments",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "MeasureComments",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "MeasureComments",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "MeasureComments",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "LocationTypes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "LocationTypes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "LocationTypes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "LocationTypes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Locations",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Locations",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Locations",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Locations",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Jurisdictions",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Jurisdictions",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Jurisdictions",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Jurisdictions",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Faqs",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Faqs",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Faqs",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Faqs",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "DirectionTypes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "DirectionTypes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "DirectionTypes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "DirectionTypes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Devices",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Devices",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Devices",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Devices",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "DeviceConfigurations",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "DeviceConfigurations",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "DeviceConfigurations",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "DeviceConfigurations",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Detectors",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Detectors",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Detectors",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Detectors",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "DetectorComments",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "DetectorComments",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "DetectorComments",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "DetectorComments",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "DetectionTypes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "DetectionTypes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "DetectionTypes",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "DetectionTypes",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Areas",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Areas",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Areas",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Areas",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Created",
                 table: "Approaches",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Approaches",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Modified",
                 table: "Approaches",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ModifiedBy",
                 table: "Approaches",
-                type: "text",
+                type: "TEXT",
                 unicode: false,
                 nullable: true);
 
@@ -640,15 +633,15 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                 name: "MeasureOptionPresets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Option = table.Column<string>(type: "text", nullable: true),
-                    MeasureTypeId = table.Column<int>(type: "integer", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp", nullable: true),
-                    Modified = table.Column<DateTime>(type: "timestamp", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", unicode: false, nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", unicode: false, nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", unicode: false, maxLength: 512, nullable: true),
+                    Option = table.Column<string>(type: "TEXT", nullable: true),
+                    MeasureTypeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Modified = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    CreatedBy = table.Column<string>(type: "TEXT", unicode: false, nullable: true),
+                    ModifiedBy = table.Column<string>(type: "TEXT", unicode: false, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1376,6 +1369,11 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                 columns: new[] { "Created", "CreatedBy", "Modified", "ModifiedBy" },
                 values: new object[] { null, null, null, null });
 
+            migrationBuilder.InsertData(
+                table: "MeasureOptions",
+                columns: new[] { "Id", "Created", "CreatedBy", "MeasureTypeId", "Modified", "ModifiedBy", "Option", "Value" },
+                values: new object[] { 120, null, null, 5, null, null, "yAxisDefault", "300" });
+
             migrationBuilder.UpdateData(
                 table: "MeasureType",
                 keyColumn: "Id",
@@ -1621,6 +1619,11 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                 columns: new[] { "Created", "CreatedBy", "Modified", "ModifiedBy" },
                 values: new object[] { null, null, null, null });
 
+            migrationBuilder.InsertData(
+                table: "MeasureType",
+                columns: new[] { "Id", "Abbreviation", "Created", "CreatedBy", "DisplayOrder", "Modified", "ModifiedBy", "Name", "ShowOnAggregationSite", "ShowOnWebsite" },
+                values: new object[] { 38, "TSP", null, null, 132, null, null, "Transit Signal Priority", false, false });
+
             migrationBuilder.CreateIndex(
                 name: "IX_MeasureOptionPresets_MeasureTypeId",
                 table: "MeasureOptionPresets",
@@ -1633,6 +1636,16 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
             migrationBuilder.DropTable(
                 name: "MeasureOptionPresets");
 
+            migrationBuilder.DeleteData(
+                table: "MeasureOptions",
+                keyColumn: "Id",
+                keyValue: 120);
+
+            migrationBuilder.DeleteData(
+                table: "MeasureType",
+                keyColumn: "Id",
+                keyValue: 38);
+
             migrationBuilder.DropColumn(
                 name: "Created",
                 table: "WatchDogIgnoreEvents");
@@ -2000,16 +2013,26 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
             migrationBuilder.DropColumn(
                 name: "ModifiedBy",
                 table: "Approaches");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Version",
+                table: "VersionHistory",
+                type: "INTEGER",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "TEXT",
+                oldUnicode: false,
+                oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Date",
                 table: "VersionHistory",
-                type: "timestamp",
+                type: "TEXT",
                 nullable: false,
-                defaultValue: new DateTime(2025, 2, 27, 9, 24, 49, 960, DateTimeKind.Local).AddTicks(1714),
+                defaultValue: new DateTime(2025, 2, 27, 9, 30, 47, 162, DateTimeKind.Local).AddTicks(348),
                 oldClrType: typeof(DateTime),
-                oldType: "timestamp",
-                oldDefaultValue: new DateTime(2025, 4, 3, 12, 11, 1, 914, DateTimeKind.Local).AddTicks(4508));
+                oldType: "TEXT",
+                oldDefaultValue: new DateTime(2025, 7, 3, 7, 0, 43, 975, DateTimeKind.Local).AddTicks(6286));
         }
     }
 }
