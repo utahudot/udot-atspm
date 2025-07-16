@@ -119,7 +119,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 var query = parameter?.DeviceConfiguration?.Query.Select(s => new ObjectPropertyParser(parameter, s).ToString()).ToArray();
                 var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
                 var operationTimeout = parameter?.DeviceConfiguration?.OperationTimeout ?? 2000;
-                var props = parameter?.DeviceConfiguration?.ConnectionProperties.ToDictionary(k => k.Key, k => k.Value.ToString());
+                var props = parameter?.DeviceConfiguration?.ConnectionProperties?.ToDictionary(k => k.Key, k => k.Value.ToString());
 
                 using (client)
                 {
