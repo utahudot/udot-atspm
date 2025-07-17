@@ -50,15 +50,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
         public TemplateLocationModifiedDto SyncNewLocationDetectorsAndApproaches(int locationId)
         {
             DateTime now = DateTime.Now;
-            var yesterday = now.Date.AddDays(-1).ToString("yyyy-MM-dd");
+            DateTime yesterday = DateTime.Today.AddDays(-1);
             var sourceLocation = _locationRepository.GetVersionByIdDetached(locationId);
             if (sourceLocation != null)
             {
-                DateOnly dateOnly = DateOnly.Parse(yesterday);
-                DateTime dateTime = dateOnly.ToDateTime(TimeOnly.MinValue);
-
-                var compressedLocationsEvents = _eventLogRepository.GetArchivedEvents(sourceLocation.LocationIdentifier, dateTime, dateTime);
-                var indianaEvents = compressedLocationsEvents.Where(l => l.DataType == typeof(IndianaEvent)).SelectMany(s => s.Data).Cast<IndianaEvent>();
+                var compressedLocationsEvents = _eventLogRepository.GetArchivedEvents(sourceLocation.LocationIdentifier, yesterday, now);
+                var indianaEvents = compressedLocationsEvents.Where(l => l.DataType == typeof(IndianaEvent)).SelectMany(s => s.Data).ToList().Cast<IndianaEvent>();
                 return ModifyLocationWithEvents(sourceLocation, indianaEvents);
             }
             else
@@ -85,7 +82,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             var overlapPhasesInUse = cycleEvents.Where(d => ((d.EventCode == 61) || (d.EventCode == 63) || (d.EventCode == 64))).Select(d => d.EventParam).Distinct();
             var pedestrianPhasesInUse = cycleEvents.Where(d => (d.EventCode == 90)).Select(d => d.EventParam).Distinct();
 
-            var detectorChannel = indianaEvents.Where(d => d.EventCode == 82).Select(d => d.EventParam).Distinct();
+            var detectorChannelsInUse = indianaEvents.Where(d => d.EventCode == 82).Select(d => d.EventParam).Distinct();
 
             var newVersion = (Location)sourceLocation.Clone();
             // Detach the original entity
@@ -95,35 +92,39 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             // Step 1: Partition the approaches into kept and removed
             var removedApproaches = newVersion.Approaches
                 .Where(approach =>
-                    !((approach.PermissivePhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.PermissivePhaseNumber)) ||
+                    !(((approach.PermissivePhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.PermissivePhaseNumber)) ||
                       (approach.ProtectedPhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.ProtectedPhaseNumber)) ||
                       (approach.PedestrianPhaseNumber == null ? false : pedestrianPhasesInUse.Contains((short)approach.PedestrianPhaseNumber)) ||
                       (approach.PermissivePhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PermissivePhaseNumber) && approach.IsPermissivePhaseOverlap == true)) ||
                       (approach.ProtectedPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.ProtectedPhaseNumber) && approach.IsProtectedPhaseOverlap == true)) ||
-                      (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true))))
+                      (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true)))
+                      || (approach.Detectors.Where(det => detectorChannelsInUse.Contains((short)det.DetectorChannel)).ToList().Count >= 1)))
                 .ToList();
 
-            newVersion.Approaches = newVersion.Approaches
+            var savedApproaches = newVersion.Approaches
                 .Where(approach =>
-                    ((approach.PermissivePhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.PermissivePhaseNumber)) ||
+                    (((approach.PermissivePhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.PermissivePhaseNumber)) ||
                       (approach.ProtectedPhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.ProtectedPhaseNumber)) ||
                       (approach.PedestrianPhaseNumber == null ? false : pedestrianPhasesInUse.Contains((short)approach.PedestrianPhaseNumber)) ||
                       (approach.PermissivePhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PermissivePhaseNumber) && approach.IsPermissivePhaseOverlap == true)) ||
                       (approach.ProtectedPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.ProtectedPhaseNumber) && approach.IsProtectedPhaseOverlap == true)) ||
-                      (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true))))
+                      (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true)))
+                      || (approach.Detectors.Where(det => detectorChannelsInUse.Contains((short)det.DetectorChannel)).ToList().Count >= 1)))
                 .ToList();
 
             var removedDetectors = new List<string>();
+            newVersion.Approaches = savedApproaches;
+
             // Step 1: Filter and save the Detectors for each Approach
             foreach (var approach in newVersion.Approaches)
             {
                 removedDetectors.AddRange(approach.Detectors
-                    .Where(det => !detectorChannel.Contains((short)det.DetectorChannel))
+                    .Where(det => !detectorChannelsInUse.Contains((short)det.DetectorChannel))
                     .Select(det => det.DetectorChannel.ToString())
                     .ToList());
 
                 approach.Detectors = approach.Detectors
-                    .Where(det => detectorChannel.Contains((short)det.DetectorChannel))
+                    .Where(det => detectorChannelsInUse.Contains((short)det.DetectorChannel))
                     .ToList();
             }
 
@@ -134,7 +135,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                 .ToList();
 
             // Step 3: Find all detectorChannels from the input array that are not attached to any approach
-            var unattachedDetectorChannels = detectorChannel.Except(usedDetectorChannels).ToList();
+            var unattachedDetectorChannels = detectorChannelsInUse.Except(usedDetectorChannels).ToList();
 
             var usedProtectedOrPermissivePhases = newVersion.Approaches
                 .SelectMany(approach => new List<int?>
