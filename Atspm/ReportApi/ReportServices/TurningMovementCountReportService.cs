@@ -119,69 +119,121 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     finalResultcheck.Table.Add(turningMovementCountData);
                 }
             }
-            finalResultcheck.PeakHour = FindPeakHour(finalResultcheck.Table);
-            SetPeakHourFactor(finalResultcheck);
+            ComputePeakHourAndFactor(finalResultcheck, parameter.Start, parameter.End, parameter.BinSize);
             SetPeakHourVolume(finalResultcheck);
             return finalResultcheck;
         }
 
-        private void SetPeakHourVolume(TurningMovementCountsResult turningMovementCountsResult)
+        private void SetPeakHourVolume(TurningMovementCountsResult result)
         {
-            foreach (var lane in turningMovementCountsResult.Table)
+            if (!result.PeakHour.HasValue)
             {
-                lane.PeakHourVolume = new DataPointForInt(turningMovementCountsResult.PeakHour.Key, lane.Volumes
-                    .Where(t => t.Timestamp >= turningMovementCountsResult.PeakHour.Key
-                                                   && t.Timestamp < turningMovementCountsResult.PeakHour.Key.AddHours(1))
-                    .Sum(t => t.Value));
+                foreach (var lane in result.Table)
+                    lane.PeakHourVolume = null;
+                return;
+            }
+
+            var peakStart = result.PeakHour.Value.Key;
+            const int AGG = 15;  
+            const int QUARTS = 4; 
+
+            foreach (var lane in result.Table)
+            {
+                int hourTotal = 0;
+
+                for (int i = 0; i < QUARTS; i++)
+                {
+                    var binStart = peakStart.AddMinutes(i * AGG);
+                    var binEnd = binStart.AddMinutes(AGG);
+
+                    hourTotal += lane.Volumes
+                        .Where(v => v.Timestamp >= binStart && v.Timestamp < binEnd)
+                        .Sum(v => v.Value);
+                }
+
+                lane.PeakHourVolume = new DataPointForInt(peakStart, hourTotal);
             }
         }
 
-        private void SetPeakHourFactor(TurningMovementCountsResult turningMovementCountsResult)
+
+        private void ComputePeakHourAndFactor(
+             TurningMovementCountsResult result,
+             DateTime periodStart,
+             DateTime periodEnd,
+             int binSizeMinutes)
         {
-            try
+            if (60 % binSizeMinutes != 0 || (periodEnd - periodStart).TotalMinutes < 60)
             {
-                if (turningMovementCountsResult.Table
-                        .Where(t => t.LaneType == "Vehicle")
-                        .SelectMany(t => t.Volumes)
-                        .Where(t => t.Timestamp >= turningMovementCountsResult.PeakHour.Key
-                                    && t.Timestamp < turningMovementCountsResult.PeakHour.Key.AddHours(1))
-                        .Count() > 0)
+                result.PeakHour = null;
+                result.PeakHourFactor = null;
+                return;
+            }
+
+            var allBins = result.Table
+                .Where(l => l.LaneType == "Vehicle")
+                .SelectMany(l => l.Volumes)
+                .Where(v => v.Timestamp >= periodStart && v.Timestamp < periodEnd)
+                .GroupBy(v => v.Timestamp)
+                .Select(g => new { Time = g.Key, Sum = g.Sum(v => v.Value) })
+                .OrderBy(x => x.Time)
+                .ToList();
+
+            int binsPerHour = 60 / binSizeMinutes;
+            if (allBins.Count < binsPerHour)
+            {
+                result.PeakHour = null;
+                result.PeakHourFactor = null;
+                return;
+            }
+
+            int bestSum = 0;
+            DateTime bestStart = DateTime.MinValue;
+            for (int i = 0; i + binsPerHour <= allBins.Count; i++)
+            {
+                int windowSum = 0;
+                for (int j = 0; j < binsPerHour; j++)
+                    windowSum += allBins[i + j].Sum;
+
+                if (windowSum > bestSum)
                 {
-                    var maxCount = turningMovementCountsResult.Table
-                        .Where(t => t.LaneType == "Vehicle")
-                        .SelectMany(t => t.Volumes)
-                        .GroupBy(t => t.Timestamp)
-                        .Select(t => new { Id = t.Key, Count = t.Sum(y => y.Value) })
-                        .Max(t => t.Count);
-                    double denominator = 4 * maxCount;
-                    if (denominator != 0)
-                        turningMovementCountsResult.PeakHourFactor = Math.Round(turningMovementCountsResult.PeakHour.Value / denominator, 2);
+                    bestSum = windowSum;
+                    bestStart = allBins[i].Time;
                 }
             }
-            catch
-            {
-                throw new Exception("Error Setting Peak Hour");
-            }
-        }
 
-        private KeyValuePair<DateTime, int> FindPeakHour(List<TurningMovementCountData> turnningMovementCountData)
-        {
-            var binStartTimes = turnningMovementCountData.SelectMany(t => t.Volumes).Select(v => v.Timestamp).Distinct().OrderBy(r => r).ToList();
-            var totalVolume = new KeyValuePair<DateTime, int>(DateTime.MinValue, 0);
+            result.PeakHour = new KeyValuePair<DateTime, int>(bestStart, bestSum);
 
-            foreach (var date in binStartTimes)
+            if (15 % binSizeMinutes != 0)
             {
-                var tempVolume = turnningMovementCountData
-                    .Where(t => t.LaneType == "Vehicle")
-                    .SelectMany(t => t.Volumes)
-                    .Where(t =>
-                        t.Timestamp >= date
-                        && t.Timestamp < date.AddHours(1))
-                    .Sum(t => t.Value);
-                if (tempVolume > totalVolume.Value)
-                    totalVolume = new KeyValuePair<DateTime, int>(date, tempVolume);
+                result.PeakHourFactor = null;
+                return;
             }
-            return totalVolume;
+
+            var hourBins = allBins
+                .Where(x => x.Time >= bestStart && x.Time < bestStart.AddHours(1))
+                .Select(x => x.Sum)
+                .ToList();
+
+            if (hourBins.Count == 0)
+            {
+                result.PeakHourFactor = null;
+                return;
+            }
+
+            var quarterSums = new int[4];
+            foreach (var x in allBins.Where(b => b.Time >= bestStart && b.Time < bestStart.AddHours(1)))
+            {
+                int minsPast = (int)(x.Time - bestStart).TotalMinutes;
+                int idx = Math.Min(3, minsPast / 15);
+                quarterSums[idx] += x.Sum;
+            }
+
+            int peakQuarter = quarterSums.Max();
+            int denom = peakQuarter * 4;
+
+            result.PeakHourFactor = denom == 0
+                ? (double?)null
+                : Math.Round((double)bestSum / denom, 2);
         }
 
         private async Task<IEnumerable<TurningMovementCountsLanesResult>> GetChartDataForLaneType(
