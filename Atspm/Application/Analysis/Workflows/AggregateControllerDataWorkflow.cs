@@ -150,25 +150,127 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
+    public class SpeedAggregationWorkflow : AggregationWorkflowBase<ApproachSpeedAggregation>
+    {
+        /// <inheritdoc/>
+        public SpeedAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
+        {
+        }
+        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterEventsByType<SpeedEvent> FilterSpeedEvents { get; set; }
+        public FilteredIndianaAndSpeedData FilterIndianaAndSpeedEvents { get; set; }
+        public GroupLocationApproachByParameter GroupPriorityNumber { get; private set; }
+        public AggregateSpeedItemEvents AggregateSpeedItemEvents { get; private set; }
 
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(FilterIndianaEvents);
+            Steps.Add(FilterSpeedEvents);
+            Steps.Add(FilterIndianaAndSpeedEvents);
+            Steps.Add(GroupPriorityNumber);
+            Steps.Add(AggregateSpeedItemEvents);
+        }
 
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            FilterIndianaEvents = new(executionBlockOptions);
+            FilterSpeedEvents = new(executionBlockOptions);
+            FilterIndianaAndSpeedEvents = new(executionBlockOptions);
+            GroupPriorityNumber = new(executionBlockOptions);
+            AggregateSpeedItemEvents = new(TimeSpan.FromMinutes(15), executionBlockOptions);
+        }
 
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            //TODO - This needs help because it is indiana and speed events
+            //Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterIndianaEvents.LinkTo(FilterSpeedEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterSpeedEvents.LinkTo(FilterIndianaAndSpeedEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterIndianaAndSpeedEvents.LinkTo(GroupPriorityNumber, new DataflowLinkOptions() { PropagateCompletion = true });
+            //GroupPriorityNumber.LinkTo(AggregateSpeedItemEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
+            //AggregateSpeedItemEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
 
+    public class SplitMonitorAggregationWorkflow : AggregationWorkflowBase<PhaseSplitMonitorAggregation>
+    {
+        /// <inheritdoc/>
+        public SplitMonitorAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
+        {
+        }
 
+        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilteredSplitMonitor FilteredSplitMonitor { get; set; }
+        public AggregateSplitMonitor AggregateSplitMonitor { get; private set; }
 
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(FilterIndianaEvents);
+            Steps.Add(FilteredSplitMonitor);
+            Steps.Add(AggregateSplitMonitor);
+        }
 
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            FilterIndianaEvents = new(executionBlockOptions);
+            FilteredSplitMonitor = new(executionBlockOptions);
+            AggregateSplitMonitor = new(TimeSpan.FromMinutes(15), executionBlockOptions);
+        }
 
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterIndianaEvents.LinkTo(FilteredSplitMonitor, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredSplitMonitor.LinkTo(AggregateSplitMonitor, new DataflowLinkOptions() { PropagateCompletion = true });
 
+            AggregateSplitMonitor.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
 
+    public class SplitFailureAggregationWorkflow : AggregationWorkflowBase<ApproachSplitFailAggregation>
+    {
+        /// <inheritdoc/>
+        public SplitFailureAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
+        {
+        }
 
+        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilteredSplitFail FilteredSplitFail { get; set; }
+        public AggregateSplitFailure AggregateSplitFailure { get; private set; }
 
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(FilterIndianaEvents);
+            Steps.Add(FilteredSplitFail);
+            Steps.Add(AggregateSplitFailure);
+        }
 
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            FilterIndianaEvents = new(executionBlockOptions);
+            FilteredSplitFail = new(executionBlockOptions);
+            AggregateSplitFailure = new(TimeSpan.FromMinutes(15), executionBlockOptions);
+        }
 
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterIndianaEvents.LinkTo(FilteredSplitFail, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredSplitFail.LinkTo(AggregateSplitFailure, new DataflowLinkOptions() { PropagateCompletion = true });
 
-
-
-
+            AggregateSplitFailure.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
 
     public class PhaseTerminationAggregationWorkflow : AggregationWorkflowBase<PhaseTerminationAggregation>
     {
