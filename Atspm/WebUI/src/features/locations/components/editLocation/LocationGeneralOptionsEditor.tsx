@@ -93,8 +93,6 @@ const LocationGeneralOptionsEditor = () => {
     handleLocationEdit(name, value as string)
   }
 
-  console.log('location', location)
-
   const handleSaveGeneralLocation = () => {
     const { approaches, region, jurisdiction, devices, ...generalInfo } =
       location
