@@ -53,10 +53,16 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations.Aggregation
                         .HasMaxLength(32)
                         .HasColumnType("NVARCHAR2(32)");
 
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TIMESTAMP(7)");
+
                     b.Property<byte[]>("Data")
                         .HasColumnType("RAW(2000)");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType");
+                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType", "Start", "End");
 
                     b.ToTable("CompressedAggregations", t =>
                         {

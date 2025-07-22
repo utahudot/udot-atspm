@@ -107,6 +107,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Description")
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
@@ -125,6 +132,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<int>("LocationId")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<int?>("Mph")
                         .HasColumnType("NUMBER(10)");
@@ -162,6 +176,20 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -186,6 +214,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(5)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -194,6 +229,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("Id");
 
@@ -300,6 +342,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("ApproachId")
                         .HasColumnType("NUMBER(10)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("TIMESTAMP(7)");
 
@@ -336,6 +385,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int?>("MinSpeedFilter")
                         .HasColumnType("NUMBER(10)");
 
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int?>("MovementDelay")
                         .HasColumnType("NUMBER(10)");
 
@@ -366,8 +422,22 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(256)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int>("DetectorId")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TIMESTAMP(7)");
@@ -389,6 +459,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<int?>("DeviceConfigurationId")
                         .HasColumnType("NUMBER(10)");
@@ -431,6 +508,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<bool>("LoggingEnabled")
                         .HasColumnType("BOOLEAN");
 
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
@@ -465,6 +549,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)")
                         .HasDefaultValueSql("((2000))");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Decoders")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
@@ -479,6 +570,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<int>("LoggingOffset")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
@@ -546,6 +644,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(5)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(30)
                         .IsUnicode(false)
@@ -553,6 +658,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("Id");
 
@@ -641,6 +753,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("CLOB");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
 
@@ -649,6 +768,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasMaxLength(256)
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(256)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("Id");
 
@@ -820,6 +946,20 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(50)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Mpo")
                         .HasMaxLength(50)
                         .IsUnicode(false)
@@ -855,6 +995,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("BOOLEAN");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int?>("JurisdictionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)")
@@ -874,6 +1021,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<double>("Longitude")
                         .HasColumnType("BINARY_DOUBLE");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Note")
                         .IsRequired()
@@ -932,9 +1086,23 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Icon")
                         .IsUnicode(true)
                         .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -985,11 +1153,25 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(255)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TIMESTAMP(7)");
@@ -1012,8 +1194,22 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Option")
                         .HasMaxLength(128)
@@ -1426,6 +1622,56 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                             MeasureTypeId = 11,
                             Option = "yAxisDefault",
                             Value = "20"
+                        },
+                        new
+                        {
+                            Id = 120,
+                            MeasureTypeId = 5,
+                            Option = "yAxisDefault",
+                            Value = "300"
+                        });
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<int>("MeasureTypeId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(512)");
+
+                    b.Property<string>("Option")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeasureTypeId");
+
+                    b.ToTable("MeasureOptionPresets", t =>
+                        {
+                            t.HasComment("Measure Option Presets");
                         });
                 });
 
@@ -1442,8 +1688,22 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(8)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
@@ -1778,6 +2038,15 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                             Name = "Ramp Metering",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = true
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Abbreviation = "TSP",
+                            DisplayOrder = 132,
+                            Name = "Transit Signal Priority",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = false
                         });
                 });
 
@@ -1788,6 +2057,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
@@ -1801,6 +2077,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<string>("Link")
                         .HasMaxLength(4000)
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
@@ -1831,6 +2114,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(48)
@@ -1842,6 +2132,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasMaxLength(48)
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(48)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
@@ -1868,11 +2165,25 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(50)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("Id");
 
@@ -1890,10 +2201,24 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(100)");
 
                     b.HasKey("Id");
 
@@ -1911,6 +2236,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<double>("Distance")
                         .HasColumnType("BINARY_DOUBLE");
 
@@ -1925,6 +2257,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("Id");
 
@@ -1945,6 +2284,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<bool>("IsOpposingOverlap")
                         .HasColumnType("BOOLEAN");
 
@@ -1956,6 +2302,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(10)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<int?>("NextLocationDistanceId")
                         .HasColumnType("NUMBER(10)");
@@ -2061,10 +2414,24 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP(7)")
-                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 26, 38, 588, DateTimeKind.Local).AddTicks(4189));
+                        .HasDefaultValue(new DateTime(2025, 7, 3, 7, 2, 10, 247, DateTimeKind.Local).AddTicks(939));
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2080,8 +2447,11 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("NUMBER(10)");
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(64)");
 
                     b.HasKey("Id");
 
@@ -2107,6 +2477,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int?>("ComponentType")
                         .HasColumnType("NUMBER(10)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<DateTime>("End")
                         .HasColumnType("TIMESTAMP(7)");
 
@@ -2118,6 +2495,13 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
@@ -2336,6 +2720,17 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Navigation("MeasureType");
                 });
 
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+                {
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
+                        .WithMany("MeasureOptionPresets")
+                        .HasForeignKey("MeasureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasureType");
+                });
+
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MenuItem", b =>
                 {
                     b.HasOne("Utah.Udot.Atspm.Data.Models.MenuItem", "Parent")
@@ -2491,6 +2886,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureType", b =>
                 {
+                    b.Navigation("MeasureOptionPresets");
+
                     b.Navigation("MeasureOptions");
                 });
 
