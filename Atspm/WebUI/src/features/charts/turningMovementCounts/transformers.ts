@@ -55,13 +55,22 @@ export default function transformTurningMovementCountsData(
 
   charts.sort((a, b) => {
     const directionOrder = ['North', 'South', 'East', 'West']
+    const movementOrder = ['Left', 'Thru', 'Right']
+
     const titleA = a.chart.displayProps.description
     const titleB = b.chart.displayProps.description
-    const directionA = directionOrder.find((dir) => titleA.includes(dir))
-    const directionB = directionOrder.find((dir) => titleB.includes(dir))
-    return (
+
+    const directionA = directionOrder.find((dir) => titleA.includes(dir)) || ''
+    const directionB = directionOrder.find((dir) => titleB.includes(dir)) || ''
+
+    const movementA = movementOrder.find((mov) => titleA.includes(mov)) || ''
+    const movementB = movementOrder.find((mov) => titleB.includes(mov)) || ''
+
+    const directionDiff =
       directionOrder.indexOf(directionA) - directionOrder.indexOf(directionB)
-    )
+    if (directionDiff !== 0) return directionDiff
+
+    return movementOrder.indexOf(movementA) - movementOrder.indexOf(movementB)
   })
 
   return {

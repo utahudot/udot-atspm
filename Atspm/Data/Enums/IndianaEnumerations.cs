@@ -19,6 +19,62 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Utah.Udot.Atspm.Data.Enums
 {
+    public enum IndianaEventParamType
+    {
+        None = 0,
+        PhaseNumber = 1,
+        DetectorChannel = 2,
+        PedDetectorChannel = 3,
+        Barrier = 4,
+        FYA = 5,
+        Overlap = 6,
+        TSP = 7,
+        Preemption = 8,
+    }
+
+    public enum IndianaEventCategory
+    {
+        none = 0,
+        ActivePhaseEvents = 1,
+        ActivePedestrianEvents = 2,
+        BarrierRingEvents = 3,
+        PhaseControlEvents = 4,
+        OverlapEvents = 5,
+        DetectorEvents = 6,
+        PreemptionEvents = 7,
+    }
+
+    /// <summary>
+    /// Attribute used to associate an <see cref="IndianaEventLayer"/> value and optional parameters with an enum type.
+    /// This can be applied to enumerations to provide metadata about the event layer and related parameters for Indiana event logging or processing.
+    /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="IndianaEventLayerAttribute"/> class with the specified event layer.
+    /// </remarks>
+    /// <param name="indianaEventLayer">The Indiana event layer to associate with the enum.</param>
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = true)]
+    public class IndianaEventLayerAttribute(IndianaEventParamType indianaEventParamType, IndianaEventCategory indianaEventCategory) : Attribute
+    {
+        private readonly IndianaEventParamType _indianaEventParamType = indianaEventParamType;
+        private readonly IndianaEventCategory _indianaEventCategory = indianaEventCategory;
+
+        /// <summary>
+        /// Gets the associated <see cref="IndianaEventLayer"/> value.
+        /// </summary>
+        public IndianaEventParamType IndianaEventParamType
+        {
+            get { return _indianaEventParamType; }
+        }
+
+        /// <summary>
+        /// Gets the associated <see cref="IndianaEventCategory"/> value.
+        /// </summary>
+        public IndianaEventCategory IndianaEventCategory
+        {
+            get { return _indianaEventCategory; }
+        }
+    }
+
     /// <summary>
     /// Traffic Location Hi Resolution Data Logger Enumerations.
     /// <seealso href="https://docs.lib.purdue.edu/jtrpdata/4/"/>
@@ -28,9 +84,10 @@ namespace Utah.Udot.Atspm.Data.Enums
         #region Indiana Specification
 
         ///<summary>
-        ///Set when NEMA Phase On becomes active, either upon start of green or walk interval, whichever occurs first
+        ///Set when NEMA PhaseNumber On becomes active, either upon start of green or walk interval, whichever occurs first
         ///</summary>
         [Display(Name = "Phase On")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseOn = 0,
 
         ///<summary>
@@ -38,61 +95,71 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///Do not set repeatedly during flashing operation
         ///</summary>
         [Display(Name = "Phase Begin Green")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseBeginGreen = 1,
 
         ///<summary>
         ///Set when a conflicting call is registered against the active phase. (Marks beginning of MAX timing)
         ///</summary>
         [Display(Name = "Phase Check")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseCheck = 2,
 
         ///<summary>
         ///Set when phase min timer expires
         ///</summary>
         [Display(Name = "Phase Min Complete")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseMinComplete = 3,
 
         ///<summary>
-        ///Phase termination due to gap out termination condition.
+        ///PhaseNumber termination due to gap out termination condition.
         ///Set once per phase when phase gaps out but may not necessarily occur upon phase termination
         ///</summary>
         [Display(Name = "Phase Gap Out")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseGapOut = 4,
 
         ///<summary>
         ///Set when phase MAX timer expires but may not necessarily occur upon phase termination due to last car passage or other features
         ///</summary>
         [Display(Name = "Phase Max Out")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseMaxOut = 5,
 
         ///<summary>
         ///Set when phase force off is applied by the coordinator to the active green phase
         ///</summary>
         [Display(Name = "Phase Force Off")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseForceOff = 6,
 
         ///<summary>
         ///Set when phase green indications are terminated into either yellow change interval or permissive (FYA) movement
         ///</summary>
         [Display(Name = "Phase Green Termination")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseGreenTermination = 7,
 
         ///<summary>
         ///Set when phase yellow indication becomes active and interval timer begins
         ///</summary>
         [Display(Name = "Phase Begin Yellow Change")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseBeginYellowChange = 8,
 
         ///<summary>
         ///Set when phase yellow indication becomes inactive
         ///</summary>
         [Display(Name = "Phase End Yellow Change")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseEndYellowChange = 9,
 
         ///<summary>
         ///Set only if phase red clearance is served. Set when red clearance timing begins
         ///</summary>
         [Display(Name = "Phase Begin Red Clearance")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseBeginRedClearance = 10,
 
         ///<summary>
@@ -101,6 +168,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///especially during clearance of trailing overlaps, red revert timing, red rest, or delay for other ring terminations
         ///</summary>
         [Display(Name = "Phase End Red Clearance")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseEndRedClearance = 11,
 
         ///<summary>
@@ -108,66 +176,77 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///including completion of any trailing overlaps or end of barrier delays for adjacent ring termination
         ///</summary>
         [Display(Name = "Phase Inactive")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseInactive = 12,
 
         ///<summary>
         ///Set when phase extension timer gaps out
         ///</summary>
         [Display(Name = "Extension Timer Gap Out")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         ExtensionTimerGapOut = 13,
 
         ///<summary>
         ///Set when phase in the programmed ring is skipped for any reason
         ///</summary>
         [Display(Name = "Phase Skipped")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PhaseSkipped = 14,
 
         ///<summary>
         ///Set when extension timer starts to reduce (the time before reduction)
         ///</summary>
         [Display(Name = "Extension Timer Reduction Start")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         ExtensionTimerReductionStart = 15,
 
         ///<summary>
         ///Set when extension timer minimum is reached (after the time to reduce)
         ///</summary>
         [Display(Name = "Extension Timer Minimum Achieved")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         ExtensionTimerMinimumAchieved = 16,
 
         ///<summary>
         ///Set when phase added initial timer expires
         ///</summary>
         [Display(Name = "Added Initial Complete")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         AddedInitialComplete = 17,
 
         ///<summary>
         ///Set when the controller determines a phase will be next to begin green after the current active phase(s) end red clearance
         ///</summary>
         [Display(Name = "Next Phase Decision")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         NextPhaseDecision = 18,
 
         ///<summary>
         ///Set when TSP early force off is applied to an active phase
         ///</summary>
         [Display(Name = "TSP Early Force Off")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         TSPEarlyForceOffPhase = 19,
 
         ///<summary>
         ///Set when controller applies preemption force off to the active cycle
         ///</summary>
         [Display(Name = "Preemption Force Off")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePhaseEvents)]
         PreemptionForceOffCycle = 20,
 
         ///<summary>
         ///Set when walk indication becomes active
         ///</summary>
         [Display(Name = "Pedestrian Begin Walk")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePedestrianEvents)]
         PedestrianBeginWalk = 21,
 
         ///<summary>
         ///Set when flashing don’t walk indication becomes active
         ///</summary>
         [Display(Name = "Pedestrian Begin Change Interval")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePedestrianEvents)]
         PedestrianBeginChangeInterval = 22,
 
         ///<summary>
@@ -175,12 +254,14 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///or head illumination after a pedestrian dark interval
         ///</summary>
         [Display(Name = "Pedestrian Begin Solid Don’t Walk")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePedestrianEvents)]
         PedestrianBeginSolidDontWalk = 23,
 
         ///<summary>
         ///Set when the pedestrian outputs are set off
         ///</summary>
         [Display(Name = "Pedestrian Dark")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePedestrianEvents)]
         PedestrianDark = 24,
 
         ///<summary>
@@ -188,12 +269,14 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///See 2009 MUTCD Section 4E.13 - Accessible Pedestrian Locations and Detectors - Extended Pushbutton Press Features for more details
         ///</summary>
         [Display(Name = "Extended Pedestrian Change Interval")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePedestrianEvents)]
         ExtendedPedestrianChangeInterval = 25,
 
         ///<summary>
         ///Set when pedestrian phase is active beyond pedestrian change interval or force off point
         ///</summary>
         [Display(Name = "Oversized Pedestrian Served")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.ActivePedestrianEvents)]
         OversizedPedestrianServed = 26,
 
         //[Display(Name = "Pedestrian events reserved for future use.")]
@@ -203,18 +286,21 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///Set when all active phases become inactive in the ring and cross barrier phases are next to be served
         ///</summary>
         [Display(Name = "Barrier Termination")]
+        [IndianaEventLayer(IndianaEventParamType.Barrier, IndianaEventCategory.BarrierRingEvents)]
         BarrierTermination = 31,
 
         ///<summary>
         ///Set when flashing yellow arrow becomes active
         ///</summary>
         [Display(Name = "FYA – Begin Permissive")]
+        [IndianaEventLayer(IndianaEventParamType.FYA, IndianaEventCategory.BarrierRingEvents)]
         FYABeginPermissive = 32,
 
         ///<summary>
         ///Set when flashing yellow arrow becomes inactive through either clearance of the permissive movement or transition into a protected movement
         ///</summary>
         [Display(Name = "FYA – End Permissive")]
+        [IndianaEventLayer(IndianaEventParamType.FYA, IndianaEventCategory.BarrierRingEvents)]
         FYAEndPermissive = 33,
 
         //[Display(Name = "Barrier events reserve for future use.")]
@@ -222,16 +308,18 @@ namespace Utah.Udot.Atspm.Data.Enums
 
         ///<summary>
         ///Set when phase hold is applied by the coordinator, preemptor, or external logic.
-        ///Phase does not necessarily need to be actively timing for this event to occur
+        ///PhaseNumber does not necessarily need to be actively timing for this event to occur
         ///</summary>
         [Display(Name = "Phase Hold Active")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PhaseHoldActive = 41,
 
         ///<summary>
         ///Set when phase hold is released by the coordinator, preemptor, or external logic.
-        ///Phase does not necessarily need to be actively timing for this event to occur
+        ///PhaseNumber does not necessarily need to be actively timing for this event to occur
         ///</summary>
         [Display(Name = "Phase Hold Released")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PhaseHoldReleased = 42,
 
         ///<summary>
@@ -239,12 +327,14 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///This event will not be set if a recall exists on the phase
         ///</summary>
         [Display(Name = "Phase Call Registered")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PhaseCallRegistered = 43,
 
         ///<summary>
         ///Call to service on a phase is cleared by either service of the phase or removal of call
         ///</summary>
         [Display(Name = "Phase Call Dropped")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PhaseCallDropped = 44,
 
         ///<summary>
@@ -252,50 +342,57 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///This event will not be set if a recall exists on the phase
         ///</summary>
         [Display(Name = "Pedestrian Call Registered")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PedestrianCallRegistered = 45,
 
         ///<summary>
         ///Set when phase omit is applied by the coordinator, preemptor, or other dynamic sources.
-        ///Phase does not necessarily need to be actively timing for this event to occur.
+        ///PhaseNumber does not necessarily need to be actively timing for this event to occur.
         ///This event is not set when phase is removed from the active sequence or other configuration-level change has occurred
         ///</summary>
         [Display(Name = "Phase Omit On")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PhaseOmitOn = 46,
 
         ///<summary>
         ///Set when phase omit is released by the coordinator, preemptor, or other dynamic sources.
-        ///Phase does not necessarily need to be actively timing for this event to occur.
+        ///PhaseNumber does not necessarily need to be actively timing for this event to occur.
         ///This event is not set when phase is added from the active sequence or other configuration-level change has occurred
         ///</summary>
         [Display(Name = "Phase Omit Off")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PhaseOmitOff = 47,
 
         ///<summary>
         ///Set when pedestrian omit is applied by the coordinator, preemptor, or other dynamic sources.
-        ///Phase does not necessarily need to be actively timing for this event to occur.
+        ///PhaseNumber does not necessarily need to be actively timing for this event to occur.
         ///This event is not set when phase is removed from the active sequence or other configuration-level change has occurred
         ///</summary>
         [Display(Name = "Pedestrian Omit On")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PedestrianOmitOn = 48,
 
         ///<summary>
         ///Set when pedestrian omit is released by the coordinator, preemptor, or other dynamic sources.
-        ///Phase does not necessarily need to be actively timing for this event to occur.
+        ///PhaseNumber does not necessarily need to be actively timing for this event to occur.
         ///This event is not set when phase is added from the active sequence or other configuration-level change has occurred
         ///</summary>
         [Display(Name = "Pedestrian Omit Off")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         PedestrianOmitOff = 49,
 
         ///<summary>
         ///Set when maximum green (MAX 1) interval is in-effect for the active phase
         ///</summary>
         [Display(Name = "MAX 1 In-Effect")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         MAX1InEffect = 50,
 
         ///<summary>
         ///Set when maximum green (MAX 2) interval is in-effect for the active phase
         ///</summary>
         [Display(Name = "MAX 2 In-Effect")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         MAX2InEffect = 51,
 
         ///<summary>
@@ -303,33 +400,38 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///This event shall be populated upon termination of MAX green (MAX 1 or MAX 2) interval
         ///</summary>
         [Display(Name = "Dynamic MAX In-Effect")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         DynamicMAXInEffect = 52,
 
         ///<summary>
         ///Set when dynamic max interval steps up for the active phase (initially after two consecutive phase max out events)
         ///</summary>
         [Display(Name = "Dynamic MAX Step Up")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         DynamicMAXStepUp = 53,
 
         ///<summary>
         ///Set when dynamic max interval steps down for the active phase (initially after two consecutive phase gap out events)
         ///</summary>
         [Display(Name = "Dynamic MAX Step Down")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         DynamicMAXStepDown = 54,
 
         ///<summary>
         ///Set when advance warning sign is on
         ///</summary>
         [Display(Name = "Advance Warning Sign On")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         AdvanceWarningSignOn = 55,
 
         ///<summary>
         ///Set when advance warning sign is off
         ///</summary>
         [Display(Name = "Advance Warning Sign Off")]
+        [IndianaEventLayer(IndianaEventParamType.PhaseNumber, IndianaEventCategory.PhaseControlEvents)]
         AdvanceWarningSignOff = 56,
 
-        //[Display(Name = "Phase Control Events reserved for future use")]
+        //[Display(Name = "PhaseNumber Control Events reserved for future use")]
         //PhaseControlEventsreservedforfutureuse = 57 - 60,   //"
 
         ///<summary>
@@ -338,24 +440,28 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual Location head colors
         ///</summary>
         [Display(Name = "Overlap Begin Green")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         OverlapBeginGreen = 61,
 
         ///<summary>
         ///Set when overlap is green and extension timers begin timing
         ///</summary>
         [Display(Name = "Overlap Begin Trailing Green (Extension)")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         OverlapBeginTrailingGreenExtension = 62,
 
         ///<summary>
         ///Set when overlap is in a yellow change interval state
         ///</summary>
         [Display(Name = "Overlap Begin Yellow")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         OverlapBeginYellow = 63,
 
         ///<summary>
         ///Set when overlap begins timing red clearance intervals
         ///</summary>
         [Display(Name = "Overlap Begin Red Clearance")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         OverlapBeginRedClearance = 64,
 
         ///<summary>
@@ -363,6 +469,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///allowing any conflicting phase next to begin service
         ///</summary>
         [Display(Name = "Overlap Off (Inactive with red indication)")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         OverlapOffInactivewithredindication = 65,
 
         ///<summary>
@@ -370,18 +477,21 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///The end of this interval shall be recorded by either an overlap off state or other active overlap state
         ///</summary>
         [Display(Name = "Overlap Dark")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         OverlapDark = 66,
 
         ///<summary>
         ///Set when walk indication becomes active
         ///</summary>
         [Display(Name = "Pedestrian Overlap Begin Walk")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         PedestrianOverlapBeginWalk = 67,
 
         ///<summary>
         ///Set when flashing don’t walk indication becomes active
         ///</summary>
         [Display(Name = "Pedestrian Overlap Begin Clearance")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         PedestrianOverlapBeginClearance = 68,
 
         ///<summary>
@@ -389,75 +499,87 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///or head illumination after a ped dark interval
         ///</summary>
         [Display(Name = "Pedestrian Overlap Begin Solid Don’t Walk")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         PedestrianOverlapBeginSolidDontWalk = 69,
 
         ///<summary>
         ///Set when the pedestrian outputs are set off
         ///</summary>
         [Display(Name = "Pedestrian Overlap Dark")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         PedestrianOverlapDark = 70,
 
         ///<summary>
         ///Set when advance warning sign becomes active
         ///</summary>
         [Display(Name = "Advance Warning Sign On")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         AdvanceWarningSignActive = 71,
 
         ///<summary>
         ///Set when advance warning sign becomes inactive
         ///</summary>
         [Display(Name = "Advance Warning Sign Off")]
+        [IndianaEventLayer(IndianaEventParamType.Overlap, IndianaEventCategory.OverlapEvents)]
         AdvanceWarningSignInactive = 72,
 
         //[Display(Name = "Overlap events reserved for future use.")]
         //Overlapeventsreservedforfutureuse = 73 - 80,    //"
 
         ///<summary>
-        ///Detector on and off events shall be triggered post any detector delay/extension processing
+        ///DetectorChannel on and off events shall be triggered post any detector delay/extension processing
         ///</summary>
         [Display(Name = "Vehicle Detector Off")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         VehicleDetectorOff = 81,
 
         ///<summary>
-        ///Detector on and off events shall be triggered post any detector delay/extension processing
+        ///DetectorChannel on and off events shall be triggered post any detector delay/extension processing
         ///</summary>
         [Display(Name = "Vehicle Detector On")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         VehicleDetectorOn = 82,
 
         ///<summary>
-        ///Detector restored to non-failed state by either manual restoration or re-enabling via continued diagnostics
+        ///DetectorChannel restored to non-failed state by either manual restoration or re-enabling via continued diagnostics
         ///</summary>
         [Display(Name = "Detector Restored")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         DetectorRestored = 83,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Detector Fault- Other")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         DetectorFaultOther = 84,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Detector Fault- Watchdog Fault")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         DetectorFaultWatchdogFault = 85,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Detector Fault- Open Loop Fault")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         DetectorFaultOpenLoopFault = 86,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Detector Fault- Shorted Loop Fault")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         DetectorFaultShortedLoopFault = 87,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Detector Fault- Excessive Change Fault")]
+        [IndianaEventLayer(IndianaEventParamType.DetectorChannel, IndianaEventCategory.DetectorEvents)]
         DetectorFaultExcessiveChangeFault = 88,
 
         ///<summary>
@@ -465,6 +587,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///(with future intent to eventually support ped presence and volume)
         ///</summary>
         [Display(Name = "PedDetector Off")]
+        [IndianaEventLayer(IndianaEventParamType.PedDetectorChannel, IndianaEventCategory.DetectorEvents)]
         PedDetectorOff = 89,
 
         ///<summary>
@@ -472,39 +595,45 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///(with future intent to eventually support ped presence and volume)
         ///</summary>
         [Display(Name = "PedDetector On")]
+        [IndianaEventLayer(IndianaEventParamType.PedDetectorChannel, IndianaEventCategory.DetectorEvents)]
         PedDetectorOn = 90,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Pedestrian Detector Failed")]
+        [IndianaEventLayer(IndianaEventParamType.PedDetectorChannel, IndianaEventCategory.DetectorEvents)]
         PedestrianDetectorFailed = 91,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics only (not system diagnostics)
+        ///DetectorChannel failure logged upon local controller diagnostics only (not system diagnostics)
         ///</summary>
         [Display(Name = "Pedestrian Detector Restored")]
+        [IndianaEventLayer(IndianaEventParamType.PedDetectorChannel, IndianaEventCategory.DetectorEvents)]
         PedestrianDetectorRestored = 92,
 
         ///<summary>
         ///TSP detector events shall be triggered post any detector delay/extension processing
         ///</summary>
         [Display(Name = "TSP Detector Off")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.DetectorEvents)]
         TSPDetectorOff = 93,
 
         ///<summary>
         ///TSP detector events shall be triggered post any detector delay/extension processing
         ///</summary>
         [Display(Name = "TSP Detector On")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.DetectorEvents)]
         TSPDetectorOn = 94,
 
-        //[Display(Name = "Detector events reserved for future use.")]
+        //[Display(Name = "DetectorChannel events reserved for future use.")]
         //Detectoreventsreservedforfutureuse = 95-100,   //"
 
         ///<summary>
         ///Set when preemption advance warning input is activated
         ///</summary>
         [Display(Name = "Preempt Advance Warning Input")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptAdvanceWarningInput = 101,
 
         ///<summary>
@@ -512,12 +641,14 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///(prior to preemption delay timing) May be set multiple times if input is intermittent during preemption service
         ///</summary>
         [Display(Name = "Preempt (Call) Input On")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptCallInputOn = 102,
 
         ///<summary>
         ///Set when gate down input is received by the controller (if available)
         ///</summary>
         [Display(Name = "Preempt Gate Down Input Received")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptGateDownInputReceived = 103,
 
         ///<summary>
@@ -525,6 +656,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///May be set multiple times if input is intermittent preemption service
         ///</summary>
         [Display(Name = "Preempt (Call) Input Off")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptCallInputOff = 104,
 
         ///<summary>
@@ -532,12 +664,14 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///and controller begins transition timing (force off) to serve preemption
         ///</summary>
         [Display(Name = "Preempt Entry Started")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptEntryStarted = 105,
 
         ///<summary>
         ///Set when track clearance phases are green and track clearance timing begins
         ///</summary>
         [Display(Name = "Preemption Begin Track Clearance")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionBeginTrackClearance = 106,
 
         ///<summary>
@@ -545,18 +679,21 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///or minimum dwell timer is reset due to call drop and reapplication
         ///</summary>
         [Display(Name = "Preemption Begin Dwell Service")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionBeginDwellService = 107,
 
         ///<summary>
         ///Set when linked preemptor input is applied from active preemptor
         ///</summary>
         [Display(Name = "Preemption Link Active On")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionLinkActiveOn = 108,
 
         ///<summary>
         ///Set when linked preemptor input is dropped from active preemptor
         ///</summary>
         [Display(Name = "Preemption Link Active Off")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionLinkActiveOff = 109,
 
         ///<summary>
@@ -564,60 +701,70 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///and preemption input is released from service
         ///</summary>
         [Display(Name = "Preemption Max Presence Exceeded")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionMaxPresenceExceeded = 110,
 
         ///<summary>
         ///Set when preemption exit interval phases are green and exit timing begins
         ///</summary>
         [Display(Name = "Preemption Begin Exit Interval")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionBeginExitInterval = 111,
 
         ///<summary>
         ///Set when request for priority is received
         ///</summary>
         [Display(Name = "TSP Check In")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPCheckIn = 112,
 
         ///<summary>
         ///Set when controller is adjusting active cycle to accommodate early service to TSP phases
         ///</summary>
         [Display(Name = "TSP Adjustment to Early Green")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPAdjustmenttoEarlyGreen = 113,
 
         ///<summary>
         ///Set when controller is adjusting active cycle to accommodate extended service to TSP phases
         ///</summary>
         [Display(Name = "TSP Adjustment to Extend Green")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPAdjustmenttoExtendGreen = 114,
 
         ///<summary>
         ///Set when request for priority is retracted
         ///</summary>
         [Display(Name = "TSP Check Out")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPCheckOut = 115,
 
         ///<summary>
         ///Set when preemption force off is applied to the active cycle
         ///</summary>
         [Display(Name = "Preemption Force Off")]
+        [IndianaEventLayer(IndianaEventParamType.Preemption, IndianaEventCategory.PreemptionEvents)]
         PreemptionForceOffPhase = 116,
 
         ///<summary>
         ///Set when TSP early force off is applied to the active cycle
         ///</summary>
         [Display(Name = "TSP Early Force Off")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPEarlyForceOffCycle = 117,
 
         ///<summary>
         ///Set when requested TSP service begins
         ///</summary>
         [Display(Name = "TSP Service Start")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPServiceStart = 118,
 
         ///<summary>
         ///Set when requested TSP service ends
         ///</summary>
         [Display(Name = "TSP Service End")]
+        [IndianaEventLayer(IndianaEventParamType.TSP, IndianaEventCategory.PreemptionEvents)]
         TSPServiceEnd = 119,
 
         //[Display(Name = "Preemption/TSP Events reserved for future use")]
@@ -1001,190 +1148,190 @@ namespace Utah.Udot.Atspm.Data.Enums
         /*
 
         ///<summary>
-        ///Set when NEMA Phase On becomes active, either upon start of green or walk interval, whichever occurs first.
-        ///The <c>Parameter</c> is Phase Number
+        ///Set when NEMA PhaseNumber On becomes active, either upon start of green or walk interval, whichever occurs first.
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase On")]
+        [Display(Name = "PhaseNumber On")]
         PhaseOn = 0,
 
         ///<summary>
         ///Set when either steady or flashing green indication has begun.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Begin Green")]
+        [Display(Name = "PhaseNumber Begin Green")]
         PhaseBeginGreen = 1,
 
         ///<summary>
         ///Set when a conflicting call is registered against the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Check")]
+        [Display(Name = "PhaseNumber Check")]
         PhaseCheck = 2,
 
         ///<summary>
         ///Set when phase min timer expires.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Min Complete")]
+        [Display(Name = "PhaseNumber Min Complete")]
         PhaseMinComplete = 3,
 
         ///<summary>
-        ///Phase termination due to gap out termination condition. Set once per phase when phase gaps out but may not necessarily occur upon phase termination.
-        ///The <c>Parameter</c> is Phase Number
+        ///PhaseNumber termination due to gap out termination condition. Set once per phase when phase gaps out but may not necessarily occur upon phase termination.
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Gap Out")]
+        [Display(Name = "PhaseNumber Gap Out")]
         PhaseGapOut = 4,
 
         ///<summary>
         ///Set when phase max timer expires, but may not necessarily occur upon phase termination.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Max Out")]
+        [Display(Name = "PhaseNumber Max Out")]
         PhaseMaxOut = 5,
 
         ///<summary>
         ///Set when phase forceoff is applied by the coordinator to the active green phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Forceoff")]
+        [Display(Name = "PhaseNumber Forceoff")]
         PhaseForceoff = 6,
 
         ///<summary>
         ///Set when phase green indications are terminated into either yellow change interval or permissive (FYA) movement.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Green Termination")]
+        [Display(Name = "PhaseNumber Green Termination")]
         PhaseGreenTermination = 7,
 
         ///<summary>
         ///Set when phase yellow indication becomes active and interval timer begins.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Begin Yellow Clearance")]
+        [Display(Name = "PhaseNumber Begin Yellow Clearance")]
         PhaseBeginYellowClearance = 8,
 
         ///<summary>
         ///Set when phase yellow indication become inactive.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase End Yellow Clearance")]
+        [Display(Name = "PhaseNumber End Yellow Clearance")]
         PhaseEndYellowClearance = 9,
 
         ///<summary>
         ///Set only if phase red clearance is served.  Set when red clearance timing begins.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Begin Red Clearance")]
+        [Display(Name = "PhaseNumber Begin Red Clearance")]
         PhaseBeginRedClearance = 10,
 
         ///<summary>
         ///Set only if phase red clearance is served.  Set when red clearance timing concludes.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase End Red Clearance")]
+        [Display(Name = "PhaseNumber End Red Clearance")]
         PhaseEndRedClearance = 11,
 
         ///<summary>
         ///Set when the phase is no longer active within the ring, including completion of any trailing overlaps or end of barrier delays.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Inactive")]
+        [Display(Name = "PhaseNumber Inactive")]
         PhaseInactive = 12,
 
         ///<summary>
         ///Set when the extension timer gaps out.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Extension Timer Gap Out")]
         ExtensionTimerGapOut = 13,
 
         ///<summary>
         ///Set when phase is skipped.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Skipped")]
+        [Display(Name = "PhaseNumber Skipped")]
         PhaseSkipped = 14,
 
         ///<summary>
         ///Set when extension timer starts to reduce (the time before reduction).
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Extension Timer Reduction Start")]
         ExtensionTimerReductionStart = 15,
 
         ///<summary>
         ///Set when the extension timer minimum is reached (after the time to reduce).
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Extension Timer Minimum Achieved")]
         ExtensionTimerMinimumAchieved = 16,
 
         ///<summary>
         ///Set when added initial is achieved.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Added Initial Complete")]
         AddedInitialComplete = 17,
 
         ///<summary>
         ///Set when the controller determines a phase will be next to begin green after the current active phase(s) end red clearance.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Next Phase Decision")]
+        [Display(Name = "Next PhaseNumber Decision")]
         NextPhaseDecision = 18,
 
         ///<summary>
         ///Set when TSP early forceoff is applied to an active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "TSP Early Forceoff Phase")]
+        [Display(Name = "TSP Early Forceoff PhaseNumber")]
         TSPEarlyForceoffPhase = 19,
 
         ///<summary>
         ///Set when the controller applies preemption forceoff to the active cycle.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Preemption Forceoff Cycle")]
         PreemptionForceoffCycle = 20,
 
         ///<summary>
         ///Set when walk indication becomes active.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Begin Walk")]
         PedestrianBeginWalk = 21,
 
         ///<summary>
         ///Set when flashing don't walk indication becomes active.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Begin Clearance")]
         PedestrianBeginClearance = 22,
 
         ///<summary>
         ///Set when don't walk indication becomes steady (non flashing) from either termination of ped clearance, or after a dark interval.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Begin Steady Don't Walk")]
         PedestrianBeginSteadyDontWalk = 23,
 
         ///<summary>
         ///Set when the pedestrian outputs are set off.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Dark")]
         PedestrianDark = 24,
 
         ///<summary>
         ///Set when extended pedestrian change interval is requested.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Extended Pedestrian Change Interval")]
         ExtendedPedestrianChangeInterval = 25,
 
         ///<summary>
         ///Oversized ped served in coord.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Oversized Ped Served")]
         OversizedPedServed = 26,
@@ -1212,114 +1359,114 @@ namespace Utah.Udot.Atspm.Data.Enums
 
         ///<summary>
         ///Set when phase hold is applied by the coordinator, preemptor, or external logic.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Hold Active")]
+        [Display(Name = "PhaseNumber Hold Active")]
         PhaseHoldActive = 41,
 
         ///<summary>
         ///Set when phase hold is released by the coordinator, preemptor, or external logic.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Hold Released")]
+        [Display(Name = "PhaseNumber Hold Released")]
         PhaseHoldReleased = 42,
 
         ///<summary>
         ///Call to service on a phase is registered by vehicular demand.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Call Registered")]
+        [Display(Name = "PhaseNumber Call Registered")]
         PhaseCallRegistered = 43,
 
         ///<summary>
         ///Call to service on a phase is cleared by either service of the phase or removal of call.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Call Dropped")]
+        [Display(Name = "PhaseNumber Call Dropped")]
         PhaseCallDropped = 44,
 
         ///<summary>
         ///Call to service on a phase is registered by pedestrian demand.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Call Registered")]
         PedestrianCallRegistered = 45,
 
         ///<summary>
         ///Set when phase omit is applied by the coordinator, preemptor, or other dynamic sources.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Omit On")]
+        [Display(Name = "PhaseNumber Omit On")]
         PhaseOmitOn = 46,
 
         ///<summary>
         ///Set when phase omit is released by the coordinator, preemptor, or other dynamic sources.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Omit Off")]
+        [Display(Name = "PhaseNumber Omit Off")]
         PhaseOmitOff = 47,
 
         ///<summary>
         ///Set when ped omit is applied by the coordinator, preemptor, or other dynamic sources.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Omit On")]
         PedestrianOmitOn = 48,
 
         ///<summary>
         ///Set when ped omit is released by the coordinator, preemptor, or other dynamic sources.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Pedestrian Omit Off")]
         PedestrianOmitOff = 49,
 
         ///<summary>
         ///Set when maximum green (MAX 1) interval is in-effect for the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "MAX 1 In-Effect")]
         MAX1InEffect = 50,
 
         ///<summary>
         ///Set when maximum green (MAX 2) interval is in-effect for the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "MAX 2 In-Effect")]
         MAX2InEffect = 51,
 
         ///<summary>
         ///Set when dynamic max interval is in-effect for the active phase. Populated upon termination if MAX green (MAX 1 or MAX 2) interval
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Dynamic MAX In-Effect")]
         DynamicMAXInEffect = 52,
 
         ///<summary>
         ///Set when dynamic max interval steps up for the active phase (initially after two consecutive phase max out events).
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Dynamic MAX Step Up")]
         DynamicMAXStepUp = 53,
 
         ///<summary>
         ///Set when dynamic max begins step down for the actuve phase (initially after two consecutive phase gap out events).
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Dynamic MAX Step Down")]
         DynamicMAXStepDown = 54,
 
         ///<summary>
         ///Set when advance warning sign is on.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Advance Warning Sign On")]
+        [Display(Name = "PhaseNumber Advance Warning Sign On")]
         PhaseAdvanceWarningSignOn = 55,
 
         ///<summary>
         ///Set when advance warning sign is off.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Phase Advance Warning Sign Off")]
+        [Display(Name = "PhaseNumber Advance Warning Sign Off")]
         PhaseAdvanceWarningSignOff = 56,
 
         ///<summary>
@@ -1407,101 +1554,101 @@ namespace Utah.Udot.Atspm.Data.Enums
         OverlapAdvanceWarningSignOff = 72,
 
         ///<summary>
-        ///Vehicle detector has turned off. Detector on and off events are triggered post any detector delay/extension processing.
+        ///Vehicle detector has turned off. DetectorChannel on and off events are triggered post any detector delay/extension processing.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Off")]
+        [Display(Name = "Vehicle DetectorChannel Off")]
         VehicleDetectorOff = 81,
 
         ///<summary>
-        ///Vehicle detector has turned on. Detector on and off events are triggered post any detector delay/extension processing.
+        ///Vehicle detector has turned on. DetectorChannel on and off events are triggered post any detector delay/extension processing.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector On")]
+        [Display(Name = "Vehicle DetectorChannel On")]
         VehicleDetectorOn = 82,
 
         ///<summary>
-        ///Detector restored to non-failed state by either manual restoration or re-enabling via continued diagnostics.
+        ///DetectorChannel restored to non-failed state by either manual restoration or re-enabling via continued diagnostics.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Restored")]
+        [Display(Name = "Vehicle DetectorChannel Restored")]
         VehicleDetectorRestored = 83,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Fault- Other")]
+        [Display(Name = "Vehicle DetectorChannel Fault- Other")]
         VehicleDetectorFaultOther = 84,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Fault- Watchdog")]
+        [Display(Name = "Vehicle DetectorChannel Fault- Watchdog")]
         VehicleDetectorFaultWatchdog = 85,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Fault- Open Loop")]
+        [Display(Name = "Vehicle DetectorChannel Fault- Open Loop")]
         VehicleDetectorFaultOpenLoop = 86,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Fault- Shorted Loop")]
+        [Display(Name = "Vehicle DetectorChannel Fault- Shorted Loop")]
         VehicleDetectorFaultShortedLoop = 87,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Vehicle detector Number
         ///</summary>
-        [Display(Name = "Vehicle Detector Fault- Excessive Change")]
+        [Display(Name = "Vehicle DetectorChannel Fault- Excessive Change")]
         VehicleDetectorFaultExcessiveChange = 88,
 
         ///<summary>
-        ///Ped detector turned off. Detector events are triggered post any detector delay/extension processing.
+        ///Ped detector turned off. DetectorChannel events are triggered post any detector delay/extension processing.
         ///The <c>Parameter</c> is Pedestrian detector Number
         ///</summary>
-        [Display(Name = "Ped Detector Off")]
+        [Display(Name = "Ped DetectorChannel Off")]
         PedDetectorOff = 89,
 
         ///<summary>
-        ///Ped detector turned on. Detector events are triggered post any detector delay/extension processing.
+        ///Ped detector turned on. DetectorChannel events are triggered post any detector delay/extension processing.
         ///The <c>Parameter</c> is Pedestrian detector Number
         ///</summary>
-        [Display(Name = "Ped Detector On")]
+        [Display(Name = "Ped DetectorChannel On")]
         PedDetectorOn = 90,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Pedestrian detector Number
         ///</summary>
-        [Display(Name = "Ped Detector Failed")]
+        [Display(Name = "Ped DetectorChannel Failed")]
         PedDetectorFailed = 91,
 
         ///<summary>
-        ///Detector failure logged upon local controller diagnostics.
+        ///DetectorChannel failure logged upon local controller diagnostics.
         ///The <c>Parameter</c> is Pedestrian detector Number
         ///</summary>
-        [Display(Name = "Ped Detector Restored")]
+        [Display(Name = "Ped DetectorChannel Restored")]
         PedDetectorRestored = 92,
 
         ///<summary>
         ///Set when TSP detector becomes inactive. TSP detector event occurs post any detector delay/extension.
         ///The <c>Parameter</c> is TSP Number
         ///</summary>
-        [Display(Name = "TSP Detector Off")]
+        [Display(Name = "TSP DetectorChannel Off")]
         TSPDetectorOff = 93,
 
         ///<summary>
         ///Set when TSP detector is active. TSP detector event occurs post any detector delay/extension.
         ///The <c>Parameter</c> is TSP Number
         ///</summary>
-        [Display(Name = "TSP Detector On")]
+        [Display(Name = "TSP DetectorChannel On")]
         TSPDetectorOn = 94,
 
         ///<summary>
@@ -1613,7 +1760,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///Set when preemption applies forceoffs to any phase in the active cycle.
         ///The <c>Parameter</c> is Preemptor Number
         ///</summary>
-        [Display(Name = "Preemption Forceoff Phase")]
+        [Display(Name = "Preemption Forceoff PhaseNumber")]
         PreemptionForceoffPhase = 116,
 
         ///<summary>
@@ -1779,16 +1926,16 @@ namespace Utah.Udot.Atspm.Data.Enums
 
         ///<summary>
         ///Set when a coordinated phase has reached the yield point.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Coordinated phase yield point")]
         Coordinatedphaseyieldpoint = 151,
 
         ///<summary>
         ///Set when coordinated phase begins.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
-        [Display(Name = "Coordinated Phase Begin")]
+        [Display(Name = "Coordinated PhaseNumber Begin")]
         CoordinatedPhaseBegin = 152,
 
         ///<summary>
@@ -2191,7 +2338,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         ActualCycleOffset = 318,
 
         ///<summary>
-        ///Phase sequence change has been requested.
+        ///PhaseNumber sequence change has been requested.
         ///The <c>Parameter</c> is Sequence Number
         ///</summary>
         [Display(Name = "Sequence Change Request")]
@@ -2206,7 +2353,7 @@ namespace Utah.Udot.Atspm.Data.Enums
 
         ///<summary>
         ///Oversized ped served in coord
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Coord - Oversize Ped")]
         CoordOversizePed = 321,
@@ -2640,63 +2787,63 @@ namespace Utah.Udot.Atspm.Data.Enums
 
         ///<summary>
         ///Set when pri/pre detector low priority call (pulsing) is received.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Low On")]
         PriPreDetLowOn = 601,
 
         ///<summary>
         ///Set when pri/pre detector low priority call (pulsing) is cleared.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Low Off")]
         PriPreDetLowOff = 602,
 
         ///<summary>
         ///Set when pri/pre detector high priority call (steady) is received
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det High On")]
         PriPreDetHighOn = 603,
 
         ///<summary>
         ///Set when pri/pre detector high priority call (steady) is cleared
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det High Off")]
         PriPreDetHighOff = 604,
 
         ///<summary>
         ///No Activity fault has occurred on a Pri/Pre detector.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Fault - No Activity")]
         PriPreDetFaultNoActivity = 605,
 
         ///<summary>
         ///Max Presence fault has occurred on a Pri/Pre detector.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Fault - Max Presence")]
         PriPreDetFaultMaxPresence = 606,
 
         ///<summary>
         ///Erratic Count fault has occurred on a Pri/Pre detector.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Fault - Erratic Count")]
         PriPreDetFaultErraticCount = 607,
 
         ///<summary>
         ///Set when all faults have been cleared on a Pri/Pre detector.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Fault - Cleared")]
         PriPreDetFaultCleared = 608,
 
         ///<summary>
         ///Set when any fault is active on a Pri/Pre detector.
-        ///The <c>Parameter</c> is Pri/Pre Detector Number
+        ///The <c>Parameter</c> is Pri/Pre DetectorChannel Number
         ///</summary>
         [Display(Name = "Pri/Pre Det Fault - Active")]
         PriPreDetFaultActive = 609,
@@ -2719,320 +2866,320 @@ namespace Utah.Udot.Atspm.Data.Enums
         ///Recorded wait time for phase 1.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 1 Wait Time")]
+        [Display(Name = "PhaseNumber 1 Wait Time")]
         Phase1WaitTime = 612,
 
         ///<summary>
         ///Recorded wait time for phase 2.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 2 Wait Time")]
+        [Display(Name = "PhaseNumber 2 Wait Time")]
         Phase2WaitTime = 613,
 
         ///<summary>
         ///Recorded wait time for phase 3.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 3 Wait Time")]
+        [Display(Name = "PhaseNumber 3 Wait Time")]
         Phase3WaitTime = 614,
 
         ///<summary>
         ///Recorded wait time for phase 4.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 4 Wait Time")]
+        [Display(Name = "PhaseNumber 4 Wait Time")]
         Phase4WaitTime = 615,
 
         ///<summary>
         ///Recorded wait time for phase 5.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 5 Wait Time")]
+        [Display(Name = "PhaseNumber 5 Wait Time")]
         Phase5WaitTime = 616,
 
         ///<summary>
         ///Recorded wait time for phase 6.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 6 Wait Time")]
+        [Display(Name = "PhaseNumber 6 Wait Time")]
         Phase6WaitTime = 617,
 
         ///<summary>
         ///Recorded wait time for phase 7.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 7 Wait Time")]
+        [Display(Name = "PhaseNumber 7 Wait Time")]
         Phase7WaitTime = 618,
 
         ///<summary>
         ///Recorded wait time for phase 8.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 8 Wait Time")]
+        [Display(Name = "PhaseNumber 8 Wait Time")]
         Phase8WaitTime = 619,
 
         ///<summary>
         ///Recorded wait time for phase 9.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 9 Wait Time")]
+        [Display(Name = "PhaseNumber 9 Wait Time")]
         Phase9WaitTime = 620,
 
         ///<summary>
         ///Recorded wait time for phase 10.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 10 Wait Time")]
+        [Display(Name = "PhaseNumber 10 Wait Time")]
         Phase10WaitTime = 621,
 
         ///<summary>
         ///Recorded wait time for phase 11.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 11 Wait Time")]
+        [Display(Name = "PhaseNumber 11 Wait Time")]
         Phase11WaitTime = 622,
 
         ///<summary>
         ///Recorded wait time for phase 12.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 12 Wait Time")]
+        [Display(Name = "PhaseNumber 12 Wait Time")]
         Phase12WaitTime = 623,
 
         ///<summary>
         ///Recorded wait time for phase 13.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 13 Wait Time")]
+        [Display(Name = "PhaseNumber 13 Wait Time")]
         Phase13WaitTime = 624,
 
         ///<summary>
         ///Recorded wait time for phase 14.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 14 Wait Time")]
+        [Display(Name = "PhaseNumber 14 Wait Time")]
         Phase14WaitTime = 625,
 
         ///<summary>
         ///Recorded wait time for phase 15.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 15 Wait Time")]
+        [Display(Name = "PhaseNumber 15 Wait Time")]
         Phase15WaitTime = 626,
 
         ///<summary>
         ///Recorded wait time for phase 16.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 16 Wait Time")]
+        [Display(Name = "PhaseNumber 16 Wait Time")]
         Phase16WaitTime = 627,
 
         ///<summary>
         ///Recorded wait time for phase 17.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 17 Wait Time")]
+        [Display(Name = "PhaseNumber 17 Wait Time")]
         Phase17WaitTime = 628,
 
         ///<summary>
         ///Recorded wait time for phase 18.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 18 Wait Time")]
+        [Display(Name = "PhaseNumber 18 Wait Time")]
         Phase18WaitTime = 629,
 
         ///<summary>
         ///Recorded wait time for phase 19.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 19 Wait Time")]
+        [Display(Name = "PhaseNumber 19 Wait Time")]
         Phase19WaitTime = 630,
 
         ///<summary>
         ///Recorded wait time for phase 20.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 20 Wait Time")]
+        [Display(Name = "PhaseNumber 20 Wait Time")]
         Phase20WaitTime = 631,
 
         ///<summary>
         ///Recorded wait time for phase 21.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 21 Wait Time")]
+        [Display(Name = "PhaseNumber 21 Wait Time")]
         Phase21WaitTime = 632,
 
         ///<summary>
         ///Recorded wait time for phase 22.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 22 Wait Time")]
+        [Display(Name = "PhaseNumber 22 Wait Time")]
         Phase22WaitTime = 633,
 
         ///<summary>
         ///Recorded wait time for phase 23.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 23 Wait Time")]
+        [Display(Name = "PhaseNumber 23 Wait Time")]
         Phase23WaitTime = 634,
 
         ///<summary>
         ///Recorded wait time for phase 24.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 24 Wait Time")]
+        [Display(Name = "PhaseNumber 24 Wait Time")]
         Phase24WaitTime = 635,
 
         ///<summary>
         ///Recorded wait time for phase 25.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 25 Wait Time")]
+        [Display(Name = "PhaseNumber 25 Wait Time")]
         Phase25WaitTime = 636,
 
         ///<summary>
         ///Recorded wait time for phase 26.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 26 Wait Time")]
+        [Display(Name = "PhaseNumber 26 Wait Time")]
         Phase26WaitTime = 637,
 
         ///<summary>
         ///Recorded wait time for phase 27.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 27 Wait Time")]
+        [Display(Name = "PhaseNumber 27 Wait Time")]
         Phase27WaitTime = 638,
 
         ///<summary>
         ///Recorded wait time for phase 28.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 28 Wait Time")]
+        [Display(Name = "PhaseNumber 28 Wait Time")]
         Phase28WaitTime = 639,
 
         ///<summary>
         ///Recorded wait time for phase 29.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 29 Wait Time")]
+        [Display(Name = "PhaseNumber 29 Wait Time")]
         Phase29WaitTime = 640,
 
         ///<summary>
         ///Recorded wait time for phase 30.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 30 Wait Time")]
+        [Display(Name = "PhaseNumber 30 Wait Time")]
         Phase30WaitTime = 641,
 
         ///<summary>
         ///Recorded wait time for phase 31.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 31 Wait Time")]
+        [Display(Name = "PhaseNumber 31 Wait Time")]
         Phase31WaitTime = 642,
 
         ///<summary>
         ///Recorded wait time for phase 32.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 32 Wait Time")]
+        [Display(Name = "PhaseNumber 32 Wait Time")]
         Phase32WaitTime = 643,
 
         ///<summary>
         ///Recorded wait time for phase 33.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 33 Wait Time")]
+        [Display(Name = "PhaseNumber 33 Wait Time")]
         Phase33WaitTime = 644,
 
         ///<summary>
         ///Recorded wait time for phase 34.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 34 Wait Time")]
+        [Display(Name = "PhaseNumber 34 Wait Time")]
         Phase34WaitTime = 645,
 
         ///<summary>
         ///Recorded wait time for phase 35.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 35 Wait Time")]
+        [Display(Name = "PhaseNumber 35 Wait Time")]
         Phase35WaitTime = 646,
 
         ///<summary>
         ///Recorded wait time for phase 36.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 36 Wait Time")]
+        [Display(Name = "PhaseNumber 36 Wait Time")]
         Phase36WaitTime = 647,
 
         ///<summary>
         ///Recorded wait time for phase 37.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 37 Wait Time")]
+        [Display(Name = "PhaseNumber 37 Wait Time")]
         Phase37WaitTime = 648,
 
         ///<summary>
         ///Recorded wait time for phase 38.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 38 Wait Time")]
+        [Display(Name = "PhaseNumber 38 Wait Time")]
         Phase38WaitTime = 649,
 
         ///<summary>
         ///Recorded wait time for phase 39.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 39 Wait Time")]
+        [Display(Name = "PhaseNumber 39 Wait Time")]
         Phase39WaitTime = 650,
 
         ///<summary>
         ///Recorded wait time for phase 40.
         ///The <c>Parameter</c> is Wait Time in Seconds
         ///</summary>
-        [Display(Name = "Phase 40 Wait Time")]
+        [Display(Name = "PhaseNumber 40 Wait Time")]
         Phase40WaitTime = 651,
 
         ///<summary>
-        ///External Phase Min Call received.
-        ///The <c>Parameter</c> is Phase Number
+        ///External PhaseNumber Min Call received.
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "External Min Call On")]
         ExternalMinCallOn = 701,
 
         ///<summary>
-        ///External Phase Min Call removed.
-        ///The <c>Parameter</c> is Phase Number
+        ///External PhaseNumber Min Call removed.
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "External Min Call Off")]
         ExternalMinCallOff = 702,
 
         ///<summary>
-        ///External Phase Max Call received.
-        ///The <c>Parameter</c> is Phase Number
+        ///External PhaseNumber Max Call received.
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "External Max Call On")]
         ExternalMaxCallOn = 703,
 
         ///<summary>
-        ///External Phase Max Call removed.
-        ///The <c>Parameter</c> is Phase Number
+        ///External PhaseNumber Max Call removed.
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "External Max Call Off")]
         ExternalMaxCallOff = 704,
 
         ///<summary>
         ///External Ped Call received.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "External Ped Call On")]
         ExternalPedCallOn = 705,
 
         ///<summary>
         ///External Ped Call removed.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "External Ped Call Off")]
         ExternalPedCallOff = 706,
@@ -3067,28 +3214,28 @@ namespace Utah.Udot.Atspm.Data.Enums
 
         ///<summary>
         ///Set when maximum green (MAX 3) interval is in-effect for the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Max 3 In-Effect")]
         Max3InEffect = 711,
 
         ///<summary>
         ///Set when maximum green (Conditional MAX) interval is in-effect for the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Conditional Max In-Effect")]
         ConditionalMaxInEffect = 712,
 
         ///<summary>
         ///Set when maximum green (Preempt Exit Max) interval is in-effect for the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Preempt Exit Max In-Effect")]
         PreemptExitMaxInEffect = 713,
 
         ///<summary>
         ///Set when maximum green (Coord Free Max) interval is in-effect for the active phase.
-        ///The <c>Parameter</c> is Phase Number
+        ///The <c>Parameter</c> is PhaseNumber Number
         ///</summary>
         [Display(Name = "Coord Free Max In Effect")]
         CoordFreeMaxInEffect = 714,
@@ -3274,769 +3421,769 @@ namespace Utah.Udot.Atspm.Data.Enums
         RampMeterLaneDemandDetectorRecalled = 1206,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector Working
+        ///Ramp Meter Lane Demand DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorWorking = 1207,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector Other
+        ///Ramp Meter Lane Demand DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorOther = 1208,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector EC
+        ///Ramp Meter Lane Demand DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorEC = 1209,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector MP
+        ///Ramp Meter Lane Demand DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorMP = 1210,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector NA
+        ///Ramp Meter Lane Demand DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorNA = 1211,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector Error
+        ///Ramp Meter Lane Demand DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorError = 1212,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector Dep NA
+        ///Ramp Meter Lane Demand DetectorChannel Dep NA
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorDepNA = 1213,
 
         ///<summary>
-        ///Ramp Meter Lane Demand Detector Dep MP
+        ///Ramp Meter Lane Demand DetectorChannel Dep MP
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLaneDemandDetectorDepMP = 1214,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector Recalled
+        ///Ramp Meter Lane Passage DetectorChannel Recalled
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorRecalled = 1215,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector Working
+        ///Ramp Meter Lane Passage DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorWorking = 1216,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector Other
+        ///Ramp Meter Lane Passage DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorOther = 1217,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector EC
+        ///Ramp Meter Lane Passage DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorEC = 1218,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector MP
+        ///Ramp Meter Lane Passage DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorMP = 1219,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector NA
+        ///Ramp Meter Lane Passage DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorNA = 1220,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector Error
+        ///Ramp Meter Lane Passage DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorError = 1221,
 
         ///<summary>
-        ///Ramp Meter Lane Passage Detector Dep NA
+        ///Ramp Meter Lane Passage DetectorChannel Dep NA
         ///The <c>Parameter</c> is used to indicate Lane Number
         ///</summary>
         RampMeterLanePassageDetectorDepNA = 1222,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector Disabled
+        ///Ramp Meter Lane 1 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorDisabled = 1223,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector Working
+        ///Ramp Meter Lane 1 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorWorking = 1224,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector Other
+        ///Ramp Meter Lane 1 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorOther = 1225,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector EC
+        ///Ramp Meter Lane 1 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorEC = 1226,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector MP
+        ///Ramp Meter Lane 1 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorMP = 1227,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector NA
+        ///Ramp Meter Lane 1 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorNA = 1228,
 
         ///<summary>
-        ///Ramp Meter Lane 1 Que Detector Error
+        ///Ramp Meter Lane 1 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane1QueDetectorError = 1229,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector Disabled
+        ///Ramp Meter Lane 2 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorDisabled = 1230,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector Working
+        ///Ramp Meter Lane 2 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorWorking = 1231,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector Other
+        ///Ramp Meter Lane 2 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorOther = 1232,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector EC
+        ///Ramp Meter Lane 2 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorEC = 1233,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector MP
+        ///Ramp Meter Lane 2 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorMP = 1234,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector NA
+        ///Ramp Meter Lane 2 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorNA = 1235,
 
         ///<summary>
-        ///Ramp Meter Lane 2 Que Detector Error
+        ///Ramp Meter Lane 2 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane2QueDetectorError = 1236,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector Disabled
+        ///Ramp Meter Lane 3 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorDisabled = 1237,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector Working
+        ///Ramp Meter Lane 3 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorWorking = 1238,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector Other
+        ///Ramp Meter Lane 3 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorOther = 1239,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector EC
+        ///Ramp Meter Lane 3 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorEC = 1240,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector MP
+        ///Ramp Meter Lane 3 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorMP = 1241,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector NA
+        ///Ramp Meter Lane 3 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorNA = 1242,
 
         ///<summary>
-        ///Ramp Meter Lane 3 Que Detector Error
+        ///Ramp Meter Lane 3 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane3QueDetectorError = 1243,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector Disabled
+        ///Ramp Meter Lane 4 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorDisabled = 1244,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector Working
+        ///Ramp Meter Lane 4 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorWorking = 1245,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector Other
+        ///Ramp Meter Lane 4 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorOther = 1246,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector EC
+        ///Ramp Meter Lane 4 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorEC = 1247,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector MP
+        ///Ramp Meter Lane 4 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorMP = 1248,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector NA
+        ///Ramp Meter Lane 4 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorNA = 1249,
 
         ///<summary>
-        ///Ramp Meter Lane 4 Que Detector Error
+        ///Ramp Meter Lane 4 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane4QueDetectorError = 1250,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector Disabled
+        ///Ramp Meter Lane 5 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorDisabled = 1251,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector Working
+        ///Ramp Meter Lane 5 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorWorking = 1252,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector Other
+        ///Ramp Meter Lane 5 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorOther = 1253,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector EC
+        ///Ramp Meter Lane 5 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorEC = 1254,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector MP
+        ///Ramp Meter Lane 5 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorMP = 1255,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector NA
+        ///Ramp Meter Lane 5 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorNA = 1256,
 
         ///<summary>
-        ///Ramp Meter Lane 5 Que Detector Error
+        ///Ramp Meter Lane 5 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane5QueDetectorError = 1257,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector Disabled
+        ///Ramp Meter Lane 6 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorDisabled = 1258,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector Working
+        ///Ramp Meter Lane 6 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorWorking = 1259,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector Other
+        ///Ramp Meter Lane 6 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorOther = 1260,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector EC
+        ///Ramp Meter Lane 6 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorEC = 1261,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector MP
+        ///Ramp Meter Lane 6 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorMP = 1262,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector NA
+        ///Ramp Meter Lane 6 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorNA = 1263,
 
         ///<summary>
-        ///Ramp Meter Lane 6 Que Detector Error
+        ///Ramp Meter Lane 6 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane6QueDetectorError = 1264,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector Disabled
+        ///Ramp Meter Lane 7 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorDisabled = 1265,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector Working
+        ///Ramp Meter Lane 7 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorWorking = 1266,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector Other
+        ///Ramp Meter Lane 7 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorOther = 1267,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector EC
+        ///Ramp Meter Lane 7 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorEC = 1268,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector MP
+        ///Ramp Meter Lane 7 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorMP = 1269,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector NA
+        ///Ramp Meter Lane 7 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorNA = 1270,
 
         ///<summary>
-        ///Ramp Meter Lane 7 Que Detector Error
+        ///Ramp Meter Lane 7 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane7QueDetectorError = 1271,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector Disabled
+        ///Ramp Meter Lane 8 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorDisabled = 1272,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector Working
+        ///Ramp Meter Lane 8 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorWorking = 1273,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector Other
+        ///Ramp Meter Lane 8 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorOther = 1274,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector EC
+        ///Ramp Meter Lane 8 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorEC = 1275,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector MP
+        ///Ramp Meter Lane 8 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorMP = 1276,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector NA
+        ///Ramp Meter Lane 8 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorNA = 1277,
 
         ///<summary>
-        ///Ramp Meter Lane 8 Que Detector Error
+        ///Ramp Meter Lane 8 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane8QueDetectorError = 1278,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector Disabled
+        ///Ramp Meter Lane 9 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorDisabled = 1279,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector Working
+        ///Ramp Meter Lane 9 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorWorking = 1280,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector Other
+        ///Ramp Meter Lane 9 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorOther = 1281,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector EC
+        ///Ramp Meter Lane 9 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorEC = 1282,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector MP
+        ///Ramp Meter Lane 9 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorMP = 1283,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector NA
+        ///Ramp Meter Lane 9 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorNA = 1284,
 
         ///<summary>
-        ///Ramp Meter Lane 9 Que Detector Error
+        ///Ramp Meter Lane 9 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane9QueDetectorError = 1285,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector Disabled
+        ///Ramp Meter Lane 10 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorDisabled = 1286,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector Working
+        ///Ramp Meter Lane 10 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorWorking = 1287,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector Other
+        ///Ramp Meter Lane 10 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorOther = 1288,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector EC
+        ///Ramp Meter Lane 10 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorEC = 1289,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector MP
+        ///Ramp Meter Lane 10 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorMP = 1290,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector NA
+        ///Ramp Meter Lane 10 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorNA = 1291,
 
         ///<summary>
-        ///Ramp Meter Lane 10 Que Detector Error
+        ///Ramp Meter Lane 10 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane10QueDetectorError = 1292,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector Disabled
+        ///Ramp Meter Lane 11 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorDisabled = 1293,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector Working
+        ///Ramp Meter Lane 11 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorWorking = 1294,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector Other
+        ///Ramp Meter Lane 11 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorOther = 1295,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector EC
+        ///Ramp Meter Lane 11 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorEC = 1296,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector MP
+        ///Ramp Meter Lane 11 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorMP = 1297,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector NA
+        ///Ramp Meter Lane 11 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorNA = 1298,
 
         ///<summary>
-        ///Ramp Meter Lane 11 Que Detector Error
+        ///Ramp Meter Lane 11 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane11QueDetectorError = 1299,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector Disabled
+        ///Ramp Meter Lane 12 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorDisabled = 1300,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector Working
+        ///Ramp Meter Lane 12 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorWorking = 1301,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector Other
+        ///Ramp Meter Lane 12 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorOther = 1302,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector EC
+        ///Ramp Meter Lane 12 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorEC = 1303,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector MP
+        ///Ramp Meter Lane 12 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorMP = 1304,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector NA
+        ///Ramp Meter Lane 12 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorNA = 1305,
 
         ///<summary>
-        ///Ramp Meter Lane 12 Que Detector Error
+        ///Ramp Meter Lane 12 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane12QueDetectorError = 1306,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector Disabled
+        ///Ramp Meter Lane 13 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorDisabled = 1307,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector Working
+        ///Ramp Meter Lane 13 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorWorking = 1308,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector Other
+        ///Ramp Meter Lane 13 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorOther = 1309,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector EC
+        ///Ramp Meter Lane 13 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorEC = 1310,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector MP
+        ///Ramp Meter Lane 13 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorMP = 1311,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector NA
+        ///Ramp Meter Lane 13 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorNA = 1312,
 
         ///<summary>
-        ///Ramp Meter Lane 13 Que Detector Error
+        ///Ramp Meter Lane 13 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane13QueDetectorError = 1313,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector Disabled
+        ///Ramp Meter Lane 14 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorDisabled = 1314,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector Working
+        ///Ramp Meter Lane 14 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorWorking = 1315,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector Other
+        ///Ramp Meter Lane 14 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorOther = 1316,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector EC
+        ///Ramp Meter Lane 14 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorEC = 1317,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector MP
+        ///Ramp Meter Lane 14 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorMP = 1318,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector NA
+        ///Ramp Meter Lane 14 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorNA = 1319,
 
         ///<summary>
-        ///Ramp Meter Lane 14 Que Detector Error
+        ///Ramp Meter Lane 14 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane14QueDetectorError = 1320,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector Disabled
+        ///Ramp Meter Lane 15 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorDisabled = 1321,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector Working
+        ///Ramp Meter Lane 15 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorWorking = 1322,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector Other
+        ///Ramp Meter Lane 15 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorOther = 1323,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector EC
+        ///Ramp Meter Lane 15 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorEC = 1324,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector MP
+        ///Ramp Meter Lane 15 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorMP = 1325,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector NA
+        ///Ramp Meter Lane 15 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorNA = 1326,
 
         ///<summary>
-        ///Ramp Meter Lane 15 Que Detector Error
+        ///Ramp Meter Lane 15 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane15QueDetectorError = 1327,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector Disabled
+        ///Ramp Meter Lane 16 Que DetectorChannel Disabled
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorDisabled = 1328,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector Working
+        ///Ramp Meter Lane 16 Que DetectorChannel Working
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorWorking = 1329,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector Other
+        ///Ramp Meter Lane 16 Que DetectorChannel Other
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorOther = 1330,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector EC
+        ///Ramp Meter Lane 16 Que DetectorChannel EC
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorEC = 1331,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector MP
+        ///Ramp Meter Lane 16 Que DetectorChannel MP
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorMP = 1332,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector NA
+        ///Ramp Meter Lane 16 Que DetectorChannel NA
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorNA = 1333,
 
         ///<summary>
-        ///Ramp Meter Lane 16 Que Detector Error
+        ///Ramp Meter Lane 16 Que DetectorChannel Error
         ///The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
         ///</summary>
         RampMeterLane16QueDetectorError = 1334

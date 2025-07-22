@@ -45,7 +45,7 @@ namespace Utah.Udot.Atspm.Specifications
         /// <param name="end"></param>
         public CompressedEventLogSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
         {
-            Criteria = c => c.LocationIdentifier == locationIdentifier && c.Start >= start && c.End <= end;
+            Criteria = c => c.LocationIdentifier == locationIdentifier && c.End > start && c.Start < end;
 
             ApplyOrderBy(o => o.Start);
         }
@@ -60,7 +60,7 @@ namespace Utah.Udot.Atspm.Specifications
         /// <param name="deviceId"></param>
         public CompressedEventLogSpecification(string locationIdentifier, DateTime start, DateTime end, int deviceId) : base()
         {
-            Criteria = c => c.LocationIdentifier == locationIdentifier && c.DeviceId == deviceId && c.Start >= start && c.End <= end;
+            Criteria = c => c.LocationIdentifier == locationIdentifier && c.DeviceId == deviceId && c.End > start && c.Start < end;
 
             ApplyOrderBy(o => o.Start);
         }
