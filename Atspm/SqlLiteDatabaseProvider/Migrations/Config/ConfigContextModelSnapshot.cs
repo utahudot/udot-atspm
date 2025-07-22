@@ -100,6 +100,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
@@ -118,6 +125,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<int>("LocationId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("Mph")
                         .HasColumnType("INTEGER");
@@ -153,6 +167,20 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -177,6 +205,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -185,6 +220,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -289,6 +331,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("ApproachId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("TEXT");
 
@@ -325,6 +374,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int?>("MinSpeedFilter")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("MovementDelay")
                         .HasColumnType("INTEGER");
 
@@ -353,8 +409,22 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("DetectorId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
@@ -374,6 +444,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("DeviceConfigurationId")
                         .HasColumnType("INTEGER");
@@ -416,6 +493,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<bool>("LoggingEnabled")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
@@ -448,6 +532,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValueSql("((2000))");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Decoders")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
@@ -462,6 +553,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<int>("LoggingOffset")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
@@ -529,6 +627,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .HasMaxLength(30)
                         .IsUnicode(false)
@@ -536,6 +641,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -622,12 +734,26 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Header")
                         .IsRequired()
                         .HasMaxLength(256)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -799,6 +925,20 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Mpo")
                         .HasMaxLength(50)
                         .IsUnicode(false)
@@ -832,6 +972,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("JurisdictionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
@@ -851,6 +998,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<double>("Longitude")
                         .HasColumnType("REAL");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Note")
                         .IsRequired()
@@ -907,8 +1061,22 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Icon")
                         .IsUnicode(true)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -958,9 +1126,23 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -983,8 +1165,22 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Option")
                         .HasMaxLength(128)
@@ -1397,6 +1593,54 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             MeasureTypeId = 11,
                             Option = "yAxisDefault",
                             Value = "20"
+                        },
+                        new
+                        {
+                            Id = 120,
+                            MeasureTypeId = 5,
+                            Option = "yAxisDefault",
+                            Value = "300"
+                        });
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MeasureTypeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Option")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeasureTypeId");
+
+                    b.ToTable("MeasureOptionPresets", t =>
+                        {
+                            t.HasComment("Measure Option Presets");
                         });
                 });
 
@@ -1411,8 +1655,22 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
@@ -1747,6 +2005,15 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             Name = "Ramp Metering",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = true
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Abbreviation = "TSP",
+                            DisplayOrder = 132,
+                            Name = "Transit Signal Priority",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = false
                         });
                 });
 
@@ -1755,6 +2022,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
@@ -1768,6 +2042,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<string>("Link")
                         .HasMaxLength(4000)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -1796,6 +2077,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(48)
@@ -1805,6 +2093,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(48)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -1831,9 +2126,23 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -1851,8 +2160,22 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
-                        .HasMaxLength(50)
+                        .HasMaxLength(100)
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -1870,6 +2193,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("Distance")
                         .HasColumnType("REAL");
 
@@ -1882,6 +2212,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<string>("LocationIdentifierB")
                         .IsRequired()
                         .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -1902,6 +2239,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsOpposingOverlap")
                         .HasColumnType("INTEGER");
 
@@ -1911,6 +2255,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -2016,10 +2367,24 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 30, 47, 162, DateTimeKind.Local).AddTicks(348));
+                        .HasDefaultValue(new DateTime(2025, 7, 3, 7, 0, 43, 975, DateTimeKind.Local).AddTicks(6286));
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2035,8 +2400,11 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -2060,6 +2428,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int?>("ComponentType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("End")
                         .HasColumnType("TEXT");
 
@@ -2071,6 +2446,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
@@ -2287,6 +2669,17 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Navigation("MeasureType");
                 });
 
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+                {
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
+                        .WithMany("MeasureOptionPresets")
+                        .HasForeignKey("MeasureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasureType");
+                });
+
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MenuItem", b =>
                 {
                     b.HasOne("Utah.Udot.Atspm.Data.Models.MenuItem", "Parent")
@@ -2442,6 +2835,8 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureType", b =>
                 {
+                    b.Navigation("MeasureOptionPresets");
+
                     b.Navigation("MeasureOptions");
                 });
 

@@ -79,7 +79,7 @@ namespace Utah.Udot.Atspm.Data
             {
                 builder.ToTable(t => t.HasComment("Compressed device data log events"));
 
-                builder.HasKey(e => new { e.LocationIdentifier, e.DeviceId, e.Start, e.End });
+                builder.HasKey(e => new { e.LocationIdentifier, e.DeviceId, e.DataType, e.Start, e.End });
 
                 builder.Property(e => e.LocationIdentifier)
                     .IsRequired()

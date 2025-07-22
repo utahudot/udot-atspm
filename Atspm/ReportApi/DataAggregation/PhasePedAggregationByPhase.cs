@@ -80,17 +80,17 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                                     break;
                                 case PedDataTypes.PedDelaySum:
                                     pedAggCount =
-                                        pedAggs.Where(s => s.Start >= bin.Start && s.Start < bin.End)
+                                        (int)pedAggs.Where(s => s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.PedDelay);
                                     break;
                                 case PedDataTypes.MinPedDelay:
                                     pedAggCount =
-                                        pedAggs.Where(s => s.Start >= bin.Start && s.Start < bin.End)
+                                        (int)pedAggs.Where(s => s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.MinPedDelay);
                                     break;
                                 case PedDataTypes.MaxPedDelay:
                                     pedAggCount =
-                                        pedAggs.Where(s => s.Start >= bin.Start && s.Start < bin.End)
+                                        (int)pedAggs.Where(s => s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.MaxPedDelay);
                                     break;
                                 case PedDataTypes.PedRequests:

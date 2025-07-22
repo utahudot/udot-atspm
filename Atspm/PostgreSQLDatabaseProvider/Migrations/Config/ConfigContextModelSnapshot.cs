@@ -2424,7 +2424,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 6, 9, 13, 35, 38, 803, DateTimeKind.Local).AddTicks(1651));
+                        .HasDefaultValue(new DateTime(2025, 7, 3, 6, 55, 1, 778, DateTimeKind.Local).AddTicks(1158));
 
                     b.Property<DateTime?>("Modified")
                         .HasColumnType("timestamp");

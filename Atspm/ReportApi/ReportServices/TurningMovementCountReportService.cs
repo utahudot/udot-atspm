@@ -257,9 +257,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 foreach (var movementType in movementTypesSorted)
                 {
                     var movementTypeDetectors = new List<Detector>();
-                   
+
                     movementTypeDetectors = detectorsForDirection.Where(d => d.MovementType == movementType).ToList();
-                    
+
                     if (!movementTypeDetectors.IsNullOrEmpty())
                     {
                         tasks.Add(GetChartDataByMovementType(
