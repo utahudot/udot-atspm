@@ -1,10 +1,10 @@
-import { useGetVersionHistory } from '@/api/config/aTSPMConfigurationApi'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+
 const GridItem = ({ item }: { item: { path: string; title: string } }) => (
   <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
     <Paper
@@ -28,29 +28,6 @@ const GridItem = ({ item }: { item: { path: string; title: string } }) => (
 )
 
 const About = () => {
-  const { data: versionHistory, isLoading: versionHisotryIsLoading } =
-    useGetVersionHistory()
-
-  const getLatestVersionName = () => {
-    if (!versionHistory?.value || versionHistory.value.length === 0) return ''
-
-    const latest = versionHistory.value.reduce((prev, current) => {
-      // Split versions into parts and compare numerically
-      const prevParts = prev.version.split('.').map(Number)
-      const currParts = current.version.split('.').map(Number)
-
-      for (let i = 0; i < Math.max(prevParts.length, currParts.length); i++) {
-        const prevVal = prevParts[i] || 0
-        const currVal = currParts[i] || 0
-        if (currVal > prevVal) return current
-        if (currVal < prevVal) return prev
-      }
-      return current // If equal, take the last one
-    })
-
-    return latest.name?.trim() || `${latest.version}`
-  }
-
   const academimcPartners = [
     {
       path: '/images/partners/purdue-university.png',
@@ -309,13 +286,6 @@ const About = () => {
           <GridItem key={item.title} item={item} />
         ))}
       </Grid>
-
-      {/* <VersionHistoryDialog
-        open={open}
-        onClose={handleClose}
-        data={versionHistory?.value ?? []}
-        isLoading={versionHisotryIsLoading}
-      /> */}
     </ResponsivePageLayout>
   )
 }
