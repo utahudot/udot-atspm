@@ -31,8 +31,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Workflows
                 // Re-implement base.Initialize() logic
                 Steps = new List<IDataflowBlock>();
 
-                Input = new BroadcastBlock<EventBatchEnvelope>(null, blockOptions);
+                var blockOptions = new DataflowBlockOptions
+                {
+                    CancellationToken = _cancellationToken
+                };
+
+                Input = new BroadcastBlock<EventBatchEnvelope>(x => x, blockOptions);
                 Output = new BufferBlock<CompressedEventLogBase>(blockOptions);
+
 
                 InstantiateSteps();
                 Steps.Add(Input);

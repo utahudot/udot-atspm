@@ -54,15 +54,9 @@ var host = Host.CreateDefaultBuilder(args)
             new UdpReceiver(
                 sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.UdpPort,
                 sp.GetRequiredService<ILogger<UdpReceiver>>()
-            ));
-        services.AddSingleton<ITcpReceiver>(sp =>
-            new TcpReceiver(
-                sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.TcpPort,
-                sp.GetRequiredService<ILogger<TcpReceiver>>()
-            ));
+            ));        
 
         services.AddScoped<UDPSpeedBatchListener>();
-        services.AddScoped<TCPSpeedBatchListener>();
         services.AddHostedService<EventListenerWorker>();
 
     })

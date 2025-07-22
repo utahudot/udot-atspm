@@ -25,12 +25,10 @@ public class EventListenerWorker : BackgroundService
         {
             using var scope = _scopeFactory.CreateScope();
             var udp = scope.ServiceProvider.GetRequiredService<UDPSpeedBatchListener>();
-            var tcp = scope.ServiceProvider.GetRequiredService<TCPSpeedBatchListener>();
 
             var udpTask = udp.StartListeningAsync(stoppingToken);
-            var tcpTask = tcp.StartListeningAsync(stoppingToken);
 
-            await Task.WhenAll(udpTask, tcpTask);
+            await Task.WhenAll(udpTask);
         }
         catch (Exception ex)
         {

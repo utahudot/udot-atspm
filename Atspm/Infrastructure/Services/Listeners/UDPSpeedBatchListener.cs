@@ -26,7 +26,7 @@ public class UDPSpeedBatchListener : SpeedBatchListenerBase
         {
             try
             {
-                var speedEvent = RawSpeedPacketParser.Parse(buffer, endpoint.ToString());
+                var speedEvent = RawSpeedPacketParser.Parse(buffer, _logger);
                 Enqueue(speedEvent);
             }
             catch (Exception ex)

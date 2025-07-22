@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Thrift.Protocol;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Messaging;
@@ -86,14 +87,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             var groups = batch.GroupBy(p => p.DetectorId).ToList();
             var sensorIds = groups.Select(g => g.Key).ToList();
 
-            IDictionary<string, (string LocationIdentifier, int DeviceId)> mappings;
+            Dictionary<string, DeviceMapping> deviceLookup;
+
             try
             {
-                mappings = _deviceRepository
+                var test = _deviceRepository
                     .GetList()
                     .Where(d => d.DeviceType == DeviceTypes.SpeedSensor)
-                    .GroupBy(d => d.DeviceIdentifier)
-                    .ToDictionary(g => g.Key, g => (g.First().Location.LocationIdentifier, g.First().Id));
+                    .ToList();
+                deviceLookup = _deviceRepository
+                    .GetList()
+                    .Where(d => d.DeviceType == DeviceTypes.SpeedSensor)
+                    .ToDictionary(
+                        d => d.DeviceIdentifier.Trim().ToUpperInvariant(),
+                        d => new DeviceMapping
+                        {
+                            Id = d.Id,
+                            DeviceIdentifier = d.DeviceIdentifier,
+                            LocationId = d.Location.Id,
+                            LocationIdentifier = d.Location.LocationIdentifier
+                        });
             }
             catch (Exception ex)
             {
@@ -101,11 +114,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 return;
             }
 
+
+
             var envelopes = new List<EventBatchEnvelope>();
 
             foreach (var group in groups)
             {
-                if (!mappings.TryGetValue(group.Key, out var map))
+                var detectorId = group.Key?.Trim().ToUpperInvariant();
+
+                if (!deviceLookup.TryGetValue(detectorId, out var device))
                 {
                     _logger.LogWarning("No mapping found for sensor ID {SensorId} — skipping this group", group.Key);
                     continue;
@@ -113,15 +130,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
                 try
                 {
-                    //debug log the envelope info
-                    _logger.LogDebug($"Creating envelope for Location Identifier:{map.LocationIdentifier} Device:{map.DeviceId}");
+                    _logger.LogDebug($"Creating envelope for Location Identifier:{device.LocationIdentifier} Device:{device.Id}");
                     var envelope = new EventBatchEnvelope
                     {
                         DataType = nameof(SpeedEvent),
                         Start = group.Min(p => p.Timestamp),
                         End = group.Max(p => p.Timestamp),
-                        LocationIdentifier = map.LocationIdentifier,
-                        DeviceId = map.DeviceId,
+                        LocationIdentifier = device.LocationIdentifier,
+                        DeviceId = device.Id,
                         Items = JToken.FromObject(group.ToList())
                     };
 
@@ -132,6 +148,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                     _logger.LogError(ex, "Failed to build envelope for sensor {SensorId}", group.Key);
                 }
             }
+
 
             if (!envelopes.Any())
             {
@@ -159,5 +176,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
         protected abstract void DisposeInternal();
     }
+
+    public class DeviceMapping
+    {
+        public int Id { get; set; }
+        public string DeviceIdentifier { get; set; } = default!;
+        public int LocationId { get; set; }
+        public string LocationIdentifier { get; set; } = default!;
+    }
+
 
 }

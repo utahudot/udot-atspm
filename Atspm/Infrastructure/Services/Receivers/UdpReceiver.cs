@@ -12,7 +12,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Receivers
 {
     public class UdpReceiver : IUdpReceiver
     {
-        private readonly Socket _socket;
         private readonly int _port;
         private readonly ILogger<UdpReceiver> _logger;
 
@@ -20,14 +19,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Receivers
         {
             _port = port;
             _logger = logger;
-            // Specify IPv4, datagram (UDP) protocol
-            _socket = new Socket(
-                AddressFamily.InterNetwork,
-                SocketType.Dgram,
-                ProtocolType.Udp
-            );
-
-            _socket.Bind(new IPEndPoint(IPAddress.Any, port));
             _logger.LogInformation("UDPReceiver bound and listening on port {Port}", port);
         }
 
@@ -59,7 +50,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Receivers
         }
 
 
-        public void Dispose() => _socket.Dispose();
+        public void Dispose() { 
+    }
     }
 
 }
