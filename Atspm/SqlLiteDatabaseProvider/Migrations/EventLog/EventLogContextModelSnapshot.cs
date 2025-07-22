@@ -44,6 +44,12 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations.EventLog
                     b.Property<int>("DeviceId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("ArchiveDate")
                         .HasColumnType("Date");
 
@@ -55,7 +61,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations.EventLog
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("LocationIdentifier", "DeviceId", "ArchiveDate");
+                    b.HasKey("LocationIdentifier", "DeviceId", "Start", "End");
 
                     b.ToTable("CompressedEvents", t =>
                         {

@@ -16,7 +16,6 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {

@@ -206,6 +206,11 @@ export default function ChartsContainer({
             {alert}
           </Alert>
         )}
+        {chartData && chartData.data.charts.length == 0 && (
+          <Alert severity="warning" sx={{ marginLeft: 1 }}>
+            No Data Avaliable
+          </Alert>
+        )}
       </Box>
       {useChartsController &&
         areRefsReady &&

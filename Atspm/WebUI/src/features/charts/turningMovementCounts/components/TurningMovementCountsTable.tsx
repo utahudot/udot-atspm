@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@mui/material'
 import { addHours } from 'date-fns'
+import { Fragment } from 'react'
 
 interface VolumeData {
   value: number
@@ -45,65 +46,71 @@ const TurningMovementCountsTable = ({
   chartData,
 }: TurningMovementCountsTableProps) => {
   const { table, peakHourFactor, peakHour } = chartData.data
-  const timestamps = [
-    ...new Set(
-      table.flatMap((data) => data.volumes.map((volume) => volume.timestamp))
-    ),
-  ].sort((a, b) => a.localeCompare(b))
 
-  const findVolumeByTimestamp = (
+  const timestamps = Array.from(
+    new Set(table.flatMap((d) => d.volumes.map((v) => v.timestamp)))
+  ).sort((a, b) => a.localeCompare(b))
+
+  const findVolume = (
     direction: string,
     movementType: string,
     timestamp: string
-  ) => {
-    return (
-      table
-        .filter(
-          (data) =>
-            data.direction === direction && data.movementType === movementType
-        )
-        .flatMap((data) => data.volumes)
-        .find((volume) => volume.timestamp === timestamp)?.value || 0
-    )
-  }
+  ) =>
+    table
+      .filter(
+        (d) => d.direction === direction && d.movementType === movementType
+      )
+      .flatMap((d) => d.volumes)
+      .find((v) => v.timestamp === timestamp)?.value || 0
 
-  const formatTime = (timestamp: string) => {
-    const formatter = new Intl.DateTimeFormat('default', {
+  const formatTime = (ts: string) =>
+    new Intl.DateTimeFormat('default', {
       hour: 'numeric',
       minute: 'numeric',
       hour12: false,
-    })
-
-    const date = new Date(timestamp)
-    return formatter.format(date)
-  }
+    }).format(new Date(ts))
 
   const directions = ['Eastbound', 'Westbound', 'Northbound', 'Southbound']
-  const movementTypes = ['Left', 'Thru', 'Right']
 
-  const totalPerColumn = directions.map((direction) =>
-    movementTypes.map((type) =>
-      timestamps.reduce(
-        (sum, timestamp) =>
-          sum + findVolumeByTimestamp(direction, type, timestamp),
-        0
+  // 4) build, per-direction, the list of movementTypes actually present
+  const preferredOrder = ['Left', 'Thru', 'Thru-Right', 'Right']
+  const movementTypesByDirection: Record<string, string[]> = {}
+  directions.forEach((dir) => {
+    const types = Array.from(
+      new Set(
+        table.filter((d) => d.direction === dir).map((d) => d.movementType)
       )
     )
-  )
+    types.sort((a, b) => {
+      const ia = preferredOrder.indexOf(a)
+      const ib = preferredOrder.indexOf(b)
+      if (ia === -1 || ib === -1) return a.localeCompare(b)
+      return ia - ib
+    })
+    movementTypesByDirection[dir] = types
+  })
 
-  const totalPerDirection = totalPerColumn.map((totals) =>
-    totals.reduce((acc, curr) => acc + curr, 0)
+  // 5) precompute totals for footer
+  const totalPerColumn = directions.map((dir) =>
+    movementTypesByDirection[dir].map((mt) =>
+      timestamps.reduce((sum, ts) => sum + findVolume(dir, mt, ts), 0)
+    )
   )
-
-  const grandTotal = totalPerDirection.reduce((acc, curr) => acc + curr, 0)
+  const totalPerDirection = totalPerColumn.map((arr) =>
+    arr.reduce((a, b) => a + b, 0)
+  )
+  const grandTotal = totalPerDirection.reduce((a, b) => a + b, 0)
 
   return (
     <Box sx={{ mt: 4 }}>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h4" component="h2">Data Table</Typography>
+          <Typography variant="h4" component="h2">
+            Data Table
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
+          {/* --- Main Volume Table --- */}
           <TableContainer>
             <Table sx={{ minWidth: 800 }} aria-label="traffic table">
               <TableHead
@@ -118,91 +125,71 @@ const TurningMovementCountsTable = ({
               >
                 <TableRow>
                   <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
-                  {directions.map((direction) => (
+                  {directions.map((dir) => (
                     <TableCell
-                      key={direction}
-                      colSpan={4}
+                      key={dir}
+                      colSpan={movementTypesByDirection[dir].length + 1}
                       sx={{ borderBottom: 'none', pb: 0 }}
                     >
-                      <Divider>{direction}</Divider>
+                      <Divider>{dir}</Divider>
                     </TableCell>
                   ))}
                 </TableRow>
                 <TableRow>
                   <TableCell align="center">Bin</TableCell>
-                  {directions.map((direction) => (
-                    <>
-                      <TableCell align="center" key={`${direction}-L`}>
-                        L
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-T`}>
-                        T
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-R`}>
-                        R
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-Total`}>
-                        Total
-                      </TableCell>
-                    </>
+                  {directions.map((dir) => (
+                    <Fragment key={dir}>
+                      {movementTypesByDirection[dir].map((mt) => (
+                        <TableCell align="center" key={`${dir}-${mt}`}>
+                          {mt}
+                        </TableCell>
+                      ))}
+                      <TableCell align="center">Total</TableCell>
+                    </Fragment>
                   ))}
                   <TableCell align="center">Bin Total</TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
-                {timestamps.map((timestamp) => (
+                {timestamps.map((ts) => (
                   <TableRow
-                    key={timestamp}
+                    key={ts}
                     sx={{
                       '& .MuiTableCell-body': {
                         fontSize: '0.9rem',
                         borderRight: '1px solid #e0e0e0',
                       },
-                      '&:nth-of-type(odd)': {
-                        backgroundColor: '#f4f4f4',
-                      },
+                      '&:nth-of-type(odd)': { backgroundColor: '#f4f4f4' },
                     }}
                   >
-                    <TableCell>{formatTime(timestamp)}</TableCell>
-                    {directions.map((direction) => {
-                      const totals = movementTypes.map((type) =>
-                        findVolumeByTimestamp(direction, type, timestamp)
+                    <TableCell>{formatTime(ts)}</TableCell>
+
+                    {directions.map((dir) => {
+                      const counts = movementTypesByDirection[dir].map((mt) =>
+                        findVolume(dir, mt, ts)
                       )
-                      const directionTotal = totals.reduce(
-                        (acc, curr) => acc + curr,
-                        0
-                      )
+                      const dirSum = counts.reduce((a, b) => a + b, 0)
+
                       return (
-                        <>
-                          {totals.map((total, index) => (
-                            <TableCell
-                              key={`${direction}-${movementTypes[index]}-${timestamp}`}
-                            >
-                              {total}
-                            </TableCell>
+                        <Fragment key={dir}>
+                          {counts.map((c, i) => (
+                            <TableCell key={`${dir}-${i}-${ts}`}>{c}</TableCell>
                           ))}
-                          <TableCell
-                            key={`${direction}-total-${timestamp}`}
-                            sx={{ backgroundColor: '#90EE9050' }}
-                          >
-                            {directionTotal}
+                          <TableCell sx={{ backgroundColor: '#90EE9050' }}>
+                            {dirSum}
                           </TableCell>
-                        </>
+                        </Fragment>
                       )
                     })}
+
                     <TableCell sx={{ backgroundColor: '#ADDFFF50' }}>
                       {directions
                         .reduce(
-                          (acc, direction) =>
-                            acc +
-                            movementTypes.reduce(
-                              (sum, type) =>
-                                sum +
-                                findVolumeByTimestamp(
-                                  direction,
-                                  type,
-                                  timestamp
-                                ),
+                          (sumD, dir) =>
+                            sumD +
+                            movementTypesByDirection[dir].reduce(
+                              (sumM, mt) => sumM + findVolume(dir, mt, ts),
                               0
                             ),
                           0
@@ -211,6 +198,8 @@ const TurningMovementCountsTable = ({
                     </TableCell>
                   </TableRow>
                 ))}
+
+                {/* Footer Totals */}
                 <TableRow
                   sx={{
                     '& .MuiTableCell-body': {
@@ -221,22 +210,17 @@ const TurningMovementCountsTable = ({
                   }}
                 >
                   <TableCell>Total</TableCell>
-                  {totalPerColumn.flatMap((totals, dirIndex) => (
-                    <>
-                      {totals.map((total, typeIndex) => (
-                        <TableCell
-                          key={`total-${directions[dirIndex]}-${movementTypes[typeIndex]}`}
-                        >
-                          {total.toLocaleString()}
+                  {directions.map((dir, di) => (
+                    <Fragment key={dir}>
+                      {totalPerColumn[di].map((tot, ti) => (
+                        <TableCell key={`tot-${dir}-${ti}`}>
+                          {tot.toLocaleString()}
                         </TableCell>
                       ))}
-                      <TableCell
-                        key={`dir-total-${directions[dirIndex]}`}
-                        sx={{ backgroundColor: '#90EE9050' }}
-                      >
-                        {totalPerDirection[dirIndex].toLocaleString()}
+                      <TableCell sx={{ backgroundColor: '#90EE9050' }}>
+                        {totalPerDirection[di].toLocaleString()}
                       </TableCell>
-                    </>
+                    </Fragment>
                   ))}
                   <TableCell sx={{ backgroundColor: '#ADDFFF50' }}>
                     {grandTotal.toLocaleString()}
@@ -245,8 +229,22 @@ const TurningMovementCountsTable = ({
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* --- Peak Hour Table --- */}
           <TableContainer sx={{ marginTop: 4 }}>
             <Table sx={{ minWidth: 800 }} aria-label="peak hour volume table">
+              <caption
+                style={{
+                  captionSide: 'top',
+                  textAlign: 'center',
+                  padding: '0.5rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                }}
+              >
+                Peak Hour (PHF = {peakHourFactor})
+              </caption>
+
               <TableHead
                 sx={{
                   '& .MuiTableCell-head': {
@@ -258,96 +256,74 @@ const TurningMovementCountsTable = ({
                 }}
               >
                 <TableRow>
-                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
-                  <TableCell
-                    colSpan={4}
-                    sx={{ borderBottom: 'none', pb: 0, textAlign: 'center' }}
-                  >
-                    Peak Hour (PHF = {peakHourFactor})
-                  </TableCell>
-                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
-                </TableRow>
-                <TableRow>
                   <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
-                  {directions.map((direction) => (
+                  {directions.map((dir) => (
                     <TableCell
-                      key={direction}
-                      colSpan={4}
+                      key={dir}
+                      colSpan={movementTypesByDirection[dir].length + 1}
                       sx={{ borderBottom: 'none', pb: 0 }}
                     >
-                      <Divider>{direction}</Divider>
+                      <Divider>{dir}</Divider>
                     </TableCell>
                   ))}
                 </TableRow>
                 <TableRow>
-                  <TableCell align="center">Bin</TableCell>
-                  {directions.map((direction) => (
-                    <>
-                      <TableCell align="center" key={`${direction}-L`}>
-                        L
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-T`}>
-                        T
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-R`}>
-                        R
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-Total`}>
-                        Total
-                      </TableCell>
-                    </>
+                  <TableCell align="center">Hour</TableCell>
+                  {directions.map((dir) => (
+                    <Fragment key={dir}>
+                      {movementTypesByDirection[dir].map((mt) => {
+                        return (
+                          <TableCell align="center" key={`${dir}-peak-${mt}`}>
+                            {mt}
+                          </TableCell>
+                        )
+                      })}
+                      <TableCell align="center">Total</TableCell>
+                    </Fragment>
                   ))}
                   <TableCell align="center">Bin Total</TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 <TableRow
                   sx={{
                     '& .MuiTableCell-body': {
                       fontSize: '0.9rem',
-                      borderRight: '1px solid #d0d0d0',
+                      borderRight: '1px solid #e0e0e0',
                     },
                   }}
                 >
                   <TableCell>
-                    {/* add hour to end time */}
-                    {formatTime(peakHour.key)} -{' '}
+                    {formatTime(peakHour.key)} –{' '}
                     {formatTime(
                       addHours(new Date(peakHour.key), 1).toISOString()
                     )}
                   </TableCell>
-                  {directions.map((direction) => {
-                    const directionData = table.filter(
-                      (data) => data.direction === direction
-                    )
-                    const totals = movementTypes.map((type) => {
-                      const typeData = directionData.find(
-                        (data) => data.movementType === type
+
+                  {directions.map((dir) => {
+                    const counts = movementTypesByDirection[dir].map((mt) => {
+                      const rec = table.find(
+                        (d) => d.direction === dir && d.movementType === mt
                       )
-                      return typeData?.peakHourVolume.value || 0
+                      return rec?.peakHourVolume.value || 0
                     })
-                    const directionTotal = totals.reduce(
-                      (acc, curr) => acc + curr,
-                      0
-                    )
+                    const dirSum = counts.reduce((a, b) => a + b, 0)
+
                     return (
-                      <>
-                        {totals.map((total, index) => (
-                          <TableCell
-                            key={`${direction}-${movementTypes[index]}-peak`}
-                          >
-                            {total.toLocaleString()}
+                      <Fragment key={`peak-${dir}`}>
+                        {counts.map((c, i) => (
+                          <TableCell key={`${dir}-peak-${i}`}>
+                            {c.toLocaleString()}
                           </TableCell>
                         ))}
-                        <TableCell
-                          key={`${direction}-total-peak`}
-                          sx={{ backgroundColor: '#90EE9050' }}
-                        >
-                          {directionTotal.toLocaleString()}
+                        <TableCell sx={{ backgroundColor: '#90EE9050' }}>
+                          {dirSum.toLocaleString()}
                         </TableCell>
-                      </>
+                      </Fragment>
                     )
                   })}
+
                   <TableCell sx={{ backgroundColor: '#ADDFFF50' }}>
                     {peakHour.value.toLocaleString()}
                   </TableCell>

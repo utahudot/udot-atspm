@@ -53,10 +53,16 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.Aggregation
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType");
+                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType", "Start", "End");
 
                     b.ToTable("CompressedAggregations", t =>
                         {
