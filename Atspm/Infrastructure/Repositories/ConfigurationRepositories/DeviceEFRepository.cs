@@ -37,6 +37,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .Include(i => i.Location).ThenInclude(i => i.Region)
                 .Include(i => i.Location).ThenInclude(i => i.Jurisdiction)
                 .Include(i => i.Location).ThenInclude(i => i.Areas)
+                .Include(i => i.Location).ThenInclude(i => i.Approaches).ThenInclude(i => i.Detectors)
                 .Include(i => i.DeviceConfiguration).ThenInclude(i => i.Product)
                 .AsQueryable();
         }

@@ -28,7 +28,7 @@ using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Device Controller
+    /// Device controller
     /// </summary>
     [ApiVersion(1.0)]
     public class DeviceController : LocationPolicyControllerBase<Device, int>

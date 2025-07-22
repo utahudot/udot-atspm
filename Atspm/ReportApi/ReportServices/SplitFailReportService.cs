@@ -17,7 +17,6 @@
 
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
@@ -112,9 +111,12 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                  phaseDetail.PhaseNumber);
             var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
             var tasks = new List<Task<SplitFailsResult>>();
-            foreach (var detectionType in detectors.SelectMany(d => d.DetectionTypes).Distinct())
+            var stopbarDetector = detectors
+            .SelectMany(d => d.DetectionTypes)
+            .FirstOrDefault(dt => dt.Id == Data.Enums.DetectionTypes.SBP);
+            if (stopbarDetector != null)
             {
-                tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, detectionType));
+                tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, stopbarDetector));
             }
             var results = await Task.WhenAll(tasks);
             return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);

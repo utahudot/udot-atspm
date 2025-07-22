@@ -19,8 +19,9 @@ using Lextm.SharpSnmpLib.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -28,23 +29,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
     /// <summary>
     /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
     /// </summary>
-    public class DeviceEventLogHostedService : HostedServiceBase
+    /// <remarks>
+    /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
+    /// </remarks>
+    /// <param name="log"></param>
+    /// <param name="serviceProvider"></param>
+    /// <param name="options"></param>
+    public class DeviceEventLogHostedService(ILogger<DeviceEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options) : HostedServiceBase(log, serviceProvider)
     {
-        private readonly IOptions<DeviceEventLoggingConfiguration> _options;
-
-        /// <summary>
-        /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="serviceProvider"></param>
-        /// <param name="options"></param>
-        public DeviceEventLogHostedService(ILogger<DeviceEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options) : base(log, serviceProvider)
-        {
-            _options = options;
-        }
+        private readonly IOptions<DeviceEventLoggingConfiguration> _options = options;
 
         /// <inheritdoc/>
-        public override async Task Process(IServiceScope scope, CancellationToken cancellationToken = default)
+        public override async Task Process(IServiceScope scope, Stopwatch stopwatch, CancellationToken cancellationToken = default)
         {
             var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 

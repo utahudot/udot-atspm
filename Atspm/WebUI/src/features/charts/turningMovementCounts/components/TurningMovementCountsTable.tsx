@@ -13,30 +13,24 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { addHours } from 'date-fns'
+import { useMemo } from 'react'
 
-interface VolumeData {
-  value: number
-  timestamp: string
+interface ColumnGroup {
+  title: string | null
+  columns: string[]
 }
-
-interface TrafficData {
-  direction: string
-  movementType: string
-  laneType: string
-  volumes: VolumeData[]
-  peakHourVolume: {
-    key: string
-    value: number
-  }
+interface Labels {
+  columnGroups: ColumnGroup[]
+  flatColumns: string[]
 }
-
+type TableRow = (string | number)[]
 interface TurningMovementCountsTableProps {
   chartData: {
     data: {
-      table: TrafficData[]
+      labels: Labels
+      table: TableRow[]
       peakHourFactor: number
-      peakHour: VolumeData
+      peakHour?: TableRow[]
     }
   }
 }
@@ -44,68 +38,69 @@ interface TurningMovementCountsTableProps {
 const TurningMovementCountsTable = ({
   chartData,
 }: TurningMovementCountsTableProps) => {
-  const { table, peakHourFactor, peakHour } = chartData.data
-  const timestamps = [
-    ...new Set(
-      table.flatMap((data) => data.volumes.map((volume) => volume.timestamp))
-    ),
-  ].sort((a, b) => a.localeCompare(b))
+  const { labels, table, peakHour } = chartData.data
 
-  const findVolumeByTimestamp = (
-    direction: string,
-    movementType: string,
-    timestamp: string
-  ) => {
-    return (
-      table
-        .filter(
-          (data) =>
-            data.direction === direction && data.movementType === movementType
-        )
-        .flatMap((data) => data.volumes)
-        .find((volume) => volume.timestamp === timestamp)?.value || 0
-    )
-  }
+  console.log('peakHourFactor:', peakHour)
 
-  const formatTime = (timestamp: string) => {
-    const formatter = new Intl.DateTimeFormat('default', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false,
+  /* indices needing background colours */
+  const { dirTotalIdx, binTotalIdx } = useMemo(() => {
+    const dirTotal = new Set<number>()
+    let binTotal = -1
+    let i = 0
+    labels.columnGroups.forEach((group) => {
+      group.columns.forEach((col, ci) => {
+        if (col === 'Total' && group.title) dirTotal.add(i)
+        if (col === 'Bin Total') binTotal = i
+        i++
+      })
     })
+    return { dirTotalIdx: dirTotal, binTotalIdx: binTotal }
+  }, [labels.columnGroups])
 
-    const date = new Date(timestamp)
-    return formatter.format(date)
+  const cellStyle = (ci: number) => {
+    if (ci === binTotalIdx) return { backgroundColor: '#ADDFFF50' }
+    if (dirTotalIdx.has(ci)) return { backgroundColor: '#90EE9050' }
+    return {}
   }
 
-  const directions = ['Eastbound', 'Westbound', 'Northbound', 'Southbound']
-  const movementTypes = ['Left', 'Thru', 'Right']
-
-  const totalPerColumn = directions.map((direction) =>
-    movementTypes.map((type) =>
-      timestamps.reduce(
-        (sum, timestamp) =>
-          sum + findVolumeByTimestamp(direction, type, timestamp),
-        0
+  const renderBodyRows = (rows: TableRow[]) =>
+    rows.map((row, ri) => {
+      const isFooter = row[0] === 'Total'
+      return (
+        <TableRow
+          key={ri}
+          sx={{
+            '& .MuiTableCell-body': {
+              fontSize: '0.9rem',
+              borderRight: '1px solid #e0e0e0',
+              padding: '.7rem',
+            },
+            ...(isFooter
+              ? { bgcolor: '#e0e0e0' }
+              : { '&:nth-of-type(odd)': { backgroundColor: '#f4f4f4' } }),
+          }}
+        >
+          {row.map((cell, ci) => (
+            <TableCell key={ci} sx={cellStyle(ci)}>
+              {typeof cell === 'number' ? cell.toLocaleString() : cell}
+            </TableCell>
+          ))}
+        </TableRow>
       )
-    )
-  )
-
-  const totalPerDirection = totalPerColumn.map((totals) =>
-    totals.reduce((acc, curr) => acc + curr, 0)
-  )
-
-  const grandTotal = totalPerDirection.reduce((acc, curr) => acc + curr, 0)
+    })
 
   return (
     <Box sx={{ mt: 4 }}>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h4" component="h2">Data Table</Typography>
+          <Typography variant="h4" component="h2">
+            Data Table
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
+          {/* ---------------- Main Table ---------------- */}
           <TableContainer>
-            <Table sx={{ minWidth: 800 }} aria-label="traffic table">
+            <Table sx={{ minWidth: 800 }}>
               <TableHead
                 sx={{
                   '& .MuiTableCell-head': {
@@ -116,245 +111,103 @@ const TurningMovementCountsTable = ({
                   },
                 }}
               >
+                {/* first header row (direction titles) */}
                 <TableRow>
-                  <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
-                  {directions.map((direction) => (
+                  {labels.columnGroups.map((g, gi) => (
                     <TableCell
-                      key={direction}
-                      colSpan={4}
+                      key={gi}
+                      colSpan={g.columns.length}
                       sx={{ borderBottom: 'none', pb: 0 }}
                     >
-                      <Divider>{direction}</Divider>
+                      {g.title && <Divider>{g.title}</Divider>}
                     </TableCell>
                   ))}
                 </TableRow>
+
+                {/* second header row (column names) */}
                 <TableRow>
-                  <TableCell align="center">Bin</TableCell>
-                  {directions.map((direction) => (
-                    <>
-                      <TableCell align="center" key={`${direction}-L`}>
-                        L
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-T`}>
-                        T
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-R`}>
-                        R
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-Total`}>
-                        Total
-                      </TableCell>
-                    </>
+                  {labels.flatColumns.map((col, ci) => (
+                    <TableCell key={ci} align="center">
+                      {col}
+                    </TableCell>
                   ))}
-                  <TableCell align="center">Bin Total</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {timestamps.map((timestamp) => (
-                  <TableRow
-                    key={timestamp}
-                    sx={{
-                      '& .MuiTableCell-body': {
-                        fontSize: '0.9rem',
-                        borderRight: '1px solid #e0e0e0',
-                      },
-                      '&:nth-of-type(odd)': {
-                        backgroundColor: '#f4f4f4',
-                      },
-                    }}
-                  >
-                    <TableCell>{formatTime(timestamp)}</TableCell>
-                    {directions.map((direction) => {
-                      const totals = movementTypes.map((type) =>
-                        findVolumeByTimestamp(direction, type, timestamp)
-                      )
-                      const directionTotal = totals.reduce(
-                        (acc, curr) => acc + curr,
-                        0
-                      )
-                      return (
-                        <>
-                          {totals.map((total, index) => (
-                            <TableCell
-                              key={`${direction}-${movementTypes[index]}-${timestamp}`}
-                            >
-                              {total}
-                            </TableCell>
-                          ))}
-                          <TableCell
-                            key={`${direction}-total-${timestamp}`}
-                            sx={{ backgroundColor: '#90EE9050' }}
-                          >
-                            {directionTotal}
-                          </TableCell>
-                        </>
-                      )
-                    })}
-                    <TableCell sx={{ backgroundColor: '#ADDFFF50' }}>
-                      {directions
-                        .reduce(
-                          (acc, direction) =>
-                            acc +
-                            movementTypes.reduce(
-                              (sum, type) =>
-                                sum +
-                                findVolumeByTimestamp(
-                                  direction,
-                                  type,
-                                  timestamp
-                                ),
-                              0
-                            ),
-                          0
-                        )
-                        .toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                <TableRow
+
+              <TableBody>{renderBodyRows(table)}</TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* ---------------- Peak‑Hour Table ---------------- */}
+          {peakHour ? (
+            <TableContainer sx={{ mt: 4 }}>
+              <Table sx={{ minWidth: 800 }}>
+                <caption
+                  style={{
+                    captionSide: 'top',
+                    textAlign: 'center',
+                    padding: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                  }}
+                >
+                  Peak Hour{' '}
+                  {peakHour.peakHourFactor
+                    ? `(PHF = ${peakHour.peakHourFactor.toFixed(2)})`
+                    : null}
+                </caption>
+
+                <TableHead
                   sx={{
-                    '& .MuiTableCell-body': {
-                      fontSize: '0.9rem',
-                      borderRight: '1px solid #d0d0d0',
-                      bgcolor: '#e0e0e0',
+                    '& .MuiTableCell-head': {
+                      fontSize: '0.8rem',
+                      bgcolor: 'white',
+                      lineHeight: '1rem',
+                      padding: '0.5rem',
                     },
                   }}
                 >
-                  <TableCell>Total</TableCell>
-                  {totalPerColumn.flatMap((totals, dirIndex) => (
-                    <>
-                      {totals.map((total, typeIndex) => (
-                        <TableCell
-                          key={`total-${directions[dirIndex]}-${movementTypes[typeIndex]}`}
-                        >
-                          {total.toLocaleString()}
-                        </TableCell>
-                      ))}
+                  <TableRow>
+                    {labels.columnGroups.map((g, gi) => (
                       <TableCell
-                        key={`dir-total-${directions[dirIndex]}`}
-                        sx={{ backgroundColor: '#90EE9050' }}
+                        key={gi}
+                        colSpan={g.columns.length}
+                        sx={{ borderBottom: 'none', pb: 0 }}
                       >
-                        {totalPerDirection[dirIndex].toLocaleString()}
+                        {g.title && <Divider>{g.title}</Divider>}
                       </TableCell>
-                    </>
-                  ))}
-                  <TableCell sx={{ backgroundColor: '#ADDFFF50' }}>
-                    {grandTotal.toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TableContainer sx={{ marginTop: 4 }}>
-            <Table sx={{ minWidth: 800 }} aria-label="peak hour volume table">
-              <TableHead
-                sx={{
-                  '& .MuiTableCell-head': {
-                    fontSize: '0.8rem',
-                    bgcolor: 'white',
-                    lineHeight: '1rem',
-                    padding: '0.5rem',
-                  },
-                }}
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    {labels.flatColumns.map((col, ci) => (
+                      <TableCell key={ci} align="center">
+                        {col === 'Hour' ? 'Hour' : col}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>{renderBodyRows(peakHour.peakHourData)}</TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Box
+              sx={{
+                height: 100,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ mt: 2, textAlign: 'center' }}
               >
-                <TableRow>
-                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
-                  <TableCell
-                    colSpan={4}
-                    sx={{ borderBottom: 'none', pb: 0, textAlign: 'center' }}
-                  >
-                    Peak Hour (PHF = {peakHourFactor})
-                  </TableCell>
-                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
-                  {directions.map((direction) => (
-                    <TableCell
-                      key={direction}
-                      colSpan={4}
-                      sx={{ borderBottom: 'none', pb: 0 }}
-                    >
-                      <Divider>{direction}</Divider>
-                    </TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  <TableCell align="center">Bin</TableCell>
-                  {directions.map((direction) => (
-                    <>
-                      <TableCell align="center" key={`${direction}-L`}>
-                        L
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-T`}>
-                        T
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-R`}>
-                        R
-                      </TableCell>
-                      <TableCell align="center" key={`${direction}-Total`}>
-                        Total
-                      </TableCell>
-                    </>
-                  ))}
-                  <TableCell align="center">Bin Total</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow
-                  sx={{
-                    '& .MuiTableCell-body': {
-                      fontSize: '0.9rem',
-                      borderRight: '1px solid #d0d0d0',
-                    },
-                  }}
-                >
-                  <TableCell>
-                    {/* add hour to end time */}
-                    {formatTime(peakHour.key)} -{' '}
-                    {formatTime(
-                      addHours(new Date(peakHour.key), 1).toISOString()
-                    )}
-                  </TableCell>
-                  {directions.map((direction) => {
-                    const directionData = table.filter(
-                      (data) => data.direction === direction
-                    )
-                    const totals = movementTypes.map((type) => {
-                      const typeData = directionData.find(
-                        (data) => data.movementType === type
-                      )
-                      return typeData?.peakHourVolume.value || 0
-                    })
-                    const directionTotal = totals.reduce(
-                      (acc, curr) => acc + curr,
-                      0
-                    )
-                    return (
-                      <>
-                        {totals.map((total, index) => (
-                          <TableCell
-                            key={`${direction}-${movementTypes[index]}-peak`}
-                          >
-                            {total.toLocaleString()}
-                          </TableCell>
-                        ))}
-                        <TableCell
-                          key={`${direction}-total-peak`}
-                          sx={{ backgroundColor: '#90EE9050' }}
-                        >
-                          {directionTotal.toLocaleString()}
-                        </TableCell>
-                      </>
-                    )
-                  })}
-                  <TableCell sx={{ backgroundColor: '#ADDFFF50' }}>
-                    {peakHour.value.toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+                Select a time range 1 hour or greater to view peak hour data.
+              </Typography>
+            </Box>
+          )}
         </AccordionDetails>
       </Accordion>
     </Box>

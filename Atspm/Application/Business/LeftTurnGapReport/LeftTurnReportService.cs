@@ -343,7 +343,8 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapReport
                 );
 
                 averageByBin.Add(time, average);
-            };
+            }
+            ;
             return averageByBin;
         }
 
