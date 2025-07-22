@@ -27,43 +27,43 @@ namespace Utah.Udot.Atspm.Extensions
     /// </summary>
     public static class IEventLogRepositoryExtensions
     {
-        ///// <summary>
-        ///// Used to update/insert an entry to the <see cref="IEventLogRepository"/> repository
-        ///// using a <see cref="HashSet{T}"/> to ensure there are no duplicate data events.
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="repo"></param>
-        ///// <param name="input"></param>
-        ///// <returns></returns>
-        //public static async Task<T> Upsert<T>(this IEventLogRepository repo, T input) where T : CompressedEventLogBase
-        //{
-        //    var searchLog = await repo.LookupAsync(input);
+        /// <summary>
+        /// Used to update/insert an entry to the <see cref="IEventLogRepository"/> repository
+        /// using a <see cref="HashSet{T}"/> to ensure there are no duplicate data events.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="repo"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static async Task<T> Upsert<T>(this IEventLogRepository repo, T input) where T : CompressedEventLogBase
+        {
+            var searchLog = await repo.LookupAsync(input);
 
-        //    if (searchLog != null)
-        //    {
-        //        dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(input.DataType));
+            if (searchLog != null)
+            {
+                dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(input.DataType));
 
-        //        foreach (var i in Enumerable.Union(searchLog.Data, input.Data).ToHashSet())
-        //        {
-        //            if (list is IList l)
-        //            {
-        //                l.Add(i);
-        //            }
-        //        }
+                foreach (var i in Enumerable.Union(searchLog.Data, input.Data).ToHashSet())
+                {
+                    if (list is IList l)
+                    {
+                        l.Add(i);
+                    }
+                }
 
-        //        searchLog.Data = list;
+                searchLog.Data = list;
 
-        //        await repo.UpdateAsync(searchLog);
+                await repo.UpdateAsync(searchLog);
 
-        //        return (T)searchLog;
-        //    }
-        //    else
-        //    {
-        //        await repo.AddAsync(input);
+                return (T)searchLog;
+            }
+            else
+            {
+                await repo.AddAsync(input);
 
-        //        return input;
-        //    }
-        //}
+                return input;
+            }
+        }
 
         /// <summary>
         /// Returns a list of unique days that have event logs for the given location.
