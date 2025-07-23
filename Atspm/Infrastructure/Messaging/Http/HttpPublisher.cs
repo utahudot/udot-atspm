@@ -31,6 +31,7 @@ public class HttpEnvelopePublisher
 
     public async Task PublishAsync(
        IReadOnlyList<EventBatchEnvelope> batch,
+       int threads,
        CancellationToken ct = default
    )
     {

@@ -395,7 +395,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                             BootstrapServers = cfg.BootstrapServers,
                             Acks = Acks.All,
                             ClientId = cfg.ClientId
-                            // etc…
                         };
                         return new ProducerBuilder<string, byte[]>(producerConfig).Build();
                     });

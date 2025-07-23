@@ -75,7 +75,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.Messaging.Database
             var batch = new List<EventBatchEnvelope> { envelope1, envelope2 };
 
             // --- Act ---
-            await publisher.PublishAsync(batch, CancellationToken.None);
+            await publisher.PublishAsync(batch, 1, CancellationToken.None);
 
             // --- Assert ---
             // Should have called Upsert exactly once per envelope, 

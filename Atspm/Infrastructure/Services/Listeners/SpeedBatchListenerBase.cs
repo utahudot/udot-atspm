@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         }
 
 
-        protected void Enqueue(SpeedEvent msg)
+        protected internal void Enqueue(SpeedEvent msg)
         {
             List<SpeedEvent>? toSend = null;
 
@@ -158,7 +158,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
             try
             {
-                await _eventPublisher.PublishAsync(envelopes, CancellationToken.None);
+                await _eventPublisher.PublishAsync(envelopes,_config.threads, CancellationToken.None);
                 _logger.LogInformation("Published {Count} envelopes for {SensorCount} sensors", envelopes.Count, envelopes.Select(e => e.DeviceId).Distinct().Count());
             }
             catch (Exception ex)

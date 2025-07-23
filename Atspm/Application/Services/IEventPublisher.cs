@@ -10,6 +10,6 @@ namespace Utah.Udot.Atspm.Services
     {
         Task PublishAsync(T message, CancellationToken ct = default);
 
-        Task PublishAsync(IReadOnlyList<T> batch, CancellationToken ct = default);
+        Task PublishAsync(IReadOnlyList<T> batch, int threads, CancellationToken ct = default);
     }
 }

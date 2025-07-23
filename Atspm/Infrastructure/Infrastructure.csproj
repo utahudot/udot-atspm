@@ -124,4 +124,9 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="Utah.Udot.ATSPM.InfrastructureTests" />
+	</ItemGroup>
+
+
 </Project>

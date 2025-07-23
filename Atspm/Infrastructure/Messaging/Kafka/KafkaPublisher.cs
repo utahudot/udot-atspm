@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.Kafka
 
         public void Dispose() => _producer.Dispose();
 
-        Task IEventPublisher<EventBatchEnvelope>.PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, CancellationToken ct)
+        Task IEventPublisher<EventBatchEnvelope>.PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, int threads, CancellationToken ct)
         {
             throw new NotImplementedException();
         }

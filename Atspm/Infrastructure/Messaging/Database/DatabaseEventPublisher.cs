@@ -31,7 +31,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Messaging.Database
         /// </summary>
         public async Task PublishAsync(EventBatchEnvelope envelope, CancellationToken ct = default)
         {
-            var workflow = new EventBatchEnvelopeWorkflow(_scopes, 50, ct);
+            var workflow = new EventBatchEnvelopeWorkflow(_scopes, 1, ct);
 
             // Send single envelope
             await workflow.Input.SendAsync(envelope, ct);
@@ -50,11 +50,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Messaging.Database
         /// <summary>
         /// Bulk path: n envelopes in one workflow instance.
         /// </summary>
-        public async Task PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, CancellationToken ct = default)
+        public async Task PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, int threads, CancellationToken ct = default)
         {
             try
             {
-                var workflow = new EventBatchEnvelopeWorkflow(_scopes, 50, ct);
+                var workflow = new EventBatchEnvelopeWorkflow(_scopes, threads, ct);
                 await workflow.Initialize();
 
                 foreach (var env in batch)

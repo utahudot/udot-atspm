@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
             await _client.PublishAsync(pubsubMessage);
         }
 
-        Task IEventPublisher<EventBatchEnvelope>.PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, CancellationToken ct)
+        Task IEventPublisher<EventBatchEnvelope>.PublishAsync(IReadOnlyList<EventBatchEnvelope> batch, int threads, CancellationToken ct)
         {
             throw new NotImplementedException();
         }

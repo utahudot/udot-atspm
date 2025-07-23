@@ -21,5 +21,10 @@
         /// The UDP port to listen on.
         /// </summary>
         public int UdpPort { get; set; } = 10088;
+
+        /// <summary>
+        /// The UDP port to listen on.
+        /// </summary>
+        public int threads { get; set; } = 50;
     }
 }
