@@ -57,6 +57,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             {
                 c.AddUserSecrets<Program>(optional: true);
             })
+                .ApplyVolumeConfiguration()
                 .ConfigureServices((h, s) =>
                 {
                     s.AddAtspmDbContext(h);
