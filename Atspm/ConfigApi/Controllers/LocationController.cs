@@ -164,7 +164,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <returns></returns>
         /// 
         [Authorize(Policy = "CanDeleteLocationConfigurations")]
-        [HttpPost]
+        [HttpPost("/api/v1/Location/{key}/DeleteAllVersions")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         public async Task<IActionResult> DeleteAllVersions(string key)
