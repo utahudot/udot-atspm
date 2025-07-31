@@ -86,42 +86,48 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), 50000, 1);
                 await Task.Delay(TimeSpan.FromSeconds(2));
 
-                foreach (var device in devices)
+                var tasks = devices.Select(async device =>
                 {
-                    var eventsPreWorkflow = eventLogRepository.GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
-
-                    // Start the workflow
-                    await Task.Run(async () =>
+                    try
                     {
+
+                        var eventsPreWorkflow = eventLogRepository
+                            .GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id)
+                            .SelectMany(s => s.Data)
+                            .ToList();
+
                         await workflow.Input.SendAsync(device);
                         workflow.Input.Complete();
                         await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
-                    });
-                    var eventsPostWorkflow = eventLogRepository.GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
-                    //var dataCountsAfter = eventLogRepository
-                    //    .GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id)
-                    //    .Select(e => new
-                    //    {
-                    //        Start = e.Start,
-                    //        End = e.End,
-                    //        DataCount = e.Data.Count()
-                    //    })
-                    //    .ToList();
-                    var deviceDownload = new DeviceEventDownload
-                    {
-                        DeviceId = device.Id,
-                        Ipaddress = device.Ipaddress,
-                        DeviceType = device.DeviceType,
-                        BeforeWorkflowEventCount = eventsPreWorkflow.Count,
-                        AfterWorkflowEventCount = eventsPostWorkflow.Count,
-                        ChangeInEventCount = eventsPostWorkflow.Count - eventsPreWorkflow.Count
-                    };
-                    devicesEventDownload.Add(deviceDownload);
-                }
-            }
-            return devicesEventDownload;
-        }
 
+                        var eventsPostWorkflow = eventLogRepository
+                            .GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id)
+                            .SelectMany(s => s.Data)
+                            .ToList();
+
+                        return new DeviceEventDownload
+                        {
+                            DeviceId = device.Id,
+                            Ipaddress = device.Ipaddress,
+                            DeviceType = device.DeviceType,
+                            BeforeWorkflowEventCount = eventsPreWorkflow.Count,
+                            AfterWorkflowEventCount = eventsPostWorkflow.Count,
+                            ChangeInEventCount = eventsPostWorkflow.Count - eventsPreWorkflow.Count
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        var deviceId = device.Id;
+                        _log.LogError(ex, "Error processing device " + deviceId);
+                        return null;
+                    }
+                });
+
+                var results = await Task.WhenAll(tasks);
+                devicesEventDownload.AddRange(results);
+                return devicesEventDownload;
+            }
+        }
 
 
         [HttpPost("deviceEventLoggin")]
