@@ -68,11 +68,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 {
                     await Process(scope, sw, cancellationToken);
 
-                    Environment.ExitCode = 1;
+                    Environment.ExitCode = 0;
                 }
                 catch (Exception)
                 {
-                    Environment.ExitCode = 0;
+                    Environment.ExitCode = 1;
 
                     throw;
                 }
