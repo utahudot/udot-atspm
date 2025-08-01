@@ -33,7 +33,7 @@ export const getGetRouteFromKeyResponseMock = (overrideResponse: Partial< Route 
 
 
 export const getGetRouteRouteLocationsFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/Route/:key/routeLocations', async (info) => {await delay(1000);
+  return http.get('*/Route/:key/routeLocations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -45,7 +45,7 @@ export const getGetRouteRouteLocationsFromKeyMockHandler = (overrideResponse?: R
 }
 
 export const getGetRouteRouteLocationsCountFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/Route/:key/routeLocations/$count', async (info) => {await delay(1000);
+  return http.get('*/Route/:key/routeLocations/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -57,7 +57,7 @@ export const getGetRouteRouteLocationsCountFromKeyMockHandler = (overrideRespons
 }
 
 export const getUpsertRouteRouteMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/UpsertRoute', async (info) => {await delay(1000);
+  return http.post('*/UpsertRoute', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -67,7 +67,7 @@ export const getUpsertRouteRouteMockHandler = (overrideResponse?: void | ((info:
 }
 
 export const getGetRouteRouteViewFromIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<void> | void)) => {
-  return http.get('*/api/v1/GetRouteView/:id', async (info) => {await delay(1000);
+  return http.get('*/GetRouteView/:id', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -77,7 +77,7 @@ export const getGetRouteRouteViewFromIdMockHandler = (overrideResponse?: void | 
 }
 
 export const getGetRouteMockHandler = (overrideResponse?: Route[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Route[]> | Route[])) => {
-  return http.get('*/api/v1/Route', async (info) => {await delay(1000);
+  return http.get('*/Route', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -89,7 +89,7 @@ export const getGetRouteMockHandler = (overrideResponse?: Route[] | ((info: Para
 }
 
 export const getPostRouteMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Route', async (info) => {await delay(1000);
+  return http.post('*/Route', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -99,7 +99,7 @@ export const getPostRouteMockHandler = (overrideResponse?: void | ((info: Parame
 }
 
 export const getGetRouteCountMockHandler = (overrideResponse?: Route[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Route[]> | Route[])) => {
-  return http.get('*/api/v1/Route/$count', async (info) => {await delay(1000);
+  return http.get('*/Route/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -111,7 +111,7 @@ export const getGetRouteCountMockHandler = (overrideResponse?: Route[] | ((info:
 }
 
 export const getGetRouteFromKeyMockHandler = (overrideResponse?: Route | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Route> | Route)) => {
-  return http.get('*/api/v1/Route/:key', async (info) => {await delay(1000);
+  return http.get('*/Route/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -123,7 +123,7 @@ export const getGetRouteFromKeyMockHandler = (overrideResponse?: Route | ((info:
 }
 
 export const getPutRouteFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Route/:key', async (info) => {await delay(1000);
+  return http.put('*/Route/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -133,7 +133,7 @@ export const getPutRouteFromKeyMockHandler = (overrideResponse?: void | ((info: 
 }
 
 export const getPatchRouteFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Route/:key', async (info) => {await delay(1000);
+  return http.patch('*/Route/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -143,7 +143,7 @@ export const getPatchRouteFromKeyMockHandler = (overrideResponse?: void | ((info
 }
 
 export const getDeleteRouteFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Route/:key', async (info) => {await delay(1000);
+  return http.delete('*/Route/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

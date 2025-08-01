@@ -38,7 +38,7 @@ export const getGetDetectorFromKeyResponseMock = (overrideResponse: Partial< Det
 
 
 export const getGetDetectorDetectorCommentsFromKeyMockHandler = (overrideResponse?: DetectorComment[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectorComment[]> | DetectorComment[])) => {
-  return http.get('*/api/v1/Detector/:key/detectorComments', async (info) => {await delay(1000);
+  return http.get('*/Detector/:key/detectorComments', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -50,7 +50,7 @@ export const getGetDetectorDetectorCommentsFromKeyMockHandler = (overrideRespons
 }
 
 export const getGetDetectorDetectorCommentsCountFromKeyMockHandler = (overrideResponse?: DetectorComment[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectorComment[]> | DetectorComment[])) => {
-  return http.get('*/api/v1/Detector/:key/detectorComments/$count', async (info) => {await delay(1000);
+  return http.get('*/Detector/:key/detectorComments/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetDetectorDetectorCommentsCountFromKeyMockHandler = (overrideRe
 }
 
 export const getGetDetectorDetectionTypesFromKeyMockHandler = (overrideResponse?: DetectionType[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectionType[]> | DetectionType[])) => {
-  return http.get('*/api/v1/Detector/:key/detectionTypes', async (info) => {await delay(1000);
+  return http.get('*/Detector/:key/detectionTypes', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetDetectorDetectionTypesFromKeyMockHandler = (overrideResponse?
 }
 
 export const getGetDetectorDetectionTypesCountFromKeyMockHandler = (overrideResponse?: DetectionType[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectionType[]> | DetectionType[])) => {
-  return http.get('*/api/v1/Detector/:key/detectionTypes/$count', async (info) => {await delay(1000);
+  return http.get('*/Detector/:key/detectionTypes/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -86,7 +86,7 @@ export const getGetDetectorDetectionTypesCountFromKeyMockHandler = (overrideResp
 }
 
 export const getGetDetectorMockHandler = (overrideResponse?: Detector[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Detector[]> | Detector[])) => {
-  return http.get('*/api/v1/Detector', async (info) => {await delay(1000);
+  return http.get('*/Detector', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -98,7 +98,7 @@ export const getGetDetectorMockHandler = (overrideResponse?: Detector[] | ((info
 }
 
 export const getPostDetectorMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Detector', async (info) => {await delay(1000);
+  return http.post('*/Detector', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -108,7 +108,7 @@ export const getPostDetectorMockHandler = (overrideResponse?: void | ((info: Par
 }
 
 export const getGetDetectorCountMockHandler = (overrideResponse?: Detector[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Detector[]> | Detector[])) => {
-  return http.get('*/api/v1/Detector/$count', async (info) => {await delay(1000);
+  return http.get('*/Detector/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -120,7 +120,7 @@ export const getGetDetectorCountMockHandler = (overrideResponse?: Detector[] | (
 }
 
 export const getGetDetectorFromKeyMockHandler = (overrideResponse?: Detector | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Detector> | Detector)) => {
-  return http.get('*/api/v1/Detector/:key', async (info) => {await delay(1000);
+  return http.get('*/Detector/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -132,7 +132,7 @@ export const getGetDetectorFromKeyMockHandler = (overrideResponse?: Detector | (
 }
 
 export const getPutDetectorFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Detector/:key', async (info) => {await delay(1000);
+  return http.put('*/Detector/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -142,7 +142,7 @@ export const getPutDetectorFromKeyMockHandler = (overrideResponse?: void | ((inf
 }
 
 export const getPatchDetectorFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Detector/:key', async (info) => {await delay(1000);
+  return http.patch('*/Detector/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -152,7 +152,7 @@ export const getPatchDetectorFromKeyMockHandler = (overrideResponse?: void | ((i
 }
 
 export const getDeleteDetectorFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Detector/:key', async (info) => {await delay(1000);
+  return http.delete('*/Detector/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

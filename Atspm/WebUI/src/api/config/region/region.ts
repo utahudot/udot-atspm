@@ -48,7 +48,7 @@ export const getRegionLocationsFromKey = (
       
       
       return configRequest<Location[]>(
-      {url: `/api/v1/Region/${key}/locations`, method: 'GET',
+      {url: `/Region/${key}/locations`, method: 'GET',
         params, signal
     },
       );
@@ -57,7 +57,7 @@ export const getRegionLocationsFromKey = (
 
 export const getGetRegionLocationsFromKeyQueryKey = (key: number,
     params?: GetRegionLocationsFromKeyParams,) => {
-    return [`/api/v1/Region/${key}/locations`, ...(params ? [params]: [])] as const;
+    return [`/Region/${key}/locations`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -116,7 +116,7 @@ export const getRegionLocationsCountFromKey = (
       
       
       return configRequest<Location[]>(
-      {url: `/api/v1/Region/${key}/locations/$count`, method: 'GET',
+      {url: `/Region/${key}/locations/$count`, method: 'GET',
         params, signal
     },
       );
@@ -125,7 +125,7 @@ export const getRegionLocationsCountFromKey = (
 
 export const getGetRegionLocationsCountFromKeyQueryKey = (key: number,
     params?: GetRegionLocationsCountFromKeyParams,) => {
-    return [`/api/v1/Region/${key}/locations/$count`, ...(params ? [params]: [])] as const;
+    return [`/Region/${key}/locations/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -180,7 +180,7 @@ export const getRegion = (
       
       
       return configRequest<Region[]>(
-      {url: `/api/v1/Region`, method: 'GET',
+      {url: `/Region`, method: 'GET',
         params, signal
     },
       );
@@ -188,7 +188,7 @@ export const getRegion = (
   
 
 export const getGetRegionQueryKey = (params?: GetRegionParams,) => {
-    return [`/api/v1/Region`, ...(params ? [params]: [])] as const;
+    return [`/Region`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -239,7 +239,7 @@ export const postRegion = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Region`, method: 'POST',
+      {url: `/Region`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: region,
         params, signal
@@ -298,7 +298,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<Region[]>(
-      {url: `/api/v1/Region/$count`, method: 'GET',
+      {url: `/Region/$count`, method: 'GET',
         params, signal
     },
       );
@@ -306,7 +306,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetRegionCountQueryKey = (params?: GetRegionCountParams,) => {
-    return [`/api/v1/Region/$count`, ...(params ? [params]: [])] as const;
+    return [`/Region/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -357,7 +357,7 @@ export const getRegionFromKey = (
       
       
       return configRequest<Region>(
-      {url: `/api/v1/Region/${key}`, method: 'GET',
+      {url: `/Region/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -366,7 +366,7 @@ export const getRegionFromKey = (
 
 export const getGetRegionFromKeyQueryKey = (key: number,
     params?: GetRegionFromKeyParams,) => {
-    return [`/api/v1/Region/${key}`, ...(params ? [params]: [])] as const;
+    return [`/Region/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -419,7 +419,7 @@ export const putRegionFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Region/${key}`, method: 'PUT',
+      {url: `/Region/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: region,
         params
@@ -479,7 +479,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Region/${key}`, method: 'PATCH',
+      {url: `/Region/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: region,
         params
@@ -537,7 +537,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Region/${key}`, method: 'DELETE'
+      {url: `/Region/${key}`, method: 'DELETE'
     },
       );
     }

@@ -39,7 +39,7 @@ export const getGetRouteDistanceFromKeyResponseMock = (overrideResponse: Partial
 
 
 export const getGetRouteDistancePreviousLocationsFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/RouteDistance/:key/previousLocations', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/:key/previousLocations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -51,7 +51,7 @@ export const getGetRouteDistancePreviousLocationsFromKeyMockHandler = (overrideR
 }
 
 export const getGetRouteDistancePreviousLocationsCountFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/RouteDistance/:key/previousLocations/$count', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/:key/previousLocations/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -63,7 +63,7 @@ export const getGetRouteDistancePreviousLocationsCountFromKeyMockHandler = (over
 }
 
 export const getGetRouteDistanceNextLocationsFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/RouteDistance/:key/nextLocations', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/:key/nextLocations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -75,7 +75,7 @@ export const getGetRouteDistanceNextLocationsFromKeyMockHandler = (overrideRespo
 }
 
 export const getGetRouteDistanceNextLocationsCountFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/RouteDistance/:key/nextLocations/$count', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/:key/nextLocations/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -87,7 +87,7 @@ export const getGetRouteDistanceNextLocationsCountFromKeyMockHandler = (override
 }
 
 export const getGetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationBMockHandler = (overrideResponse?: RouteDistance | void | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteDistance | void> | RouteDistance | void)) => {
-  return http.get('*/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=:locationA,locationB=:locationB)', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=:locationA,locationB=:locationB)', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -99,7 +99,7 @@ export const getGetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAA
 }
 
 export const getGetRouteDistanceMockHandler = (overrideResponse?: RouteDistance[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteDistance[]> | RouteDistance[])) => {
-  return http.get('*/api/v1/RouteDistance', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -111,7 +111,7 @@ export const getGetRouteDistanceMockHandler = (overrideResponse?: RouteDistance[
 }
 
 export const getPostRouteDistanceMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/RouteDistance', async (info) => {await delay(1000);
+  return http.post('*/RouteDistance', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -121,7 +121,7 @@ export const getPostRouteDistanceMockHandler = (overrideResponse?: void | ((info
 }
 
 export const getGetRouteDistanceCountMockHandler = (overrideResponse?: RouteDistance[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteDistance[]> | RouteDistance[])) => {
-  return http.get('*/api/v1/RouteDistance/$count', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -133,7 +133,7 @@ export const getGetRouteDistanceCountMockHandler = (overrideResponse?: RouteDist
 }
 
 export const getGetRouteDistanceFromKeyMockHandler = (overrideResponse?: RouteDistance | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteDistance> | RouteDistance)) => {
-  return http.get('*/api/v1/RouteDistance/:key', async (info) => {await delay(1000);
+  return http.get('*/RouteDistance/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -145,7 +145,7 @@ export const getGetRouteDistanceFromKeyMockHandler = (overrideResponse?: RouteDi
 }
 
 export const getPutRouteDistanceFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/RouteDistance/:key', async (info) => {await delay(1000);
+  return http.put('*/RouteDistance/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -155,7 +155,7 @@ export const getPutRouteDistanceFromKeyMockHandler = (overrideResponse?: void | 
 }
 
 export const getPatchRouteDistanceFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/RouteDistance/:key', async (info) => {await delay(1000);
+  return http.patch('*/RouteDistance/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -165,7 +165,7 @@ export const getPatchRouteDistanceFromKeyMockHandler = (overrideResponse?: void 
 }
 
 export const getDeleteRouteDistanceFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/RouteDistance/:key', async (info) => {await delay(1000);
+  return http.delete('*/RouteDistance/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

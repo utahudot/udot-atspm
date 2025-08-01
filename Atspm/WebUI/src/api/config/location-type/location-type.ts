@@ -48,7 +48,7 @@ export const getLocationTypeLocationsFromKey = (
       
       
       return configRequest<Location[]>(
-      {url: `/api/v1/LocationType/${key}/locations`, method: 'GET',
+      {url: `/LocationType/${key}/locations`, method: 'GET',
         params, signal
     },
       );
@@ -57,7 +57,7 @@ export const getLocationTypeLocationsFromKey = (
 
 export const getGetLocationTypeLocationsFromKeyQueryKey = (key: number,
     params?: GetLocationTypeLocationsFromKeyParams,) => {
-    return [`/api/v1/LocationType/${key}/locations`, ...(params ? [params]: [])] as const;
+    return [`/LocationType/${key}/locations`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -116,7 +116,7 @@ export const getLocationTypeLocationsCountFromKey = (
       
       
       return configRequest<Location[]>(
-      {url: `/api/v1/LocationType/${key}/locations/$count`, method: 'GET',
+      {url: `/LocationType/${key}/locations/$count`, method: 'GET',
         params, signal
     },
       );
@@ -125,7 +125,7 @@ export const getLocationTypeLocationsCountFromKey = (
 
 export const getGetLocationTypeLocationsCountFromKeyQueryKey = (key: number,
     params?: GetLocationTypeLocationsCountFromKeyParams,) => {
-    return [`/api/v1/LocationType/${key}/locations/$count`, ...(params ? [params]: [])] as const;
+    return [`/LocationType/${key}/locations/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -180,7 +180,7 @@ export const getLocationType = (
       
       
       return configRequest<LocationType[]>(
-      {url: `/api/v1/LocationType`, method: 'GET',
+      {url: `/LocationType`, method: 'GET',
         params, signal
     },
       );
@@ -188,7 +188,7 @@ export const getLocationType = (
   
 
 export const getGetLocationTypeQueryKey = (params?: GetLocationTypeParams,) => {
-    return [`/api/v1/LocationType`, ...(params ? [params]: [])] as const;
+    return [`/LocationType`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -239,7 +239,7 @@ export const postLocationType = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/LocationType`, method: 'POST',
+      {url: `/LocationType`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: locationType,
         params, signal
@@ -298,7 +298,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<LocationType[]>(
-      {url: `/api/v1/LocationType/$count`, method: 'GET',
+      {url: `/LocationType/$count`, method: 'GET',
         params, signal
     },
       );
@@ -306,7 +306,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetLocationTypeCountQueryKey = (params?: GetLocationTypeCountParams,) => {
-    return [`/api/v1/LocationType/$count`, ...(params ? [params]: [])] as const;
+    return [`/LocationType/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -357,7 +357,7 @@ export const getLocationTypeFromKey = (
       
       
       return configRequest<LocationType>(
-      {url: `/api/v1/LocationType/${key}`, method: 'GET',
+      {url: `/LocationType/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -366,7 +366,7 @@ export const getLocationTypeFromKey = (
 
 export const getGetLocationTypeFromKeyQueryKey = (key: number,
     params?: GetLocationTypeFromKeyParams,) => {
-    return [`/api/v1/LocationType/${key}`, ...(params ? [params]: [])] as const;
+    return [`/LocationType/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -419,7 +419,7 @@ export const putLocationTypeFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/LocationType/${key}`, method: 'PUT',
+      {url: `/LocationType/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: locationType,
         params
@@ -479,7 +479,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/LocationType/${key}`, method: 'PATCH',
+      {url: `/LocationType/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: locationType,
         params
@@ -537,7 +537,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/LocationType/${key}`, method: 'DELETE'
+      {url: `/LocationType/${key}`, method: 'DELETE'
     },
       );
     }

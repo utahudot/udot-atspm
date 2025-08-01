@@ -54,7 +54,7 @@ export const getMeasureTypeDetectionTypesFromKey = (
       
       
       return configRequest<DetectionType[]>(
-      {url: `/api/v1/MeasureType/${key}/detectionTypes`, method: 'GET',
+      {url: `/MeasureType/${key}/detectionTypes`, method: 'GET',
         params, signal
     },
       );
@@ -63,7 +63,7 @@ export const getMeasureTypeDetectionTypesFromKey = (
 
 export const getGetMeasureTypeDetectionTypesFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeDetectionTypesFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}/detectionTypes`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}/detectionTypes`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -122,7 +122,7 @@ export const getMeasureTypeDetectionTypesCountFromKey = (
       
       
       return configRequest<DetectionType[]>(
-      {url: `/api/v1/MeasureType/${key}/detectionTypes/$count`, method: 'GET',
+      {url: `/MeasureType/${key}/detectionTypes/$count`, method: 'GET',
         params, signal
     },
       );
@@ -131,7 +131,7 @@ export const getMeasureTypeDetectionTypesCountFromKey = (
 
 export const getGetMeasureTypeDetectionTypesCountFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeDetectionTypesCountFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}/detectionTypes/$count`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}/detectionTypes/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -190,7 +190,7 @@ export const getMeasureTypeMeasureCommentsFromKey = (
       
       
       return configRequest<MeasureComment[]>(
-      {url: `/api/v1/MeasureType/${key}/measureComments`, method: 'GET',
+      {url: `/MeasureType/${key}/measureComments`, method: 'GET',
         params, signal
     },
       );
@@ -199,7 +199,7 @@ export const getMeasureTypeMeasureCommentsFromKey = (
 
 export const getGetMeasureTypeMeasureCommentsFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeMeasureCommentsFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}/measureComments`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}/measureComments`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -258,7 +258,7 @@ export const getMeasureTypeMeasureCommentsCountFromKey = (
       
       
       return configRequest<MeasureComment[]>(
-      {url: `/api/v1/MeasureType/${key}/measureComments/$count`, method: 'GET',
+      {url: `/MeasureType/${key}/measureComments/$count`, method: 'GET',
         params, signal
     },
       );
@@ -267,7 +267,7 @@ export const getMeasureTypeMeasureCommentsCountFromKey = (
 
 export const getGetMeasureTypeMeasureCommentsCountFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeMeasureCommentsCountFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}/measureComments/$count`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}/measureComments/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -326,7 +326,7 @@ export const getMeasureTypeMeasureOptionPresetsFromKey = (
       
       
       return configRequest<MeasureOptionPreset[]>(
-      {url: `/api/v1/MeasureType/${key}/measureOptionPresets`, method: 'GET',
+      {url: `/MeasureType/${key}/measureOptionPresets`, method: 'GET',
         params, signal
     },
       );
@@ -335,7 +335,7 @@ export const getMeasureTypeMeasureOptionPresetsFromKey = (
 
 export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}/measureOptionPresets`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}/measureOptionPresets`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -394,7 +394,7 @@ export const getMeasureTypeMeasureOptionPresetsCountFromKey = (
       
       
       return configRequest<MeasureOptionPreset[]>(
-      {url: `/api/v1/MeasureType/${key}/measureOptionPresets/$count`, method: 'GET',
+      {url: `/MeasureType/${key}/measureOptionPresets/$count`, method: 'GET',
         params, signal
     },
       );
@@ -403,7 +403,7 @@ export const getMeasureTypeMeasureOptionPresetsCountFromKey = (
 
 export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}/measureOptionPresets/$count`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}/measureOptionPresets/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -458,7 +458,7 @@ export const getMeasureType = (
       
       
       return configRequest<MeasureType[]>(
-      {url: `/api/v1/MeasureType`, method: 'GET',
+      {url: `/MeasureType`, method: 'GET',
         params, signal
     },
       );
@@ -466,7 +466,7 @@ export const getMeasureType = (
   
 
 export const getGetMeasureTypeQueryKey = (params?: GetMeasureTypeParams,) => {
-    return [`/api/v1/MeasureType`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -517,7 +517,7 @@ export const postMeasureType = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureType`, method: 'POST',
+      {url: `/MeasureType`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureType,
         params, signal
@@ -576,7 +576,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<MeasureType[]>(
-      {url: `/api/v1/MeasureType/$count`, method: 'GET',
+      {url: `/MeasureType/$count`, method: 'GET',
         params, signal
     },
       );
@@ -584,7 +584,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetMeasureTypeCountQueryKey = (params?: GetMeasureTypeCountParams,) => {
-    return [`/api/v1/MeasureType/$count`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -635,7 +635,7 @@ export const getMeasureTypeFromKey = (
       
       
       return configRequest<MeasureType>(
-      {url: `/api/v1/MeasureType/${key}`, method: 'GET',
+      {url: `/MeasureType/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -644,7 +644,7 @@ export const getMeasureTypeFromKey = (
 
 export const getGetMeasureTypeFromKeyQueryKey = (key: number,
     params?: GetMeasureTypeFromKeyParams,) => {
-    return [`/api/v1/MeasureType/${key}`, ...(params ? [params]: [])] as const;
+    return [`/MeasureType/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -697,7 +697,7 @@ export const putMeasureTypeFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureType/${key}`, method: 'PUT',
+      {url: `/MeasureType/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureType,
         params
@@ -757,7 +757,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureType/${key}`, method: 'PATCH',
+      {url: `/MeasureType/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureType,
         params
@@ -815,7 +815,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureType/${key}`, method: 'DELETE'
+      {url: `/MeasureType/${key}`, method: 'DELETE'
     },
       );
     }

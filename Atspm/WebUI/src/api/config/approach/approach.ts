@@ -51,7 +51,7 @@ export const getApproachDetectorsFromKey = (
       
       
       return configRequest<Detector[]>(
-      {url: `/api/v1/Approach/${key}/detectors`, method: 'GET',
+      {url: `/Approach/${key}/detectors`, method: 'GET',
         params, signal
     },
       );
@@ -60,7 +60,7 @@ export const getApproachDetectorsFromKey = (
 
 export const getGetApproachDetectorsFromKeyQueryKey = (key: number,
     params?: GetApproachDetectorsFromKeyParams,) => {
-    return [`/api/v1/Approach/${key}/detectors`, ...(params ? [params]: [])] as const;
+    return [`/Approach/${key}/detectors`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -119,7 +119,7 @@ export const getApproachDetectorsCountFromKey = (
       
       
       return configRequest<Detector[]>(
-      {url: `/api/v1/Approach/${key}/detectors/$count`, method: 'GET',
+      {url: `/Approach/${key}/detectors/$count`, method: 'GET',
         params, signal
     },
       );
@@ -128,7 +128,7 @@ export const getApproachDetectorsCountFromKey = (
 
 export const getGetApproachDetectorsCountFromKeyQueryKey = (key: number,
     params?: GetApproachDetectorsCountFromKeyParams,) => {
-    return [`/api/v1/Approach/${key}/detectors/$count`, ...(params ? [params]: [])] as const;
+    return [`/Approach/${key}/detectors/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -184,7 +184,7 @@ export const upsertApproachApproach = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/UpsertApproach`, method: 'POST',
+      {url: `/UpsertApproach`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: approachDto,
         params, signal
@@ -244,7 +244,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/GetApproachDto/${id}`, method: 'GET',
+      {url: `/GetApproachDto/${id}`, method: 'GET',
         params, signal
     },
       );
@@ -253,7 +253,7 @@ const {mutation: mutationOptions} = options ?
 
 export const getGetApproachApproachDtoFromIdQueryKey = (id: number,
     params?: GetApproachApproachDtoFromIdParams,) => {
-    return [`/api/v1/GetApproachDto/${id}`, ...(params ? [params]: [])] as const;
+    return [`/GetApproachDto/${id}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -305,7 +305,7 @@ export const getApproach = (
       
       
       return configRequest<Approach[]>(
-      {url: `/api/v1/Approach`, method: 'GET',
+      {url: `/Approach`, method: 'GET',
         params, signal
     },
       );
@@ -313,7 +313,7 @@ export const getApproach = (
   
 
 export const getGetApproachQueryKey = (params?: GetApproachParams,) => {
-    return [`/api/v1/Approach`, ...(params ? [params]: [])] as const;
+    return [`/Approach`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -364,7 +364,7 @@ export const postApproach = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Approach`, method: 'POST',
+      {url: `/Approach`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: approach,
         params, signal
@@ -423,7 +423,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<Approach[]>(
-      {url: `/api/v1/Approach/$count`, method: 'GET',
+      {url: `/Approach/$count`, method: 'GET',
         params, signal
     },
       );
@@ -431,7 +431,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetApproachCountQueryKey = (params?: GetApproachCountParams,) => {
-    return [`/api/v1/Approach/$count`, ...(params ? [params]: [])] as const;
+    return [`/Approach/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -482,7 +482,7 @@ export const getApproachFromKey = (
       
       
       return configRequest<Approach>(
-      {url: `/api/v1/Approach/${key}`, method: 'GET',
+      {url: `/Approach/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -491,7 +491,7 @@ export const getApproachFromKey = (
 
 export const getGetApproachFromKeyQueryKey = (key: number,
     params?: GetApproachFromKeyParams,) => {
-    return [`/api/v1/Approach/${key}`, ...(params ? [params]: [])] as const;
+    return [`/Approach/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -544,7 +544,7 @@ export const putApproachFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Approach/${key}`, method: 'PUT',
+      {url: `/Approach/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: approach,
         params
@@ -604,7 +604,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Approach/${key}`, method: 'PATCH',
+      {url: `/Approach/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: approach,
         params
@@ -662,7 +662,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Approach/${key}`, method: 'DELETE'
+      {url: `/Approach/${key}`, method: 'DELETE'
     },
       );
     }

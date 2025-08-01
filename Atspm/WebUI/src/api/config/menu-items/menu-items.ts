@@ -41,7 +41,7 @@ export const getMenuItems = (
       
       
       return configRequest<MenuItem[]>(
-      {url: `/api/v1/MenuItems`, method: 'GET',
+      {url: `/MenuItems`, method: 'GET',
         params, signal
     },
       );
@@ -49,7 +49,7 @@ export const getMenuItems = (
   
 
 export const getGetMenuItemsQueryKey = (params?: GetMenuItemsParams,) => {
-    return [`/api/v1/MenuItems`, ...(params ? [params]: [])] as const;
+    return [`/MenuItems`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -100,7 +100,7 @@ export const postMenuItems = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MenuItems`, method: 'POST',
+      {url: `/MenuItems`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: menuItem,
         params, signal
@@ -159,7 +159,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<MenuItem[]>(
-      {url: `/api/v1/MenuItems/$count`, method: 'GET',
+      {url: `/MenuItems/$count`, method: 'GET',
         params, signal
     },
       );
@@ -167,7 +167,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetMenuItemsCountQueryKey = (params?: GetMenuItemsCountParams,) => {
-    return [`/api/v1/MenuItems/$count`, ...(params ? [params]: [])] as const;
+    return [`/MenuItems/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -218,7 +218,7 @@ export const getMenuItemsFromKey = (
       
       
       return configRequest<MenuItem>(
-      {url: `/api/v1/MenuItems/${key}`, method: 'GET',
+      {url: `/MenuItems/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -227,7 +227,7 @@ export const getMenuItemsFromKey = (
 
 export const getGetMenuItemsFromKeyQueryKey = (key: number,
     params?: GetMenuItemsFromKeyParams,) => {
-    return [`/api/v1/MenuItems/${key}`, ...(params ? [params]: [])] as const;
+    return [`/MenuItems/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -280,7 +280,7 @@ export const putMenuItemsFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MenuItems/${key}`, method: 'PUT',
+      {url: `/MenuItems/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: menuItem,
         params
@@ -340,7 +340,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MenuItems/${key}`, method: 'PATCH',
+      {url: `/MenuItems/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: menuItem,
         params
@@ -398,7 +398,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MenuItems/${key}`, method: 'DELETE'
+      {url: `/MenuItems/${key}`, method: 'DELETE'
     },
       );
     }

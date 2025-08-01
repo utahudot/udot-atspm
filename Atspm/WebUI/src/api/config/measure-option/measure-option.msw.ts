@@ -28,7 +28,7 @@ export const getGetMeasureOptionFromKeyResponseMock = (overrideResponse: Partial
 
 
 export const getGetMeasureOptionMockHandler = (overrideResponse?: MeasureOption[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureOption[]> | MeasureOption[])) => {
-  return http.get('*/api/v1/MeasureOption', async (info) => {await delay(1000);
+  return http.get('*/MeasureOption', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetMeasureOptionMockHandler = (overrideResponse?: MeasureOption[
 }
 
 export const getPostMeasureOptionMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/MeasureOption', async (info) => {await delay(1000);
+  return http.post('*/MeasureOption', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostMeasureOptionMockHandler = (overrideResponse?: void | ((info
 }
 
 export const getGetMeasureOptionCountMockHandler = (overrideResponse?: MeasureOption[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureOption[]> | MeasureOption[])) => {
-  return http.get('*/api/v1/MeasureOption/$count', async (info) => {await delay(1000);
+  return http.get('*/MeasureOption/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetMeasureOptionCountMockHandler = (overrideResponse?: MeasureOp
 }
 
 export const getGetMeasureOptionFromKeyMockHandler = (overrideResponse?: MeasureOption | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureOption> | MeasureOption)) => {
-  return http.get('*/api/v1/MeasureOption/:key', async (info) => {await delay(1000);
+  return http.get('*/MeasureOption/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetMeasureOptionFromKeyMockHandler = (overrideResponse?: Measure
 }
 
 export const getPutMeasureOptionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/MeasureOption/:key', async (info) => {await delay(1000);
+  return http.put('*/MeasureOption/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutMeasureOptionFromKeyMockHandler = (overrideResponse?: void | 
 }
 
 export const getPatchMeasureOptionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/MeasureOption/:key', async (info) => {await delay(1000);
+  return http.patch('*/MeasureOption/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchMeasureOptionFromKeyMockHandler = (overrideResponse?: void 
 }
 
 export const getDeleteMeasureOptionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/MeasureOption/:key', async (info) => {await delay(1000);
+  return http.delete('*/MeasureOption/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

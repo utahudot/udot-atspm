@@ -41,7 +41,7 @@ export const getMeasureOption = (
       
       
       return configRequest<MeasureOption[]>(
-      {url: `/api/v1/MeasureOption`, method: 'GET',
+      {url: `/MeasureOption`, method: 'GET',
         params, signal
     },
       );
@@ -49,7 +49,7 @@ export const getMeasureOption = (
   
 
 export const getGetMeasureOptionQueryKey = (params?: GetMeasureOptionParams,) => {
-    return [`/api/v1/MeasureOption`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOption`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -100,7 +100,7 @@ export const postMeasureOption = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOption`, method: 'POST',
+      {url: `/MeasureOption`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureOption,
         params, signal
@@ -159,7 +159,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<MeasureOption[]>(
-      {url: `/api/v1/MeasureOption/$count`, method: 'GET',
+      {url: `/MeasureOption/$count`, method: 'GET',
         params, signal
     },
       );
@@ -167,7 +167,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetMeasureOptionCountQueryKey = (params?: GetMeasureOptionCountParams,) => {
-    return [`/api/v1/MeasureOption/$count`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOption/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -218,7 +218,7 @@ export const getMeasureOptionFromKey = (
       
       
       return configRequest<MeasureOption>(
-      {url: `/api/v1/MeasureOption/${key}`, method: 'GET',
+      {url: `/MeasureOption/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -227,7 +227,7 @@ export const getMeasureOptionFromKey = (
 
 export const getGetMeasureOptionFromKeyQueryKey = (key: number,
     params?: GetMeasureOptionFromKeyParams,) => {
-    return [`/api/v1/MeasureOption/${key}`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOption/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -280,7 +280,7 @@ export const putMeasureOptionFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOption/${key}`, method: 'PUT',
+      {url: `/MeasureOption/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureOption,
         params
@@ -340,7 +340,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOption/${key}`, method: 'PATCH',
+      {url: `/MeasureOption/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureOption,
         params
@@ -398,7 +398,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOption/${key}`, method: 'DELETE'
+      {url: `/MeasureOption/${key}`, method: 'DELETE'
     },
       );
     }

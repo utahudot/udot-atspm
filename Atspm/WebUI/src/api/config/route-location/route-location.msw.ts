@@ -28,7 +28,7 @@ export const getGetRouteLocationFromKeyResponseMock = (overrideResponse: Partial
 
 
 export const getGetRouteLocationMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/RouteLocation', async (info) => {await delay(1000);
+  return http.get('*/RouteLocation', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetRouteLocationMockHandler = (overrideResponse?: RouteLocation[
 }
 
 export const getPostRouteLocationMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/RouteLocation', async (info) => {await delay(1000);
+  return http.post('*/RouteLocation', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostRouteLocationMockHandler = (overrideResponse?: void | ((info
 }
 
 export const getGetRouteLocationCountMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/RouteLocation/$count', async (info) => {await delay(1000);
+  return http.get('*/RouteLocation/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetRouteLocationCountMockHandler = (overrideResponse?: RouteLoca
 }
 
 export const getGetRouteLocationFromKeyMockHandler = (overrideResponse?: RouteLocation | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation> | RouteLocation)) => {
-  return http.get('*/api/v1/RouteLocation/:key', async (info) => {await delay(1000);
+  return http.get('*/RouteLocation/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetRouteLocationFromKeyMockHandler = (overrideResponse?: RouteLo
 }
 
 export const getPutRouteLocationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/RouteLocation/:key', async (info) => {await delay(1000);
+  return http.put('*/RouteLocation/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutRouteLocationFromKeyMockHandler = (overrideResponse?: void | 
 }
 
 export const getPatchRouteLocationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/RouteLocation/:key', async (info) => {await delay(1000);
+  return http.patch('*/RouteLocation/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchRouteLocationFromKeyMockHandler = (overrideResponse?: void 
 }
 
 export const getDeleteRouteLocationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/RouteLocation/:key', async (info) => {await delay(1000);
+  return http.delete('*/RouteLocation/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

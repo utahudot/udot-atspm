@@ -33,7 +33,7 @@ export const getGetMeasureCommentFromKeyResponseMock = (overrideResponse: Partia
 
 
 export const getGetMeasureCommentMeasureTypesFromKeyMockHandler = (overrideResponse?: MeasureType[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureType[]> | MeasureType[])) => {
-  return http.get('*/api/v1/MeasureComment/:key/measureTypes', async (info) => {await delay(1000);
+  return http.get('*/MeasureComment/:key/measureTypes', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -45,7 +45,7 @@ export const getGetMeasureCommentMeasureTypesFromKeyMockHandler = (overrideRespo
 }
 
 export const getGetMeasureCommentMeasureTypesCountFromKeyMockHandler = (overrideResponse?: MeasureType[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureType[]> | MeasureType[])) => {
-  return http.get('*/api/v1/MeasureComment/:key/measureTypes/$count', async (info) => {await delay(1000);
+  return http.get('*/MeasureComment/:key/measureTypes/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -57,7 +57,7 @@ export const getGetMeasureCommentMeasureTypesCountFromKeyMockHandler = (override
 }
 
 export const getGetMeasureCommentMockHandler = (overrideResponse?: MeasureComment[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureComment[]> | MeasureComment[])) => {
-  return http.get('*/api/v1/MeasureComment', async (info) => {await delay(1000);
+  return http.get('*/MeasureComment', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -69,7 +69,7 @@ export const getGetMeasureCommentMockHandler = (overrideResponse?: MeasureCommen
 }
 
 export const getPostMeasureCommentMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/MeasureComment', async (info) => {await delay(1000);
+  return http.post('*/MeasureComment', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -79,7 +79,7 @@ export const getPostMeasureCommentMockHandler = (overrideResponse?: void | ((inf
 }
 
 export const getGetMeasureCommentCountMockHandler = (overrideResponse?: MeasureComment[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureComment[]> | MeasureComment[])) => {
-  return http.get('*/api/v1/MeasureComment/$count', async (info) => {await delay(1000);
+  return http.get('*/MeasureComment/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -91,7 +91,7 @@ export const getGetMeasureCommentCountMockHandler = (overrideResponse?: MeasureC
 }
 
 export const getGetMeasureCommentFromKeyMockHandler = (overrideResponse?: MeasureComment | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureComment> | MeasureComment)) => {
-  return http.get('*/api/v1/MeasureComment/:key', async (info) => {await delay(1000);
+  return http.get('*/MeasureComment/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -103,7 +103,7 @@ export const getGetMeasureCommentFromKeyMockHandler = (overrideResponse?: Measur
 }
 
 export const getPutMeasureCommentFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/MeasureComment/:key', async (info) => {await delay(1000);
+  return http.put('*/MeasureComment/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -113,7 +113,7 @@ export const getPutMeasureCommentFromKeyMockHandler = (overrideResponse?: void |
 }
 
 export const getPatchMeasureCommentFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/MeasureComment/:key', async (info) => {await delay(1000);
+  return http.patch('*/MeasureComment/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -123,7 +123,7 @@ export const getPatchMeasureCommentFromKeyMockHandler = (overrideResponse?: void
 }
 
 export const getDeleteMeasureCommentFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/MeasureComment/:key', async (info) => {await delay(1000);
+  return http.delete('*/MeasureComment/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

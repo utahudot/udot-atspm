@@ -30,7 +30,7 @@ export const getGetMeasureOptionPresetFromKeyResponseMock = (overrideResponse: P
 
 
 export const getGetMeasureOptionPresetMeasureOptionPresetTypesMockHandler = (overrideResponse?: string[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<string[]> | string[])) => {
-  return http.get('*/api/v1/MeasureOptionPreset/GetMeasureOptionPresetTypes', async (info) => {await delay(1000);
+  return http.get('*/MeasureOptionPreset/GetMeasureOptionPresetTypes', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -42,7 +42,7 @@ export const getGetMeasureOptionPresetMeasureOptionPresetTypesMockHandler = (ove
 }
 
 export const getGetMeasureOptionPresetMockHandler = (overrideResponse?: MeasureOptionPreset[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureOptionPreset[]> | MeasureOptionPreset[])) => {
-  return http.get('*/api/v1/MeasureOptionPreset', async (info) => {await delay(1000);
+  return http.get('*/MeasureOptionPreset', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -54,7 +54,7 @@ export const getGetMeasureOptionPresetMockHandler = (overrideResponse?: MeasureO
 }
 
 export const getPostMeasureOptionPresetMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/MeasureOptionPreset', async (info) => {await delay(1000);
+  return http.post('*/MeasureOptionPreset', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -64,7 +64,7 @@ export const getPostMeasureOptionPresetMockHandler = (overrideResponse?: void | 
 }
 
 export const getGetMeasureOptionPresetCountMockHandler = (overrideResponse?: MeasureOptionPreset[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureOptionPreset[]> | MeasureOptionPreset[])) => {
-  return http.get('*/api/v1/MeasureOptionPreset/$count', async (info) => {await delay(1000);
+  return http.get('*/MeasureOptionPreset/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -76,7 +76,7 @@ export const getGetMeasureOptionPresetCountMockHandler = (overrideResponse?: Mea
 }
 
 export const getGetMeasureOptionPresetFromKeyMockHandler = (overrideResponse?: MeasureOptionPreset | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeasureOptionPreset> | MeasureOptionPreset)) => {
-  return http.get('*/api/v1/MeasureOptionPreset/:key', async (info) => {await delay(1000);
+  return http.get('*/MeasureOptionPreset/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -88,7 +88,7 @@ export const getGetMeasureOptionPresetFromKeyMockHandler = (overrideResponse?: M
 }
 
 export const getPutMeasureOptionPresetFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/MeasureOptionPreset/:key', async (info) => {await delay(1000);
+  return http.put('*/MeasureOptionPreset/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -98,7 +98,7 @@ export const getPutMeasureOptionPresetFromKeyMockHandler = (overrideResponse?: v
 }
 
 export const getPatchMeasureOptionPresetFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/MeasureOptionPreset/:key', async (info) => {await delay(1000);
+  return http.patch('*/MeasureOptionPreset/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -108,7 +108,7 @@ export const getPatchMeasureOptionPresetFromKeyMockHandler = (overrideResponse?:
 }
 
 export const getDeleteMeasureOptionPresetFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/MeasureOptionPreset/:key', async (info) => {await delay(1000);
+  return http.delete('*/MeasureOptionPreset/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

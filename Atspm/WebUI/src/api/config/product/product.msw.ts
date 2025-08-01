@@ -28,7 +28,7 @@ export const getGetProductFromKeyResponseMock = (overrideResponse: Partial< Prod
 
 
 export const getGetProductMockHandler = (overrideResponse?: Product[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Product[]> | Product[])) => {
-  return http.get('*/api/v1/Product', async (info) => {await delay(1000);
+  return http.get('*/Product', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetProductMockHandler = (overrideResponse?: Product[] | ((info: 
 }
 
 export const getPostProductMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Product', async (info) => {await delay(1000);
+  return http.post('*/Product', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostProductMockHandler = (overrideResponse?: void | ((info: Para
 }
 
 export const getGetProductCountMockHandler = (overrideResponse?: Product[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Product[]> | Product[])) => {
-  return http.get('*/api/v1/Product/$count', async (info) => {await delay(1000);
+  return http.get('*/Product/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetProductCountMockHandler = (overrideResponse?: Product[] | ((i
 }
 
 export const getGetProductFromKeyMockHandler = (overrideResponse?: Product | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Product> | Product)) => {
-  return http.get('*/api/v1/Product/:key', async (info) => {await delay(1000);
+  return http.get('*/Product/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetProductFromKeyMockHandler = (overrideResponse?: Product | ((i
 }
 
 export const getPutProductFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Product/:key', async (info) => {await delay(1000);
+  return http.put('*/Product/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutProductFromKeyMockHandler = (overrideResponse?: void | ((info
 }
 
 export const getPatchProductFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Product/:key', async (info) => {await delay(1000);
+  return http.patch('*/Product/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchProductFromKeyMockHandler = (overrideResponse?: void | ((in
 }
 
 export const getDeleteProductFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Product/:key', async (info) => {await delay(1000);
+  return http.delete('*/Product/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

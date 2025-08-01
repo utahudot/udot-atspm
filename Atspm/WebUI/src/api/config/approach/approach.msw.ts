@@ -33,7 +33,7 @@ export const getGetApproachFromKeyResponseMock = (overrideResponse: Partial< App
 
 
 export const getGetApproachDetectorsFromKeyMockHandler = (overrideResponse?: Detector[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Detector[]> | Detector[])) => {
-  return http.get('*/api/v1/Approach/:key/detectors', async (info) => {await delay(1000);
+  return http.get('*/Approach/:key/detectors', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -45,7 +45,7 @@ export const getGetApproachDetectorsFromKeyMockHandler = (overrideResponse?: Det
 }
 
 export const getGetApproachDetectorsCountFromKeyMockHandler = (overrideResponse?: Detector[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Detector[]> | Detector[])) => {
-  return http.get('*/api/v1/Approach/:key/detectors/$count', async (info) => {await delay(1000);
+  return http.get('*/Approach/:key/detectors/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -57,7 +57,7 @@ export const getGetApproachDetectorsCountFromKeyMockHandler = (overrideResponse?
 }
 
 export const getUpsertApproachApproachMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/UpsertApproach', async (info) => {await delay(1000);
+  return http.post('*/UpsertApproach', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -67,7 +67,7 @@ export const getUpsertApproachApproachMockHandler = (overrideResponse?: void | (
 }
 
 export const getGetApproachApproachDtoFromIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<void> | void)) => {
-  return http.get('*/api/v1/GetApproachDto/:id', async (info) => {await delay(1000);
+  return http.get('*/GetApproachDto/:id', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -77,7 +77,7 @@ export const getGetApproachApproachDtoFromIdMockHandler = (overrideResponse?: vo
 }
 
 export const getGetApproachMockHandler = (overrideResponse?: Approach[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach[]> | Approach[])) => {
-  return http.get('*/api/v1/Approach', async (info) => {await delay(1000);
+  return http.get('*/Approach', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -89,7 +89,7 @@ export const getGetApproachMockHandler = (overrideResponse?: Approach[] | ((info
 }
 
 export const getPostApproachMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Approach', async (info) => {await delay(1000);
+  return http.post('*/Approach', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -99,7 +99,7 @@ export const getPostApproachMockHandler = (overrideResponse?: void | ((info: Par
 }
 
 export const getGetApproachCountMockHandler = (overrideResponse?: Approach[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach[]> | Approach[])) => {
-  return http.get('*/api/v1/Approach/$count', async (info) => {await delay(1000);
+  return http.get('*/Approach/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -111,7 +111,7 @@ export const getGetApproachCountMockHandler = (overrideResponse?: Approach[] | (
 }
 
 export const getGetApproachFromKeyMockHandler = (overrideResponse?: Approach | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach> | Approach)) => {
-  return http.get('*/api/v1/Approach/:key', async (info) => {await delay(1000);
+  return http.get('*/Approach/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -123,7 +123,7 @@ export const getGetApproachFromKeyMockHandler = (overrideResponse?: Approach | (
 }
 
 export const getPutApproachFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Approach/:key', async (info) => {await delay(1000);
+  return http.put('*/Approach/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -133,7 +133,7 @@ export const getPutApproachFromKeyMockHandler = (overrideResponse?: void | ((inf
 }
 
 export const getPatchApproachFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Approach/:key', async (info) => {await delay(1000);
+  return http.patch('*/Approach/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -143,7 +143,7 @@ export const getPatchApproachFromKeyMockHandler = (overrideResponse?: void | ((i
 }
 
 export const getDeleteApproachFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Approach/:key', async (info) => {await delay(1000);
+  return http.delete('*/Approach/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
