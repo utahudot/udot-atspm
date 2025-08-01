@@ -1,4 +1,4 @@
-import { useGetLocationSaveTemplatedLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
+import { useGetLocationSaveTemplatedLocationFromKey } from '@/api/config'
 import {
   useCreateLocation,
   useLatestVersionOfAllLocations,

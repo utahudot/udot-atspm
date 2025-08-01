@@ -1,4 +1,4 @@
-import { Area } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Area } from '@/api/config'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,

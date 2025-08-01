@@ -1,12 +1,10 @@
 import {
+  Approach,
   deleteApproachFromKey,
   deleteDetectorFromKey,
-} from '@/api/config/aTSPMConfigurationApi'
-import {
-  Approach,
   Detector,
   Location,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import { devtools } from 'zustand/middleware'
 import { createWithEqualityFn } from 'zustand/traditional'
 
@@ -86,12 +84,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       )
 
       set(() => ({
-        location: location
-          ? {
-              ...location,
-              approaches: undefined,
-            }
-          : null,
+        location: location ? location : null,
         approaches: approachList,
         savedApproaches: JSON.parse(JSON.stringify(approachList)),
         channelMap: newMap,

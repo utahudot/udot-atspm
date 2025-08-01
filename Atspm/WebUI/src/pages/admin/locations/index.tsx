@@ -1,5 +1,4 @@
-import { getLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { getLocationFromKey, Location } from '@/api/config'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'

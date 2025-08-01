@@ -4,7 +4,7 @@ import {
   useGetLocationType,
   useGetRegion,
   usePutLocationFromKey,
-} from '@/api/config/aTSPMConfigurationApi'
+} from '@/api/config'
 import CustomSelect from '@/components/customSelect'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useNotificationStore } from '@/stores/notifications'
