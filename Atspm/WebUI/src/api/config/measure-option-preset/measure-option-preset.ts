@@ -45,7 +45,7 @@ export const getMeasureOptionPresetMeasureOptionPresetTypes = (
       
       
       return configRequest<string[]>(
-      {url: `/api/v1/MeasureOptionPreset/GetMeasureOptionPresetTypes`, method: 'GET',
+      {url: `/MeasureOptionPreset/GetMeasureOptionPresetTypes`, method: 'GET',
         params, signal
     },
       );
@@ -53,7 +53,7 @@ export const getMeasureOptionPresetMeasureOptionPresetTypes = (
   
 
 export const getGetMeasureOptionPresetMeasureOptionPresetTypesQueryKey = (params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,) => {
-    return [`/api/v1/MeasureOptionPreset/GetMeasureOptionPresetTypes`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOptionPreset/GetMeasureOptionPresetTypes`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -106,7 +106,7 @@ export const getMeasureOptionPreset = (
       
       
       return configRequest<MeasureOptionPreset[]>(
-      {url: `/api/v1/MeasureOptionPreset`, method: 'GET',
+      {url: `/MeasureOptionPreset`, method: 'GET',
         params, signal
     },
       );
@@ -114,7 +114,7 @@ export const getMeasureOptionPreset = (
   
 
 export const getGetMeasureOptionPresetQueryKey = (params?: GetMeasureOptionPresetParams,) => {
-    return [`/api/v1/MeasureOptionPreset`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOptionPreset`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -165,7 +165,7 @@ export const postMeasureOptionPreset = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOptionPreset`, method: 'POST',
+      {url: `/MeasureOptionPreset`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureOptionPreset,
         params, signal
@@ -224,7 +224,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<MeasureOptionPreset[]>(
-      {url: `/api/v1/MeasureOptionPreset/$count`, method: 'GET',
+      {url: `/MeasureOptionPreset/$count`, method: 'GET',
         params, signal
     },
       );
@@ -232,7 +232,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetMeasureOptionPresetCountQueryKey = (params?: GetMeasureOptionPresetCountParams,) => {
-    return [`/api/v1/MeasureOptionPreset/$count`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOptionPreset/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -283,7 +283,7 @@ export const getMeasureOptionPresetFromKey = (
       
       
       return configRequest<MeasureOptionPreset>(
-      {url: `/api/v1/MeasureOptionPreset/${key}`, method: 'GET',
+      {url: `/MeasureOptionPreset/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -292,7 +292,7 @@ export const getMeasureOptionPresetFromKey = (
 
 export const getGetMeasureOptionPresetFromKeyQueryKey = (key: number,
     params?: GetMeasureOptionPresetFromKeyParams,) => {
-    return [`/api/v1/MeasureOptionPreset/${key}`, ...(params ? [params]: [])] as const;
+    return [`/MeasureOptionPreset/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -345,7 +345,7 @@ export const putMeasureOptionPresetFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOptionPreset/${key}`, method: 'PUT',
+      {url: `/MeasureOptionPreset/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureOptionPreset,
         params
@@ -405,7 +405,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOptionPreset/${key}`, method: 'PATCH',
+      {url: `/MeasureOptionPreset/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: measureOptionPreset,
         params
@@ -463,7 +463,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/MeasureOptionPreset/${key}`, method: 'DELETE'
+      {url: `/MeasureOptionPreset/${key}`, method: 'DELETE'
     },
       );
     }

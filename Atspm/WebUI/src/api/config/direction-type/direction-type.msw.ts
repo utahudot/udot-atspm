@@ -42,7 +42,7 @@ export const getGetDirectionTypeFromKeyResponseMock = (overrideResponse: Partial
 
 
 export const getGetDirectionTypeApproachesFromKeyMockHandler = (overrideResponse?: Approach[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach[]> | Approach[])) => {
-  return http.get('*/api/v1/DirectionType/:key/approaches', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key/approaches', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -54,7 +54,7 @@ export const getGetDirectionTypeApproachesFromKeyMockHandler = (overrideResponse
 }
 
 export const getGetDirectionTypeApproachesCountFromKeyMockHandler = (overrideResponse?: Approach[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach[]> | Approach[])) => {
-  return http.get('*/api/v1/DirectionType/:key/approaches/$count', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key/approaches/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -66,7 +66,7 @@ export const getGetDirectionTypeApproachesCountFromKeyMockHandler = (overrideRes
 }
 
 export const getGetDirectionTypePrimaryDirectionsFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/DirectionType/:key/primaryDirections', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key/primaryDirections', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -78,7 +78,7 @@ export const getGetDirectionTypePrimaryDirectionsFromKeyMockHandler = (overrideR
 }
 
 export const getGetDirectionTypePrimaryDirectionsCountFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/DirectionType/:key/primaryDirections/$count', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key/primaryDirections/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -90,7 +90,7 @@ export const getGetDirectionTypePrimaryDirectionsCountFromKeyMockHandler = (over
 }
 
 export const getGetDirectionTypeOpposingDirectionsFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/DirectionType/:key/opposingDirections', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key/opposingDirections', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -102,7 +102,7 @@ export const getGetDirectionTypeOpposingDirectionsFromKeyMockHandler = (override
 }
 
 export const getGetDirectionTypeOpposingDirectionsCountFromKeyMockHandler = (overrideResponse?: RouteLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RouteLocation[]> | RouteLocation[])) => {
-  return http.get('*/api/v1/DirectionType/:key/opposingDirections/$count', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key/opposingDirections/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -114,7 +114,7 @@ export const getGetDirectionTypeOpposingDirectionsCountFromKeyMockHandler = (ove
 }
 
 export const getGetDirectionTypeMockHandler = (overrideResponse?: DirectionType[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DirectionType[]> | DirectionType[])) => {
-  return http.get('*/api/v1/DirectionType', async (info) => {await delay(1000);
+  return http.get('*/DirectionType', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -126,7 +126,7 @@ export const getGetDirectionTypeMockHandler = (overrideResponse?: DirectionType[
 }
 
 export const getPostDirectionTypeMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/DirectionType', async (info) => {await delay(1000);
+  return http.post('*/DirectionType', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -136,7 +136,7 @@ export const getPostDirectionTypeMockHandler = (overrideResponse?: void | ((info
 }
 
 export const getGetDirectionTypeCountMockHandler = (overrideResponse?: DirectionType[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DirectionType[]> | DirectionType[])) => {
-  return http.get('*/api/v1/DirectionType/$count', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -148,7 +148,7 @@ export const getGetDirectionTypeCountMockHandler = (overrideResponse?: Direction
 }
 
 export const getGetDirectionTypeFromKeyMockHandler = (overrideResponse?: DirectionType | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DirectionType> | DirectionType)) => {
-  return http.get('*/api/v1/DirectionType/:key', async (info) => {await delay(1000);
+  return http.get('*/DirectionType/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -160,7 +160,7 @@ export const getGetDirectionTypeFromKeyMockHandler = (overrideResponse?: Directi
 }
 
 export const getPutDirectionTypeFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/DirectionType/:key', async (info) => {await delay(1000);
+  return http.put('*/DirectionType/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -170,7 +170,7 @@ export const getPutDirectionTypeFromKeyMockHandler = (overrideResponse?: void | 
 }
 
 export const getPatchDirectionTypeFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/DirectionType/:key', async (info) => {await delay(1000);
+  return http.patch('*/DirectionType/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -180,7 +180,7 @@ export const getPatchDirectionTypeFromKeyMockHandler = (overrideResponse?: void 
 }
 
 export const getDeleteDirectionTypeFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/DirectionType/:key', async (info) => {await delay(1000);
+  return http.delete('*/DirectionType/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

@@ -41,7 +41,7 @@ export const getVersionHistory = (
       
       
       return configRequest<VersionHistory[]>(
-      {url: `/api/v1/VersionHistory`, method: 'GET',
+      {url: `/VersionHistory`, method: 'GET',
         params, signal
     },
       );
@@ -49,7 +49,7 @@ export const getVersionHistory = (
   
 
 export const getGetVersionHistoryQueryKey = (params?: GetVersionHistoryParams,) => {
-    return [`/api/v1/VersionHistory`, ...(params ? [params]: [])] as const;
+    return [`/VersionHistory`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -100,7 +100,7 @@ export const postVersionHistory = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/VersionHistory`, method: 'POST',
+      {url: `/VersionHistory`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: versionHistory,
         params, signal
@@ -159,7 +159,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<VersionHistory[]>(
-      {url: `/api/v1/VersionHistory/$count`, method: 'GET',
+      {url: `/VersionHistory/$count`, method: 'GET',
         params, signal
     },
       );
@@ -167,7 +167,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetVersionHistoryCountQueryKey = (params?: GetVersionHistoryCountParams,) => {
-    return [`/api/v1/VersionHistory/$count`, ...(params ? [params]: [])] as const;
+    return [`/VersionHistory/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -218,7 +218,7 @@ export const getVersionHistoryFromKey = (
       
       
       return configRequest<VersionHistory>(
-      {url: `/api/v1/VersionHistory/${key}`, method: 'GET',
+      {url: `/VersionHistory/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -227,7 +227,7 @@ export const getVersionHistoryFromKey = (
 
 export const getGetVersionHistoryFromKeyQueryKey = (key: number,
     params?: GetVersionHistoryFromKeyParams,) => {
-    return [`/api/v1/VersionHistory/${key}`, ...(params ? [params]: [])] as const;
+    return [`/VersionHistory/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -280,7 +280,7 @@ export const putVersionHistoryFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/VersionHistory/${key}`, method: 'PUT',
+      {url: `/VersionHistory/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: versionHistory,
         params
@@ -340,7 +340,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/VersionHistory/${key}`, method: 'PATCH',
+      {url: `/VersionHistory/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: versionHistory,
         params
@@ -398,7 +398,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/VersionHistory/${key}`, method: 'DELETE'
+      {url: `/VersionHistory/${key}`, method: 'DELETE'
     },
       );
     }

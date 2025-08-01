@@ -48,7 +48,7 @@ export const getDeviceActiveDevicesByLocationFromLocationId = (
       
       
       return configRequest<Device[]>(
-      {url: `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`, method: 'GET',
+      {url: `/Device/GetActiveDevicesByLocation(locationId=${locationId})`, method: 'GET',
         params, signal
     },
       );
@@ -57,7 +57,7 @@ export const getDeviceActiveDevicesByLocationFromLocationId = (
 
 export const getGetDeviceActiveDevicesByLocationFromLocationIdQueryKey = (locationId: number,
     params?: GetDeviceActiveDevicesByLocationFromLocationIdParams,) => {
-    return [`/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`, ...(params ? [params]: [])] as const;
+    return [`/Device/GetActiveDevicesByLocation(locationId=${locationId})`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -115,7 +115,7 @@ export const getDeviceActiveDevicesCount = (
       
       
       return configRequest<DeviceGroup[]>(
-      {url: `/api/v1/Device/GetActiveDevicesCount`, method: 'GET',
+      {url: `/Device/GetActiveDevicesCount`, method: 'GET',
         params, signal
     },
       );
@@ -123,7 +123,7 @@ export const getDeviceActiveDevicesCount = (
   
 
 export const getGetDeviceActiveDevicesCountQueryKey = (params?: GetDeviceActiveDevicesCountParams,) => {
-    return [`/api/v1/Device/GetActiveDevicesCount`, ...(params ? [params]: [])] as const;
+    return [`/Device/GetActiveDevicesCount`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -176,7 +176,7 @@ export const getDevice = (
       
       
       return configRequest<Device[]>(
-      {url: `/api/v1/Device`, method: 'GET',
+      {url: `/Device`, method: 'GET',
         params, signal
     },
       );
@@ -184,7 +184,7 @@ export const getDevice = (
   
 
 export const getGetDeviceQueryKey = (params?: GetDeviceParams,) => {
-    return [`/api/v1/Device`, ...(params ? [params]: [])] as const;
+    return [`/Device`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -235,7 +235,7 @@ export const postDevice = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Device`, method: 'POST',
+      {url: `/Device`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: device,
         params, signal
@@ -294,7 +294,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<Device[]>(
-      {url: `/api/v1/Device/$count`, method: 'GET',
+      {url: `/Device/$count`, method: 'GET',
         params, signal
     },
       );
@@ -302,7 +302,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetDeviceCountQueryKey = (params?: GetDeviceCountParams,) => {
-    return [`/api/v1/Device/$count`, ...(params ? [params]: [])] as const;
+    return [`/Device/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -353,7 +353,7 @@ export const getDeviceFromKey = (
       
       
       return configRequest<Device>(
-      {url: `/api/v1/Device/${key}`, method: 'GET',
+      {url: `/Device/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -362,7 +362,7 @@ export const getDeviceFromKey = (
 
 export const getGetDeviceFromKeyQueryKey = (key: number,
     params?: GetDeviceFromKeyParams,) => {
-    return [`/api/v1/Device/${key}`, ...(params ? [params]: [])] as const;
+    return [`/Device/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -415,7 +415,7 @@ export const putDeviceFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Device/${key}`, method: 'PUT',
+      {url: `/Device/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: device,
         params
@@ -475,7 +475,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Device/${key}`, method: 'PATCH',
+      {url: `/Device/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: device,
         params
@@ -533,7 +533,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Device/${key}`, method: 'DELETE'
+      {url: `/Device/${key}`, method: 'DELETE'
     },
       );
     }

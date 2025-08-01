@@ -28,7 +28,7 @@ export const getGetFaqFromKeyResponseMock = (overrideResponse: Partial< Faq > = 
 
 
 export const getGetFaqMockHandler = (overrideResponse?: Faq[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Faq[]> | Faq[])) => {
-  return http.get('*/api/v1/Faq', async (info) => {await delay(1000);
+  return http.get('*/Faq', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetFaqMockHandler = (overrideResponse?: Faq[] | ((info: Paramete
 }
 
 export const getPostFaqMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Faq', async (info) => {await delay(1000);
+  return http.post('*/Faq', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostFaqMockHandler = (overrideResponse?: void | ((info: Paramete
 }
 
 export const getGetFaqCountMockHandler = (overrideResponse?: Faq[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Faq[]> | Faq[])) => {
-  return http.get('*/api/v1/Faq/$count', async (info) => {await delay(1000);
+  return http.get('*/Faq/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetFaqCountMockHandler = (overrideResponse?: Faq[] | ((info: Par
 }
 
 export const getGetFaqFromKeyMockHandler = (overrideResponse?: Faq | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Faq> | Faq)) => {
-  return http.get('*/api/v1/Faq/:key', async (info) => {await delay(1000);
+  return http.get('*/Faq/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetFaqFromKeyMockHandler = (overrideResponse?: Faq | ((info: Par
 }
 
 export const getPutFaqFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Faq/:key', async (info) => {await delay(1000);
+  return http.put('*/Faq/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutFaqFromKeyMockHandler = (overrideResponse?: void | ((info: Pa
 }
 
 export const getPatchFaqFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Faq/:key', async (info) => {await delay(1000);
+  return http.patch('*/Faq/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchFaqFromKeyMockHandler = (overrideResponse?: void | ((info: 
 }
 
 export const getDeleteFaqFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Faq/:key', async (info) => {await delay(1000);
+  return http.delete('*/Faq/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

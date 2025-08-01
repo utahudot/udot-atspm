@@ -57,7 +57,7 @@ export const getGetLocationFromKeyResponseMock = (overrideResponse: Partial< Loc
 
 
 export const getGetLocationApproachesFromKeyMockHandler = (overrideResponse?: Approach[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach[]> | Approach[])) => {
-  return http.get('*/api/v1/Location/:key/approaches', async (info) => {await delay(1000);
+  return http.get('*/Location/:key/approaches', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -69,7 +69,7 @@ export const getGetLocationApproachesFromKeyMockHandler = (overrideResponse?: Ap
 }
 
 export const getGetLocationApproachesCountFromKeyMockHandler = (overrideResponse?: Approach[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Approach[]> | Approach[])) => {
-  return http.get('*/api/v1/Location/:key/approaches/$count', async (info) => {await delay(1000);
+  return http.get('*/Location/:key/approaches/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -81,7 +81,7 @@ export const getGetLocationApproachesCountFromKeyMockHandler = (overrideResponse
 }
 
 export const getGetLocationAreasFromKeyMockHandler = (overrideResponse?: Area[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Area[]> | Area[])) => {
-  return http.get('*/api/v1/Location/:key/areas', async (info) => {await delay(1000);
+  return http.get('*/Location/:key/areas', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -93,7 +93,7 @@ export const getGetLocationAreasFromKeyMockHandler = (overrideResponse?: Area[] 
 }
 
 export const getGetLocationAreasCountFromKeyMockHandler = (overrideResponse?: Area[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Area[]> | Area[])) => {
-  return http.get('*/api/v1/Location/:key/areas/$count', async (info) => {await delay(1000);
+  return http.get('*/Location/:key/areas/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -105,7 +105,7 @@ export const getGetLocationAreasCountFromKeyMockHandler = (overrideResponse?: Ar
 }
 
 export const getGetLocationDevicesFromKeyMockHandler = (overrideResponse?: Device[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Device[]> | Device[])) => {
-  return http.get('*/api/v1/Location/:key/devices', async (info) => {await delay(1000);
+  return http.get('*/Location/:key/devices', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -117,7 +117,7 @@ export const getGetLocationDevicesFromKeyMockHandler = (overrideResponse?: Devic
 }
 
 export const getGetLocationDevicesCountFromKeyMockHandler = (overrideResponse?: Device[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Device[]> | Device[])) => {
-  return http.get('*/api/v1/Location/:key/devices/$count', async (info) => {await delay(1000);
+  return http.get('*/Location/:key/devices/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -129,7 +129,7 @@ export const getGetLocationDevicesCountFromKeyMockHandler = (overrideResponse?: 
 }
 
 export const getGetLocationCopyLocationToNewVersionFromKeyMockHandler = (overrideResponse?: Location | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<Location> | Location)) => {
-  return http.post('*/api/v1/Location/:key/CopyLocationToNewVersion', async (info) => {await delay(1000);
+  return http.post('*/Location/:key/CopyLocationToNewVersion', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -141,7 +141,7 @@ export const getGetLocationCopyLocationToNewVersionFromKeyMockHandler = (overrid
 }
 
 export const getDeleteLocationSetLocationTodFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Location/:key/SetLocationToDeleted', async (info) => {await delay(1000);
+  return http.post('*/Location/:key/SetLocationToDeleted', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -151,7 +151,7 @@ export const getDeleteLocationSetLocationTodFromKeyMockHandler = (overrideRespon
 }
 
 export const getDeleteLocationAllVersionsFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Location/:key/DeleteAllVersions', async (info) => {await delay(1000);
+  return http.post('*/Location/:key/DeleteAllVersions', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -161,7 +161,7 @@ export const getDeleteLocationAllVersionsFromKeyMockHandler = (overrideResponse?
 }
 
 export const getGetLocationLatestVersionOfLocationFromIdentifierMockHandler = (overrideResponse?: Location | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location> | Location)) => {
-  return http.get('*/api/v1/Location/GetLatestVersionOfLocation(identifier=:identifier)', async (info) => {await delay(1000);
+  return http.get('*/Location/GetLatestVersionOfLocation(identifier=:identifier)', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -173,7 +173,7 @@ export const getGetLocationLatestVersionOfLocationFromIdentifierMockHandler = (o
 }
 
 export const getGetLocationAllVersionsOfLocationFromIdentifierMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Location/GetAllVersionsOfLocation(identifier=:identifier)', async (info) => {await delay(1000);
+  return http.get('*/Location/GetAllVersionsOfLocation(identifier=:identifier)', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -185,7 +185,7 @@ export const getGetLocationAllVersionsOfLocationFromIdentifierMockHandler = (ove
 }
 
 export const getGetLocationLatestVersionOfAllLocationsMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Location/GetLatestVersionOfAllLocations', async (info) => {await delay(1000);
+  return http.get('*/Location/GetLatestVersionOfAllLocations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -197,7 +197,7 @@ export const getGetLocationLatestVersionOfAllLocationsMockHandler = (overrideRes
 }
 
 export const getGetLocationDetectionTypeCountMockHandler = (overrideResponse?: DetectionTypeGroup[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectionTypeGroup[]> | DetectionTypeGroup[])) => {
-  return http.get('*/api/v1/Location/GetDetectionTypeCount', async (info) => {await delay(1000);
+  return http.get('*/Location/GetDetectionTypeCount', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -209,7 +209,7 @@ export const getGetLocationDetectionTypeCountMockHandler = (overrideResponse?: D
 }
 
 export const getGetLocationLocationsForSearchMockHandler = (overrideResponse?: SearchLocation[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<SearchLocation[]> | SearchLocation[])) => {
-  return http.get('*/api/v1/Location/GetLocationsForSearch', async (info) => {await delay(1000);
+  return http.get('*/Location/GetLocationsForSearch', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -221,7 +221,7 @@ export const getGetLocationLocationsForSearchMockHandler = (overrideResponse?: S
 }
 
 export const getGetLocationMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Location', async (info) => {await delay(1000);
+  return http.get('*/Location', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -233,7 +233,7 @@ export const getGetLocationMockHandler = (overrideResponse?: Location[] | ((info
 }
 
 export const getPostLocationMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Location', async (info) => {await delay(1000);
+  return http.post('*/Location', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -243,7 +243,7 @@ export const getPostLocationMockHandler = (overrideResponse?: void | ((info: Par
 }
 
 export const getGetLocationCountMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Location/$count', async (info) => {await delay(1000);
+  return http.get('*/Location/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -255,7 +255,7 @@ export const getGetLocationCountMockHandler = (overrideResponse?: Location[] | (
 }
 
 export const getGetLocationFromKeyMockHandler = (overrideResponse?: Location | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location> | Location)) => {
-  return http.get('*/api/v1/Location/:key', async (info) => {await delay(1000);
+  return http.get('*/Location/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -267,7 +267,7 @@ export const getGetLocationFromKeyMockHandler = (overrideResponse?: Location | (
 }
 
 export const getPutLocationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Location/:key', async (info) => {await delay(1000);
+  return http.put('*/Location/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -277,7 +277,7 @@ export const getPutLocationFromKeyMockHandler = (overrideResponse?: void | ((inf
 }
 
 export const getPatchLocationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Location/:key', async (info) => {await delay(1000);
+  return http.patch('*/Location/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -287,7 +287,7 @@ export const getPatchLocationFromKeyMockHandler = (overrideResponse?: void | ((i
 }
 
 export const getDeleteLocationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Location/:key', async (info) => {await delay(1000);
+  return http.delete('*/Location/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

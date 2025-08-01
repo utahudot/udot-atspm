@@ -35,7 +35,7 @@ export const getGetDeviceConfigurationFromKeyResponseMock = (overrideResponse: P
 
 
 export const getGetDeviceConfigurationDevicesFromKeyMockHandler = (overrideResponse?: Device[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Device[]> | Device[])) => {
-  return http.get('*/api/v1/DeviceConfiguration/:key/devices', async (info) => {await delay(1000);
+  return http.get('*/DeviceConfiguration/:key/devices', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -47,7 +47,7 @@ export const getGetDeviceConfigurationDevicesFromKeyMockHandler = (overrideRespo
 }
 
 export const getGetDeviceConfigurationDevicesCountFromKeyMockHandler = (overrideResponse?: Device[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Device[]> | Device[])) => {
-  return http.get('*/api/v1/DeviceConfiguration/:key/devices/$count', async (info) => {await delay(1000);
+  return http.get('*/DeviceConfiguration/:key/devices/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -59,7 +59,7 @@ export const getGetDeviceConfigurationDevicesCountFromKeyMockHandler = (override
 }
 
 export const getGetDeviceConfigurationEventLogDecodersMockHandler = (overrideResponse?: string[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<string[]> | string[])) => {
-  return http.get('*/api/v1/DeviceConfiguration/GetEventLogDecoders', async (info) => {await delay(1000);
+  return http.get('*/DeviceConfiguration/GetEventLogDecoders', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -71,7 +71,7 @@ export const getGetDeviceConfigurationEventLogDecodersMockHandler = (overrideRes
 }
 
 export const getGetDeviceConfigurationMockHandler = (overrideResponse?: DeviceConfiguration[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DeviceConfiguration[]> | DeviceConfiguration[])) => {
-  return http.get('*/api/v1/DeviceConfiguration', async (info) => {await delay(1000);
+  return http.get('*/DeviceConfiguration', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -83,7 +83,7 @@ export const getGetDeviceConfigurationMockHandler = (overrideResponse?: DeviceCo
 }
 
 export const getPostDeviceConfigurationMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/DeviceConfiguration', async (info) => {await delay(1000);
+  return http.post('*/DeviceConfiguration', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -93,7 +93,7 @@ export const getPostDeviceConfigurationMockHandler = (overrideResponse?: void | 
 }
 
 export const getGetDeviceConfigurationCountMockHandler = (overrideResponse?: DeviceConfiguration[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DeviceConfiguration[]> | DeviceConfiguration[])) => {
-  return http.get('*/api/v1/DeviceConfiguration/$count', async (info) => {await delay(1000);
+  return http.get('*/DeviceConfiguration/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -105,7 +105,7 @@ export const getGetDeviceConfigurationCountMockHandler = (overrideResponse?: Dev
 }
 
 export const getGetDeviceConfigurationFromKeyMockHandler = (overrideResponse?: DeviceConfiguration | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DeviceConfiguration> | DeviceConfiguration)) => {
-  return http.get('*/api/v1/DeviceConfiguration/:key', async (info) => {await delay(1000);
+  return http.get('*/DeviceConfiguration/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -117,7 +117,7 @@ export const getGetDeviceConfigurationFromKeyMockHandler = (overrideResponse?: D
 }
 
 export const getPutDeviceConfigurationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/DeviceConfiguration/:key', async (info) => {await delay(1000);
+  return http.put('*/DeviceConfiguration/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -127,7 +127,7 @@ export const getPutDeviceConfigurationFromKeyMockHandler = (overrideResponse?: v
 }
 
 export const getPatchDeviceConfigurationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/DeviceConfiguration/:key', async (info) => {await delay(1000);
+  return http.patch('*/DeviceConfiguration/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -137,7 +137,7 @@ export const getPatchDeviceConfigurationFromKeyMockHandler = (overrideResponse?:
 }
 
 export const getDeleteDeviceConfigurationFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/DeviceConfiguration/:key', async (info) => {await delay(1000);
+  return http.delete('*/DeviceConfiguration/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

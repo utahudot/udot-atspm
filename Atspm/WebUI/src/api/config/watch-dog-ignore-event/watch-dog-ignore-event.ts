@@ -41,7 +41,7 @@ export const getWatchDogIgnoreEvent = (
       
       
       return configRequest<WatchDogIgnoreEvent[]>(
-      {url: `/api/v1/WatchDogIgnoreEvent`, method: 'GET',
+      {url: `/WatchDogIgnoreEvent`, method: 'GET',
         params, signal
     },
       );
@@ -49,7 +49,7 @@ export const getWatchDogIgnoreEvent = (
   
 
 export const getGetWatchDogIgnoreEventQueryKey = (params?: GetWatchDogIgnoreEventParams,) => {
-    return [`/api/v1/WatchDogIgnoreEvent`, ...(params ? [params]: [])] as const;
+    return [`/WatchDogIgnoreEvent`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -100,7 +100,7 @@ export const postWatchDogIgnoreEvent = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/WatchDogIgnoreEvent`, method: 'POST',
+      {url: `/WatchDogIgnoreEvent`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: watchDogIgnoreEvent,
         params, signal
@@ -159,7 +159,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<WatchDogIgnoreEvent[]>(
-      {url: `/api/v1/WatchDogIgnoreEvent/$count`, method: 'GET',
+      {url: `/WatchDogIgnoreEvent/$count`, method: 'GET',
         params, signal
     },
       );
@@ -167,7 +167,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetWatchDogIgnoreEventCountQueryKey = (params?: GetWatchDogIgnoreEventCountParams,) => {
-    return [`/api/v1/WatchDogIgnoreEvent/$count`, ...(params ? [params]: [])] as const;
+    return [`/WatchDogIgnoreEvent/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -218,7 +218,7 @@ export const getWatchDogIgnoreEventFromKey = (
       
       
       return configRequest<WatchDogIgnoreEvent>(
-      {url: `/api/v1/WatchDogIgnoreEvent/${key}`, method: 'GET',
+      {url: `/WatchDogIgnoreEvent/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -227,7 +227,7 @@ export const getWatchDogIgnoreEventFromKey = (
 
 export const getGetWatchDogIgnoreEventFromKeyQueryKey = (key: number,
     params?: GetWatchDogIgnoreEventFromKeyParams,) => {
-    return [`/api/v1/WatchDogIgnoreEvent/${key}`, ...(params ? [params]: [])] as const;
+    return [`/WatchDogIgnoreEvent/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -280,7 +280,7 @@ export const putWatchDogIgnoreEventFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/WatchDogIgnoreEvent/${key}`, method: 'PUT',
+      {url: `/WatchDogIgnoreEvent/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: watchDogIgnoreEvent,
         params
@@ -340,7 +340,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/WatchDogIgnoreEvent/${key}`, method: 'PATCH',
+      {url: `/WatchDogIgnoreEvent/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: watchDogIgnoreEvent,
         params
@@ -398,7 +398,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/WatchDogIgnoreEvent/${key}`, method: 'DELETE'
+      {url: `/WatchDogIgnoreEvent/${key}`, method: 'DELETE'
     },
       );
     }

@@ -33,7 +33,7 @@ export const getGetRegionFromKeyResponseMock = (overrideResponse: Partial< Regio
 
 
 export const getGetRegionLocationsFromKeyMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Region/:key/locations', async (info) => {await delay(1000);
+  return http.get('*/Region/:key/locations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -45,7 +45,7 @@ export const getGetRegionLocationsFromKeyMockHandler = (overrideResponse?: Locat
 }
 
 export const getGetRegionLocationsCountFromKeyMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Region/:key/locations/$count', async (info) => {await delay(1000);
+  return http.get('*/Region/:key/locations/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -57,7 +57,7 @@ export const getGetRegionLocationsCountFromKeyMockHandler = (overrideResponse?: 
 }
 
 export const getGetRegionMockHandler = (overrideResponse?: Region[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Region[]> | Region[])) => {
-  return http.get('*/api/v1/Region', async (info) => {await delay(1000);
+  return http.get('*/Region', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -69,7 +69,7 @@ export const getGetRegionMockHandler = (overrideResponse?: Region[] | ((info: Pa
 }
 
 export const getPostRegionMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Region', async (info) => {await delay(1000);
+  return http.post('*/Region', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -79,7 +79,7 @@ export const getPostRegionMockHandler = (overrideResponse?: void | ((info: Param
 }
 
 export const getGetRegionCountMockHandler = (overrideResponse?: Region[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Region[]> | Region[])) => {
-  return http.get('*/api/v1/Region/$count', async (info) => {await delay(1000);
+  return http.get('*/Region/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -91,7 +91,7 @@ export const getGetRegionCountMockHandler = (overrideResponse?: Region[] | ((inf
 }
 
 export const getGetRegionFromKeyMockHandler = (overrideResponse?: Region | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Region> | Region)) => {
-  return http.get('*/api/v1/Region/:key', async (info) => {await delay(1000);
+  return http.get('*/Region/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -103,7 +103,7 @@ export const getGetRegionFromKeyMockHandler = (overrideResponse?: Region | ((inf
 }
 
 export const getPutRegionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Region/:key', async (info) => {await delay(1000);
+  return http.put('*/Region/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -113,7 +113,7 @@ export const getPutRegionFromKeyMockHandler = (overrideResponse?: void | ((info:
 }
 
 export const getPatchRegionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Region/:key', async (info) => {await delay(1000);
+  return http.patch('*/Region/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -123,7 +123,7 @@ export const getPatchRegionFromKeyMockHandler = (overrideResponse?: void | ((inf
 }
 
 export const getDeleteRegionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Region/:key', async (info) => {await delay(1000);
+  return http.delete('*/Region/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

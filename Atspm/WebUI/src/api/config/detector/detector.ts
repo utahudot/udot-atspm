@@ -51,7 +51,7 @@ export const getDetectorDetectorCommentsFromKey = (
       
       
       return configRequest<DetectorComment[]>(
-      {url: `/api/v1/Detector/${key}/detectorComments`, method: 'GET',
+      {url: `/Detector/${key}/detectorComments`, method: 'GET',
         params, signal
     },
       );
@@ -60,7 +60,7 @@ export const getDetectorDetectorCommentsFromKey = (
 
 export const getGetDetectorDetectorCommentsFromKeyQueryKey = (key: number,
     params?: GetDetectorDetectorCommentsFromKeyParams,) => {
-    return [`/api/v1/Detector/${key}/detectorComments`, ...(params ? [params]: [])] as const;
+    return [`/Detector/${key}/detectorComments`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -119,7 +119,7 @@ export const getDetectorDetectorCommentsCountFromKey = (
       
       
       return configRequest<DetectorComment[]>(
-      {url: `/api/v1/Detector/${key}/detectorComments/$count`, method: 'GET',
+      {url: `/Detector/${key}/detectorComments/$count`, method: 'GET',
         params, signal
     },
       );
@@ -128,7 +128,7 @@ export const getDetectorDetectorCommentsCountFromKey = (
 
 export const getGetDetectorDetectorCommentsCountFromKeyQueryKey = (key: number,
     params?: GetDetectorDetectorCommentsCountFromKeyParams,) => {
-    return [`/api/v1/Detector/${key}/detectorComments/$count`, ...(params ? [params]: [])] as const;
+    return [`/Detector/${key}/detectorComments/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -187,7 +187,7 @@ export const getDetectorDetectionTypesFromKey = (
       
       
       return configRequest<DetectionType[]>(
-      {url: `/api/v1/Detector/${key}/detectionTypes`, method: 'GET',
+      {url: `/Detector/${key}/detectionTypes`, method: 'GET',
         params, signal
     },
       );
@@ -196,7 +196,7 @@ export const getDetectorDetectionTypesFromKey = (
 
 export const getGetDetectorDetectionTypesFromKeyQueryKey = (key: number,
     params?: GetDetectorDetectionTypesFromKeyParams,) => {
-    return [`/api/v1/Detector/${key}/detectionTypes`, ...(params ? [params]: [])] as const;
+    return [`/Detector/${key}/detectionTypes`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -255,7 +255,7 @@ export const getDetectorDetectionTypesCountFromKey = (
       
       
       return configRequest<DetectionType[]>(
-      {url: `/api/v1/Detector/${key}/detectionTypes/$count`, method: 'GET',
+      {url: `/Detector/${key}/detectionTypes/$count`, method: 'GET',
         params, signal
     },
       );
@@ -264,7 +264,7 @@ export const getDetectorDetectionTypesCountFromKey = (
 
 export const getGetDetectorDetectionTypesCountFromKeyQueryKey = (key: number,
     params?: GetDetectorDetectionTypesCountFromKeyParams,) => {
-    return [`/api/v1/Detector/${key}/detectionTypes/$count`, ...(params ? [params]: [])] as const;
+    return [`/Detector/${key}/detectionTypes/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -319,7 +319,7 @@ export const getDetector = (
       
       
       return configRequest<Detector[]>(
-      {url: `/api/v1/Detector`, method: 'GET',
+      {url: `/Detector`, method: 'GET',
         params, signal
     },
       );
@@ -327,7 +327,7 @@ export const getDetector = (
   
 
 export const getGetDetectorQueryKey = (params?: GetDetectorParams,) => {
-    return [`/api/v1/Detector`, ...(params ? [params]: [])] as const;
+    return [`/Detector`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -378,7 +378,7 @@ export const postDetector = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Detector`, method: 'POST',
+      {url: `/Detector`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: detector,
         params, signal
@@ -437,7 +437,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<Detector[]>(
-      {url: `/api/v1/Detector/$count`, method: 'GET',
+      {url: `/Detector/$count`, method: 'GET',
         params, signal
     },
       );
@@ -445,7 +445,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetDetectorCountQueryKey = (params?: GetDetectorCountParams,) => {
-    return [`/api/v1/Detector/$count`, ...(params ? [params]: [])] as const;
+    return [`/Detector/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -496,7 +496,7 @@ export const getDetectorFromKey = (
       
       
       return configRequest<Detector>(
-      {url: `/api/v1/Detector/${key}`, method: 'GET',
+      {url: `/Detector/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -505,7 +505,7 @@ export const getDetectorFromKey = (
 
 export const getGetDetectorFromKeyQueryKey = (key: number,
     params?: GetDetectorFromKeyParams,) => {
-    return [`/api/v1/Detector/${key}`, ...(params ? [params]: [])] as const;
+    return [`/Detector/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -558,7 +558,7 @@ export const putDetectorFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Detector/${key}`, method: 'PUT',
+      {url: `/Detector/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: detector,
         params
@@ -618,7 +618,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Detector/${key}`, method: 'PATCH',
+      {url: `/Detector/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: detector,
         params
@@ -676,7 +676,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Detector/${key}`, method: 'DELETE'
+      {url: `/Detector/${key}`, method: 'DELETE'
     },
       );
     }

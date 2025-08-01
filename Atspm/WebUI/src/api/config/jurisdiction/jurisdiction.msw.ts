@@ -33,7 +33,7 @@ export const getGetJurisdictionFromKeyResponseMock = (overrideResponse: Partial<
 
 
 export const getGetJurisdictionLocationsFromKeyMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Jurisdiction/:key/locations', async (info) => {await delay(1000);
+  return http.get('*/Jurisdiction/:key/locations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -45,7 +45,7 @@ export const getGetJurisdictionLocationsFromKeyMockHandler = (overrideResponse?:
 }
 
 export const getGetJurisdictionLocationsCountFromKeyMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Jurisdiction/:key/locations/$count', async (info) => {await delay(1000);
+  return http.get('*/Jurisdiction/:key/locations/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -57,7 +57,7 @@ export const getGetJurisdictionLocationsCountFromKeyMockHandler = (overrideRespo
 }
 
 export const getGetJurisdictionMockHandler = (overrideResponse?: Jurisdiction[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Jurisdiction[]> | Jurisdiction[])) => {
-  return http.get('*/api/v1/Jurisdiction', async (info) => {await delay(1000);
+  return http.get('*/Jurisdiction', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -69,7 +69,7 @@ export const getGetJurisdictionMockHandler = (overrideResponse?: Jurisdiction[] 
 }
 
 export const getPostJurisdictionMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Jurisdiction', async (info) => {await delay(1000);
+  return http.post('*/Jurisdiction', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -79,7 +79,7 @@ export const getPostJurisdictionMockHandler = (overrideResponse?: void | ((info:
 }
 
 export const getGetJurisdictionCountMockHandler = (overrideResponse?: Jurisdiction[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Jurisdiction[]> | Jurisdiction[])) => {
-  return http.get('*/api/v1/Jurisdiction/$count', async (info) => {await delay(1000);
+  return http.get('*/Jurisdiction/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -91,7 +91,7 @@ export const getGetJurisdictionCountMockHandler = (overrideResponse?: Jurisdicti
 }
 
 export const getGetJurisdictionFromKeyMockHandler = (overrideResponse?: Jurisdiction | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Jurisdiction> | Jurisdiction)) => {
-  return http.get('*/api/v1/Jurisdiction/:key', async (info) => {await delay(1000);
+  return http.get('*/Jurisdiction/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -103,7 +103,7 @@ export const getGetJurisdictionFromKeyMockHandler = (overrideResponse?: Jurisdic
 }
 
 export const getPutJurisdictionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Jurisdiction/:key', async (info) => {await delay(1000);
+  return http.put('*/Jurisdiction/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -113,7 +113,7 @@ export const getPutJurisdictionFromKeyMockHandler = (overrideResponse?: void | (
 }
 
 export const getPatchJurisdictionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Jurisdiction/:key', async (info) => {await delay(1000);
+  return http.patch('*/Jurisdiction/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -123,7 +123,7 @@ export const getPatchJurisdictionFromKeyMockHandler = (overrideResponse?: void |
 }
 
 export const getDeleteJurisdictionFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Jurisdiction/:key', async (info) => {await delay(1000);
+  return http.delete('*/Jurisdiction/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

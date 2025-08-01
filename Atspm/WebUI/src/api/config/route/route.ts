@@ -51,7 +51,7 @@ export const getRouteRouteLocationsFromKey = (
       
       
       return configRequest<RouteLocation[]>(
-      {url: `/api/v1/Route/${key}/routeLocations`, method: 'GET',
+      {url: `/Route/${key}/routeLocations`, method: 'GET',
         params, signal
     },
       );
@@ -60,7 +60,7 @@ export const getRouteRouteLocationsFromKey = (
 
 export const getGetRouteRouteLocationsFromKeyQueryKey = (key: number,
     params?: GetRouteRouteLocationsFromKeyParams,) => {
-    return [`/api/v1/Route/${key}/routeLocations`, ...(params ? [params]: [])] as const;
+    return [`/Route/${key}/routeLocations`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -119,7 +119,7 @@ export const getRouteRouteLocationsCountFromKey = (
       
       
       return configRequest<RouteLocation[]>(
-      {url: `/api/v1/Route/${key}/routeLocations/$count`, method: 'GET',
+      {url: `/Route/${key}/routeLocations/$count`, method: 'GET',
         params, signal
     },
       );
@@ -128,7 +128,7 @@ export const getRouteRouteLocationsCountFromKey = (
 
 export const getGetRouteRouteLocationsCountFromKeyQueryKey = (key: number,
     params?: GetRouteRouteLocationsCountFromKeyParams,) => {
-    return [`/api/v1/Route/${key}/routeLocations/$count`, ...(params ? [params]: [])] as const;
+    return [`/Route/${key}/routeLocations/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -187,7 +187,7 @@ export const upsertRouteRoute = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/UpsertRoute`, method: 'POST',
+      {url: `/UpsertRoute`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: routeDto,
         params, signal
@@ -250,7 +250,7 @@ export const useUpsertRouteRoute = <TError = void,
       
       
       return configRequest<void>(
-      {url: `/api/v1/GetRouteView/${id}`, method: 'GET',
+      {url: `/GetRouteView/${id}`, method: 'GET',
         params, signal
     },
       );
@@ -259,7 +259,7 @@ export const useUpsertRouteRoute = <TError = void,
 
 export const getGetRouteRouteViewFromIdQueryKey = (id: number,
     params?: GetRouteRouteViewFromIdParams,) => {
-    return [`/api/v1/GetRouteView/${id}`, ...(params ? [params]: [])] as const;
+    return [`/GetRouteView/${id}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -311,7 +311,7 @@ export const getRoute = (
       
       
       return configRequest<Route[]>(
-      {url: `/api/v1/Route`, method: 'GET',
+      {url: `/Route`, method: 'GET',
         params, signal
     },
       );
@@ -319,7 +319,7 @@ export const getRoute = (
   
 
 export const getGetRouteQueryKey = (params?: GetRouteParams,) => {
-    return [`/api/v1/Route`, ...(params ? [params]: [])] as const;
+    return [`/Route`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -370,7 +370,7 @@ export const postRoute = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Route`, method: 'POST',
+      {url: `/Route`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: route,
         params, signal
@@ -429,7 +429,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<Route[]>(
-      {url: `/api/v1/Route/$count`, method: 'GET',
+      {url: `/Route/$count`, method: 'GET',
         params, signal
     },
       );
@@ -437,7 +437,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetRouteCountQueryKey = (params?: GetRouteCountParams,) => {
-    return [`/api/v1/Route/$count`, ...(params ? [params]: [])] as const;
+    return [`/Route/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -488,7 +488,7 @@ export const getRouteFromKey = (
       
       
       return configRequest<Route>(
-      {url: `/api/v1/Route/${key}`, method: 'GET',
+      {url: `/Route/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -497,7 +497,7 @@ export const getRouteFromKey = (
 
 export const getGetRouteFromKeyQueryKey = (key: number,
     params?: GetRouteFromKeyParams,) => {
-    return [`/api/v1/Route/${key}`, ...(params ? [params]: [])] as const;
+    return [`/Route/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -550,7 +550,7 @@ export const putRouteFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Route/${key}`, method: 'PUT',
+      {url: `/Route/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: route,
         params
@@ -610,7 +610,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Route/${key}`, method: 'PATCH',
+      {url: `/Route/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: route,
         params
@@ -668,7 +668,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Route/${key}`, method: 'DELETE'
+      {url: `/Route/${key}`, method: 'DELETE'
     },
       );
     }

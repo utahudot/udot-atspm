@@ -28,7 +28,7 @@ export const getGetDetectorCommentFromKeyResponseMock = (overrideResponse: Parti
 
 
 export const getGetDetectorCommentMockHandler = (overrideResponse?: DetectorComment[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectorComment[]> | DetectorComment[])) => {
-  return http.get('*/api/v1/DetectorComment', async (info) => {await delay(1000);
+  return http.get('*/DetectorComment', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetDetectorCommentMockHandler = (overrideResponse?: DetectorComm
 }
 
 export const getPostDetectorCommentMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/DetectorComment', async (info) => {await delay(1000);
+  return http.post('*/DetectorComment', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostDetectorCommentMockHandler = (overrideResponse?: void | ((in
 }
 
 export const getGetDetectorCommentCountMockHandler = (overrideResponse?: DetectorComment[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectorComment[]> | DetectorComment[])) => {
-  return http.get('*/api/v1/DetectorComment/$count', async (info) => {await delay(1000);
+  return http.get('*/DetectorComment/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetDetectorCommentCountMockHandler = (overrideResponse?: Detecto
 }
 
 export const getGetDetectorCommentFromKeyMockHandler = (overrideResponse?: DetectorComment | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<DetectorComment> | DetectorComment)) => {
-  return http.get('*/api/v1/DetectorComment/:key', async (info) => {await delay(1000);
+  return http.get('*/DetectorComment/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetDetectorCommentFromKeyMockHandler = (overrideResponse?: Detec
 }
 
 export const getPutDetectorCommentFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/DetectorComment/:key', async (info) => {await delay(1000);
+  return http.put('*/DetectorComment/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutDetectorCommentFromKeyMockHandler = (overrideResponse?: void 
 }
 
 export const getPatchDetectorCommentFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/DetectorComment/:key', async (info) => {await delay(1000);
+  return http.patch('*/DetectorComment/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchDetectorCommentFromKeyMockHandler = (overrideResponse?: voi
 }
 
 export const getDeleteDetectorCommentFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/DetectorComment/:key', async (info) => {await delay(1000);
+  return http.delete('*/DetectorComment/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

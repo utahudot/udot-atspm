@@ -28,7 +28,7 @@ export const getGetMenuItemsFromKeyResponseMock = (overrideResponse: Partial< Me
 
 
 export const getGetMenuItemsMockHandler = (overrideResponse?: MenuItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MenuItem[]> | MenuItem[])) => {
-  return http.get('*/api/v1/MenuItems', async (info) => {await delay(1000);
+  return http.get('*/MenuItems', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetMenuItemsMockHandler = (overrideResponse?: MenuItem[] | ((inf
 }
 
 export const getPostMenuItemsMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/MenuItems', async (info) => {await delay(1000);
+  return http.post('*/MenuItems', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostMenuItemsMockHandler = (overrideResponse?: void | ((info: Pa
 }
 
 export const getGetMenuItemsCountMockHandler = (overrideResponse?: MenuItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MenuItem[]> | MenuItem[])) => {
-  return http.get('*/api/v1/MenuItems/$count', async (info) => {await delay(1000);
+  return http.get('*/MenuItems/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetMenuItemsCountMockHandler = (overrideResponse?: MenuItem[] | 
 }
 
 export const getGetMenuItemsFromKeyMockHandler = (overrideResponse?: MenuItem | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MenuItem> | MenuItem)) => {
-  return http.get('*/api/v1/MenuItems/:key', async (info) => {await delay(1000);
+  return http.get('*/MenuItems/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetMenuItemsFromKeyMockHandler = (overrideResponse?: MenuItem | 
 }
 
 export const getPutMenuItemsFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/MenuItems/:key', async (info) => {await delay(1000);
+  return http.put('*/MenuItems/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutMenuItemsFromKeyMockHandler = (overrideResponse?: void | ((in
 }
 
 export const getPatchMenuItemsFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/MenuItems/:key', async (info) => {await delay(1000);
+  return http.patch('*/MenuItems/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchMenuItemsFromKeyMockHandler = (overrideResponse?: void | ((
 }
 
 export const getDeleteMenuItemsFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/MenuItems/:key', async (info) => {await delay(1000);
+  return http.delete('*/MenuItems/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

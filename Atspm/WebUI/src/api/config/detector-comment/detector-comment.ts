@@ -41,7 +41,7 @@ export const getDetectorComment = (
       
       
       return configRequest<DetectorComment[]>(
-      {url: `/api/v1/DetectorComment`, method: 'GET',
+      {url: `/DetectorComment`, method: 'GET',
         params, signal
     },
       );
@@ -49,7 +49,7 @@ export const getDetectorComment = (
   
 
 export const getGetDetectorCommentQueryKey = (params?: GetDetectorCommentParams,) => {
-    return [`/api/v1/DetectorComment`, ...(params ? [params]: [])] as const;
+    return [`/DetectorComment`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -100,7 +100,7 @@ export const postDetectorComment = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/DetectorComment`, method: 'POST',
+      {url: `/DetectorComment`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: detectorComment,
         params, signal
@@ -159,7 +159,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<DetectorComment[]>(
-      {url: `/api/v1/DetectorComment/$count`, method: 'GET',
+      {url: `/DetectorComment/$count`, method: 'GET',
         params, signal
     },
       );
@@ -167,7 +167,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetDetectorCommentCountQueryKey = (params?: GetDetectorCommentCountParams,) => {
-    return [`/api/v1/DetectorComment/$count`, ...(params ? [params]: [])] as const;
+    return [`/DetectorComment/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -218,7 +218,7 @@ export const getDetectorCommentFromKey = (
       
       
       return configRequest<DetectorComment>(
-      {url: `/api/v1/DetectorComment/${key}`, method: 'GET',
+      {url: `/DetectorComment/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -227,7 +227,7 @@ export const getDetectorCommentFromKey = (
 
 export const getGetDetectorCommentFromKeyQueryKey = (key: number,
     params?: GetDetectorCommentFromKeyParams,) => {
-    return [`/api/v1/DetectorComment/${key}`, ...(params ? [params]: [])] as const;
+    return [`/DetectorComment/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -280,7 +280,7 @@ export const putDetectorCommentFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/DetectorComment/${key}`, method: 'PUT',
+      {url: `/DetectorComment/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: detectorComment,
         params
@@ -340,7 +340,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/DetectorComment/${key}`, method: 'PATCH',
+      {url: `/DetectorComment/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: detectorComment,
         params
@@ -398,7 +398,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/DetectorComment/${key}`, method: 'DELETE'
+      {url: `/DetectorComment/${key}`, method: 'DELETE'
     },
       );
     }

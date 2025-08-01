@@ -51,7 +51,7 @@ export const getRouteDistancePreviousLocationsFromKey = (
       
       
       return configRequest<RouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/previousLocations`, method: 'GET',
+      {url: `/RouteDistance/${key}/previousLocations`, method: 'GET',
         params, signal
     },
       );
@@ -60,7 +60,7 @@ export const getRouteDistancePreviousLocationsFromKey = (
 
 export const getGetRouteDistancePreviousLocationsFromKeyQueryKey = (key: number,
     params?: GetRouteDistancePreviousLocationsFromKeyParams,) => {
-    return [`/api/v1/RouteDistance/${key}/previousLocations`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/${key}/previousLocations`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -119,7 +119,7 @@ export const getRouteDistancePreviousLocationsCountFromKey = (
       
       
       return configRequest<RouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/previousLocations/$count`, method: 'GET',
+      {url: `/RouteDistance/${key}/previousLocations/$count`, method: 'GET',
         params, signal
     },
       );
@@ -128,7 +128,7 @@ export const getRouteDistancePreviousLocationsCountFromKey = (
 
 export const getGetRouteDistancePreviousLocationsCountFromKeyQueryKey = (key: number,
     params?: GetRouteDistancePreviousLocationsCountFromKeyParams,) => {
-    return [`/api/v1/RouteDistance/${key}/previousLocations/$count`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/${key}/previousLocations/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -187,7 +187,7 @@ export const getRouteDistanceNextLocationsFromKey = (
       
       
       return configRequest<RouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/nextLocations`, method: 'GET',
+      {url: `/RouteDistance/${key}/nextLocations`, method: 'GET',
         params, signal
     },
       );
@@ -196,7 +196,7 @@ export const getRouteDistanceNextLocationsFromKey = (
 
 export const getGetRouteDistanceNextLocationsFromKeyQueryKey = (key: number,
     params?: GetRouteDistanceNextLocationsFromKeyParams,) => {
-    return [`/api/v1/RouteDistance/${key}/nextLocations`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/${key}/nextLocations`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -255,7 +255,7 @@ export const getRouteDistanceNextLocationsCountFromKey = (
       
       
       return configRequest<RouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/nextLocations/$count`, method: 'GET',
+      {url: `/RouteDistance/${key}/nextLocations/$count`, method: 'GET',
         params, signal
     },
       );
@@ -264,7 +264,7 @@ export const getRouteDistanceNextLocationsCountFromKey = (
 
 export const getGetRouteDistanceNextLocationsCountFromKeyQueryKey = (key: number,
     params?: GetRouteDistanceNextLocationsCountFromKeyParams,) => {
-    return [`/api/v1/RouteDistance/${key}/nextLocations/$count`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/${key}/nextLocations/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -324,7 +324,7 @@ export const getRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndL
       
       
       return configRequest<RouteDistance | void>(
-      {url: `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`, method: 'GET',
+      {url: `/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`, method: 'GET',
         params, signal
     },
       );
@@ -334,7 +334,7 @@ export const getRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndL
 export const getGetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationBQueryKey = (locationA: string,
     locationB: string,
     params?: GetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationBParams,) => {
-    return [`/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -391,7 +391,7 @@ export const getRouteDistance = (
       
       
       return configRequest<RouteDistance[]>(
-      {url: `/api/v1/RouteDistance`, method: 'GET',
+      {url: `/RouteDistance`, method: 'GET',
         params, signal
     },
       );
@@ -399,7 +399,7 @@ export const getRouteDistance = (
   
 
 export const getGetRouteDistanceQueryKey = (params?: GetRouteDistanceParams,) => {
-    return [`/api/v1/RouteDistance`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -450,7 +450,7 @@ export const postRouteDistance = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/RouteDistance`, method: 'POST',
+      {url: `/RouteDistance`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: routeDistance,
         params, signal
@@ -509,7 +509,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<RouteDistance[]>(
-      {url: `/api/v1/RouteDistance/$count`, method: 'GET',
+      {url: `/RouteDistance/$count`, method: 'GET',
         params, signal
     },
       );
@@ -517,7 +517,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetRouteDistanceCountQueryKey = (params?: GetRouteDistanceCountParams,) => {
-    return [`/api/v1/RouteDistance/$count`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -568,7 +568,7 @@ export const getRouteDistanceFromKey = (
       
       
       return configRequest<RouteDistance>(
-      {url: `/api/v1/RouteDistance/${key}`, method: 'GET',
+      {url: `/RouteDistance/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -577,7 +577,7 @@ export const getRouteDistanceFromKey = (
 
 export const getGetRouteDistanceFromKeyQueryKey = (key: number,
     params?: GetRouteDistanceFromKeyParams,) => {
-    return [`/api/v1/RouteDistance/${key}`, ...(params ? [params]: [])] as const;
+    return [`/RouteDistance/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -630,7 +630,7 @@ export const putRouteDistanceFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/RouteDistance/${key}`, method: 'PUT',
+      {url: `/RouteDistance/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: routeDistance,
         params
@@ -690,7 +690,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/RouteDistance/${key}`, method: 'PATCH',
+      {url: `/RouteDistance/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: routeDistance,
         params
@@ -748,7 +748,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/RouteDistance/${key}`, method: 'DELETE'
+      {url: `/RouteDistance/${key}`, method: 'DELETE'
     },
       );
     }

@@ -48,7 +48,7 @@ export const getAreaLocationsFromKey = (
       
       
       return configRequest<Location[]>(
-      {url: `/api/v1/Area/${key}/locations`, method: 'GET',
+      {url: `/Area/${key}/locations`, method: 'GET',
         params, signal
     },
       );
@@ -57,7 +57,7 @@ export const getAreaLocationsFromKey = (
 
 export const getGetAreaLocationsFromKeyQueryKey = (key: number,
     params?: GetAreaLocationsFromKeyParams,) => {
-    return [`/api/v1/Area/${key}/locations`, ...(params ? [params]: [])] as const;
+    return [`/Area/${key}/locations`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -116,7 +116,7 @@ export const getAreaLocationsCountFromKey = (
       
       
       return configRequest<Location[]>(
-      {url: `/api/v1/Area/${key}/locations/$count`, method: 'GET',
+      {url: `/Area/${key}/locations/$count`, method: 'GET',
         params, signal
     },
       );
@@ -125,7 +125,7 @@ export const getAreaLocationsCountFromKey = (
 
 export const getGetAreaLocationsCountFromKeyQueryKey = (key: number,
     params?: GetAreaLocationsCountFromKeyParams,) => {
-    return [`/api/v1/Area/${key}/locations/$count`, ...(params ? [params]: [])] as const;
+    return [`/Area/${key}/locations/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -180,7 +180,7 @@ export const getArea = (
       
       
       return configRequest<Area[]>(
-      {url: `/api/v1/Area`, method: 'GET',
+      {url: `/Area`, method: 'GET',
         params, signal
     },
       );
@@ -188,7 +188,7 @@ export const getArea = (
   
 
 export const getGetAreaQueryKey = (params?: GetAreaParams,) => {
-    return [`/api/v1/Area`, ...(params ? [params]: [])] as const;
+    return [`/Area`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -239,7 +239,7 @@ export const postArea = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Area`, method: 'POST',
+      {url: `/Area`, method: 'POST',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: area,
         params, signal
@@ -298,7 +298,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<Area[]>(
-      {url: `/api/v1/Area/$count`, method: 'GET',
+      {url: `/Area/$count`, method: 'GET',
         params, signal
     },
       );
@@ -306,7 +306,7 @@ const {mutation: mutationOptions} = options ?
   
 
 export const getGetAreaCountQueryKey = (params?: GetAreaCountParams,) => {
-    return [`/api/v1/Area/$count`, ...(params ? [params]: [])] as const;
+    return [`/Area/$count`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -357,7 +357,7 @@ export const getAreaFromKey = (
       
       
       return configRequest<Area>(
-      {url: `/api/v1/Area/${key}`, method: 'GET',
+      {url: `/Area/${key}`, method: 'GET',
         params, signal
     },
       );
@@ -366,7 +366,7 @@ export const getAreaFromKey = (
 
 export const getGetAreaFromKeyQueryKey = (key: number,
     params?: GetAreaFromKeyParams,) => {
-    return [`/api/v1/Area/${key}`, ...(params ? [params]: [])] as const;
+    return [`/Area/${key}`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -419,7 +419,7 @@ export const putAreaFromKey = (
       
       
       return configRequest<void>(
-      {url: `/api/v1/Area/${key}`, method: 'PUT',
+      {url: `/Area/${key}`, method: 'PUT',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: area,
         params
@@ -479,7 +479,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Area/${key}`, method: 'PATCH',
+      {url: `/Area/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
       data: area,
         params
@@ -537,7 +537,7 @@ const {mutation: mutationOptions} = options ?
       
       
       return configRequest<void>(
-      {url: `/api/v1/Area/${key}`, method: 'DELETE'
+      {url: `/Area/${key}`, method: 'DELETE'
     },
       );
     }

@@ -28,7 +28,7 @@ export const getGetVersionHistoryFromKeyResponseMock = (overrideResponse: Partia
 
 
 export const getGetVersionHistoryMockHandler = (overrideResponse?: VersionHistory[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<VersionHistory[]> | VersionHistory[])) => {
-  return http.get('*/api/v1/VersionHistory', async (info) => {await delay(1000);
+  return http.get('*/VersionHistory', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetVersionHistoryMockHandler = (overrideResponse?: VersionHistor
 }
 
 export const getPostVersionHistoryMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/VersionHistory', async (info) => {await delay(1000);
+  return http.post('*/VersionHistory', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostVersionHistoryMockHandler = (overrideResponse?: void | ((inf
 }
 
 export const getGetVersionHistoryCountMockHandler = (overrideResponse?: VersionHistory[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<VersionHistory[]> | VersionHistory[])) => {
-  return http.get('*/api/v1/VersionHistory/$count', async (info) => {await delay(1000);
+  return http.get('*/VersionHistory/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetVersionHistoryCountMockHandler = (overrideResponse?: VersionH
 }
 
 export const getGetVersionHistoryFromKeyMockHandler = (overrideResponse?: VersionHistory | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<VersionHistory> | VersionHistory)) => {
-  return http.get('*/api/v1/VersionHistory/:key', async (info) => {await delay(1000);
+  return http.get('*/VersionHistory/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetVersionHistoryFromKeyMockHandler = (overrideResponse?: Versio
 }
 
 export const getPutVersionHistoryFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/VersionHistory/:key', async (info) => {await delay(1000);
+  return http.put('*/VersionHistory/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutVersionHistoryFromKeyMockHandler = (overrideResponse?: void |
 }
 
 export const getPatchVersionHistoryFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/VersionHistory/:key', async (info) => {await delay(1000);
+  return http.patch('*/VersionHistory/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchVersionHistoryFromKeyMockHandler = (overrideResponse?: void
 }
 
 export const getDeleteVersionHistoryFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/VersionHistory/:key', async (info) => {await delay(1000);
+  return http.delete('*/VersionHistory/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

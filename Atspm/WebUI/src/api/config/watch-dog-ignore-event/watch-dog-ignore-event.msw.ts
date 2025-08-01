@@ -28,7 +28,7 @@ export const getGetWatchDogIgnoreEventFromKeyResponseMock = (overrideResponse: P
 
 
 export const getGetWatchDogIgnoreEventMockHandler = (overrideResponse?: WatchDogIgnoreEvent[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<WatchDogIgnoreEvent[]> | WatchDogIgnoreEvent[])) => {
-  return http.get('*/api/v1/WatchDogIgnoreEvent', async (info) => {await delay(1000);
+  return http.get('*/WatchDogIgnoreEvent', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -40,7 +40,7 @@ export const getGetWatchDogIgnoreEventMockHandler = (overrideResponse?: WatchDog
 }
 
 export const getPostWatchDogIgnoreEventMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/WatchDogIgnoreEvent', async (info) => {await delay(1000);
+  return http.post('*/WatchDogIgnoreEvent', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -50,7 +50,7 @@ export const getPostWatchDogIgnoreEventMockHandler = (overrideResponse?: void | 
 }
 
 export const getGetWatchDogIgnoreEventCountMockHandler = (overrideResponse?: WatchDogIgnoreEvent[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<WatchDogIgnoreEvent[]> | WatchDogIgnoreEvent[])) => {
-  return http.get('*/api/v1/WatchDogIgnoreEvent/$count', async (info) => {await delay(1000);
+  return http.get('*/WatchDogIgnoreEvent/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -62,7 +62,7 @@ export const getGetWatchDogIgnoreEventCountMockHandler = (overrideResponse?: Wat
 }
 
 export const getGetWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?: WatchDogIgnoreEvent | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<WatchDogIgnoreEvent> | WatchDogIgnoreEvent)) => {
-  return http.get('*/api/v1/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
+  return http.get('*/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -74,7 +74,7 @@ export const getGetWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?: W
 }
 
 export const getPutWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
+  return http.put('*/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -84,7 +84,7 @@ export const getPutWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?: v
 }
 
 export const getPatchWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
+  return http.patch('*/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -94,7 +94,7 @@ export const getPatchWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?:
 }
 
 export const getDeleteWatchDogIgnoreEventFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
+  return http.delete('*/WatchDogIgnoreEvent/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

@@ -33,7 +33,7 @@ export const getGetAreaFromKeyResponseMock = (overrideResponse: Partial< Area > 
 
 
 export const getGetAreaLocationsFromKeyMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Area/:key/locations', async (info) => {await delay(1000);
+  return http.get('*/Area/:key/locations', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -45,7 +45,7 @@ export const getGetAreaLocationsFromKeyMockHandler = (overrideResponse?: Locatio
 }
 
 export const getGetAreaLocationsCountFromKeyMockHandler = (overrideResponse?: Location[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Location[]> | Location[])) => {
-  return http.get('*/api/v1/Area/:key/locations/$count', async (info) => {await delay(1000);
+  return http.get('*/Area/:key/locations/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -57,7 +57,7 @@ export const getGetAreaLocationsCountFromKeyMockHandler = (overrideResponse?: Lo
 }
 
 export const getGetAreaMockHandler = (overrideResponse?: Area[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Area[]> | Area[])) => {
-  return http.get('*/api/v1/Area', async (info) => {await delay(1000);
+  return http.get('*/Area', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -69,7 +69,7 @@ export const getGetAreaMockHandler = (overrideResponse?: Area[] | ((info: Parame
 }
 
 export const getPostAreaMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void)) => {
-  return http.post('*/api/v1/Area', async (info) => {await delay(1000);
+  return http.post('*/Area', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 201,
@@ -79,7 +79,7 @@ export const getPostAreaMockHandler = (overrideResponse?: void | ((info: Paramet
 }
 
 export const getGetAreaCountMockHandler = (overrideResponse?: Area[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Area[]> | Area[])) => {
-  return http.get('*/api/v1/Area/$count', async (info) => {await delay(1000);
+  return http.get('*/Area/$count', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -91,7 +91,7 @@ export const getGetAreaCountMockHandler = (overrideResponse?: Area[] | ((info: P
 }
 
 export const getGetAreaFromKeyMockHandler = (overrideResponse?: Area | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Area> | Area)) => {
-  return http.get('*/api/v1/Area/:key', async (info) => {await delay(1000);
+  return http.get('*/Area/:key', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -103,7 +103,7 @@ export const getGetAreaFromKeyMockHandler = (overrideResponse?: Area | ((info: P
 }
 
 export const getPutAreaFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void)) => {
-  return http.put('*/api/v1/Area/:key', async (info) => {await delay(1000);
+  return http.put('*/Area/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -113,7 +113,7 @@ export const getPutAreaFromKeyMockHandler = (overrideResponse?: void | ((info: P
 }
 
 export const getPatchAreaFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void)) => {
-  return http.patch('*/api/v1/Area/:key', async (info) => {await delay(1000);
+  return http.patch('*/Area/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,
@@ -123,7 +123,7 @@ export const getPatchAreaFromKeyMockHandler = (overrideResponse?: void | ((info:
 }
 
 export const getDeleteAreaFromKeyMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void)) => {
-  return http.delete('*/api/v1/Area/:key', async (info) => {await delay(1000);
+  return http.delete('*/Area/:key', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 204,

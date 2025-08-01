@@ -20,7 +20,7 @@
     }
   ],
   "paths": {
-    "/api/v1/Approach/{key}/detectors": {
+    "/Approach/{key}/detectors": {
       "get": {
         "tags": ["Approach"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
@@ -427,7 +427,7 @@
         }
       }
     },
-    "/api/v1/Approach/{key}/detectors/$count": {
+    "/Approach/{key}/detectors/$count": {
       "get": {
         "tags": ["Approach"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
@@ -834,7 +834,7 @@
         }
       }
     },
-    "/api/v1/UpsertApproach": {
+    "/UpsertApproach": {
       "post": {
         "tags": ["Approach"],
         "operationId": "UpsertApproachApproach",
@@ -1088,7 +1088,7 @@
         }
       }
     },
-    "/api/v1/GetApproachDto/{id}": {
+    "/GetApproachDto/{id}": {
       "get": {
         "tags": ["Approach"],
         "operationId": "GetApproachApproachDtoFromId",
@@ -1137,7 +1137,7 @@
         }
       }
     },
-    "/api/v1/Approach": {
+    "/Approach": {
       "get": {
         "tags": ["Approach"],
         "operationId": "GetApproach",
@@ -1782,7 +1782,7 @@
         }
       }
     },
-    "/api/v1/Approach/$count": {
+    "/Approach/$count": {
       "get": {
         "tags": ["Approach"],
         "operationId": "GetApproachCount",
@@ -2182,7 +2182,7 @@
         }
       }
     },
-    "/api/v1/Approach/{key}": {
+    "/Approach/{key}": {
       "get": {
         "tags": ["Approach"],
         "operationId": "GetApproachFromKey",
@@ -2974,7 +2974,7 @@
         }
       }
     },
-    "/api/v1/Area/{key}/locations": {
+    "/Area/{key}/locations": {
       "get": {
         "tags": ["Area"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -3381,7 +3381,7 @@
         }
       }
     },
-    "/api/v1/Area/{key}/locations/$count": {
+    "/Area/{key}/locations/$count": {
       "get": {
         "tags": ["Area"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -3788,7 +3788,7 @@
         }
       }
     },
-    "/api/v1/Area": {
+    "/Area": {
       "get": {
         "tags": ["Area"],
         "operationId": "GetArea",
@@ -4433,7 +4433,7 @@
         }
       }
     },
-    "/api/v1/Area/$count": {
+    "/Area/$count": {
       "get": {
         "tags": ["Area"],
         "operationId": "GetAreaCount",
@@ -4833,7 +4833,7 @@
         }
       }
     },
-    "/api/v1/Area/{key}": {
+    "/Area/{key}": {
       "get": {
         "tags": ["Area"],
         "operationId": "GetAreaFromKey",
@@ -5625,7 +5625,7 @@
         }
       }
     },
-    "/api/v1/DetectionType/{key}/detectors": {
+    "/DetectionType/{key}/detectors": {
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
@@ -6031,7 +6031,7 @@
         }
       }
     },
-    "/api/v1/DetectionType/{key}/detectors/$count": {
+    "/DetectionType/{key}/detectors/$count": {
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
@@ -6437,7 +6437,7 @@
         }
       }
     },
-    "/api/v1/DetectionType/{key}/measureTypes": {
+    "/DetectionType/{key}/measureTypes": {
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
@@ -6843,7 +6843,7 @@
         }
       }
     },
-    "/api/v1/DetectionType/{key}/measureTypes/$count": {
+    "/DetectionType/{key}/measureTypes/$count": {
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
@@ -7249,7 +7249,7 @@
         }
       }
     },
-    "/api/v1/DetectionType": {
+    "/DetectionType": {
       "get": {
         "tags": ["DetectionType"],
         "operationId": "GetDetectionType",
@@ -7894,7 +7894,7 @@
         }
       }
     },
-    "/api/v1/DetectionType/$count": {
+    "/DetectionType/$count": {
       "get": {
         "tags": ["DetectionType"],
         "operationId": "GetDetectionTypeCount",
@@ -8294,7 +8294,7 @@
         }
       }
     },
-    "/api/v1/DetectionType/{key}": {
+    "/DetectionType/{key}": {
       "get": {
         "tags": ["DetectionType"],
         "operationId": "GetDetectionTypeFromKey",
@@ -9082,7 +9082,7 @@
         }
       }
     },
-    "/api/v1/Detector/{key}/detectorComments": {
+    "/Detector/{key}/detectorComments": {
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action",
@@ -9489,7 +9489,7 @@
         }
       }
     },
-    "/api/v1/Detector/{key}/detectorComments/$count": {
+    "/Detector/{key}/detectorComments/$count": {
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action",
@@ -9896,7 +9896,7 @@
         }
       }
     },
-    "/api/v1/Detector/{key}/detectionTypes": {
+    "/Detector/{key}/detectionTypes": {
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
@@ -10303,7 +10303,7 @@
         }
       }
     },
-    "/api/v1/Detector/{key}/detectionTypes/$count": {
+    "/Detector/{key}/detectionTypes/$count": {
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
@@ -10710,7 +10710,7 @@
         }
       }
     },
-    "/api/v1/Detector": {
+    "/Detector": {
       "get": {
         "tags": ["Detector"],
         "operationId": "GetDetector",
@@ -11355,7 +11355,7 @@
         }
       }
     },
-    "/api/v1/Detector/$count": {
+    "/Detector/$count": {
       "get": {
         "tags": ["Detector"],
         "operationId": "GetDetectorCount",
@@ -11755,7 +11755,7 @@
         }
       }
     },
-    "/api/v1/Detector/{key}": {
+    "/Detector/{key}": {
       "get": {
         "tags": ["Detector"],
         "operationId": "GetDetectorFromKey",
@@ -12547,7 +12547,7 @@
         }
       }
     },
-    "/api/v1/DetectorComment": {
+    "/DetectorComment": {
       "get": {
         "tags": ["DetectorComment"],
         "operationId": "GetDetectorComment",
@@ -13192,7 +13192,7 @@
         }
       }
     },
-    "/api/v1/DetectorComment/$count": {
+    "/DetectorComment/$count": {
       "get": {
         "tags": ["DetectorComment"],
         "operationId": "GetDetectorCommentCount",
@@ -13592,7 +13592,7 @@
         }
       }
     },
-    "/api/v1/DetectorComment/{key}": {
+    "/DetectorComment/{key}": {
       "get": {
         "tags": ["DetectorComment"],
         "operationId": "GetDetectorCommentFromKey",
@@ -14384,7 +14384,7 @@
         }
       }
     },
-    "/api/v1/Device/GetActiveDevicesByLocation(locationId={locationId})": {
+    "/Device/GetActiveDevicesByLocation(locationId={locationId})": {
       "get": {
         "tags": ["Device"],
         "summary": "Gets all Utah.Udot.Atspm.Data.Models.Device from locationId where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active",
@@ -14784,7 +14784,7 @@
         }
       }
     },
-    "/api/v1/Device/GetActiveDevicesCount": {
+    "/Device/GetActiveDevicesCount": {
       "get": {
         "tags": ["Device"],
         "summary": "Gets a count of device type for all active devices Utah.Udot.Atspm.Data.Models.Device where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active",
@@ -15175,7 +15175,7 @@
         }
       }
     },
-    "/api/v1/Device": {
+    "/Device": {
       "get": {
         "tags": ["Device"],
         "operationId": "GetDevice",
@@ -15820,7 +15820,7 @@
         }
       }
     },
-    "/api/v1/Device/$count": {
+    "/Device/$count": {
       "get": {
         "tags": ["Device"],
         "operationId": "GetDeviceCount",
@@ -16220,7 +16220,7 @@
         }
       }
     },
-    "/api/v1/Device/{key}": {
+    "/Device/{key}": {
       "get": {
         "tags": ["Device"],
         "operationId": "GetDeviceFromKey",
@@ -17012,7 +17012,7 @@
         }
       }
     },
-    "/api/v1/DeviceConfiguration/{key}/devices": {
+    "/DeviceConfiguration/{key}/devices": {
       "get": {
         "tags": ["DeviceConfiguration"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
@@ -17419,7 +17419,7 @@
         }
       }
     },
-    "/api/v1/DeviceConfiguration/{key}/devices/$count": {
+    "/DeviceConfiguration/{key}/devices/$count": {
       "get": {
         "tags": ["DeviceConfiguration"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
@@ -17826,7 +17826,7 @@
         }
       }
     },
-    "/api/v1/DeviceConfiguration/GetEventLogDecoders": {
+    "/DeviceConfiguration/GetEventLogDecoders": {
       "get": {
         "tags": ["DeviceConfiguration"],
         "summary": "Gets all implementations of Utah.Udot.Atspm.Services.IEventLogDecoder\r\nthat can be assigned to Utah.Udot.Atspm.Data.Models.DeviceConfiguration for decoding Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase derived types.",
@@ -18217,7 +18217,7 @@
         }
       }
     },
-    "/api/v1/DeviceConfiguration": {
+    "/DeviceConfiguration": {
       "get": {
         "tags": ["DeviceConfiguration"],
         "operationId": "GetDeviceConfiguration",
@@ -18862,7 +18862,7 @@
         }
       }
     },
-    "/api/v1/DeviceConfiguration/$count": {
+    "/DeviceConfiguration/$count": {
       "get": {
         "tags": ["DeviceConfiguration"],
         "operationId": "GetDeviceConfigurationCount",
@@ -19262,7 +19262,7 @@
         }
       }
     },
-    "/api/v1/DeviceConfiguration/{key}": {
+    "/DeviceConfiguration/{key}": {
       "get": {
         "tags": ["DeviceConfiguration"],
         "operationId": "GetDeviceConfigurationFromKey",
@@ -20054,7 +20054,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}/approaches": {
+    "/DirectionType/{key}/approaches": {
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
@@ -20460,7 +20460,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}/approaches/$count": {
+    "/DirectionType/{key}/approaches/$count": {
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
@@ -20866,7 +20866,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}/primaryDirections": {
+    "/DirectionType/{key}/primaryDirections": {
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -21272,7 +21272,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}/primaryDirections/$count": {
+    "/DirectionType/{key}/primaryDirections/$count": {
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -21678,7 +21678,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}/opposingDirections": {
+    "/DirectionType/{key}/opposingDirections": {
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -22084,7 +22084,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}/opposingDirections/$count": {
+    "/DirectionType/{key}/opposingDirections/$count": {
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -22490,7 +22490,7 @@
         }
       }
     },
-    "/api/v1/DirectionType": {
+    "/DirectionType": {
       "get": {
         "tags": ["DirectionType"],
         "operationId": "GetDirectionType",
@@ -23135,7 +23135,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/$count": {
+    "/DirectionType/$count": {
       "get": {
         "tags": ["DirectionType"],
         "operationId": "GetDirectionTypeCount",
@@ -23535,7 +23535,7 @@
         }
       }
     },
-    "/api/v1/DirectionType/{key}": {
+    "/DirectionType/{key}": {
       "get": {
         "tags": ["DirectionType"],
         "operationId": "GetDirectionTypeFromKey",
@@ -24323,7 +24323,7 @@
         }
       }
     },
-    "/api/v1/Faq": {
+    "/Faq": {
       "get": {
         "tags": ["Faq"],
         "operationId": "GetFaq",
@@ -24968,7 +24968,7 @@
         }
       }
     },
-    "/api/v1/Faq/$count": {
+    "/Faq/$count": {
       "get": {
         "tags": ["Faq"],
         "operationId": "GetFaqCount",
@@ -25368,7 +25368,7 @@
         }
       }
     },
-    "/api/v1/Faq/{key}": {
+    "/Faq/{key}": {
       "get": {
         "tags": ["Faq"],
         "operationId": "GetFaqFromKey",
@@ -26160,7 +26160,7 @@
         }
       }
     },
-    "/api/v1/Jurisdiction/{key}/locations": {
+    "/Jurisdiction/{key}/locations": {
       "get": {
         "tags": ["Jurisdiction"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -26567,7 +26567,7 @@
         }
       }
     },
-    "/api/v1/Jurisdiction/{key}/locations/$count": {
+    "/Jurisdiction/{key}/locations/$count": {
       "get": {
         "tags": ["Jurisdiction"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -26974,7 +26974,7 @@
         }
       }
     },
-    "/api/v1/Jurisdiction": {
+    "/Jurisdiction": {
       "get": {
         "tags": ["Jurisdiction"],
         "operationId": "GetJurisdiction",
@@ -27619,7 +27619,7 @@
         }
       }
     },
-    "/api/v1/Jurisdiction/$count": {
+    "/Jurisdiction/$count": {
       "get": {
         "tags": ["Jurisdiction"],
         "operationId": "GetJurisdictionCount",
@@ -28019,7 +28019,7 @@
         }
       }
     },
-    "/api/v1/Jurisdiction/{key}": {
+    "/Jurisdiction/{key}": {
       "get": {
         "tags": ["Jurisdiction"],
         "operationId": "GetJurisdictionFromKey",
@@ -28811,7 +28811,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/approaches": {
+    "/Location/{key}/approaches": {
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
@@ -29225,7 +29225,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/approaches/$count": {
+    "/Location/{key}/approaches/$count": {
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
@@ -29639,7 +29639,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/areas": {
+    "/Location/{key}/areas": {
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Area navigation property action",
@@ -30053,7 +30053,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/areas/$count": {
+    "/Location/{key}/areas/$count": {
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Area navigation property action",
@@ -30467,7 +30467,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/devices": {
+    "/Location/{key}/devices": {
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
@@ -30881,7 +30881,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/devices/$count": {
+    "/Location/{key}/devices/$count": {
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
@@ -31295,7 +31295,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/CopyLocationToNewVersion": {
+    "/Location/{key}/CopyLocationToNewVersion": {
       "post": {
         "tags": ["Location"],
         "summary": "Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version",
@@ -31554,7 +31554,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/SetLocationToDeleted": {
+    "/Location/{key}/SetLocationToDeleted": {
       "post": {
         "tags": ["Location"],
         "summary": "Marks Utah.Udot.Atspm.Data.Models.Location to deleted",
@@ -31598,7 +31598,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}/DeleteAllVersions": {
+    "/Location/{key}/DeleteAllVersions": {
       "post": {
         "tags": ["Location"],
         "summary": "Marks Utah.Udot.Atspm.Data.Models.Location to deleted",
@@ -31648,7 +31648,7 @@
         }
       }
     },
-    "/api/v1/Location/GetLatestVersionOfLocation(identifier={identifier})": {
+    "/Location/GetLatestVersionOfLocation(identifier={identifier})": {
       "get": {
         "tags": ["Location"],
         "summary": "Get latest version of Utah.Udot.Atspm.Data.Models.Location and related entities that match identifier",
@@ -31898,7 +31898,7 @@
         }
       }
     },
-    "/api/v1/Location/GetAllVersionsOfLocation(identifier={identifier})": {
+    "/Location/GetAllVersionsOfLocation(identifier={identifier})": {
       "get": {
         "tags": ["Location"],
         "summary": "Get all active Utah.Udot.Atspm.Data.Models.Location that match identifier",
@@ -32301,7 +32301,7 @@
         }
       }
     },
-    "/api/v1/Location/GetLatestVersionOfAllLocations": {
+    "/Location/GetLatestVersionOfAllLocations": {
       "get": {
         "tags": ["Location"],
         "summary": "Get latest version of all Utah.Udot.Atspm.Data.Models.Location",
@@ -32692,7 +32692,7 @@
         }
       }
     },
-    "/api/v1/Location/GetDetectionTypeCount": {
+    "/Location/GetDetectionTypeCount": {
       "get": {
         "tags": ["Location"],
         "summary": "Get count of Device Types using correct version of all Utah.Udot.Atspm.Data.Models.Location",
@@ -33091,7 +33091,7 @@
         }
       }
     },
-    "/api/v1/Location/GetLocationsForSearch": {
+    "/Location/GetLocationsForSearch": {
       "get": {
         "tags": ["Location"],
         "summary": "Gets an optimized list of Utah.Udot.Atspm.ConfigApi.Models.SearchLocation to use for Location selection",
@@ -33521,7 +33521,7 @@
         }
       }
     },
-    "/api/v1/Location": {
+    "/Location": {
       "get": {
         "tags": ["Location"],
         "operationId": "GetLocation",
@@ -34166,7 +34166,7 @@
         }
       }
     },
-    "/api/v1/Location/$count": {
+    "/Location/$count": {
       "get": {
         "tags": ["Location"],
         "operationId": "GetLocationCount",
@@ -34566,7 +34566,7 @@
         }
       }
     },
-    "/api/v1/Location/{key}": {
+    "/Location/{key}": {
       "get": {
         "tags": ["Location"],
         "operationId": "GetLocationFromKey",
@@ -35358,7 +35358,7 @@
         }
       }
     },
-    "/api/v1/LocationType/{key}/locations": {
+    "/LocationType/{key}/locations": {
       "get": {
         "tags": ["LocationType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -35765,7 +35765,7 @@
         }
       }
     },
-    "/api/v1/LocationType/{key}/locations/$count": {
+    "/LocationType/{key}/locations/$count": {
       "get": {
         "tags": ["LocationType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -36172,7 +36172,7 @@
         }
       }
     },
-    "/api/v1/LocationType": {
+    "/LocationType": {
       "get": {
         "tags": ["LocationType"],
         "operationId": "GetLocationType",
@@ -36817,7 +36817,7 @@
         }
       }
     },
-    "/api/v1/LocationType/$count": {
+    "/LocationType/$count": {
       "get": {
         "tags": ["LocationType"],
         "operationId": "GetLocationTypeCount",
@@ -37217,7 +37217,7 @@
         }
       }
     },
-    "/api/v1/LocationType/{key}": {
+    "/LocationType/{key}": {
       "get": {
         "tags": ["LocationType"],
         "operationId": "GetLocationTypeFromKey",
@@ -38009,7 +38009,7 @@
         }
       }
     },
-    "/api/v1/MeasureComment/{key}/measureTypes": {
+    "/MeasureComment/{key}/measureTypes": {
       "get": {
         "tags": ["MeasureComment"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
@@ -38416,7 +38416,7 @@
         }
       }
     },
-    "/api/v1/MeasureComment/{key}/measureTypes/$count": {
+    "/MeasureComment/{key}/measureTypes/$count": {
       "get": {
         "tags": ["MeasureComment"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
@@ -38823,7 +38823,7 @@
         }
       }
     },
-    "/api/v1/MeasureComment": {
+    "/MeasureComment": {
       "get": {
         "tags": ["MeasureComment"],
         "operationId": "GetMeasureComment",
@@ -39468,7 +39468,7 @@
         }
       }
     },
-    "/api/v1/MeasureComment/$count": {
+    "/MeasureComment/$count": {
       "get": {
         "tags": ["MeasureComment"],
         "operationId": "GetMeasureCommentCount",
@@ -39868,7 +39868,7 @@
         }
       }
     },
-    "/api/v1/MeasureComment/{key}": {
+    "/MeasureComment/{key}": {
       "get": {
         "tags": ["MeasureComment"],
         "operationId": "GetMeasureCommentFromKey",
@@ -40660,7 +40660,7 @@
         }
       }
     },
-    "/api/v1/MeasureOption": {
+    "/MeasureOption": {
       "get": {
         "tags": ["MeasureOption"],
         "operationId": "GetMeasureOption",
@@ -41305,7 +41305,7 @@
         }
       }
     },
-    "/api/v1/MeasureOption/$count": {
+    "/MeasureOption/$count": {
       "get": {
         "tags": ["MeasureOption"],
         "operationId": "GetMeasureOptionCount",
@@ -41705,7 +41705,7 @@
         }
       }
     },
-    "/api/v1/MeasureOption/{key}": {
+    "/MeasureOption/{key}": {
       "get": {
         "tags": ["MeasureOption"],
         "operationId": "GetMeasureOptionFromKey",
@@ -42497,7 +42497,7 @@
         }
       }
     },
-    "/api/v1/MeasureOptionPreset/GetMeasureOptionPresetTypes": {
+    "/MeasureOptionPreset/GetMeasureOptionPresetTypes": {
       "get": {
         "tags": ["MeasureOptionPreset"],
         "summary": "Retrieves a list of measure option preset types.",
@@ -42888,7 +42888,7 @@
         }
       }
     },
-    "/api/v1/MeasureOptionPreset": {
+    "/MeasureOptionPreset": {
       "get": {
         "tags": ["MeasureOptionPreset"],
         "operationId": "GetMeasureOptionPreset",
@@ -43533,7 +43533,7 @@
         }
       }
     },
-    "/api/v1/MeasureOptionPreset/$count": {
+    "/MeasureOptionPreset/$count": {
       "get": {
         "tags": ["MeasureOptionPreset"],
         "operationId": "GetMeasureOptionPresetCount",
@@ -43933,7 +43933,7 @@
         }
       }
     },
-    "/api/v1/MeasureOptionPreset/{key}": {
+    "/MeasureOptionPreset/{key}": {
       "get": {
         "tags": ["MeasureOptionPreset"],
         "operationId": "GetMeasureOptionPresetFromKey",
@@ -44725,7 +44725,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}/detectionTypes": {
+    "/MeasureType/{key}/detectionTypes": {
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
@@ -45132,7 +45132,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}/detectionTypes/$count": {
+    "/MeasureType/{key}/detectionTypes/$count": {
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
@@ -45539,7 +45539,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}/measureComments": {
+    "/MeasureType/{key}/measureComments": {
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action",
@@ -45946,7 +45946,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}/measureComments/$count": {
+    "/MeasureType/{key}/measureComments/$count": {
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action",
@@ -46353,7 +46353,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}/measureOptionPresets": {
+    "/MeasureType/{key}/measureOptionPresets": {
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action",
@@ -46760,7 +46760,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}/measureOptionPresets/$count": {
+    "/MeasureType/{key}/measureOptionPresets/$count": {
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action",
@@ -47167,7 +47167,7 @@
         }
       }
     },
-    "/api/v1/MeasureType": {
+    "/MeasureType": {
       "get": {
         "tags": ["MeasureType"],
         "operationId": "GetMeasureType",
@@ -47812,7 +47812,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/$count": {
+    "/MeasureType/$count": {
       "get": {
         "tags": ["MeasureType"],
         "operationId": "GetMeasureTypeCount",
@@ -48212,7 +48212,7 @@
         }
       }
     },
-    "/api/v1/MeasureType/{key}": {
+    "/MeasureType/{key}": {
       "get": {
         "tags": ["MeasureType"],
         "operationId": "GetMeasureTypeFromKey",
@@ -49004,7 +49004,7 @@
         }
       }
     },
-    "/api/v1/MenuItems": {
+    "/MenuItems": {
       "get": {
         "tags": ["MenuItems"],
         "operationId": "GetMenuItems",
@@ -49649,7 +49649,7 @@
         }
       }
     },
-    "/api/v1/MenuItems/$count": {
+    "/MenuItems/$count": {
       "get": {
         "tags": ["MenuItems"],
         "operationId": "GetMenuItemsCount",
@@ -50049,7 +50049,7 @@
         }
       }
     },
-    "/api/v1/MenuItems/{key}": {
+    "/MenuItems/{key}": {
       "get": {
         "tags": ["MenuItems"],
         "operationId": "GetMenuItemsFromKey",
@@ -50841,7 +50841,7 @@
         }
       }
     },
-    "/api/v1/Product": {
+    "/Product": {
       "get": {
         "tags": ["Product"],
         "operationId": "GetProduct",
@@ -51486,7 +51486,7 @@
         }
       }
     },
-    "/api/v1/Product/$count": {
+    "/Product/$count": {
       "get": {
         "tags": ["Product"],
         "operationId": "GetProductCount",
@@ -51886,7 +51886,7 @@
         }
       }
     },
-    "/api/v1/Product/{key}": {
+    "/Product/{key}": {
       "get": {
         "tags": ["Product"],
         "operationId": "GetProductFromKey",
@@ -52678,7 +52678,7 @@
         }
       }
     },
-    "/api/v1/Region/{key}/locations": {
+    "/Region/{key}/locations": {
       "get": {
         "tags": ["Region"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -53085,7 +53085,7 @@
         }
       }
     },
-    "/api/v1/Region/{key}/locations/$count": {
+    "/Region/{key}/locations/$count": {
       "get": {
         "tags": ["Region"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
@@ -53492,7 +53492,7 @@
         }
       }
     },
-    "/api/v1/Region": {
+    "/Region": {
       "get": {
         "tags": ["Region"],
         "operationId": "GetRegion",
@@ -54137,7 +54137,7 @@
         }
       }
     },
-    "/api/v1/Region/$count": {
+    "/Region/$count": {
       "get": {
         "tags": ["Region"],
         "operationId": "GetRegionCount",
@@ -54537,7 +54537,7 @@
         }
       }
     },
-    "/api/v1/Region/{key}": {
+    "/Region/{key}": {
       "get": {
         "tags": ["Region"],
         "operationId": "GetRegionFromKey",
@@ -55329,7 +55329,7 @@
         }
       }
     },
-    "/api/v1/Route/{key}/routeLocations": {
+    "/Route/{key}/routeLocations": {
       "get": {
         "tags": ["Route"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -55736,7 +55736,7 @@
         }
       }
     },
-    "/api/v1/Route/{key}/routeLocations/$count": {
+    "/Route/{key}/routeLocations/$count": {
       "get": {
         "tags": ["Route"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -56143,7 +56143,7 @@
         }
       }
     },
-    "/api/v1/UpsertRoute": {
+    "/UpsertRoute": {
       "post": {
         "tags": ["Route"],
         "summary": "Creates a route with its associated route locations",
@@ -56399,7 +56399,7 @@
         }
       }
     },
-    "/api/v1/GetRouteView/{id}": {
+    "/GetRouteView/{id}": {
       "get": {
         "tags": ["Route"],
         "operationId": "GetRouteRouteViewFromId",
@@ -56455,7 +56455,7 @@
         }
       }
     },
-    "/api/v1/Route": {
+    "/Route": {
       "get": {
         "tags": ["Route"],
         "operationId": "GetRoute",
@@ -57100,7 +57100,7 @@
         }
       }
     },
-    "/api/v1/Route/$count": {
+    "/Route/$count": {
       "get": {
         "tags": ["Route"],
         "operationId": "GetRouteCount",
@@ -57500,7 +57500,7 @@
         }
       }
     },
-    "/api/v1/Route/{key}": {
+    "/Route/{key}": {
       "get": {
         "tags": ["Route"],
         "operationId": "GetRouteFromKey",
@@ -58292,7 +58292,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/{key}/previousLocations": {
+    "/RouteDistance/{key}/previousLocations": {
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -58699,7 +58699,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/{key}/previousLocations/$count": {
+    "/RouteDistance/{key}/previousLocations/$count": {
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -59106,7 +59106,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/{key}/nextLocations": {
+    "/RouteDistance/{key}/nextLocations": {
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -59513,7 +59513,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/{key}/nextLocations/$count": {
+    "/RouteDistance/{key}/nextLocations/$count": {
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
@@ -59920,7 +59920,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA={locationA},locationB={locationB})": {
+    "/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA={locationA},locationB={locationB})": {
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Gets the Utah.Udot.Atspm.Data.Models.RouteDistance that contains locationA and locationB",
@@ -60170,7 +60170,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance": {
+    "/RouteDistance": {
       "get": {
         "tags": ["RouteDistance"],
         "operationId": "GetRouteDistance",
@@ -60815,7 +60815,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/$count": {
+    "/RouteDistance/$count": {
       "get": {
         "tags": ["RouteDistance"],
         "operationId": "GetRouteDistanceCount",
@@ -61215,7 +61215,7 @@
         }
       }
     },
-    "/api/v1/RouteDistance/{key}": {
+    "/RouteDistance/{key}": {
       "get": {
         "tags": ["RouteDistance"],
         "operationId": "GetRouteDistanceFromKey",
@@ -62007,7 +62007,7 @@
         }
       }
     },
-    "/api/v1/RouteLocation": {
+    "/RouteLocation": {
       "get": {
         "tags": ["RouteLocation"],
         "operationId": "GetRouteLocation",
@@ -62652,7 +62652,7 @@
         }
       }
     },
-    "/api/v1/RouteLocation/$count": {
+    "/RouteLocation/$count": {
       "get": {
         "tags": ["RouteLocation"],
         "operationId": "GetRouteLocationCount",
@@ -63052,7 +63052,7 @@
         }
       }
     },
-    "/api/v1/RouteLocation/{key}": {
+    "/RouteLocation/{key}": {
       "get": {
         "tags": ["RouteLocation"],
         "operationId": "GetRouteLocationFromKey",
@@ -63844,7 +63844,7 @@
         }
       }
     },
-    "/api/v1/VersionHistory": {
+    "/VersionHistory": {
       "get": {
         "tags": ["VersionHistory"],
         "operationId": "GetVersionHistory",
@@ -64489,7 +64489,7 @@
         }
       }
     },
-    "/api/v1/VersionHistory/$count": {
+    "/VersionHistory/$count": {
       "get": {
         "tags": ["VersionHistory"],
         "operationId": "GetVersionHistoryCount",
@@ -64889,7 +64889,7 @@
         }
       }
     },
-    "/api/v1/VersionHistory/{key}": {
+    "/VersionHistory/{key}": {
       "get": {
         "tags": ["VersionHistory"],
         "operationId": "GetVersionHistoryFromKey",
@@ -65681,7 +65681,7 @@
         }
       }
     },
-    "/api/v1/WatchDogIgnoreEvent": {
+    "/WatchDogIgnoreEvent": {
       "get": {
         "tags": ["WatchDogIgnoreEvent"],
         "operationId": "GetWatchDogIgnoreEvent",
@@ -66326,7 +66326,7 @@
         }
       }
     },
-    "/api/v1/WatchDogIgnoreEvent/$count": {
+    "/WatchDogIgnoreEvent/$count": {
       "get": {
         "tags": ["WatchDogIgnoreEvent"],
         "operationId": "GetWatchDogIgnoreEventCount",
@@ -66726,7 +66726,7 @@
         }
       }
     },
-    "/api/v1/WatchDogIgnoreEvent/{key}": {
+    "/WatchDogIgnoreEvent/{key}": {
       "get": {
         "tags": ["WatchDogIgnoreEvent"],
         "operationId": "GetWatchDogIgnoreEventFromKey",
