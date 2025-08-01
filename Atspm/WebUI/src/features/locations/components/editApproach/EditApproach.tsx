@@ -4,7 +4,7 @@ import {
   DirectionTypes,
   LaneTypes,
   MovementTypes,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import { Color } from '@/features/charts/utils'
 import { useEditApproach } from '@/features/locations/api/approach'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
