@@ -152,11 +152,11 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 var startTime = greenTimeStart;
                 foreach (var greenEvent in greenOccupancyEvents)
                 {
-                    if (greenEvent.EventCode == 81) // Detector On
+                    if (greenEvent.EventCode == 82) // Detector On
                     {
                         startTime = greenEvent.Timestamp;
                     }
-                    else if (greenEvent.EventCode == 82) // Detector Off
+                    else if (greenEvent.EventCode == 81) // Detector Off
                     {
                         var duration = (int)(greenEvent.Timestamp - startTime).TotalSeconds;
                         greenOccupancySum += duration;
@@ -170,11 +170,11 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 startTime = greenTimeStart;
                 foreach (var redEvent in redOccupancyEvents)
                 {
-                    if (redEvent.EventCode == 81) // Detector On
+                    if (redEvent.EventCode == 82) // Detector On
                     {
                         startTime = redEvent.Timestamp;
                     }
-                    else if (redEvent.EventCode == 82) // Detector Off
+                    else if (redEvent.EventCode == 81) // Detector Off
                     {
                         var duration = (int)(redEvent.Timestamp - startTime).TotalSeconds;
                         redOccupancySum += duration;
