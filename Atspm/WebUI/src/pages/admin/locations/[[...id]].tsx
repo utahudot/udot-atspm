@@ -8,46 +8,71 @@ import LocationEditor from '@/features/locations/components/editLocation/EditLoc
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
-import { useCallback, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export async function getLocation(locationId: number) {
-  const locationResponse = await getLocationFromKey(locationId, {
+  const res = await getLocationFromKey(locationId, {
     expand:
       'areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))',
   })
-  if (locationResponse?.value?.length) {
-    const newestLocation = locationResponse.value[0]
-    newestLocation.approaches = sortApproachesAndDetectors(
-      newestLocation.approaches
-    )
-    return newestLocation
+  if (res?.value?.length) {
+    const newest = res.value[0]
+    newest.approaches = sortApproachesAndDetectors(newest.approaches)
+    return newest
   }
   return null
 }
 
 const LocationsAdmin = () => {
+  const { push, query, isReady } = useRouter()
+  const raw = query.id
+  const locationId = Array.isArray(raw) ? Number(raw[0]) : Number(raw)
+
   const location = useLocationStore((s) => s.location)
   const setLocation = useLocationStore((s) => s.setLocation)
+
+  console.log('locationId', location?.id)
 
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isWizardOpen, setIsWizardOpen] = useState(false)
 
-  const handleSetLocation = useCallback(
-    async (selectedLocation: Location | null) => {
-      if (selectedLocation) {
-        setLocation(await getLocation(selectedLocation.id))
-      } else {
-        setLocation(null)
-      }
+  const onSelectLocation = useCallback(
+    (sel: Location | number | null) => {
+      const id =
+        sel && typeof sel === 'object'
+          ? sel.id
+          : typeof sel === 'number'
+            ? sel
+            : null
+      if (id) push(`/admin/locations/${id}`, undefined, { shallow: true })
+      else push('/admin/locations', undefined, { shallow: true })
     },
-    [setLocation]
+    [push]
   )
 
-  const handleOpenWizard = () => {
-    setIsWizardOpen(true)
-  }
+  useEffect(() => {
+    if (!isReady) return
+    if (!Number.isFinite(locationId)) {
+      setLocation(null)
+      return
+    }
+    ;(async () => {
+      setLocation(await getLocation(locationId))
+    })()
+  }, [isReady, locationId, setLocation])
 
+  const lastFetchedId = useRef<number | null>(null)
+  useEffect(() => {
+    if (location?.id && location.id !== lastFetchedId.current) {
+      lastFetchedId.current = location.id
+      onSelectLocation(location.id)
+      ;(async () => setLocation(await getLocation(location.id)))()
+    }
+  }, [location?.id, setLocation, onSelectLocation])
+
+  const handleOpenWizard = () => setIsWizardOpen(true)
   const openNewLocationModal = useCallback(() => setModalOpen(true), [])
   const closeModal = useCallback(() => setModalOpen(false), [])
 
@@ -58,12 +83,12 @@ const LocationsAdmin = () => {
       <AddButton
         label="New Location"
         onClick={openNewLocationModal}
-        sx={{ mb: 1, width: '200px' }}
+        sx={{ mb: 1, width: 200 }}
       />
-      <StyledPaper sx={{ width: '50%', minWidth: '400px', p: 3 }}>
+      <StyledPaper sx={{ width: '50%', minWidth: 400, p: 3 }}>
         <SelectLocation
           location={location}
-          setLocation={handleSetLocation}
+          setLocation={onSelectLocation}
           mapHeight={400}
         />
       </StyledPaper>
@@ -71,7 +96,7 @@ const LocationsAdmin = () => {
       {isModalOpen && (
         <NewLocationModal
           closeModal={closeModal}
-          setLocation={handleSetLocation}
+          setLocation={onSelectLocation}
           onCreatedFromTemplate={handleOpenWizard}
         />
       )}
