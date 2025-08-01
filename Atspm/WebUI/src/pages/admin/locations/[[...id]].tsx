@@ -32,8 +32,6 @@ const LocationsAdmin = () => {
   const location = useLocationStore((s) => s.location)
   const setLocation = useLocationStore((s) => s.setLocation)
 
-  console.log('locationId', location?.id)
-
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isWizardOpen, setIsWizardOpen] = useState(false)
