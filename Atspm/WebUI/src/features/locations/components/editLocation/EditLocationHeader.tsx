@@ -16,6 +16,7 @@ import {
   Avatar,
   Box,
   Button,
+  Divider,
   Icon,
   InputLabel,
   Menu,
@@ -220,6 +221,7 @@ export default function EditLocationHeader() {
             <MenuItem onClick={() => handleDeletePopup('deleteVersion')}>
               Delete This Version
             </MenuItem>
+            <Divider />
             <MenuItem onClick={() => handleDeletePopup('deleteLocation')}>
               Delete This Location
             </MenuItem>
