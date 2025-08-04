@@ -59,7 +59,7 @@ const AdminMenu = () => {
         slotProps={{
           paper: {
             sx: {
-              px: 2,
+              // px: 2,
               py: 1,
               minWidth: 220,
             },
@@ -73,25 +73,27 @@ const AdminMenu = () => {
           return (
             <Box key={label}>
               {idx !== 0 && <Divider sx={{ my: 1 }} />}
-              {/* gap between groups */}
-              <Typography
-                variant="subtitle2"
-                color="primary"
-                sx={{ fontSize: '0.8rem' }}
-              >
-                {label}
-              </Typography>
-              {items.map((k) => (
-                <MenuItem
-                  key={k}
-                  component={NextLink}
-                  href={pagesToLinks.get(k) as string}
-                  onClick={handleClose}
-                  sx={{ pl: 1 }}
+              <Box sx={{ px: 2 }}>
+                {/* gap between groups */}
+                <Typography
+                  variant="subtitle2"
+                  color="primary"
+                  sx={{ fontSize: '0.8rem' }}
                 >
-                  {k}
-                </MenuItem>
-              ))}
+                  {label}
+                </Typography>
+                {items.map((k) => (
+                  <MenuItem
+                    key={k}
+                    component={NextLink}
+                    href={pagesToLinks.get(k) as string}
+                    onClick={handleClose}
+                    sx={{ pl: 1 }}
+                  >
+                    {k}
+                  </MenuItem>
+                ))}
+              </Box>
             </Box>
           )
         })}
