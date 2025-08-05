@@ -68,7 +68,6 @@ const MenuItemsAdmin = () => {
   }
 
   const HandleDeleteMenuItem = async (id: number) => {
-    console.log('Deleting Menu Item with ID:', id)
     try {
       await deleteMenuItem({ key: id })
       refetchMenuItems()

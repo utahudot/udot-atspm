@@ -130,7 +130,6 @@ const DeviceConfigModal = ({
   const { data: transportProtocols } = useConfigEnums(
     ConfigEnum.TransportProtocols
   )
-  console.log(allDecodersData)
   const defaultConnectionProperties = deviceConfiguration
     ? Object.entries(deviceConfiguration)
         .filter(([key]) => !knownKeys.has(key))
