@@ -113,13 +113,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
     const pedestrianPhaseNumber =
       rawPed === '' || rawPed == null ? null : Number(rawPed)
 
-    console.log(
-      'parsed phases',
-      protectedPhaseNumber,
-      permissivePhaseNumber,
-      pedestrianPhaseNumber
-    )
-
     // 2) protectedPhaseNumber is always required (even if it’s zero)
     if (protectedPhaseNumber == null) {
       newErrors[approach.id] = {
@@ -273,6 +266,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findLaneType,
     findDetectionHardware,
     findDetectionType,
+    updateSavedApproaches,
     updateApproachInStore,
     deleteApproachInStore,
     addNotification,
@@ -332,7 +326,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
         variant="outlined"
         sx={{
           mb: '6px',
-          border: '2px solid lightgrey',
           borderLeft: `7px solid ${leftBorderColor}`,
         }}
       >
