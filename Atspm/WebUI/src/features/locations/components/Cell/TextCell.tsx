@@ -1,5 +1,6 @@
 import { useCellNavigation } from '@/features/locations/components/Cell/CellNavigation'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import LockOutlined from '@mui/icons-material/LockOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import {
   alpha,
@@ -17,7 +18,6 @@ import {
   useCallback,
   useEffect,
   useRef,
-  useState,
 } from 'react'
 
 interface TextCellProps {
@@ -25,11 +25,12 @@ interface TextCellProps {
   row: number
   col: number
   rowCount: number
-  colCount: number
+  colCount: number | null
   value: string | number | null | undefined
   onUpdate: (v: string) => void
   error?: string | { error?: string; [key: string]: any }
   warning?: string | { error?: string; [key: string]: any }
+  disabled?: boolean
 }
 
 export const TextCell = ({
@@ -42,6 +43,7 @@ export const TextCell = ({
   onUpdate,
   error,
   warning,
+  disabled = false,
 }: TextCellProps) => {
   const theme = useTheme()
   const {
@@ -54,8 +56,13 @@ export const TextCell = ({
   } = useCellNavigation(approachId, row, col, rowCount, colCount)
   const cellRef = useRef<HTMLElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const [isHovered, setIsHovered] = useState(false)
-  const isFocused = tabIndex === 0 && !isEditing
+
+  const enableNav = !disabled && !disabled
+  const isFocused = enableNav && tabIndex === 0 && !isEditing
+
+  const openEditorIfNotDisabled = useCallback(() => {
+    if (!disabled) openEditor()
+  }, [disabled, openEditor])
 
   // derive error/warning text
   const errorText =
@@ -72,6 +79,7 @@ export const TextCell = ({
         : (warning.error ?? JSON.stringify(warning))
 
   const isError = Boolean(errorText)
+
   const isWarning = Boolean(warningText) && !isError
   const hasIssue = isError || isWarning
 
@@ -95,8 +103,10 @@ export const TextCell = ({
       : undefined
 
   useEffect(() => {
-    if (isFocused) cellRef.current?.focus()
-  }, [isFocused])
+    if (!disabled && isFocused) {
+      cellRef.current?.focus()
+    }
+  }, [disabled, isFocused])
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -107,6 +117,7 @@ export const TextCell = ({
   }, [isEditing])
 
   const handleCellKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (disabled) return
     if (!isEditing && e.key === 'Backspace') {
       e.preventDefault()
       openEditor()
@@ -151,20 +162,25 @@ export const TextCell = ({
     [closeEditor]
   )
 
+  const navProps = enableNav
+    ? {
+        tabIndex,
+        onFocusCapture: onFocus,
+        onKeyDown: handleCellKeyDown,
+        'aria-rowindex': row + 1,
+        'aria-colindex': col + 1,
+        'aria-selected': isFocused,
+        'data-row': row,
+        'data-col': col,
+      }
+    : {}
+
   return (
     <TableCell
+      {...navProps}
+      aria-disabled={disabled}
       ref={cellRef}
       role="gridcell"
-      aria-rowindex={row + 1}
-      aria-colindex={col + 1}
-      aria-selected={isFocused}
-      tabIndex={tabIndex}
-      onFocusCapture={onFocus}
-      onKeyDown={handleCellKeyDown}
-      data-row={row}
-      data-col={col}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       sx={{
         height: 48,
         width: 140,
@@ -175,115 +191,133 @@ export const TextCell = ({
         outline: 'none',
         caretColor: isEditing ? theme.palette.text.primary : 'transparent',
         '&:focus, &:focus-visible': { outline: 'none' },
-        bgcolor: bgColor,
+        bgcolor: disabled ? 'grey.300' : bgColor,
       }}
     >
-      {(isEditing || isFocused || showIssue) && (
-        <Box
-          sx={{
-            pointerEvents: 'none',
-            position: 'absolute',
-            inset: 0,
-            border: `2px solid ${outlineColor}`,
-            borderRadius: 1,
-            zIndex: 1,
-          }}
-        />
-      )}
-      <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-        {isEditing ? (
-          <Input
-            inputRef={inputRef}
-            disableUnderline
-            fullWidth
-            value={value ?? ''}
-            onChange={(e) => onUpdate(e.target.value)}
-            onKeyDown={handleInputKeyDown}
-            onBlur={handleInputBlur}
-            error={isError}
-            sx={{
-              height: '100%',
-              py: 0,
-              px: 1,
-              boxSizing: 'border-box',
-              '& .MuiInput-input': {
-                height: '100%',
-                padding: 0,
-                lineHeight: '44px',
-                outline: 'none',
-              },
-            }}
-            endAdornment={
-              isError ? (
-                <InputAdornment position="end">
-                  <Tooltip title={errorText!}>
-                    <ErrorOutlineIcon
-                      role="img"
-                      color="error"
-                      aria-label={errorText!}
-                    />
-                  </Tooltip>
-                </InputAdornment>
-              ) : isWarning ? (
-                <InputAdornment position="end">
-                  <Tooltip title={warningText!}>
-                    <WarningAmberOutlinedIcon
-                      role="img"
-                      color="warning"
-                      aria-label={warningText!}
-                    />
-                  </Tooltip>
-                </InputAdornment>
-              ) : (
-                <InputAdornment position="end" sx={{ width: 24 }} />
-              )
-            }
-          />
-        ) : (
-          <>
-            <Typography
-              onDoubleClick={openEditor}
-              noWrap
+      <Tooltip
+        title={disabled ? 'Pedestrian phase is locked to protected phase' : ''}
+      >
+        <Box>
+          {!disabled && (isEditing || isFocused || showIssue) && (
+            <Box
               sx={{
-                height: '100%',
-                lineHeight: '44px',
-                px: 1,
-                cursor: 'text',
+                pointerEvents: 'none',
+                position: 'absolute',
+                inset: 0,
+                border: `2px solid ${outlineColor}`,
+                borderRadius: 1,
+                zIndex: 1,
               }}
-            >
-              {value}
-            </Typography>
-            {showIssue && (
-              <Box
+            />
+          )}
+          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+            {isEditing ? (
+              <Input
+                disabled={disabled}
+                inputRef={inputRef}
+                disableUnderline
+                fullWidth
+                value={value ?? ''}
+                onChange={(e) => onUpdate(e.target.value)}
+                onKeyDown={handleInputKeyDown}
+                onBlur={handleInputBlur}
+                error={isError}
                 sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  right: 4,
-                  transform: 'translateY(-50%)',
+                  height: '100%',
+                  py: 0,
+                  px: 1,
+                  boxSizing: 'border-box',
+                  '& .MuiInput-input': {
+                    height: '100%',
+                    padding: 0,
+                    lineHeight: '44px',
+                    outline: 'none',
+                  },
                 }}
-              >
-                {isError ? (
-                  <Tooltip title={errorText!}>
-                    <ErrorOutlineIcon
-                      role="img"
-                      color="error"
-                      aria-label={errorText!}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title={warningText!}>
-                    <WarningAmberOutlinedIcon
-                      role="img"
-                      color="warning"
-                      aria-label={warningText!}
-                    />
-                  </Tooltip>
+                endAdornment={
+                  isError ? (
+                    <InputAdornment position="end">
+                      <Tooltip title={errorText}>
+                        <ErrorOutlineIcon
+                          role="img"
+                          color="error"
+                          aria-label={errorText}
+                        />
+                      </Tooltip>
+                    </InputAdornment>
+                  ) : isWarning ? (
+                    <InputAdornment position="end">
+                      <Tooltip title={warningText}>
+                        <WarningAmberOutlinedIcon
+                          role="img"
+                          color="warning"
+                          aria-label={warningText}
+                        />
+                      </Tooltip>
+                    </InputAdornment>
+                  ) : (
+                    <InputAdornment position="end" sx={{ width: 24 }} />
+                  )
+                }
+              />
+            ) : (
+              <>
+                <Typography
+                  onDoubleClick={openEditorIfNotDisabled}
+                  noWrap
+                  sx={{
+                    height: '100%',
+                    lineHeight: '44px',
+                    px: 1,
+                    cursor: 'text',
+                  }}
+                >
+                  {value}
+                </Typography>
+                {!disabled && showIssue && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: 4,
+                      transform: 'translateY(-50%)',
+                    }}
+                  >
+                    {isError ? (
+                      <Tooltip title={errorText}>
+                        <ErrorOutlineIcon
+                          role="img"
+                          color="error"
+                          aria-label={errorText}
+                        />
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title={warningText}>
+                        <WarningAmberOutlinedIcon
+                          role="img"
+                          color="warning"
+                          aria-label={warningText}
+                        />
+                      </Tooltip>
+                    )}
+                  </Box>
                 )}
-              </Box>
+              </>
             )}
-          </>
-        )}
-      </Box>
+          </Box>
+          {disabled && (
+            <LockOutlined
+              fontSize="small"
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                right: 4,
+                transform: 'translateY(-50%)',
+              }}
+            />
+          )}
+        </Box>
+      </Tooltip>
     </TableCell>
   )
 }
