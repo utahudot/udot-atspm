@@ -40,8 +40,6 @@ const TurningMovementCountsTable = ({
 }: TurningMovementCountsTableProps) => {
   const { labels, table, peakHour } = chartData.data
 
-  console.log('peakHourFactor:', peakHour)
-
   /* indices needing background colours */
   const { dirTotalIdx, binTotalIdx } = useMemo(() => {
     const dirTotal = new Set<number>()
