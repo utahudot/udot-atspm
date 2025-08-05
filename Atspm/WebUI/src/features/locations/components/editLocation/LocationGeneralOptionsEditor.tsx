@@ -268,28 +268,6 @@ const LocationGeneralOptionsEditor = () => {
                     minWidth: '226px',
                   }}
                 />
-                <FormControlLabel
-                  control={<Checkbox onChange={handleCheckboxChange} />}
-                  name="pedsAre1to1"
-                  label={
-                    <Tooltip
-                      title={
-                        'If enabled, peds phases will be 1 to 1 with the protected phase.'
-                      }
-                    >
-                      <Typography
-                        sx={{
-                          textDecoration: 'underline',
-                          textDecorationStyle: 'dotted',
-                          textUnderlineOffset: '5px',
-                        }}
-                      >
-                        Peds are 1 to 1
-                      </Typography>
-                    </Tooltip>
-                  }
-                  checked={location.pedsAre1to1}
-                />
               </Box>
             </Box>
             <Divider />
