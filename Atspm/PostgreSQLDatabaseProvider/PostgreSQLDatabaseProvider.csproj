@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
+  <Version>5.1.2</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -10,6 +11,7 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(NameSpacePrefix).Atspm.$(MSBuildProjectName)</AssemblyName>
+  <Version>5.1.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

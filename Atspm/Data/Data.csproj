@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
+  <Version>5.1.2</Version>
 	</PropertyGroup>
 	
 	<PropertyGroup>
@@ -11,6 +12,7 @@
     <RootNamespace>Utah.Udot.Atspm.Data</RootNamespace>
     <AssemblyName>Utah.Udot.Atspm.Data</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  <Version>5.1.2</Version>
   </PropertyGroup>
 	
 	<ItemGroup>

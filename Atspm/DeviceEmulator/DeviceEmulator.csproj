@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-DeviceEmulator-21da0fac-23e8-4b93-94ba-338fd7b187a4</UserSecretsId>
+  <Version>5.1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
