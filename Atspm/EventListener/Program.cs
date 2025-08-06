@@ -1,77 +1,73 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Events;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
-using Utah.Udot.Atspm.Infrastructure.Services.Receivers; // UDPSpeedBatchListener
-
+using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-var isWindows = OperatingSystem.IsWindows();
 
-var host = Host.CreateDefaultBuilder(args)
-    .UseContentRoot(AppContext.BaseDirectory) // works for services and Docker
-    .ConfigureAppConfiguration((context, config) =>
-    {
-        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-        config.AddEnvironmentVariables(); // supports Docker env vars
-    })
-    .UseWindowsService() // harmless on Linux
-    .ConfigureLogging((context, logging) =>
-    {
-        logging.ClearProviders();
-        logging.AddConsole();
-
-        if (isWindows)
-        {
-            logging.AddEventLog(options =>
-            {
-                options.SourceName = "EventListenerService";
-                options.LogName = "Atspm";
-            });
-        }
-    })
-    .ConfigureServices((context, services) =>
-    {
-        // Your normal registrations
-        services.Configure<EventListenerConfiguration>(context.Configuration.GetSection("EventListenerConfiguration"));
-
-        services.AddHttpClient("IngestApi", (sp, client) =>
-        {
-            var cfg = sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value;
-            client.BaseAddress = new Uri(cfg.ApiBaseUrl);
-        }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        });
-
-        services.AddAtspmDbContext(context);
-        services.AddAtspmEFConfigRepositories();
-        services.AddAtspmEFEventLogRepositories();
-        services.AddEventPublishers(context);
-
-        services.AddSingleton<IUdpReceiver>(sp =>
-            new UdpReceiver(
-                sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.UdpPort,
-                sp.GetRequiredService<ILogger<UdpReceiver>>()
-            ));        
-
-        services.AddScoped<UDPSpeedBatchListener>();
-        services.AddHostedService<EventListenerWorker>();
-
-    })
-    .UseConsoleLifetime()
-    .Build();
+// Configure Serilog *before* host creation
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables()
+        .Build())
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "eventlistener.log"))
+    .CreateLogger();
 
 try
 {
+    var host = Host.CreateDefaultBuilder(args)
+        .UseSerilog() // replaces default logging with Serilog
+        .UseContentRoot(AppContext.BaseDirectory)
+        .ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            config.AddEnvironmentVariables();
+        })
+        .UseWindowsService()
+        .ConfigureServices((context, services) =>
+        {
+            services.Configure<EventListenerConfiguration>(context.Configuration.GetSection("EventListenerConfiguration"));
+
+            services.AddHttpClient("IngestApi", (sp, client) =>
+            {
+                var cfg = sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value;
+                client.BaseAddress = new Uri(cfg.ApiBaseUrl);
+            }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            });
+
+            services.AddAtspmDbContext(context);
+            services.AddAtspmEFConfigRepositories();
+            services.AddAtspmEFEventLogRepositories();
+            services.AddEventPublishers(context);
+
+            services.AddSingleton<IUdpReceiver>(sp =>
+                new UdpReceiver(
+                    sp.GetRequiredService<IOptions<EventListenerConfiguration>>().Value.UdpPort,
+                    sp.GetRequiredService<ILogger<UdpReceiver>>()
+                ));
+
+            services.AddScoped<UDPSpeedBatchListener>();
+            services.AddHostedService<EventListenerWorker>();
+        })
+        //.UseConsoleLifetime()
+        .Build();
+
     await host.RunAsync();
 }
 catch (Exception ex)
 {
-    Console.WriteLine("Unhandled startup error:");
-    Console.WriteLine(ex.ToString());
-    throw; // re-throw so debugger catches it too
+    Log.Fatal(ex, "Unhandled startup error");
 }
-
-
+finally
+{
+    Log.CloseAndFlush();
+}

@@ -26,9 +26,11 @@ public class EventListenerWorker : BackgroundService
             using var scope = _scopeFactory.CreateScope();
             var udp = scope.ServiceProvider.GetRequiredService<UDPSpeedBatchListener>();
 
+            _logger.LogInformation("Calling StartListeningAsync...");
             var udpTask = udp.StartListeningAsync(stoppingToken);
-
-            await Task.WhenAll(udpTask);
+            _logger.LogInformation("StartListeningAsync returned. Awaiting task...");
+            await udpTask;
+            _logger.LogInformation("UDP listener finished or was cancelled.");
         }
         catch (Exception ex)
         {
