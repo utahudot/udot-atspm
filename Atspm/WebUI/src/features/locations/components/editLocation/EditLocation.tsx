@@ -125,8 +125,10 @@ function ApproachesTab() {
         : null,
     }))
 
-    updateSavedApproaches(updatedApproaches)
     updateApproachesInStore(updatedApproaches)
+    updateSavedApproaches(updatedApproaches)
+
+    setShowPedsAre1To1Dialog(false)
 
     try {
       await updateLocation({
@@ -139,12 +141,8 @@ function ApproachesTab() {
           updateApproach({
             key: app.id,
             data: {
-              pedestrianDetectors: !pedsAre1to1
-                ? app.protectedPhaseNumber?.toString()
-                : null,
-              pedestrianPhaseNumber: !pedsAre1to1
-                ? app.protectedPhaseNumber
-                : null,
+              pedestrianDetectors: app.pedestrianDetectors,
+              pedestrianPhaseNumber: app.pedestrianPhaseNumber,
             },
           })
         )
@@ -160,8 +158,6 @@ function ApproachesTab() {
         type: 'error',
       })
     }
-
-    setShowPedsAre1To1Dialog(false)
   }
 
   return (

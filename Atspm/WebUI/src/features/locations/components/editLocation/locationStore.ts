@@ -54,7 +54,8 @@ interface ApproachSlice {
   updateApproaches: (newApproaches: ConfigApproach[]) => void
   addApproach: () => void
   updateApproach: (updatedApproach: ConfigApproach) => void
-  updateSavedApproaches: (updatedApproach: ConfigApproach) => void
+  updateSavedApproach: (updatedApproach: ConfigApproach) => void
+  updateSavedApproaches: (updatedApproaches: ConfigApproach[]) => void
   resetApproaches: () => void
   copyApproach: (approach: ConfigApproach) => void
   deleteApproach: (approach: ConfigApproach) => void
@@ -96,6 +97,9 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       if (approaches.length !== savedApproaches.length) return true
 
       const stable = (obj: any) => JSON.stringify(normalize(obj))
+
+      console.log('checking unsaved changes', approaches)
+      console.log('against saved', savedApproaches)
 
       for (const a of approaches) {
         const saved = savedApproaches.find((s) => s.id === a.id)
@@ -139,7 +143,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       set({ approaches: copy })
     },
 
-    updateSavedApproaches: (updatedApproach) => {
+    updateSavedApproach: (updatedApproach) => {
       const { savedApproaches } = get()
       const idx = savedApproaches.findIndex((a) => a.id === updatedApproach.id)
 
@@ -151,6 +155,10 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       const copy = [...savedApproaches]
       copy[idx] = updatedApproach
       set({ savedApproaches: copy })
+    },
+
+    updateSavedApproaches: (updatedApproaches) => {
+      set({ savedApproaches: updatedApproaches })
     },
 
     resetApproaches: () => {
@@ -289,7 +297,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
     },
 
     deleteDetector: (detectorId) => {
-      const { approaches } = get()
+      const { approaches, channelMap } = get()
       let shouldCallApi = false
 
       const updatedApproaches = approaches.map((approach) => {
@@ -309,6 +317,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       if (shouldCallApi) {
         try {
           deleteDetectorFromKey(detectorId)
+          channelMap.delete(detectorId)
         } catch (err) {
           console.error(err)
         }

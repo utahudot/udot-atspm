@@ -55,7 +55,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const copyApproachInStore = useLocationStore((s) => s.copyApproach)
   const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
   const addDetectorInStore = useLocationStore((s) => s.addDetector)
-  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproaches)
+  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproach)
 
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
