@@ -1,4 +1,4 @@
-import {Region} from '@/features/regions/types/index'
+import { Region } from '@/features/regions/types/index'
 
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
@@ -114,7 +114,7 @@ const RegionsAdmin = () => {
   return (
     <ResponsivePageLayout title="Manage Regions" noBottomMargin>
       <AdminTable
-        pageName="Regions"
+        pageName="Region"
         headers={headers}
         headerKeys={headerKeys}
         data={filteredData}
@@ -139,7 +139,7 @@ const RegionsAdmin = () => {
             id={0}
             name={''}
             objectType="Region"
-            deleteLabel={(selectedRow: typeof filteredData[number] ) =>
+            deleteLabel={(selectedRow: (typeof filteredData)[number]) =>
               selectedRow.description
             }
             open={false}
