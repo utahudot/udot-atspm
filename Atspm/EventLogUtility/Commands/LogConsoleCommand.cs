@@ -179,7 +179,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public TransportProtocolCommandOption() : base("--transport-protocol", "Device transport protocol to include")
         {
             AddAlias("-tp");
-            
+
         }
     }
 

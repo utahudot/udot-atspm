@@ -14,9 +14,9 @@
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>6ae15f41-e3a6-4c86-90f8-7344f3a24ee5</UserSecretsId>
-		<VersionPrefix>5.0</VersionPrefix>
-		<VersionSuffix>rc.1</VersionSuffix>
-		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+		<VersionPrefix>5.1.2</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
