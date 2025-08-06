@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Workflows/DeviceEventLogWorkflow.cs
+// for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Workflows/DecodeEventLogWorkflow.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             DecodeDeviceData = new(_services, new ExecutionDataflowBlockOptions() { CancellationToken = _cancellationToken });
             BatchEventLogs = new(_batchSize);
             ArchiveDeviceData = new(new ExecutionDataflowBlockOptions() { CancellationToken = _cancellationToken });
-            SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() {CancellationToken = _cancellationToken });
+            SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() { CancellationToken = _cancellationToken });
         }
 
         /// <inheritdoc/>
