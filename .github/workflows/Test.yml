@@ -20,11 +20,16 @@ jobs:
       with:
         dotnet-version: '8.0.x'
         
-    - name: 📝 Update .csproj files
-      uses: vers-one/dotnet-project-version-updater@v1
-      with:
-        files: '**/*.csproj'
-        version: ${{ github.event.inputs.version }}
+    - name: 📝 Update .csproj versions
+      run: |
+        find . -name "*.csproj" | while read csproj; do
+          echo "Updating $csproj to version ${{ github.event.inputs.version }}"
+          if grep -q "<Version>" "$csproj"; then
+            sed -i 's|<Version>.*</Version>|<Version>${{ github.event.inputs.version }}</Version>|' "$csproj"
+          else
+            sed -i '/<\/PropertyGroup>/i \  <Version>${{ github.event.inputs.version }}</Version>' "$csproj"
+          fi
+        done
 
     - name: 💾 Commit updated project files
       run: |
