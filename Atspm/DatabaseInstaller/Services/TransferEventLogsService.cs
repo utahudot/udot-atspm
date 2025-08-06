@@ -75,7 +75,7 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            for (var date = _config.Start; date <= _config.End.AddDays(1); date = date.AddHours(1))
+            for (var date = _config.Start; date < _config.End.AddDays(1); date = date.AddHours(1))
             {
                 _logger.LogInformation($"Processing data for {date}");
 
