@@ -89,6 +89,8 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
+            services.Configure<DeviceEventLoggingConfiguration>(host.Configuration.GetSection(nameof(WatchdogConfiguration)));
+
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<WatchdogConfiguration>().BindCommandLine();
             services.AddHostedService<ScanHostedService>();
