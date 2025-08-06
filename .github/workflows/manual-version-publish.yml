@@ -28,7 +28,7 @@ jobs:
       uses: gittools/actions/gitversion/execute@v0
 
     - name: 🧬 Display version
-      run: echo "Version: ${{ steps.gitversion.outputs.fullSemVer }}"
+      run: echo "Version:" ${{ steps.gitversion.outputs.fullSemVer }}
 
     - name: 📝 Update .csproj files
       uses: roryprimrose/dotnet-project-version-updater@v1
