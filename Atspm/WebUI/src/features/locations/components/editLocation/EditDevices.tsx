@@ -1,4 +1,4 @@
-import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Device } from '@/api/config'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
 import {
   useDeleteDevice,

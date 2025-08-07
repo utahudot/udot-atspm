@@ -15,7 +15,7 @@
 // limitations under the License.
 // #endregion
 
-import { RouteLocation } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { RouteLocation } from '@/api/config'
 
 import axios from 'axios'
 

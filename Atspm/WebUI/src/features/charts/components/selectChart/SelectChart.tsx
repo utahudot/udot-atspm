@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Location } from '@/api/config'
 import { useChartDefaults } from '@/features/charts/api/getChartDefaults'
 import { useGetMeasureTypes } from '@/features/charts/api/getMeasureTypes'
 import { ApproachDelayChartOptions } from '@/features/charts/approachDelay/components/ApproachDelayChartOptions'

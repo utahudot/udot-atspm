@@ -58,10 +58,11 @@ const LocationMap = ({
   const filtersButtonRef = useRef(null)
 
   const [mapInfo, setMapInfo] = useState<{
-    tile_layer: string
-    attribution: string
+    tile_layer: string | undefined
+    attribution: string | undefined
     initialLat: number
     initialLong: number
+    zoomLevel: number
   } | null>(null)
 
   const locationsEnabledLength = locations.filter((l) => l.chartEnabled).length
@@ -69,11 +70,13 @@ const LocationMap = ({
   useEffect(() => {
     const fetchEnv = async () => {
       const env = await getEnv()
+      if (!env) return
       setMapInfo({
         tile_layer: env.MAP_TILE_LAYER,
         attribution: env.MAP_TILE_ATTRIBUTION,
-        initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE),
-        initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE),
+        initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE ?? '0'),
+        initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE ?? '0'),
+        zoomLevel: parseInt(env.MAP_DEFAULT_ZOOM ?? '0'),
       })
     }
     fetchEnv()
@@ -176,7 +179,7 @@ const LocationMap = ({
   return (
     <MapContainer
       center={center || [mapInfo.initialLat, mapInfo.initialLong]}
-      zoom={zoom || 6}
+      zoom={zoom ?? mapInfo.zoomLevel ?? 6}
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',

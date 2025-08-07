@@ -1,4 +1,4 @@
-import { Product } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Product } from '@/api/config'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'

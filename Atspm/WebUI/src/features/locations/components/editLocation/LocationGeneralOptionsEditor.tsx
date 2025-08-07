@@ -4,7 +4,7 @@ import {
   useGetLocationType,
   useGetRegion,
   usePutLocationFromKey,
-} from '@/api/config/aTSPMConfigurationApi'
+} from '@/api/config'
 import CustomSelect from '@/components/customSelect'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useNotificationStore } from '@/stores/notifications'
@@ -92,8 +92,6 @@ const LocationGeneralOptionsEditor = () => {
     const { value } = e.target
     handleLocationEdit(name, value as string)
   }
-
-  console.log('location', location)
 
   const handleSaveGeneralLocation = () => {
     const { approaches, region, jurisdiction, devices, ...generalInfo } =
@@ -269,28 +267,6 @@ const LocationGeneralOptionsEditor = () => {
                   sx={{
                     minWidth: '226px',
                   }}
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={handleCheckboxChange} />}
-                  name="pedsAre1to1"
-                  label={
-                    <Tooltip
-                      title={
-                        'If enabled, peds phases will be 1 to 1 with the protected phase.'
-                      }
-                    >
-                      <Typography
-                        sx={{
-                          textDecoration: 'underline',
-                          textDecorationStyle: 'dotted',
-                          textUnderlineOffset: '5px',
-                        }}
-                      >
-                        Peds are 1 to 1
-                      </Typography>
-                    </Tooltip>
-                  }
-                  checked={location.pedsAre1to1}
                 />
               </Box>
             </Box>

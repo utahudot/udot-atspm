@@ -34,8 +34,9 @@ namespace Utah.Udot.Atspm.Extensions
         /// </summary>
         /// <param name="repo"></param>
         /// <param name="id">Location version to copy</param>
+        /// <param name="newVersionLabel">Label for new version</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
-        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int id)
+        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int id, string newVersionLabel)
         {
             var sourceLocation = repo.GetVersionByIdDetached(id);
             if (sourceLocation != null)
@@ -45,7 +46,7 @@ namespace Utah.Udot.Atspm.Extensions
 
                 newVersion.VersionAction = LocationVersionActions.NewVersion;
                 newVersion.Start = DateTime.Today;
-                newVersion.Note = $"Copy of {sourceLocation.Note}";
+                newVersion.Note = newVersionLabel;
 
                 newVersion.Id = 0;
 

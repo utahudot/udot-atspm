@@ -1,14 +1,12 @@
 import {
+  Route,
+  RouteDistance,
+  RouteLocation,
   useGetLocationLatestVersionOfAllLocations,
   useGetRouteDistance,
   useGetRouteRouteViewFromId,
   useUpsertRouteRoute,
-} from '@/api/config/aTSPMConfigurationApi'
-import {
-  Route,
-  RouteDistance,
-  RouteLocation,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
 import { Location } from '@/features/locations/types'

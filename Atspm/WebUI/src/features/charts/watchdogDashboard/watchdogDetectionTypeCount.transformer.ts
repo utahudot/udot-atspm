@@ -39,10 +39,11 @@ const transformDetectionTypeCountData = (
     legend: {
       type: 'scroll',
       orient: 'vertical',
-      top: "25%",
-      right: 5,
+      top: '22%',
+      right: 20,
       itemWidth: 26,
       itemHeight: 15,
+      itemGap: 20,
       textStyle: {
         fontSize: 13,
       },

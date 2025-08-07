@@ -1,12 +1,10 @@
 import {
   getLocationFromKey,
-  useGetLocationLatestVersionOfAllLocations,
-  useGetRoute,
-} from '@/api/config/aTSPMConfigurationApi'
-import {
   SearchLocation as Location,
   Route,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+  useGetLocationLatestVersionOfAllLocations,
+  useGetRoute,
+} from '@/api/config'
 import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'

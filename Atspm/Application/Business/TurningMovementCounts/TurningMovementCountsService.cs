@@ -87,7 +87,10 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
 
             var peakHourMaxVolume = allLanesMovementVolumes.Items
                 .Where(i => i.StartTime >= peakHour.Key && i.StartTime < peakHourEnd)
-                .Max(i => i.HourlyVolume);
+                .Select(i => i.HourlyVolume)
+                .DefaultIfEmpty(0)
+                .Max();
+
 
             var peakHourFactor = GetPeakHourFactor(peakHour.Value, peakHourMaxVolume, binMultiplier);
 
@@ -174,7 +177,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             var startTime = new DateTime();
             var iteratedVolumes = new SortedDictionary<DateTime, int>();
 
-            for (var i = 0; i < volumeCollection.Items.Count - (binMultiplier - 1); i++)
+            for (var i = 0; i <= volumeCollection.Items.Count - binMultiplier; i++)
             {
                 startTime = volumeCollection.Items.ElementAt(i).StartTime;
                 subTotal = 0;

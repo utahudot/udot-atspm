@@ -5,10 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
   Button,
+  Divider,
+  Grid,
   Link,
   Paper,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from '@mui/material'
@@ -21,35 +21,21 @@ const schema = z.object({
   lastName: z.string().min(1, { message: 'Last Name is required' }),
   agency: z.string().min(1, { message: 'Agency is required' }),
   email: z.string().email({ message: 'Invalid email address' }),
-  phoneNumber: z
-    .string()
-    .regex(/^(\+1|1)?[-.\s]?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/, {
-      message: 'Must be a valid phone number',
-    }),
-  roles: z.string(),
 })
 
 type FormData = z.infer<typeof schema>
 
 const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [responseSuccess, setResponseSuccess] = useState(false)
-  const [responseError, setResponseError] = useState(false)
-  const initialProfileData = useRef<FormData | null>(null)
-  const { mutate } = useEditUserInfo()
-  const {
-    data: profileData,
-    error: userError,
-    isLoading,
-  } = useUserInfo({
-    config: { enabled: true },
-  })
+
+  const { data: profile } = useUserInfo({ config: { enabled: true } })
+  const { mutate: saveUser } = useEditUserInfo()
+
+  const initial = useRef<FormData | null>(null)
+
   const {
     control,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm<FormData>({
@@ -59,183 +45,135 @@ const ProfilePage = () => {
       lastName: '',
       agency: '',
       email: '',
-      phoneNumber: '',
-      roles: '',
     },
   })
 
   useEffect(() => {
-    if (profileData) {
-      const { firstName, lastName, agency, email, phoneNumber, roles } =
-        profileData
-      const initialData = {
-        firstName,
-        lastName,
-        agency,
-        email,
-        phoneNumber: phoneNumber || '',
-        roles,
+    if (profile) {
+      const init = {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        agency: profile.agency,
+        email: profile.email,
       }
-      initialProfileData.current = initialData
-      reset(initialData)
+      initial.current = init
+      reset(init)
       setIsEditing(false)
     }
-  }, [profileData, reset])
+  }, [profile, reset])
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    mutate(data, {
-      onSuccess: () => {
-        setIsEditing(false)
-        setResponseSuccess(true)
-        setSubmitted(true)
-      },
-      onError: () => {
-        setResponseError(true)
-      },
-    })
-  }
-
-  const handleCancel = () => {
-    if (initialProfileData.current) {
-      reset(initialProfileData.current)
-    }
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    saveUser({ ...data, roles: profile?.roles })
     setIsEditing(false)
   }
 
-  const handleTabChange = (_: unknown, newValue: number) => {
-    setActiveTab(newValue)
+  const cancel = () => {
+    if (initial.current) reset(initial.current)
+    setIsEditing(false)
   }
-
   return (
-    <ResponsivePageLayout title={'Profile Page'}>
-      <Tabs value={activeTab} onChange={handleTabChange}>
-        <Tab label="Info" />
-        <Tab label="Settings" />
-      </Tabs>
+    <ResponsivePageLayout title="Profile" width={800} noBottomMargin>
+      <Paper
+        sx={{
+          p: 2,
+          px: 4,
+          pb: 4,
+          mt: 2,
+          mx: 'auto',
+        }}
+      >
+        <Box
+          display={'flex'}
+          justifyContent="space-between"
+          mb={3}
+          sx={{ alignItems: 'center' }}
+        >
+          <Typography variant="h4" sx={{ mb: 0 }}>
+            Your Information
+          </Typography>
 
-      {activeTab === 0 && (
-        <Paper elevation={3} sx={{ p: 3, m: 3 }}>
-          <Typography variant="h2">Profile</Typography>
-          <Box sx={{ display: 'flex', gap: '20px', mb: '20px', mt: '20px' }}>
-            <Controller
-              name="firstName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="First Name"
-                  disabled={!isEditing}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message}
-                />
-              )}
-            />
-            <Controller
-              name="lastName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Last Name"
-                  disabled={!isEditing}
-                  error={!!errors.lastName}
-                  helperText={errors.lastName?.message}
-                />
-              )}
-            />
-          </Box>
-          <Box sx={{ mb: '20px' }}>
-            <Controller
-              name="agency"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Agency"
-                  disabled={!isEditing}
-                  error={!!errors.agency}
-                  helperText={errors.agency?.message}
-                />
-              )}
-            />
-          </Box>
-          <Box sx={{ mb: '20px' }}>
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Email"
-                  disabled={!isEditing}
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                />
-              )}
-            />
-          </Box>
-          <Box sx={{ mb: '20px' }}>
-            <Controller
-              name="phoneNumber"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Phone Number"
-                  disabled={!isEditing}
-                  error={!!errors.phoneNumber}
-                  helperText={errors.phoneNumber?.message}
-                  required
-                />
-              )}
-            />
-          </Box>
-          <Box sx={{ mb: '20px' }}>
-            <Controller
-              name="roles"
-              control={control}
-              render={({ field }) => (
-                <TextField {...field} label="Roles" disabled />
-              )}
-            />
-          </Box>
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              if (isEditing) {
-                handleSubmit(onSubmit)()
-              } else {
-                setIsEditing(true)
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              onClick={
+                isEditing ? handleSubmit(onSubmit) : () => setIsEditing(true)
               }
-            }}
-            disabled={isEditing && !!errors.phoneNumber}
-          >
-            {isEditing ? 'Save' : 'Edit'}
-          </Button>
-          {isEditing && <Button onClick={handleCancel}>Cancel</Button>}
-        </Paper>
-      )}
-      {activeTab === 1 && (
-        <Paper elevation={3} sx={{ p: 3, m: 3 }}>
-          <Typography variant="h2">Settings</Typography>
-          <Box sx={{ mb: '20px' }}>
-            <Link href="/password-reset" underline="none">
-              <Box
-                sx={{
-                  p: '10px',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  width: 'fit-content',
-                }}
-              >
-                Update Password
-              </Box>
-            </Link>
+            >
+              {isEditing ? 'Save' : 'Edit'}
+            </Button>
+            {isEditing && (
+              <Button onClick={cancel} variant="outlined" color="inherit">
+                Cancel
+              </Button>
+            )}
           </Box>
-        </Paper>
-      )}
+        </Box>
+
+        <Grid container spacing={2}>
+          {[
+            {
+              name: 'firstName',
+              label: 'First Name',
+              xs: 12,
+              sm: 6,
+              error: errors.firstName,
+            },
+            {
+              name: 'lastName',
+              label: 'Last Name',
+              xs: 12,
+              sm: 6,
+              error: errors.lastName,
+            },
+            {
+              name: 'agency',
+              label: 'Agency',
+              xs: 12,
+              sm: 6,
+              error: errors.agency,
+            },
+            {
+              name: 'email',
+              label: 'Email',
+              xs: 12,
+              sm: 6,
+              error: errors.email,
+            },
+          ].map(({ name, label, xs, sm, error }) => (
+            <Grid item xs={xs} sm={sm} key={name}>
+              <Controller
+                name={name as keyof FormData}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label={label}
+                    fullWidth
+                    disabled={!isEditing}
+                    error={!!error}
+                    helperText={error?.message}
+                  />
+                )}
+              />
+            </Grid>
+          ))}
+        </Grid>
+
+        {profile?.roles && (
+          <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 3 }}>
+            Roles: {profile.roles}
+          </Typography>
+        )}
+
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h4" sx={{ mb: 2 }}>
+          Security
+        </Typography>
+        <Link href="/password-reset" underline="none">
+          <Button variant="outlined">Update Password</Button>
+        </Link>
+      </Paper>
     </ResponsivePageLayout>
   )
 }

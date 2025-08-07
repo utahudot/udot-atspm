@@ -1,7 +1,4 @@
-import {
-  useGetDetectionType,
-  useGetLocationType,
-} from '@/api/config/aTSPMConfigurationApi'
+import { useGetDetectionType, useGetLocationType } from '@/api/config'
 import CalendarCell from '@/features/locations/components/Cell/CalendarCell'
 import CommentCell from '@/features/locations/components/Cell/CommentCell'
 import { MultiSelectCell } from '@/features/locations/components/Cell/MultiSelectCell'

@@ -1,11 +1,12 @@
 import {
+  Area,
+  Location,
   useDeleteAreaFromKey,
   useGetArea,
   useGetLocationLocationsForSearch,
   usePatchAreaFromKey,
   usePostArea,
-} from '@/api/config/aTSPMConfigurationApi'
-import { Area, Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'

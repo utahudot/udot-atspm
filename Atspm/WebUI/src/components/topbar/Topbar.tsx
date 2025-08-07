@@ -1,5 +1,5 @@
+import AdminMenu from '@/components/topbar/AdminMenu'
 import { transformMenuItems } from '@/components/topbar/menuUtils'
-import { useGetAdminPagesList } from '@/features/identity/pagesCheck'
 import { doesUserHaveAccess } from '@/features/identity/utils'
 import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
 import { useSidebarStore } from '@/stores/sidebar'
@@ -15,6 +15,19 @@ import DropDownButton from './DropdownButton'
 import UserMenu from './UserMenu'
 
 export const topbarHeight = 60
+
+const infoItems = [
+  {
+    name: 'About',
+    icon: <InfoOutlinedIcon fontSize="small" />,
+    link: '/about',
+  },
+  {
+    name: 'FAQ',
+    icon: <QuestionAnswerOutlinedIcon fontSize="small" />,
+    link: '/faq',
+  },
+]
 
 export default function Topbar() {
   const { toggleSidebar } = useSidebarStore()
@@ -35,26 +48,6 @@ export default function Topbar() {
 
   const menuItems = menuItemsData ? transformMenuItems(menuItemsData.value) : []
 
-  const infoItems = [
-    {
-      name: 'About',
-      icon: <InfoOutlinedIcon fontSize="small" />,
-      link: '/about',
-    },
-    {
-      name: 'FAQ',
-      icon: <QuestionAnswerOutlinedIcon fontSize="small" />,
-      link: '/faq',
-    },
-  ]
-
-  const pagesToLinks = useGetAdminPagesList()
-
-  const adminPagesList = Array.from(pagesToLinks.keys()).map((key) => ({
-    name: key,
-    link: pagesToLinks.get(key) as string,
-  }))
-
   useEffect(() => {
     // This effect runs once when the component mounts but could be triggered on certain conditions like user authentication status change
     return () => {
@@ -62,11 +55,6 @@ export default function Topbar() {
       queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
     }
   }, [])
-
-  // Or if you want to manually trigger an update:
-  const refreshMenuItems = () => {
-    queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
-  }
 
   return (
     <Box
@@ -152,13 +140,7 @@ export default function Topbar() {
             icon={<InfoOutlinedIcon />}
             menuItems={infoItems}
           />
-          {userHasAccess && (
-            <DropDownButton
-              title="Admin"
-              icon={<InfoOutlinedIcon />}
-              menuItems={adminPagesList}
-            />
-          )}
+          {userHasAccess && <AdminMenu />}
           <UserMenu />
         </Box>
       )}

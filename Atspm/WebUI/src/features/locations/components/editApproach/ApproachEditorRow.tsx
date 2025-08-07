@@ -60,8 +60,8 @@ const ApproachEditorRowHeader = ({
     if (!hasApproachError) return
     const { protectedPhaseNumber, permissivePhaseNumber, id } = approach
     const phaseValid =
-      protectedPhaseNumber !== '' &&
-      !(protectedPhaseNumber === 0 && permissivePhaseNumber === '')
+      protectedPhaseNumber &&
+      !(protectedPhaseNumber === 0 && permissivePhaseNumber)
     if (phaseValid) {
       const newErrors = { ...errors }
       delete newErrors[id]

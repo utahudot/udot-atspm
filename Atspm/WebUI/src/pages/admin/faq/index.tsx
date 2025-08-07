@@ -1,10 +1,10 @@
 import {
+  Faq,
   useDeleteFaqFromKey,
   useGetFaq,
   usePatchFaqFromKey,
   usePostFaq,
-} from '@/api/config/aTSPMConfigurationApi'
-import { Faq } from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -22,8 +22,8 @@ const FaqAdmin = () => {
   const pageAccess = useViewPage(PageNames.FAQs)
   const { addNotification } = useNotificationStore()
 
-  const hasGeneralEditClaim = useUserHasClaim("GeneralConfiguration:Edit");
-  const hasGeneralDeleteClaim = useUserHasClaim("GeneralConfiguration:Delete");
+  const hasGeneralEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
+  const hasGeneralDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete')
 
   const { mutateAsync: createMutation } = usePostFaq()
   const { mutateAsync: deleteMutation } = useDeleteFaqFromKey()
@@ -33,7 +33,7 @@ const FaqAdmin = () => {
   const faqs = faqData?.value
 
   if (pageAccess.isLoading) {
-    return;
+    return
   }
 
   const HandleCreateFaq = async (faqData: Faq) => {
@@ -45,7 +45,7 @@ const FaqAdmin = () => {
       console.error('Mutation Error:', error)
       addNotification({ type: 'error', title: 'Error Creating FAQ' })
     }
-  };
+  }
 
   const HandleEditFaq = async (faqData: Faq) => {
     const { id, header, body, displayOrder } = faqData
@@ -75,18 +75,18 @@ const FaqAdmin = () => {
 
   const onModalClose = () => {
     //do something?? potentially just delete
-  };
+  }
 
   if (isLoading) {
     return (
       <Backdrop open>
         <CircularProgress color="inherit" />
       </Backdrop>
-    );
+    )
   }
 
   if (!faqs) {
-    return <div>Error returning data</div>;
+    return <div>Error returning data</div>
   }
 
   const filteredData = faqs.map((obj: Faq) => {
@@ -95,21 +95,21 @@ const FaqAdmin = () => {
       header: obj.header,
       body: obj.body,
       displayOrder: obj.displayOrder,
-    };
-  });
+    }
+  })
 
   const FaqBodyCell = ({ value }: { value: string }) => {
-    return <Markup content={value} />;
-  };
+    return <Markup content={value} />
+  }
   const customCellRender = [
     {
-      headerKey: "body",
+      headerKey: 'body',
       component: (value: string) => <FaqBodyCell value={value} />,
     },
-  ];
+  ]
 
-  const headers = ["Header", "Body", "Display Order"];
-  const headerKeys = ["header", "body", "displayOrder"];
+  const headers = ['Header', 'Body', 'Display Order']
+  const headerKeys = ['header', 'body', 'displayOrder']
 
   return (
     <ResponsivePageLayout title="Manage FAQs" noBottomMargin>
@@ -138,7 +138,7 @@ const FaqAdmin = () => {
         deleteModal={
           <DeleteModal
             id={0}
-            name={""}
+            name={''}
             objectType="Faqs"
             deleteLabel={(selectedRow: Faq) => selectedRow.header}
             open={false}
@@ -148,7 +148,7 @@ const FaqAdmin = () => {
         }
       />
     </ResponsivePageLayout>
-  );
-};
+  )
+}
 
-export default FaqAdmin;
+export default FaqAdmin

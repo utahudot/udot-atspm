@@ -42,6 +42,7 @@ export function useEditUsers() {
     url: route,
     axiosInstance: identityAxios,
     headers,
+    notify: false,
   })
   return mutation
 }

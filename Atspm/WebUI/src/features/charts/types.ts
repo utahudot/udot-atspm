@@ -61,13 +61,25 @@ export interface TransformedPreemptDetailsResponse {
     charts: StandardChart[]
   }
 }
+
+export type TableRow = (string | number)[]
+export type ColumnGroup = { title: string | null; columns: string[] }
+
+export interface Labels {
+  columnGroups: ColumnGroup[]
+  flatColumns: string[]
+}
+
 export interface TransformedTurningMovementCountsResponse {
   type: ChartType
   data: {
+    labels: Labels
+    table: TableRow[]
     charts: StandardChart[]
-    table: any
-    peakHourFactor: number
-    peakHour: { key: string; value: string }
+    peakHour?: {
+      peakHourFactor: number | null
+      peakHourData: TableRow[]
+    } | null
   }
 }
 

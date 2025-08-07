@@ -8,86 +8,89 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material'
 
-interface RouteCheckerProps {
-  data: {
-    locationIdentifier: string
-    approachDescription: string | null
-    mph: number | null
-    distance: number | null
-  }[]
+interface Row {
+  locationIdentifier: string
+  primaryPhaseDescription: string | null
+  primaryMph: number | null
+  opposingPhaseDescription: string | null
+  opposingMph: number | null
+  distance: number | null
 }
 
-const RouteChecker = ({ data }: RouteCheckerProps) => {
-  const length = data.length
+interface Props {
+  data: Row[]
+}
 
-  return (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
+const ChipCell = ({ value }: { value: number | null }) => (
+  <Chip
+    // label={value ?? 'N/A'}
+    label={
+      <Typography variant="caption" fontSize="12px">
+        {value ?? 'N/A'}
+      </Typography>
+    }
+    size="small"
+    icon={
+      value !== null ? (
+        <CheckIcon color="success" sx={{ fontSize: '12px !important' }} />
+      ) : (
+        <CloseIcon color="error" sx={{ fontSize: '12px !important' }} />
+      )
+    }
+    color={value !== null ? 'success' : 'error'}
+  />
+)
+
+const RouteChecker = ({ data }: Props) => (
+  <TableContainer>
+    <Table size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell sx={{ fontSize: '0.75rem', px: 1 }}>Location</TableCell>
+          <TableCell sx={{ fontSize: '0.75rem', px: 1 }}>
+            Primary Phase
+          </TableCell>
+          <TableCell sx={{ fontSize: '0.75rem', px: 1 }}>Speed (mph)</TableCell>
+          <TableCell sx={{ fontSize: '0.75rem', px: 1 }}>
+            Opposing Phase
+          </TableCell>
+          <TableCell sx={{ fontSize: '0.75rem', px: 1 }}>Speed (mph)</TableCell>
+          <TableCell sx={{ fontSize: '0.75rem', px: 1 }}>Distance</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {data.length === 0 ? (
           <TableRow>
-            <TableCell>Location</TableCell>
-            <TableCell>Phase</TableCell>
-            <TableCell>Speed Limit</TableCell>
-            <TableCell>Distance</TableCell>
+            <TableCell colSpan={6} align="center">
+              No locations on route
+            </TableCell>
           </TableRow>
-        </TableHead>
-        <TableBody>
-          {length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={4} align="center">
-                No locations on route
+        ) : (
+          data.map((r, idx) => (
+            <TableRow key={r.locationIdentifier}>
+              <TableCell>{r.locationIdentifier}</TableCell>
+              <TableCell>{r.primaryPhaseDescription ?? '—'}</TableCell>
+              <TableCell>
+                <ChipCell value={r.primaryMph} />
+              </TableCell>
+              <TableCell>{r.opposingPhaseDescription ?? '—'}</TableCell>
+              <TableCell>
+                <ChipCell value={r.opposingMph} />
+              </TableCell>
+              <TableCell>
+                {idx === data.length - 1 ? null : (
+                  <ChipCell value={r.distance} />
+                )}
               </TableCell>
             </TableRow>
-          ) : (
-            data.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{item.locationIdentifier}</TableCell>
-                <TableCell>{item.approachDescription}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={
-                      item.mph !== null ? item.mph.toLocaleString() : 'N/A'
-                    }
-                    size="small"
-                    icon={
-                      item.mph !== null ? (
-                        <CheckIcon color="success" />
-                      ) : (
-                        <CloseIcon color="error" />
-                      )
-                    }
-                    color={item.mph !== null ? 'success' : 'error'}
-                  />
-                </TableCell>
-                <TableCell>
-                  {index + 1 - length === 0 ? null : (
-                    <Chip
-                      label={
-                        item.distance !== null
-                          ? item.distance.toLocaleString()
-                          : 'N/A'
-                      }
-                      size="small"
-                      icon={
-                        item.distance !== null ? (
-                          <CheckIcon color="success" />
-                        ) : (
-                          <CloseIcon color="error" />
-                        )
-                      }
-                      color={item.distance !== null ? 'success' : 'error'}
-                    />
-                  )}
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  )
-}
+          ))
+        )}
+      </TableBody>
+    </Table>
+  </TableContainer>
+)
 
 export default RouteChecker

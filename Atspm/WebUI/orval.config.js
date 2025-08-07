@@ -17,19 +17,20 @@ module.exports = {
   //     },
   //   },
   // },
-  data: {
+  config: {
     input: {
       target: './config-spec.json',
     },
     output: {
-      target: './src/api/config',
+      workspace: './src/api/config',
+      target: './',
       client: 'react-query',
-      templates: './orval-templates',
       mock: true,
-      mode: 'split',
+      templates: './orval-templates',
+      mode: 'tags-split',
       override: {
         mutator: {
-          path: './src/lib/axios.ts',
+          path: '../../lib/axios.ts',
           name: 'configRequest',
         },
       },

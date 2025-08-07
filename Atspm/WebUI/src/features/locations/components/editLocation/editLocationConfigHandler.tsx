@@ -1,8 +1,4 @@
-import {
-  Approach,
-  Detector,
-  Location,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Approach, Detector, Location } from '@/api/config'
 import { useGetLocation } from '@/features/locations/api'
 import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import { useEffect, useState } from 'react'

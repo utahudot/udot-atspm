@@ -1,7 +1,4 @@
-import {
-  postMeasureOptionPreset,
-  useGetMeasureType,
-} from '@/api/config/aTSPMConfigurationApi'
+import { postMeasureOptionPreset, useGetMeasureType } from '@/api/config'
 import { TransitSignalPriorityResult } from '@/api/reports/aTSPMReportDataApi.schemas'
 import { TspReportOptions } from '@/pages/reports/transit-signal-priority'
 import { useNotificationStore } from '@/stores/notifications'
