@@ -20,7 +20,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
 		<PackageId>$(AssemblyName)</PackageId>
-		<VersionPrefix>5.1.0</VersionPrefix>
+		<VersionPrefix>5.1.2</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
