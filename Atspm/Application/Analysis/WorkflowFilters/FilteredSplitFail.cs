@@ -31,8 +31,15 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
         public FilteredSplitFail(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add(1);
+            filteredList.Add(4);
+            filteredList.Add(5);
+            filteredList.Add(6);
             filteredList.Add(8);
             filteredList.Add(9);
+            filteredList.Add(61);
+            filteredList.Add(63);
+            filteredList.Add(64);
+            filteredList.Add(66);
             filteredList.Add(81);
             filteredList.Add(82);
         }
