@@ -25,33 +25,6 @@ using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    //public class LogCommandModelBinder : ModelBinder<DeviceEventLoggingConfiguration>
-    //{
-    //    public LogCommandModelBinder(LogConsoleCommand cmd)
-    //    {
-    //        BindMemberFromValue(b => b.Path, cmd.PathCommandOption);
-    //        BindMemberFromValue(b => b.BatchSize, cmd.BatchSizeOption);
-    //        BindMemberFromValue(b => b.ParallelProcesses, cmd.PrallelProcessesOption);
-    //    }
-    //}
-
-    //public class LogCommandQueryBinder : ModelBinder<DeviceEventLoggingQueryOptions>
-    //{
-    //    public LogCommandQueryBinder(LogConsoleCommand cmd)
-    //    {
-    //        BindMemberFromValue(b => b.IncludedLocations, cmd.IncludeLocationOption);
-    //        BindMemberFromValue(b => b.ExcludedLocations, cmd.ExcludeLocationOption);
-    //        BindMemberFromValue(b => b.IncludedAreas, cmd.AreaOption);
-    //        BindMemberFromValue(b => b.IncludedJurisdictions, cmd.JurisdictionOption);
-    //        BindMemberFromValue(b => b.IncludedRegions, cmd.RegionOption);
-    //        BindMemberFromValue(b => b.IncludedLocationTypes, cmd.LocationTypeOption);
-    //        BindMemberFromValue(b => b.DeviceType, cmd.DeviceConfigurationOption);
-    //        BindMemberFromValue(b => b.TransportProtocol, cmd.TransportProtocolOption);
-    //        BindMemberFromValue(b => b.TransportProtocol, cmd.TransportProtocolOption);
-    //    }
-    //}
-
-
     public class AggregationCommand : Command, ICommandOption<EventLogAggregateConfiguration>
     {
         public AggregationCommand() : base("aggregate-events", "Run event aggregation")
@@ -65,17 +38,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AggregationTypeArgument.FromAmong(values);
 
             DateOption.SetDefaultValue(DateTime.Now.Date.AddDays(-1));
-
-            //IncludeLocationOption.AddValidator(r =>
-            //{
-            //    if (r.GetValueForOption(ExcludeLocationOption)?.Count() > 0)
-            //        r.ErrorMessage = "Can't use include option when also using exclude option";
-            //});
-            //ExcludeLocationOption.AddValidator(r =>
-            //{
-            //    if (r.GetValueForOption(IncludeLocationOption)?.Count() > 0)
-            //        r.ErrorMessage = "Can't use exclude option when also using include option";
-            //});
 
             AddArgument(AggregationTypeArgument);
             AddOption(DateOption);

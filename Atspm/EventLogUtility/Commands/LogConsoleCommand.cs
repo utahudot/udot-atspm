@@ -22,7 +22,6 @@ using System.CommandLine.Binding;
 using System.CommandLine.NamingConventionBinder;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
-using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
@@ -112,7 +111,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludeConfigurations, DeviceConfigurationOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.DeviceStatus, DeviceStatusCommandOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocations, IncludeLocationOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.ExcludedLocations, ExcludeLocationOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
@@ -180,6 +179,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public TransportProtocolCommandOption() : base("--transport-protocol", "Device transport protocol to include")
         {
             AddAlias("-tp");
+
         }
     }
 

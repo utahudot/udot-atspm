@@ -35,7 +35,7 @@ namespace Utah.Udot.Atspm.Data.Models
         [JsonIgnore]
         public string LocationIdentifier { get; set; }
 
-        [Obsolete("this has bee replaced with StartEndRange")]
+        [Obsolete("this has been replaced with StartEndRange")]
         [JsonIgnore]
         public DateTime BinStartTime { get; set; }
     }
@@ -176,14 +176,20 @@ namespace Utah.Udot.Atspm.Data.Models
         ///<inheritdoc/>
         public int PhaseNumber { get; set; }
         public int PedCycles { get; set; }
-        public int PedDelay { get; set; }
-        public int MinPedDelay { get; set; }
-        public int MaxPedDelay { get; set; }
+        public double PedDelay { get; set; }
+        public double MinPedDelay { get; set; }
+        public double MaxPedDelay { get; set; }
         public int ImputedPedCallsRegistered { get; set; }
         public int UniquePedDetections { get; set; }
         public int PedBeginWalkCount { get; set; }
         public int PedCallsRegisteredCount { get; set; }
         public int PedRequests { get; set; }
+
+        public override string ToString()
+        {
+            //return $"Start: {Start} PhaseNumber: {PhaseNumber}, PedCycles: {PedCycles}, PedDelay: {PedDelay}, MinPedDelay: {MinPedDelay}, MaxPedDelay: {MaxPedDelay}, ImputedPedCallsRegistered: {ImputedPedCallsRegistered}, UniquePedDetections: {UniquePedDetections}, PedBeginWalkCount: {PedBeginWalkCount}, PedCallsRegisteredCount: {PedCallsRegisteredCount}, PedRequests: {PedRequests} End: {End}";
+            return $"{PedCycles}-{PedDelay}-{MinPedDelay}-{MaxPedDelay}-{PedRequests}-{ImputedPedCallsRegistered}-{UniquePedDetections}-{PedBeginWalkCount}-{PedCallsRegisteredCount}";
+        }
     }
 
     public partial class PhaseSplitMonitorAggregation : AggregationModelBase, ILocationPhaseLayer

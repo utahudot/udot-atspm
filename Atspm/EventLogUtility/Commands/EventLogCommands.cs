@@ -16,6 +16,7 @@
 #endregion
 
 using System.CommandLine;
+using Utah.Udot.ATSPM.EventLogUtility.Commands;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
@@ -25,11 +26,15 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         {
             AddCommand(AggregationCommand);
             AddCommand(LogCommand);
+            AddCommand(TransferCommand);
             AddCommand(ExtractCommand);
+            AddCommand(DecodeEventsCommand);
         }
 
         public AggregationCommand AggregationCommand { get; set; } = new AggregationCommand();
         public LogConsoleCommand LogCommand { get; set; } = new LogConsoleCommand();
+        public TransferLogsConsoleCommand TransferCommand { get; set; } = new TransferLogsConsoleCommand();
         public ExtractConsoleCommand ExtractCommand { get; set; } = new ExtractConsoleCommand();
+        public DecodeEventsCommand DecodeEventsCommand { get; set; } = new DecodeEventsCommand();
     }
 }
