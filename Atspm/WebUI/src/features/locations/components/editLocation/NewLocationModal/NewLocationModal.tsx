@@ -1,9 +1,8 @@
-import { useGetLocationSaveTemplatedLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
+// import { useGetLocationSaveTemplatedLocationFromKey } from '@/api/config'
 import {
   useCreateLocation,
   useLatestVersionOfAllLocations,
 } from '@/features/locations/api'
-import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import { Location, LocationExpanded } from '@/features/locations/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined'
@@ -19,7 +18,6 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -78,25 +76,19 @@ const NewLocationModal = ({
   setLocation,
   onCreatedFromTemplate,
 }: NewLocationModalProps) => {
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null
-  )
-  const [copyLocationFromTemplate, setCopyLocationFromTemplate] =
-    useState<boolean>(false)
+  // const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+  //   null
+  // )
+  // const [copyLocationFromTemplate, setCopyLocationFromTemplate] =
+  //   useState<boolean>(false)
 
-  const locationHandler = useLocationConfigHandler({
-    location: selectedLocation as Location,
-  })
+  // const locationHandler = useLocationConfigHandler({
+  //   location: selectedLocation as Location,
+  // })
 
-  const { mutateAsync: createFromTemplate } =
-    useGetLocationSaveTemplatedLocationFromKey()
   const { mutate: createLocation } = useCreateLocation()
   const { data: allLocationsData } = useLatestVersionOfAllLocations()
   const allLocations = allLocationsData?.value || []
-
-  const chosenSchema = useMemo(() => {
-    return copyLocationFromTemplate ? templateSchema : noTemplateSchema
-  }, [copyLocationFromTemplate])
 
   const {
     control,
@@ -104,7 +96,7 @@ const NewLocationModal = ({
     formState: { errors, isSubmitting },
     watch,
   } = useForm<LocationExpanded>({
-    resolver: zodResolver(chosenSchema),
+    resolver: zodResolver(noTemplateSchema),
     defaultValues: {
       locationIdentifier: '',
       primaryName: '',
@@ -124,65 +116,65 @@ const NewLocationModal = ({
   const locationIsLessThan10Characters = (locationIdentifier || '').length <= 10
 
   const onSubmit = async (data: LocationExpanded) => {
-    const devices = locationHandler?.expandedLocation?.devices || []
-    const transformedDevices = devices.map((device, index) => {
-      const { id, locationId, ...rest } = device
-      return {
-        ...rest,
-        ipaddress: data.devices ? data.devices[index].ipaddress : '',
-      }
-    })
+    // const devices = locationHandler?.expandedLocation?.devices || []
+    // const transformedDevices = devices.map((device, index) => {
+    //   const { id, locationId, ...rest } = device
+    //   return {
+    //     ...rest,
+    //     ipaddress: data.devices ? data.devices[index].ipaddress : '',
+    //   }
+    // })
 
-    if (copyLocationFromTemplate && selectedLocation) {
-      const templateData = {
-        locationIdentifier: data.locationIdentifier,
-        primaryName: data.primaryName || '',
-        secondaryName: data.secondaryName || '',
-        latitude: data.latitude || null,
-        longitude: data.longitude || null,
-        devices: transformedDevices,
-      }
+    // if (copyLocationFromTemplate && selectedLocation) {
+    //   const templateData = {
+    //     locationIdentifier: data.locationIdentifier,
+    //     primaryName: data.primaryName || '',
+    //     secondaryName: data.secondaryName || '',
+    //     latitude: data.latitude || null,
+    //     longitude: data.longitude || null,
+    //     devices: transformedDevices,
+    //   }
 
-      await createFromTemplate(
-        {
-          key: parseInt(selectedLocation.id),
-          data: templateData,
-        },
-        {
-          onSuccess: (createdData) => {
-            setLocation(createdData as unknown as Location)
+    //   await createFromTemplate(
+    //     {
+    //       key: parseInt(selectedLocation.id),
+    //       data: templateData,
+    //     },
+    //     {
+    //       onSuccess: (createdData) => {
+    //         setLocation(createdData as unknown as Location)
 
-            onCreatedFromTemplate()
-          },
-          onSettled: closeModal,
-        }
-      )
-    } else {
-      // If not copying template, we just need locationIdentifier.
-      const defaultValues = {
-        locationIdentifier: data.locationIdentifier,
-        note: '',
-        start: new Date().toISOString(),
-        primaryName: '',
-        secondaryName: '',
-        latitude: 0,
-        longitude: 0,
-        pedsAre1to1: false,
-        locationTypeId: 1,
-        chartEnabled: false,
-        regionId: 10,
-        jurisdictionId: 1,
-        versionAction: 'Initial',
-      }
-
-      createLocation(defaultValues, {
-        onSuccess: (createdData) => {
-          setLocation(createdData as unknown as Location)
-        },
-        onSettled: closeModal,
-      })
+    //         onCreatedFromTemplate()
+    //       },
+    //       onSettled: closeModal,
+    //     }
+    //   )
+    // } else {
+    // If not copying template, we just need locationIdentifier.
+    const defaultValues = {
+      locationIdentifier: data.locationIdentifier,
+      note: '',
+      start: new Date().toISOString(),
+      primaryName: '',
+      secondaryName: '',
+      latitude: 0,
+      longitude: 0,
+      pedsAre1to1: false,
+      locationTypeId: 1,
+      chartEnabled: false,
+      regionId: 10,
+      jurisdictionId: 1,
+      versionAction: 'Initial',
     }
+
+    createLocation(defaultValues, {
+      onSuccess: (createdData) => {
+        setLocation(createdData as unknown as Location)
+      },
+      onSettled: closeModal,
+    })
   }
+  // }
 
   const errorMessage = () => {
     if (errors.locationIdentifier) {

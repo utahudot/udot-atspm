@@ -27,7 +27,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
     /// </summary>
     public abstract class HostedServiceBase : IHostedService
     {
-        protected readonly ILogger _log;
+        private readonly ILogger _log;
         private readonly IServiceScopeFactory _services;
 
         /// <summary>
@@ -41,9 +41,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// The process to execute given the current service scope
         /// </summary>
         /// <param name="scope"></param>
+        /// <param name="stopwatch"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Exit Code</returns>
-        public abstract Task Process(IServiceScope scope, CancellationToken cancellationToken = default);
+        public abstract Task Process(IServiceScope scope, Stopwatch stopwatch = default, CancellationToken cancellationToken = default);
 
         /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -65,7 +66,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 try
                 {
-                    await Process(scope, cancellationToken);
+                    await Process(scope, sw, cancellationToken);
 
                     Environment.ExitCode = 1;
                 }
@@ -90,8 +91,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             cancellationToken.Register(() => logMessages.StoppingCancelled(serviceName));
             logMessages.StoppingService(serviceName);
-
-            //Environment.ExitCode = 0;
 
             return Task.CompletedTask;
         }

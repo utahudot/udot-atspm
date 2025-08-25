@@ -21,6 +21,7 @@ using Identity.Business.Agency;
 using Identity.Business.Claims;
 using Identity.Business.Tokens;
 using Identity.Business.Users;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 
-//gitactions: II
+//gitactions: III
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
@@ -108,6 +109,9 @@ builder.Host
         s.AddPathBaseFilter(h);
         s.AddAtspmAuthentication(h);
         s.AddAtspmAuthorization();
+
+        s.AddDataProtection()
+        .SetApplicationName("TestResetFlow");
 
         //don't mind me, i'm just putting this in here to gitactions thinks I changed something
 

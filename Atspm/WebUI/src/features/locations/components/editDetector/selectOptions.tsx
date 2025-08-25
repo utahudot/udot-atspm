@@ -38,7 +38,7 @@ export const hardwareTypes = [
   { id: 'Sensys', description: 'Sensys' },
   { id: 'Video', description: 'Video' },
   { id: 'FLIRThermalCamera', description: 'FLIR: Thermal Camera' },
-  { id: 'LiDAR', description: 'LiDAR' },
+  { id: 'LiDar', description: 'LiDAR' },
 ]
 
 export const laneTypes = [

@@ -50,5 +50,36 @@ namespace Utah.Udot.Atspm.Extensions
                 .GroupBy(x => x.index / batchSize)
                 .Select(group => group.Select(x => x.item));
         }
+
+        /// <summary>
+        /// Returns a sequence of lists representing a sliding window of the specified size over the source sequence.
+        /// Each list contains consecutive elements from the source, and the window advances by one element at a time.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the source sequence.</typeparam>
+        /// <param name="source">The source sequence to create sliding windows from.</param>
+        /// <param name="windowSize">The number of elements in each window.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> of lists, where each list contains <paramref name="windowSize"/> consecutive elements from the source.
+        /// </returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="windowSize"/> is less than 1.</exception>
+        public static IEnumerable<IList<T>> SlidingWindow<T>(this IEnumerable<T> source, int windowSize)
+        {
+            if (windowSize < 1)
+                throw new ArgumentException("Window size must be at least 1.");
+
+            var buffer = new Queue<T>();
+
+            foreach (var item in source)
+            {
+                buffer.Enqueue(item);
+
+                if (buffer.Count == windowSize)
+                {
+                    yield return buffer.ToList();
+                    buffer.Dequeue();
+                }
+            }
+        }
+
     }
 }

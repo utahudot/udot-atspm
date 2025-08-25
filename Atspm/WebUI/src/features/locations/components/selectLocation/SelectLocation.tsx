@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Location } from '@/api/config'
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'

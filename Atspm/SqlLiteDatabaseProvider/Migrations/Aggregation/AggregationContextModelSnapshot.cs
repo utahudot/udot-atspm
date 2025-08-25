@@ -48,10 +48,16 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations.Aggregation
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("Data")
                         .HasColumnType("BLOB");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType");
+                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType", "Start", "End");
 
                     b.ToTable("CompressedAggregations", t =>
                         {
