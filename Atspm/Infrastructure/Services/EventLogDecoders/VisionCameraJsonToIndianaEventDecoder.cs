@@ -1,4 +1,5 @@
-﻿using Utah.Udot.Atspm.Data.Models.EventLogModels;
+﻿using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders;
 
 
@@ -17,6 +18,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
                 {
                     var matchingDetectors = detectors
                         .Where(x => x.DectectorIdentifier == visionCameraDetection.zoneName)
+                        .Where(x => MovementMatches(x.MovementType, visionCameraDetection.direction))
                         .ToList();
 
                     if (!matchingDetectors.Any())
@@ -39,6 +41,36 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
                 .ToList(); // If you want a concrete list
 
             return response;
+        }
+
+        private bool MovementMatches(MovementTypes detectorMovement, string cameraDirection)
+        {
+            var cameraMovement = MapCameraDirection(cameraDirection);
+
+            switch (detectorMovement)
+            {
+                case MovementTypes.TR:
+                    return cameraMovement == MovementTypes.T || cameraMovement == MovementTypes.R;
+                case MovementTypes.TL:
+                    return cameraMovement == MovementTypes.T || cameraMovement == MovementTypes.L;
+                case MovementTypes.LTR:
+                    return cameraMovement == MovementTypes.L ||
+                           cameraMovement == MovementTypes.T ||
+                           cameraMovement == MovementTypes.R;
+                default:
+                    return detectorMovement == cameraMovement;
+            }
+        }
+
+        private MovementTypes MapCameraDirection(string cameraDirection)
+        {
+            return cameraDirection switch
+            {
+                "Through" => MovementTypes.T,
+                "RightTurn" => MovementTypes.R,
+                "LeftTurn" => MovementTypes.L,
+                _ => MovementTypes.NA
+            };
         }
 
         private class Root
