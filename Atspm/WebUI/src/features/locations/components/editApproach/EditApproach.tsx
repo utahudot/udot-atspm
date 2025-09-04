@@ -18,6 +18,7 @@ import {
 } from '@/features/locations/components/editLocation/locationStore'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
+import { removeAuditFields } from '@/utils/removeAuditFields'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -139,7 +140,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     setErrors(null)
 
     // Create a deep clone so we can safely mutate
-    const modifiedApproach = JSON.parse(
+    let modifiedApproach = JSON.parse(
       JSON.stringify(approach)
     ) as ConfigApproach
 
@@ -189,6 +190,11 @@ function EditApproach({ approach }: ApproachAdminProps) {
       det.movementType = findMovementType(det.movementType)?.value
       det.laneType = findLaneType(det.laneType)?.value
     })
+
+    // remove audit fields
+    modifiedApproach = removeAuditFields(modifiedApproach)
+    modifiedApproach.detectors =
+      modifiedApproach.detectors.map(removeAuditFields)
 
     editApproach(modifiedApproach, {
       onSuccess: (saved) => {
