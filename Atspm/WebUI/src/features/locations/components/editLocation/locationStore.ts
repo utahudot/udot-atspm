@@ -98,9 +98,6 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
 
       const stable = (obj: any) => JSON.stringify(normalize(obj))
 
-      console.log('checking unsaved changes', approaches)
-      console.log('against saved', savedApproaches)
-
       for (const a of approaches) {
         const saved = savedApproaches.find((s) => s.id === a.id)
         if (!saved) return true
