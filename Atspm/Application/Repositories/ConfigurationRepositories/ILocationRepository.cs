@@ -90,5 +90,6 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 
 
         Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate);
+        List<Location> GetLatestLocationsWithDetectionTypes();
     }
 }
