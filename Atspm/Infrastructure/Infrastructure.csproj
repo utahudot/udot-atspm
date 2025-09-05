@@ -25,6 +25,7 @@
 		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<UserSecretsId>8d5d6633-25e5-4c4a-b864-a8268f7b1dde</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>

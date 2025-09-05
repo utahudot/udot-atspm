@@ -63,10 +63,11 @@ namespace Utah.Udot.Atspm.Data.Models
         ///<inheritdoc/>
         public int ApproachId { get; set; }
 
-        public int SummedSpeed { get; set; }
+        public double SummedSpeed { get; set; }
         public int SpeedVolume { get; set; }
-        public int Speed85th { get; set; }
-        public int Speed15th { get; set; }
+        public double AverageSpeed { get; set; }
+        public double Speed85th { get; set; }
+        public double Speed15th { get; set; }
     }
 
     public partial class ApproachSplitFailAggregation : AggregationModelBase, ILocationApproachLayer
@@ -77,13 +78,13 @@ namespace Utah.Udot.Atspm.Data.Models
         ///<inheritdoc/>
         public int ApproachId { get; set; }
 
-        public bool IsProtectedPhase { get; set; }
-        public int SplitFailures { get; set; }
-        public int GreenOccupancySum { get; set; }
-        public int RedOccupancySum { get; set; }
-        public int GreenTimeSum { get; set; }
-        public int RedTimeSum { get; set; }
-        public int Cycles { get; set; }
+        public bool IsProtectedPhase { get; set; } // not zero get the calculations for each version protected phase and not :P use this as the event param
+        public int SplitFailures { get; set; } // how many times the 85% was hit for both green and red
+        public int GreenOccupancySum { get; set; } //how long the detector was on (EC 81on, 82 off)
+        public int RedOccupancySum { get; set; } // how long the detector was on those 5 sec. (after 9)
+        public int GreenTimeSum { get; set; } //how long the light was green (EC 1 - 8)
+        public int RedTimeSum { get; set; } // always 5 times the amount of cycles (only looking at 5 seconds after EC 9)
+        public int Cycles { get; set; } //(1 , 8, 9)
     }
 
     public partial class ApproachYellowRedActivationAggregation : AggregationModelBase, ILocationApproachLayer
@@ -198,8 +199,8 @@ namespace Utah.Udot.Atspm.Data.Models
         ///<inheritdoc/>
         public int PhaseNumber { get; set; }
 
-        public int EightyFifthPercentileSplit { get; set; }
-        public int SkippedCount { get; set; }
+        public double EightyFifthPercentileSplit { get; set; }
+        public int SkippedCount { get; set; } //All the cycles subtracted from the cycles
     }
 
     /// <summary>

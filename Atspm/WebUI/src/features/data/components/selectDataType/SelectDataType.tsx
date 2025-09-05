@@ -51,7 +51,7 @@ export const SelectDataType = ({
   const maxHeight = '600px'
   return (
     <Box display="flex" flexDirection="column">
-      <OptionsWrapper header="Data Types">
+      <OptionsWrapper header="Data Types" noPadding>
         <Box sx={{ maxHeight, overflow: 'auto' }}>
           <List sx={{ marginTop: '-8px' }}>
             {/* <Divider

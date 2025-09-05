@@ -8,12 +8,12 @@ import Login from '@/features/identity/components/signin'
 import { useSidebarStore } from '@/stores/sidebar'
 import {
   Avatar,
+  Box,
   Dialog,
   IconButton,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Menu,
+  MenuItem,
+  Typography,
 } from '@mui/material'
 import Cookies from 'js-cookie'
 import React, { useEffect, useState } from 'react'
@@ -143,16 +143,30 @@ export default function UserMenu() {
             'aria-labelledby': 'userMenu',
             role: 'menu',
           }}
+          slotProps={{
+            paper: {
+              sx: {
+                minWidth: 150,
+              },
+            },
+          }}
         >
           {isLoggedIn && (
-            <ListItemButton component={Link} href={'/user/profile'}>
-              <ListItemIcon>
+            <MenuItem component={Link} href={'/user/profile'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexGrow: 1,
+                  justifyContent: 'space-between',
+                }}
+              >
                 <PersonOutlineOutlinedIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary={'Profile'} />
-            </ListItemButton>
+                <Typography>Profile</Typography>
+              </Box>
+            </MenuItem>
           )}
-          <ListItemButton
+          {/* <ListItemButton
             onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
             role="menuitem"
           >
@@ -160,7 +174,22 @@ export default function UserMenu() {
               <LoginOutlinedIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
-          </ListItemButton>
+          </ListItemButton> */}
+          <MenuItem
+            onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexGrow: 1,
+                justifyContent: 'space-between',
+              }}
+            >
+              <LoginOutlinedIcon fontSize="small" />
+              <Typography>{isLoggedIn ? 'Log out' : 'Log in'}</Typography>
+            </Box>
+          </MenuItem>
         </Menu>
       )}
       {openLogin && (
