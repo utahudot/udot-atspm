@@ -99,7 +99,9 @@ const LocationGeneralOptionsEditor = () => {
 
     generalInfo.start = format(parseISO(location.start), 'yyyy-MM-dd')
 
+    // remove audit fields
     const generalInfoDto = removeAuditFields(generalInfo)
+    generalInfoDto.areas = location?.areas?.map(removeAuditFields)
 
     try {
       updateGeneralInfo(
