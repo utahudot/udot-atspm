@@ -16,6 +16,7 @@
 #endregion
 
 using Asp.Versioning;
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -33,13 +34,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host
     .ApplyVolumeConfiguration()
-    .ConfigureServices((h, s) =>
+.ConfigureLogging((h, l) =>
+{
+    //l.AddGoogle(new LoggingServiceOptions
+    //{
+    //    ProjectId = "ut-udot-atspm-dev",
+    //    ServiceName = "config",
+    //    Version = "1",
+    //    Options = LoggingOptions.Create(LogLevel.Debug, "Slinky", bufferOptions: BufferOptions.NoBuffer())
+    //});
+    l.AddGoogleLogging(h);
+})
+.ConfigureServices((h, s) =>
+{
+    s.AddControllers(o =>
     {
-        s.AddControllers(o =>
-        {
-            o.ReturnHttpNotAcceptable = true;
-            o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-            //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
+        o.ReturnHttpNotAcceptable = true;
+        o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+        //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
             o.OutputFormatters.Add(new EventLogCsvFormatter());
             o.OutputFormatters.RemoveType<StringOutputFormatter>();
         })
@@ -152,4 +164,23 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+
+
+
+
+var l = app.Services.GetService<ILogger<Program>>().WithAddedLabels(new Dictionary<string, string>()
+            {
+                { "Larry", DateTime.Now.Year.ToString() },
+                { "Moe", DateTime.Now.Month.ToString() },
+                { "Curly", DateTime.Now.Date.ToString() },
+            });
+
+//var l = app.Services.GetService<ILogger<Program>>();
+
+l.LogDebug(new EventId(1001, "Debug Event"), "this is a test log message {param1} {param2} {param3}", "Larry", "Moe", "Curly");
+l.LogInformation(new EventId(1002, "Information Event"), "this is a test log message {param1} {param2} {param3}", "Larry", "Moe", "Curly");
+l.LogWarning(new EventId(1003, "Warning Event"), "this is a test log message {param1} {param2} {param3}", "Larry", "Moe", "Curly");
+l.LogError(new EventId(1004, "Error Event"), "this is a test log message {param1} {param2} {param3}", "Larry", "Moe", "Curly");
+
 app.Run();
+
