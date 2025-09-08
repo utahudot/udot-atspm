@@ -15,18 +15,13 @@
 // limitations under the License.
 #endregion
 
-using Google.Api;
-using Google.Cloud.Diagnostics.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using System.Diagnostics;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -34,11 +29,11 @@ using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
 
-if (OperatingSystem.IsWindows())
-{
-    if (!EventLog.SourceExists("Atspm"))
-        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
-}
+//if (OperatingSystem.IsWindows())
+//{
+//    if (!EventLog.SourceExists("Atspm"))
+//        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
+//}
 
 var rootCmd = new WatchdogCommand();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -51,16 +46,15 @@ cmdBuilder.UseHost(hostBuilder =>
     .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
-        if (OperatingSystem.IsWindows())
-        {
-            l.AddEventLog(c =>
-            {
-                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
-                c.LogName = "Atspm";
-            });
-        }
+        //if (OperatingSystem.IsWindows())
+        //{
+        //    l.AddEventLog(c =>
+        //    {
+        //        c.SourceName = AppDomain.CurrentDomain.FriendlyName;
+        //        c.LogName = "Atspm";
+        //    });
+        //}
 
-        
         l.AddGoogleLogging(h);
     })
     .ConfigureServices((h, s) =>
@@ -103,118 +97,3 @@ host =>
 
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync(args);
-
-
-/// <summary>
-/// Provides extension methods for <see cref="IHostEnvironment"/> to detect and extract environment context
-/// </summary>
-public static class HostEnvironmentExtensions
-{
-    /// <summary>
-    /// Determines if the application is running inside a container by checking the <c>DOTNET_RUNNING_IN_CONTAINER</c> environment variable.
-    /// </summary>
-    /// <param name="env">The host environment.</param>
-    /// <returns>True if running in a container; otherwise, false.</returns>
-    public static bool IsContainer(this IHostEnvironment env)
-    {
-        return string.Equals(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"), "true", StringComparison.OrdinalIgnoreCase);
-    }
-
-    /// <summary>
-    /// Determines if the application is running as a Google Cloud Run service by checking the <c>K_SERVICE</c> environment variable.
-    /// </summary>
-    /// <param name="env">The host environment.</param>
-    /// <returns>True if running as a Cloud Run service; otherwise, false.</returns>
-    public static bool IsCloudRunService(this IHostEnvironment env)
-    {
-        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("K_SERVICE"));
-    }
-
-    /// <summary>
-    /// Determines if the application is running as a Google Cloud Run job by checking the <c>CLOUD_RUN_JOB</c> environment variable.
-    /// </summary>
-    /// <param name="env">The host environment.</param>
-    /// <returns>True if running as a Cloud Run job; otherwise, false.</returns>
-    public static bool IsCloudRunJob(this IHostEnvironment env)
-    {
-        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CLOUD_RUN_JOB"));
-    }
-
-    /// <summary>
-    /// Extracts Cloud Run service metadata from environment variables (<c>K_SERVICE</c>, <c>K_REVISION</c>, <c>K_CONFIGURATION</c>)
-    /// and returns a <see cref="CloudRunConfiguration"/> instance.
-    /// </summary>
-    /// <param name="env">The host environment.</param>
-    /// <returns>A <see cref="CloudRunConfiguration"/> populated from environment variables.</returns>
-    public static CloudRunConfiguration GetCloudRunConfiguration(this IHostEnvironment env)
-    {
-        return new CloudRunConfiguration()
-        {
-            Service = Environment.GetEnvironmentVariable("K_SERVICE"),
-            Revision = Environment.GetEnvironmentVariable("K_REVISION"),
-            Configuration = Environment.GetEnvironmentVariable("K_CONFIGURATION"),
-        };
-    }
-
-    /// <summary>
-    /// Extracts Cloud Run job metadata from environment variables (<c>CLOUD_RUN_JOB</c>, <c>CLOUD_RUN_JOB_EXECUTION</c>,
-    /// <c>CLOUD_RUN_TASK_INDEX</c>, <c>CLOUD_RUN_TASK_ATTEMPT</c>) and returns a <see cref="CloudRunJobConfiguration"/> instance.
-    /// </summary>
-    /// <param name="env">The host environment.</param>
-    /// <returns>A <see cref="CloudRunJobConfiguration"/> populated from environment variables.</returns>
-    public static CloudRunJobConfiguration GetCloudRunJobConfiguration(this IHostEnvironment env)
-    {
-        return new CloudRunJobConfiguration()
-        {
-            JobName = Environment.GetEnvironmentVariable("CLOUD_RUN_JOB"),
-            ExecutionId = Environment.GetEnvironmentVariable("CLOUD_RUN_EXECUTION"),
-            TaskIndex = Environment.GetEnvironmentVariable("CLOUD_RUN_TASK_INDEX"),
-            TaskAttempt = Environment.GetEnvironmentVariable("CLOUD_RUN_TASK_ATTEMPT"),
-        };
-    }
-}
-
-public static class LoggingBuilerExtensions
-{
-    public static ILoggingBuilder AddGoogleLogging(this ILoggingBuilder builder, HostBuilderContext host)
-    {
-        var config = host.Configuration.GetSection("Logging:GoogleDiagnostics").Get<GoogleDiagnosticsConfiguration>();
-
-        if (config != null && config.Enabled)
-        {
-            var resource = new MonitoredResource();
-            var labels = new Dictionary<string, string>();
-
-            if (host.HostingEnvironment.IsCloudRunService())
-            {
-                var service = host.HostingEnvironment.GetCloudRunConfiguration();
-            }
-
-            if (host.HostingEnvironment.IsCloudRunJob())
-            {
-                var job = host.HostingEnvironment.GetCloudRunJobConfiguration();
-
-                builder.ClearProviders();
-
-                resource.Type = "cloud_run_job";
-                resource.Labels.Add("project_id", config.ProjectId);
-                resource.Labels.Add("job_name", job?.JobName);
-                resource.Labels.Add("location", config.Region);
-
-                labels.Add("run.googleapis.com/execution_name", job?.ExecutionId ?? "manual");
-                labels.Add("run.googleapis.com/task_attempt", job?.TaskAttempt ?? "0");
-                labels.Add("run.googleapis.com/task_index", job?.TaskIndex ?? "0");
-            }
-
-            builder.AddGoogle(new LoggingServiceOptions
-            {
-                ProjectId = config.ProjectId,
-                ServiceName = config.ServiceName,
-                Version = config.Version,
-                Options = LoggingOptions.Create(config.MinimumLogLevel, config.LogName, labels, resource)
-            });
-        }
-
-        return builder;
-    }
-}
