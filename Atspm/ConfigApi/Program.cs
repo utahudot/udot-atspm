@@ -29,7 +29,6 @@ using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.ATSPM.ConfigApi.Utility;
-using Utah.Udot.NetStandardToolkit.Extensions;
 
 //gitactions: III
 
@@ -39,6 +38,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host
     .ApplyVolumeConfiguration()
+    .ConfigureLogging((h, l) =>
+    {
+        l.AddGoogle(h);
+    })
     .ConfigureServices((h, s) =>
     {
         s.AddControllers(o =>
