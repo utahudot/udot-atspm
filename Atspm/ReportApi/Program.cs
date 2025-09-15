@@ -58,6 +58,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host
     .ApplyVolumeConfiguration()
+    .ConfigureLogging((h, l) =>
+    {
+        l.AddGoogle(h);
+    })
     .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>

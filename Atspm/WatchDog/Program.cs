@@ -15,28 +15,20 @@
 // limitations under the License.
 #endregion
 
-using Google.Cloud.Diagnostics.Common;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using System.Diagnostics;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
-
-if (OperatingSystem.IsWindows())
-{
-    if (!EventLog.SourceExists("Atspm"))
-        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
-}
 
 var rootCmd = new WatchdogCommand();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -49,34 +41,7 @@ cmdBuilder.UseHost(hostBuilder =>
     .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
-        if (OperatingSystem.IsWindows())
-        {
-            l.AddEventLog(c =>
-            {
-                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
-                c.LogName = "Atspm";
-            });
-        }
-
-        Console.WriteLine($"OsVersion: {Environment.OSVersion} - {Environment.OSVersion.Platform}:{Environment.OSVersion.Version}");
-
-        Console.WriteLine($"container? {Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")}");
-
-        Console.WriteLine($"gcp container? {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("K_SERVICE"))}");
-        Console.WriteLine($"gcp job container? {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CLOUD_RUN_JOB"))}");
-
-        var config = h.Configuration.GetSection("Logging:GoogleDiagnostics").Get<GoogleDiagnosticsConfiguration>();
-
-        if (config != null && config.Enabled)
-        {
-            l.AddGoogle(new LoggingServiceOptions
-            {
-                ProjectId = config.ProjectId,
-                ServiceName = config.ServiceName,
-                Version = config.Version,
-                Options = LoggingOptions.Create(config.MinimumLogLevel, config.ServiceName)
-            });
-        }
+        l.AddGoogle(h);
     })
     .ConfigureServices((h, s) =>
     {
@@ -94,7 +59,6 @@ cmdBuilder.UseHost(hostBuilder =>
         s.AddScoped<PhaseService>();
         s.AddScoped<SegmentedErrorsService>();
         s.AddScoped<IWatchDogIgnoreEventService, WatchDogIgnoreEventService>();
-
 
         // Register the hosted service with the date
         s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
@@ -114,7 +78,6 @@ host =>
         }
     });
 });
-
 
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync(args);
