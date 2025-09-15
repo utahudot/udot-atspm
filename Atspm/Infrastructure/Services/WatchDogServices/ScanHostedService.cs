@@ -24,6 +24,14 @@ using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
+    /// <summary>
+    /// Hosted background service that executes the signal performance scan process as part of the Watchdog system.
+    /// Inherits from <see cref="HostedServiceBase"/> to provide scoped execution and logging.
+    /// 
+    /// This service configures scan and email options from <see cref="WatchdogConfiguration"/> and invokes
+    /// the <see cref="ScanService"/> to perform the scan operation, typically used for monitoring and reporting
+    /// on traffic signal performance and anomalies.
+    /// </summary>
     public class ScanHostedService(ILogger<ScanHostedService> log, IServiceScopeFactory serviceProvider, IOptions<WatchdogConfiguration> options) : HostedServiceBase(log, serviceProvider)
     {
         private readonly WatchdogConfiguration _options = options.Value;
