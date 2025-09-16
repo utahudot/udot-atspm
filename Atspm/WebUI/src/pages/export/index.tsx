@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Location } from '@/api/config'
 import OptionsWrapper from '@/components/OptionsWrapper'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import SelectDateTime from '@/components/selectTimeSpan'
@@ -24,6 +24,7 @@ import {
   useTheme,
 } from '@mui/material'
 import {
+  addDays,
   endOfMonth,
   endOfWeek,
   isValid,
@@ -59,10 +60,14 @@ const ExportData = () => {
 
   const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
 
+  // Todo: for now, the end date is the start date + 1 day for raw data
+
   const { refetch: refetchEventLogs } = useEventLogs({
     locationIdentifier: location?.locationIdentifier || '',
     start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
-    end: isValid(endDateTime) ? dateToTimestamp(endDateTime) : '',
+    end: isValid(startDateTime)
+      ? dateToTimestamp(addDays(startDateTime, 1))
+      : '',
     dataType: selectedOption.name,
     ResponseFormat: downloadFormat,
   })
@@ -71,7 +76,7 @@ const ExportData = () => {
     location?.locationIdentifier,
     selectedOption.name,
     isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
-    isValid(endDateTime) ? dateToTimestamp(endDateTime) : ''
+    isValid(startDateTime) ? dateToTimestamp(addDays(startDateTime, 1)) : ''
   )
 
   const missingDays = useMissingDays(
@@ -201,7 +206,7 @@ const ExportData = () => {
                 setSelectedDataType={setSelectedOption}
               />
               <Box display="flex" flexDirection="column">
-                <OptionsWrapper header="Export Options">
+                <OptionsWrapper header="Export Options" noPadding>
                   <Box sx={{ overflow: 'auto' }}>
                     <List sx={{ marginTop: '-8px' }}>
                       {options.map((opt, index) => (

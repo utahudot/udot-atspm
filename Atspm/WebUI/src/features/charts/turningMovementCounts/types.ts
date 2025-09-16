@@ -57,8 +57,15 @@ export interface RawTurningMovementCountsResponse {
   type: ChartType.TurningMovementCounts
   data: {
     charts: RawTurningMovementCountsData[]
-    table: any
-    peakHourFactor: number
-    peakHour: { key: string; value: string }
+    table: RawTurningMovementCountTableRow[]
+    peakHourFactor: number | null
+    peakHour: { key: string; value: number } | null
   }
+}
+
+interface RawTurningMovementCountTableRow {
+  direction: string
+  movementType: string
+  laneType: string
+  volume: { value: number; timestamp: string }[]
 }

@@ -15,11 +15,11 @@
 // limitations under the License.
 // #endregion
 import { identityAxios } from '@/lib/axios'
-import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
+import { QueryConfig } from '@/lib/react-query'
+import { useNotificationStore } from '@/stores/notifications'
 import Cookies from 'js-cookie'
 import { useMutation } from 'react-query'
 import UserDto from '../types/userDto'
-import { useNotificationStore } from '@/stores/notifications'
 
 const userToken = Cookies.get('token')
 
@@ -40,8 +40,7 @@ export const useEditUserInfo = (config?: QueryConfig<typeof editUserInfo>) => {
     onSuccess: (data) => {
       addNotification({
         type: 'success',
-        title: 'Success',
-        message: 'Profile updated successfully',
+        title: 'Profile updated',
       })
       if (config?.onSuccess) {
         config.onSuccess(data)
@@ -50,8 +49,7 @@ export const useEditUserInfo = (config?: QueryConfig<typeof editUserInfo>) => {
     onError: (error) => {
       addNotification({
         type: 'error',
-        title: 'Error',
-        message: 'Failed to update profile',
+        title: 'Failed to update profile',
       })
       if (config?.onError) {
         config.onError(error)
