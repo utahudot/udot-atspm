@@ -87,26 +87,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             var groups = batch.GroupBy(p => p.DetectorId).ToList();
             var sensorIds = groups.Select(g => g.Key).ToList();
 
-            Dictionary<string, DeviceMapping> deviceLookup;
+            List<Device> devices = new List<Device>();
 
             try
             {
-                var test = _deviceRepository
+                devices = _deviceRepository
                     .GetList()
                     .Where(d => d.DeviceType == DeviceTypes.SpeedSensor)
                     .ToList();
-                deviceLookup = _deviceRepository
-                    .GetList()
-                    .Where(d => d.DeviceType == DeviceTypes.SpeedSensor)
-                    .ToDictionary(
-                        d => d.DeviceIdentifier.Trim().ToUpperInvariant(),
-                        d => new DeviceMapping
-                        {
-                            Id = d.Id,
-                            DeviceIdentifier = d.DeviceIdentifier,
-                            LocationId = d.Location.Id,
-                            LocationIdentifier = d.Location.LocationIdentifier
-                        });
+                //deviceLookup = devices
+                //    .ToDictionary(
+                //        d => d.DeviceIdentifier.Trim().ToUpperInvariant(),
+                //        d => new DeviceMapping
+                //        {
+                //            Id = d.Id,
+                //            DeviceIdentifier = d.DeviceIdentifier,
+                //            LocationId = d.Location.Id,
+                //            LocationIdentifier = d.Location.LocationIdentifier
+                //        });
             }
             catch (Exception ex)
             {
@@ -121,8 +119,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
             foreach (var group in groups)
             {
                 var detectorId = group.Key?.Trim().ToUpperInvariant();
-
-                if (!deviceLookup.TryGetValue(detectorId, out var device))
+                var device = devices.Where(d => d.DeviceIdentifier.Trim().ToUpperInvariant() == detectorId).FirstOrDefault();
+                if (device == null)
                 {
                     _logger.LogWarning("No mapping found for sensor ID {SensorId} — skipping this group", group.Key);
                     continue;
@@ -130,13 +128,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
                 try
                 {
-                    _logger.LogDebug($"Creating envelope for Location Identifier:{device.LocationIdentifier} Device:{device.Id}");
+                    _logger.LogDebug($"Creating envelope for Location Identifier:{device.Location.LocationIdentifier} Device:{device.Id}");
                     var envelope = new EventBatchEnvelope
                     {
                         DataType = nameof(SpeedEvent),
                         Start = group.Min(p => p.Timestamp),
                         End = group.Max(p => p.Timestamp),
-                        LocationIdentifier = device.LocationIdentifier,
+                        LocationIdentifier = device.Location.LocationIdentifier,
                         DeviceId = device.Id,
                         Items = JToken.FromObject(group.ToList())
                     };
