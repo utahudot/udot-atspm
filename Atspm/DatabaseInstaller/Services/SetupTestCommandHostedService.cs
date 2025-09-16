@@ -19,7 +19,6 @@ using DatabaseInstaller.Commands;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -28,57 +27,33 @@ public class SetupTestCommandHostedService : IHostedService
 {
     private readonly ILogger<SetupTestCommandHostedService> _logger;
     private readonly IJurisdictionRepository _jurisdictionRepository;
-    private readonly ILocationTypeRepository _locationTypeRepository;
     private readonly ILocationRepository _locationRepository;
-    private readonly IApproachRepository _approachRepository;
-    private readonly IDetectorRepository _detectorRepository;
     private readonly IDeviceConfigurationRepository _deviceConfigurationRepository;
     private readonly IProductRepository _productRepository;
     private readonly IRegionsRepository _regionsRepository;
     private readonly IAreaRepository _areaRepository;
-    private readonly IDetectionTypeRepository _detectionTypeRepository;
-    private readonly IMeasureTypeRepository _measureTypeRepository;
-    private readonly IRouteRepository _routeRepository;
-    private readonly IRouteLocationsRepository _routeLocationsRepository;
-    private readonly IServiceProvider _serviceProvider;
     private readonly IDeviceRepository _deviceRepository;
     private readonly TestingConfiguration _config;
 
     public SetupTestCommandHostedService(
         ILogger<SetupTestCommandHostedService> logger,
         IJurisdictionRepository jurisdictionRepository,
-        ILocationTypeRepository locationTypeRepository,
         ILocationRepository locationRepository,
-        IApproachRepository approachRepository,
-        IDetectorRepository detectorRepository,
         IDeviceRepository deviceRepository,
         IDeviceConfigurationRepository deviceConfigurationRepository,
         IProductRepository productRepository,
         IRegionsRepository regionsRepository,
         IAreaRepository areaRepository,
-        IDetectionTypeRepository detectionTypeRepository,
-        IMeasureTypeRepository measureTypeRepository,
-        IRouteRepository routeRepository,
-        IRouteLocationsRepository routeLocationsRepository,
-        IOptions<TestingConfiguration> config,
-        IServiceProvider serviceProvider
+        IOptions<TestingConfiguration> config
         )
     {
         _logger = logger;
         _jurisdictionRepository = jurisdictionRepository;
-        _locationTypeRepository = locationTypeRepository;
         _locationRepository = locationRepository;
-        _approachRepository = approachRepository;
-        _detectorRepository = detectorRepository;
         _deviceConfigurationRepository = deviceConfigurationRepository;
         _productRepository = productRepository;
         _regionsRepository = regionsRepository;
         _areaRepository = areaRepository;
-        _detectionTypeRepository = detectionTypeRepository;
-        _measureTypeRepository = measureTypeRepository;
-        _routeRepository = routeRepository;
-        _routeLocationsRepository = routeLocationsRepository;
-        _serviceProvider = serviceProvider;
         _deviceRepository = deviceRepository;
         _config = config.Value;
     }
@@ -96,18 +71,54 @@ public class SetupTestCommandHostedService : IHostedService
 
     private async Task SeedEmulatedDevicesFromConfigAsync(string path, string? protocolFilter)
     {
-        if (!File.Exists(path))
+        // Instead of reading from devices.json, generate devices dynamically
+        var devices = new List<DeviceDefinition>();
+
+        // Counts per protocol (from env vars or config)
+        int ftpCount = _config.FtpCount;
+        var sftpCount = _config.SftpCount;
+        var httpCount = _config.HttpCount;
+
+        // FTP
+        for (int i = 1; i <= ftpCount; i++)
         {
-            _logger.LogWarning($"devices.json file not found at path: {path}");
-            return;
+            devices.Add(new DeviceDefinition
+            {
+                DeviceIdentifier = $"FTP-{i:D3}",
+                Protocol = "ftp",
+                IpAddress = _config.FtpIp,
+                Port = 21,
+                LogDirectory = Path.Combine(_config.FtpLogBase, $"FTP-{i:D3}"),
+                UseCompression = false
+            });
         }
 
-        var json = await File.ReadAllTextAsync(path);
-        var devices = JsonSerializer.Deserialize<List<DeviceDefinition>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        if (devices == null || devices.Count == 0)
+        // SFTP
+        for (int i = 1; i <= sftpCount; i++)
         {
-            _logger.LogWarning("No devices found in devices.json");
-            return;
+            devices.Add(new DeviceDefinition
+            {
+                DeviceIdentifier = $"SFTP-{i:D3}",
+                Protocol = "sftp",
+                IpAddress = _config.SftpIp,
+                Port = 22,
+                LogDirectory = Path.Combine(_config.SftpLogBase, $"SFTP-{i:D3}"),
+                UseCompression = false
+            });
+        }
+
+        // HTTP
+        for (int i = 1; i <= httpCount; i++)
+        {
+            devices.Add(new DeviceDefinition
+            {
+                DeviceIdentifier = $"HTTP-{i:D3}",
+                Protocol = "http",
+                IpAddress = "127.0.0.1",
+                Port = 80,
+                LogDirectory = Path.Combine(_config.HttpLogBase, $"HTTP-{i:D3}"),
+                UseCompression = false
+            });
         }
 
         if (!string.IsNullOrEmpty(protocolFilter))
@@ -117,6 +128,12 @@ public class SetupTestCommandHostedService : IHostedService
                 .ToList();
 
             _logger.LogInformation($"Filtered devices to protocol '{protocolFilter}', count: {devices.Count}");
+        }
+
+        if (!devices.Any())
+        {
+            _logger.LogWarning("No devices generated from configuration.");
+            return;
         }
 
         var defaultRegionId = EnsureDefaultRegion();
@@ -131,13 +148,32 @@ public class SetupTestCommandHostedService : IHostedService
 
             var protocolEnum = Enum.TryParse<TransportProtocols>(device.Protocol, true, out var proto) ? proto : TransportProtocols.Ftp;
             var productId = productLookup.First().Value; // Default to first if unknown
+
             var product = _productRepository.GetList()
-                .ToList() // forces EF to evaluate in memory
+                .ToList()
                 .FirstOrDefault(p => device.DeviceIdentifier.Contains(p.Model, StringComparison.OrdinalIgnoreCase));
 
             if (product != null)
             {
                 productId = product.Id;
+            }
+            var Path = "";
+            var username = "";
+
+            switch (protocolEnum)
+            {
+                case TransportProtocols.Ftp:
+                    Path = $"{_config.FtpLogBase}/{device.DeviceIdentifier}";
+                    username = "ftpuser";
+                    break;
+                case TransportProtocols.Sftp:
+                    Path = $"{_config.SftpLogBase}/{device.DeviceIdentifier}";
+                    username = "sftpuser";
+                    break;
+                case TransportProtocols.Http:
+                    Path = $"{_config.HttpLogBase}/{device.DeviceIdentifier}";
+                    username = "sftpuser";
+                    break;
             }
 
             var deviceConfig = new DeviceConfiguration
@@ -145,7 +181,7 @@ public class SetupTestCommandHostedService : IHostedService
                 Description = $"Test config for {device.DeviceIdentifier}",
                 Protocol = protocolEnum,
                 Port = device.Port,
-                Path = $"/files/{device.DeviceIdentifier}",
+                Path = Path,
                 Query = new[] { "dat", "datZ" },
                 ConnectionProperties = new Dictionary<string, object>
                 {
@@ -154,11 +190,11 @@ public class SetupTestCommandHostedService : IHostedService
                     ["DataConnectionType"] = "AutoActive",
                     ["AutoConnect"] = true
                 },
-                ConnectionTimeout = 2000,
+                ConnectionTimeout = 5000,
                 OperationTimeout = 30000,
                 LoggingOffset = 0,
                 Decoders = new[] { "AscToIndianaDecoder" },
-                UserName = "ftpuser",
+                UserName = username,
                 Password = "password",
                 ProductId = productId
             };
@@ -172,7 +208,7 @@ public class SetupTestCommandHostedService : IHostedService
                 Latitude = 40.7,
                 Longitude = -111.9,
                 ChartEnabled = true,
-                Note = "Seeded from devices.json",
+                Note = "Seeded from dynamic config",
                 VersionAction = LocationVersionActions.New,
                 Start = DateTime.UtcNow,
                 PedsAre1to1 = false,
@@ -188,7 +224,7 @@ public class SetupTestCommandHostedService : IHostedService
                 DeviceStatus = DeviceStatus.Active,
                 DeviceType = DeviceTypes.SignalController,
                 LoggingEnabled = true,
-                Notes = "Auto-attached from devices.json",
+                Notes = "Auto-attached from dynamic config",
                 DeviceConfigurationId = deviceConfig.Id,
                 DeviceConfiguration = deviceConfig,
             };
@@ -198,7 +234,114 @@ public class SetupTestCommandHostedService : IHostedService
 
             _logger.LogInformation($"Seeded device {device.DeviceIdentifier} at IP {device.IpAddress} using dedicated config {deviceConfig.Description}");
         }
+
     }
+
+    //private async Task SeedEmulatedDevicesFromConfigAsync(string path, string? protocolFilter)
+    //{
+    //    if (!File.Exists(path))
+    //    {
+    //        _logger.LogWarning($"devices.json file not found at path: {path}");
+    //        return;
+    //    }
+
+    //    var json = await File.ReadAllTextAsync(path);
+    //    var devices = JsonSerializer.Deserialize<List<DeviceDefinition>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    //    if (devices == null || devices.Count == 0)
+    //    {
+    //        _logger.LogWarning("No devices found in devices.json");
+    //        return;
+    //    }
+
+    //    if (!string.IsNullOrEmpty(protocolFilter))
+    //    {
+    //        devices = devices
+    //            .Where(d => d.Protocol.Equals(protocolFilter, StringComparison.OrdinalIgnoreCase))
+    //            .ToList();
+
+    //        _logger.LogInformation($"Filtered devices to protocol '{protocolFilter}', count: {devices.Count}");
+    //    }
+
+    //    var defaultRegionId = EnsureDefaultRegion();
+    //    var defaultAreaId = EnsureDefaultArea();
+    //    var defaultJurisdictionId = EnsureDefaultJurisdiction();
+    //    var productLookup = _productRepository.GetList().ToDictionary(p => p.Model, p => p.Id);
+
+    //    foreach (var device in devices)
+    //    {
+    //        if (_deviceRepository.GetList().Any(d => d.DeviceIdentifier == device.DeviceIdentifier))
+    //            continue;
+
+    //        var protocolEnum = Enum.TryParse<TransportProtocols>(device.Protocol, true, out var proto) ? proto : TransportProtocols.Ftp;
+    //        var productId = productLookup.First().Value; // Default to first if unknown
+    //        var product = _productRepository.GetList()
+    //            .ToList() // forces EF to evaluate in memory
+    //            .FirstOrDefault(p => device.DeviceIdentifier.Contains(p.Model, StringComparison.OrdinalIgnoreCase));
+
+    //        if (product != null)
+    //        {
+    //            productId = product.Id;
+    //        }
+
+    //        var deviceConfig = new DeviceConfiguration
+    //        {
+    //            Description = $"Test config for {device.DeviceIdentifier}",
+    //            Protocol = protocolEnum,
+    //            Port = device.Port,
+    //            Path = $"/files/{device.DeviceIdentifier}",
+    //            Query = new[] { "dat", "datZ" },
+    //            ConnectionProperties = new Dictionary<string, object>
+    //            {
+    //                ["DataConnectionConnectTimeout"] = 5000,
+    //                ["DataConnectionReadTimeout"] = 15000,
+    //                ["DataConnectionType"] = "AutoActive",
+    //                ["AutoConnect"] = true
+    //            },
+    //            ConnectionTimeout = 2000,
+    //            OperationTimeout = 30000,
+    //            LoggingOffset = 0,
+    //            Decoders = new[] { "AscToIndianaDecoder" },
+    //            UserName = "ftpuser",
+    //            Password = "password",
+    //            ProductId = productId
+    //        };
+    //        _deviceConfigurationRepository.Add(deviceConfig);
+
+    //        var location = new Location
+    //        {
+    //            LocationIdentifier = device.DeviceIdentifier,
+    //            PrimaryName = device.DeviceIdentifier,
+    //            SecondaryName = device.DeviceIdentifier,
+    //            Latitude = 40.7,
+    //            Longitude = -111.9,
+    //            ChartEnabled = true,
+    //            Note = "Seeded from devices.json",
+    //            VersionAction = LocationVersionActions.New,
+    //            Start = DateTime.UtcNow,
+    //            PedsAre1to1 = false,
+    //            LocationTypeId = 1,
+    //            JurisdictionId = defaultJurisdictionId,
+    //            RegionId = defaultRegionId,
+    //        };
+
+    //        var newDevice = new Device
+    //        {
+    //            DeviceIdentifier = device.DeviceIdentifier,
+    //            Ipaddress = device.IpAddress,
+    //            DeviceStatus = DeviceStatus.Active,
+    //            DeviceType = DeviceTypes.SignalController,
+    //            LoggingEnabled = true,
+    //            Notes = "Auto-attached from devices.json",
+    //            DeviceConfigurationId = deviceConfig.Id,
+    //            DeviceConfiguration = deviceConfig,
+    //        };
+
+    //        location.Devices.Add(newDevice);
+    //        _locationRepository.Add(location);
+
+    //        _logger.LogInformation($"Seeded device {device.DeviceIdentifier} at IP {device.IpAddress} using dedicated config {deviceConfig.Description}");
+    //    }
+    //}
 
     private int EnsureDefaultJurisdiction()
     {

@@ -8,12 +8,14 @@ namespace DeviceEmulator.Services
         private readonly DeviceDefinition _device;
         private readonly ILogger _logger;
         private readonly string _deviceDirectory;
+        private readonly IConfiguration _config;
 
-        public SftpDeviceRunner(DeviceDefinition device, ILogger logger)
+        public SftpDeviceRunner(DeviceDefinition device, ILogger logger, IConfiguration config)
         {
             _device = device;
             _logger = logger;
-            _deviceDirectory = Path.Combine("data", "sftp", _device.DeviceIdentifier);
+            _config = config;
+            _deviceDirectory = Path.Combine("/data", _device.DeviceIdentifier);
 
             Directory.CreateDirectory(_deviceDirectory);
         }

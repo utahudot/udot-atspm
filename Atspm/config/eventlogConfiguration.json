@@ -1,0 +1,20 @@
+{
+  "DeviceDownloaderConfiguration": {
+    "DeviceDownloader": {
+      "BasePath": "\tmp",
+      "DeleteRemoteFile": "true",
+      "Ping": "false"
+    }
+  },
+  "EventLogImporterConfiguration": {
+    "EventLogFileImporter": {
+      "EarliestAcceptableDate": "01/01/1970",
+      "DeleteSource": "true"
+    }
+  },
+  "DeviceEventLoggingConfiguration": {
+    "Path": "\tmp",
+    "BatchSize": 50000,
+    "ParallelProcesses": 50
+  }
+}

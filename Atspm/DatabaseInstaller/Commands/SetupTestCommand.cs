@@ -62,5 +62,13 @@ namespace DatabaseInstaller.Commands
         public int LocationCount { get; set; }
         public int DeviceConfigurationId { get; set; }
         public string Protocol { get; set; }
+        public int FtpCount { get; set; }
+        public int SftpCount { get; set; }
+        public int HttpCount { get; set; }
+        public string FtpLogBase { get; set; }
+        public string SftpLogBase { get; set; }
+        public string HttpLogBase { get; set; }
+        public string FtpIp { get; set; }
+        public string SftpIp { get; set; }
     }
 }

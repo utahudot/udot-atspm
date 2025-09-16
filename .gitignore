@@ -121,3 +121,7 @@ Thumbs.db
 **/.sonarqube/
 
 **/nuget.config
+/Atspm/settings.env
+/Atspm/Data
+/Atspm/ftp_data
+/Atspm/.env

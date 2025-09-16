@@ -26,14 +26,25 @@ x-environment: &default-environment
   Jwt__Key: "${JWT_KEY}"
   Jwt__Issuer: "${JWT_ISSUER}"
 
+networks:
+  custom_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
+
+
 services:
   postgres:
     image: postgres:16
+    networks:
+      - custom_net
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     ports:
-      - "5432:5432"
+      - "15432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -70,6 +81,8 @@ services:
       dockerfile: ConfigApi/Dockerfile
     ports:
       - "44400:5000"
+    networks:
+      - custom_net
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5000"
@@ -86,6 +99,8 @@ services:
       dockerfile: DataApi/Dockerfile
     ports:
       - "44401:5001"
+    networks:
+      - custom_net
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5001"
@@ -101,6 +116,8 @@ services:
       dockerfile: ReportApi/Dockerfile
     ports:
       - "44402:5002"
+    networks:
+      - custom_net
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5002"
@@ -116,6 +133,8 @@ services:
       dockerfile: IdentityApi/Dockerfile
     ports:
       - "44403:5003"
+    networks:
+      - custom_net
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5003"
@@ -136,6 +155,8 @@ services:
       context: ./WebUI
       dockerfile: Dockerfile
     container_name: webui
+    networks:
+      - custom_net
     ports:
       - "3000:3000"
     volumes:
@@ -152,6 +173,8 @@ services:
   
   nginx:
     image: nginx:alpine
+    networks:
+      - custom_net
     ports:
       - "3443:443"
     volumes:
@@ -209,25 +232,16 @@ services:
     build:
       context: .
       dockerfile: EventLogUtility/Dockerfile
+    networks:
+      - custom_net
+    volumes:
+      - ./config/eventlogConfiguration.json:/app/Configuration/EventLogConfiguration/eventlogConfiguration.json:ro
     environment:
       <<: *default-environment
-
-      DeviceDownloaderConfiguration__DeviceDownloader__BasePath: "${DeviceDownloaderConfiguration__DeviceDownloader__BasePath}"
-      DeviceDownloaderConfiguration__DeviceDownloader__DeleteRemoteFile: "${DeviceDownloaderConfiguration__DeviceDownloader__DeleteRemoteFile}"
-      DeviceDownloaderConfiguration__DeviceDownloader__Ping: "${DeviceDownloaderConfiguration__DeviceDownloader__Ping}"
-
-      EventLogImporterConfiguration__EventLogFileImporter__EarliestAcceptableDate: "${EventLogImporterConfiguration__EventLogFileImporter__EarliestAcceptableDate}"
-      EventLogImporterConfiguration__EventLogFileImporter__DeleteSource: "${EventLogImporterConfiguration__EventLogFileImporter__DeleteSource}"
-
-      EventLogUtility__SiemensDecoder: "${EventLogUtility__SiemensDecoder}"
-
-      DeviceEventLoggingConfiguration__Path: "${DeviceEventLoggingConfiguration__Path}"
-      DeviceEventLoggingConfiguration__BatchSize: "${DeviceEventLoggingConfiguration__BatchSize}"
-      DeviceEventLoggingConfiguration__ParallelProcesses: "${DeviceEventLoggingConfiguration__ParallelProcesses}"
     depends_on:
       database-installer:
         condition: service_completed_successfully
-    entrypoint: ["dotnet", "EventLogUtility.dll"]
+    entrypoint: ["dotnet", "EventLogUtility.dll", "log"]
 
 
 

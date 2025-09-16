@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".env" />
+    <None Include="config\eventlogConfiguration.json" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
