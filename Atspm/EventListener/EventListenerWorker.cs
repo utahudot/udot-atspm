@@ -1,11 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
-
 public class EventListenerWorker : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;

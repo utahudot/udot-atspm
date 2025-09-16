@@ -1,21 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using Utah.Udot.Atspm.Data;                                                   // your ConfigContext
-using Utah.Udot.Atspm.Data.Enums;                                              // DeviceTypes, etc.
-using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;    // IDeviceRepository, DeviceConfigurationEFRepository
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Infrastructure.Extensions;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Microsoft.Extensions.Configuration;
 using SpeedEventEmitter.Services;                                              // Detector
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 namespace SpeedEventEmitter
 {
@@ -50,5 +38,5 @@ namespace SpeedEventEmitter
         }
     }
 
-    
+
 }

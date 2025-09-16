@@ -1,11 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Thrift.Protocol;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Messaging;
@@ -156,7 +150,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
             try
             {
-                await _eventPublisher.PublishAsync(envelopes,_config.threads, CancellationToken.None);
+                await _eventPublisher.PublishAsync(envelopes, _config.threads, CancellationToken.None);
                 _logger.LogInformation("Published {Count} envelopes for {SensorCount} sensors", envelopes.Count, envelopes.Select(e => e.DeviceId).Distinct().Count());
             }
             catch (Exception ex)

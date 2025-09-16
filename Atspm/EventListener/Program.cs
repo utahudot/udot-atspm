@@ -1,10 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Serilog;
-using Serilog.Events;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
-using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -27,6 +24,7 @@ try
         .UseContentRoot(AppContext.BaseDirectory)
         .ConfigureAppConfiguration((context, config) =>
         {
+            config.AddUserSecrets<Program>(optional: true);
             config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             config.AddEnvironmentVariables();
         })
