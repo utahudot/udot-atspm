@@ -1,10 +1,10 @@
 import {
+  MenuItem,
   useDeleteMenuItemsFromKey,
   useGetMenuItems,
   usePatchMenuItemsFromKey,
   usePostMenuItems,
-} from '@/api/config/aTSPMConfigurationApi'
-import { MenuItem } from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -68,7 +68,6 @@ const MenuItemsAdmin = () => {
   }
 
   const HandleDeleteMenuItem = async (id: number) => {
-    console.log('Deleting Menu Item with ID:', id)
     try {
       await deleteMenuItem({ key: id })
       refetchMenuItems()

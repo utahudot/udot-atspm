@@ -40,7 +40,10 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
   )
 
   const rowCount = approach.detectors?.length + 1 || 1
-  const colCount = 10
+  const colCount = pedsAre1to1 ? 8 : 10
+
+  let columnCount = 0
+  const getColumnCount = () => columnCount++
 
   return (
     <TableContainer component={Paper}>
@@ -118,7 +121,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <SelectCell
               approachId={approach.id}
               row={0}
-              col={0}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               options={directionTypeOptions}
@@ -129,7 +132,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <TextCell
               approachId={approach.id}
               row={0}
-              col={1}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               value={approach.description}
@@ -139,7 +142,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <TextCell
               approachId={approach.id}
               row={0}
-              col={2}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               value={approach.protectedPhaseNumber}
@@ -152,7 +155,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               row={0}
               col={3}
               rowCount={rowCount}
-              colCount={colCount}
+              colCount={getColumnCount()}
               value={approach.permissivePhaseNumber}
               onUpdate={(v) => handleUpdate('permissivePhaseNumber', v)}
             />
@@ -162,8 +165,12 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               row={0}
               col={4}
               rowCount={rowCount}
-              colCount={colCount}
-              value={approach.pedestrianPhaseNumber}
+              colCount={pedsAre1to1 ? null : getColumnCount()}
+              value={
+                (approach.pedestrianPhaseNumber ?? pedsAre1to1)
+                  ? approach.protectedPhaseNumber
+                  : ''
+              }
               onUpdate={(v) => handleUpdate('pedestrianPhaseNumber', v)}
               disabled={pedsAre1to1}
             />
@@ -173,8 +180,14 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               row={0}
               col={5}
               rowCount={rowCount}
-              colCount={colCount}
-              value={approach.pedestrianDetectors?.toString() || ''}
+              colCount={pedsAre1to1 ? null : getColumnCount()}
+              value={
+                approach.pedestrianDetectors
+                  ? approach.pedestrianDetectors.toString()
+                  : pedsAre1to1
+                    ? approach.protectedPhaseNumber
+                    : ''
+              }
               onUpdate={(v) =>
                 handleUpdate('pedestrianDetectors', v?.toString())
               }
@@ -184,7 +197,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <TextCell
               approachId={approach.id}
               row={0}
-              col={6}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               value={approach.mph}
@@ -194,7 +207,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <BooleanCell
               approachId={approach.id}
               row={0}
-              col={7}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               value={approach.isProtectedPhaseOverlap}
@@ -204,7 +217,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <BooleanCell
               approachId={approach.id}
               row={0}
-              col={8}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               value={approach.isPermissivePhaseOverlap}
@@ -214,7 +227,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             <BooleanCell
               approachId={approach.id}
               row={0}
-              col={9}
+              col={getColumnCount()}
               rowCount={rowCount}
               colCount={colCount}
               value={approach.isPedestrianPhaseOverlap}
