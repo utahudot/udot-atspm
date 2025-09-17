@@ -46,7 +46,9 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
             List<Approach> primaryApproaches,
             List<Approach> opposingApproaches,
             int distanceFromStopBar,
-            DetectionType detectionType
+            DetectionType detectionType,
+            DirectionTypes primaryDirection,
+            DirectionTypes opposingDirection
             )
         {
             int binSizeMultiplier = 60 / options.BinSize;
@@ -108,8 +110,8 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
                 options.End,
                 detectionType.Id.GetDisplayAttribute()?.Name,
                 distanceFromStopBar,
-                primaryApproaches[0].DirectionType.Description,
-                opposingApproaches[0].DirectionType.Description)
+                primaryDirection.GetDisplayName(),
+                opposingDirection.GetDisplayName())
             {
                 PrimaryDirectionVolumes = direction1VolumesSeries,
                 OpposingDirectionVolumes = direction2VolumesSeries,
@@ -183,7 +185,7 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
             List<DataPointForDouble> result = new List<DataPointForDouble>();
             for (int i = 0; i < approachVolume.Items.Count; i++)
             {
-                if (combinedVolume.Items[i].DetectorCount == 0)
+                if (combinedVolume.Items[i].DetectorCount == 0 || approachVolume.Items[i].DetectorCount == 0)
                 {
                     result.Add(new DataPointForDouble(approachVolume.Items[i].StartTime, 0));
                 }
@@ -290,7 +292,7 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
                     .Sum(v => v.DetectorCount);
             }
             totalVolume += peakhourvolume;
-            if (totalVolume > 0)
+            if (totalVolume > 0 && peakhourvolume > 0)
                 PHDF = Round(Convert.ToDouble(peakhourvolume) / Convert.ToDouble(totalVolume), 3);
             else
                 PHDF = 0;

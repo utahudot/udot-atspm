@@ -1,4 +1,4 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { SearchLocation as Location } from '@/api/config'
 import { Filters } from '@/features/locations/components/selectLocation/SelectLocation'
 import { Autocomplete, Badge, TextField, Tooltip } from '@mui/material'
 import match from 'autosuggest-highlight/match'
