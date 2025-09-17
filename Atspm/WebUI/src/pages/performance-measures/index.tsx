@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Location } from '@/api/config'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan'

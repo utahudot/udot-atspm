@@ -1,11 +1,11 @@
 import { navigateToPage } from '@/utils/routes'
 
 import {
+  Route,
   useDeleteRouteFromKey,
   useGetRoute,
   usePostRoute,
-} from '@/api/config/aTSPMConfigurationApi'
-import { Route } from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'

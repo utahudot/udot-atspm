@@ -1,12 +1,10 @@
 import {
+  Approach,
   deleteApproachFromKey,
   deleteDetectorFromKey,
-} from '@/api/config/aTSPMConfigurationApi'
-import {
-  Approach,
   Detector,
   Location,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import { devtools } from 'zustand/middleware'
 import { createWithEqualityFn } from 'zustand/traditional'
 
@@ -56,8 +54,9 @@ interface ApproachSlice {
   updateApproaches: (newApproaches: ConfigApproach[]) => void
   addApproach: () => void
   updateApproach: (updatedApproach: ConfigApproach) => void
-  updateSavedApproaches: (updatedApproach: ConfigApproach) => void
-  updateSavedApproachesFromCurrent: () => void
+  updateSavedApproach: (updatedApproach: ConfigApproach) => void
+  updateSavedApproaches: (updatedApproaches: ConfigApproach[]) => void
+  resetApproaches: () => void
   copyApproach: (approach: ConfigApproach) => void
   deleteApproach: (approach: ConfigApproach) => void
   resetStore: () => void
@@ -86,12 +85,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       )
 
       set(() => ({
-        location: location
-          ? {
-              ...location,
-              approaches: undefined,
-            }
-          : null,
+        location: location ? location : null,
         approaches: approachList,
         savedApproaches: JSON.parse(JSON.stringify(approachList)),
         channelMap: newMap,
@@ -100,34 +94,16 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
 
     hasUnsavedChanges: () => {
       const { approaches, savedApproaches } = get()
-
       if (approaches.length !== savedApproaches.length) return true
 
-      const prepareForComparison = (approach: ConfigApproach) => {
-        const { open, index, isNew, ...rest } = approach
-        return {
-          ...rest,
-          detectors: approach.detectors.map((detector) => {
-            const { isNew: detectorIsNew, ...detectorRest } = detector
-            return detectorRest
-          }),
-        }
-      }
+      const stable = (obj: any) => JSON.stringify(normalize(obj))
 
-      for (let i = 0; i < approaches.length; i++) {
-        const current = approaches[i]
-        const saved = savedApproaches.find((sa) => sa.id === current.id)
-
+      for (const a of approaches) {
+        const saved = savedApproaches.find((s) => s.id === a.id)
         if (!saved) return true
 
-        const preparedCurrent = prepareForComparison(current)
-        const preparedSaved = prepareForComparison(saved)
-
-        if (JSON.stringify(preparedCurrent) !== JSON.stringify(preparedSaved)) {
-          return true
-        }
+        if (stable(stripUIFlags(a)) !== stable(stripUIFlags(saved))) return true
       }
-
       return false
     },
 
@@ -164,7 +140,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       set({ approaches: copy })
     },
 
-    updateSavedApproaches: (updatedApproach) => {
+    updateSavedApproach: (updatedApproach) => {
       const { savedApproaches } = get()
       const idx = savedApproaches.findIndex((a) => a.id === updatedApproach.id)
 
@@ -178,9 +154,13 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       set({ savedApproaches: copy })
     },
 
-    updateSavedApproachesFromCurrent: () => {
-      const { approaches } = get()
-      set({ savedApproaches: JSON.parse(JSON.stringify(approaches)) })
+    updateSavedApproaches: (updatedApproaches) => {
+      set({ savedApproaches: updatedApproaches })
+    },
+
+    resetApproaches: () => {
+      const { savedApproaches } = get()
+      set({ approaches: JSON.parse(JSON.stringify(savedApproaches)) })
     },
 
     addApproach: () => {
@@ -314,7 +294,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
     },
 
     deleteDetector: (detectorId) => {
-      const { approaches } = get()
+      const { approaches, channelMap } = get()
       let shouldCallApi = false
 
       const updatedApproaches = approaches.map((approach) => {
@@ -334,6 +314,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       if (shouldCallApi) {
         try {
           deleteDetectorFromKey(detectorId)
+          channelMap.delete(detectorId)
         } catch (err) {
           console.error(err)
         }
@@ -343,3 +324,20 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
     },
   }))
 )
+
+const normalize = (v: any): any => {
+  if (Array.isArray(v)) return v.map(normalize)
+  if (v !== null && typeof v === 'object')
+    return Object.fromEntries(
+      Object.entries(v).map(([k, val]) => [k, normalize(val)])
+    )
+  return typeof v === 'number' ? String(v) : v
+}
+
+const stripUIFlags = (approach: ConfigApproach) => {
+  const { open, index, isNew, ...clean } = approach
+  return {
+    ...clean,
+    detectors: approach.detectors.map(({ isNew: _dNew, ...d }) => d),
+  }
+}
