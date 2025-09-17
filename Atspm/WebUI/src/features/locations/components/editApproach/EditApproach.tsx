@@ -4,7 +4,7 @@ import {
   DirectionTypes,
   LaneTypes,
   MovementTypes,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import { Color } from '@/features/charts/utils'
 import { useEditApproach } from '@/features/locations/api/approach'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
@@ -18,6 +18,7 @@ import {
 } from '@/features/locations/components/editLocation/locationStore'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
+import { removeAuditFields } from '@/utils/removeAuditFields'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -55,7 +56,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const copyApproachInStore = useLocationStore((s) => s.copyApproach)
   const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
   const addDetectorInStore = useLocationStore((s) => s.addDetector)
-  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproaches)
+  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproach)
 
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
@@ -113,13 +114,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
     const pedestrianPhaseNumber =
       rawPed === '' || rawPed == null ? null : Number(rawPed)
 
-    console.log(
-      'parsed phases',
-      protectedPhaseNumber,
-      permissivePhaseNumber,
-      pedestrianPhaseNumber
-    )
-
     // 2) protectedPhaseNumber is always required (even if it’s zero)
     if (protectedPhaseNumber == null) {
       newErrors[approach.id] = {
@@ -146,7 +140,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     setErrors(null)
 
     // Create a deep clone so we can safely mutate
-    const modifiedApproach = JSON.parse(
+    let modifiedApproach = JSON.parse(
       JSON.stringify(approach)
     ) as ConfigApproach
 
@@ -197,6 +191,11 @@ function EditApproach({ approach }: ApproachAdminProps) {
       det.laneType = findLaneType(det.laneType)?.value
     })
 
+    // remove audit fields
+    modifiedApproach = removeAuditFields(modifiedApproach)
+    modifiedApproach.detectors =
+      modifiedApproach.detectors.map(removeAuditFields)
+
     editApproach(modifiedApproach, {
       onSuccess: (saved) => {
         try {
@@ -230,11 +229,10 @@ function EditApproach({ approach }: ApproachAdminProps) {
 
           if (approach.isNew) {
             deleteApproachInStore(approach)
-            updateApproachInStore(normalizedSaved)
-          } else {
-            updateApproachInStore(normalizedSaved)
           }
 
+          updateApproachInStore(normalizedSaved)
+          updateSavedApproaches(normalizedSaved)
           addNotification({
             title: 'Approach saved successfully',
             type: 'success',
@@ -274,6 +272,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findLaneType,
     findDetectionHardware,
     findDetectionType,
+    updateSavedApproaches,
     updateApproachInStore,
     deleteApproachInStore,
     addNotification,
@@ -333,7 +332,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
         variant="outlined"
         sx={{
           mb: '6px',
-          border: '2px solid lightgrey',
           borderLeft: `7px solid ${leftBorderColor}`,
         }}
       >

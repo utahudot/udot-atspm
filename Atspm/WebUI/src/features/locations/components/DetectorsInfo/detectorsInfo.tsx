@@ -1,7 +1,4 @@
-import {
-  useGetDetectionType,
-  useGetLocationType,
-} from '@/api/config/aTSPMConfigurationApi'
+import { useGetDetectionType, useGetLocationType } from '@/api/config'
 import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
 import { hardwareTypeOptions } from '@/features/locations/components/editDetector/HardwareTypeCell'
 import { laneTypeOptions } from '@/features/locations/components/editDetector/LaneTypeCell'

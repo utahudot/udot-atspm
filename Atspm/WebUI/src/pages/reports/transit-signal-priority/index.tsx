@@ -1,12 +1,10 @@
 import {
+  Approach,
+  SearchLocation as Location,
   useGetLocationLatestVersionOfAllLocations,
   useGetMeasureType,
   useGetMeasureTypeMeasureOptionPresetsFromKey,
-} from '@/api/config/aTSPMConfigurationApi'
-import {
-  Approach,
-  SearchLocation as Location,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+} from '@/api/config'
 import { useGetTransitSignalPriorityReportData } from '@/api/reports/aTSPMReportDataApi'
 import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
 import MultipleLocationsSelect, {

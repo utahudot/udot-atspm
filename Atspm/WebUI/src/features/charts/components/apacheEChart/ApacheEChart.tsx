@@ -189,7 +189,6 @@ export default function ApacheEChart({
       setTimeout(() => {
         if (clickedChart) {
           currentChart.group = originalGroup
-          console.log('🔄 Group restored:', originalGroup)
         }
       }, 100)
     }
