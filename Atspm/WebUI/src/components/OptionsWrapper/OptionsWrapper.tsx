@@ -3,9 +3,10 @@ import { Box, Paper, Typography } from '@mui/material'
 interface OptionsWrapperProps {
   children: React.ReactNode
   header: string
+  noPadding?: boolean
 }
 
-function OptionsWrapper({ children, header }: OptionsWrapperProps) {
+function OptionsWrapper({ children, header, noPadding }: OptionsWrapperProps) {
   return (
     <Paper>
       <Box
@@ -20,7 +21,7 @@ function OptionsWrapper({ children, header }: OptionsWrapperProps) {
       >
         <Typography variant="subtitle2">{header}</Typography>
       </Box>
-      <Box p={2}>{children}</Box>
+      <Box p={noPadding ? 0 : 2}>{children}</Box>
     </Paper>
   )
 }

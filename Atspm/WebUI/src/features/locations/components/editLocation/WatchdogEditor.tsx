@@ -192,7 +192,7 @@ const WatchdogEditor = () => {
   }
 
   return (
-    <Paper sx={{ padding: 2 }}>
+    <Paper sx={{ padding: 2, mt: 2 }}>
       <Typography variant="h4" fontWeight="bold" component="p" sx={{ mb: 2 }}>
         Watchdog Options
       </Typography>

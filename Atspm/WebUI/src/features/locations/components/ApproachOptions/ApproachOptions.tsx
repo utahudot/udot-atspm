@@ -1,4 +1,4 @@
-import { useGetLocationSyncLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
+import { useGetLocationSyncLocationFromKey } from '@/api/config'
 import { AddButton } from '@/components/addButton'
 import ApproachesReconcilationReport from '@/features/locations/components/ApproachesReconcilationReport'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'

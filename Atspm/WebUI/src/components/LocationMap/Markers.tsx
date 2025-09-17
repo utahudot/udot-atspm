@@ -1,4 +1,4 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { SearchLocation as Location } from '@/api/config'
 import { generatePin } from '@/features/locations/utils'
 import { Box } from '@mui/material'
 import { memo, useEffect, useState } from 'react'

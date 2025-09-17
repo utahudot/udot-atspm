@@ -39,8 +39,8 @@ const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
     legend: {
       type: 'scroll',
       orient: 'vertical',
-      top: '37%',
-      right: 130,
+      top: '20%',
+      right: 50,
       itemWidth: 26,
       itemHeight: 15,
       textStyle: {

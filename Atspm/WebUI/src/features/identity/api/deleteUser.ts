@@ -31,6 +31,7 @@ export function useDeleteUser() {
     url: route,
     axiosInstance: identityAxios,
     headers,
+    notify: false,
   })
   return mutation
 }

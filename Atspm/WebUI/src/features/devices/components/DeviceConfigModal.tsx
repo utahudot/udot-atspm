@@ -1,4 +1,4 @@
-import { useGetDeviceConfigurationEventLogDecoders } from '@/api/config/aTSPMConfigurationApi'
+import { useGetDeviceConfigurationEventLogDecoders } from '@/api/config'
 import { knownKeys } from '@/features/devices/components/DeviceConfigCustomRenderCell'
 import { DeviceConfiguration } from '@/features/devices/types/index'
 import { useGetProducts } from '@/features/products/api'
@@ -34,10 +34,10 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface ModalProps {
-  data?: DeviceConfiguration;
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (device: DeviceConfiguration) => void;
+  data?: DeviceConfiguration
+  isOpen: boolean
+  onClose: () => void
+  onSave: (device: DeviceConfiguration) => void
 }
 
 const deviceConfigSchema = z.object({
@@ -65,7 +65,7 @@ const deviceConfigSchema = z.object({
   productId: z.number({ required_error: 'Product is required' }).nullable(),
 })
 
-type DeviceConfigFormData = z.infer<typeof deviceConfigSchema>;
+type DeviceConfigFormData = z.infer<typeof deviceConfigSchema>
 
 const DeviceConfigModal = ({
   data: deviceConfiguration,
@@ -130,7 +130,6 @@ const DeviceConfigModal = ({
   const { data: transportProtocols } = useConfigEnums(
     ConfigEnum.TransportProtocols
   )
-  console.log(allDecodersData)
   const defaultConnectionProperties = deviceConfiguration
     ? Object.entries(deviceConfiguration)
         .filter(([key]) => !knownKeys.has(key))
@@ -165,10 +164,10 @@ const DeviceConfigModal = ({
       // Use the computed extra properties
       connectionProperties: defaultConnectionProperties ?? null,
     },
-  });
+  })
 
   useEffect(() => {
-    if (!deviceConfiguration) return;
+    if (!deviceConfiguration) return
 
     setValue('protocol', deviceConfiguration.protocol)
     setValue('productId', deviceConfiguration.productId ?? null)
@@ -177,14 +176,14 @@ const DeviceConfigModal = ({
       if (key !== 'protocol' && key !== 'productId') {
         setValue(key as keyof DeviceConfigFormData, value as any)
       }
-    });
-  }, [deviceConfiguration, setValue]);
+    })
+  }, [deviceConfiguration, setValue])
 
   const onSubmit = async (data: DeviceConfigFormData) => {
     try {
       const selectedProduct = productData?.value.find(
         (product) => product.id === data.productId
-      );
+      )
 
       const { connectionProperties, ...rest } = data
 
@@ -207,9 +206,9 @@ const DeviceConfigModal = ({
       onSave(mergedDevice as DeviceConfiguration)
       onClose()
     } catch (error) {
-      console.error("Error occurred while editing/creating device:", error);
+      console.error('Error occurred while editing/creating device:', error)
     }
-  };
+  }
 
   const {
     fields: queryFields,
@@ -231,7 +230,7 @@ const DeviceConfigModal = ({
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle sx={{ fontSize: "1.3rem" }} id="role-permissions-label">
+      <DialogTitle sx={{ fontSize: '1.3rem' }} id="role-permissions-label">
         Device Configuration Details
       </DialogTitle>
 
@@ -814,7 +813,7 @@ const DeviceConfigModal = ({
         </form>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default DeviceConfigModal;
+export default DeviceConfigModal

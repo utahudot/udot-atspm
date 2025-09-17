@@ -83,8 +83,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
 
 
                         var h = model.Action("SaveTemplatedLocation").ReturnsFromEntitySet<Location>("Location"); ;
-                        //var h = model.Collection.Function("SaveTemplatedLocation");
-                        //h.Parameter<TemplateLocationDto>("templateLocationDto");
                         h.Parameter<string>("locationIdentifier");
                         h.Parameter<double>("latitude");
                         h.Parameter<double>("longitude");
@@ -93,8 +91,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         h.Parameter<string>("note");
                         h.CollectionParameter<Device>("devices");
 
-
-                        var j = model.Action("DeleteAllVersions");
 
                         var detectionTypeGroup = builder.EntitySet<DetectionTypeGroup>("DetectionTypeGroups").EntityType;
                         detectionTypeGroup.Property(d => d.Id).IsRequired();
