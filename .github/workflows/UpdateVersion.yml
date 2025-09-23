@@ -26,7 +26,7 @@ jobs:
         id: detect_branch
         run: |
           BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
-          echo "Detected Branch: $BRANCH"
+          echo "Detected branch: $BRANCH"
           echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Checkout source branch
