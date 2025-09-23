@@ -18,6 +18,7 @@ import {
 } from '@/features/locations/components/editLocation/locationStore'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
+import { dateToTimestamp } from '@/utils/dateTime'
 import { removeAuditFields } from '@/utils/removeAuditFields'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -184,6 +185,8 @@ function EditApproach({ approach }: ApproachAdminProps) {
         dType.id = findDetectionType(dType.abbreviation)?.value
       })
 
+      det.dateAdded = dateToTimestamp(det.dateAdded)
+
       det.detectionHardware = findDetectionHardware(
         det.detectionHardware
       )?.value
@@ -289,10 +292,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const handleDeleteApproach = useCallback(() => {
     try {
       deleteApproachInStore(approach)
-      addNotification({
-        title: 'Approach deleted',
-        type: 'success',
-      })
+      addNotification({ title: 'Approach deleted', type: 'success' })
     } catch (error) {
       console.error('Failed to delete:', error)
       addNotification({
@@ -330,10 +330,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     <>
       <Paper
         variant="outlined"
-        sx={{
-          mb: '6px',
-          borderLeft: `7px solid ${leftBorderColor}`,
-        }}
+        sx={{ mb: '6px', borderLeft: `7px solid ${leftBorderColor}` }}
       >
         <ApproachEditorRowHeader
           open={open}
