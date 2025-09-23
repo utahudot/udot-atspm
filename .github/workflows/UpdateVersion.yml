@@ -3,14 +3,17 @@ name: Tag Version Bump
 on:
   push:
     tags:
-      - 'v*.*.*'  # Matches semantic version tags like v1.2.3
+      - 'v*.*.*'
+      - 'v*.*.*-*'
 
 jobs:
   bump-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required to find branches containing the tag commit
 
       - name: Extract version from tag
         id: extract_version
@@ -18,6 +21,17 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           VERSION="${TAG_NAME#v}"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Detect source branch
+        id: detect_branch
+        run: |
+          BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
+          echo "Detected Branch: $BRANCH"
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Checkout source branch
+        run: |
+          git checkout ${{ steps.detect_branch.outputs.BRANCH }}
 
       - name: Update .csproj versions
         run: |
@@ -27,9 +41,9 @@ jobs:
             sed -i 's|<Version>.*</Version>|<Version>'"$VERSION"'</Version>|' "$csproj"
           done
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git commit -am "Bump version to ${{ steps.extract_version.outputs.VERSION }}"
-          git push
+          git push origin HEAD:${{ steps.detect_branch.outputs.BRANCH }}
