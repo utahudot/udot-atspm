@@ -31,12 +31,17 @@ jobs:
         id: detect_branch
         run: |
           BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
-          echo "Detected branch: $BRANCH"
+          if [ -z "$BRANCH" ]; then
+            BRANCH="main"
+            echo "No branch detected — falling back to 'main'"
+          else
+            echo "Detected branch: $BRANCH"
+          fi
           echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Debug branch
         run: |
-            echo "Branch: ${{ steps.detect_branch.outputs.BRANCH }}"
+          echo "Branch: ${{ steps.detect_branch.outputs.BRANCH }}"
 
       - name: Checkout source branch
         run: |
@@ -55,4 +60,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git commit -am "Bump version to ${{ steps.extract_version.outputs.VERSION }}"
-          git push origin HEAD:${{ steps.detect_branch.outputs.BRANCH }}
+          if [ -n "${{ steps.detect_branch.outputs.BRANCH }}" ]; then
+            git push origin HEAD:${{ steps.detect_branch.outputs.BRANCH }}
+          else
+            echo "No branch to push to; skipping push."
+          fi
