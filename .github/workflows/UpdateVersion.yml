@@ -33,4 +33,4 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git commit -am "Bump version to ${{ steps.extract_version.outputs.VERSION }}"
-          git push origin VersionAction
+          git push origin HEAD:VersionAction
