@@ -1,0 +1,31 @@
+name: Update .NET Project Versions
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version number (e.g., 1.2.3)'
+        required: true
+        type: string
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Update version in all .csproj files
+      run: |
+        find . -name "*.csproj" | while read file; do
+          echo "Updating $file"
+          sed -i "s|<Version>.*</Version>|<Version>${{ github.event.inputs.version }}</Version>|" "$file"
+        done
+
+    - name: Commit changes
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git commit -am "Update version to ${{ github.event.inputs.version }}"
+        git push
