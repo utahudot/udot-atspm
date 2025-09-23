@@ -16,11 +16,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install .NET Project Version Updater
-      run: dotnet tool install --global dotnet-project-version-updater
+    - name: Download dotnet-project-version-updater
+      run: |
+        curl -L -o updater.zip https://github.com/antonfirsov/dotnet-project-version-updater/releases/latest/download/dotnet-project-version-updater-linux-x64.zip
+        unzip updater.zip -d updater
+        chmod +x updater/dotnet-project-version-updater
 
-    - name: Update version in all .csproj files
-      run: dotnet-project-version-updater --version ${{ github.event.inputs.version }}
+    - name: Run version updater
+      run: ./updater/dotnet-project-version-updater --version ${{ github.event.inputs.version }}
 
     - name: Commit changes
       run: |
