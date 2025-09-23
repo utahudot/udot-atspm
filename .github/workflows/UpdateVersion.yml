@@ -25,12 +25,12 @@ jobs:
       - name: Detect source branch
         id: detect_branch
         run: |
-          BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
+          BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||' | xargs)
           if [ -z "$BRANCH" ]; then
             BRANCH="main"
             echo "No branch detected — falling back to 'main'"
           else
-            echo "Detected branch: $BRANCH"
+            echo "Detected branch: '$BRANCH'"
           fi
           echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
