@@ -18,9 +18,14 @@ jobs:
       - name: Extract version from tag
         id: extract_version
         run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-          VERSION="${TAG_NAME#v}"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
+          if [ -z "$BRANCH" ]; then
+            BRANCH="main"
+            echo "No branch detected — falling back to 'main'"
+          else
+          echo "Detected branch: $BRANCH"
+          fi
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Detect source branch
         id: detect_branch
@@ -28,6 +33,10 @@ jobs:
           BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
           echo "Detected branch: $BRANCH"
           echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Debug branch
+        run: |
+            echo "Branch: ${{ steps.detect_branch.outputs.BRANCH }}"
 
       - name: Checkout source branch
         run: |
