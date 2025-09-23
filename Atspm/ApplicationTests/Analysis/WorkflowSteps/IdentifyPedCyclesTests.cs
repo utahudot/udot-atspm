@@ -51,9 +51,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         public async Task Stuff()
         {
             {
-                //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\Location7115TestData.json").FullName);
-                //var Location = JsonConvert.DeserializeObject<Location>(json);
-
                 var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\Pedaggraw.csv");
 
                 var logs = File.ReadAllLines(file1.FullName)
@@ -73,12 +70,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                     .OrderBy(o => o.Timestamp)
                     .ToList();
 
-
-
-                //var c = new CalculateDwellTime();
-
-                //var r = await c.ExecuteAsync(Tuple.Create(Location, logs.AsEnumerable(), 1));
-
                 var result = new IdentifyPedCyclesTestData()
                 {
                     Configuration = _testLocation,
@@ -96,7 +87,28 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
         }
 
+        [Fact]
+        public void FindConsequtivePedDetectorOn()
+        {
+            var events = new List<IndianaEvent>
+            {
+                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("5/16/23 4:20:50.7"), EventCode = 21, EventParam = 2},
+                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("5/16/23 4:20:50.7"), EventCode = 90, EventParam = 2},
+                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("5/16/23 4:20:57.7"), EventCode = 22, EventParam = 2},
+            };
 
+            var expected = new PedCycle()
+            {
+                BeginWalk = DateTime.Parse("5/16/23 4:20:50.7"),
+                PedDetectorOn = DateTime.Parse("5/16/23 4:20:50.7"),
+                Start = DateTime.Parse("5/16/23 4:20:50.7"),
+                End = DateTime.Parse("5/16/23 4:20:57.7"),
+            };
+
+            var actual = events.ToPedCycles().First();
+
+            Assert.Equal(expected, actual);
+        }
 
         [Theory]
         [AnalysisTestData<IdentifyPedCyclesTestData>]
@@ -115,55 +127,53 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             //var approaches = config.Approaches.ToLookup(l => l.ProtectedPhaseNumber);
 
 
+
+
+
             _output.WriteLine($"{config} - {input.Count(c => c.EventCode == 21)}");
 
-            var filter = input
-                .Where(w => w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90)
-                .OrderBy(o => o.Timestamp)
-                .ToList();
 
 
-            var test = filter.KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn).ToList();
+            //var results = test
+            //    .Select((t, index) => new { Item = t, Index = index })
+            //    .Where(x => x.Item.EventCode == 90 && x.Index > 0 && x.Index < test.Count - 1)
+            //    .Select(x =>
+            //    {
+            //        var prev = test[x.Index - 1];
+            //        var next = test[x.Index + 1];
 
-            var results = test
-                .Select((t, index) => new { Item = t, Index = index })
-                .Where(x => x.Item.EventCode == 90 && x.Index > 0 && x.Index < test.Count - 1)
-                .Select(x =>
-                {
-                    var prev = test[x.Index - 1];
-                    var next = test[x.Index + 1];
+            //        var pedCycle = new PedCycle()
+            //        {
+            //            PedDetectorOn = x.Item.Timestamp
+            //        };
 
-                    var pedCycle = new PedCycle()
-                    {
-                        PedDetectorOn = x.Item.Timestamp
-                    };
+            //        if (prev.EventCode == 21 && next.EventCode == 22)
+            //        {
+            //            pedCycle.Start = prev.Timestamp;
+            //            pedCycle.BeginWalk = prev.Timestamp;
+            //            pedCycle.End = next.Timestamp;
+            //        }
 
-                    if (prev.EventCode == 21 && next.EventCode == 22)
-                    {
-                        pedCycle.Start = prev.Timestamp;
-                        pedCycle.BeginWalk = prev.Timestamp;
-                        pedCycle.End = next.Timestamp;
-                    }
+            //        else if (prev.EventCode == 21 && next.EventCode == 21)
+            //        {
+            //            pedCycle.Start = prev.Timestamp;
+            //            pedCycle.BeginWalk = next.Timestamp;
+            //            pedCycle.End = next.Timestamp;
+            //        }
 
-                    else if (prev.EventCode == 21 && next.EventCode == 21)
-                    {
-                        pedCycle.Start = prev.Timestamp;
-                        pedCycle.BeginWalk = next.Timestamp;
-                        pedCycle.End = next.Timestamp;
-                    }
+            //        else if (prev.EventCode == 22 && next.EventCode == 21)
+            //        {
+            //            pedCycle.Start = prev.Timestamp;
+            //            pedCycle.BeginWalk = next.Timestamp;
+            //            pedCycle.End = next.Timestamp;
+            //        }
 
-                    else if (prev.EventCode == 22 && next.EventCode == 21)
-                    {
-                        pedCycle.Start = prev.Timestamp;
-                        pedCycle.BeginWalk = next.Timestamp;
-                        pedCycle.End = next.Timestamp;
-                    }
+            //        return pedCycle;
+            //    })
+            //    .Where(w => w.BeginWalk > DateTime.MinValue)
+            //    .ToList();
 
-                    return pedCycle;
-                })
-                .Where(w => w.BeginWalk > DateTime.MinValue)
-                .ToList();
-
+            var results = input.ToPedCycles();
 
             _output.WriteLine($"{results.Min(m => m.BeginWalk)} - {results.Max(m => m.BeginWalk)}");
 
@@ -192,8 +202,17 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
                 f.PedRequests = input.Count(w => w.EventCode == 90 && f.InRange(w.Timestamp));
 
-                var imputedCalls = input.Where(w => w.EventCode == 90 || w.EventCode == 21 || w.EventCode == 67 || w.EventCode == 0).OrderBy(o => o.Timestamp).ToList();
-                f.ImputedPedCallsRegistered = imputedCalls.Where((w, i) => i > 0 && f.InRange(w.Timestamp) && w.EventCode == 90 && (imputedCalls[i - 1].EventCode == 21 || imputedCalls[i - 1].EventCode == 67 || imputedCalls[i - 1].EventCode == 0)).Count();
+
+
+                //var imputedCalls = input.Where(w => w.EventCode == 90 || w.EventCode == 21 || w.EventCode == 67 || w.EventCode == 0).OrderBy(o => o.Timestamp).ToList();
+                //f.ImputedPedCallsRegistered = imputedCalls.Where((w, i) => i > 0 && f.InRange(w.Timestamp) && w.EventCode == 90 && (imputedCalls[i - 1].EventCode == 21 || imputedCalls[i - 1].EventCode == 67 || imputedCalls[i - 1].EventCode == 0)).Count();
+
+                f.ImputedPedCallsRegistered = input
+                .Where(e => e.EventCode is 90 or 21 or 67 or 0)
+                .OrderBy(e => e.Timestamp)
+                .Select((e, i) => new { e, i })
+                .Where(x => x.i > 0 && x.e.EventCode == 90 && f.InRange(x.e.Timestamp) && (input[x.i - 1].EventCode is 21 or 67 or 0))
+                .Count();
 
 
 

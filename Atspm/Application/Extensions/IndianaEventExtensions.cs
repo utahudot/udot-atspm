@@ -27,6 +27,45 @@ namespace Utah.Udot.Atspm.Extensions
     /// </summary>
     public static class IndianaEventExtensions
     {
+        public static IList<PedCycle> ToPedCycles(this IEnumerable<IndianaEvent> events)
+        {
+            var filter = events
+                .Where(w => w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90)
+                .KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn)
+                .ToList();
+
+            return filter
+                .Select((item, index) => new { item, index })
+                .Where(x => x.item.EventCode == 90 && x.index > 0 && x.index < filter.Count - 1)
+                .Select(x =>
+                {
+                    var prev = filter[x.index - 1];
+                    var next = filter[x.index + 1];
+
+                    return new PedCycle
+                    {
+                        PedDetectorOn = x.item.Timestamp,
+                        Start = prev.Timestamp,
+                        BeginWalk = (prev.EventCode, next.EventCode) switch
+                        {
+                            (21, 22) => prev.Timestamp,
+                            (21, 21) => next.Timestamp,
+                            (22, 21) => next.Timestamp,
+                            _ => DateTime.MinValue
+                        },
+                        End = (prev.EventCode, next.EventCode) switch
+                        {
+                            (21, 22) => next.Timestamp,
+                            (21, 21) => next.Timestamp,
+                            (22, 21) => next.Timestamp,
+                            _ => DateTime.MinValue
+                        }
+                    };
+                })
+                .Where(p => p.BeginWalk > DateTime.MinValue)
+                .ToList();
+        }
+        
         /// <summary>
         /// Returns a list of <see cref="IndianaEvent"/> where, for the specified <paramref name="eventCode"/>,
         /// only the first occurrence in any sequence of consecutive events with that code is kept.
