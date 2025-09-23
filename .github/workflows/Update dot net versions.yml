@@ -16,16 +16,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Install .NET Project Version Updater
+      run: dotnet tool install --global dotnet-project-version-updater
+
     - name: Update version in all .csproj files
-      run: |
-        find . -name "*.csproj" | while read file; do
-          echo "Updating $file"
-          sed -i "s|<Version>.*</Version>|<Version>${{ github.event.inputs.version }}</Version>|" "$file"
-        done
+      run: dotnet-project-version-updater --version ${{ github.event.inputs.version }}
 
     - name: Commit changes
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git commit -am "Update version to ${{ github.event.inputs.version }}"
+        git commit -am "Update project version to ${{ github.event.inputs.version }}"
         git push
