@@ -18,14 +18,9 @@ jobs:
       - name: Extract version from tag
         id: extract_version
         run: |
-          BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -v '\->' | head -n 1 | sed 's|origin/||')
-          if [ -z "$BRANCH" ]; then
-            BRANCH="main"
-            echo "No branch detected — falling back to 'main'"
-          else
-          echo "Detected branch: $BRANCH"
-          fi
-          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Detect source branch
         id: detect_branch
@@ -64,7 +59,7 @@ jobs:
           echo "trying to push to: HEAD:${{ steps.detect_branch.outputs.BRANCH }}"
           
           if [ -n "${{ steps.detect_branch.outputs.BRANCH }}" ]; then
-            git push origin ${{ steps.detect_branch.outputs.BRANCH }}
+            git push origin HEAD:${{ steps.detect_branch.outputs.BRANCH }}
           else
             echo "No branch to push to; skipping push."
           fi
