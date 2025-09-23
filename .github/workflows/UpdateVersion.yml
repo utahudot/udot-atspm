@@ -3,7 +3,8 @@ name: Tag Version Bump
 on:
   push:
     tags:
-      - 'v*.*.*'  # Matches semantic version tags like v1.2.3
+      - 'v*.*.*'       # Matches stable tags like v1.2.3
+      - 'v*.*.*-*'     # Matches pre-release tags like v1.2.3-rc1, v2.0.0-beta
 
 jobs:
   bump-version:
@@ -32,4 +33,4 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git commit -am "Bump version to ${{ steps.extract_version.outputs.VERSION }}"
-          git push
+          git push origin VersionAction
