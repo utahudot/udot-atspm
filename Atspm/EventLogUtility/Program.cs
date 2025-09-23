@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
@@ -36,6 +37,7 @@ if (OperatingSystem.IsWindows())
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
+
 cmdBuilder.UseHost(a =>
 {
     return Host.CreateDefaultBuilder(a)
@@ -52,17 +54,10 @@ cmdBuilder.UseHost(a =>
             });
         }
 
-        //l.AddGoogle(new LoggingServiceOptions
-        //{
-        //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
-        //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
-        //});
+        l.AddGoogle(h);
     })
     .ConfigureServices((h, s) =>
     {
-        //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
-
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();

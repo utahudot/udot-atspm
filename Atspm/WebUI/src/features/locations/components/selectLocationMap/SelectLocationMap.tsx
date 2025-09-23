@@ -1,4 +1,4 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { SearchLocation as Location } from '@/api/config'
 import { Filters } from '@/features/locations/components/selectLocation/SelectLocation'
 import { Skeleton } from '@mui/material'
 import dynamic from 'next/dynamic'

@@ -13,9 +13,7 @@
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<VersionPrefix>5.0</VersionPrefix>
-		<VersionSuffix>rc.1</VersionSuffix>
-		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+		<Version>5.1.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

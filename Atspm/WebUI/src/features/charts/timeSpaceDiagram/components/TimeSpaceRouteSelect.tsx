@@ -5,15 +5,25 @@ import {
   Autocomplete,
   Box,
   FormControl,
-  InputAdornment,
   Paper,
   TextField,
+  Typography,
 } from '@mui/material'
 import { useEffect } from 'react'
 import { TSHistoricHandler } from './handlers/handlers'
 
 interface Props {
   handler: TSHistoricHandler
+}
+
+interface RouteRow {
+  locationIdentifier: string
+  primaryPhaseDescription: string | null
+  primaryMph: number | null
+  opposingPhaseDescription: string | null
+  opposingMph: number | null
+  distance: number | null
+  order: number
 }
 
 export const TimeSpaceRouteSelect = ({ handler }: Props) => {
@@ -26,32 +36,37 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
     if (handler.routeId) refetch()
   }, [handler.routeId, refetch])
 
-  if (routeData && routeData?.routeLocations === undefined) return null
+  if (routeData && routeData.routeLocations === undefined) return null
 
-  const routeValuesToCheck =
+  const routeValuesToCheck: RouteRow[] =
     routeData?.routeLocations
-      .map((location) => {
-        const approach = location.approaches.find((approach) => {
-          return approach.protectedPhaseNumber === location.primaryPhase
-        })
+      .map((loc) => {
+        const primary = loc.approaches.find(
+          (a) => a.protectedPhaseNumber === loc.primaryPhase
+        )
+        const opposing = loc.approaches.find(
+          (a) => a.protectedPhaseNumber === loc.opposingPhase
+        )
 
         return {
-          locationIdentifier: location.locationIdentifier,
-          approachDescription: approach ? approach.description : null,
-          mph: approach ? approach.mph : null,
-          distance: location?.nextLocationDistance?.distance ?? null,
-          order: location.order,
+          locationIdentifier: loc.locationIdentifier,
+          primaryPhaseDescription: primary?.description ?? null,
+          primaryMph: primary?.mph ?? null,
+          opposingPhaseDescription: opposing?.description ?? null,
+          opposingMph: opposing?.mph ?? null,
+          distance: loc.nextLocationDistance?.distance ?? null,
+          order: loc.order,
         }
       })
-      // sort so 1 comes before 2, etc.
       .sort((a, b) => a.order - b.order) || []
 
-  const allDistancesValid = routeValuesToCheck.every((item, index) => {
-    if (index === routeValuesToCheck.length - 1) return true
-    return item.distance !== null
-  })
+  const allDistancesValid = routeValuesToCheck.every(
+    (row, idx) => idx === routeValuesToCheck.length - 1 || row.distance !== null
+  )
 
-  const someMphMissing = routeValuesToCheck.some((item) => item.mph === null)
+  const someMphMissing = routeValuesToCheck.some(
+    (r) => r.primaryMph === null || r.opposingMph === null
+  )
 
   const renderContent = () => {
     if (routeValuesToCheck.length < 2) {
@@ -74,18 +89,17 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
       return (
         <>
           <Alert severity="warning" sx={{ my: 2 }}>
-            Some locations are missing speed limits. Please add a default one.
+            Some approaches are missing speed limits. Please add a default one.
           </Alert>
-          <TextField
-            label="Speed Limit"
-            variant="outlined"
-            fullWidth
-            sx={{ mb: 2 }}
-            onChange={(e) => handler.setSpeedLimit(parseInt(e.target.value))}
-            InputProps={{
-              endAdornment: <InputAdornment position="end">mph</InputAdornment>,
-            }}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
+            <TextField
+              label="Speed Limit"
+              sx={{ maxWidth: 150 }}
+              onChange={(e) => handler.setSpeedLimit(+e.target.value)}
+              size="small"
+            />
+            <Typography sx={{ marginX: '0.5rem' }}>mph</Typography>
+          </Box>
         </>
       )
     }
@@ -97,47 +111,41 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
     <Paper
       sx={{
         p: 3,
-        width: '450px',
         display: 'flex',
+        minWidth: 600,
         flexDirection: 'column',
       }}
     >
-      <FormControl fullWidth sx={{ mb: 2 }}>
+      <FormControl sx={{ mb: 2 }}>
         <Autocomplete
           options={handler.routes}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(o) => o.name}
           value={
             handler.routes.find(
-              (route) => route.id === Number.parseInt(handler.routeId)
+              (r) => r.id === Number.parseInt(handler.routeId)
             ) || null
           }
-          onChange={(_, newValue) =>
-            handler.setRouteId(newValue ? String(newValue.id) : '')
-          }
+          onChange={(_, v) => handler.setRouteId(v ? String(v.id) : '')}
           renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Route Select"
-              variant="outlined"
-              fullWidth
-            />
+            <TextField {...params} label="Route Select" />
           )}
         />
       </FormControl>
+
       {handler.routeId && (
         <>
           <Box
             sx={{
-              maxHeight: '350px',
+              maxHeight: 350,
               overflowY: 'auto',
               outline: '1px solid #ccc',
-              marginBottom: 2,
+              mb: 2,
               flexGrow: 1,
             }}
           >
-            {routeValuesToCheck && <RouteChecker data={routeValuesToCheck} />}
+            <RouteChecker data={routeValuesToCheck} />
           </Box>
-          <Box>{renderContent()}</Box>
+          {renderContent()}
         </>
       )}
     </Paper>

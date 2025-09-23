@@ -15,69 +15,61 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
-    public class ScanHostedService : IHostedService
+    /// <summary>
+    /// Hosted background service that executes the signal performance scan process as part of the Watchdog system.
+    /// Inherits from <see cref="HostedServiceBase"/> to provide scoped execution and logging.
+    /// 
+    /// This service configures scan and email options from <see cref="WatchdogConfiguration"/> and invokes
+    /// the <see cref="ScanService"/> to perform the scan operation, typically used for monitoring and reporting
+    /// on traffic signal performance and anomalies.
+    /// </summary>
+    public class ScanHostedService(ILogger<ScanHostedService> log, IServiceScopeFactory serviceProvider, IOptions<WatchdogConfiguration> options) : HostedServiceBase(log, serviceProvider)
     {
-        private readonly ScanService _scanService;
-        private readonly ILogger<ScanHostedService> _log;
-        private readonly WatchdogConfiguration _options;
+        private readonly WatchdogConfiguration _options = options.Value;
 
-        public ScanHostedService(ScanService scanService, ILogger<ScanHostedService> logger, IOptions<WatchdogConfiguration> options)
+        /// <inheritdoc/>
+        public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
-            _scanService = scanService;
-            _log = logger;
-            _options = options.Value;
-        }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            try
+            var options = new WatchdogLoggingOptions
             {
-                var options = new WatchdogLoggingOptions
-                {
-                    ConsecutiveCount = _options.ConsecutiveCount,
-                    LowHitThreshold = _options.LowHitThreshold,
-                    MaximumPedestrianEvents = _options.MaximumPedestrianEvents,
-                    MinimumRecords = _options.MinimumRecords,
-                    MinPhaseTerminations = _options.MinPhaseTerminations,
-                    PercentThreshold = _options.PercentThreshold,
-                    PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
-                    PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
-                    ScanDate = _options.ScanDate,
-                    ScanDayEndHour = _options.ScanDayEndHour,
-                    ScanDayStartHour = _options.ScanDayStartHour,
-                    WeekdayOnly = _options.WeekdayOnly
-                };
-                var emailOptions = new WatchdogEmailOptions
-                {
-                    PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
-                    PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
-                    ScanDate = _options.ScanDate,
-                    ScanDayEndHour = _options.ScanDayEndHour,
-                    ScanDayStartHour = _options.ScanDayStartHour,
-                    WeekdayOnly = _options.WeekdayOnly,
-                    DefaultEmailAddress = _options.DefaultEmailAddress,
-                    EmailAllErrors = _options.EmailAllErrors,
-                    Sort = _options.Sort
-                };
-
-                await _scanService.StartScan(options, emailOptions, cancellationToken);
-            }
-            catch (Exception ex)
+                ConsecutiveCount = _options.ConsecutiveCount,
+                LowHitThreshold = _options.LowHitThreshold,
+                MaximumPedestrianEvents = _options.MaximumPedestrianEvents,
+                MinimumRecords = _options.MinimumRecords,
+                MinPhaseTerminations = _options.MinPhaseTerminations,
+                PercentThreshold = _options.PercentThreshold,
+                PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
+                PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
+                ScanDate = _options.ScanDate,
+                ScanDayEndHour = _options.ScanDayEndHour,
+                ScanDayStartHour = _options.ScanDayStartHour,
+                WeekdayOnly = _options.WeekdayOnly
+            };
+            var emailOptions = new WatchdogEmailOptions
             {
-                _log.LogError(ex, "An error occurred during scanning.");
-            }
-        }
+                PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
+                PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
+                ScanDate = _options.ScanDate,
+                ScanDayEndHour = _options.ScanDayEndHour,
+                ScanDayStartHour = _options.ScanDayStartHour,
+                WeekdayOnly = _options.WeekdayOnly,
+                DefaultEmailAddress = _options.DefaultEmailAddress,
+                EmailAllErrors = _options.EmailAllErrors,
+                Sort = _options.Sort
+            };
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
+            var scanService = scope.ServiceProvider.GetService<ScanService>();
+
+            await scanService.StartScan(options, emailOptions, cancellationToken);
         }
     }
 }

@@ -16,7 +16,6 @@
 #endregion
 
 using Confluent.Kafka;
-using Google.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +28,6 @@ using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Utility;
 using Utah.Udot.Atspm.Infrastructure.Messaging;
 using Utah.Udot.Atspm.Infrastructure.Messaging.Kafka;
-using Utah.Udot.Atspm.Infrastructure.Messaging.PubSub;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
@@ -308,68 +306,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             return services;
         }
 
-        /// <summary>
-        /// Used to read confiuration values from mapped container volumes.
-        /// <list type="bullet">
-        /// <listheader>Configuration files providers</listheader>
-        /// <item><see cref="ApplyVolumeJsonConfiguration(IConfigurationBuilder, HostBuilderContext, DirectoryInfo)"/></item>
-        /// <item><see cref="ApplyVolumeTxtConfiguration(IConfigurationBuilder, HostBuilderContext, DirectoryInfo)"/></item>
-        /// </list>
-        /// </summary>
-        /// <param name="hostBuilder"></param>
-        /// <param name="path">Path to where the container volume is mapped</param>
-        /// <returns></returns>
-        public static IHostBuilder ApplyVolumeConfiguration(this IHostBuilder hostBuilder, string path = "Configuration")
-        {
-            var dir = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), path));
-
-            if (dir.Exists)
-            {
-                hostBuilder.ConfigureAppConfiguration((h, c) =>
-                {
-                    c.ApplyVolumeJsonConfiguration(h, dir).ApplyVolumeTxtConfiguration(h, dir);
-                });
-            }
-
-            return hostBuilder;
-        }
-
-        /// <summary>
-        /// Used to read configuration values from .json files when using mapped container volumes.
-        /// </summary>
-        /// <param name="configurationBuilder"></param>
-        /// <param name="host"></param>
-        /// <param name="dir">Directory of mapped container volume</param>
-        /// <returns></returns>
-        public static IConfigurationBuilder ApplyVolumeJsonConfiguration(this IConfigurationBuilder configurationBuilder, HostBuilderContext host, DirectoryInfo dir)
-        {
-            foreach (var file in dir.GetFiles("*.json", SearchOption.AllDirectories))
-            {
-                configurationBuilder.AddJsonFile(file.FullName, true, true);
-            }
-
-            return configurationBuilder;
-        }
-
-        /// <summary>
-        /// Used to read configuration values from .txt files when using mapped container volumes.
-        /// </summary>
-        /// <param name="configurationBuilder"></param>
-        /// <param name="host"></param>
-        /// <param name="dir">Directory of mapped container volume</param>
-        /// <returns></returns>
-        public static IConfigurationBuilder ApplyVolumeTxtConfiguration(this IConfigurationBuilder configurationBuilder, HostBuilderContext host, DirectoryInfo dir)
-        {
-            configurationBuilder.AddKeyPerFile(a =>
-            {
-                a.FileProvider = new PhysicalFileProvider(dir.FullName);
-                a.Optional = true;
-                a.ReloadOnChange = true;
-                a.IgnoreCondition = f => !f.EndsWith(".txt");
-            });
-
-            return configurationBuilder;
-        }
+  
 
         public static IServiceCollection AddEventPublishers(
         this IServiceCollection services,
@@ -404,19 +341,20 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     break;
 
                 case "PubSub":
-                    services.AddSingleton(sp =>
-                    {
-                        var cfg = sp
-                            .GetRequiredService<IOptions<PubSubConfiguration>>()
-                            .Value;
-                        return PublisherClient.CreateAsync(
-                            new TopicName(cfg.ProjectId, cfg.TopicId))
-                            .Result;
-                    });
-                    services.AddSingleton<
-                        IEventPublisher<EventBatchEnvelope>,
-                        PubSubPublisher>();
-                    break;
+                    throw new NotImplementedException("PubSub publisher is not yet implemented.");
+                //services.AddSingleton(sp =>
+                //{
+                //    var cfg = sp
+                //        .GetRequiredService<IOptions<PubSubConfiguration>>()
+                //        .Value;
+                //    return PublisherClient.CreateAsync(
+                //        new TopicName(cfg.ProjectId, cfg.TopicId))
+                //        .Result;
+                //});
+                //services.AddSingleton<
+                //    IEventPublisher<EventBatchEnvelope>,
+                //    PubSubPublisher>();
+                //break;
 
                 case "Database":
                     // No external bus client required—just your DB pipeline

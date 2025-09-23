@@ -235,7 +235,7 @@ namespace Utah.Udot.Atspm.Business.Common
             foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Cycles
-                             where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.End
+                             where cycle.StartTime >= planSplitMonitorData.Start && cycle.EndTime <= planSplitMonitorData.End
                              select cycle;
 
                 if (Cycles.Count() > HighCycleCount)

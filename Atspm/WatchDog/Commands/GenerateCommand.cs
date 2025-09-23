@@ -43,6 +43,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
             AddOption(PercentThresholdOption);
             AddOption(EmailAllErrorsOption);
             AddOption(DefaultEmailAddressOption);
+            AddOption(SortOption);
         }
 
         public Option<DateTime> ScanDateOption { get; set; } = new("--scanDate", "Scan Date");
@@ -89,6 +90,8 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
+            services.Configure<WatchdogConfiguration>(host.Configuration.GetSection(nameof(WatchdogConfiguration)));
+
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<WatchdogConfiguration>().BindCommandLine();
             services.AddHostedService<ScanHostedService>();

@@ -13,9 +13,7 @@
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>4a25a28a-6471-4d98-ae56-b46fe556756b</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<VersionPrefix>5.0</VersionPrefix>
-		<VersionSuffix>rc.1</VersionSuffix>
-		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+		<Version>5.1.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -53,6 +51,18 @@
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="appsettings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="appsettings.Production.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="appsettings.Staging.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

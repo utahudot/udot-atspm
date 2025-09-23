@@ -2,6 +2,8 @@ import { RouteSelect } from '@/components/RouteSelect/RouteSelect'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan'
 import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
+import { useGetRouteWithExpandedLocations } from '@/features/routes/api/getRouteWithExpandedLocations'
+import RouteTable from '@/features/tools/link-pivot/components/RouteTable'
 import {
   Box,
   FormControl,
@@ -10,6 +12,7 @@ import {
   Select,
   TextField,
 } from '@mui/material'
+import { useEffect } from 'react'
 import { LinkPivotHandler, StreamType } from '../handlers/linkPivotHandlers'
 
 interface Props {
@@ -29,6 +32,33 @@ const daysOfWeekList: string[] = [
 export const LinkPivotOptionsComponent = (props: Props) => {
   const { handler } = props
 
+  const { data: routeData, refetch } = useGetRouteWithExpandedLocations({
+    routeId: handler.routeId,
+    includeLocationDetail: true,
+  })
+
+  const routeValuesToCheck =
+    routeData?.routeLocations
+      .map((location) => {
+        const approach = location.approaches.find((approach) => {
+          return approach.protectedPhaseNumber === location.primaryPhase
+        })
+
+        return {
+          locationIdentifier: `${location.locationIdentifier} - ${location.primaryName} & ${location.secondaryName}`,
+          primaryName: location.primaryName,
+          secondaryName: location.secondaryName,
+          approachId: approach?.description,
+          order: approach?.order || 0,
+        }
+      })
+      // sort so 1 comes before 2, etc.
+      .sort((a, b) => a.order - b.order) || []
+
+  useEffect(() => {
+    if (handler.routeId) refetch()
+  }, [handler.routeId, refetch])
+
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
       <StyledPaper
@@ -42,6 +72,17 @@ export const LinkPivotOptionsComponent = (props: Props) => {
           hasLocationNames={false}
           hasLocationMap={false}
         />
+        <Box
+          sx={{
+            maxHeight: 350,
+            overflowY: 'auto',
+            outline: '1px solid #ccc',
+            mb: 2,
+            flexGrow: 1,
+          }}
+        >
+          <RouteTable data={routeValuesToCheck} />
+        </Box>
       </StyledPaper>
       <StyledPaper
         sx={{
