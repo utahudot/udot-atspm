@@ -64,6 +64,19 @@ services:
       --admin-password "${ADMIN_PASSWORD}"
       --seed-admin "${SEED_ADMIN}"
 
+  database-installer-locations:
+    build:
+      context: .
+      dockerfile: DatabaseInstaller/Dockerfile
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+    environment:
+      <<: *default-environment
+    entrypoint: >
+      dotnet DatabaseInstaller.dll setup-test
+      --protocol ftp 
+
   configapi:
     build:
       context: .
@@ -77,7 +90,7 @@ services:
       - ${CERT_LOCATION}
     user: root
     depends_on:
-      database-installer:
+      database-installer-locations:
         condition: service_completed_successfully
 
   dataapi:
@@ -88,11 +101,14 @@ services:
       - "44401:5001"
     environment:
       <<: *default-environment
-      ASPNETCORE_URLS: "https://+:5001"
+      ASPNETCORE_URLS: "http://+:5000;https://+:5001"
+      Bus__Type: ${Bus_Type}
+      Kafka__BootstrapServers: ${KAFKA_BOOTSTRAPSERVERS}
+      Kafka__Topic: ${KAFKA_TOPIC}
     volumes:
       - ${CERT_LOCATION}
     depends_on:
-      database-installer:
+      database-installer-locations:
         condition: service_completed_successfully
 
   reportapi:
@@ -120,11 +136,11 @@ services:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5003"
 
-      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__Host}"
-      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__Port}"
-      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__UserName}"
-      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__Password}"
-      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__EnableSsl}"
+      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__SmtpEmailService__Host}"
+      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__SmtpEmailService__Port}"
+      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__SmtpEmailService__UserName}"
+      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__SmtpEmailService__Password}"
+      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__SmtpEmailService__EnableSsl}"
     volumes:      
       - ${CERT_LOCATION}
     depends_on:
@@ -176,11 +192,11 @@ services:
     environment:
       <<: *default-environment
 
-      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__Host}"
-      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__Port}"
-      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__UserName}"
-      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__Password}"
-      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__EnableSsl}"
+      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__SmtpEmailService__Host}"
+      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__SmtpEmailService__Port}"
+      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__SmtpEmailService__UserName}"
+      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__SmtpEmailService__Password}"
+      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__SmtpEmailService__EnableSsl}"
       WatchdogConfiguration__ScanDate: "${WatchdogConfiguration__ScanDate}"
       WatchdogConfiguration__ConsecutiveCount: "${WatchdogConfiguration__ConsecutiveCount}"
       WatchdogConfiguration__LowHitThreshold: "${WatchdogConfiguration__LowHitThreshold}"
@@ -228,7 +244,68 @@ services:
       database-installer:
         condition: service_completed_successfully
     entrypoint: ["dotnet", "EventLogUtility.dll"]
+  
 
+   # ------------------------------------------------------------------------------
+  # 1) ZooKeeper (required by Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+  # ------------------------------------------------------------------------------
+  # 2) Kafka broker
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      # optional: 29092 for internal Docker-to-Docker
+      - "29092:29092"
+    environment:
+      KAFKA_DEFAULT_NUM_PARTITIONS: 6
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
+      # tell Kafka where ZooKeeper lives
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+      # listeners that Kafka will bind to
+      KAFKA_LISTENERS: ${KAFKA_LISTENERS}
+      # what address it advertises to clients
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
+      KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
+
+    # wait on ZooKeeper before starting
+    depends_on:
+      - zookeeper
+
+  eventlistener:
+    build:
+      context: .
+      dockerfile: EventListener/Dockerfile
+    environment:
+      <<: *default-environment
+    
+      EventListenerConfiguration__ApiBaseUrl: "http://dataapi:5000/"
+      EventListenerConfiguration__ApiEndpoint: "api/v1.0/EventLog"
+      EventListenerConfiguration__BatchSize: "${EVENT_LISTENER_BATCH_SIZE}"
+      EventListenerConfiguration__IntervalSeconds: "${EVENT_LISTENER_INTERVAL_SECONDS}"
+      EventListenerConfiguration__UdpPort: "${EVENT_LISTENER_UDP_PORT}"
+      EventListenerConfiguration__TcpPort: "${EVENT_LISTENER_TCP_PORT}"
+      Publisher__Type: "${Publisher_Type}"
+    depends_on:
+      dataapi:
+        condition: service_started
+    entrypoint: ["dotnet", "EventListener.dll"]
 
 
 volumes:

@@ -46,7 +46,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.WorkflowSteps
             {
                 var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                yield return await repo.Upsert(input);
+                yield return await repo.UpsertAsync(input);
             }
         }
     }

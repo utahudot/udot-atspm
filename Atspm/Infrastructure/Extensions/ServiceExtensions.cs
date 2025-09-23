@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Utility;
+using Utah.Udot.Atspm.Infrastructure.Messaging;
+using Utah.Udot.Atspm.Infrastructure.Messaging.Kafka;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
@@ -35,6 +38,7 @@ using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
 using Utah.Udot.Atspm.Repositories;
 using Utah.Udot.Atspm.SqlDatabaseProvider;
 using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
+using Utah.Udot.ATSPM.Infrastructure.Messaging.Database;
 using Utah.Udot.NetStandardToolkit.Authentication;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
@@ -298,6 +302,71 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.Configure<PathBaseSettings>(host.Configuration.GetSection($"{nameof(PathBaseSettings)}"));
 
             services.AddTransient<IStartupFilter, PathBaseStartupFilter>();
+
+            return services;
+        }
+
+  
+
+        public static IServiceCollection AddEventPublishers(
+        this IServiceCollection services,
+        HostBuilderContext host
+    )
+        {
+            // 1) bind each sub-section
+            services.Configure<KafkaConfiguration>(
+                host.Configuration.GetSection("Kafka"));
+            services.Configure<PubSubConfiguration>(
+                host.Configuration.GetSection("PubSub"));
+
+            // 2) pick which implementation
+            var busType = host.Configuration.GetValue<string>("Publisher:Type");
+            switch (busType)
+            {
+                case "Kafka":
+                    services.AddSingleton<IProducer<string, byte[]>>(sp =>
+                    {
+                        var cfg = sp.GetRequiredService<IOptions<KafkaConfiguration>>().Value;
+                        var producerConfig = new ProducerConfig
+                        {
+                            BootstrapServers = cfg.BootstrapServers,
+                            Acks = Acks.All,
+                            ClientId = cfg.ClientId
+                        };
+                        return new ProducerBuilder<string, byte[]>(producerConfig).Build();
+                    });
+                    services.AddSingleton<
+                        IEventPublisher<EventBatchEnvelope>,
+                        KafkaPublisher>();
+                    break;
+
+                case "PubSub":
+                    throw new NotImplementedException("PubSub publisher is not yet implemented.");
+                //services.AddSingleton(sp =>
+                //{
+                //    var cfg = sp
+                //        .GetRequiredService<IOptions<PubSubConfiguration>>()
+                //        .Value;
+                //    return PublisherClient.CreateAsync(
+                //        new TopicName(cfg.ProjectId, cfg.TopicId))
+                //        .Result;
+                //});
+                //services.AddSingleton<
+                //    IEventPublisher<EventBatchEnvelope>,
+                //    PubSubPublisher>();
+                //break;
+
+                case "Database":
+                    // No external bus client required—just your DB pipeline
+                    services.AddSingleton<
+                        IEventPublisher<EventBatchEnvelope>,
+                        DatabaseEventPublisher>();
+                    break;
+
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported bus type '{busType}'");
+            }
 
             return services;
         }

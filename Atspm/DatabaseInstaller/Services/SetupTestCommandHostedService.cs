@@ -123,7 +123,7 @@ public class SetupTestCommandHostedService : IHostedService
         var defaultAreaId = EnsureDefaultArea();
         var defaultJurisdictionId = EnsureDefaultJurisdiction();
         var productLookup = _productRepository.GetList().ToDictionary(p => p.Model, p => p.Id);
-
+        var speedDeviceIdentifier = 1;
         foreach (var device in devices)
         {
             if (_deviceRepository.GetList().Any(d => d.DeviceIdentifier == device.DeviceIdentifier))
@@ -193,7 +193,21 @@ public class SetupTestCommandHostedService : IHostedService
                 DeviceConfiguration = deviceConfig,
             };
 
+            var newSpeedDevice = new Device
+            {
+                //Make speedDeviceIdentifer a 6 character string lead by zeros
+                DeviceIdentifier = speedDeviceIdentifier.ToString("D6"),
+                Ipaddress = device.IpAddress,
+                DeviceStatus = DeviceStatus.Active,
+                DeviceType = DeviceTypes.SpeedSensor,
+                LoggingEnabled = true,
+                Notes = "Auto-attached from devices.json",
+                DeviceConfigurationId = deviceConfig.Id,
+                DeviceConfiguration = deviceConfig,
+            };
+            speedDeviceIdentifier++;
             location.Devices.Add(newDevice);
+            location.Devices.Add(newSpeedDevice);
             _locationRepository.Add(location);
 
             _logger.LogInformation($"Seeded device {device.DeviceIdentifier} at IP {device.IpAddress} using dedicated config {deviceConfig.Description}");
@@ -410,6 +424,7 @@ public class SetupTestCommandHostedService : IHostedService
     }
 
 
+
     private void SeedLocationsWithDevices(int locationCount, int deviceConfigurationId)
     {
         var configuration = _deviceConfigurationRepository.Lookup(deviceConfigurationId);
@@ -468,6 +483,7 @@ public class SetupTestCommandHostedService : IHostedService
 
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
 
     private class DeviceDefinition
     {

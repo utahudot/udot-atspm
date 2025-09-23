@@ -39,6 +39,13 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         /// <returns></returns>
         IReadOnlyList<Device> GetActiveDevicesByAllLatestLocations();
 
+        /// <summary>
+        /// Gets all <see cref="Device"/> Gets devices with detector by dectiection type <see cref="Location"/>
+        /// </summary>
+        /// <param name="detectionType"></param>
+        /// <returns></returns>
+        IQueryable<Device> GetList(DetectionTypes detectionType);
+
         //IReadOnlyList<Device> GetDevicesForEventLogging();
     }
 }

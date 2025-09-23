@@ -48,6 +48,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Confluent.Kafka" Version="2.10.0" />
 		<PackageReference Include="FluentFTP" Version="52.1.0" />
 		<PackageReference Include="Lextm.SharpSnmpLib" Version="12.5.5" />
 		<PackageReference Include="MailKit" Version="4.8.0" />
@@ -116,5 +117,10 @@
 	    <PackagePath>\</PackagePath>
 	  </None>
 	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Utah.Udot.ATSPM.InfrastructureTests" />
+	</ItemGroup>
+
 
 </Project>
