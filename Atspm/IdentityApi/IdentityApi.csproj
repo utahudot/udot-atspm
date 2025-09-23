@@ -13,7 +13,7 @@
 		<UserSecretsId>c9b0a688-a79d-41c6-ba5b-a3db33a33762</UserSecretsId>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<Version>5.1.8</Version>
+		<Version>5.1.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
