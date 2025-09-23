@@ -1,0 +1,35 @@
+name: Tag Version Bump
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Matches semantic version tags like v1.2.3
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update .csproj versions
+        run: |
+          VERSION="${{ steps.extract_version.outputs.VERSION }}"
+          find . -name "*.csproj" | while read csproj; do
+            echo "Updating $csproj to version $VERSION"
+            sed -i 's|<Version>.*</Version>|<Version>'"$VERSION"'</Version>|' "$csproj"
+          done
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Bump version to ${{ steps.extract_version.outputs.VERSION }}"
+          git push
