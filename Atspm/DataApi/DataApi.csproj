@@ -15,7 +15,7 @@
 		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IncludeOpenAPIAnalyzers>True</IncludeOpenAPIAnalyzers>
-		<Version>5.1.8</Version>
+		<Version>5.1.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
