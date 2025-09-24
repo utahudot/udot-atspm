@@ -35,7 +35,7 @@ jobs:
           
       - name: Pack NuGet package
         run: |
-          TEST = ${{ steps.validate_version.outputs.clean_version }}
+          TEST="${{ github.event.inputs.tag_name }}"
           echo "📦 Cleaned version for packaging: $TEST"
           dotnet pack ${{ matrix.project }} --configuration Release -o ./nupkgs
 
