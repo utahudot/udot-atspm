@@ -1,4 +1,5 @@
 import { useCellNavigation } from '@/features/locations/components/Cell/CellNavigation'
+import { dateToTimestamp } from '@/utils/dateTime'
 import { Box, TableCell, alpha, useTheme } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import React, {
@@ -71,7 +72,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   const handleDateChange = (d: Date | null) => {
     if (!d) return
     onUpdate(d)
-    setTypedDate(d.toISOString().slice(0, 10))
+    setTypedDate(dateToTimestamp(d))
   }
 
   const outlineColor = theme.palette.primary.main
