@@ -9,7 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ github.event.release.tag_name }}
-
+    strategy:
+      matrix:
+        project:
+          - Atspm/Application/Application.csproj
+          - Atspm/Infrastructure/Infrastructure.csproj
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,24 +23,35 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Validate VERSION format
+        run: |
+          CLEAN_VERSION="${VERSION#v}"
+          echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
+          if [[ ! $CLEAN_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: VERSION ($VERSION) is not a valid semantic version (MAJOR.MINOR.PATCH)"
+            exit 1
+          fi
+
       - name: Restore dependencies
-        run: |
-          dotnet restore Atspm/Application/Application.csproj
-          dotnet restore Atspm/Infrastructure/Infrastructure.csproj
+        run: dotnet restore ${{ matrix.project }}
 
-      - name: Build projects
-        run: |
-          dotnet build Atspm/Application/Application.csproj --configuration Release
-          dotnet build Atspm/Infrastructure/Infrastructure.csproj --configuration Release
+      - name: Build project
+        run: dotnet build ${{ matrix.project }} --configuration Release
 
-      - name: Pack NuGet packages
+      - name: Pack NuGet package
         run: |
-          CLEAN_VERSION="${VERSION#v}"  # Strip leading 'v' if present
-          dotnet pack Atspm/Application/Application.csproj --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
-          dotnet pack Atspm/Infrastructure/Infrastructure.csproj --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
+          # CLEAN_VERSION="${{ github.event.release.tag_name#v }}"  # Strip leading 'v' if present
+          # echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
+          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
 
       - name: Push to NuGet
         run: |
           for pkg in ./nupkgs/*.nupkg; do
-            dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+            echo "Pushing $pkg to NuGet..."
+            if dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}; then
+              echo "Successfully pushed $pkg."
+            else
+              echo "ERROR: Failed to push $pkg." >&2
+              exit 1
+            fi
           done
