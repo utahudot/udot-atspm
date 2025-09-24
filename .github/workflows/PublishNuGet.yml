@@ -40,8 +40,7 @@ jobs:
 
       - name: Pack NuGet package
         run: |
-          # CLEAN_VERSION="${{ github.event.release.tag_name#v }}"  # Strip leading 'v' if present
-          # echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
+          echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
           dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
 
       - name: Push to NuGet
