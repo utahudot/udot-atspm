@@ -1,0 +1,46 @@
+name: Manual Version & NuGet Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to apply to all .NET projects (e.g., 1.2.3)'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🧾 Checkout code
+      uses: actions/checkout@v3
+
+    - name: 🛠 Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: 📝 Update .csproj versions
+      run: |
+        find . -name "*.csproj" | while read csproj; do
+          echo "Updating $csproj to version ${{ github.event.inputs.version }}"
+          if grep -q "<Version>" "$csproj"; then
+            sed -i 's|<Version>.*</Version>|<Version>${{ github.event.inputs.version }}</Version>|' "$csproj"
+          else
+            sed -i '/<\/PropertyGroup>/i \  <Version>${{ github.event.inputs.version }}</Version>' "$csproj"
+          fi
+        done
+
+    - name: 💾 Commit updated project files
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add .
+        git commit -m "🔧 Version bump to ${{ github.event.inputs.version }}"
+        git push
+
+    - name: 📦 Pack NuGet packages
+      run: dotnet pack --configuration Release --output ./nuget /p:Version=${{ github.event.inputs.version }}
+
+    - name: 🚀 Publish to NuGet
+      run: dotnet nuget push ./nuget/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}

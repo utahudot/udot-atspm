@@ -20,11 +20,12 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
 		<PackageId>$(AssemblyName)</PackageId>
-		<VersionPrefix>5.1.0</VersionPrefix>
+		<VersionPrefix>5.1.2</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<UserSecretsId>8d5d6633-25e5-4c4a-b864-a8268f7b1dde</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
