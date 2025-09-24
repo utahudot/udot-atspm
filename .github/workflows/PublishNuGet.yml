@@ -1,0 +1,42 @@
+name: Publish NuGet Packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-nuget:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.release.tag_name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: |
+          dotnet restore Atspm/Application/Application.csproj
+          dotnet restore Atspm/Infrastructure/Infrastructure.csproj
+
+      - name: Build projects
+        run: |
+          dotnet build Atspm/Application/Application.csproj --configuration Release
+          dotnet build Atspm/Infrastructure/Infrastructure.csproj --configuration Release
+
+      - name: Pack NuGet packages
+        run: |
+          CLEAN_VERSION="${VERSION#v}"  # Strip leading 'v' if present
+          dotnet pack Atspm/Application/Application.csproj --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
+          dotnet pack Atspm/Infrastructure/Infrastructure.csproj --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
+
+      - name: Push to NuGet
+        run: |
+          for pkg in ./nupkgs/*.nupkg; do
+            dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+          done
