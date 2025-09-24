@@ -41,18 +41,18 @@ jobs:
           
       - name: Pack NuGet package
         run: |
-          TEST="${{ github.event.inputs.tag_name }}"
-          echo "📦 Cleaned version for packaging: $TEST"
-          dotnet pack ${{ matrix.project }} --configuration Release -o ./nupkgs
-
-      - name: Push to NuGet
-        run: |
-          for pkg in ./nupkgs/*.nupkg; do
-            echo "Pushing $pkg to NuGet..."
-            if dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}; then
-              echo "Successfully pushed $pkg."
-            else
-              echo "ERROR: Failed to push $pkg." >&2
-              exit 1
-            fi
-          done
+          VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
+          echo "📦 Cleaned version for packaging: $VERSION"
+          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=$VERSION -o ./nupkgs
+          
+      #- name: Push to NuGet
+       # run: |
+        #  for pkg in ./nupkgs/*.nupkg; do
+         #   echo "Pushing $pkg to NuGet..."
+          #  if dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}; then
+           #   echo "Successfully pushed $pkg."
+            #else
+             # echo "ERROR: Failed to push $pkg." >&2
+              #exit 1
+            #fi
+          #done
