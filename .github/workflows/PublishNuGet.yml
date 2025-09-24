@@ -26,6 +26,7 @@ jobs:
       - name: Validate VERSION format
         run: |
           CLEAN_VERSION="${VERSION#v}"
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
           echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
           if [[ ! $CLEAN_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9]+(\.[A-Za-z0-9]+)*)?$ ]]; then
             echo "ERROR: VERSION ($VERSION) is not a valid semantic version (MAJOR.MINOR.PATCH[-PRERELEASE])"
@@ -41,7 +42,7 @@ jobs:
       - name: Pack NuGet package
         run: |
           echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
-          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=$CLEAN_VERSION -o ./nupkgs
+          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=${{ steps.validate_version.outputs.CLEAN_VERSION }} -o ./nupkgs
 
       - name: Push to NuGet
         run: |
