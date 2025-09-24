@@ -7,8 +7,6 @@ on:
 jobs:
   publish-nuget:
     runs-on: ubuntu-latest
-    env:
-      VERSION: ${{ github.event.release.tag_name }}
     strategy:
       matrix:
         project:
@@ -23,25 +21,22 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Validate VERSION format
+      - name: Validate and clean version
+        id: validate_version
         run: |
+          VERSION="${{ github.event.release.tag_name }}"
           CLEAN_VERSION="${VERSION#v}"
-          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
           echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
+          echo "clean_version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
           if [[ ! $CLEAN_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9]+(\.[A-Za-z0-9]+)*)?$ ]]; then
             echo "ERROR: VERSION ($VERSION) is not a valid semantic version (MAJOR.MINOR.PATCH[-PRERELEASE])"
             exit 1
           fi
-
-      # - name: Restore dependencies
-      #   run: dotnet restore ${{ matrix.project }}
-
-      # - name: Build project
-      #  run: dotnet build ${{ matrix.project }} --configuration Release
-
+          
       - name: Pack NuGet package
         run: |
-          echo "📦 Cleaned version for packaging: =${{ steps.validate_version.outputs.CLEAN_VERSION }}"
+          TEST = ${{ steps.validate_version.outputs.clean_version }}
+          echo "📦 Cleaned version for packaging: $TEST"
           dotnet pack ${{ matrix.project }} --configuration Release -o ./nupkgs
 
       - name: Push to NuGet
