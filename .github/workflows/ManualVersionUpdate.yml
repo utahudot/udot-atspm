@@ -1,4 +1,4 @@
-name: Manual Version Update
+name: Create Tag and Version Projects
 
 on:
   workflow_dispatch:
