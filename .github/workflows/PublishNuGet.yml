@@ -68,7 +68,7 @@ jobs:
         run: |
           for pkg in ./nupkgs/*.nupkg; do
             echo "Pushing $pkg to NuGet..."
-            if dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}; then
+            if dotnet nuget push "$pkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate; then
               echo "Successfully pushed $pkg."
             else
               echo "ERROR: Failed to push $pkg." >&2
