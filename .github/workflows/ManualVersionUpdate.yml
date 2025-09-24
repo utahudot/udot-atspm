@@ -1,0 +1,53 @@
+name: Manual Version Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      newVersion:
+        description: 'New version number (e.g., v1.2.3 or v1.2.3-rc1)'
+        required: true
+        type: string
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate SemVer format
+        run: |
+          VERSION="${{ github.event.inputs.newVersion }}"
+          if [[ ! "$VERSION" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z0-9]+[0-9]*)?$ ]]; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Must match SemVer like v1.2.3 or v1.2.3-rc1"
+            exit 1
+          fi
+
+          if [[ "$VERSION" == *-* ]]; then
+            echo "Detected preview version: $VERSION"
+          else
+            echo "Detected release version: $VERSION"
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update .csproj versions
+        run: |
+          VERSION="${{ github.event.inputs.newVersion }}"
+          CLEAN_VERSION="${VERSION#v}"  # Strip leading 'v'
+          find . -name "*.csproj" | while read csproj; do
+            echo "Updating $csproj to version $CLEAN_VERSION"
+            sed -i 's|<Version>.*</Version>|<Version>'"$CLEAN_VERSION"'</Version>|' "$csproj"
+          done
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Bump version to ${{ github.event.inputs.newVersion }}"
+          git push
+
+      - name: Create and push tag
+        run: |
+          VERSION="${{ github.event.inputs.newVersion }}"
+          git tag "$VERSION"
+          git push origin "$VERSION"
