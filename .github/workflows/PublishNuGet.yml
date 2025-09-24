@@ -27,8 +27,8 @@ jobs:
         run: |
           CLEAN_VERSION="${VERSION#v}"
           echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
-          if [[ ! $CLEAN_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "ERROR: VERSION ($VERSION) is not a valid semantic version (MAJOR.MINOR.PATCH)"
+          if [[ ! $CLEAN_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9]+(\.[A-Za-z0-9]+)*)?$ ]]; then
+            echo "ERROR: VERSION ($VERSION) is not a valid semantic version (MAJOR.MINOR.PATCH[-PRERELEASE])"
             exit 1
           fi
 
