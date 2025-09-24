@@ -32,11 +32,11 @@ jobs:
             exit 1
           fi
 
-      - name: Restore dependencies
-        run: dotnet restore ${{ matrix.project }}
+      # - name: Restore dependencies
+      #   run: dotnet restore ${{ matrix.project }}
 
-      - name: Build project
-        run: dotnet build ${{ matrix.project }} --configuration Release
+      # - name: Build project
+      #  run: dotnet build ${{ matrix.project }} --configuration Release
 
       - name: Pack NuGet package
         run: |
