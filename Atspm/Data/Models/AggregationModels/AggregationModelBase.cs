@@ -141,6 +141,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int GreenTime { get; set; }
         public int TotalRedToRedCycles { get; set; }
         public int TotalGreenToGreenCycles { get; set; }
+        public int PhaseBeginCount { get; set; }
     }
 
     public partial class PhaseLeftTurnGapAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer
