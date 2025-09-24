@@ -41,8 +41,8 @@ jobs:
 
       - name: Pack NuGet package
         run: |
-          echo "📦 Cleaned version for packaging: $CLEAN_VERSION"
-          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=${{ steps.validate_version.outputs.CLEAN_VERSION }} -o ./nupkgs
+          echo "📦 Cleaned version for packaging: =${{ steps.validate_version.outputs.CLEAN_VERSION }}"
+          dotnet pack ${{ matrix.project }} --configuration Release -o ./nupkgs
 
       - name: Push to NuGet
         run: |
