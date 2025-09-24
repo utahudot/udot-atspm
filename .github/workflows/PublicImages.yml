@@ -1,7 +1,8 @@
-name: Build Containers and Publish to GHCR (Manual Trigger)
+name: Build Containers and Publish to GHCR (On Release)
 
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -13,12 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4     
-      # Check which Containers have changed files (find all for manual run)
+      # Check which Containers have changed files (find by filter)
       - uses: dorny/paths-filter@v3
         id: changes
         with:
           filters: .github/filters.json
-          # For manual run, you might want to build all, so override outputs if needed
     outputs:
       changes: ${{steps.changes.outputs.changes}}
 
@@ -56,7 +56,7 @@ jobs:
         id: meta
         run: |
           IMAGE_REPO="ghcr.io/${{ github.repository }}/${{ matrix.name }}"
-          echo "IMAGE_TAGS=${IMAGE_REPO}:${{ github.sha }},${IMAGE_REPO}:latest" >> $GITHUB_ENV
+          echo "IMAGE_TAGS=${IMAGE_REPO}:${GITHUB_REF#refs/tags/},${IMAGE_REPO}:latest" >> $GITHUB_ENV
 
       - name: 📦 Build and push image (non-WebUI)
         uses: docker/build-push-action@v6
@@ -69,6 +69,8 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          labels: |
+            org.opencontainers.image.description=${{ github.event.release.body }}
 
       - name: 📦 Build and push image WebUI
         uses: docker/build-push-action@v6
@@ -80,3 +82,5 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          labels: |
+            org.opencontainers.image.description=${{ github.event.release.body }}
