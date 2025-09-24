@@ -25,8 +25,7 @@ using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
-//trick github
-//"830379441974"
+//gitactions: IIII
 
 if (OperatingSystem.IsWindows())
 {

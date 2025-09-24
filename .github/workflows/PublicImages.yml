@@ -9,28 +9,20 @@ permissions:
   packages: write
 
 jobs:
-  changes:
-    name: Find Containers to build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4     
-      # Check which Containers have changed files (find by filter)
-      - uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: .github/filters.json
-    outputs:
-      changes: ${{steps.changes.outputs.changes}}
-
   build:
     name: Build Job
-    needs: changes
-    if: ${{ needs.changes.outputs.changes != '[]'}}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        name: ${{fromJson(needs.changes.outputs.changes)}}
+        name:
+          - atspm-webui
+          - atspm-config-api
+          - atspm-data-api
+          - atspm-identity-api
+          - atspm-report-api
+          - atspm-watchdog
+          - atspm-eventlogutil
 
     steps:
       - name: ⬇️ Set up code
