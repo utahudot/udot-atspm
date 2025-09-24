@@ -14,13 +14,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { format } from 'date-fns'
 
-export const dateToTimestamp = (date: Date) => {
-  return format(date, "yyyy-MM-dd'T'HH:mm:ss")
+/**
+ * Converts a Date or date string into a timezone-free timestamp string.
+ * Output format: "YYYY-MM-DDTHH:mm:ss"
+ * - Strips any timezone info (Z, ±HH:mm) if input is a string.
+ * - Uses local date/time parts if input is a Date.
+ *
+ * @param {Date|string} value The input date object or date string
+ * @returns {string} A timezone-free timestamp string, or original string if invalid date
+ */
+export const dateToTimestamp = (value: Date | string): string => {
+  const d = typeof value === 'string' ? new Date(value) : value
+  if (!(d instanceof Date) || isNaN(d.getTime())) return value as string // return original value if not a valid date
+
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const y = d.getFullYear()
+  const m = pad(d.getMonth() + 1)
+  const day = pad(d.getDate())
+  const hh = pad(d.getHours())
+  const mm = pad(d.getMinutes())
+  const ss = pad(d.getSeconds())
+
+  return `${y}-${m}-${day}T${hh}:${mm}:${ss}`
 }
 
-export const toUTCDateStamp = (date: Date): string => {
+export const toUTCDateStamp = (date: Date | string): string => {
+  if (typeof date === 'string') {
+    date = new Date(date)
+  }
   const year = date.getUTCFullYear()
   const month = String(date.getUTCMonth() + 1).padStart(2, '0')
   const day = String(date.getUTCDate()).padStart(2, '0')
