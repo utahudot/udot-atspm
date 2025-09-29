@@ -59,13 +59,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         public virtual Uri GenerateLocalFilePath(Device device, Uri resource)
         {
             var fileExtension = Path.HasExtension(resource.Segments.LastOrDefault()) ? Path.GetExtension(resource.Segments.LastOrDefault()) : ".txt";
-            var fileName = $"{device.DeviceIdentifier}-{DateTime.Now.Ticks}{fileExtension}";
+            var deviceIdentifier = device.DeviceIdentifier ?? "999999";
 
+            var fileName = $"{deviceIdentifier}-{DateTime.Now.Ticks}{fileExtension}";
             var path = Path.Combine
                 (_options.BasePath,
                 $"{device.Location?.LocationIdentifier}",
                 device.DeviceType.ToString(),
-                 $"{device.DeviceIdentifier}-{device.Ipaddress}");
+                 $"{deviceIdentifier}-{device.Ipaddress}");
 
             var result = new UriBuilder()
             {
@@ -111,7 +112,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                     //throw new InvalidDeviceIpAddressException(parameter);
                 }
 
-                var deviceIdentifier = parameter?.DeviceIdentifier;
+                var deviceIdentifier = parameter?.DeviceIdentifier ?? "999999";
                 var user = parameter?.DeviceConfiguration?.UserName;
                 var password = parameter?.DeviceConfiguration?.Password;
                 var path = new ObjectPropertyParser(parameter, parameter?.DeviceConfiguration?.Path).ToString();
