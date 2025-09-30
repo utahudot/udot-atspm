@@ -19,6 +19,10 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Extensions;
+using Confluent.Kafka;
+using Newtonsoft.Json;
+using Utah.Udot.Atspm.Infrastructure.Messaging;
+using System.Text;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
@@ -33,12 +37,15 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     {
         private readonly IEventLogRepository _repository;
         private readonly ILogger _log;
+        private readonly IProducer<string, byte[]> _busProducer;
 
         /// <inheritdoc/>
-        public EventLogController(IEventLogRepository repository, ILogger<EventLogController> log)
+        public EventLogController(IEventLogRepository repository, ILogger<EventLogController> log,
+        IProducer<string, byte[]> busProducer)
         {
             _repository = repository;
             _log = log;
+            _busProducer = busProducer;
         }
 
         /// <summary>
@@ -237,6 +244,35 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] List<EventBatchEnvelope> batches)
+        {
+            if (batches == null || batches.Count == 0)
+                return BadRequest("No batches provided.");
+
+            _log.LogInformation("Publishing {BatchCount} batches", batches.Count);
+
+            var produceTasks = batches.Select(batch =>
+            {
+                // Serialize the envelope
+                var envelopeJson = JsonConvert.SerializeObject(batch);
+                var envelopeBytes = Encoding.UTF8.GetBytes(envelopeJson);
+
+                // Key by LocationIdentifier, topic by EventType
+                var message = new Message<string, byte[]>
+                {
+                    Key = batch.LocationIdentifier,
+                    Value = envelopeBytes
+                };
+
+                return _busProducer.ProduceAsync("location-events", message);
+            });
+
+            await Task.WhenAll(produceTasks);
+
+            return Ok(new { publishedBatches = batches.Count });
         }
     }
 }

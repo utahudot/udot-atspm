@@ -53,12 +53,36 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
 
         /// <summary>
-        /// Updates the <see cref="Device.LocationId"/> to new location version
+        /// <see cref="Device"/> query builder for the EventLogUtility.
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="deviceIds"></param>
-        /// <param name="locationId"></param>
-        public static void UpdateDevicesForNewVersion(this IDeviceRepository repo, List<int> deviceIds, int locationId)
+        /// <param name="queryOptions"></param>
+        /// <returns></returns>
+        public static IAsyncEnumerable<Device> GetDevicesForLoggingWithDetectors(this IDeviceRepository repo, DeviceEventLoggingQueryOptions queryOptions)
+        {
+            var result = repo.GetList()
+                .Include(d => d.Location)
+                .ThenInclude(l => l.Approaches)
+                .ThenInclude(a => a.Detectors)
+                .Where(w => w.LoggingEnabled)
+                .Where(w => queryOptions.DeviceType == DeviceTypes.Unknown || w.DeviceType == queryOptions.DeviceType)
+                .Where(w => queryOptions.DeviceStatus == DeviceStatus.Unknown || w.DeviceStatus == queryOptions.DeviceStatus)
+                .Where(w => queryOptions.TransportProtocol == TransportProtocols.Unknown || w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
+                .AsQueryable()
+                .AsAsyncEnumerable()
+                .Where(w => !(queryOptions.IncludedDevices?.Count() > 0) || queryOptions.IncludedDevices.Any(a => w.DeviceIdentifier == a))
+                .Where(w => !(queryOptions.IncludeConfigurations?.Count() > 0) || queryOptions.IncludeConfigurations.Any(a => w.DeviceConfigurationId == a))
+                .Where(w => !(queryOptions.IncludedLocations?.Count() > 0) || queryOptions.IncludedLocations.Any(a => w.Location.LocationIdentifier == a))
+                .Where(w => !(queryOptions.ExcludedLocations?.Count() > 0) || !queryOptions.ExcludedLocations.Any(a => w.Location.LocationIdentifier == a))
+                .Where(w => !(queryOptions.IncludedAreas?.Count() > 0) || queryOptions.IncludedAreas.Any(l => w.Location.Areas.Any(a => a.Name == l)))
+                .Where(w => !(queryOptions.IncludedRegions?.Count() > 0) || queryOptions.IncludedRegions.Any(a => w.Location.Region.Description == a))
+                .Where(w => !(queryOptions.IncludedJurisdictions?.Count() > 0) || queryOptions.IncludedJurisdictions.Any(a => w.Location.Jurisdiction.Name == a))
+                .Where(w => !(queryOptions.IncludedLocationTypes?.Count() > 0) || queryOptions.IncludedLocationTypes.Any(a => w.Location.LocationType.Name == a));
+
+            return result;
+        }
+
+        public static void UpdateDevicesForNewVersion(this IDeviceRepository repo,  List<int> deviceIds, int locationId)
         {
             var devices = repo.GetList().Where(w => deviceIds.Contains(w.Id)).ToList();
             foreach (var device in devices)

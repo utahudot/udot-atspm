@@ -1,5 +1,60 @@
+x-environment: &default-environment
+  ASPNETCORE_ENVIRONMENT: "Development"
+  ASPNETCORE_Kestrel__Certificates__Default__Password: "password"
+  ASPNETCORE_Kestrel__Certificates__Default__Path: "/root/.aspnet/https/aspnetapp.pfx"
+  ASPNETCORE_URLS: "https://+:5000"
 
-# services:
+  # Allowed Hosts
+  AllowedHosts: "${ALLOWED_HOSTS}"
+
+  # Database Connection Strings (Using Double Underscore Format)
+  ConnectionStrings__ConfigContext__ConnectionString: "${CONFIG_CONNECTION}"
+  ConnectionStrings__AggregationContext__ConnectionString: "${AGGREGATION_CONNECTION}"
+  ConnectionStrings__EventLogContext__ConnectionString: "${EVENTLOG_CONNECTION}"
+  ConnectionStrings__IdentityContext__ConnectionString: "${IDENTITY_CONNECTION}"
+
+  # Database Providers
+  ConnectionStrings__ConfigContext__Provider: "${ConfigContext_Provider}"
+  ConnectionStrings__AggregationContext__Provider: "${AggregationContext_Provider}"
+  ConnectionStrings__EventLogContext__Provider: "${EventLogContext_Provider}"
+  ConnectionStrings__IdentityContext__Provider: "${IdentityContext_Provider}"
+
+  # JWT Configuration
+  Jwt__ExpireDays: "${JWT_EXPIRE_DAYS}"
+  Jwt__Key: "${JWT_KEY}"
+  Jwt__Issuer: "${JWT_ISSUER}"
+
+
+
+services:
+  speed-emitter-udp:
+    build:
+      context: .
+      dockerfile: SpeedEventEmitter/Dockerfile
+    environment:
+      <<: *default-environment
+      EVENT_LISTENER_HOST: eventlistener
+      EVENT_LISTENER_PORT: "${EVENT_LISTENER_UDP_PORT}"
+      EMITTER_PROTOCOL: udp
+      EMITTER_INTERVAL_MS: "${EMITTER_INTERVAL_MS}"
+    depends_on:
+      eventlistener:
+        condition: service_started
+
+  speed-emitter-tcp:
+    build:
+      context: .
+      dockerfile: SpeedEventEmitter/Dockerfile
+    environment:
+      <<: *default-environment
+      EVENT_LISTENER_HOST: eventlistener
+      EVENT_LISTENER_PORT: "${EVENT_LISTENER_TCP_PORT}"
+      EMITTER_PROTOCOL: tcp
+      EMITTER_INTERVAL_MS: "${EMITTER_INTERVAL_MS}"
+    depends_on:
+      eventlistener:
+        condition: service_started
+
 #   device-emulator:
 #     build:
 #       context: .

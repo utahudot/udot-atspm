@@ -42,6 +42,37 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .AsQueryable();
         }
 
+
+
+        /// <inheritdoc/>
+        public IQueryable<Device> GetList(DetectionTypes detectionType)
+        {
+            return base.GetList()
+
+                // only devices with at least one matching detector
+                .Where(d =>
+                    d.Location
+                     .Approaches
+                     .SelectMany(a => a.Detectors)
+                     .Any(det => det.DetectionTypes.Select(d => d.Id).Contains(detectionType)))
+
+                // still eager‐load Location→Region
+                .Include(d => d.Location)
+                    .ThenInclude(loc => loc.Region)
+
+                // filtered Approaches: only those that have a matching detector
+                .Include(d => d.Location)
+                    .ThenInclude(loc =>
+                        loc.Approaches
+                           .Where(a =>
+                               a.Detectors.Any(det => det.DetectionTypes.Select(d => d.Id).Contains(detectionType))))
+                    // …and within each included Approach, only the matching Detectors
+                    .ThenInclude(a =>
+                        a.Detectors
+                         .Where(det => det.DetectionTypes.Select(d => d.Id).Contains(detectionType)));
+        }
+
+
         #endregion
 
         #region IDeviceRepository

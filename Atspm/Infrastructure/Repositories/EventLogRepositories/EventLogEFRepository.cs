@@ -15,7 +15,9 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -28,6 +30,47 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         public EventLogEFRepository(EventLogContext db, ILogger<EventLogEFRepository> log) : base(db, log) { }
 
         #region IEventLogRepository
+
+
+
+        /// <summary>
+        /// Used to update/insert an entry to the <see cref="IEventLogRepository"/> repository
+        /// using a <see cref="HashSet{T}"/> to ensure there are no duplicate data events.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="repo"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        /// 
+        public async Task<T> UpsertAsync<T>( T input) where T : CompressedEventLogBase
+        {
+            var searchLog = await LookupAsync(input);
+
+            if (searchLog != null)
+            {
+                dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(input.DataType));
+
+                foreach (var i in Enumerable.Union(searchLog.Data, input.Data).ToHashSet())
+                {
+                    if (list is IList l)
+                    {
+                        l.Add(i);
+                    }
+                }
+
+                searchLog.Data = list;
+
+                await UpdateAsync(searchLog);
+
+                return (T)searchLog;
+            }
+            else
+            {
+                await AddAsync(input);
+
+                return input;
+            }
+        }
 
         ///<inheritdoc/>
         public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId)
