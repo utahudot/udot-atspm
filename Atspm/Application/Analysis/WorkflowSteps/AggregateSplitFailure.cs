@@ -89,7 +89,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             var cycleEvents = indianaEvents.GetEventsByEventCodes(
                     start.AddSeconds(-900),
                     end.AddSeconds(900),
-                    IndianaEventExtensions.GetCycleEventCodes(phaseDetail.UseOverlap),
+                    TempExtensions.IndianaEventExtensions.GetCycleEventCodes(phaseDetail.UseOverlap),
                     phaseDetail.PhaseNumber).OrderBy(e => e.Timestamp).ToList();
 
             if (cycleEvents.IsNullOrEmpty())
