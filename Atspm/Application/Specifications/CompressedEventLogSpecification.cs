@@ -61,7 +61,7 @@ namespace Utah.Udot.Atspm.Specifications
         public CompressedEventLogSpecification(string locationIdentifier, DateTime start, DateTime end, int deviceId) : base()
         {
             Criteria = c => c.LocationIdentifier == locationIdentifier && c.DeviceId == deviceId && c.End > start && c.Start < end;
-            //Criteria = c => c.LocationIdentifier == locationIdentifier && c.DeviceId == deviceId && ((c.Start >= start && c.End <= end) || (c.Start >= start && c.End >= end));
+
             ApplyOrderBy(o => o.Start);
         }
     }
