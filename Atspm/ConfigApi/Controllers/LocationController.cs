@@ -130,8 +130,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             }
         }
 
-        //HACK: move this to LocationManagementController
-
         /// <summary>
         /// Marks <see cref="Location"/> to deleted
         /// </summary>
@@ -155,8 +153,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 return NotFound(e.Message);
             }
         }
-
-        //HACK: move this to LocationManagementController
 
         /// <summary>
         /// Marks <see cref="Location"/> to deleted

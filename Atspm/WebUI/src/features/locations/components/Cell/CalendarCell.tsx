@@ -39,7 +39,8 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   } = useCellNavigation(approachId, row, col, rowCount, colCount)
   const cellRef = useRef<HTMLElement>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [typedDate, setTypedDate] = useState(value)
+
+  const date = value ? new Date(value) : null
 
   useEffect(() => {
     if (tabIndex === 0 && !pickerOpen) {
@@ -71,7 +72,6 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   const handleDateChange = (d: Date | null) => {
     if (!d) return
     onUpdate(d)
-    setTypedDate(d.toISOString().slice(0, 10))
   }
 
   const outlineColor = theme.palette.primary.main
@@ -117,7 +117,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
       <DatePicker
         open={pickerOpen}
         onClose={handlePickerClose}
-        value={new Date(typedDate)}
+        value={date}
         onChange={handleDateChange}
         slotProps={{
           textField: {

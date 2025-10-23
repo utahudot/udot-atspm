@@ -65,7 +65,12 @@ namespace Utah.Udot.Atspm.Business.Common
                 return null;
             }
             var analysisPhaseData = new AnalysisPhaseData();
-            var phase = phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseNumber);
+            var phases = phaseService.GetPhases(location);
+
+            var phase = phases
+                .First(p => p.PhaseNumber == phaseNumber && !p.IsPermissivePhase)
+                ?? phases.FirstOrDefault(p => p.PhaseNumber == phaseNumber);
+
             SetPhaseDescription(analysisPhaseData, phase, phaseNumber);
             analysisPhaseData.PhaseNumber = phaseNumber;
             var cycleEventCodes = new List<short> { 1, 8, 11 };
@@ -106,7 +111,7 @@ namespace Utah.Udot.Atspm.Business.Common
             }
             else
             {
-                analysisPhaseData.PhaseDescription = phase.GetApproachDescription();
+                analysisPhaseData.PhaseDescription = $"{phase.Approach.DirectionType.Description} Phase {phaseNumber}"; 
             }
         }
 
