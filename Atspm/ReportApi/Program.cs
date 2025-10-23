@@ -50,7 +50,7 @@ using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
-//gitactions: III
+//gitactions: IIII
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -58,6 +58,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host
     .ApplyVolumeConfiguration()
+    .ConfigureLogging((h, l) =>
+    {
+        l.AddGoogle(h);
+    })
     .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
