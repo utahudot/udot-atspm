@@ -321,6 +321,16 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                     }
                     return result;
                 });
+                if (phaseDetail.UseOverlap)
+                {
+                    bool has64 = tempEvents.Any(e => e.EventCode == 64);
+                    if (has64)
+                    {
+                        tempEvents = tempEvents
+                            .Where(e => e.EventCode != 65)
+                            .ToList();
+                    }
+                }
                 cycles = _cycleService.GetGreenToGreenCycles(options.Start.AddMinutes(-2), options.End.AddMinutes(2), tempEvents).ToList();
 
                 for (int i = 0; i < cycles.Count; i++)

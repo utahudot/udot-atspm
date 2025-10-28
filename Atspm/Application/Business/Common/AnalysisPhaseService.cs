@@ -68,7 +68,7 @@ namespace Utah.Udot.Atspm.Business.Common
             var phases = phaseService.GetPhases(location);
 
             var phase = phases
-                .First(p => p.PhaseNumber == phaseNumber && !p.IsPermissivePhase)
+                .FirstOrDefault(p => p.PhaseNumber == phaseNumber && !p.IsPermissivePhase)
                 ?? phases.FirstOrDefault(p => p.PhaseNumber == phaseNumber);
 
             SetPhaseDescription(analysisPhaseData, phase, phaseNumber);
@@ -111,7 +111,7 @@ namespace Utah.Udot.Atspm.Business.Common
             }
             else
             {
-                analysisPhaseData.PhaseDescription = $"{phase.Approach.DirectionType.Description} Phase {phaseNumber}"; 
+                analysisPhaseData.PhaseDescription = $"{phase.Approach.DirectionType.Description} Phase {phaseNumber}";
             }
         }
 
