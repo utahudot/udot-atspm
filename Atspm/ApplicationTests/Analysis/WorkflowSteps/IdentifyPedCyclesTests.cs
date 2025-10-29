@@ -25,6 +25,8 @@ using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Attributes;
 using Utah.Udot.Atspm.ApplicationTests.Fixtures;
+using Utah.Udot.Atspm.Business.PedDelay;
+using Utah.Udot.Atspm.Business.PhaseTermination;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -112,82 +114,106 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             //if i use an attribute to organize events into phases, would that affect anything?
 
 
+            //We only look at protected phases that are not 0. All other approaches and phases can be ignored.
+            //If the approach is marked as pedestrian overlap we use event codes 67, 68, 45, 90, otherwise we use 21, 22, 45, 90. 
+            //if (Approach.IsPedestrianPhaseOverlap)
+            //{
+            //   BeginWalkEvent = 67;
+            //    BeginClearanceEvent = 68;
+            //}
+            //else
+            //{
+            //    BeginWalkEvent = 21;
+            //    BeginClearanceEvent = 22;
+            //}
+            //If the location Peds Are 1 to 1 field is true then the event param for the ped detector will be the same as the phase number (event code 90). If it is false we will will use the numbers listed in the pedestrian detectors field to match with event code 90.
+
+
             //var approaches = config.Approaches.ToLookup(l => l.ProtectedPhaseNumber);
 
 
-            _output.WriteLine($"{config} - {input.Count(c => c.EventCode == 21)}");
-
-            var filter = input
-                .Where(w => w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90)
-                .OrderBy(o => o.Timestamp)
-                .ToList();
+            //_output.WriteLine($"{config} - {input.Count(c => c.EventCode == 21)}");
 
 
-            var test = filter.KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn).ToList();
-
-            var results = test
-                .Select((t, index) => new { Item = t, Index = index })
-                .Where(x => x.Item.EventCode == 90 && x.Index > 0 && x.Index < test.Count - 1)
-                .Select(x =>
-                {
-                    var prev = test[x.Index - 1];
-                    var next = test[x.Index + 1];
-
-                    var pedCycle = new PedCycle()
-                    {
-                        PedDetectorOn = x.Item.Timestamp
-                    };
-
-                    if (prev.EventCode == 21 && next.EventCode == 22)
-                    {
-                        pedCycle.Start = prev.Timestamp;
-                        pedCycle.BeginWalk = prev.Timestamp;
-                        pedCycle.End = next.Timestamp;
-                    }
-
-                    else if (prev.EventCode == 21 && next.EventCode == 21)
-                    {
-                        pedCycle.Start = prev.Timestamp;
-                        pedCycle.BeginWalk = next.Timestamp;
-                        pedCycle.End = next.Timestamp;
-                    }
-
-                    else if (prev.EventCode == 22 && next.EventCode == 21)
-                    {
-                        pedCycle.Start = prev.Timestamp;
-                        pedCycle.BeginWalk = next.Timestamp;
-                        pedCycle.End = next.Timestamp;
-                    }
-
-                    return pedCycle;
-                })
-                .Where(w => w.BeginWalk > DateTime.MinValue)
-                .ToList();
+            //foreach (var a in config.Approaches)
+            //{
+            //    _output.WriteLine($"{a} - {a.ProtectedPhaseNumber} - {a.IsPedestrianPhaseOverlap}");
+            //}
 
 
-            _output.WriteLine($"{results.Min(m => m.BeginWalk)} - {results.Max(m => m.BeginWalk)}");
+            //var filter = input
+            //    .Where(w => w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90)
+            //    .OrderBy(o => o.Timestamp)
+            //    .ToList();
 
-            //foreach (var r in results)
+
+            //var test = filter.KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn).ToList();
+
+            //var pedCycles = test
+            //    .Select((t, index) => new { Item = t, Index = index })
+            //    .Where(x => x.Item.EventCode == 90 && x.Index > 0 && x.Index < test.Count - 1)
+            //    .Select(x =>
+            //    {
+            //        var prev = test[x.Index - 1];
+            //        var next = test[x.Index + 1];
+
+            //        var pedCycle = new Atspm.Analysis.WorkflowSteps.PedCycle()
+            //        {
+            //            PedDetectorOn = x.Item.Timestamp
+            //        };
+
+            //        if (prev.EventCode == 21 && next.EventCode == 22)
+            //        {
+            //            pedCycle.Start = prev.Timestamp;
+            //            pedCycle.BeginWalk = prev.Timestamp;
+            //            pedCycle.End = next.Timestamp;
+            //        }
+
+            //        else if (prev.EventCode == 21 && next.EventCode == 21)
+            //        {
+            //            pedCycle.Start = prev.Timestamp;
+            //            pedCycle.BeginWalk = next.Timestamp;
+            //            pedCycle.End = next.Timestamp;
+            //        }
+
+            //        else if (prev.EventCode == 22 && next.EventCode == 21)
+            //        {
+            //            pedCycle.Start = prev.Timestamp;
+            //            pedCycle.BeginWalk = next.Timestamp;
+            //            pedCycle.End = next.Timestamp;
+            //        }
+
+            //        return pedCycle;
+            //    })
+            //    .Where(w => w.BeginWalk > DateTime.MinValue)
+            //    .ToList();
+
+
+            //_output.WriteLine($"{pedCycles.Min(m => m.BeginWalk)} - {pedCycles.Max(m => m.BeginWalk)}");
+
+            //foreach (var r in pedCycles)
             //{
             //    _output.WriteLine($"{r}");
             //}
 
+            var pedCycles = input.IdentifyPedCycles();
+
             var span = TimeSpan.FromMinutes(15);
 
             //HACK: updated timeline object in toolkit so the rounding can be removed
-            var tl = new Timeline<PhasePedAggregation>(results.Min(m => m.BeginWalk).RoundDown(span), results.Max(m => m.BeginWalk).RoundUp(span), span);
+            var tl = new Timeline<PhasePedAggregation>(pedCycles.Min(m => m.BeginWalk).RoundDown(span), pedCycles.Max(m => m.BeginWalk).RoundUp(span), span);
 
-            _output.WriteLine($"{tl.Start} - {tl.End}");
+            //_output.WriteLine($"{tl.Start} - {tl.End}");
 
             tl.Segments.ToList().ForEach(f =>
             {
                 f.LocationIdentifier = config.LocationIdentifier;
                 f.PhaseNumber = 2;
-                f.PedCycles = results.Count(c => f.InRange(c.BeginWalk));
-                f.PedDelay = results.Where(c => f.InRange(c.BeginWalk)).Sum(s => s.PedDelay);
+                f.PedCycles = pedCycles.Count(c => f.InRange(c.BeginWalk));
+                f.PedDelay = pedCycles.Where(c => f.InRange(c.BeginWalk)).Sum(s => s.PedDelay);
 
-                f.MinPedDelay = results.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).Where(w => w > 0).DefaultIfEmpty(0).Min();
-                f.MaxPedDelay = results.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).DefaultIfEmpty(0).Max();
+                f.MinPedDelay = pedCycles.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).Where(w => w > 0).DefaultIfEmpty(0).Min();
+                f.MaxPedDelay = pedCycles.Where(c => f.InRange(c.BeginWalk)).Select(s => s.PedDelay).DefaultIfEmpty(0).Max();
 
 
                 f.PedRequests = input.Count(w => w.EventCode == 90 && f.InRange(w.Timestamp));
@@ -216,7 +242,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
 
 
-            _output.WriteLine($"{tl.Segments.ToList().Count}");
+            //_output.WriteLine($"{tl.Segments.ToList().Count}");
 
             foreach (var r in tl.Segments.ToList())
             {

@@ -18,15 +18,92 @@
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Extensions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Utah.Udot.Atspm.Extensions
 {
     /// <summary>
-    /// Provides extension methods for working with collections of <see cref="IndianaEvent"/> objects,
-    /// including filtering sequential events and grouping events by parameter type.
+    /// Provides extension methods for working with collections of <see cref="IndianaEvent"/> objects.
     /// </summary>
     public static class IndianaEventExtensions
     {
+        /// <summary>
+        /// Identifies pedestrian cycles from a sequence of <see cref="IndianaEvent"/> objects.
+        /// Filters and matches pedestrian detector activations with corresponding walk and change interval events
+        /// to construct a list of <see cref="PedCycle"/> instances representing pedestrian service intervals.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to analyze for pedestrian cycles.</param>
+        /// <param name="IsPedPhaseOverlap">
+        /// If <c>true</c>, uses overlap pedestrian event codes for matching cycles; otherwise, uses standard pedestrian event codes.
+        /// </param>
+        /// <returns>
+        /// A read-only list of <see cref="PedCycle"/> objects, each representing a detected pedestrian cycle
+        /// with timing information for detector activation, walk start, and change interval.
+        /// </returns>
+        public static IReadOnlyList<PedCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool IsPedPhaseOverlap = false)
+        {
+            IndianaEnumerations a;
+            IndianaEnumerations b;
+
+            if (IsPedPhaseOverlap)
+            {
+                a = IndianaEnumerations.PedestrianOverlapBeginWalk;
+                b = IndianaEnumerations.PedestrianOverlapBeginClearance;
+            }
+            else
+            {
+                a = IndianaEnumerations.PedestrianBeginWalk;
+                b = IndianaEnumerations.PedestrianBeginChangeInterval;
+            }
+
+            var filter = events
+                .Where(w => w.EventCode == (short)a || w.EventCode == (short)b || w.EventCode == (short)IndianaEnumerations.PedDetectorOn)
+                .OrderBy(o => o.Timestamp)
+                .KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn)
+                .ToList();
+
+            var result = filter
+                .Select((t, index) => new { Item = t, Index = index })
+                .Where(x => x.Item.EventCode == 90 && x.Index > 0 && x.Index < filter.Count - 1)
+                .Select(x =>
+                {
+                    var prev = filter[x.Index - 1];
+                    var next = filter[x.Index + 1];
+
+                    var pedCycle = new Atspm.Analysis.WorkflowSteps.PedCycle()
+                    {
+                        PedDetectorOn = x.Item.Timestamp
+                    };
+
+                    if (prev.EventCode == 21 && next.EventCode == 22)
+                    {
+                        pedCycle.Start = prev.Timestamp;
+                        pedCycle.BeginWalk = prev.Timestamp;
+                        pedCycle.End = next.Timestamp;
+                    }
+
+                    else if (prev.EventCode == 21 && next.EventCode == 21)
+                    {
+                        pedCycle.Start = prev.Timestamp;
+                        pedCycle.BeginWalk = next.Timestamp;
+                        pedCycle.End = next.Timestamp;
+                    }
+
+                    else if (prev.EventCode == 22 && next.EventCode == 21)
+                    {
+                        pedCycle.Start = prev.Timestamp;
+                        pedCycle.BeginWalk = next.Timestamp;
+                        pedCycle.End = next.Timestamp;
+                    }
+
+                    return pedCycle;
+                })
+                .Where(w => w.BeginWalk > DateTime.MinValue)
+                .ToList();
+
+            return result;
+        }
+        
         /// <summary>
         /// Returns a list of <see cref="IndianaEvent"/> where, for the specified <paramref name="eventCode"/>,
         /// only the first occurrence in any sequence of consecutive events with that code is kept.
