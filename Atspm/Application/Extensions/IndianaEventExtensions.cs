@@ -15,10 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Analysis.PedestrianDelay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Extensions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Utah.Udot.Atspm.Extensions
 {
@@ -27,6 +28,29 @@ namespace Utah.Udot.Atspm.Extensions
     /// </summary>
     public static class IndianaEventExtensions
     {
+        public static IEnumerable<IndianaEvent> WhereCode(this IEnumerable<IndianaEvent> events, params short[] codes)
+        {
+            var codeSet = new HashSet<short>(codes);
+            return events.Where(e => codeSet.Contains(e.EventCode));
+        }
+
+        public static IEnumerable<IndianaEvent> WhereParam(this IEnumerable<IndianaEvent> events, params short[] param)
+        {
+            var paramSet = new HashSet<short>(param);
+            return events.Where(e => paramSet.Contains(e.EventParam));
+        }
+
+        public static ILookup<short, IndianaEvent> ToCodeLookup(this IEnumerable<IndianaEvent> events)
+        {
+            return events.ToLookup(e => e.EventCode);
+        }
+
+        public static ILookup<short, IndianaEvent> ToParamLookup(this IEnumerable<IndianaEvent> events)
+        {
+            return events.ToLookup(e => e.EventParam);
+        }
+
+
         /// <summary>
         /// Identifies pedestrian cycles from a sequence of <see cref="IndianaEvent"/> objects.
         /// Filters and matches pedestrian detector activations with corresponding walk and change interval events
@@ -42,22 +66,16 @@ namespace Utah.Udot.Atspm.Extensions
         /// </returns>
         public static IReadOnlyList<PedCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool IsPedPhaseOverlap = false)
         {
-            IndianaEnumerations a;
-            IndianaEnumerations b;
-
-            if (IsPedPhaseOverlap)
-            {
-                a = IndianaEnumerations.PedestrianOverlapBeginWalk;
-                b = IndianaEnumerations.PedestrianOverlapBeginClearance;
-            }
-            else
-            {
-                a = IndianaEnumerations.PedestrianBeginWalk;
-                b = IndianaEnumerations.PedestrianBeginChangeInterval;
-            }
+            var (a, b) = IsPedPhaseOverlap
+                ? ((short)IndianaEnumerations.PedestrianOverlapBeginWalk, (short)IndianaEnumerations.PedestrianOverlapBeginClearance)
+                : ((short)IndianaEnumerations.PedestrianBeginWalk, (short)IndianaEnumerations.PedestrianBeginChangeInterval);
 
             var filter = events
-                .Where(w => w.EventCode == (short)a || w.EventCode == (short)b || w.EventCode == (short)IndianaEnumerations.PedDetectorOn)
+                .WhereCode([
+                    (short)a,
+                    (short)b,
+                    (short)IndianaEnumerations.PedDetectorOn
+                ])
                 .OrderBy(o => o.Timestamp)
                 .KeepFirstSequentialEvent(IndianaEnumerations.PedDetectorOn)
                 .ToList();
@@ -70,7 +88,7 @@ namespace Utah.Udot.Atspm.Extensions
                     var prev = filter[x.Index - 1];
                     var next = filter[x.Index + 1];
 
-                    var pedCycle = new Atspm.Analysis.WorkflowSteps.PedCycle()
+                    var pedCycle = new PedCycle()
                     {
                         PedDetectorOn = x.Item.Timestamp
                     };
