@@ -50,6 +50,47 @@ namespace Utah.Udot.Atspm.Extensions
             return events.ToLookup(e => e.EventParam);
         }
 
+        public static int CountImputedCalls(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        {
+            var filter = events
+                .Where(e => e.EventCode is 90 or 21 or 67 or 0)
+                .OrderBy(e => e.Timestamp)
+                .ToList();
+
+            return filter.Where((e, i) =>
+                    i > 0 &&
+                    range.InRange(e.Timestamp) &&
+                    e.EventCode == 90 &&
+                    filter[i - 1].EventCode is 21 or 67 or 0)
+                .Count();
+        }
+
+        public static int CountUniquePedDetections(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        {
+            var filter = events
+                .Where(w => w.EventCode == 90)
+                .OrderBy(o => o.Timestamp)
+                .ToList();
+
+            return filter.SlidingWindow(2)
+                .Where(x => x[1].Timestamp - x[0].Timestamp > (range.End - range.Start))
+                .Count(w => range.InRange(w[1].Timestamp));
+        }
+
+        public static int PedRequests(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        {
+            return events.Count(w => w.EventCode == (short)IndianaEnumerations.PedDetectorOn && range.InRange(w.Timestamp));
+        }
+
+        public static int PedBeginWalkCount(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        {
+            return events.Count(w => w.EventCode == (short)IndianaEnumerations.PedestrianBeginWalk && range.InRange(w.Timestamp));
+        }
+
+        public static int PedCallsRegisteredCount(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        {
+            return events.Count(w => w.EventCode == (short)IndianaEnumerations.PedestrianCallRegistered && range.InRange(w.Timestamp));
+        }
 
         /// <summary>
         /// Identifies pedestrian cycles from a sequence of <see cref="IndianaEvent"/> objects.

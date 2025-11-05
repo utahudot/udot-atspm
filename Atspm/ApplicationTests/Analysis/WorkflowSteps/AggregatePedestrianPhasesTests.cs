@@ -30,6 +30,7 @@ using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -55,7 +56,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testLocation, (IEnumerable<IndianaEvent>)[]);
 
-            var sut = new AggregatePedestrianPhases(TimeSpan.FromMinutes(15));
+            var sut = new AggregatePedestrianPhases(null);
 
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(testData, source.Token));
         }
@@ -172,8 +173,15 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             _output.WriteLine($"{config.Approaches.Count}");
 
             var testData = Tuple.Create(config, (IEnumerable<IndianaEvent>)input);
-            
-            var sut = new AggregatePedestrianPhases(TimeSpan.FromMinutes(15));
+
+
+            var aggDate = DateTime.Parse("5/16/2023");
+            var startSlot = aggDate.Date;
+            var endSlot = aggDate.Date.AddDays(1).AddTicks(-1);
+
+            var tl = new Timeline<StartEndRange>(startSlot, endSlot, TimeSpan.FromMinutes(15));
+
+            var sut = new AggregatePedestrianPhases(tl);
 
             var actual = await sut.ExecuteAsync(testData);
 
@@ -181,8 +189,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             foreach (var r in actual)
             {
-                if (r.PedCycles > 0 || r.PedRequests > 0)
-                    _output.WriteLine($"{r}");
+                //if (r.PedCycles > 0 || r.PedRequests > 0)
+                if (r.UniquePedDetections > 0)
+                    _output.WriteLine($"{r.PhaseNumber} - {r.Start} - {r.UniquePedDetections}");
             }
 
 

@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Business.PedDelay;
@@ -23,17 +24,18 @@ using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
     public class AggregatePedestrianPhases : TransformProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<PhasePedAggregation>>
     {
-        private readonly TimeSpan _binSize;
+        private readonly Timeline<StartEndRange> _timeline;
 
-        public AggregatePedestrianPhases(TimeSpan binSize, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public AggregatePedestrianPhases(Timeline<StartEndRange> timeLine, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            _binSize = binSize;
+            _timeline = timeLine;
         }
 
         protected override Task<IEnumerable<PhasePedAggregation>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
@@ -52,10 +54,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 ])
                 .ToList();
 
-
-            var aggDate = DateTime.Parse("5/16/2023");
-            var startSlot = aggDate.Date;
-            var endSlot = aggDate.Date.AddDays(1).AddTicks(-1);
+            List<int> test1 = new List<int>();
+            List<int> test2 = new List<int>();
 
             var eventsByParam = events.ToParamLookup();
 
@@ -65,10 +65,10 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
                 var pedCycles = matchingEvents.IdentifyPedCycles(o.IsPedestrianPhaseOverlap);
 
-                var tl = new Timeline<PhasePedAggregation>(startSlot, endSlot, _binSize);
-
-                foreach (var f in tl.Segments)
+                return _timeline.Segments.Select(s => 
                 {
+                    var f = new PhasePedAggregation() { Start = s.Start, End = s.End };
+
                     f.LocationIdentifier = o.Location.LocationIdentifier;
                     f.PhaseNumber = o.ProtectedPhaseNumber;
 
@@ -93,30 +93,18 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
                     if (matchingEvents.Any())
                     {
-                        f.PedRequests = matchingEvents.Count(w => w.EventCode == 90 && f.InRange(w.Timestamp));
-
-                        var imputedCalls = matchingEvents.Where(w => w.EventCode is 90 or 21 or 67 or 0).OrderBy(o => o.Timestamp).ToList();
-                        f.ImputedPedCallsRegistered = imputedCalls.Where((w, i) =>
-                            i > 0 &&
-                            f.InRange(w.Timestamp) &&
-                            w.EventCode == 90 &&
-                            imputedCalls[i - 1].EventCode is 21 or 67 or 0).Count();
-
-                        var uniquePedDetections = matchingEvents.Where(w => w.EventCode == 90).OrderBy(o => o.Timestamp).ToList();
-                        f.UniquePedDetections = uniquePedDetections.SlidingWindow(2)
-                            .Where(x => x[1].Timestamp - x[0].Timestamp > _binSize)
-                            .Count(w => f.InRange(w[1].Timestamp));
-
-                        f.PedBeginWalkCount = matchingEvents.Count(w => w.EventCode == 21 && f.InRange(w.Timestamp));
-                        f.PedCallsRegisteredCount = matchingEvents.Count(w => w.EventCode == 45 && f.InRange(w.Timestamp));
+                        f.PedRequests = matchingEvents.PedRequests(f);
+                        f.ImputedPedCallsRegistered = matchingEvents.CountImputedCalls(f);
+                        f.UniquePedDetections = matchingEvents.CountUniquePedDetections(f);
+                        f.PedBeginWalkCount = matchingEvents.PedBeginWalkCount(f);
+                        f.PedCallsRegisteredCount = matchingEvents.PedCallsRegisteredCount(f);
                     }
-                }
 
-                return tl.Segments;
+                    return f;
+                });
             })
                 .ToList()
                 .AsEnumerable();
-
 
             return Task.FromResult(result);
         }
