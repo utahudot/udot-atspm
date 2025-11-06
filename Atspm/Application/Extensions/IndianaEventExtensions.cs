@@ -73,8 +73,9 @@ namespace Utah.Udot.Atspm.Extensions
                 .ToList();
 
             return filter.SlidingWindow(2)
-                .Where(x => x[1].Timestamp - x[0].Timestamp > (range.End - range.Start))
-                .Count(w => range.InRange(w[1].Timestamp));
+                .Where(x => x[1].Timestamp - x[0].Timestamp > TimeSpan.FromSeconds(15))
+                .Count();
+                //.Count(w => range.InRange(w[1].Timestamp));
         }
 
         public static int PedRequests(this IEnumerable<IndianaEvent> events, StartEndRange range)
