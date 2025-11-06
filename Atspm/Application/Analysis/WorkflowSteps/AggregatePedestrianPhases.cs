@@ -15,16 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Business.PedDelay;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
@@ -67,25 +62,28 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
                 return _timeline.Segments.Select(s => 
                 {
-                    var f = new PhasePedAggregation() { Start = s.Start, End = s.End };
+                    var agg = new PhasePedAggregation() 
+                    { 
+                        Start = s.Start, 
+                        End = s.End,
+                        LocationIdentifier = o.Location.LocationIdentifier,
+                        PhaseNumber = o.ProtectedPhaseNumber
+                    };
 
-                    f.LocationIdentifier = o.Location.LocationIdentifier;
-                    f.PhaseNumber = o.ProtectedPhaseNumber;
-
-                    var inRangeCycles = pedCycles.Where(c => f.InRange(c.BeginWalk)).ToList();
+                    var inRangeCycles = pedCycles.Where(c => agg.InRange(c.BeginWalk)).ToList();
 
                     if (inRangeCycles.Any())
                     {
-                        f.PedCycles = inRangeCycles.Count;
-                        f.PedDelay = inRangeCycles.Sum(s => s.PedDelay);
+                        agg.PedCycles = inRangeCycles.Count;
+                        agg.PedDelay = inRangeCycles.Sum(s => s.PedDelay);
 
-                        f.MinPedDelay = inRangeCycles
+                        agg.MinPedDelay = inRangeCycles
                         .Where(w => w.PedDelay > 0)
                         .Select(w => w.PedDelay)
                         .DefaultIfEmpty(0)
                         .Min();
 
-                        f.MaxPedDelay = inRangeCycles
+                        agg.MaxPedDelay = inRangeCycles
                         .Select(w => w.PedDelay)
                         .DefaultIfEmpty(0)
                         .Max();
@@ -93,14 +91,14 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
                     if (matchingEvents.Any())
                     {
-                        f.PedRequests = matchingEvents.PedRequests(f);
-                        f.ImputedPedCallsRegistered = matchingEvents.CountImputedCalls(f);
-                        f.UniquePedDetections = matchingEvents.CountUniquePedDetections(f);
-                        f.PedBeginWalkCount = matchingEvents.PedBeginWalkCount(f);
-                        f.PedCallsRegisteredCount = matchingEvents.PedCallsRegisteredCount(f);
+                        agg.PedRequests = matchingEvents.PedRequests(agg);
+                        agg.ImputedPedCallsRegistered = matchingEvents.CountImputedCalls(agg);
+                        agg.UniquePedDetections = matchingEvents.CountUniquePedDetections(agg);
+                        agg.PedBeginWalkCount = matchingEvents.PedBeginWalkCount(agg);
+                        agg.PedCallsRegisteredCount = matchingEvents.PedCallsRegisteredCount(agg);
                     }
 
-                    return f;
+                    return agg;
                 });
             })
                 .ToList()

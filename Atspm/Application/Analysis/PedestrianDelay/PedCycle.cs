@@ -29,7 +29,7 @@
         /// <returns>A formatted string describing the pedestrian cycle.</returns>
         public override string ToString()
         {
-            return $"PedCycle: BeginWalk: {BeginWalk}, PedDetectorOn: {PedDetectorOn}, PedDelay: {PedDelay} seconds";
+            return $"PedCycle: Start: {Start} BeginWalk: {BeginWalk}, PedDetectorOn: {PedDetectorOn}, PedDelay: {PedDelay} seconds End: {End}";
         }
     }
 }

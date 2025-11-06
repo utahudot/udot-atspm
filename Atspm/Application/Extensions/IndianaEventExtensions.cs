@@ -98,16 +98,16 @@ namespace Utah.Udot.Atspm.Extensions
         /// to construct a list of <see cref="PedCycle"/> instances representing pedestrian service intervals.
         /// </summary>
         /// <param name="events">The collection of <see cref="IndianaEvent"/> to analyze for pedestrian cycles.</param>
-        /// <param name="IsPedPhaseOverlap">
+        /// <param name="isPedPhaseOverlap">
         /// If <c>true</c>, uses overlap pedestrian event codes for matching cycles; otherwise, uses standard pedestrian event codes.
         /// </param>
         /// <returns>
         /// A read-only list of <see cref="PedCycle"/> objects, each representing a detected pedestrian cycle
         /// with timing information for detector activation, walk start, and change interval.
         /// </returns>
-        public static IReadOnlyList<PedCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool IsPedPhaseOverlap = false)
+        public static IReadOnlyList<PedCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool isPedPhaseOverlap = false)
         {
-            var (a, b) = IsPedPhaseOverlap
+            var (a, b) = isPedPhaseOverlap
                 ? ((short)IndianaEnumerations.PedestrianOverlapBeginWalk, (short)IndianaEnumerations.PedestrianOverlapBeginClearance)
                 : ((short)IndianaEnumerations.PedestrianBeginWalk, (short)IndianaEnumerations.PedestrianBeginChangeInterval);
 
@@ -134,21 +134,21 @@ namespace Utah.Udot.Atspm.Extensions
                         PedDetectorOn = x.Item.Timestamp
                     };
 
-                    if (prev.EventCode == 21 && next.EventCode == 22)
+                    if (prev.EventCode == a && next.EventCode == b)
                     {
                         pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = prev.Timestamp;
                         pedCycle.End = next.Timestamp;
                     }
 
-                    else if (prev.EventCode == 21 && next.EventCode == 21)
+                    else if (prev.EventCode == a && next.EventCode == a)
                     {
                         pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = next.Timestamp;
                         pedCycle.End = next.Timestamp;
                     }
 
-                    else if (prev.EventCode == 22 && next.EventCode == 21)
+                    else if (prev.EventCode == b && next.EventCode == a)
                     {
                         pedCycle.Start = prev.Timestamp;
                         pedCycle.BeginWalk = next.Timestamp;

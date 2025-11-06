@@ -15,14 +15,15 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.Analysis.PedestrianDelay;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Attributes;
@@ -30,6 +31,7 @@ using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.NetStandardToolkit.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -61,11 +63,174 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(testData, source.Token));
         }
 
+        #region IdentityPedCycles
+
+        [Theory]
+        [Trait(nameof(IndianaEventExtensions), "IdentifyPedCycles")]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void IdentifyPedCyclesSequenceOneTest(bool isPedPhaseOverlap)
+        {
+            var approach = new Approach()
+            {
+                ProtectedPhaseNumber = 2,
+                IsPedestrianPhaseOverlap = isPedPhaseOverlap
+            };
+
+            var location = new Location()
+            {
+                LocationIdentifier = "1001",
+            };
+
+            location.Approaches.Add(approach);
+
+            var startTime = DateTime.Now;
+            var endTime = startTime.AddSeconds(4);
+            var pedDetectorOnTime = startTime.AddSeconds(2);
+            var beginWalkTime = startTime;
+
+            var events = new List<IndianaEvent>
+            {
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = pedDetectorOnTime, EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = startTime, EventCode = (short)IndianaEnumerations.PedestrianBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = endTime, EventCode = (short)IndianaEnumerations.PedestrianBeginChangeInterval, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = startTime, EventCode = (short)IndianaEnumerations.PedestrianOverlapBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = endTime, EventCode = (short)IndianaEnumerations.PedestrianOverlapBeginClearance, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+            };
 
 
+            var actual = events.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap)[0];
+
+            _output.WriteLine($"{actual}");
+
+            var expected = new PedCycle()
+            {
+                PedDetectorOn = pedDetectorOnTime,
+                Start = startTime,
+                BeginWalk = beginWalkTime,
+                End = endTime
+            };
+
+            _output.WriteLine($"{expected}");
+
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.PedDetectorOn, actual.PedDetectorOn);
+            Assert.Equal(expected.BeginWalk, actual.BeginWalk);
+            Assert.Equal(expected.End, actual.End);
+            Assert.Equal(expected.PedDelay, actual.PedDelay);
+        }
+
+        [Theory]
+        [Trait(nameof(IndianaEventExtensions), "IdentifyPedCycles")]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void IdentifyPedCyclesSequenceTwoTest(bool isPedPhaseOverlap)
+        {
+            var approach = new Approach()
+            {
+                ProtectedPhaseNumber = 2,
+                IsPedestrianPhaseOverlap = isPedPhaseOverlap
+            };
+
+            var location = new Location()
+            {
+                LocationIdentifier = "1001",
+            };
+
+            location.Approaches.Add(approach);
+
+            var startTime = DateTime.Now;
+            var endTime = startTime.AddSeconds(4);
+            var pedDetectorOnTime = startTime.AddSeconds(2);
+            var beginWalkTime = endTime;
+
+            var events = new List<IndianaEvent>
+            {
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = pedDetectorOnTime, EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = endTime, EventCode = (short)IndianaEnumerations.PedestrianBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = startTime, EventCode = (short)IndianaEnumerations.PedestrianBeginChangeInterval, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = endTime, EventCode = (short)IndianaEnumerations.PedestrianOverlapBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = startTime, EventCode = (short)IndianaEnumerations.PedestrianOverlapBeginClearance, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+            };
 
 
+            var actual = events.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap)[0];
 
+            _output.WriteLine($"{actual}");
+
+            var expected = new PedCycle()
+            {
+                PedDetectorOn = pedDetectorOnTime,
+                Start = startTime,
+                BeginWalk = beginWalkTime,
+                End = endTime
+            };
+
+            _output.WriteLine($"{expected}");
+
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.PedDetectorOn, actual.PedDetectorOn);
+            Assert.Equal(expected.BeginWalk, actual.BeginWalk);
+            Assert.Equal(expected.End, actual.End);
+            Assert.Equal(expected.PedDelay, actual.PedDelay);
+        }
+
+        [Theory]
+        [Trait(nameof(IndianaEventExtensions), "IdentifyPedCycles")]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void IdentifyPedCyclesSequenceThreeTest(bool isPedPhaseOverlap)
+        {
+            var approach = new Approach()
+            {
+                ProtectedPhaseNumber = 2,
+                IsPedestrianPhaseOverlap = isPedPhaseOverlap
+            };
+
+            var location = new Location()
+            {
+                LocationIdentifier = "1001",
+            };
+
+            location.Approaches.Add(approach);
+
+            var startTime = DateTime.Now;
+            var endTime = startTime.AddSeconds(4);
+            var pedDetectorOnTime = startTime.AddSeconds(2);
+            var beginWalkTime = endTime;
+
+            var events = new List<IndianaEvent>
+            {
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = pedDetectorOnTime, EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = startTime, EventCode = (short)IndianaEnumerations.PedestrianBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = endTime, EventCode = (short)IndianaEnumerations.PedestrianBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = startTime, EventCode = (short)IndianaEnumerations.PedestrianOverlapBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = location.LocationIdentifier, Timestamp = endTime, EventCode = (short)IndianaEnumerations.PedestrianOverlapBeginWalk, EventParam = Convert.ToInt16(approach.ProtectedPhaseNumber)},
+            };
+
+
+            var actual = events.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap)[0];
+
+            _output.WriteLine($"{actual}");
+
+            var expected = new PedCycle()
+            {
+                PedDetectorOn = pedDetectorOnTime,
+                Start = startTime,
+                BeginWalk = beginWalkTime,
+                End = endTime
+            };
+
+            _output.WriteLine($"{expected}");
+
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.PedDetectorOn, actual.PedDetectorOn);
+            Assert.Equal(expected.BeginWalk, actual.BeginWalk);
+            Assert.Equal(expected.End, actual.End);
+            Assert.Equal(expected.PedDelay, actual.PedDelay);
+        }
+
+        #endregion
 
 
 
@@ -126,35 +291,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
 
-
-
-        [Fact]
-        public void TestEventApproachGroupJoin()
-        {
-            var approaches = Enumerable.Range(1, 8).Select(s => new Approach
-            {
-                ProtectedPhaseNumber = s
-            }).ToList();  
-
-            var events = new List<IndianaEvent>
-            {
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 1 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 1 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 2 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 2 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 8 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 8 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 8 },
-                new IndianaEvent { EventCode = (short)IndianaEnumerations.PedDetectorOn, EventParam = 8 },
-            };        
-
-            var gj = approaches.GroupJoin(events, o => o.ProtectedPhaseNumber, i => i.EventParam, (o, i) => new { Approach = o, Events = i });
-
-            foreach (var i in gj)
-            {
-                _output.WriteLine($"{i.Approach} --- {i.Events.Count()}");
-            }
-        }
 
 
 
