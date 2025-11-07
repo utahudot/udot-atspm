@@ -1,35 +1,50 @@
-﻿namespace Utah.Udot.Atspm.Analysis.PedestrianDelay
+﻿using Utah.Udot.Atspm.Data.Models.EventLogModels;
+
+namespace Utah.Udot.Atspm.Analysis.PedestrianDelay
 {
     /// <summary>
-    /// Represents a single pedestrian cycle, including the timing of walk interval and detector activation.
-    /// Used to calculate pedestrian delay and analyze pedestrian service intervals at a signalized intersection.
+    /// Represents a pedestrian cycle for analysis, aggregating related <see cref="IndianaEvent"/> objects
+    /// such as walk interval start, detector requests, imputed calls, unique detections, and call registrations.
     /// Inherits start and end range properties from <see cref="StartEndRange"/>.
+    /// Used to summarize and report pedestrian activity and delay metrics for a signalized intersection.
     /// </summary>
     public class PedCycle : StartEndRange
     {
         /// <summary>
-        /// Gets or sets the timestamp when the pedestrian walk interval begins.
+        /// Gets or sets the <see cref="DateTime"/> representing the start of the pedestrian walk interval.
         /// </summary>
-        public DateTime BeginWalk { get; set; }
+        public DateTime PedestrianBeginWalk { get; set; }
 
         /// <summary>
-        /// Gets or sets the timestamp when the pedestrian detector is activated.
+        /// Gets or sets the collection of <see cref="IndianaEvent"/> representing pedestrian detector requests within the cycle.
         /// </summary>
-        public DateTime PedDetectorOn { get; set; }
+        public IReadOnlyList<IndianaEvent> PedRequests { get; set; }
 
         /// <summary>
-        /// Gets the calculated pedestrian delay in seconds.
-        /// Returns zero if the detector activation occurs after the walk interval begins; otherwise, returns the absolute difference in seconds.
+        /// Gets or sets the collection of <see cref="IndianaEvent"/> representing imputed pedestrian calls within the cycle.
         /// </summary>
-        public double PedDelay => PedDetectorOn > BeginWalk ? 0 : Math.Abs((BeginWalk - PedDetectorOn).TotalSeconds);
+        public int ImputedCalls { get; set; }
 
         /// <summary>
-        /// Returns a string representation of the pedestrian cycle, including walk start, detector activation, and delay.
+        /// Gets or sets the collection of <see cref="IndianaEvent"/> representing unique pedestrian detector activations within the cycle.
         /// </summary>
-        /// <returns>A formatted string describing the pedestrian cycle.</returns>
+        public int UniquePedDetections { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of <see cref="IndianaEvent"/> representing pedestrian call registrations within the cycle.
+        /// </summary>
+        public IReadOnlyList<IndianaEvent> PedCallsRegistered { get; set; }
+
+        /// <summary>
+        /// Returns a string representation of the pedestrian cycle, including start, walk interval, and event counts.
+        /// </summary>
+        /// <returns>
+        /// A formatted string describing the pedestrian cycle, including the start time, walk interval start,
+        /// counts for requests, imputed calls, unique detections, call registrations, and the end time.
+        /// </returns>
         public override string ToString()
         {
-            return $"PedCycle: Start: {Start} BeginWalk: {BeginWalk}, PedDetectorOn: {PedDetectorOn}, PedDelay: {PedDelay} seconds End: {End}";
+            return $"{nameof(PedCycle)}: Start: {Start} BeginWalk: {PedestrianBeginWalk}, PedRequests: {PedRequests.Count}, ImputedCalls: {ImputedCalls} UniquePedDetections: {UniquePedDetections} PedCallsRegistered: {PedCallsRegistered.Count} End: {End}";
         }
     }
 }

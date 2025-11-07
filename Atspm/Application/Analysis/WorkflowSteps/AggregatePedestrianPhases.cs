@@ -40,6 +40,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             var events = input.Item2
                 .Where(w => w.LocationIdentifier == location.LocationIdentifier)
                 .WhereCode([
+                    (short)IndianaEnumerations.PhaseOn,
                     (short)IndianaEnumerations.PedestrianBeginWalk,
                     (short)IndianaEnumerations.PedestrianBeginChangeInterval,
                     (short)IndianaEnumerations.PedestrianOverlapBeginWalk,
@@ -89,14 +90,14 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                         .Max();
                     }
 
-                    if (matchingEvents.Any())
-                    {
-                        agg.PedRequests = matchingEvents.PedRequests(agg);
-                        agg.ImputedPedCallsRegistered = matchingEvents.CountImputedCalls(agg);
-                        agg.UniquePedDetections = matchingEvents.CountUniquePedDetections(agg);
-                        agg.PedBeginWalkCount = matchingEvents.PedBeginWalkCount(agg);
-                        agg.PedCallsRegisteredCount = matchingEvents.PedCallsRegisteredCount(agg);
-                    }
+                    //if (matchingEvents.Any())
+                    //{
+                    //    agg.PedRequests = matchingEvents.PedRequests(agg);
+                    //    agg.ImputedPedCallsRegistered = matchingEvents.CountImputedCalls(agg);
+                    //    agg.UniquePedDetections = matchingEvents.CountUniquePedDetections(agg);
+                    //    agg.PedBeginWalkCount = matchingEvents.PedBeginWalkCount(agg);
+                    //    agg.PedCallsRegisteredCount = matchingEvents.PedCallsRegistered(agg);
+                    //}
 
                     return agg;
                 });

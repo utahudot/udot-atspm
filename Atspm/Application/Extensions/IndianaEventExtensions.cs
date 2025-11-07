@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Analysis.PedestrianDelay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -28,28 +27,59 @@ namespace Utah.Udot.Atspm.Extensions
     /// </summary>
     public static class IndianaEventExtensions
     {
+        /// <summary>
+        /// Filters the collection of <see cref="IndianaEvent"/> to include only those events whose <see cref="IndianaEvent.EventCode"/>
+        /// matches any of the specified codes.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to filter.</param>
+        /// <param name="codes">The event codes to include.</param>
+        /// <returns>An enumerable of <see cref="IndianaEvent"/> matching the specified codes.</returns>
         public static IEnumerable<IndianaEvent> WhereCode(this IEnumerable<IndianaEvent> events, params short[] codes)
         {
             var codeSet = new HashSet<short>(codes);
             return events.Where(e => codeSet.Contains(e.EventCode));
         }
 
+        /// <summary>
+        /// Filters the collection of <see cref="IndianaEvent"/> to include only those events whose <see cref="IndianaEvent.EventParam"/>
+        /// matches any of the specified parameters.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to filter.</param>
+        /// <param name="param">The event parameters to include.</param>
+        /// <returns>An enumerable of <see cref="IndianaEvent"/> matching the specified parameters.</returns>
         public static IEnumerable<IndianaEvent> WhereParam(this IEnumerable<IndianaEvent> events, params short[] param)
         {
             var paramSet = new HashSet<short>(param);
             return events.Where(e => paramSet.Contains(e.EventParam));
         }
 
+        /// <summary>
+        /// Creates a lookup from <see cref="IndianaEvent.EventCode"/> to <see cref="IndianaEvent"/> for fast event code-based grouping.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to group.</param>
+        /// <returns>An <see cref="ILookup{TKey, TElement}"/> keyed by event code.</returns>
         public static ILookup<short, IndianaEvent> ToCodeLookup(this IEnumerable<IndianaEvent> events)
         {
             return events.ToLookup(e => e.EventCode);
         }
 
+        /// <summary>
+        /// Creates a lookup from <see cref="IndianaEvent.EventParam"/> to <see cref="IndianaEvent"/> for fast event parameter-based grouping.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to group.</param>
+        /// <returns>An <see cref="ILookup{TKey, TElement}"/> keyed by event parameter.</returns>
         public static ILookup<short, IndianaEvent> ToParamLookup(this IEnumerable<IndianaEvent> events)
         {
             return events.ToLookup(e => e.EventParam);
         }
 
+        /// <summary>
+        /// Counts the number of imputed pedestrian calls within the specified range.
+        /// Imputed calls are detected by finding a sequence where a pedestrian call event (code 90) follows a walk or overlap event (code 21, 67, or 0).
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to analyze.</param>
+        /// <param name="range">The time range to consider for imputed calls.</param>
+        /// <returns>The count of imputed pedestrian calls in the specified range.</returns>
         public static int CountImputedCalls(this IEnumerable<IndianaEvent> events, StartEndRange range)
         {
             var filter = events
@@ -57,56 +87,66 @@ namespace Utah.Udot.Atspm.Extensions
                 .OrderBy(e => e.Timestamp)
                 .ToList();
 
-            return filter.Where((e, i) =>
-                    i > 0 &&
-                    range.InRange(e.Timestamp) &&
-                    e.EventCode == 90 &&
-                    filter[i - 1].EventCode is 21 or 67 or 0)
-                .Count();
+            return filter.SlidingWindow(2)
+                .Where(x => x[0].EventCode is 21 or 67 or 0 && x[1].EventCode == 90)
+                .Count(w => range.InRange(w[0].Timestamp));
         }
 
+        /// <summary>
+        /// Counts the number of unique pedestrian detector activations within the specified range.
+        /// A unique detection is defined as a detector activation (code 90) that occurs at least 15 seconds after the previous activation.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to analyze.</param>
+        /// <param name="range">The time range to consider for unique detections.</param>
+        /// <returns>The count of unique pedestrian detector activations in the specified range.</returns>
         public static int CountUniquePedDetections(this IEnumerable<IndianaEvent> events, StartEndRange range)
         {
             var filter = events
-                .Where(w => w.EventCode == 90)
+                .Where(w => w.EventCode == (short)IndianaEnumerations.PedDetectorOn)
                 .OrderBy(o => o.Timestamp)
                 .ToList();
 
             return filter.SlidingWindow(2)
                 .Where(x => x[1].Timestamp - x[0].Timestamp > TimeSpan.FromSeconds(15))
-                .Count();
-                //.Count(w => range.InRange(w[1].Timestamp));
+                .Count(w => range.InRange(w[1].Timestamp));
         }
 
-        public static int PedRequests(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        /// <summary>
+        /// Returns all pedestrian detector activation events (<see cref="IndianaEnumerations.PedDetectorOn"/>) within the specified time range.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to filter.</param>
+        /// <param name="range">The time range to include events.</param>
+        /// <returns>A read-only list of <see cref="IndianaEvent"/> representing pedestrian detector activations in the range.</returns>
+        public static IReadOnlyList<IndianaEvent> PedRequests(this IEnumerable<IndianaEvent> events, StartEndRange range)
         {
-            return events.Count(w => w.EventCode == (short)IndianaEnumerations.PedDetectorOn && range.InRange(w.Timestamp));
+            return events.Where(w => w.EventCode == (short)IndianaEnumerations.PedDetectorOn && range.InRange(w.Timestamp)).ToList();
         }
 
-        public static int PedBeginWalkCount(this IEnumerable<IndianaEvent> events, StartEndRange range)
+        /// <summary>
+        /// Returns all pedestrian call registered events (<see cref="IndianaEnumerations.PedestrianCallRegistered"/>) within the specified time range.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to filter.</param>
+        /// <param name="range">The time range to include events.</param>
+        /// <returns>A read-only list of <see cref="IndianaEvent"/> representing pedestrian call registrations in the range.</returns>
+        public static IReadOnlyList<IndianaEvent> PedCallsRegistered(this IEnumerable<IndianaEvent> events, StartEndRange range)
         {
-            return events.Count(w => w.EventCode == (short)IndianaEnumerations.PedestrianBeginWalk && range.InRange(w.Timestamp));
-        }
-
-        public static int PedCallsRegisteredCount(this IEnumerable<IndianaEvent> events, StartEndRange range)
-        {
-            return events.Count(w => w.EventCode == (short)IndianaEnumerations.PedestrianCallRegistered && range.InRange(w.Timestamp));
+            return events.Where(w => w.EventCode == (short)IndianaEnumerations.PedestrianCallRegistered && range.InRange(w.Timestamp)).ToList();
         }
 
         /// <summary>
         /// Identifies pedestrian cycles from a sequence of <see cref="IndianaEvent"/> objects.
         /// Filters and matches pedestrian detector activations with corresponding walk and change interval events
-        /// to construct a list of <see cref="PedCycle"/> instances representing pedestrian service intervals.
+        /// to construct a list of <see cref="PedDelayCycle"/> instances representing pedestrian service intervals.
         /// </summary>
         /// <param name="events">The collection of <see cref="IndianaEvent"/> to analyze for pedestrian cycles.</param>
         /// <param name="isPedPhaseOverlap">
         /// If <c>true</c>, uses overlap pedestrian event codes for matching cycles; otherwise, uses standard pedestrian event codes.
         /// </param>
         /// <returns>
-        /// A read-only list of <see cref="PedCycle"/> objects, each representing a detected pedestrian cycle
+        /// A read-only list of <see cref="PedDelayCycle"/> objects, each representing a detected pedestrian cycle
         /// with timing information for detector activation, walk start, and change interval.
         /// </returns>
-        public static IReadOnlyList<PedCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool isPedPhaseOverlap = false)
+        public static IReadOnlyList<PedDelayCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool isPedPhaseOverlap = false)
         {
             var (a, b) = isPedPhaseOverlap
                 ? ((short)IndianaEnumerations.PedestrianOverlapBeginWalk, (short)IndianaEnumerations.PedestrianOverlapBeginClearance)
@@ -130,7 +170,7 @@ namespace Utah.Udot.Atspm.Extensions
                     var prev = filter[x.Index - 1];
                     var next = filter[x.Index + 1];
 
-                    var pedCycle = new PedCycle()
+                    var pedCycle = new PedDelayCycle()
                     {
                         PedDetectorOn = x.Item.Timestamp
                     };
