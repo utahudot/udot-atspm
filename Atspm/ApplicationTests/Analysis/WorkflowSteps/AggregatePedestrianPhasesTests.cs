@@ -15,11 +15,14 @@
 // limitations under the License.
 #endregion
 
+using Google.Protobuf.Collections;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.PedestrianDelay;
@@ -98,7 +101,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             };
 
 
-            var actual = events.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap)[0];
+            var actual = events.IdentifyPedDelayCycles(approach.IsPedestrianPhaseOverlap)[0];
 
             _output.WriteLine($"{actual}");
 
@@ -153,7 +156,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             };
 
 
-            var actual = events.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap)[0];
+            var actual = events.IdentifyPedDelayCycles(approach.IsPedestrianPhaseOverlap)[0];
 
             _output.WriteLine($"{actual}");
 
@@ -208,7 +211,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             };
 
 
-            var actual = events.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap)[0];
+            var actual = events.IdentifyPedDelayCycles(approach.IsPedestrianPhaseOverlap)[0];
 
             _output.WriteLine($"{actual}");
 
@@ -321,7 +324,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
 
 
-        [Fact(Skip = "use to generate test files")]
+        [Fact(Skip = "Used to create test data")]
         public async Task Stuff()
         {
             {
@@ -347,17 +350,43 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                     .OrderBy(o => o.Timestamp)
                     .ToList();
 
+                _testLocation.Approaches = _testLocation.Approaches.Where(w => w.ProtectedPhaseNumber == 2).ToList();
 
+                var file2 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\pedaggresultdata.csv");
 
-                //var c = new CalculateDwellTime();
+                var output = File.ReadAllLines(file2.FullName)
+                       .Skip(1)
+                       .Select(x => x.Split(','))
+                       .Select(x => new PhasePedAggregation
+                       {
+                           LocationIdentifier = x[0],
+                           PhaseNumber = int.Parse(x[1]),
+                           Start = DateTime.Parse(x[2]),
+                           End = DateTime.Parse(x[2]).AddMinutes(15),
+                           PedCycles = int.Parse(x[3]),
+                           PedDelay = double.Parse(x[4]),
+                           MinPedDelay = double.Parse(x[5]),
+                           MaxPedDelay = double.Parse(x[6]),
+                           PedRequests = int.Parse(x[7]),
+                           ImputedPedCallsRegistered = int.Parse(x[8]),
+                           UniquePedDetections = int.Parse(x[9]),
+                           PedBeginWalkCount = int.Parse(x[10]),
+                           PedCallsRegisteredCount = int.Parse(x[11])
 
-                //var r = await c.ExecuteAsync(Tuple.Create(Location, logs.AsEnumerable(), 1));
+                       }).ToList();
 
-                var result = new IdentifyPedCyclesTestData()
+                _output.WriteLine($"{output.Count}");
+
+                foreach (var o in output)
+                {
+                    _output.WriteLine($"{o}");
+                }
+
+                var result = new AggregatePedestrianPhasesTestData()
                 {
                     Configuration = _testLocation,
                     Input = logs,
-                    Output = null
+                    Output = output
                 };
 
 
@@ -366,7 +395,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                     TypeNameHandling = TypeNameHandling.All,
                     Formatting = Formatting.Indented
                 });
-                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\IdentifyPedCyclesTestData1.json", test);
+                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\AggregatePedestrianPhasesTestData1.json", test);
             }
         }
 
@@ -378,154 +407,30 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
 
         [Theory]
-        [AnalysisTestData<IdentifyPedCyclesTestData>]
+        [AnalysisTestData<AggregatePedestrianPhasesTestData>]
         [Trait(nameof(AggregatePedestrianPhases), "From File")]
-        public async Task AggregatePedestrianPhasesFromFileTest(Location config, List<IndianaEvent> input, object output)
+        public async Task AggregatePedestrianPhasesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PhasePedAggregation> output)
         {
-            //foreach (var i in input)
-            //{
-            //    i.LocationIdentifier = config.LocationIdentifier;
-            //}
+            var testData = Tuple.Create(config, input);
 
-            //_output.WriteLine($"{config.Approaches.Count}");
+            var aggDate = input
+                .GroupBy(dt => dt.Timestamp)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault().Key;
 
-            //var testData = Tuple.Create(config, (IEnumerable<IndianaEvent>)input);
+            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
+            var sut = new AggregatePedestrianPhases(tl);
 
-            var aggDate = DateTime.Parse("5/16/2023");
-            var startSlot = aggDate.Date;
-            var endSlot = aggDate.Date.AddDays(1).AddTicks(-1);
+            var actual = await sut.ExecuteAsync(testData);
 
-            //var tl = new Timeline<StartEndRange>(startSlot, endSlot, TimeSpan.FromMinutes(15));
+            _output.WriteLine($"actual: {actual.Count()}");
 
-            //var sut = new AggregatePedestrianPhases(tl);
+            var expected = output;
 
-            //var actual = await sut.ExecuteAsync(testData);
+            _output.WriteLine($"expected: {expected.Count()}");
 
-            //_output.WriteLine($"{actual.Count()}");
-
-            //foreach (var r in actual)
-            //{
-            //    //if (r.PedCycles > 0 || r.PedRequests > 0)
-            //    if (r.PedCallsRegistered > 0)
-            //        _output.WriteLine($"{r.PhaseNumber} - {r.Start} - {r.PedCallsRegistered}");
-            //}
-
-            var interval = TimeSpan.FromMinutes(15);
-
-            var tl = new Timeline<PhasePedAggregation>(startSlot, endSlot, TimeSpan.FromMinutes(15));
-
-            var filter = input
-                .Where(w => w.EventCode is 21 or 22)
-                .KeepFirstSequentialEvent(IndianaEnumerations.PedestrianBeginChangeInterval)
-                .OrderBy(o => o.Timestamp)
-                .ToList();
-
-            var result = filter.SlidingWindow(3)
-                .Where(w => w[1].EventCode == 21)
-                .Select(s =>
-                {
-                    var test = new PedCycle()
-                    {
-                        Start = s[0].EventCode == 21 ? s[1].Timestamp : s[0].Timestamp,
-                        PedestrianBeginWalk = s[1].Timestamp,
-                        End = s[2].Timestamp,
-                    };
-
-                    test.PedRequests = input.PedRequests(test);
-                    test.UniquePedDetections = input.CountUniquePedDetections(test);
-                    test.ImputedCalls = input.CountImputedCalls(test);
-                    test.PedCallsRegistered = input.PedCallsRegistered(test);
-
-                    return test;
-                }).ToList();
-
-            //_output.WriteLine($"{result.Count}");
-
-
-            //var mismatches = result
-            //    .Select((item, index) => new { item, index })
-            //    .Where(x => x.index < result.Count - 1 && x.item.End != result[x.index + 1].Start)
-            //    .ToList();
-
-            //foreach (var m in mismatches)
-            //{
-            //    _output.WriteLine($"{m}");
-            //}
-
-            //foreach (var r in result.Where(w => w.Index > 79 && w.Index < 87))
-            //{
-            //    _output.WriteLine($"{r}");
-            //}
-
-            tl.Segments.ToList().ForEach(f =>
-            {
-                f.PedBeginWalkCount = result.Count(c => f.InRange(c.PedestrianBeginWalk));
-                f.PedRequests = result.Where(w => f.InRange(w.PedestrianBeginWalk)).Sum(s => s.PedRequests.Count);
-                f.UniquePedDetections = result.Where(w => f.InRange(w.PedestrianBeginWalk)).Sum(s => s.UniquePedDetections);
-                f.ImputedPedCallsRegistered = result.Where(w => f.InRange(w.PedestrianBeginWalk)).Sum(s => s.ImputedCalls);
-                f.PedCallsRegisteredCount = result.Where(w => f.InRange(w.PedestrianBeginWalk)).Sum(s => s.PedCallsRegistered.Count);
-            });
-
-            foreach (var s in tl.Segments)
-            {
-                if (s.PedBeginWalkCount > 0)
-                    _output.WriteLine($"{s}");
-            }
-
-
-            //for (int i = 0; i < filter.Count; i++)
-            //{
-            //    if (filter[i].EventCode == 21 && filter[i + 1].EventCode == 22 && filter[i + 2].EventCode == 21)
-            //    {
-            //        result.Add(new PedCycle()
-            //        {
-            //            Start = filter[i].Timestamp,
-            //            End = filter[i + 2].Timestamp
-            //        });
-            //    }
-
-            //    if (filter[i].EventCode == 21 && filter[i + 1].EventCode == 21)
-            //    {
-            //        result.Add(new PedCycle()
-            //        {
-            //            Start = filter[i].Timestamp,
-            //            End = filter[i + 1].Timestamp
-            //        });
-            //    }
-            //}
-
-
-
-
-
-
-
-
-
-            //var json = File.ReadAllText(new FileInfo(file).FullName);
-            //var testFile = JsonConvert.DeserializeObject<IdentifyPedCyclesTestData>(json);
-
-            //_output.WriteLine($"Configuration: {testFile.Configuration}");
-            //_output.WriteLine($"Input: {testFile.Input.Count}");
-            //_output.WriteLine($"Output: {testFile.Output.Segments.Count}");
-
-            //var t1 = Tuple.Create(testFile.Configuration[0], testFile.Input[0]);
-            //var t2 = Tuple.Create(testFile.Configuration[1], testFile.Input[1]);
-
-            //var testData = Tuple.Create(t1, t2);
-
-            //var sut = new CalculateTotalVolumes();
-
-            //var result = await sut.ExecuteAsync(testData);
-
-            //var expected = testFile.Output;
-            //var actual = result.Item2;
-
-            //_output.WriteLine($"expected: {expected.Count}");
-            //_output.WriteLine($"actual: {actual.Count}");
-
-            //Assert.Equivalent(expected, actual);
+            Assert.Equivalent(actual, expected);
         }
 
         public void Dispose()
@@ -537,6 +442,14 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
     public static class TempDateExtensions
     {
+        public static Timeline<T> CreateTimeline<T>(this DateTime date, TimeSpan span) where T : IStartEndRange, new()
+        {
+            var startSlot = date.Date;
+            var endSlot = date.Date.AddDays(1).AddTicks(-1);
+
+            return new Timeline<T>(startSlot, endSlot, span);
+        }
+        
         public static DateTime Floor(this DateTime dt, TimeSpan interval)
         {
             if (interval <= TimeSpan.Zero)
@@ -554,6 +467,5 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             var ticks = ((dt.Ticks + interval.Ticks - 1) / interval.Ticks) * interval.Ticks;
             return new DateTime(ticks, dt.Kind);
         }
-
     }
 }

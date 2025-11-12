@@ -50,16 +50,17 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 ])
                 .ToList();
 
-            List<int> test1 = new List<int>();
-            List<int> test2 = new List<int>();
-
             var eventsByParam = events.ToParamLookup();
 
-            var result = location.Approaches.SelectMany(o =>
+            var result = location.Approaches
+                .AsParallel()
+                .SelectMany(o =>
             {
                 var matchingEvents = eventsByParam[(short)o.ProtectedPhaseNumber];
 
                 var pedCycles = matchingEvents.IdentifyPedCycles(o.IsPedestrianPhaseOverlap);
+
+                var pedDelayCycles = matchingEvents.IdentifyPedDelayCycles(o.IsPedestrianPhaseOverlap);
 
                 return _timeline.Segments.Select(s => 
                 {
@@ -71,33 +72,35 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                         PhaseNumber = o.ProtectedPhaseNumber
                     };
 
-                    var inRangeCycles = pedCycles.Where(c => agg.InRange(c.BeginWalk)).ToList();
+                    var inRangePedCycle = pedCycles.Where(c => agg.InRange(c.PedestrianBeginWalk)).ToList();
 
-                    if (inRangeCycles.Any())
+                    var inRangePedDelayCycle = pedDelayCycles.Where(c => agg.InRange(c.BeginWalk)).ToList();
+
+                    if (inRangePedCycle.Any())
                     {
-                        agg.PedCycles = inRangeCycles.Count;
-                        agg.PedDelay = inRangeCycles.Sum(s => s.PedDelay);
+                        agg.PedBeginWalkCount = inRangePedCycle.Count;
+                        agg.PedRequests = inRangePedCycle.Sum(c => c.PedRequests.Count);
+                        agg.UniquePedDetections = inRangePedCycle.Sum(c => c.UniquePedDetections);
+                        agg.ImputedPedCallsRegistered = inRangePedCycle.Sum(c => c.ImputedCalls);
+                        agg.PedCallsRegisteredCount = inRangePedCycle.Sum(c => c.PedCallsRegistered.Count);
+                    }
 
-                        agg.MinPedDelay = inRangeCycles
+                    if (inRangePedDelayCycle.Any())
+                    {
+                        agg.PedCycles = inRangePedDelayCycle.Count;
+                        agg.PedDelay = Math.Round(inRangePedDelayCycle.Sum(s => s.PedDelay), 1);
+
+                        agg.MinPedDelay = inRangePedDelayCycle
                         .Where(w => w.PedDelay > 0)
                         .Select(w => w.PedDelay)
                         .DefaultIfEmpty(0)
                         .Min();
 
-                        agg.MaxPedDelay = inRangeCycles
+                        agg.MaxPedDelay = inRangePedDelayCycle
                         .Select(w => w.PedDelay)
                         .DefaultIfEmpty(0)
                         .Max();
                     }
-
-                    //if (matchingEvents.Any())
-                    //{
-                    //    agg.PedRequests = matchingEvents.PedRequests(agg);
-                    //    agg.ImputedPedCallsRegistered = matchingEvents.CountImputedCalls(agg);
-                    //    agg.UniquePedDetections = matchingEvents.CountUniquePedDetections(agg);
-                    //    agg.PedBeginWalkCount = matchingEvents.PedBeginWalkCount(agg);
-                    //    agg.PedCallsRegisteredCount = matchingEvents.PedCallsRegistered(agg);
-                    //}
 
                     return agg;
                 });

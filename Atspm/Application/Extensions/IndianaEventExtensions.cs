@@ -135,6 +135,56 @@ namespace Utah.Udot.Atspm.Extensions
 
         /// <summary>
         /// Identifies pedestrian cycles from a sequence of <see cref="IndianaEvent"/> objects.
+        /// Matches walk and change interval events to construct a list of <see cref="PedCycle"/> instances,
+        /// each representing a pedestrian service interval with associated event counts and metrics.
+        /// </summary>
+        /// <param name="events">The collection of <see cref="IndianaEvent"/> to analyze for pedestrian cycles.</param>
+        /// <param name="isPedPhaseOverlap">
+        /// If <c>true</c>, uses overlap pedestrian event codes for matching cycles; otherwise, uses standard pedestrian event codes.
+        /// </param>
+        /// <returns>
+        /// A read-only list of <see cref="PedCycle"/> objects, each representing a detected pedestrian cycle
+        /// with timing and event count information for walk intervals, detector requests, imputed calls, unique detections, and call registrations.
+        /// </returns>
+        public static IReadOnlyList<PedCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool isPedPhaseOverlap = false)
+        {
+            var (a, b) = isPedPhaseOverlap
+                ? ((short)IndianaEnumerations.PedestrianOverlapBeginWalk, (short)IndianaEnumerations.PedestrianOverlapBeginClearance)
+                : ((short)IndianaEnumerations.PedestrianBeginWalk, (short)IndianaEnumerations.PedestrianBeginChangeInterval);
+
+            var filter = events
+                .WhereCode([
+                    (short)a,
+                            (short)b
+                ])
+                .KeepFirstSequentialEvent(IndianaEnumerations.PedestrianBeginChangeInterval)
+                .OrderBy(o => o.Timestamp)
+                .ToList();
+
+            var result = filter.SlidingWindow(3)
+                .Where(w => w[1].EventCode == 21)
+                .Select(s =>
+                {
+                    var test = new PedCycle()
+                    {
+                        Start = s[0].EventCode == 21 ? s[1].Timestamp : s[0].Timestamp,
+                        PedestrianBeginWalk = s[1].Timestamp,
+                        End = s[2].Timestamp,
+                    };
+
+                    test.PedRequests = events.PedRequests(test);
+                    test.UniquePedDetections = events.CountUniquePedDetections(test);
+                    test.ImputedCalls = events.CountImputedCalls(test);
+                    test.PedCallsRegistered = events.PedCallsRegistered(test);
+
+                    return test;
+                }).ToList();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Identifies pedestrian cycles from a sequence of <see cref="IndianaEvent"/> objects.
         /// Filters and matches pedestrian detector activations with corresponding walk and change interval events
         /// to construct a list of <see cref="PedDelayCycle"/> instances representing pedestrian service intervals.
         /// </summary>
@@ -146,7 +196,7 @@ namespace Utah.Udot.Atspm.Extensions
         /// A read-only list of <see cref="PedDelayCycle"/> objects, each representing a detected pedestrian cycle
         /// with timing information for detector activation, walk start, and change interval.
         /// </returns>
-        public static IReadOnlyList<PedDelayCycle> IdentifyPedCycles(this IEnumerable<IndianaEvent> events, bool isPedPhaseOverlap = false)
+        public static IReadOnlyList<PedDelayCycle> IdentifyPedDelayCycles(this IEnumerable<IndianaEvent> events, bool isPedPhaseOverlap = false)
         {
             var (a, b) = isPedPhaseOverlap
                 ? ((short)IndianaEnumerations.PedestrianOverlapBeginWalk, (short)IndianaEnumerations.PedestrianOverlapBeginClearance)
