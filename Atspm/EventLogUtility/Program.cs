@@ -16,6 +16,7 @@
 #endregion
 
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
@@ -41,8 +42,12 @@ cmdBuilder.UseDefaults();
 cmdBuilder.UseHost(a =>
 {
     return Host.CreateDefaultBuilder(a)
-    //.UseConsoleLifetime()
+    //.UseConsoleLifetime()    
     .ApplyVolumeConfiguration()
+    //.ConfigureAppConfiguration((h, c) =>
+    //{
+    //    c.AddUserSecrets<Program>(optional: true); // Load secrets first
+    //})
     .ConfigureLogging((h, l) =>
     {
         if (OperatingSystem.IsWindows())
