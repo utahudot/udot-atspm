@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilteredTerminations.cs
+// for Application - Utah.Udot.Atspm.Specifications/IndianaEventLogSpecifications.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 // limitations under the License.
 #endregion
 
-using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Specifications;
 
-namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
+namespace Utah.Udot.Atspm.Specifications
 {
     /// <summary>
-    /// Filters <see cref="IndianaEvent"/> workflow events to
+    /// Filters <see cref="IEnumerable{IndianaEvent}"/> by:
     /// <list type="bullet">
     /// <item><see cref="IndianaEnumerations.PhaseGapOut"/></item>
     /// <item><see cref="IndianaEnumerations.PhaseMaxOut"/></item>
@@ -30,15 +30,22 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
     /// <item><see cref="IndianaEnumerations.PhaseGreenTermination"/></item>
     /// </list>
     /// </summary>
-    public class FilteredTerminations : FilterEventCodeLocationBase
+    public class IndianaTerminationDataSpecification : BaseSpecification<IndianaEvent>
     {
-        /// <inheritdoc/>
-        public FilteredTerminations(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        /// <inheritdoc cref="IndianaTerminationDataSpecification"/>
+        public IndianaTerminationDataSpecification()
         {
-            filteredList.Add((int)IndianaEnumerations.PhaseGapOut);
-            filteredList.Add((int)IndianaEnumerations.PhaseMaxOut);
-            filteredList.Add((int)IndianaEnumerations.PhaseForceOff);
-            filteredList.Add((int)IndianaEnumerations.PhaseGreenTermination);
+            var codes = new HashSet<short>()
+            {
+                (short)IndianaEnumerations.PhaseGapOut,
+                (short)IndianaEnumerations.PhaseMaxOut,
+                (short)IndianaEnumerations.PhaseForceOff,
+                (short)IndianaEnumerations.PhaseGreenTermination,
+            };
+
+            Criteria = c => codes.Contains(c.EventCode);
+
+            ApplyOrderBy(o => o.Timestamp);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilteredPedCalls.cs
+// for Application - Utah.Udot.Atspm.Specifications/IndianaEventLogSpecifications.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,26 +15,31 @@
 // limitations under the License.
 #endregion
 
-using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Specifications;
 
-namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
+namespace Utah.Udot.Atspm.Specifications
 {
     /// <summary>
-    /// Filters <see cref="IndianaEvent"/> workflow events to
+    /// Filters <see cref="IEnumerable{IndianaEvent}"/> by:
     /// <list type="bullet">
-    /// <item><see cref="IndianaEnumerations.PedestrianCallRegistered"/></item>
-    /// <item><see cref="IndianaEnumerations.PedDetectorOn"/></item>
+    /// <item><see cref="IndianaEnumerations.CoordPatternChange"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPedCalls : FilterEventCodeLocationBase
+    public class IndianaPlanDataSpecification : BaseSpecification<IndianaEvent>
     {
-        /// <inheritdoc/>
-        public FilteredPedCalls(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        /// <inheritdoc cref="IndianaPlanDataSpecification"/>
+        public IndianaPlanDataSpecification()
         {
-            filteredList.Add((int)IndianaEnumerations.PedestrianCallRegistered);
-            filteredList.Add((int)IndianaEnumerations.PedDetectorOn);
+            var codes = new HashSet<short>()
+            {
+                (short)IndianaEnumerations.CoordPatternChange,
+            };
+
+            Criteria = c => codes.Contains(c.EventCode);
+
+            ApplyOrderBy(o => o.Timestamp);
         }
     }
 }

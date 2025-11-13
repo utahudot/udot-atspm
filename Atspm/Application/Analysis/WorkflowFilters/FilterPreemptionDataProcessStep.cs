@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests/FilteredPedCallsTests.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterPreemptionDataProcessStep.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Analysis.WorkflowFilters;
-using Utah.Udot.Atspm.Data.Enums;
-using Xunit.Abstractions;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Specifications;
 
-namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
-    public class FilteredPedCallsTests : WorkflowFilterTestsBase
+    public class FilterPreemptionDataProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPreemptionDataSpecification(), dataflowBlockOptions)
     {
-        public FilteredPedCallsTests(ITestOutputHelper output) : base(output)
-        {
-            filteredList.Add((int)IndianaEnumerations.PedestrianCallRegistered);
-            filteredList.Add((int)IndianaEnumerations.PedDetectorOn);
-
-            sut = new FilteredPedCalls();
-        }
     }
 }

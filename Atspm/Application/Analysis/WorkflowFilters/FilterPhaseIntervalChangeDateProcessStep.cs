@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests/FilterPriorityDataTests.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterPhaseIntervalChangeDateProcessStep.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Analysis.WorkflowFilters;
-using Xunit.Abstractions;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Specifications;
 
-namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
-    public class FilterPriorityDataTests : WorkflowFilterTestsBase
+    public class FilterPhaseIntervalChangeDateProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPhaseIntervalChangesDataSpecification(), dataflowBlockOptions)
     {
-        public FilterPriorityDataTests(ITestOutputHelper output) : base(output)
-        {
-            filteredList.Add(112);
-            filteredList.Add(113);
-            filteredList.Add(114);
-
-            sut = new FilterPriorityData();
-        }
     }
 }

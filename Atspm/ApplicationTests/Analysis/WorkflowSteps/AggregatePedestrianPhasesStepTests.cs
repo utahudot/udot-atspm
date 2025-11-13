@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePedestrianPhasesTests.cs
+// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePedestrianPhasesStepTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Google.Protobuf.Collections;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.PedestrianDelay;
@@ -40,19 +37,19 @@ using Xunit.Abstractions;
 
 namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
-    public class AggregatePedestrianPhasesTests : IClassFixture<TestLocationFixture>, IDisposable
+    public class AggregatePedestrianPhasesStepTests : IClassFixture<TestLocationFixture>, IDisposable
     {
         private readonly ITestOutputHelper _output;
         private readonly Location _testLocation;
 
-        public AggregatePedestrianPhasesTests(ITestOutputHelper output, TestLocationFixture testLocation)
+        public AggregatePedestrianPhasesStepTests(ITestOutputHelper output, TestLocationFixture testLocation)
         {
             _output = output;
             _testLocation = testLocation.TestLocation;
         }
 
         [Fact]
-        [Trait(nameof(AggregatePedestrianPhases), "Cancellation")]
+        [Trait(nameof(AggregatePedestrianPhasesStep), "Cancellation")]
         public async Task AggregatePedestrianPhasesTestsCancellation()
         {
             var source = new CancellationTokenSource();
@@ -60,7 +57,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testLocation, (IEnumerable<IndianaEvent>)[]);
 
-            var sut = new AggregatePedestrianPhases(null);
+            var sut = new AggregatePedestrianPhasesStep(null);
 
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(testData, source.Token));
         }
@@ -408,7 +405,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
         [Theory]
         [AnalysisTestData<AggregatePedestrianPhasesTestData>]
-        [Trait(nameof(AggregatePedestrianPhases), "From File")]
+        [Trait(nameof(AggregatePedestrianPhasesStep), "From File")]
         public async Task AggregatePedestrianPhasesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PhasePedAggregation> output)
         {
             var testData = Tuple.Create(config, input);
@@ -420,7 +417,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
-            var sut = new AggregatePedestrianPhases(tl);
+            var sut = new AggregatePedestrianPhasesStep(tl);
 
             var actual = await sut.ExecuteAsync(testData);
 

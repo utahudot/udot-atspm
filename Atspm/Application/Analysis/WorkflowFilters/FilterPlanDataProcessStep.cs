@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterPriorityData.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterPlanDataProcessStep.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,25 +16,11 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
-    /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
-    /// <list type="bullet">
-    /// <item><see cref="112"/></item>
-    /// <item><see cref="113"/></item>
-    /// <item><see cref="114"/></item>
-    /// </list>
-    /// </summary>
-    public class FilterPriorityData : FilterEventCodeLocationBase
+    public class FilterPlanDataProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPlanDataSpecification(), dataflowBlockOptions)
     {
-        /// <inheritdoc/>
-        public FilterPriorityData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            filteredList.Add(112);
-            filteredList.Add(113);
-            filteredList.Add(114);
-        }
     }
 }

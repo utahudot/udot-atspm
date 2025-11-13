@@ -222,11 +222,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 
         #endregion
 
-
-
-
-
-
         /// <inheritdoc/>
         public Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate)
         {

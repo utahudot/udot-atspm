@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterEventCodeBase.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterEventCodeSignalBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,23 +16,27 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
     /// Base class for filter controller event log data used in process workflows
     /// </summary>
-    public abstract class FilterEventCodeBase : ProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
+    public abstract class FilterIndianaEventsByCodeAndLocationBase : ProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Location, IEnumerable<IndianaEvent>>>
     {
-        /// <summary>
-        /// List of filtered event codes
-        /// </summary>
-        protected List<int> filteredList = new();
-
         /// <inheritdoc/>
-        public FilterEventCodeBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilterIndianaEventsByCodeAndLocationBase(ISpecification<IndianaEvent> specification, DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            workflowProcess = new BroadcastBlock<IEnumerable<ControllerEventLog>>(f => f.Where(l => filteredList.Contains(l.EventCode)), options);
+            workflowProcess = new BroadcastBlock<Tuple<Location, IEnumerable<IndianaEvent>>>(f =>
+            {
+                return Tuple.Create(f.Item1, f.Item2
+                     .FromSpecification(new IndianaLogLocationFilterSpecification(f.Item1))
+                     .FromSpecification(specification));
+            }, options);
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
         }
     }

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilteredDetectorData.cs
+// for Application - Utah.Udot.Atspm.Specifications/IndianaEventLogSpecifications.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,26 +15,33 @@
 // limitations under the License.
 #endregion
 
-using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Specifications;
 
-namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
+namespace Utah.Udot.Atspm.Specifications
 {
     /// <summary>
-    /// Filters <see cref="IndianaEvent"/> workflow events to
+    /// Filters <see cref="IEnumerable{IndianaEvent}"/> by:
     /// <list type="bullet">
     /// <item><see cref="IndianaEnumerations.VehicleDetectorOff"/></item>
     /// <item><see cref="IndianaEnumerations.VehicleDetectorOn"/></item>
     /// </list>
     /// </summary>
-    public class FilteredDetectorData : FilterEventCodeLocationBase
+    public class IndianaDetectorDataSpecification : BaseSpecification<IndianaEvent>
     {
-        /// <inheritdoc/>
-        public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        /// <inheritdoc cref="IndianaDetectorDataSpecification"/>
+        public IndianaDetectorDataSpecification()
         {
-            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOff);
-            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOn);
+            var codes = new HashSet<short>()
+            {
+                (short)IndianaEnumerations.VehicleDetectorOff,
+                (short)IndianaEnumerations.VehicleDetectorOn,
+            };
+
+            Criteria = c => codes.Contains(c.EventCode);
+
+            ApplyOrderBy(o => o.Timestamp);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterBase.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterDetectorDataProcessStep.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,15 +16,11 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
-    /// <summary>
-    /// Base class for <see cref="BroadcastBlock{T}"/> filters used in workflows
-    /// </summary>
-    public abstract class FilterBase : ProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
+    public class FilterDetectorDataProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaDetectorDataSpecification(), dataflowBlockOptions)
     {
-        /// <inheritdoc/>
-        public FilterBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
     }
 }

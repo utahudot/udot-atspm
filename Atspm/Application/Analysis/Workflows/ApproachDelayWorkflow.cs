@@ -43,8 +43,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
 
         protected JoinBlock<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
 
-        public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
-        public FilteredDetectorData FilteredDetectorData { get; private set; }
+        public FilterPhaseIntervalChangeDateProcessStep FilteredPhaseIntervalChanges { get; private set; }
+        public FilterDetectorDataProcessStep FilteredDetectorData { get; private set; }
 
         public GroupLocationsByApproaches GroupLocationsByApproaches1 { get; private set; }
         public GroupLocationsByApproaches GroupLocationsByApproaches2 { get; private set; }

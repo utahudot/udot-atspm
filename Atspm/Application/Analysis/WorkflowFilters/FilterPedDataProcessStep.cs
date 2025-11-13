@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilteredPedPhases.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterDetectorDataProcessStep.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,23 +16,11 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
-    /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
-    /// <list type="bullet">
-    /// <item><see cref="21"/></item>
-    /// <item><see cref="23"/></item>
-    /// </list>
-    /// </summary>
-    public class FilteredPedPhases : FilterEventCodeBase
+    public class FilterPedDataProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPedDataSpecification(), dataflowBlockOptions)
     {
-        /// <inheritdoc/>
-        public FilteredPedPhases(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            filteredList.Add(21);
-            filteredList.Add(23);
-        }
     }
 }
