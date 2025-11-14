@@ -20,10 +20,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Analysis.WorkflowFilters;
-using Utah.Udot.Atspm.Analysis.Workflows;
-using Utah.Udot.Atspm.Analysis.WorkflowSteps;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -35,46 +31,37 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
-            var aggDate = _options.Value.Dates.FirstOrDefault();
-            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
-
-            var locations = scope.ServiceProvider.GetService<ILocationRepository>();
-            var eventLogs = scope.ServiceProvider.GetService<IEventLogRepository>();
-
-            var loc = locations.GetLatestVersionOfLocation("7115", aggDate);
-            var events = eventLogs.GetArchivedEvents("7115", aggDate.Date, aggDate.AddDays(1));
-
-            var blockOptions = new ExecutionDataflowBlockOptions()
+            foreach (var date in _options.Value.Dates)
             {
-                CancellationToken = cancellationToken,
-                MaxDegreeOfParallelism = 1
-            };
+                var tl = date.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
-            var unBox = new UnboxArchivedEvents(blockOptions);
-            var unBoxed = await unBox.ExecuteAsync(Tuple.Create<Location, IEnumerable<CompressedEventLogBase>>(loc, events));
+                var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, 1, cancellationToken);
 
-            var filterEvents = new FilterEventsByType<IndianaEvent>(blockOptions);
-            var indianaEvents = await filterEvents.ExecuteAsync(unBoxed);
+                var locations = scope.ServiceProvider.GetService<ILocationRepository>();
+                var eventLogs = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-            var filterPedEvents = new FilterPedDataProcessStep();
-            filterPedEvents.Post(indianaEvents);
-            filterPedEvents.Complete();
+                await foreach (var l in locations.GetEventsForAggregation(date, new EventAggregationQueryOptions()).Take(10))
+                {
+                    Console.WriteLine($"Location: {l}");
 
-            var filteredPedEvents = filterPedEvents.Receive();
+                    var events = eventLogs.GetArchivedEvents(l.LocationIdentifier, date.Date, date.AddDays(1));
 
-            var aggregatePedPhases = new AggregatePedestrianPhasesStep(tl, blockOptions);
-            var phasePedAggregations = await aggregatePedPhases.ExecuteAsync(filteredPedEvents);
+                    var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine(a));
 
-            Console.WriteLine($"phasePedAggregation: {phasePedAggregations.Count()}");
+                    workflow.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (var p in phasePedAggregations)
-            {
-                Console.WriteLine($"{p}");
+                    await workflow.Input.SendAsync(Tuple.Create<Location, IEnumerable<CompressedEventLogBase>>(l, events));
+
+                    workflow.Input.Complete();
+
+                    await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                    await result.Completion;
+                }
             }
-
         }
     }
 
+    //TODO: move this into the toolkit
     public static class TempDateExtensions
     {
         public static Timeline<T> CreateTimeline<T>(this DateTime date, TimeSpan span) where T : IStartEndRange, new()

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Configuration/EventLogAggregateConfiguration.cs
+// for EventLogUtility - Utah.Udot.Atspm.EventLogUtility.Commands/LogConsoleCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,16 @@
 // limitations under the License.
 #endregion
 
-namespace Utah.Udot.Atspm.Infrastructure.Configuration
+using System.CommandLine;
+
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public class EventLogAggregateConfiguration
+    public class PrallelProcessesOption : Option<int>
     {
-        public string AggregationType { get; set; }
-
-        public IEnumerable<DateTime> Dates { get; set; }
-
-        /// <summary>
-        /// Amount of processes that can be run in parallel
-        /// </summary>
-        public int ParallelProcesses { get; set; }
-
-        /// <inheritdoc cref="EventAggregationQueryOptions"/>
-        public EventAggregationQueryOptions EventAggregationQueryOptions { get; set; } = new();
+        public PrallelProcessesOption() : base("--parallel-processes", "Amount of processes that can be run in parallel")
+        {
+            AddAlias("-pp");
+            //SetDefaultValue(50);
+        }
     }
 }

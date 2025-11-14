@@ -40,6 +40,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         public int ParallelProcesses { get; set; }
 
         /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
-        public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new DeviceEventLoggingQueryOptions();
+        public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new();
     }
 }

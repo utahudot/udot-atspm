@@ -36,11 +36,11 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregatePedestrianPhasesStep"/> class.
         /// </summary>
-        /// <param name="timeLine">The timeline used to segment and aggregate pedestrian phase data by time intervals.</param>
+        /// <param name="timeline">The timeline used to segment and aggregate pedestrian phase data by time intervals.</param>
         /// <param name="dataflowBlockOptions">Options for configuring the dataflow block execution. Optional.</param>
-        public AggregatePedestrianPhasesStep(Timeline<StartEndRange> timeLine, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public AggregatePedestrianPhasesStep(Timeline<StartEndRange> timeline, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            _timeline = timeLine;
+            _timeline = timeline;
         }
 
         /// <inheritdoc/>

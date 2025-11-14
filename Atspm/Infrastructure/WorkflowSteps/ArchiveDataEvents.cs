@@ -88,4 +88,56 @@ namespace Utah.Udot.ATSPM.Infrastructure.WorkflowSteps
             }
         }
     }
+
+    //TODO: change to this from AI suggestion
+    //protected override async IAsyncEnumerable<CompressedEventLogBase> Process(
+    //Tuple<Device, EventLogModelBase>[] input,
+    //[EnumeratorCancellation] CancellationToken cancelToken = default)
+    //    {
+    //        var grouped = input.GroupBy(g => new
+    //        {
+    //            g.Item2.LocationIdentifier,
+    //            g.Item2.Timestamp.Year,
+    //            g.Item2.Timestamp.Month,
+    //            g.Item2.Timestamp.Day,
+    //            g.Item2.Timestamp.Hour,
+    //            DeviceId = g.Item1.Id,
+    //            DataType = g.Item2.GetType()
+    //        });
+
+    //        foreach (var group in grouped)
+    //        {
+    //            var list = CreateTypedList(group.Select(x => x.Item2), group.Key.DataType);
+
+    //            var timeline = new Timeline<StartEndRange>((IList)list, TimeSpan.FromHours(1));
+
+    //            var compressed = CreateCompressedEventLog(group.Key.DataType);
+    //            compressed.LocationIdentifier = group.Key.LocationIdentifier;
+    //            compressed.Start = timeline.Start;
+    //            compressed.End = timeline.End;
+    //            compressed.DataType = group.Key.DataType;
+    //            compressed.DeviceId = group.Key.DeviceId;
+    //            compressed.Data = list;
+
+    //            yield return compressed;
+    //        }
+    //    }
+
+    //private static object CreateTypedList(IEnumerable<EventLogModelBase> source, Type type)
+    //    {
+    //        var listType = typeof(List<>).MakeGenericType(type);
+    //        var list = (IList)Activator.CreateInstance(listType)!;
+
+    //        foreach (var item in source)
+    //            list.Add(item);
+
+    //        return list;
+    //    }
+
+    //    private static CompressedEventLogBase CreateCompressedEventLog(Type type)
+    //    {
+    //        var compType = typeof(CompressedEventLogs<>).MakeGenericType(type);
+    //        return (CompressedEventLogBase)Activator.CreateInstance(compType)!;
+    //    }
+
 }

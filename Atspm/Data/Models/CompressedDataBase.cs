@@ -87,7 +87,7 @@ namespace Utah.Udot.Atspm.Data.Models
 
         public override string ToString()
         {
-            return $"***{this.LocationIdentifier} - {this.Start} - {this.End} - {this.DeviceId} - {this.DataType.Name} - {this.Data?.Count()} - {this.DataType.Name} | min: {this.Data?.Min(m => m.Timestamp)} max: {this.Data?.Max(m => m.Timestamp)}";
+            return $"{this.LocationIdentifier} - {this.Start} - {this.End} - {this.DeviceId} - {this.DataType.Name} - {this.Data?.Count()} - {this.DataType.Name} | min: {this.Data?.Min(m => m.Timestamp)} max: {this.Data?.Max(m => m.Timestamp)}";
         }
     }
 
@@ -116,6 +116,11 @@ namespace Utah.Udot.Atspm.Data.Models
             get => base.Data.Cast<AggregationModelBase>().ToList();
             set => base.Data = value;
         }
+
+        public override string ToString()
+        {
+            return $"{this.LocationIdentifier} - {this.Start} - {this.End} - {this.DataType.Name} - {this.Data?.Count()} - {this.DataType.Name}";
+        }
     }
 
     /// <summary>
@@ -129,6 +134,11 @@ namespace Utah.Udot.Atspm.Data.Models
         {
             get => base.Data.Cast<T>().ToHashSet().ToList();
             set => base.Data = value.Cast<T>().ToHashSet().ToList();
+        }
+
+        public override string ToString()
+        {
+            return $"{this.LocationIdentifier} - {this.Start} - {this.End} - {this.DataType.Name} - {this.Data?.Count()} - {this.DataType.Name}";
         }
     }
 }
