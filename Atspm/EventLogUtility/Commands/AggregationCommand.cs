@@ -107,7 +107,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                     eventAggregationQueryOptions.UpdateInstance(a.EventAggregationQueryOptions, b);
                 });
 
-            services.AddHostedService<DeviceEventLogHostedService>();
+            services.AddHostedService<EventAggregationHostedService>();
         }
     }
 }

@@ -29,19 +29,14 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     /// This class processes event data into time-binned <see cref="PhasePedAggregation"/> results, including counts and delay metrics
     /// for pedestrian cycles, requests, and detections. Designed for use in ATSPM workflow analysis pipelines.
     /// </summary>
-    public class AggregatePedestrianPhasesStep : TransformProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<PhasePedAggregation>>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AggregatePedestrianPhasesStep"/> class.
+    /// </remarks>
+    /// <param name="timeline">The timeline used to segment and aggregate pedestrian phase data by time intervals.</param>
+    /// <param name="dataflowBlockOptions">Options for configuring the dataflow block execution. Optional.</param>
+    public class AggregatePedestrianPhasesStep(Timeline<StartEndRange> timeline, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<PhasePedAggregation>>(dataflowBlockOptions)
     {
-        private readonly Timeline<StartEndRange> _timeline;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AggregatePedestrianPhasesStep"/> class.
-        /// </summary>
-        /// <param name="timeline">The timeline used to segment and aggregate pedestrian phase data by time intervals.</param>
-        /// <param name="dataflowBlockOptions">Options for configuring the dataflow block execution. Optional.</param>
-        public AggregatePedestrianPhasesStep(Timeline<StartEndRange> timeline, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            _timeline = timeline;
-        }
+        private readonly Timeline<StartEndRange> _timeline = timeline;
 
         /// <inheritdoc/>
         protected override Task<IEnumerable<PhasePedAggregation>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
@@ -56,7 +51,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             var eventsByParam = events.ToParamLookup();
 
             var result = location.Approaches
-                //.AsParallel()
+                .AsParallel()
                 .SelectMany(o =>
             {
                 var matchingEvents = eventsByParam[(short)o.ProtectedPhaseNumber];

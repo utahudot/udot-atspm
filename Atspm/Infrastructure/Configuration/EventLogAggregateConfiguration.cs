@@ -15,6 +15,8 @@
 // limitations under the License.
 #endregion
 
+using System.Text;
+
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     public class EventLogAggregateConfiguration
@@ -30,5 +32,25 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
 
         /// <inheritdoc cref="EventAggregationQueryOptions"/>
         public EventAggregationQueryOptions EventAggregationQueryOptions { get; set; } = new();
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"{nameof(EventLogAggregateConfiguration)}***************************************************");
+
+            sb.AppendLine($"{nameof(AggregationType)}: {AggregationType}");
+
+            foreach (var i in Dates)
+            {
+                sb.AppendLine($"{nameof(Dates)}: {i}");
+            }
+
+            sb.AppendLine($"{nameof(ParallelProcesses)}: {ParallelProcesses}");
+
+            sb.AppendLine($"{nameof(EventLogAggregateConfiguration)}***************************************************");
+
+            return sb.ToString();
+        }
     }
 }

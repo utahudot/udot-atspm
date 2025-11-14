@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -31,32 +32,36 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
+            Console.WriteLine($"{_options.Value}");
+            Console.WriteLine($"{_options.Value.EventAggregationQueryOptions}");
+
             foreach (var date in _options.Value.Dates)
             {
                 var tl = date.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
                 var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, 1, cancellationToken);
 
+                await Task.Delay(TimeSpan.FromSeconds(2));
+
+                var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine(a));
+                workflow.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
+
                 var locations = scope.ServiceProvider.GetService<ILocationRepository>();
                 var eventLogs = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                await foreach (var l in locations.GetEventsForAggregation(date, new EventAggregationQueryOptions()).Take(10))
+                await foreach (var l in locations.GetEventsForAggregation(date, _options.Value.EventAggregationQueryOptions))
                 {
                     Console.WriteLine($"Location: {l}");
 
                     var events = eventLogs.GetArchivedEvents(l.LocationIdentifier, date.Date, date.AddDays(1));
 
-                    var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine(a));
-
-                    workflow.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
-
                     await workflow.Input.SendAsync(Tuple.Create<Location, IEnumerable<CompressedEventLogBase>>(l, events));
-
-                    workflow.Input.Complete();
-
-                    await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
-                    await result.Completion;
                 }
+
+                workflow.Input.Complete();
+
+                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                await result.Completion;
             }
         }
     }
