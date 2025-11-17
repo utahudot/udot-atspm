@@ -39,7 +39,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             {
                 var tl = date.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
-                var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, 1, cancellationToken);
+                var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, 50, cancellationToken);
 
                 await Task.Delay(TimeSpan.FromSeconds(2));
 
@@ -53,7 +53,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 {
                     Console.WriteLine($"Location: {l}");
 
-                    var events = eventLogs.GetArchivedEvents(l.LocationIdentifier, date.Date, date.AddDays(1));
+                    var events = eventLogs.GetArchivedEvents(l.LocationIdentifier, tl.Start, tl.End);
 
                     await workflow.Input.SendAsync(Tuple.Create<Location, IEnumerable<CompressedEventLogBase>>(l, events));
                 }
@@ -62,6 +62,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
                 await result.Completion;
+            }
+
+            var aggRepo = scope.ServiceProvider.GetService<IAggregationRepository>();
+
+            foreach (var a in aggRepo.GetList())
+            {
+                Console.WriteLine($"Returned: {a}");
             }
         }
     }

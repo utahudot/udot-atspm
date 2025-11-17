@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <summary>
         /// Amount of processes that can be run in parallel
         /// </summary>
-        public int ParallelProcesses { get; set; }
+        public int ParallelProcesses { get; set; } = 1;
 
         /// <inheritdoc cref="EventAggregationQueryOptions"/>
         public EventAggregationQueryOptions EventAggregationQueryOptions { get; set; } = new();

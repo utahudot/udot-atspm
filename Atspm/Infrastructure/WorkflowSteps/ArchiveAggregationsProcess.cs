@@ -19,7 +19,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
             foreach (var group in grouped)
             {
                 dynamic list = CreateTypedList(group, group.Key.DataType);
-                var tl = new Timeline<StartEndRange>(group, TimeSpan.FromDays(1));
+                var tl = new Timeline<StartEndRange>(group.Min(m => m.Start), group.Max(m => m.Start), TimeSpan.FromDays(1));
 
                 var compressed = CreateCompressedAggregation(group.Key.DataType);
                 compressed.LocationIdentifier = group.Key.LocationIdentifier;
@@ -49,7 +49,6 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
             return (CompressedAggregationBase)Activator.CreateInstance(compType)!;
         }
 
-        //TODO: update this to Utah.Udot.ATSPM.Infrastructure.WorkflowSteps.ArchiveDataEvents
         private record GroupKey(string LocationIdentifier, int Year, int Month, int Day, Type DataType);
     }
 }

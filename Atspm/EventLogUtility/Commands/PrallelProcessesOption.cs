@@ -24,7 +24,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public PrallelProcessesOption() : base("--parallel-processes", "Amount of processes that can be run in parallel")
         {
             AddAlias("-pp");
-            //SetDefaultValue(50);
+            //SetDefaultValue(1);
         }
     }
 }

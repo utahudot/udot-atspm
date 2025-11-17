@@ -48,6 +48,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
         public ArchiveAggregationsProcess ArchiveAggregationsProcess { get; private set; }
 
+        public SaveArchivedAggregationsProcess SaveArchivedAggregationsProcess { get; private set; }
+
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
@@ -56,6 +58,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             Steps.Add(AggregatePedestrianPhasesWorkflow.Output);
 
             Steps.Add(ArchiveAggregationsProcess);
+            Steps.Add(SaveArchivedAggregationsProcess);
         }
 
         /// <inheritdoc/>
@@ -75,6 +78,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             AggregatePedestrianPhasesWorkflow = new(aggregationOptions);
 
             ArchiveAggregationsProcess = new ArchiveAggregationsProcess(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            //TODO: try this with parallelism
+            SaveArchivedAggregationsProcess = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
         }
 
         /// <inheritdoc/>
@@ -83,14 +88,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             Input.LinkTo(RestorArchivedEventsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
 
             RestorArchivedEventsProcess.LinkTo(BroadcastEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
             BroadcastEvents.LinkTo(AggregatePedestrianPhasesWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
             AggregatePedestrianPhasesWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
-            ArchiveAggregationsProcess.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            ArchiveAggregationsProcess.LinkTo(SaveArchivedAggregationsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
+            SaveArchivedAggregationsProcess.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 }
