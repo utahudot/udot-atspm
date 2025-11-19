@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
         public object Output { get; set; }
     }
 
-    public class DetectorEventCountAggregationTestData : AnalysisTestDataBase { }
+    public class AggregateDetectorEventCountTestData : AnalysisTestDataBase { }
 
 
     public class AggregatePedestrianPhasesTestData : AnalysisTestDataBase { }

@@ -107,10 +107,6 @@ namespace Utah.Udot.Atspm.Data.Models
     /// </summary>
     public partial class DetectorEventCountAggregation : AggregationModelBase, ILocationApproachLayer
     {
-        /// <inheritdoc/>
-        //public string LocationIdentifier { get; set; }
-
-
         ///<inheritdoc/>
         public int ApproachId { get; set; }
 
@@ -125,7 +121,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int EventCount { get; set; }
 
         /// <inheritdoc/>
-        public override string ToString() => JsonConvert.SerializeObject(this);
+        public override string ToString() => $"{LocationIdentifier}|{Start}: {DetectorPrimaryId}-{ApproachId}-{EventCount}|{End}";
     }
 
     public partial class PhaseCycleAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer

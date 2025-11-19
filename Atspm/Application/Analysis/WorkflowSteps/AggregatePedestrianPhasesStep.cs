@@ -40,72 +40,52 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IEnumerable<PhasePedAggregation>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
-            var location = input.Item1;
+            var (location, rawEvents) = input;
 
-            var events = input.Item2
+            var eventsByParam = rawEvents
                 .FromSpecification(new IndianaLogLocationFilterSpecification(location))
                 .FromSpecification(new IndianaPedDataSpecification())
-                .ToList();
-
-            var eventsByParam = events.ToParamLookup();
+                .ToParamLookup();
 
             var result = location.Approaches
                 .AsParallel()
-                .SelectMany(o =>
-            {
-                var matchingEvents = eventsByParam[(short)o.ProtectedPhaseNumber];
-
-                var pedCycles = matchingEvents.IdentifyPedCycles(o.IsPedestrianPhaseOverlap);
-
-                var pedDelayCycles = matchingEvents.IdentifyPedDelayCycles(o.IsPedestrianPhaseOverlap);
-
-                return _timeline.Segments.Select(s => 
+                .SelectMany(approach =>
                 {
-                    var agg = new PhasePedAggregation() 
-                    { 
-                        Start = s.Start, 
-                        End = s.End,
-                        LocationIdentifier = o.Location.LocationIdentifier,
-                        PhaseNumber = o.ProtectedPhaseNumber
-                    };
+                    var matchingEvents = eventsByParam[(short)approach.ProtectedPhaseNumber];
 
-                    var inRangePedCycle = pedCycles.Where(c => agg.InRange(c.PedestrianBeginWalk)).ToList();
+                    var pedCycles = matchingEvents.IdentifyPedCycles(approach.IsPedestrianPhaseOverlap);
+                    var pedDelayCycles = matchingEvents.IdentifyPedDelayCycles(approach.IsPedestrianPhaseOverlap);
 
-                    var inRangePedDelayCycle = pedDelayCycles.Where(c => agg.InRange(c.BeginWalk)).ToList();
-
-                    if (inRangePedCycle.Any())
+                    return _timeline.Segments.Select(segment =>
                     {
-                        agg.PedBeginWalkCount = inRangePedCycle.Count;
-                        agg.PedRequests = inRangePedCycle.Sum(c => c.PedRequests.Count);
-                        agg.UniquePedDetections = inRangePedCycle.Sum(c => c.UniquePedDetections);
-                        agg.ImputedPedCallsRegistered = inRangePedCycle.Sum(c => c.ImputedCalls);
-                        agg.PedCallsRegisteredCount = inRangePedCycle.Sum(c => c.PedCallsRegistered.Count);
-                    }
+                        var inRangePedCycle = pedCycles.Where(c => segment.InRange(c.PedestrianBeginWalk)).ToList();
+                        var inRangePedDelayCycle = pedDelayCycles.Where(c => segment.InRange(c.BeginWalk)).ToList();
 
-                    if (inRangePedDelayCycle.Any())
-                    {
-                        agg.PedCycles = inRangePedDelayCycle.Count;
-                        agg.PedDelay = Math.Round(inRangePedDelayCycle.Sum(s => s.PedDelay), 1);
+                        var agg = new PhasePedAggregation
+                        {
+                            Start = segment.Start,
+                            End = segment.End,
+                            LocationIdentifier = approach.Location.LocationIdentifier,
+                            PhaseNumber = approach.ProtectedPhaseNumber,
+                            PedBeginWalkCount = inRangePedCycle.Count,
+                            PedRequests = inRangePedCycle.Sum(c => c.PedRequests.Count),
+                            UniquePedDetections = inRangePedCycle.Sum(c => c.UniquePedDetections),
+                            ImputedPedCallsRegistered = inRangePedCycle.Sum(c => c.ImputedCalls),
+                            PedCallsRegisteredCount = inRangePedCycle.Sum(c => c.PedCallsRegistered.Count),
+                            PedCycles = inRangePedDelayCycle.Count,
+                            PedDelay = Math.Round(inRangePedDelayCycle.Sum(c => c.PedDelay), 1),
+                            MinPedDelay = inRangePedDelayCycle.Where(c => c.PedDelay > 0).Select(c => c.PedDelay).DefaultIfEmpty(0).Min(),
+                            MaxPedDelay = inRangePedDelayCycle.Select(c => c.PedDelay).DefaultIfEmpty(0).Max()
+                        };
 
-                        agg.MinPedDelay = inRangePedDelayCycle
-                        .Where(w => w.PedDelay > 0)
-                        .Select(w => w.PedDelay)
-                        .DefaultIfEmpty(0)
-                        .Min();
-
-                        agg.MaxPedDelay = inRangePedDelayCycle
-                        .Select(w => w.PedDelay)
-                        .DefaultIfEmpty(0)
-                        .Max();
-                    }
-
-                    return agg;
-                });
-            })
+                        return agg;
+                    });
+                })
                 .ToList()
                 .AsEnumerable();
 
             return Task.FromResult(result);
         }
+
     }
 }

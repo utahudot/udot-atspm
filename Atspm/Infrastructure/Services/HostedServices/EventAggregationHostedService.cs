@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
@@ -41,9 +42,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, _options.Value.ParallelProcesses, cancellationToken);
 
-                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
-                var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine(a));
+                var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine($"output: {a}"));
                 workflow.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
 
                 var locations = scope.ServiceProvider.GetService<ILocationRepository>();

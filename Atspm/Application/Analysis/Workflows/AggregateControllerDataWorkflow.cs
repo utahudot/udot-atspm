@@ -115,26 +115,18 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
 
 
 
-    public class DetectorEventCountAggregationWorkflow : AggregationWorkflowBase<DetectorEventCountAggregation>
+    /// <inheritdoc/>
+    public class AggregateDetectorEventCountWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<DetectorEventCountAggregation>(options)
     {
-        /// <inheritdoc/>
-        public DetectorEventCountAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
-        {
-        }
-
         public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; private set; }
-        public FilterDetectorDataProcessStep FilteredDetectorData { get; private set; }
-        public GroupLocationsByApproaches GroupApproachesForDetectors { get; private set; }
-        public GroupDetectorsByDetectorEvent GroupDetectorsByDetectorEvent { get; private set; }
-        public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
+        public FilterDetectorDataProcessStep FilterDetectorDataProcessStep { get; private set; }
+        public AggregateDetectorEventsStep AggregateDetectorEvents { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
             Steps.Add(FilterIndianaEvents);
-            Steps.Add(FilteredDetectorData);
-            Steps.Add(GroupApproachesForDetectors);
-            Steps.Add(GroupDetectorsByDetectorEvent);
+            Steps.Add(FilterDetectorDataProcessStep);
             Steps.Add(AggregateDetectorEvents);
         }
 
@@ -142,10 +134,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         protected override void InstantiateSteps()
         {
             FilterIndianaEvents = new(executionBlockOptions);
-            FilteredDetectorData = new(blockOptions);
-            GroupApproachesForDetectors = new(executionBlockOptions);
-            GroupDetectorsByDetectorEvent = new(executionBlockOptions);
-            AggregateDetectorEvents = new(TimeSpan.FromMinutes(15), executionBlockOptions);
+            FilterDetectorDataProcessStep = new(blockOptions);
+            AggregateDetectorEvents = new(workflowOptions.Timeline, executionBlockOptions);
         }
 
         /// <inheritdoc/>
@@ -153,10 +143,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
             Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            FilterIndianaEvents.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredDetectorData.LinkTo(GroupApproachesForDetectors, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupApproachesForDetectors.LinkTo(GroupDetectorsByDetectorEvent, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupDetectorsByDetectorEvent.LinkTo(AggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterIndianaEvents.LinkTo(FilterDetectorDataProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterDetectorDataProcessStep.LinkTo(AggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregateDetectorEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
@@ -374,7 +362,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         //public FilterDetectorDataProcessStep FilterDetectorDataProcessStep { get; private set; }
         //public GroupLocationsByApproaches GroupApproachesForDetectors { get; private set; }
         //public GroupDetectorsByDetectorEvent GroupDetectorsByDetectorEvent { get; private set; }
-        //public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
+        //public AggregateDetectorEventsStep AggregateDetectorEventsStep { get; private set; }
 
         //aggregate termination events
         //public FilterTerminationsProcessStep FilterTerminationsProcessStep { get; private set; }
@@ -406,7 +394,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             //Steps.Add(FilterDetectorDataProcessStep);
             //Steps.Add(GroupApproachesForDetectors);
             //Steps.Add(GroupDetectorsByDetectorEvent);
-            //Steps.Add(AggregateDetectorEvents);
+            //Steps.Add(AggregateDetectorEventsStep);
 
             //aggregate termination events
             //Steps.Add(FilterTerminationsProcessStep);
@@ -439,7 +427,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             //FilterDetectorDataProcessStep = new();
             //GroupApproachesForDetectors = new();
             //GroupDetectorsByDetectorEvent = new();
-            //AggregateDetectorEvents = new();
+            //AggregateDetectorEventsStep = new();
 
             //aggregate termination events
             //FilterTerminationsProcessStep = new();
@@ -478,7 +466,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             //aggregate detector events
             //FilterDetectorDataProcessStep.LinkTo(GroupApproachesForDetectors, new DataflowLinkOptions() { PropagateCompletion = true });
             //GroupApproachesForDetectors.LinkTo(GroupDetectorsByDetectorEvent, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupDetectorsByDetectorEvent.LinkTo(AggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            //GroupDetectorsByDetectorEvent.LinkTo(AggregateDetectorEventsStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
             //aggregate termination events
             //FilterTerminationsProcessStep.LinkTo(GroupApproachesForTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -500,7 +488,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             //GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
 
             //link output to aggregation results
-            //AggregateDetectorEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            //AggregateDetectorEventsStep.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
             //AggregatePhaseTerminationEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
             //AggregateLocationPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
             //AggregatePreemptCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });

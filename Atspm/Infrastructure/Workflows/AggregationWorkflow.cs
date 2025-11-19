@@ -44,8 +44,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
         public BroadcastBlock<Tuple<Location, IEnumerable<EventLogModelBase>>> BroadcastEvents { get; private set; }
 
+        
+        public AggregateDetectorEventCountWorkflow AggregateDetectorEventCountWorkflow { get; private set; }
         public AggregatePedestrianPhasesWorkflow AggregatePedestrianPhasesWorkflow { get; private set; }
 
+        
         public ArchiveAggregationsProcess ArchiveAggregationsProcess { get; private set; }
 
         public SaveArchivedAggregationsProcess SaveArchivedAggregationsProcess { get; private set; }
@@ -55,6 +58,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             Steps.Add(RestorArchivedEventsProcess);
             Steps.Add(BroadcastEvents);
+
+            Steps.Add(AggregateDetectorEventCountWorkflow.Output);
             Steps.Add(AggregatePedestrianPhasesWorkflow.Output);
 
             Steps.Add(ArchiveAggregationsProcess);
@@ -75,6 +80,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             RestorArchivedEventsProcess = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             BroadcastEvents = new(null, new DataflowBlockOptions() { CancellationToken = _cancellationToken });
 
+            AggregateDetectorEventCountWorkflow = new(aggregationOptions);
             AggregatePedestrianPhasesWorkflow = new(aggregationOptions);
 
             ArchiveAggregationsProcess = new ArchiveAggregationsProcess(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
@@ -85,13 +91,21 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         protected override void LinkSteps()
         {
             Input.LinkTo(RestorArchivedEventsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
-
             RestorArchivedEventsProcess.LinkTo(BroadcastEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            BroadcastEvents.LinkTo(AggregateDetectorEventCountWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(AggregatePedestrianPhasesWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
 
+            AggregateDetectorEventCountWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregatePedestrianPhasesWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
 
-            AggregatePedestrianPhasesWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
-
+            Task.WhenAll(
+                AggregateDetectorEventCountWorkflow.Output.Completion,
+                AggregatePedestrianPhasesWorkflow.Output.Completion)
+                .ContinueWith(_ =>
+                {
+                    ArchiveAggregationsProcess.Complete();
+                }, _cancellationToken);
 
             ArchiveAggregationsProcess.LinkTo(SaveArchivedAggregationsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
             SaveArchivedAggregationsProcess.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
