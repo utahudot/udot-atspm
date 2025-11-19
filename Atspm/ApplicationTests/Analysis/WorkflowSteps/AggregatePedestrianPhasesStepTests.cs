@@ -31,6 +31,7 @@ using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.NetStandardToolkit.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -432,37 +433,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
         public void Dispose()
         {
-        }
-    }
-
-    
-
-    public static class TempDateExtensions
-    {
-        public static Timeline<T> CreateTimeline<T>(this DateTime date, TimeSpan span) where T : IStartEndRange, new()
-        {
-            var startSlot = date.Date;
-            var endSlot = date.Date.AddDays(1).AddTicks(-1);
-
-            return new Timeline<T>(startSlot, endSlot, span);
-        }
-        
-        public static DateTime Floor(this DateTime dt, TimeSpan interval)
-        {
-            if (interval <= TimeSpan.Zero)
-                throw new ArgumentException("Interval must be greater than zero.", nameof(interval));
-
-            var ticks = dt.Ticks / interval.Ticks * interval.Ticks;
-            return new DateTime(ticks, dt.Kind);
-        }
-
-        public static DateTime Ceiling(this DateTime dt, TimeSpan interval)
-        {
-            if (interval <= TimeSpan.Zero)
-                throw new ArgumentException("Interval must be greater than zero.", nameof(interval));
-
-            var ticks = ((dt.Ticks + interval.Ticks - 1) / interval.Ticks) * interval.Ticks;
-            return new DateTime(ticks, dt.Kind);
         }
     }
 }

@@ -32,6 +32,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         {
             var values = typeof(AggregationModelBase).Assembly.GetTypes()
                 .Where(w => w.IsSubclassOf(typeof(AggregationModelBase)))
+                //TODO: I added a ToSnakeCase extension method for this
                 .Select(s => Regex.Replace(s.Name, @"(?<=[a-z])([A-Z])", @"_$1").ToLower())
                 .Prepend("all")
                 .ToArray();
