@@ -39,6 +39,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 .ToParamLookup();
 
             var result = location.Approaches
+                .AsParallel()
                 .SelectMany(a => a.Detectors)
                 .SelectMany(d => _timeline.Segments.Select(s => new DetectorEventCountAggregation
                 {

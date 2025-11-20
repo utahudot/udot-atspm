@@ -31,7 +31,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         private readonly int _parallelProcesses;
         private readonly CancellationToken _cancellationToken;
 
-        public AggregationWorkflow(IServiceScopeFactory services, Timeline<StartEndRange> timeline, int parallelProcesses = 50, CancellationToken cancellationToken = default)
+        public AggregationWorkflow(IServiceScopeFactory services, Timeline<StartEndRange> timeline, int parallelProcesses = 1, CancellationToken cancellationToken = default)
         {
             _services = services;
             _timeline = timeline;
