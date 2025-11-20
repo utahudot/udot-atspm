@@ -18,6 +18,7 @@
 using Utah.Udot.Atspm.Analysis.PedestrianDelay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
@@ -71,6 +72,43 @@ namespace Utah.Udot.Atspm.Extensions
         public static ILookup<short, IndianaEvent> ToParamLookup(this IEnumerable<IndianaEvent> events)
         {
             return events.ToLookup(e => e.EventParam);
+        }
+
+        public static IReadOnlyList<RedToRedCycle> IdentifyRedToRedCycles(this IEnumerable<IndianaEvent> events)
+        {
+            var filter = events.FromSpecification(new IndianaPhaseIntervalChangesDataSpecification()).ToList();
+
+            var expectedSequence = new List<short>()
+            {
+                (short)IndianaEnumerations.PhaseEndYellowChange, 
+                (short)IndianaEnumerations.PhaseBeginGreen, 
+                (short)IndianaEnumerations.PhaseBeginYellowChange, 
+                (short)IndianaEnumerations.PhaseEndYellowChange }; 
+            
+            var result = filter.GroupBy(g => (g.LocationIdentifier, PhaseNumber: g.EventParam))
+                .SelectMany(group => 
+                { 
+                    var sequence = group
+                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
+                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
+                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
+                    .SlidingWindow(4)
+                    .Where(window => window.Select(e => e.EventCode)
+                    .SequenceEqual(expectedSequence))
+                    .Select(window => new RedToRedCycle 
+                    { 
+                        LocationIdentifier = group.Key.LocationIdentifier, 
+                        PhaseNumber = group.Key.PhaseNumber, 
+                        Start = window[0].Timestamp, 
+                        GreenEvent = window[1].Timestamp, 
+                        YellowEvent = window[2].Timestamp, 
+                        End = window[3].Timestamp 
+                    }); 
+
+                    return sequence; 
+                }).ToList(); 
+            
+            return result;
         }
 
         /// <summary>
