@@ -1,3 +1,5 @@
+import { usePatchLocationFromKey } from '@/api/config'
+import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useNotificationStore } from '@/stores/notifications'
 import { getEnv } from '@/utils/getEnv'
 import PinDropIcon from '@mui/icons-material/PinDrop'
@@ -12,13 +14,11 @@ import {
 } from '@mui/material'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query'
 
 type LatLngTuple = [number, number]
 
-type Props = {
-  latitude?: string | number | null
-  longitude?: string | number | null
-  locationTypeId?: number | null
+type LocationCoordinatePickerProps = {
   onChange: (lat: number, lng: number) => void
 }
 
@@ -31,12 +31,14 @@ const DynamicLocationCoordinateMap = dynamic(
 )
 
 export default function LocationCoordinatePicker({
-  latitude,
-  longitude,
-  locationTypeId,
   onChange,
-}: Props) {
+}: LocationCoordinatePickerProps) {
+  const { location } = useLocationStore()
   const { addNotification } = useNotificationStore()
+  const queryClient = useQueryClient()
+  const { latitude, longitude, locationTypeId, id } = location!
+
+  const { mutateAsync: saveCoordinates } = usePatchLocationFromKey()
 
   const [mapCenter, setMapCenter] = useState<LatLngTuple>([0, 0])
   const [zoom, setZoom] = useState(17)
@@ -84,17 +86,44 @@ export default function LocationCoordinatePicker({
     setPendingCoords([lat, lng])
   }
 
-  const handleSelect = () => {
+  const handleSelect = async () => {
     if (!pendingCoords) {
       setIsOpen(false)
       return
     }
 
-    addNotification({
-      type: 'info',
-      title: `Coordinates updated`,
-      message: `Changes must be saved to take effect.`,
-    })
+    if (!id) {
+      addNotification({
+        type: 'error',
+        title: 'Location ID is missing',
+        message: 'Cannot save coordinates without a valid location ID.',
+      })
+      setIsOpen(false)
+      return
+    }
+
+    try {
+      await saveCoordinates({
+        key: id,
+        data: {
+          latitude: pendingCoords[0],
+          longitude: pendingCoords[1],
+        },
+      })
+      queryClient.invalidateQueries()
+
+      addNotification({
+        type: 'success',
+        title: `Coordinates updated`,
+      })
+    } catch (error) {
+      console.error('Failed to save coordinates:', error)
+      addNotification({
+        type: 'error',
+        title: 'Failed to save coordinates',
+        message: String(error),
+      })
+    }
 
     const [lat, lng] = pendingCoords
     onChange(lat, lng)
@@ -147,7 +176,7 @@ export default function LocationCoordinatePicker({
           </Box>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSelect} variant="contained">
-            Select
+            Update Coordinates
           </Button>
         </DialogActions>
       </Dialog>

@@ -310,13 +310,6 @@ const LocationGeneralOptionsEditor = () => {
                       }
                     />
                     <LocationCoordinatePicker
-                      latitude={location.latitude}
-                      longitude={location.longitude}
-                      locationTypeId={
-                        location.locationTypeId
-                          ? Number(location.locationTypeId)
-                          : undefined
-                      }
                       onChange={(lat, lng) => {
                         const latStr = lat.toFixed(6)
                         const lngStr = lng.toFixed(6)
