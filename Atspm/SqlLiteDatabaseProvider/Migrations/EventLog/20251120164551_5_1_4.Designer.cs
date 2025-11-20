@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Utah.Udot.Atspm.Data;
 
@@ -10,9 +11,11 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations.EventLog
 {
     [DbContext(typeof(EventLogContext))]
-    partial class EventLogContextModelSnapshot : ModelSnapshot
+    [Migration("20251120164551_5_1_4")]
+    partial class _5_1_4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");

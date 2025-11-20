@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         #region IAggregationRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end, Type dataType)
+        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType)
         {
             return GetList()
                 .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
@@ -38,7 +38,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : AggregationModelBase
+        public IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase
         {
             var type = typeof(T);
 
@@ -50,7 +50,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end)
+        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end)
         {
             return GetList()
                 .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))

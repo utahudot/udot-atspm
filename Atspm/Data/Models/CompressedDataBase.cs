@@ -39,11 +39,6 @@ namespace Utah.Udot.Atspm.Data.Models
         public Type DataType { get; set; }
 
         /// <summary>
-        /// Day the data is compressed into
-        /// </summary>
-        public DateOnly ArchiveDate { get; set; }
-
-        /// <summary>
         /// Compressed data, ovverride or use <c>new</c> in derrived class for specific type
         /// </summary>
         public virtual IEnumerable<ILocationLayer> Data

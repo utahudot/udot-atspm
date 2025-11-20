@@ -54,6 +54,5 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             return Task.FromResult(result);
         }
-
     }
 }

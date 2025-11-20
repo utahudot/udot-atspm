@@ -190,7 +190,7 @@ namespace DatabaseInstaller.Services
                                     {
                                         LocationIdentifier = location.LocationIdentifier,
                                         DeviceId = device.Id,
-                                        ArchiveDate = DateOnly.FromDateTime(start),
+                                        //ArchiveDate = DateOnly.FromDateTime(start),
                                         Start = start,
                                         End = end,
                                         Data = eventLogs

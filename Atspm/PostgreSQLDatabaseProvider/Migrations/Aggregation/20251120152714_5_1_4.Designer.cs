@@ -2,45 +2,48 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Oracle.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations.Aggregation
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    partial class AggregationContextModelSnapshot : ModelSnapshot
+    [Migration("20251120152714_5_1_4")]
+    partial class _5_1_4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.CompressedAggregationBase", b =>
                 {
                     b.Property<string>("LocationIdentifier")
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("DataType")
                         .HasMaxLength(32)
-                        .HasColumnType("NVARCHAR2(32)");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<DateTime>("End")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<byte[]>("Data")
-                        .HasColumnType("RAW(2000)");
+                        .HasColumnType("bytea");
 
                     b.HasKey("LocationIdentifier", "DataType", "Start", "End");
 

@@ -75,7 +75,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
-            var result = _repository.GetArchivedAggregations(locationIdentifier, start, end);
+            //HACK: change start/end params to DateTime
+            var result = _repository.GetArchivedAggregations(locationIdentifier, start.ToDateTime(TimeOnly.MinValue), end.ToDateTime(TimeOnly.MinValue));
 
             if (result.Count == 0)
                 return NotFound();
@@ -117,7 +118,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 return BadRequest("Invalid data type");
             }
 
-            var result = _repository.GetArchivedAggregations(locationIdentifier, start, end, type);
+            //HACK: change start/end params to DateTime
+            var result = _repository.GetArchivedAggregations(locationIdentifier, start.ToDateTime(TimeOnly.MinValue), end.ToDateTime(TimeOnly.MinValue), type);
 
             if (result.Count == 0)
                 return NotFound();

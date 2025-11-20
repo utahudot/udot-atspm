@@ -260,7 +260,7 @@ namespace DatabaseInstaller.Services
             return new CompressedEventLogs<IndianaEvent>
             {
                 LocationIdentifier = location.LocationIdentifier,
-                ArchiveDate = archiveDate,
+                //ArchiveDate = archiveDate,
                 Start = hourStart,
                 End = hourEnd,
                 Data = indianaEvents,
