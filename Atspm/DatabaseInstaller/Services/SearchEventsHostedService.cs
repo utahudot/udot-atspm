@@ -13,6 +13,7 @@ using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace DatabaseInstaller.Services;
 
@@ -22,19 +23,21 @@ public sealed class SearchEventsHostedService : IHostedService
     private readonly IHostApplicationLifetime _lifetime;
     private readonly TransferCommandConfiguration _config;
     private readonly IServiceScopeFactory _scopeFactory;
-
+    private readonly ILocationRepository _locationRepository;
     private readonly ConcurrentBag<IndianaEvent> _eventLogs = new();
 
     public SearchEventsHostedService(
         IOptions<TransferCommandConfiguration> config,
         ILogger<SearchEventsHostedService> logger,
         IHostApplicationLifetime lifetime,
-        IServiceScopeFactory scopeFactory)
+        IServiceScopeFactory scopeFactory, 
+        ILocationRepository locationRepository)
     {
         _config = config.Value;
         _logger = logger;
         _lifetime = lifetime;
         _scopeFactory = scopeFactory;
+        _locationRepository = locationRepository;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -52,16 +55,21 @@ public sealed class SearchEventsHostedService : IHostedService
 
             // Parse optional filters
             var eventCodes = ParseEventCodes(_config.EventCodes);
-            var locations = ParseList(_config.Locations);
-
+            var locations = new List<string>();
             if (locations.Count == 0)
             {
-                _logger.LogWarning("No locations provided. Set Locations in configuration (comma-separated).");
-                return;
+                locations = _locationRepository.GetLatestVersionOfAllLocations().Select(l => l.LocationIdentifier)
+                    .ToList();
+                //_logger.LogWarning("No locations provided. Set Locations in configuration (comma-separated).");
+                //return;
+            }
+            else
+            {
+                locations = ParseList(_config.Locations);
             }
 
-            _logger.LogInformation("Searching events between {Start} and {End} for {Count} locations{CodesHint}.",
-                start, end, locations.Count, eventCodes.Count > 0 ? $" and {eventCodes.Count} event codes" : string.Empty);
+                _logger.LogInformation("Searching events between {Start} and {End} for {Count} locations{CodesHint}.",
+                    start, end, locations.Count, eventCodes.Count > 0 ? $" and {eventCodes.Count} event codes" : string.Empty);
 
             // Bounded concurrency
             const int maxDegreeOfParallelism = 6;
