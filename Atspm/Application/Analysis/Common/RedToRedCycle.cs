@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System.Text.Json;
 using Utah.Udot.Atspm.Data.Interfaces;
 
 namespace Utah.Udot.Atspm.Analysis.Common
@@ -50,15 +49,9 @@ namespace Utah.Udot.Atspm.Analysis.Common
 
         #endregion
 
-
         public IntervalSpan GreenInterval { get; set; }
         public IntervalSpan RedInterval { get; set; }
         public IntervalSpan YellowInterval { get; set; }
-
-        //public abstract TimeSpan TotalGreenTime { get; }
-        //public abstract TimeSpan TotalYellowTime { get; }
-        //public abstract TimeSpan TotalRedTime { get; }
-        //public abstract TimeSpan TotalTime { get; }
 
         public override string ToString()
         {
@@ -75,25 +68,13 @@ namespace Utah.Udot.Atspm.Analysis.Common
         /// <inheritdoc/>
         [Obsolete]
         public DateTime YellowEvent { get; set; }
-
-        //public override TimeSpan TotalGreenTime => YellowEvent - GreenEvent;
-        //public override TimeSpan TotalYellowTime => End - YellowEvent;
-        //public override TimeSpan TotalRedTime => GreenEvent - Start;
-        //public override TimeSpan TotalTime => End - Start;
     }
 
     public class GreenToGreenCycle : CycleBase
     {
-        //public DateTime RedEvent { get; set; }
-
-        //public DateTime YellowEvent { get; set; }
-
-        //public override TimeSpan TotalGreenTime => YellowEvent - Start;
-        //public override TimeSpan TotalYellowTime => RedEvent - YellowEvent;
-        //public override TimeSpan TotalRedTime => End - RedEvent;
-        //public override TimeSpan TotalTime => End - Start;
     }
 
+    //HACK: the span needs to be added to StartEndRange
     public class IntervalSpan : StartEndRange
     {
         public TimeSpan Span => End - Start;
