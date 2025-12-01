@@ -112,6 +112,40 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
+    public class AggregatePhaseCyclesWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PhaseCycleAggregation>(options)
+    {
+        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; private set; }
+        public FilterPhaseIntervalChangeDateProcessStep FilterPhaseIntervalChangeDateProcessStep { get; private set; }
+        public AggregatePhaseCyclesStep AggregatePhaseCyclesStep { get; private set; }
+
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(FilterIndianaEvents);
+            Steps.Add(FilterPhaseIntervalChangeDateProcessStep);
+            Steps.Add(AggregatePhaseCyclesStep);
+        }
+
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            FilterIndianaEvents = new(executionBlockOptions);
+            FilterPhaseIntervalChangeDateProcessStep = new(blockOptions);
+            AggregatePhaseCyclesStep = new(workflowOptions.Timeline, executionBlockOptions);
+        }
+
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            FilterIndianaEvents.LinkTo(FilterPhaseIntervalChangeDateProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterPhaseIntervalChangeDateProcessStep.LinkTo(AggregatePhaseCyclesStep, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            AggregatePhaseCyclesStep.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
+
 
 
 
