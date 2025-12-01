@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using System.Linq;
 using Utah.Udot.Atspm.Analysis.PedestrianDelay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -76,8 +77,6 @@ namespace Utah.Udot.Atspm.Extensions
 
         public static IReadOnlyList<GreenToGreenCycle> IdentifyGreenToGreenCycles(this IEnumerable<IndianaEvent> events)
         {
-            var filter = events.FromSpecification(new IndianaPhaseIntervalChangesDataSpecification()).ToList();
-
             var expectedSequence = new List<short>()
             {
                 (short)IndianaEnumerations.PhaseBeginGreen,
@@ -85,74 +84,69 @@ namespace Utah.Udot.Atspm.Extensions
                 (short)IndianaEnumerations.PhaseEndYellowChange,
                 (short)IndianaEnumerations.PhaseBeginGreen,};
 
-            var result = filter.GroupBy(g => (g.LocationIdentifier, PhaseNumber: g.EventParam))
-                .SelectMany(group =>
-                {
-                    var sequence = group
-                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
-                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
-                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
-                    .SlidingWindow(4)
-                    .Where(window => window.Select(e => e.EventCode)
-                    .SequenceEqual(expectedSequence))
-                    .Select(window => new GreenToGreenCycle
-                    {
-                        LocationIdentifier = group.Key.LocationIdentifier,
-                        PhaseNumber = group.Key.PhaseNumber,
-                        Start = window[0].Timestamp,
-                        //YellowEvent = window[1].Timestamp,
-                        //RedEvent = window[2].Timestamp,
-                        End = window[3].Timestamp,
-                        GreenInterval = new IntervalSpan() { Start = window[0].Timestamp, End = window[1].Timestamp },
-                        YellowInterval = new IntervalSpan() { Start = window[1].Timestamp, End = window[2].Timestamp },
-                        RedInterval = new IntervalSpan() { Start = window[2].Timestamp, End = window[3].Timestamp },
-                    });
-
-                    return sequence;
-                }).ToList();
-
-            return result;
+            return events.IdentifyPhaseCycles<GreenToGreenCycle>(expectedSequence);
         }
 
         public static IReadOnlyList<RedToRedCycle> IdentifyRedToRedCycles(this IEnumerable<IndianaEvent> events)
         {
-            var filter = events.FromSpecification(new IndianaPhaseIntervalChangesDataSpecification()).ToList();
-
             var expectedSequence = new List<short>()
             {
                 (short)IndianaEnumerations.PhaseEndYellowChange, 
                 (short)IndianaEnumerations.PhaseBeginGreen, 
                 (short)IndianaEnumerations.PhaseBeginYellowChange, 
-                (short)IndianaEnumerations.PhaseEndYellowChange }; 
-            
-            var result = filter.GroupBy(g => (g.LocationIdentifier, PhaseNumber: g.EventParam))
-                .SelectMany(group => 
-                { 
-                    var sequence = group
-                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
-                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
-                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
-                    .SlidingWindow(4)
-                    .Where(window => window.Select(e => e.EventCode)
-                    .SequenceEqual(expectedSequence))
-                    .Select(window => new RedToRedCycle
-                    {
-                        LocationIdentifier = group.Key.LocationIdentifier,
-                        PhaseNumber = group.Key.PhaseNumber,
-                        Start = window[0].Timestamp,
-                        //GreenEvent = window[1].Timestamp,
-                        //YellowEvent = window[2].Timestamp,
-                        End = window[3].Timestamp,
-                        GreenInterval = new IntervalSpan() { Start = window[1].Timestamp, End = window[2].Timestamp },
-                        YellowInterval = new IntervalSpan() { Start = window[2].Timestamp, End = window[3].Timestamp },
-                        RedInterval = new IntervalSpan() { Start = window[0].Timestamp, End = window[1].Timestamp },
-                    });
+                (short)IndianaEnumerations.PhaseEndYellowChange };
 
-                    return sequence; 
-                }).ToList(); 
-            
-            return result;
+            return events.IdentifyPhaseCycles<RedToRedCycle>(expectedSequence);
         }
+
+        public static IReadOnlyList<T> IdentifyPhaseCycles<T>(this IEnumerable<IndianaEvent> events, IEnumerable<short> cycleSequence) where T : CycleBase, new()
+        {
+            var filtered = events
+                .FromSpecification(new IndianaPhaseIntervalChangesDataSpecification());
+
+            return filtered
+                .GroupBy(e => (e.LocationIdentifier, PhaseNumber: e.EventParam))
+                .SelectMany(group =>
+                {
+                    var windows = group
+                        .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
+                        .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
+                        .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
+                        .SlidingWindow(cycleSequence.Count())
+                        .Where(window => window.Select(e => e.EventCode).SequenceEqual(cycleSequence));
+
+                    return windows.Select(window =>
+                    {
+                        var pairs = window.SlidingWindow(2);
+
+                        var greenPair = pairs.FirstOrDefault(p =>
+                            p[0].EventCode == (short)IndianaEnumerations.PhaseBeginGreen &&
+                            p[1].EventCode == (short)IndianaEnumerations.PhaseBeginYellowChange);
+
+                        var yellowPair = pairs.FirstOrDefault(p =>
+                            p[0].EventCode == (short)IndianaEnumerations.PhaseBeginYellowChange &&
+                            p[1].EventCode == (short)IndianaEnumerations.PhaseEndYellowChange);
+
+                        var redPair = pairs.FirstOrDefault(p =>
+                            p[0].EventCode == (short)IndianaEnumerations.PhaseEndYellowChange &&
+                            p[1].EventCode == (short)IndianaEnumerations.PhaseBeginGreen);
+
+                        return new T
+                        {
+                            LocationIdentifier = group.Key.LocationIdentifier,
+                            PhaseNumber = group.Key.PhaseNumber,
+                            Start = window[0].Timestamp,
+                            End = window[cycleSequence.Count() - 1].Timestamp,
+                            GreenInterval = greenPair != null ? new IntervalSpan { Start = greenPair[0].Timestamp, End = greenPair[1].Timestamp } : null,
+                            YellowInterval = yellowPair != null ? new IntervalSpan { Start = yellowPair[0].Timestamp, End = yellowPair[1].Timestamp } : null,
+                            RedInterval = redPair != null ? new IntervalSpan { Start = redPair[0].Timestamp, End = redPair[1].Timestamp } : null
+                        };
+                    });
+                })
+                .ToList();
+        }
+
+
 
         /// <summary>
         /// Counts the number of imputed pedestrian calls within the specified range.

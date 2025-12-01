@@ -136,112 +136,29 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(AggregateDetectorEventsStep), "From File")]
         public async Task AggregatePhaseCyclesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PhaseCycleAggregation> output)
         {
-            //var testData = Tuple.Create(config, input);
+            var testData = Tuple.Create(config, input);
 
-            var phaseNumber = 2;
-
-            // Pre-filter cycles and intervals for the target phase
-            var redCycles = input.IdentifyRedToRedCycles().Where(w => w.LocationIdentifier == "7115" && w.PhaseNumber == phaseNumber).ToList();
-            var greenCycles = input.IdentifyGreenToGreenCycles().Where(w => w.LocationIdentifier == "7115" && w.PhaseNumber == phaseNumber).ToList();
-
-            _output.WriteLine($"red cycles: {redCycles.Count}");
-            _output.WriteLine($"green cycles: {greenCycles.Count}");
-
-            // Find the most common timestamp (aggregation date)
             var aggDate = input
                 .GroupBy(dt => dt.Timestamp)
                 .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
-                .FirstOrDefault();
+                .FirstOrDefault().Key;
 
-            // Build interval spans in a single pass
-            //var dur = input
-            //    .FromSpecification(new IndianaPhaseIntervalChangesDataSpecification())
-            //    .Where(w => w.EventParam == phaseNumber)
-            //    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
-            //    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
-            //    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
-            //    .SlidingWindow(2)
-            //    .Select(chunk =>
-            //    {
-            //        var codes = chunk.Select(s => s.EventCode).ToArray();
-            //        return codes switch
-            //        {
-            //            [var a, var b] when a == (short)IndianaEnumerations.PhaseBeginGreen && b == (short)IndianaEnumerations.PhaseBeginYellowChange
-            //                => (IntervalSpan)new GreenInterval { Start = chunk[0].Timestamp, End = chunk[1].Timestamp },
-            //            [var a, var b] when a == (short)IndianaEnumerations.PhaseEndYellowChange && b == (short)IndianaEnumerations.PhaseBeginGreen
-            //                => (IntervalSpan)new RedInterval { Start = chunk[0].Timestamp, End = chunk[1].Timestamp },
-            //            [var a, var b] when a == (short)IndianaEnumerations.PhaseBeginYellowChange && b == (short)IndianaEnumerations.PhaseEndYellowChange
-            //                => (IntervalSpan)new YellowInterval { Start = chunk[0].Timestamp, End = chunk[1].Timestamp },
-            //            _ => null,
-            //        };
-            //    })
-            //    .Where(x => x != null)
-            //    .ToList();
+            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
-            // Group cycles by phase number
-            var cyclesGroup = redCycles.Concat<CycleBase>(greenCycles)
-                .GroupBy(g => (g.LocationIdentifier, g.PhaseNumber))
-                .OrderBy(o => o.Key);
+            var sut = new AggregatePhaseCyclesStep(tl);
 
-            //foreach (var stuff in cyclesGroup.SelectMany(m => m).OrderBy(o => o.Start))
-            //{
-            //    _output.WriteLine($"{stuff}");
-            //}
+            var actual = await sut.ExecuteAsync(testData);
 
-            foreach (var group in cyclesGroup)
+            _output.WriteLine($"actual: {actual.Count()}");
+
+            foreach (var a in actual.Where(w => w.PhaseNumber == 2))
             {
-                var tl = aggDate.CreateTimeline<PhaseCycleAggregation>(TimeSpan.FromMinutes(15));
-
-                foreach (var f in tl.Segments)
-                {
-                    f.LocationIdentifier = group.Key.LocationIdentifier;
-                    f.PhaseNumber = group.Key.PhaseNumber;
-                    f.TotalRedToRedCycles = group.OfType<RedToRedCycle>().Count(c => f.InRange(c.Start));
-                    f.TotalGreenToGreenCycles = group.OfType<GreenToGreenCycle>().Count(c => f.InRange(c.Start));
-
-                    // Fix for CS0029 and CS1662 errors
-                    //var compare = ;
-                    var r = group.Select(s => s.RedInterval).Distinct(new LambdaEqualityComparer<IntervalSpan>((a, b) => a.Start == b.Start && a.End == b.End)).ToList();
-                    var y = group.Select(s => s.YellowInterval).Distinct(new LambdaEqualityComparer<IntervalSpan>((a, b) => a.Start == b.Start && a.End == b.End)).ToList();
-                    var g = group.Select(s => s.GreenInterval).Distinct(new LambdaEqualityComparer<IntervalSpan>((a, b) => a.Start == b.Start && a.End == b.End)).ToList();
-
-                    //foreach (var stuff in g.OrderBy(o => o.Start))
-                    //{
-                    //    _output.WriteLine($"{stuff}");
-                    //}
-
-
-                    f.RedTime = (int)Math.Round(r.Where(w => f.InRange(w.Start)).Sum(s => s.Span.TotalSeconds), MidpointRounding.AwayFromZero);
-                    f.YellowTime = (int)Math.Round(y.Where(w => f.InRange(w.Start)).Sum(s => s.Span.TotalSeconds), MidpointRounding.AwayFromZero);
-                    f.GreenTime = (int)Math.Round(g.Where(w => f.InRange(w.Start)).Sum(s => s.Span.TotalSeconds), MidpointRounding.AwayFromZero);
-
-
-                    _output.WriteLine($"cycle: {f}");
-                }
+                _output.WriteLine($"{a}");
             }
 
+            var expected = output;
 
-
-
-
-
-            //var sut = new AggregateDetectorEventsStep(tl);
-
-            //var actual = await sut.ExecuteAsync(testData);
-
-            //_output.WriteLine($"actual count: {actual.Count()}");
-
-            //foreach (var a in actual)
-            //{
-            //    _output.WriteLine($"actual: {a}");
-            //}
-
-            //_output.WriteLine($"actual: {actual.Count()}");
-
-            //var expected = output;
-
-            //_output.WriteLine($"expected: {expected.Count()}");
+            _output.WriteLine($"expected: {expected.Count()}");
 
             //Assert.Equivalent(actual, expected);
         }
