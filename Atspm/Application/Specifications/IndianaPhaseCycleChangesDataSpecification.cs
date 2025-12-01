@@ -24,25 +24,21 @@ namespace Utah.Udot.Atspm.Specifications
     /// <summary>
     /// Filters <see cref="IEnumerable{IndianaEvent}"/> by:
     /// <list type="bullet">
-    /// <item><see cref="IndianaEnumerations.PhaseOn"/></item>
     /// <item><see cref="IndianaEnumerations.PhaseBeginGreen"/></item>
     /// <item><see cref="IndianaEnumerations.PhaseBeginYellowChange"/></item>
     /// <item><see cref="IndianaEnumerations.PhaseEndYellowChange"/></item>
-    /// <item><see cref="IndianaEnumerations.PhaseEndRedClearance"/></item>
     /// </list>
     /// </summary>
-    public class IndianaPhaseIntervalChangesDataSpecification : BaseSpecification<IndianaEvent>
+    public class IndianaPhaseCycleChangesDataSpecification : BaseSpecification<IndianaEvent>
     {
         /// <inheritdoc cref="IndianaPhaseIntervalChangesDataSpecification"/>
-        public IndianaPhaseIntervalChangesDataSpecification()
+        public IndianaPhaseCycleChangesDataSpecification()
         {
             var codes = new HashSet<short>()
             {
-                (short)IndianaEnumerations.PhaseOn,
                 (short)IndianaEnumerations.PhaseBeginGreen,
                 (short)IndianaEnumerations.PhaseBeginYellowChange,
                 (short)IndianaEnumerations.PhaseEndYellowChange,
-                (short)IndianaEnumerations.PhaseEndRedClearance,
             };
 
             Criteria = c => codes.Contains(c.EventCode);

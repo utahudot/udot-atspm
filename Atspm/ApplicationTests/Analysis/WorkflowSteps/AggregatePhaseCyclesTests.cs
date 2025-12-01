@@ -15,29 +15,20 @@
 // limitations under the License.
 #endregion
 
-using Lextm.SharpSnmpLib;
-using MailKit.Search;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Utah.Udot.Atspm.Analysis.Common;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Attributes;
 using Utah.Udot.Atspm.ApplicationTests.Fixtures;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
-using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Common;
-using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -58,9 +49,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         public async Task Stuff()
         {
             {
-                //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\Location7115TestData.json").FullName);
-                //var Location = JsonConvert.DeserializeObject<Location>(json);
-
                 var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\TempPhaseCycleTestData.csv");
 
                 var logs = File.ReadAllLines(file1.FullName)
@@ -74,53 +62,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                            EventParam = short.Parse(x[3])
                        }).ToList();
 
-                //logs = logs
-                //    .Where(w => w.EventCode == 0 || w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90 || w.EventCode == 45 || w.EventCode == 67 || w.EventCode == 68)
-                //    .Where(w => w.EventParam == 2)
-                //    .OrderBy(o => o.Timestamp)
-                //    .ToList();
-
-                //_testLocation.Approaches = _testLocation.Approaches.Where(w => w.ProtectedPhaseNumber == 2).ToList();
-
-                //var file2 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\pedaggresultdata.csv");
-
-                //var output = File.ReadAllLines(file2.FullName)
-                //       .Skip(1)
-                //       .Select(x => x.Split(','))
-                //       .Select(x => new PhasePedAggregation
-                //       {
-                //           LocationIdentifier = x[0],
-                //           PhaseNumber = int.Parse(x[1]),
-                //           Start = DateTime.Parse(x[2]),
-                //           End = DateTime.Parse(x[2]).AddMinutes(15),
-                //           PedCycles = int.Parse(x[3]),
-                //           PedDelay = double.Parse(x[4]),
-                //           MinPedDelay = double.Parse(x[5]),
-                //           MaxPedDelay = double.Parse(x[6]),
-                //           PedRequests = int.Parse(x[7]),
-                //           ImputedPedCallsRegistered = int.Parse(x[8]),
-                //           UniquePedDetections = int.Parse(x[9]),
-                //           PedBeginWalkCount = int.Parse(x[10]),
-                //           PedCallsRegisteredCount = int.Parse(x[11])
-
-                //       }).ToList();
-
-                //_output.WriteLine($"{output.Count}");
-
-                //foreach (var o in output)
-                //{
-                //    _output.WriteLine($"{o}");
-                //}
-
-                var output = new List<PhaseCycleAggregation>();
-
                 var result = new AggregatePhaseCycleTestData()
                 {
                     Configuration = _testLocation,
                     Input = logs,
-                    Output = output
+                    Output = new List<PhaseCycleAggregation>()
                 };
-
 
                 var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
                 {
@@ -160,7 +107,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"expected: {expected.Count()}");
 
-            //Assert.Equivalent(actual, expected);
+            Assert.Equivalent(actual, expected);
         }
 
         public void Dispose()

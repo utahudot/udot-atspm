@@ -102,7 +102,7 @@ namespace Utah.Udot.Atspm.Extensions
         public static IReadOnlyList<T> IdentifyPhaseCycles<T>(this IEnumerable<IndianaEvent> events, IEnumerable<short> cycleSequence) where T : CycleBase, new()
         {
             var filtered = events
-                .FromSpecification(new IndianaPhaseIntervalChangesDataSpecification());
+                .FromSpecification(new IndianaPhaseCycleChangesDataSpecification());
 
             return filtered
                 .GroupBy(e => (e.LocationIdentifier, PhaseNumber: e.EventParam))
