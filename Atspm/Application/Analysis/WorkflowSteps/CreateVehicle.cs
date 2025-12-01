@@ -25,14 +25,16 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
         protected override Task<Tuple<Approach, IEnumerable<Vehicle>>> Process(Tuple<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item2.Item2?.GroupJoin(input.Item1.Item2,
-                o => new { o.LocationIdentifier, o.PhaseNumber },
-                i => new { i.LocationIdentifier, i.PhaseNumber },
-                (o, i) => i.Where(w => o.InRange(w.Timestamp))
-                .Select(s => new Vehicle(s, o)))
-                .SelectMany(m => m);
+            //var result = input.Item2.Item2?.GroupJoin(input.Item1.Item2,
+            //    o => new { o.LocationIdentifier, o.PhaseNumber },
+            //    i => new { i.LocationIdentifier, i.PhaseNumber },
+            //    (o, i) => i.Where(w => o.InRange(w.Timestamp))
+            //    .Select(s => new Vehicle(s, o)))
+            //    .SelectMany(m => m);
 
-            return Task.FromResult(Tuple.Create(input.Item1.Item1, result));
+            //return Task.FromResult(Tuple.Create(input.Item1.Item1, result));
+
+            throw new NotImplementedException();
         }
     }
 }

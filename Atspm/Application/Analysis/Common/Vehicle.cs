@@ -90,7 +90,7 @@ namespace Utah.Udot.Atspm.Analysis.Common
             }
         }
 
-        public IRedToRedCycle RedToRedCycle { get; set; } = new RedToRedCycle();
+        public IRedToRedCycle RedToRedCycle { get; set; } //= new RedToRedCycle();
 
         #endregion
 

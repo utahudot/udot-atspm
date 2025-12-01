@@ -38,20 +38,8 @@ namespace Utah.Udot.Atspm.Analysis.Common
         DateTime YellowEvent { get; set; }
     }
 
-    /// <summary>
-    /// A cycle which is the time between two <see cref="9"/> events including
-    /// <see cref="1"/> and <see cref="8"/>
-    /// </summary>
-    public class RedToRedCycle : StartEndRange, IRedToRedCycle
+    public abstract class CycleBase : StartEndRange, ILocationPhaseLayer
     {
-        #region IRedToRedCycle
-
-        /// <inheritdoc/>
-        public DateTime GreenEvent { get; set; }
-
-        /// <inheritdoc/>
-        public DateTime YellowEvent { get; set; }
-
         #region ILocationPhaseLayer
 
         /// <inheritdoc/>
@@ -62,28 +50,57 @@ namespace Utah.Udot.Atspm.Analysis.Common
 
         #endregion
 
-        #region ICycle
 
-        /// <inheritdoc/>
-        public double TotalGreenTime => (YellowEvent - GreenEvent).TotalSeconds;
+        public IntervalSpan GreenInterval { get; set; }
+        public IntervalSpan RedInterval { get; set; }
+        public IntervalSpan YellowInterval { get; set; }
 
-        /// <inheritdoc/>
-        public double TotalYellowTime => (End - YellowEvent).TotalSeconds;
+        //public abstract TimeSpan TotalGreenTime { get; }
+        //public abstract TimeSpan TotalYellowTime { get; }
+        //public abstract TimeSpan TotalRedTime { get; }
+        //public abstract TimeSpan TotalTime { get; }
 
-        /// <inheritdoc/>
-        public double TotalRedTime => (GreenEvent - Start).TotalSeconds;
-
-        /// <inheritdoc/>
-        public double TotalTime => (End - Start).TotalSeconds;
-
-        #endregion
-
-        #endregion
-
-        /// <inheritdoc/>
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this);
+            return $"{GetType().Name}: {LocationIdentifier}|{PhaseNumber} {Start} - {RedInterval.Span.TotalSeconds} - {YellowInterval.Span.TotalSeconds} - {GreenInterval.Span.TotalSeconds}";
+        }
+    }
+
+    public class RedToRedCycle : CycleBase
+    {
+        /// <inheritdoc/>
+        [Obsolete]
+        public DateTime GreenEvent { get; set; }
+
+        /// <inheritdoc/>
+        [Obsolete]
+        public DateTime YellowEvent { get; set; }
+
+        //public override TimeSpan TotalGreenTime => YellowEvent - GreenEvent;
+        //public override TimeSpan TotalYellowTime => End - YellowEvent;
+        //public override TimeSpan TotalRedTime => GreenEvent - Start;
+        //public override TimeSpan TotalTime => End - Start;
+    }
+
+    public class GreenToGreenCycle : CycleBase
+    {
+        //public DateTime RedEvent { get; set; }
+
+        //public DateTime YellowEvent { get; set; }
+
+        //public override TimeSpan TotalGreenTime => YellowEvent - Start;
+        //public override TimeSpan TotalYellowTime => RedEvent - YellowEvent;
+        //public override TimeSpan TotalRedTime => End - RedEvent;
+        //public override TimeSpan TotalTime => End - Start;
+    }
+
+    public class IntervalSpan : StartEndRange
+    {
+        public TimeSpan Span => End - Start;
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}: {Start:HH:mm:ss.f} - {Span.TotalSeconds} - {End:HH:mm:ss.f}";
         }
     }
 }

@@ -317,7 +317,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Timestamp = DateTime.Parse("4/17/2023 8:01:00"),
                 DetectorChannel = 2,
-                RedToRedCycle = testCycle
+                //RedToRedCycle = testCycle
             };
             var actual = result.Item2.First();
 

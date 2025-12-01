@@ -23,6 +23,8 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Extensions
             };
         }
 
+        #region IdentifyRedToRedCycles
+
         [Fact]
         public void ReturnsEmptyList_WhenNoEventsMatchSpecification()
         {
@@ -148,5 +150,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Extensions
             Assert.Equal(now.AddSeconds(2), cycle.YellowEvent);
             Assert.Equal(now.AddSeconds(3), cycle.End);
         }
+
+        #endregion
     }
 }

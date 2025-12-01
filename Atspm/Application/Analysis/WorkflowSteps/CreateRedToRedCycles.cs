@@ -87,8 +87,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 {
                     Start = m.ElementAt(0).Timestamp,
                     End = m.ElementAt(3).Timestamp,
-                    GreenEvent = m.ElementAt(1).Timestamp,
-                    YellowEvent = m.ElementAt(2).Timestamp,
+                    //GreenEvent = m.ElementAt(1).Timestamp,
+                    //YellowEvent = m.ElementAt(2).Timestamp,
                     PhaseNumber = p,
                     LocationIdentifier = s
                 }))

@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Specifications
                 (short)IndianaEnumerations.PhaseBeginGreen,
                 (short)IndianaEnumerations.PhaseBeginYellowChange,
                 (short)IndianaEnumerations.PhaseEndYellowChange,
-                (short)IndianaEnumerations.PhaseEndRedClearance,
+                //(short)IndianaEnumerations.PhaseEndRedClearance,
             };
 
             Criteria = c => codes.Contains(c.EventCode);

@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.Analysis.Common
     /// </summary>
     public class CycleArrivals : StartEndRange, ICycleArrivals, ILocationPhaseLayer
     {
-        private readonly ICycleTotal _cycle = new RedToRedCycle();
+        private readonly ICycleTotal _cycle; //= new RedToRedCycle();
 
         public CycleArrivals() { }
 

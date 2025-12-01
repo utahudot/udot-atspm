@@ -74,6 +74,46 @@ namespace Utah.Udot.Atspm.Extensions
             return events.ToLookup(e => e.EventParam);
         }
 
+        public static IReadOnlyList<GreenToGreenCycle> IdentifyGreenToGreenCycles(this IEnumerable<IndianaEvent> events)
+        {
+            var filter = events.FromSpecification(new IndianaPhaseIntervalChangesDataSpecification()).ToList();
+
+            var expectedSequence = new List<short>()
+            {
+                (short)IndianaEnumerations.PhaseBeginGreen,
+                (short)IndianaEnumerations.PhaseBeginYellowChange,
+                (short)IndianaEnumerations.PhaseEndYellowChange,
+                (short)IndianaEnumerations.PhaseBeginGreen,};
+
+            var result = filter.GroupBy(g => (g.LocationIdentifier, PhaseNumber: g.EventParam))
+                .SelectMany(group =>
+                {
+                    var sequence = group
+                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
+                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
+                    .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
+                    .SlidingWindow(4)
+                    .Where(window => window.Select(e => e.EventCode)
+                    .SequenceEqual(expectedSequence))
+                    .Select(window => new GreenToGreenCycle
+                    {
+                        LocationIdentifier = group.Key.LocationIdentifier,
+                        PhaseNumber = group.Key.PhaseNumber,
+                        Start = window[0].Timestamp,
+                        //YellowEvent = window[1].Timestamp,
+                        //RedEvent = window[2].Timestamp,
+                        End = window[3].Timestamp,
+                        GreenInterval = new IntervalSpan() { Start = window[0].Timestamp, End = window[1].Timestamp },
+                        YellowInterval = new IntervalSpan() { Start = window[1].Timestamp, End = window[2].Timestamp },
+                        RedInterval = new IntervalSpan() { Start = window[2].Timestamp, End = window[3].Timestamp },
+                    });
+
+                    return sequence;
+                }).ToList();
+
+            return result;
+        }
+
         public static IReadOnlyList<RedToRedCycle> IdentifyRedToRedCycles(this IEnumerable<IndianaEvent> events)
         {
             var filter = events.FromSpecification(new IndianaPhaseIntervalChangesDataSpecification()).ToList();
@@ -95,15 +135,18 @@ namespace Utah.Udot.Atspm.Extensions
                     .SlidingWindow(4)
                     .Where(window => window.Select(e => e.EventCode)
                     .SequenceEqual(expectedSequence))
-                    .Select(window => new RedToRedCycle 
-                    { 
-                        LocationIdentifier = group.Key.LocationIdentifier, 
-                        PhaseNumber = group.Key.PhaseNumber, 
-                        Start = window[0].Timestamp, 
-                        GreenEvent = window[1].Timestamp, 
-                        YellowEvent = window[2].Timestamp, 
-                        End = window[3].Timestamp 
-                    }); 
+                    .Select(window => new RedToRedCycle
+                    {
+                        LocationIdentifier = group.Key.LocationIdentifier,
+                        PhaseNumber = group.Key.PhaseNumber,
+                        Start = window[0].Timestamp,
+                        //GreenEvent = window[1].Timestamp,
+                        //YellowEvent = window[2].Timestamp,
+                        End = window[3].Timestamp,
+                        GreenInterval = new IntervalSpan() { Start = window[1].Timestamp, End = window[2].Timestamp },
+                        YellowInterval = new IntervalSpan() { Start = window[2].Timestamp, End = window[3].Timestamp },
+                        RedInterval = new IntervalSpan() { Start = window[0].Timestamp, End = window[1].Timestamp },
+                    });
 
                     return sequence; 
                 }).ToList(); 
@@ -303,11 +346,11 @@ namespace Utah.Udot.Atspm.Extensions
         /// A list of <see cref="IndianaEvent"/> with only the first event of each consecutive sequence
         /// of the specified event code included.
         /// </returns>
-        public static IList<IndianaEvent> KeepFirstSequentialEvent(this IEnumerable<IndianaEvent> events, IndianaEnumerations eventCode)
+        public static IEnumerable<IndianaEvent> KeepFirstSequentialEvent(this IEnumerable<IndianaEvent> events, IndianaEnumerations eventCode)
         {
             var sort = events.OrderBy(o => o.Timestamp).ToList();
 
-            return sort.Where((w, i) => i == 0 || w.EventCode != (int)eventCode || (w.EventCode == (int)eventCode && w.EventCode != sort[i - 1].EventCode)).ToList();
+            return sort.Where((w, i) => i == 0 || w.EventCode != (int)eventCode || (w.EventCode == (int)eventCode && w.EventCode != sort[i - 1].EventCode));
         }
 
         /// <summary>
