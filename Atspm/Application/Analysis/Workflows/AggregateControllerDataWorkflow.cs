@@ -15,195 +15,12 @@
 // limitations under the License.
 #endregion
 
-using System.Collections;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.Plans;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.Workflows
 {
-    public class AggregationWorkflowOptions
-    {
-        public Timeline<StartEndRange> Timeline { get; set; }
-        public int MaxDegreeOfParallelism { get; set; } = 1;
-        public CancellationToken CancellationToken { get; set; }
-    }
-
-    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<EventLogModelBase>>, IEnumerable<T>> where T : AggregationModelBase
-    {
-        protected AggregationWorkflowOptions workflowOptions;
-        protected ExecutionDataflowBlockOptions executionBlockOptions;
-
-        /// <inheritdoc/>
-        public AggregationWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken })
-        {
-            workflowOptions = options;
-            executionBlockOptions = new ExecutionDataflowBlockOptions()
-            {
-                CancellationToken = options.CancellationToken,
-                MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
-            };
-        }
-    }
-
-
-
-
-    
-
-
-
-
-
-
-    
-
-
-    public class FilterEventsByType<T>(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformProcessStepBase<Tuple<Location, IEnumerable<EventLogModelBase>>, Tuple<Location, IEnumerable<T>>>(dataflowBlockOptions) where T : EventLogModelBase
-    {
-        protected override Task<Tuple<Location, IEnumerable<T>>> Process(Tuple<Location, IEnumerable<EventLogModelBase>> input, CancellationToken cancelToken = default)
-        {
-            var location = input.Item1;
-            var events = input.Item2
-                .FromSpecification(new EventLogSpecification(location))
-                .Where(w => w.GetType() == typeof(T))
-                .Cast<T>()
-                .ToList()
-                .AsEnumerable();
-
-            return Task.FromResult(Tuple.Create(location, events));
-        }
-    }
-
-
-    public class AggregatePedestrianPhasesWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PhasePedAggregation>(options)
-    {
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; private set; }
-        public FilterPedDataProcessStep FilterPedDataProcessStep { get; private set; }
-        public AggregatePedestrianPhasesStep AggregatePedestrianPhases { get; private set; }
-
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            Steps.Add(FilterIndianaEvents);
-            Steps.Add(FilterPedDataProcessStep);
-            Steps.Add(AggregatePedestrianPhases);
-        }
-
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            FilterIndianaEvents = new(executionBlockOptions);
-            FilterPedDataProcessStep = new(blockOptions);
-            AggregatePedestrianPhases = new(workflowOptions.Timeline, executionBlockOptions);
-        }
-
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            FilterIndianaEvents.LinkTo(FilterPedDataProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilterPedDataProcessStep.LinkTo(AggregatePedestrianPhases, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            AggregatePedestrianPhases.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
-    public class AggregatePhaseCyclesWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PhaseCycleAggregation>(options)
-    {
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; private set; }
-        public FilterPhaseIntervalChangeDateProcessStep FilterPhaseIntervalChangeDateProcessStep { get; private set; }
-        public AggregatePhaseCyclesStep AggregatePhaseCyclesStep { get; private set; }
-
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            Steps.Add(FilterIndianaEvents);
-            Steps.Add(FilterPhaseIntervalChangeDateProcessStep);
-            Steps.Add(AggregatePhaseCyclesStep);
-        }
-
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            FilterIndianaEvents = new(executionBlockOptions);
-            FilterPhaseIntervalChangeDateProcessStep = new(blockOptions);
-            AggregatePhaseCyclesStep = new(workflowOptions.Timeline, executionBlockOptions);
-        }
-
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            FilterIndianaEvents.LinkTo(FilterPhaseIntervalChangeDateProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilterPhaseIntervalChangeDateProcessStep.LinkTo(AggregatePhaseCyclesStep, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            AggregatePhaseCyclesStep.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
-
-
-
-    /// <inheritdoc/>
-    public class AggregateDetectorEventCountWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<DetectorEventCountAggregation>(options)
-    {
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; private set; }
-        public FilterDetectorDataProcessStep FilterDetectorDataProcessStep { get; private set; }
-        public AggregateDetectorEventsStep AggregateDetectorEvents { get; private set; }
-
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            Steps.Add(FilterIndianaEvents);
-            Steps.Add(FilterDetectorDataProcessStep);
-            Steps.Add(AggregateDetectorEvents);
-        }
-
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            FilterIndianaEvents = new(executionBlockOptions);
-            FilterDetectorDataProcessStep = new(blockOptions);
-            AggregateDetectorEvents = new(workflowOptions.Timeline, executionBlockOptions);
-        }
-
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            FilterIndianaEvents.LinkTo(FilterDetectorDataProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilterDetectorDataProcessStep.LinkTo(AggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            AggregateDetectorEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class PhaseTerminationAggregationWorkflow : AggregationWorkflowBase<PhaseTerminationAggregation>
     {
         private readonly int _consecutiveCount;
@@ -214,7 +31,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             _consecutiveCount = consecutiveCount;
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
         public FilterTerminationsProcessStep FilteredTerminations { get; private set; }
         public GroupLocationsByApproaches GroupApproachesForTerminations { get; private set; }
         public GroupPhaseTerminationsByApproaches GroupApproachesByPhase { get; private set; }
@@ -264,7 +81,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
         public FilterPlanDataProcessStep FilteredPlanData { get; private set; }
         public GroupLocationByParameter GroupLocationPlans { get; private set; }
         public CalculateTimingPlans<Plan> CalculateTimingPlans { get; private set; }
@@ -311,7 +128,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
         public FilterPreemptionDataProcessStep FilteredPreemptionData { get; private set; }
         public GroupLocationByParameter GroupPreemptNumber { get; private set; }
         public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
@@ -354,7 +171,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
         public FilterPriorityDataProcessStep FilterPriorityData { get; private set; }
         public GroupLocationByParameter GroupPriorityNumber { get; private set; }
         public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }

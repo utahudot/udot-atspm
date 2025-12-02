@@ -19,12 +19,8 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class AggregatePhaseTerminationEvents : TransformProcessStepBase<Tuple<Approach, int, PhaseTerminations>, IEnumerable<PhaseTerminationAggregation>>
+    public class AggregatePhaseTerminationEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformProcessStepBase<Tuple<Approach, int, PhaseTerminations>, IEnumerable<PhaseTerminationAggregation>>(dataflowBlockOptions)
     {
-        /// <inheritdoc/>
-        public AggregatePhaseTerminationEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        /// <inheritdoc/>
         protected override Task<IEnumerable<PhaseTerminationAggregation>> Process(Tuple<Approach, int, PhaseTerminations> input, CancellationToken cancelToken = default)
         {
             var approach = input.Item1;

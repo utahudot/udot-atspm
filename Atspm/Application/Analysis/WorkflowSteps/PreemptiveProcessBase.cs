@@ -30,19 +30,6 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
         protected override Task<IEnumerable<T>> Process(Tuple<Location, IEnumerable<IndianaEvent>, int> input, CancellationToken cancelToken = default)
         {
-            //var result = Tuple.Create(input.Item1, input.Item2
-            //    .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
-            //    .Where(w => w.EventParam == input.Item3)
-            //    .TimeSpanFromConsecutiveCodes(first, second)
-            //    .Select(s => new T()
-            //    {
-            //        LocationIdentifier = input.Item1.LocationIdentifier,
-            //        PreemptNumber = input.Item3,
-            //        Start = s.Item1[0].Timestamp,
-            //        End = s.Item1[1].Timestamp,
-            //        Seconds = s.Item2
-            //    }), input.Item3);
-
             var result = input.Item2
                 .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
                 .Where(w => w.EventParam == input.Item3)
@@ -59,29 +46,4 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             return Task.FromResult(result);
         }
     }
-
-    //public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
-    //{
-    //    protected IndianaEnumerations first;
-    //    protected IndianaEnumerations second;
-
-    //    public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-    //    protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-    //    {
-    //        var result = input.GroupBy(g => g.LocationIdentifier)
-    //            .SelectMany(s => s.GroupBy(g => g.EventParam)
-    //            .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
-    //            .Select(s => new T()
-    //            {
-    //                LocationIdentifier = s.Item1[0].LocationIdentifier == s.Item1[1].LocationIdentifier ? s.Item1[0].LocationIdentifier : string.Empty,
-    //                PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
-    //                Start = s.Item1[0].Timestamp,
-    //                End = s.Item1[1].Timestamp,
-    //                Seconds = s.Item2
-    //            })));
-
-    //        return Task.FromResult(result);
-    //    }
-    //}
 }

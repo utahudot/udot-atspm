@@ -24,21 +24,61 @@ using Utah.Udot.NetStandardToolkit.Extensions;
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
     /// <summary>
-    /// Aggregates pedestrian phase data for a given <see cref="Location"/> and its approaches from a collection of <see cref="IndianaEvent"/> objects.
-    /// This class processes event data into time-binned <see cref="PhasePedAggregation"/> results, including counts and delay metrics
-    /// for pedestrian cycles, requests, and detections. Designed for use in ATSPM workflow analysis pipelines.
+    /// A workflow step that aggregates pedestrian phase data from <see cref="IndianaEvent"/> logs
+    /// into <see cref="PhasePedAggregation"/> results.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="AggregatePedestrianPhasesStep"/> class.
+    /// This step processes raw event logs for a given location, identifies pedestrian cycles and delay cycles,
+    /// and computes aggregated statistics such as pedestrian requests, detections, calls, and delays.
+    /// Results are grouped by approach and segmented according to the provided <see cref="Timeline{T}"/>.
     /// </remarks>
-    /// <param name="timeline">The timeline used to segment and aggregate pedestrian phase data by time intervals.</param>
-    /// <param name="dataflowBlockOptions">Options for configuring the dataflow block execution. Optional.</param>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AggregatePedestrianPhasesStep"/> class
+    /// with the specified timeline and dataflow block options.
+    /// </remarks>
+    /// <param name="timeline">
+    /// The timeline used to segment aggregation results into defined start and end ranges.
+    /// </param>
+    /// <param name="dataflowBlockOptions">
+    /// Options that configure execution behavior of the dataflow block, such as cancellation and parallelism.
+    /// Defaults to <c>null</c> if not provided.
+    /// </param>
     public class AggregatePedestrianPhasesStep(Timeline<StartEndRange> timeline, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<PhasePedAggregation>>(dataflowBlockOptions)
     {
         private readonly Timeline<StartEndRange> _timeline = timeline;
 
-        /// <inheritdoc/>
-        protected override Task<IEnumerable<PhasePedAggregation>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
+        /// <summary>
+        /// Processes the input tuple by aggregating pedestrian phase data for the given location.
+        /// </summary>
+        /// <param name="input">
+        /// A tuple containing the <see cref="Location"/> and a collection of <see cref="IndianaEvent"/> instances.
+        /// </param>
+        /// <param name="cancelToken">
+        /// A cancellation token used to cancel the operation if requested.
+        /// </param>
+        /// <returns>
+        /// A task that produces a collection of <see cref="PhasePedAggregation"/> results,
+        /// segmented by the provided timeline.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// The method filters events using <see cref="EventLogSpecification"/> and 
+        /// <see cref="IndianaPedDataSpecification"/>, then groups them by phase number.
+        /// </para>
+        /// <para>
+        /// Pedestrian cycles and delay cycles are identified, and aggregated statistics include:
+        /// <list type="bullet">
+        /// <item><description>Counts of pedestrian begin-walk events</description></item>
+        /// <item><description>Total pedestrian requests and registered calls</description></item>
+        /// <item><description>Unique pedestrian detections</description></item>
+        /// <item><description>Imputed pedestrian calls</description></item>
+        /// <item><description>Cycle counts and delay metrics (total, min, max)</description></item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        protected override Task<IEnumerable<PhasePedAggregation>> Process(
+            Tuple<Location, IEnumerable<IndianaEvent>> input,
+            CancellationToken cancelToken = default)
         {
             var (location, rawEvents) = input;
 
@@ -87,6 +127,5 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             return Task.FromResult(result);
         }
-
     }
 }

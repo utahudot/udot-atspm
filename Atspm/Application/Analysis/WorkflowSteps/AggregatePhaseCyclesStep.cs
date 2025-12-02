@@ -24,11 +24,54 @@ using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
+    /// <summary>
+    /// A workflow step that aggregates phase cycle data from <see cref="IndianaEvent"/> logs
+    /// into <see cref="PhaseCycleAggregation"/> results.
+    /// </summary>
+    /// <remarks>
+    /// This step processes raw event logs for a given location, identifies red-to-red and green-to-green cycles,
+    /// and computes aggregated statistics such as cycle counts and total time spent in red, yellow, and green intervals.
+    /// Results are grouped by approach and segmented according to the provided <see cref="Timeline{T}"/>.
+    /// </remarks>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AggregatePhaseCyclesStep"/> class
+    /// with the specified timeline and dataflow block options.
+    /// </remarks>
+    /// <param name="timeline">
+    /// The timeline used to segment aggregation results into defined start and end ranges.
+    /// </param>
+    /// <param name="dataflowBlockOptions">
+    /// Options that configure execution behavior of the dataflow block, such as cancellation and parallelism.
+    /// Defaults to <c>null</c> if not provided.
+    /// </param>
     public class AggregatePhaseCyclesStep(Timeline<StartEndRange> timeline, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<PhaseCycleAggregation>>(dataflowBlockOptions)
     {
         private readonly Timeline<StartEndRange> _timeline = timeline;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Processes the input tuple by aggregating phase cycle data for the given location.
+        /// </summary>
+        /// <param name="input">
+        /// A tuple containing the <see cref="Location"/> and a collection of <see cref="IndianaEvent"/> instances.
+        /// </param>
+        /// <param name="cancelToken">
+        /// A cancellation token used to cancel the operation if requested.
+        /// </param>
+        /// <returns>
+        /// A task that produces a collection of <see cref="PhaseCycleAggregation"/> results,
+        /// segmented by the provided timeline.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// The method filters events using <see cref="EventLogSpecification"/> and 
+        /// <see cref="IndianaPhaseIntervalChangesDataSpecification"/>, then groups them by phase number.
+        /// </para>
+        /// <para>
+        /// Red-to-red and green-to-green cycles are identified, and distinct intervals for red, yellow,
+        /// and green phases are computed. Aggregated statistics include cycle counts, phase begin counts,
+        /// and total time spent in each interval type.
+        /// </para>
+        /// </remarks>
         protected override Task<IEnumerable<PhaseCycleAggregation>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var (location, rawEvents) = input;
