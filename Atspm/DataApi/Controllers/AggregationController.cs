@@ -18,6 +18,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
@@ -26,107 +27,183 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// Aggregation controller
     /// for querying raw aggregation data
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion("1.0")]
     [Authorize(Policy = "CanViewData")]
-    public class AggregationController : DataControllerBase
+    public class AggregationController(IAggregationRepository repository, ILogger<AggregationController> log) : DataControllerBase
     {
-        private readonly IAggregationRepository _repository;
-        private readonly ILogger _log;
-
-        /// <inheritdoc/>
-        public AggregationController(IAggregationRepository repository, ILogger<AggregationController> log)
-        {
-            _repository = repository;
-            _log = log;
-        }
+        private readonly IAggregationRepository _repository = repository;
+        private readonly ILogger _log = log;
 
         /// <summary>
-        /// Returns the possible aggregated data types
+        /// Retrieves the available aggregated data types defined in the system.
         /// </summary>
-        /// <returns></returns>
-        /// <response code="200">Call completed successfully</response>
+        /// <returns>
+        /// A list of aggregation type names.
+        /// </returns>
+        /// <response code="200">
+        /// Call completed successfully and returns the list of aggregation types.
+        /// </response>
+        /// <response code="500">
+        /// An unexpected error occurred while retrieving aggregation types.
+        /// </response>
         [HttpGet("[Action]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<string>> GetDataTypes()
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public ActionResult<IReadOnlyList<string>> GetDataTypes()
         {
-            var result = typeof(AggregationModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(AggregationModelBase))).Select(s => s.Name).ToList();
-
-            return Ok(result);
-        }
-
-
-        /// <summary>
-        /// Get all aggregations for location by date
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of aggregation to start with</param>
-        /// <param name="end">Archive date of aggregation to end with</param>
-        /// <returns></returns>
-        /// <response code="200">Call completed successfully</response>
-        /// <response code="400">Invalid request (date)</response>
-        /// <response code="404">Resource not found</response>
-        [HttpGet("[Action]/{locationIdentifier}")]
-        [Produces("application/json", "application/xml")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end)
-        {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
-                return BadRequest("Invalid date range");
-
-            //HACK: change start/end params to DateTime
-            var result = _repository.GetArchivedAggregations(locationIdentifier, start.ToDateTime(TimeOnly.MinValue), end.ToDateTime(TimeOnly.MinValue));
-
-            if (result.Count == 0)
-                return NotFound();
-
-            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Get all aggregations for location by date and datatype
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="dataType">Type that inherits from <see cref="AggregationModelBase"/></param>
-        /// <param name="start">Archive date of aggregation to start with</param>
-        /// <param name="end">Archive date of aggregation to end with</param>
-        /// <returns></returns>
-        /// <response code="200">Call completed successfully</response>
-        /// <response code="400">Invalid request (date)</response>
-        /// <response code="404">Resource not found</response>
-        [HttpGet("[Action]/{locationIdentifier}/{dataType}")]
-        [Produces("application/json", "application/xml")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedAggregations(string locationIdentifier, string dataType, DateOnly start, DateOnly end)
-        {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
-                return BadRequest("Invalid date range");
-
-            Type type;
-
             try
             {
-                type = Type.GetType($"{typeof(AggregationModelBase).Namespace}.{dataType}, {typeof(AggregationModelBase).Assembly}", true);
+                var result = typeof(AggregationModelBase)
+                    .ListDerivedTypes()
+                    .ToList()
+                    .AsReadOnly();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+                {
+                    Title = "Unexpected error",
+                    Detail = "An error occurred while retrieving aggregation types.",
+                    Status = StatusCodes.Status500InternalServerError
+                });
+            }
+        }
+
+
+        /// <summary>
+        /// Retrieves archived aggregation records for a specific location within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose aggregations are requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
+        /// </param>
+        /// <returns>
+        /// A stream of <see cref="CompressedDataBase"/> objects representing archived aggregations.
+        /// </returns>
+        /// <remarks>
+        /// ### Examples:
+        /// - GET /api/aggregations/location123?start=2024-01-01&amp;end=2024-12-31
+        /// ### Streaming and Cancellation
+        /// - Results are streamed using <c>IAsyncEnumerable</c>.
+        /// - Clients can cancel by aborting the HTTP request (e.g., disposing <c>HttpClient</c> in .NET or calling <c>AbortController.abort()</c> in JavaScript).
+        /// - Cancellation immediately stops enumeration and closes the response.
+        /// </remarks>
+        /// <response code="200">Aggregations successfully retrieved (may be empty).</response>
+        /// <response code="400">Invalid date range or malformed request.</response>
+        /// <response code="404">Location not found (if repository distinguishes this).</response>
+        [HttpGet("[action]/{locationIdentifier}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public ActionResult<IAsyncEnumerable<CompressedDataBase>> GetArchivedAggregations(
+            [FromRoute] string locationIdentifier,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            if (end < start)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid date range",
+                    Detail = "End must be greater than or equal to start",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
+
+            var results = _repository.GetArchivedAggregations(locationIdentifier, start, end).WithCancellation(cancellationToken);
+
+            return Ok(results);
+        }
+
+        /// <summary>
+        /// Retrieves archived aggregation records for a specific location and aggregation data type within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose aggregations are requested.
+        /// </param>
+        /// <param name="dataType">
+        /// The name of the aggregation data type to retrieve (e.g., DailyAggregation, MonthlyAggregation).
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
+        /// </param>
+        /// <returns>
+        /// A stream of <see cref="CompressedDataBase"/> objects representing archived aggregations of the specified type.
+        /// </returns>
+        /// <remarks>
+        /// ### Examples
+        /// - GET /api/aggregations/location123/DailyAggregation?start=2024-01-01&amp;end=2024-12-31
+        ///
+        /// ### Streaming and Cancellation
+        /// - Results are streamed using <c>IAsyncEnumerable</c>.
+        /// - Clients can cancel by aborting the HTTP request (e.g., disposing <c>HttpClient</c> in .NET or calling <c>AbortController.abort()</c> in JavaScript).
+        /// - Cancellation immediately stops enumeration and closes the response.
+        /// </remarks>
+        /// <response code="200">Aggregations successfully retrieved (may be empty).</response>
+        /// <response code="400">Invalid date range or data type.</response>
+        /// <response code="404">Location not found (if repository distinguishes this).</response>
+        [HttpGet("[action]/{locationIdentifier}/{dataType}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public ActionResult<IAsyncEnumerable<CompressedDataBase>> GetArchivedAggregations(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] string dataType,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            if (end < start)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid date range",
+                    Detail = "End must be greater than or equal to start",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
+
+            Type type;
+            try
+            {
+                type = Type.GetType(
+                    $"{typeof(AggregationModelBase).Namespace}.{dataType}, {typeof(AggregationModelBase).Assembly}",
+                    throwOnError: true);
             }
             catch (Exception)
             {
-                return BadRequest("Invalid data type");
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid data type",
+                    Detail = $"The specified data type '{dataType}' is not recognized.",
+                    Status = StatusCodes.Status400BadRequest
+                });
             }
 
-            //HACK: change start/end params to DateTime
-            var result = _repository.GetArchivedAggregations(locationIdentifier, start.ToDateTime(TimeOnly.MinValue), end.ToDateTime(TimeOnly.MinValue), type);
+            var results = _repository.GetArchivedAggregations(locationIdentifier, start, end, type).WithCancellation(cancellationToken);
 
-            if (result.Count == 0)
-                return NotFound();
-
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
-
-            return Ok(result);
+            return Ok(results);
         }
     }
 }

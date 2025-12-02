@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
 
@@ -29,16 +30,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         #region IAggregationRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType)
+        public IAsyncEnumerable<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType)
         {
             return GetList()
                 .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == dataType)
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase
+        public IAsyncEnumerable<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase
         {
             var type = typeof(T);
 
@@ -46,15 +47,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
                 .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == type)
                 .Cast<CompressedAggregations<T>>()
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end)
+        public IAsyncEnumerable<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end)
         {
             return GetList()
                 .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         #endregion

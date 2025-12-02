@@ -32,7 +32,7 @@ namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="dataType"></param>
         /// <returns></returns>
-        IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType);
+        IAsyncEnumerable<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType);
 
         /// <summary>
         /// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
@@ -43,7 +43,7 @@ namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase;
+        IAsyncEnumerable<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase;
 
         /// <summary>
         /// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
@@ -52,7 +52,7 @@ namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end);
+        IAsyncEnumerable<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end);
     }
 
     /// <summary>
