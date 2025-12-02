@@ -20,6 +20,7 @@ using Utah.Udot.Atspm.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
+    ///<inheritdoc cref="IndianaPhaseIntervalChangesDataSpecification"/>
     public class FilterPhaseIntervalChangeDateProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPhaseIntervalChangesDataSpecification(), dataflowBlockOptions)
     {
     }

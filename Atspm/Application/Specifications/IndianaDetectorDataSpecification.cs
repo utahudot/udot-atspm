@@ -38,7 +38,6 @@ namespace Utah.Udot.Atspm.Specifications
                 (short)IndianaEnumerations.VehicleDetectorOff,
                 (short)IndianaEnumerations.VehicleDetectorOn,
             };
-
             Criteria = c => codes.Contains(c.EventCode);
 
             ApplyOrderBy(o => o.Timestamp);

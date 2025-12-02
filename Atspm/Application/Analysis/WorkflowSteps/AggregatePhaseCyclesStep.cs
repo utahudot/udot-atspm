@@ -34,7 +34,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             var (location, rawEvents) = input;
 
             var eventsByParam = rawEvents
-                .FromSpecification(new IndianaLogLocationFilterSpecification(location))
+                .FromSpecification(new EventLogSpecification(location))
+                .Cast<IndianaEvent>()
                 .FromSpecification(new IndianaPhaseIntervalChangesDataSpecification())
                 .ToParamLookup();
 

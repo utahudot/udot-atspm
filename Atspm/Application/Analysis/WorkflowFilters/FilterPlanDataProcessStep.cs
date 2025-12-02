@@ -20,6 +20,7 @@ using Utah.Udot.Atspm.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
+    ///<inheritdoc cref="IndianaPlanDataSpecification"/>
     public class FilterPlanDataProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPlanDataSpecification(), dataflowBlockOptions)
     {
     }

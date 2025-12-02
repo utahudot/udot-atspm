@@ -20,6 +20,7 @@ using Utah.Udot.Atspm.Specifications;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
+    ///<inheritdoc cref="IndianaPedDataSpecification"/>
     public class FilterPedDataProcessStep(DataflowBlockOptions dataflowBlockOptions = default) : FilterIndianaEventsByCodeAndLocationBase(new IndianaPedDataSpecification(), dataflowBlockOptions)
     {
     }

@@ -34,10 +34,6 @@ namespace Utah.Udot.Atspm.Data.Models
         ///<inheritdoc/>
         [JsonIgnore]
         public string LocationIdentifier { get; set; }
-
-        [Obsolete("this has been replaced with StartEndRange")]
-        [JsonIgnore]
-        public DateTime BinStartTime { get; set; }
     }
 
     public partial class ApproachPcdAggregation : AggregationModelBase, ILocationApproachLayer

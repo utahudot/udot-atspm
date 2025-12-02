@@ -32,7 +32,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType)
         {
             return GetList()
-                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == dataType)
                 .ToList();
         }
@@ -43,7 +43,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
             var type = typeof(T);
 
             return GetList()
-                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == type)
                 .Cast<CompressedAggregations<T>>()
                 .ToList();
@@ -53,7 +53,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end)
         {
             return GetList()
-                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
                 .ToList();
         }
 

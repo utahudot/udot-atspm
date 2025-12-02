@@ -24,19 +24,51 @@ using Utah.Udot.NetStandardToolkit.Specifications;
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
-    /// Base class for filter controller event log data used in process workflows
+    /// Provides a base implementation for filtering Indiana event log data 
+    /// by event code and location within process workflows.
     /// </summary>
-    public abstract class FilterIndianaEventsByCodeAndLocationBase : ProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Location, IEnumerable<IndianaEvent>>>
+    /// <remarks>
+    /// This abstract class defines a reusable workflow step that applies 
+    /// filtering logic to <see cref="IndianaEvent"/> collections associated 
+    /// with a given <see cref="Location"/>. 
+    /// It leverages specifications to enforce filtering rules and broadcasts 
+    /// the filtered results downstream in the workflow pipeline.
+    /// </remarks>
+    public abstract class FilterIndianaEventsByCodeAndLocationBase
+        : ProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Location, IEnumerable<IndianaEvent>>>
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="FilterIndianaEventsByCodeAndLocationBase"/> class.
+        /// </summary>
+        /// <param name="specification">
+        /// The specification used to filter <see cref="IndianaEvent"/> objects 
+        /// based on custom business rules (e.g., event codes).
+        /// </param>
+        /// <param name="dataflowBlockOptions">
+        /// Optional configuration settings for the underlying dataflow block, 
+        /// such as degree of parallelism or cancellation tokens. 
+        /// Defaults to <c>null</c> if not provided.
+        /// </param>
+        /// <remarks>
+        /// The constructor sets up a <see cref="BroadcastBlock{T}"/> that 
+        /// applies both a location-based filter 
+        /// (<see cref="EventLogSpecification"/>) and the 
+        /// provided specification to the incoming event stream. 
+        /// Completion of the workflow process is logged to the console.
+        /// </remarks>
         public FilterIndianaEventsByCodeAndLocationBase(ISpecification<IndianaEvent> specification, DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             workflowProcess = new BroadcastBlock<Tuple<Location, IEnumerable<IndianaEvent>>>(f =>
             {
-                return Tuple.Create(f.Item1, f.Item2
-                     .FromSpecification(new IndianaLogLocationFilterSpecification(f.Item1))
+                return Tuple.Create(
+                    f.Item1,
+                    f.Item2
+                     .FromSpecification(new EventLogSpecification(f.Item1))
+                     .Cast<IndianaEvent>()
                      .FromSpecification(specification));
             }, options);
+
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
         }
     }

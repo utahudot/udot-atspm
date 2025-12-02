@@ -29,7 +29,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         protected override Task<IEnumerable<Tuple<Location, int, IEnumerable<IndianaEvent>>>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2
-                .FromSpecification(new IndianaLogLocationFilterSpecification(input.Item1))
+                .FromSpecification(new EventLogSpecification(input.Item1))
+                .Cast<IndianaEvent>()
                 .GroupBy(g => Convert.ToInt32(g.EventParam))
                 .Select(s => Tuple.Create(input.Item1, s.Key, s.AsEnumerable()));
 

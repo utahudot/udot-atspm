@@ -19,43 +19,31 @@ using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Specifications
 {
-    public class AggregationDateRangeSpecification : BaseSpecification<CompressedAggregationBase>
+    /// <summary>
+    /// A specification that filters <see cref="AggregationModelBase"/> entities
+    /// based on location and overlapping time range.
+    /// </summary>
+    public class AggregationSpecification : BaseSpecification<AggregationModelBase>
     {
-        public AggregationDateRangeSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregationSpecification"/> class
+        /// with the provided location identifier and time range.
+        /// </summary>
+        /// <param name="locationIdentifier">The unique identifier of the location to filter aggregations for.</param>
+        /// <param name="start">The start of the time window (inclusive boundary for overlap).</param>
+        /// <param name="end">The end of the time window (inclusive boundary for overlap).</param>
+        /// <remarks>
+        /// Aggregations are included if their <see cref="AggregationModelBase.End"/> is after <paramref name="start"/>
+        /// and their <see cref="AggregationModelBase.Start"/> is before <paramref name="end"/>.
+        /// This effectively selects all aggregations that overlap with the given time range.
+        /// </remarks>
+        public AggregationSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
         {
-            Criteria = c => c.LocationIdentifier == locationIdentifier && c.End > start && c.Start < end;
+            Criteria = c => c.LocationIdentifier == locationIdentifier
+                         && c.End > start
+                         && c.Start < end;
 
             ApplyOrderBy(o => o.Start);
         }
-    }
-
-    public class AggregationDateTimeRangeSpecification : BaseSpecification<AggregationModelBase>
-    {
-        //public AggregationDateTimeRangeSpecification(DateTime start, DateTime end) : base()
-        //{
-        //    Criteria = c => c.Start >= start && c.End <= end;
-
-        //    ApplyOrderBy(o => o.Start);
-        //}
-
-        public AggregationDateTimeRangeSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
-        {
-            Criteria = c => c.LocationIdentifier == locationIdentifier && c.Start >= start && c.End <= end;
-
-            ApplyOrderBy(o => o.Start);
-        }
-
-        //public AggregationDateTimeRangeSpecification(int startHour, int startMinute, int endHour, int endMinute) : base()
-        //{
-        //    Criteria = l => l.Start.Hour > startHour && l.End.Hour < endHour
-        //    || l.Start.Hour == startHour && l.End.Hour == endHour
-        //    && l.Start.Minute >= startMinute && l.End.Minute <= endMinute
-        //    || l.Start.Hour == startHour && l.End.Hour < endHour
-        //    && l.Start.Minute >= startMinute
-        //    || l.Start.Hour < startHour && l.End.Hour == endHour
-        //    && l.Start.Minute <= endMinute;
-
-        //    ApplyOrderBy(o => o.Start);
-        //}
     }
 }

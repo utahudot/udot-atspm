@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Identity.Client;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
@@ -30,7 +31,10 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         {
             var Location = input.Item1;
             var priority = input.Item2;
-            var logs = input.Item3.FromSpecification(new IndianaLogLocationAndParamterFilterSpecification(Location, priority));
+            var logs = input.Item3
+                .FromSpecification(new EventLogSpecification(Location))
+                .Cast<IndianaEvent>()
+                .Where(w => w.EventParam == (short)priority);
 
             var tl = new Timeline<PriorityAggregation>(logs, TimeSpan.FromMinutes(15));
 

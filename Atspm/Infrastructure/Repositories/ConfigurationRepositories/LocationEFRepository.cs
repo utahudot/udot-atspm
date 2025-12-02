@@ -95,7 +95,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         public IReadOnlyList<Location> GetAllVersionsOfLocation(string LocationIdentifier)
         {
             var result = BaseQuery()
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .FromSpecification(new LocationIdentifierSpecification(LocationIdentifier))
                 .FromSpecification(new ActiveLocationSpecification())
                 .ToList();
 
@@ -121,7 +121,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .FromSpecification(new LocationIdentifierSpecification(LocationIdentifier))
                 .FromSpecification(new ActiveLocationSpecification())
                 .FirstOrDefault();
 
@@ -154,7 +154,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .FromSpecification(new LocationIdentifierSpecification(LocationIdentifier))
                 .Where(Location => Location.Start <= startDate)
                 .FromSpecification(new ActiveLocationSpecification())
                 .FirstOrDefault();
@@ -192,7 +192,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         {
             var result = BaseQuery()
                 .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .FromSpecification(new LocationIdentifierSpecification(LocationIdentifier))
                 .Where(Location => Location.Start < startDate && Location.Start < endDate)
                 .FromSpecification(new ActiveLocationSpecification())
                 .ToList();
@@ -230,7 +230,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .FromSpecification(new LocationIdentifierSpecification(LocationIdentifier))
                 .Where(Location => Location.Start <= startDate)
                 .FromSpecification(new ActiveLocationSpecification())
                 .FirstOrDefault();

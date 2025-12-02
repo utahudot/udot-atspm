@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Specifications
@@ -28,10 +29,10 @@ namespace Utah.Udot.Atspm.Specifications
         /// Matches <see cref="CompressedEventLogBase"/> by <see cref="CompressedDataBase.LocationIdentifier"/>
         /// and orders by <see cref="StartEndRange.Start"/>
         /// </summary>
-        /// <param name="Location"></param>
-        public CompressedEventLogSpecification(Location Location) : base()
+        /// <param name="location"></param>
+        public CompressedEventLogSpecification(ILocationLayer location) : base()
         {
-            Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
+            Criteria = c => c.LocationIdentifier == location.LocationIdentifier;
 
             ApplyOrderBy(o => o.Start);
         }

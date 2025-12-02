@@ -20,16 +20,25 @@ using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Specifications
 {
+    /// <summary>
+    /// A specification that filters for active <see cref="Location"/> entities.
+    /// </summary>
+    /// <remarks>
+    /// This specification excludes locations that have a <see cref="LocationVersionActions.Delete"/> action
+    /// and orders the results by the <see cref="Location.Start"/> property in descending order.
+    /// </remarks>
     public class ActiveLocationSpecification : BaseSpecification<Location>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActiveLocationSpecification"/> class.
+        /// </summary>
+        /// <remarks>
+        /// The base specification is configured to include only locations that are not marked for deletion,
+        /// and results are ordered by the start date descending.
+        /// </remarks>
         public ActiveLocationSpecification() : base(s => s.VersionAction != LocationVersionActions.Delete)
         {
             ApplyOrderByDescending(o => o.Start);
         }
-    }
-
-    public class LocationIdSpecification : BaseSpecification<Location>
-    {
-        public LocationIdSpecification(string locationId) : base(s => s.LocationIdentifier == locationId) { }
     }
 }

@@ -55,7 +55,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
                  .Include(i => i.Jurisdiction)
                  .Include(i => i.Region)
                  .Include(i => i.Devices)
-                 .FromSpecification(new LocationIdSpecification(locationIdentifier))
+                 .FromSpecification(new LocationIdentifierSpecification(locationIdentifier))
                  .FromSpecification(new ActiveLocationSpecification())
                  .ToList();
 
