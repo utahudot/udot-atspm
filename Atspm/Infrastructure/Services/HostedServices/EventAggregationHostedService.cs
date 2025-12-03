@@ -24,6 +24,7 @@ using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
+using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
@@ -53,7 +54,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 await foreach (var l in locations.GetEventsForAggregation(date, _options.Value.EventAggregationQueryOptions))
                 {
-                    var events = eventLogs.GetArchivedEvents(l.LocationIdentifier, tl.Start, tl.End);
+                    var events = await eventLogs.GetData(l.LocationIdentifier, tl.Start, tl.End).ToListAsync(cancellationToken);
 
                     await workflow.Input.SendAsync(Tuple.Create<Location, IEnumerable<CompressedEventLogBase>>(l, events));
                 }

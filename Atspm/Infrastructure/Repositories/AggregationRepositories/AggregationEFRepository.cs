@@ -18,40 +18,65 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
-
+    
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
-    ///<inheritdoc cref="IAggregationRepository"/>
-    public class AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : ATSPMRepositoryEFBase<CompressedAggregationBase>(db, log), IAggregationRepository
+    /// <inheritdoc cref="ICompressedDataRepository{T}"/>
+    public abstract class CompressedDataEFRepositoryBase<T>(DbContext db, ILogger<ATSPMRepositoryEFBase<T>> log) : ATSPMRepositoryEFBase<T>(db, log), ICompressedDataRepository<T> where T : CompressedDataBase
     {
-        #region IAggregationRepository
+        #region ICompressedDataRepository
 
-        ///<inheritdoc/>
-        public IAsyncEnumerable<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end, Type dataType)
+        /// <inheritdoc cref="ICompressedDataRepository{T}.GetData(string, DateTime, DateTime)"/>
+        public IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end)
         {
             return GetList()
-                .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end))
+                .AsAsyncEnumerable();
+        }
+
+        /// <inheritdoc cref="ICompressedDataRepository{T}.GetData(string, DateTime, DateTime, Type)"/>
+        public IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType)
+        {
+            return GetList()
+                .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end))
                 .Where(w => w.DataType == dataType)
                 .AsAsyncEnumerable();
         }
 
+        #endregion
+    }
+
+    ///<inheritdoc cref="IAggregationRepository"/>
+    public class AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : CompressedDataEFRepositoryBase<CompressedAggregationBase>(db, log), IAggregationRepository
+    {
+        #region IAggregationRepository
+
+        /////<inheritdoc/>
+        //public IAsyncEnumerable<CompressedAggregationBase> GetData(string locationIdentifier, DateTime start, DateTime end)
+        //{
+        //    return GetList()
+        //        .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
+        //        .AsAsyncEnumerable();
+        //}
+
+        /////<inheritdoc/>
+        //public IAsyncEnumerable<CompressedAggregationBase> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType)
+        //{
+        //    return GetList()
+        //        .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
+        //        .Where(w => w.DataType == dataType)
+        //        .AsAsyncEnumerable();
+        //}
+
         ///<inheritdoc/>
-        public IAsyncEnumerable<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase
+        public IAsyncEnumerable<CompressedAggregations<T>> GetData<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase
         {
             var type = typeof(T);
 
             return GetList()
-                .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationIdentifier, start, end))
                 .Where(w => w.DataType == type)
                 .Cast<CompressedAggregations<T>>()
-                .AsAsyncEnumerable();
-        }
-
-        ///<inheritdoc/>
-        public IAsyncEnumerable<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateTime start, DateTime end)
-        {
-            return GetList()
-                .FromSpecification(new CompressedAggregationsSpecification(locationIdentifier, start, end))
                 .AsAsyncEnumerable();
         }
 

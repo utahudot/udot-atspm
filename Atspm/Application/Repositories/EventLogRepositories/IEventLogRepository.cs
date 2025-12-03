@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Repositories.AggregationRepositories;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
@@ -23,8 +24,27 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
     /// <summary>
     /// Device event log repository
     /// </summary>
-    public interface IEventLogRepository : IAsyncRepository<CompressedEventLogBase>
+    public interface IEventLogRepository : ICompressedDataRepository<CompressedEventLogBase>
     {
+        ///// <summary>
+        ///// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
+        ///// </summary>
+        ///// <param name="locationIdentifier">Location identifier</param>
+        ///// <param name="start">Archive date of event to start with</param>
+        ///// <param name="end">Archive date of event to end with</param>
+        ///// <returns></returns>
+        //IAsyncEnumerable<CompressedEventLogBase> GetData(string locationIdentifier, DateTime start, DateTime end);
+
+        ///// <summary>
+        ///// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
+        ///// </summary>
+        ///// <param name="locationIdentifier">Location identifier</param>
+        ///// <param name="start">Archive date of event to start with</param>
+        ///// <param name="end">Archive date of event to end with</param>
+        ///// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
+        ///// <returns></returns>
+        //IAsyncEnumerable<CompressedEventLogBase> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType);
+
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
         /// </summary>
@@ -34,7 +54,28 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
         /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId);
+        IAsyncEnumerable<CompressedEventLogBase> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId);
+
+        /// <summary>
+        /// Get archived event that matches <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
+        /// </summary>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <param name="deviceId">Deivce id events came from</param>
+        /// <returns></returns>
+        IAsyncEnumerable<CompressedEventLogBase> GetData(string locationIdentifier, DateTime start, DateTime end, int deviceId);
+
+        /// <summary>
+        /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
+        /// Where date type of derived from <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">Data type of <see cref="EventLogModelBase"/></typeparam>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
+        IAsyncEnumerable<CompressedEventLogs<T>> GetData<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase;
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
@@ -46,47 +87,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IAsyncEnumerable<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase;
-
-        /// <summary>
-        /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event to start with</param>
-        /// <param name="end">Archive date of event to end with</param>
-        /// <returns></returns>
-        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end);
-
-        /// <summary>
-        /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event to start with</param>
-        /// <param name="end">Archive date of event to end with</param>
-        /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
-        /// <returns></returns>
-        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType);
-
-        /// <summary>
-        /// Get archived event that matches <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event to start with</param>
-        /// <param name="end">Archive date of event to end with</param>
-        /// <param name="deviceId">Deivce id events came from</param>
-        /// <returns></returns>
-        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, int deviceId);
-
-        /// <summary>
-        /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
-        /// Where date type of derived from <typeparamref name="T"/>
-        /// </summary>
-        /// <typeparam name="T">Data type of <see cref="EventLogModelBase"/></typeparam>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event to start with</param>
-        /// <param name="end">Archive date of event to end with</param>
-        /// <returns></returns>
-        IAsyncEnumerable<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase;
+        IAsyncEnumerable<CompressedEventLogs<T>> GetData<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase;
     }
 
     /// <summary>
