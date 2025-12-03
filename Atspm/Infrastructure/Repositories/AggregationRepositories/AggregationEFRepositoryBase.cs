@@ -36,7 +36,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         public virtual IReadOnlyList<T> GetAggregationsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new CompressedAggregationsSpecification(locationId, startTime, endTime))
+                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)

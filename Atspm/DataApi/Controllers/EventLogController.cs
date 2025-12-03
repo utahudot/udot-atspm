@@ -18,7 +18,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
@@ -31,246 +30,258 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// </summary>
     [ApiVersion("1.0")]
     [Authorize(Policy = "CanViewData")]
-    public class EventLogController(IEventLogRepository repository, ILocationRepository locations, ILogger<EventLogController> log) 
+    public class EventLogController(IEventLogRepository repository, ILocationRepository locations, IDeviceRepository devices, ILogger<EventLogController> log) 
         : DataControllerBase<CompressedEventLogBase,EventLogModelBase>(repository, locations, log)
     {
         private readonly IEventLogRepository _repository = repository;
+        private readonly IDeviceRepository _devices = devices;
 
-        //protected override IAsyncEnumerable<CompressedEventLogBase> GetData(string locationIdentifier, DateTime start, DateTime end, Type? type = null)
-        //{
-        //    return type == null
-        //        ? _repository.GetData(locationIdentifier, start, end)
-        //        : _repository.GetData(locationIdentifier, start, end, type);
-        //}
+        /// <summary>
+        /// Streams archived data records for a specific location, device, and data type within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose data are requested.
+        /// </param>
+        /// <param name="deviceId">
+        /// Unique identifier of the device whose data are requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
+        /// </param>
+        /// <remarks>
+        /// ### Response Format
+        /// - Content type: <c>application/x-ndjson</c>
+        /// - Each line is a JSON object representing a <see cref="CompressedEventLogBase"/> record.
+        /// - Clients should parse line-by-line rather than expecting a JSON array.
+        ///
+        /// ### Example Request
+        /// - GET /StreamData/1014?deviceId=42&amp;start=2024-01-01&amp;end=2024-12-31&amp;dataType=[dataType]
+        /// </remarks>
+        /// <response code="200">Data successfully streamed (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}")]
+        [Produces("application/x-ndjson")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> StreamData(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] int deviceId,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
 
-        ///// <summary>
-        ///// Retrieves the available EventLogModelBase derived types defined in the system.
-        ///// </summary>
-        ///// <returns>
-        ///// A list of event type names.
-        ///// </returns>
-        ///// <response code="200">
-        ///// Call completed successfully and returns the list of aggregation types.
-        ///// </response>
-        ///// <response code="500">
-        ///// An unexpected error occurred while retrieving aggregation types.
-        ///// </response>
-        //[HttpGet("[Action]")]
-        //[Produces("application/json")]
-        //[ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
-        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        //public ActionResult<IReadOnlyList<string>> GetDataTypes()
-        //{
-        //    try
-        //    {
-        //        var result = typeof(EventLogModelBase)
-        //            .ListDerivedTypes()
-        //            .ToList()
-        //            .AsReadOnly();
+            if (!await _devices.DeviceExists(deviceId))
+                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
 
-        //        return Ok(result);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
-        //        {
-        //            Title = "Unexpected error",
-        //            Detail = "An error occurred while retrieving aggregation types.",
-        //            Status = StatusCodes.Status500InternalServerError
-        //        });
-        //    }
-        //}
+            Response.ContentType = "application/x-ndjson";
 
+            await foreach (var item in _repository.GetData(locationIdentifier, start, end, deviceId)
+                                                  .WithCancellation(cancellationToken))
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                await Response.WriteAsync(json + "\n", cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
 
+            return new EmptyResult();
+        }
 
+        /// <summary>
+        /// Retrieves archived data records for a specific location, device, and data type within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose data are requested.
+        /// </param>
+        /// <param name="deviceId">
+        /// Unique identifier of the device whose data are requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the request by aborting the HTTP call.
+        /// </param>
+        /// <remarks>
+        /// ### Response Format
+        /// - Content type: <c>application/json</c>
+        /// - Response is a JSON array of <see cref="CompressedEventLogBase"/> objects.
+        /// </remarks>
+        /// <response code="200">Data successfully retrieved (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(typeof(IEnumerable<CompressedEventLogBase>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] int deviceId,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
 
+            if (!await _devices.DeviceExists(deviceId))
+                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
 
+            var list = await _repository.GetData(locationIdentifier, start, end, deviceId)
+                                        .ToListAsync(cancellationToken);
+            return Ok(list);
+        }
 
+        /// <summary>
+        /// Streams archived data records for a specific location, device, and data type within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose data are requested.
+        /// </param>
+        /// <param name="deviceId">
+        /// Unique identifier of the device whose data are requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <param name="dataType">
+        /// Name of the data type. Must map to a valid CLR type.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
+        /// </param>
+        /// <remarks>
+        /// ### Response Format
+        /// - Content type: <c>application/x-ndjson</c>
+        /// - Each line is a JSON object representing a <see cref="CompressedEventLogBase"/> record.
+        /// - Clients should parse line-by-line rather than expecting a JSON array.
+        ///
+        /// ### Example Request
+        /// - GET /StreamData/1014?deviceId=42&amp;start=2024-01-01&amp;end=2024-12-31&amp;dataType=[dataType]
+        /// </remarks>
+        /// <response code="200">Data successfully streamed (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("[action]/{locationIdentifier}/{dataType}/{deviceId:int}")]
+        [Produces("application/x-ndjson")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> StreamData(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] string dataType,
+            [FromRoute] int deviceId,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
 
+            if (!await _devices.DeviceExists(deviceId))
+                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
 
+            if (!typeof(EventLogModelBase).ToDictionary().TryGetValue(dataType, out var type))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid data type",
+                    Detail = $"The specified data type '{dataType}' is not recognized.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
 
-        //    /// <summary>
-        //    /// Get all event logs for location by date
-        //    /// </summary>
-        //    /// <param name="locationIdentifier">Location identifier</param>
-        //    /// <param name="start">Archive date of event to start with</param>
-        //    /// <param name="end">Archive date of event to end with</param>
-        //    /// <returns></returns>
-        //    /// <response code="200">Call completed successfully</response>
-        //    /// <response code="400">Invalid request (date)</response>
-        //    /// <response code="404">Resource not found</response>
-        //    [HttpGet("[Action]/{locationIdentifier}")]
-        //    [Produces("application/json", "application/xml")]
-        //    [ProducesResponseType(StatusCodes.Status200OK)]
-        //    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //    [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //    public IActionResult GetData(string locationIdentifier, DateTime start, DateTime end)
-        //    {
-        //        if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
-        //            return BadRequest("Invalid date range");
+            Response.ContentType = "application/x-ndjson";
 
-        //        var result = _repository.GetData(locationIdentifier, start, end);
+            await foreach (var item in _repository.GetData(locationIdentifier, start, end, type, deviceId)
+                                                  .WithCancellation(cancellationToken))
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                await Response.WriteAsync(json + "\n", cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
 
-        //        if (result.Count == 0)
-        //            return NotFound();
+            return new EmptyResult();
+        }
 
-        //        HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
+        /// <summary>
+        /// Retrieves archived data records for a specific location, device, and data type within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose data are requested.
+        /// </param>
+        /// <param name="deviceId">
+        /// Unique identifier of the device whose data are requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <param name="dataType">
+        /// Name of the data type. Must map to a valid CLR type.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the request by aborting the HTTP call.
+        /// </param>
+        /// <remarks>
+        /// ### Response Format
+        /// - Content type: <c>application/json</c>
+        /// - Response is a JSON array of <see cref="CompressedEventLogBase"/> objects.
+        /// </remarks>
+        /// <response code="200">Data successfully retrieved (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("[action]/{locationIdentifier}/{dataType}/{deviceId:int}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(typeof(IEnumerable<CompressedEventLogBase>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] string dataType,
+            [FromRoute] int deviceId,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
 
-        //        return Ok(result);
-        //    }
+            if (!await _devices.DeviceExists(deviceId))
+                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
 
-        //    /// <summary>
-        //    /// Get all event logs for location by date and device id
-        //    /// </summary>
-        //    /// <param name="locationIdentifier">Location identifier</param>
-        //    /// <param name="deviceId">Device id events came from</param>
-        //    /// <param name="start">Archive date of event to start with</param>
-        //    /// <param name="end">Archive date of event to end with</param>
-        //    /// <returns></returns>
-        //    /// <response code="200">Call completed successfully</response>
-        //    /// <response code="400">Invalid request (date)</response>
-        //    /// <response code="404">Resource not found</response>
-        //    [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}")]
-        //    [Produces("application/json", "application/xml")]
-        //    [ProducesResponseType(StatusCodes.Status200OK)]
-        //    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //    [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //    public IActionResult GetData(string locationIdentifier, int deviceId, DateTime start, DateTime end)
-        //    {
-        //        if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
-        //            return BadRequest("Invalid date range");
+            if (!typeof(EventLogModelBase).ToDictionary().TryGetValue(dataType, out var type))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid data type",
+                    Detail = $"The specified data type '{dataType}' is not recognized.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
 
-        //        if (deviceId == 0)
-        //            return BadRequest("Invalid device id");
-
-        //        var result = _repository.GetData(locationIdentifier, start, end, deviceId);
-
-        //        if (result.Count == 0)
-        //            return NotFound();
-
-        //        HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
-
-        //        return Ok(result);
-        //    }
-
-        //    /// <summary>
-        //    /// Get all event logs for location by date and datatype
-        //    /// </summary>
-        //    /// <param name="locationIdentifier">Location identifier</param>
-        //    /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
-        //    /// <param name="start">Archive date of event to start with</param>
-        //    /// <param name="end">Archive date of event to end with</param>
-        //    /// <returns></returns>
-        //    /// <response code="200">Call completed successfully</response>
-        //    /// <response code="400">Invalid request (date)</response>
-        //    /// <response code="404">Resource not found</response>
-        //    [HttpGet("[Action]/{locationIdentifier}/{dataType}")]
-        //    [Produces("application/json", "application/xml")]
-        //    [ProducesResponseType(StatusCodes.Status200OK)]
-        //    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //    [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //    public IActionResult GetData(string locationIdentifier, string dataType, DateTime start, DateTime end)
-        //    {
-        //        if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
-        //            return BadRequest("Invalid date range");
-
-        //        Type type;
-
-        //        try
-        //        {
-        //            type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
-        //        }
-        //        catch (Exception)
-        //        {
-        //            return BadRequest("Invalid data type");
-        //        }
-
-        //        var result = _repository.GetData(locationIdentifier, start, end, type);
-
-        //        if (result.Count == 0)
-        //            return NotFound();
-
-        //        HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
-
-        //        return Ok(result);
-        //    }
-
-        //    /// <summary>
-        //    /// Get all event logs for location by date, device id and datatype
-        //    /// </summary>
-        //    /// <param name="locationIdentifier">Location identifier</param>
-        //    /// <param name="deviceId">Device id events came from</param>
-        //    /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
-        //    /// <param name="start">Archive date of event to start with</param>
-        //    /// <param name="end">Archive date of event to end with</param>
-        //    /// <returns></returns>
-        //    /// <response code="200">Call completed successfully</response>
-        //    /// <response code="400">Invalid request (date)</response>
-        //    /// <response code="404">Resource not found</response>
-        //    [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}/{dataType}")]
-        //    [Produces("application/json", "application/xml")]
-        //    [ProducesResponseType(StatusCodes.Status200OK)]
-        //    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //    [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //    public IActionResult GetData(string locationIdentifier, int deviceId, string dataType, DateTime start, DateTime end)
-        //    {
-        //        if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
-        //            return BadRequest("Invalid date range");
-
-        //        if (deviceId == 0)
-        //            return BadRequest("Invalid device id");
-
-        //        Type type;
-
-        //        try
-        //        {
-        //            type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
-        //        }
-        //        catch (Exception)
-        //        {
-        //            return BadRequest("Invalid data type");
-        //        }
-
-        //        var result = _repository.GetData(locationIdentifier, start, end, type, deviceId);
-
-        //        if (result.Count == 0)
-        //            return NotFound();
-
-        //        HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
-
-        //        return Ok(result);
-        //    }
-
-        //    /// <summary>
-        //    /// Get all days that have event logs for a given location.
-        //    /// </summary>
-        //    /// <param name="locationIdentifier">Location identifier</param>
-        //    /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
-        //    /// <returns>A list of unique days with event logs.</returns>
-        //    /// <response code="200">Call completed successfully</response>
-        //    /// <response code="404">Resource not found</response>
-        //    [AllowAnonymous]
-        //    [HttpGet("[Action]/{locationIdentifier}")]
-        //    [Produces("application/json", "application/xml")]
-        //    [ProducesResponseType(StatusCodes.Status200OK)]
-        //    [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //    public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateTime start, DateTime end)
-        //    {
-
-        //        Type type;
-
-        //        try
-        //        {
-        //            type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
-        //        }
-        //        catch (Exception)
-        //        {
-        //            return BadRequest("Invalid data type");
-        //        }
-
-        //        var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
-
-        //        return Ok(result);
-        //    }
+            var list = await _repository.GetData(locationIdentifier, start, end, type, deviceId)
+                                        .ToListAsync(cancellationToken);
+            return Ok(list);
+        }
     }
 }

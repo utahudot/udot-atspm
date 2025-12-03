@@ -78,7 +78,7 @@ namespace Utah.Udot.Atspm.Extensions
         {
 
             return repo.GetList()
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedDataSpecification<CompressedEventLogBase>(locationIdentifier, start, end))
                 .Where(x => x.DataType == dataType)
                 .Select(x => DateOnly.FromDateTime(x.Start))
                 .Distinct()

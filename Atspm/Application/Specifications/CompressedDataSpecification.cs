@@ -19,8 +19,35 @@ using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Specifications
 {
+    /// <summary>
+    /// Defines query specifications for retrieving <see cref="CompressedDataBase"/> records
+    /// based on location, date range, and optional data type.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The entity type being queried. Must inherit from <see cref="CompressedDataBase"/>.
+    /// </typeparam>
+    /// <remarks>
+    /// This specification applies filtering criteria and ordering rules that can be used
+    /// with repositories or query providers supporting the Specification pattern.
+    /// </remarks>
     public class CompressedDataSpecification<T> : BaseSpecification<T> where T : CompressedDataBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompressedDataSpecification{T}"/> class
+        /// for a specific location and date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose compressed data is requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the query range. Records must end after this date.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the query range. Records must start before this date.
+        /// </param>
+        /// <remarks>
+        /// Results are ordered by the <c>Start</c> property of <see cref="CompressedDataBase"/>.
+        /// </remarks>
         public CompressedDataSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
         {
             Criteria = c => c.LocationIdentifier == locationIdentifier &&
@@ -30,6 +57,25 @@ namespace Utah.Udot.Atspm.Specifications
             ApplyOrderBy(o => o.Start);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompressedDataSpecification{T}"/> class
+        /// for a specific location, date range, and data type.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose compressed data is requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the query range. Records must end after this date.
+        /// </param>
+        /// <param name="end">
+        /// Inclusive end date of the query range. Records must start before this date.
+        /// </param>
+        /// <param name="type">
+        /// CLR type representing the aggregation data type to filter by.
+        /// </param>
+        /// <remarks>
+        /// Results are ordered by the <c>Start</c> property of <see cref="CompressedDataBase"/>.
+        /// </remarks>
         public CompressedDataSpecification(string locationIdentifier, DateTime start, DateTime end, Type type) : base()
         {
             Criteria = c => c.LocationIdentifier == locationIdentifier &&
@@ -40,4 +86,5 @@ namespace Utah.Udot.Atspm.Specifications
             ApplyOrderBy(o => o.Start);
         }
     }
+
 }

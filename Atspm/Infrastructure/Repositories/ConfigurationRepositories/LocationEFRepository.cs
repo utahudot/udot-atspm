@@ -204,6 +204,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
+        /// <inheritdoc/>
         public List<Location> GetLatestLocationsWithDetectionTypes()
         {
             var result = BaseQuery()
@@ -220,6 +221,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> LocationExists(string locationIdentifier)
         {
             return await GetList().AnyAsync(a => a.LocationIdentifier == locationIdentifier);

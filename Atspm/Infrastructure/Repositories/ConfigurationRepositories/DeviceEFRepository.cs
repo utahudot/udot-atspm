@@ -72,6 +72,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
+        /// <inheritdoc/>
+        public async Task<bool> DeviceExists(int deviceId)
+        {
+            return await GetList().AnyAsync(a => a.Id == deviceId);
+        }
+
         #endregion
     }
 }

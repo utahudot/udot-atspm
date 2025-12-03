@@ -242,7 +242,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
-            if (!typeof(T1).ToDictionary().TryGetValue(dataType, out var type))
+            if (!typeof(T2).ToDictionary().TryGetValue(dataType, out var type))
             {
                 return BadRequest(new ProblemDetails
                 {
@@ -310,11 +310,6 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
-
-            if (!typeof(T1).ListDerivedTypes().Contains(dataType))
-            {
-                return BadRequest(new ProblemDetails { Title = "Invalid data type", Detail = $"The specified data type '{dataType}' is not recognized." });
-            }
 
             if (!typeof(T1).ToDictionary().TryGetValue(dataType, out var type))
             {
