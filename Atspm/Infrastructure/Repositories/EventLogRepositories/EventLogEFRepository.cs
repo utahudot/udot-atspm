@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -22,60 +23,58 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
 {
     ///<inheritdoc cref="IEventLogRepository"/>
-    public class EventLogEFRepository : ATSPMRepositoryEFBase<CompressedEventLogBase>, IEventLogRepository
+    public class EventLogEFRepository(EventLogContext db, ILogger<EventLogEFRepository> log) : ATSPMRepositoryEFBase<CompressedEventLogBase>(db, log), IEventLogRepository
     {
-        ///<inheritdoc/>
-        public EventLogEFRepository(EventLogContext db, ILogger<EventLogEFRepository> log) : base(db, log) { }
-
         #region IEventLogRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId)
+        public IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId)
         {
             return GetList()
                 .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end, deviceId))
                 .Where(w => w.DataType == dataType)
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase
+        public IAsyncEnumerable<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase
         {
             var type = typeof(T);
 
-            return [.. GetList()
+            return GetList()
                 .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end, deviceId))
                 .Where(w => w.DataType == type)
-                .Cast<CompressedEventLogs<T>>()];
+                .Cast<CompressedEventLogs<T>>()
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end)
+        public IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end)
         {
             return GetList()
                 .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType)
+        public IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType)
         {
             return GetList()
                 .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == dataType)
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, int deviceId)
+        public IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, int deviceId)
         {
             return GetList()
                 .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end, deviceId))
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase
+        public IAsyncEnumerable<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase
         {
             var type = typeof(T);
 
@@ -83,7 +82,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
                 .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == type)
                 .Cast<CompressedEventLogs<T>>()
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         #endregion

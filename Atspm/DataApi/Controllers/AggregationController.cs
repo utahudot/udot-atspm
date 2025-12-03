@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
@@ -30,13 +31,12 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// <inheritdoc/>
     [ApiVersion("1.0")]
     [Authorize(Policy = "CanViewData")]
-    public class AggregationController(IAggregationRepository repository, ILogger<AggregationController> log) : DataControllerBase
+    public class AggregationController(IAggregationRepository repository, ILocationRepository locations, ILogger<AggregationController> log) : DataControllerBase(locations, log)
     {
         private readonly IAggregationRepository _repository = repository;
-        private readonly ILogger _log = log;
 
         /// <summary>
-        /// Retrieves the available aggregated data types defined in the system.
+        /// Retrieves the available AggregationModelBase derived types defined in the system.
         /// </summary>
         /// <returns>
         /// A list of aggregation type names.
@@ -62,7 +62,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
                 {
@@ -73,6 +73,67 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Streams archived aggregation records for a specific location within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose aggregations are requested.
+        /// </param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.</param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.</param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
+        /// </param>
+        /// <remarks>
+        /// ### Response Format
+        /// - Content type: <c>application/x-ndjson</c>
+        /// - Each line is a JSON object representing a <see cref="CompressedAggregationBase"/> record.
+        /// - Clients should parse line-by-line rather than expecting a JSON array.
+        ///
+        /// ### Example Request
+        /// - GET /api/v1/Aggregation/ndjson/1014?start=2024-01-01&amp;end=2024-12-31
+        ///
+        /// ### Example Response (NDJSON)
+        /// ```
+        /// {"locationId":"1014","start":"2024-01-01T00:00:00Z","end":"2024-01-01T23:59:59Z"}
+        /// {"locationId":"1014","start":"2024-01-02T00:00:00Z","end":"2024-01-02T23:59:59Z"}
+        /// ```
+        ///
+        /// ### Streaming and Cancellation
+        /// - Results are streamed using <c>IAsyncEnumerable</c>.
+        /// - Clients can cancel by aborting the HTTP request (e.g., disposing <c>HttpClient</c> in .NET or calling <c>AbortController.abort()</c> in JavaScript).
+        /// - Cancellation immediately stops enumeration and closes the response.
+        /// </remarks>
+        /// <response code="200">Aggregations successfully streamed (may be empty).</response>
+        /// <response code="400">Invalid date range or malformed request.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("ndjson/{locationIdentifier}")]
+        [Produces("application/x-ndjson")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)] // NDJSON represented as text
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> StreamAggregations(
+            [FromRoute] string locationIdentifier,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
+
+            Response.ContentType = "application/x-ndjson";
+
+            await foreach (var item in _repository.GetArchivedAggregations(locationIdentifier, start, end).WithCancellation(cancellationToken))
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                await Response.WriteAsync(json + "\n", cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
+
+            return new EmptyResult();
+        }
 
         /// <summary>
         /// Retrieves archived aggregation records for a specific location within a given date range.
@@ -81,117 +142,98 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// Unique identifier of the location whose aggregations are requested.
         /// </param>
         /// <param name="start">
-        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
-        /// </param>
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.</param>
         /// <param name="end">
-        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
-        /// </param>
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.</param>
         /// <param name="cancellationToken">
-        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the request by aborting the HTTP call.
         /// </param>
-        /// <returns>
-        /// A stream of <see cref="CompressedDataBase"/> objects representing archived aggregations.
-        /// </returns>
         /// <remarks>
-        /// ### Examples:
-        /// - GET /api/aggregations/location123?start=2024-01-01&amp;end=2024-12-31
-        /// ### Streaming and Cancellation
-        /// - Results are streamed using <c>IAsyncEnumerable</c>.
-        /// - Clients can cancel by aborting the HTTP request (e.g., disposing <c>HttpClient</c> in .NET or calling <c>AbortController.abort()</c> in JavaScript).
-        /// - Cancellation immediately stops enumeration and closes the response.
+        /// ### Response Format
+        /// - Content type: <c>application/json</c>
+        /// - Response is a JSON array of <see cref="CompressedAggregationBase"/> objects.
+        ///
+        /// ### Example Request
+        /// - GET /api/v1/Aggregation/GetArchivedAggregations/1014?start=2024-01-01&amp;end=2024-12-31
+        ///
+        /// ### Example Response (JSON Array)
+        /// ```json
+        /// [
+        ///   {"locationId":"1014","start":"2024-01-01T00:00:00Z","end":"2024-01-01T23:59:59Z"},
+        ///   {"locationId":"1014","start":"2024-01-02T00:00:00Z","end":"2024-01-02T23:59:59Z"}
+        /// ]
+        /// ```
         /// </remarks>
         /// <response code="200">Aggregations successfully retrieved (may be empty).</response>
         /// <response code="400">Invalid date range or malformed request.</response>
-        /// <response code="404">Location not found (if repository distinguishes this).</response>
+        /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}")]
         [Produces("application/json", "application/xml")]
-        [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<CompressedAggregationBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public ActionResult<IAsyncEnumerable<CompressedDataBase>> GetArchivedAggregations(
+        public async Task<ActionResult<IEnumerable<CompressedAggregationBase>>> GetArchivedAggregations(
             [FromRoute] string locationIdentifier,
             [FromQuery] DateTime start,
             [FromQuery] DateTime end,
             CancellationToken cancellationToken)
         {
-            if (end < start)
-            {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid date range",
-                    Detail = "End must be greater than or equal to start",
-                    Status = StatusCodes.Status400BadRequest
-                });
-            }
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
 
-            var results = _repository.GetArchivedAggregations(locationIdentifier, start, end).WithCancellation(cancellationToken);
+            var list = await _repository.GetArchivedAggregations(locationIdentifier, start, end)
+                                        .ToListAsync(cancellationToken);
 
-            return Ok(results);
+            return Ok(list);
         }
 
         /// <summary>
-        /// Retrieves archived aggregation records for a specific location and aggregation data type within a given date range.
+        /// Streams archived aggregation records for a specific location and data type within a given date range.
         /// </summary>
         /// <param name="locationIdentifier">
-        /// Unique identifier of the location whose aggregations are requested.
-        /// </param>
-        /// <param name="dataType">
-        /// The name of the aggregation data type to retrieve (e.g., DailyAggregation, MonthlyAggregation).
-        /// </param>
+        /// Unique identifier of the location whose aggregations are requested.</param>
         /// <param name="start">
-        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.
-        /// </param>
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.</param>
         /// <param name="end">
-        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.
-        /// </param>
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.</param>
+        /// <param name="dataType">
+        /// Name of the aggregation data type (e.g., "TrafficVolumeAggregation"). Must map to a valid CLR type.</param>
         /// <param name="cancellationToken">
-        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.
-        /// </param>
-        /// <returns>
-        /// A stream of <see cref="CompressedDataBase"/> objects representing archived aggregations of the specified type.
-        /// </returns>
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the stream by aborting the HTTP request.</param>
         /// <remarks>
-        /// ### Examples
-        /// - GET /api/aggregations/location123/DailyAggregation?start=2024-01-01&amp;end=2024-12-31
+        /// ### Response Format
+        /// - Content type: <c>application/x-ndjson</c>
+        /// - Each line is a JSON object representing a <see cref="CompressedAggregationBase"/> record.
+        /// - Clients should parse line-by-line rather than expecting a JSON array.
         ///
-        /// ### Streaming and Cancellation
-        /// - Results are streamed using <c>IAsyncEnumerable</c>.
-        /// - Clients can cancel by aborting the HTTP request (e.g., disposing <c>HttpClient</c> in .NET or calling <c>AbortController.abort()</c> in JavaScript).
-        /// - Cancellation immediately stops enumeration and closes the response.
+        /// ### Example Request
+        /// - GET /api/v1/Aggregation/ndjson/1014?start=2024-01-01&amp;end=2024-12-31&amp;dataType=TrafficVolumeAggregation
+        ///
+        /// ### Example Response (NDJSON)
+        /// ```
+        /// {"locationId":"1014","start":"2024-01-01T00:00:00Z","end":"2024-01-01T23:59:59Z"}
+        /// {"locationId":"1014","start":"2024-01-02T00:00:00Z","end":"2024-01-02T23:59:59Z"}
+        /// ```
         /// </remarks>
-        /// <response code="200">Aggregations successfully retrieved (may be empty).</response>
-        /// <response code="400">Invalid date range or data type.</response>
-        /// <response code="404">Location not found (if repository distinguishes this).</response>
-        [HttpGet("[action]/{locationIdentifier}/{dataType}")]
-        [Produces("application/json", "application/xml")]
-        [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
+        /// <response code="200">Aggregations successfully streamed (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("ndjson/{locationIdentifier}/{dataType}")]
+        [Produces("application/x-ndjson")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public ActionResult<IAsyncEnumerable<CompressedDataBase>> GetArchivedAggregations(
+        public async Task<IActionResult> StreamAggregations(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
             [FromQuery] DateTime start,
             [FromQuery] DateTime end,
             CancellationToken cancellationToken)
         {
-            if (end < start)
-            {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid date range",
-                    Detail = "End must be greater than or equal to start",
-                    Status = StatusCodes.Status400BadRequest
-                });
-            }
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
 
-            Type type;
-            try
-            {
-                type = Type.GetType(
-                    $"{typeof(AggregationModelBase).Namespace}.{dataType}, {typeof(AggregationModelBase).Assembly}",
-                    throwOnError: true);
-            }
-            catch (Exception)
+            if (!typeof(AggregationModelBase).ToDictionary().TryGetValue(dataType, out var type))
             {
                 return BadRequest(new ProblemDetails
                 {
@@ -201,9 +243,83 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 });
             }
 
-            var results = _repository.GetArchivedAggregations(locationIdentifier, start, end, type).WithCancellation(cancellationToken);
+            Response.ContentType = "application/x-ndjson";
 
-            return Ok(results);
+            await foreach (var item in _repository.GetArchivedAggregations(locationIdentifier, start, end, type).WithCancellation(cancellationToken))
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                await Response.WriteAsync(json + "\n", cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
+
+            return new EmptyResult();
+        }
+
+        /// <summary>
+        /// Retrieves archived aggregation records for a specific location and data type within a given date range.
+        /// </summary>
+        /// <param name="locationIdentifier">
+        /// Unique identifier of the location whose aggregations are requested.</param>
+        /// <param name="start">
+        /// Inclusive start date of the archive range. Must be less than or equal to <paramref name="end"/>.</param>
+        /// <param name="end">
+        /// Inclusive end date of the archive range. Must be greater than or equal to <paramref name="start"/>.</param>
+        /// <param name="dataType">
+        /// Name of the aggregation data type (derived from <see cref="CompressedAggregationBase"/>). Must map to a valid CLR type.</param>
+        /// <param name="cancellationToken">
+        /// Token automatically provided by ASP.NET Core. Consumers can cancel the request by aborting the HTTP call.</param>
+        /// <remarks>
+        /// ### Response Format
+        /// - Content type: <c>application/json</c>
+        /// - Response is a JSON array of <see cref="CompressedAggregationBase"/> objects.
+        ///
+        /// ### Example Request
+        /// - GET /api/v1/Aggregation/GetArchivedAggregations/1014?start=2024-01-01&amp;end=2024-12-31&amp;dataType=TrafficVolumeAggregation
+        ///
+        /// ### Example Response (JSON Array)
+        /// ```json
+        /// [
+        ///   {"locationId":"1014","start":"2024-01-01T00:00:00Z","end":"2024-01-01T23:59:59Z"},
+        ///   {"locationId":"1014","start":"2024-01-02T00:00:00Z","end":"2024-01-02T23:59:59Z"}
+        /// ]
+        /// ```
+        /// </remarks>
+        /// <response code="200">Aggregations successfully retrieved (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [HttpGet("[action]/{locationIdentifier}/{dataType}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(typeof(IEnumerable<CompressedAggregationBase>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<CompressedAggregationBase>>> GetArchivedAggregations(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] string dataType,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            CancellationToken cancellationToken)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
+
+            if (!typeof(AggregationModelBase).ListDerivedTypes().Contains(dataType))
+            {
+                return BadRequest(new ProblemDetails { Title = "Invalid data type", Detail = $"The specified data type '{dataType}' is not recognized." });
+            }
+
+            if (!typeof(AggregationModelBase).ToDictionary().TryGetValue(dataType, out var type))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid data type",
+                    Detail = $"The specified data type '{dataType}' is not recognized.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
+
+            var list = await _repository.GetArchivedAggregations(locationIdentifier, start, end, type)
+                                        .ToListAsync(cancellationToken);
+            return Ok(list);
         }
     }
 }

@@ -87,6 +87,8 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
         IReadOnlyList<Location> GetLocationsBetweenDates(string LocationIdentifier, DateTime startDate, DateTime endDate);
 
+        Task<bool> LocationExists(string locationIdentifier);
+
 
 
         Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate);

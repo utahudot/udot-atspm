@@ -22,11 +22,8 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     ///<inheritdoc cref="IAggregationRepository"/>
-    public class AggregationEFRepository : ATSPMRepositoryEFBase<CompressedAggregationBase>, IAggregationRepository
+    public class AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : ATSPMRepositoryEFBase<CompressedAggregationBase>(db, log), IAggregationRepository
     {
-        ///<inheritdoc/>
-        public AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : base(db, log) { }
-
         #region IAggregationRepository
 
         ///<inheritdoc/>

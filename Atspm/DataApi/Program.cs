@@ -47,8 +47,15 @@ builder.Host
         o.OutputFormatters.Add(new EventLogCsvFormatter());
         o.OutputFormatters.RemoveType<StringOutputFormatter>();
     })
-        .AddNewtonsoftJson()
-        .AddXmlDataContractSerializerFormatters();
+    .AddJsonOptions(options =>
+    {
+        // Configure System.Text.Json here
+        options.JsonSerializerOptions.DefaultBufferSize = 16 * 1024; // optional tuning
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;   // example: keep PascalCase
+        options.JsonSerializerOptions.WriteIndented = true;          // example: pretty-print
+    })
+    .AddNewtonsoftJson()
+    .AddXmlDataContractSerializerFormatters();
     s.AddProblemDetails();
 
     s.AddResponseCompression(o =>
@@ -91,6 +98,7 @@ builder.Host
         o.AddJwtAuthorization();
 
         o.OperationFilter<TimestampFormatHeader>();
+        o.OperationFilter<DataTypeEnumOperationFilter>();
         o.DocumentFilter<GenerateAggregationSchemas>();
         o.DocumentFilter<GenerateEventSchemas>();
     });
@@ -119,6 +127,7 @@ builder.Host
     });
 
     s.AddAtspmDbContext(h);
+    s.AddAtspmEFConfigRepositories();
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFAggregationRepositories();
 

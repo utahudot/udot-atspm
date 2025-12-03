@@ -34,7 +34,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
         /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId);
+        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId);
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
@@ -46,7 +46,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase;
+        IAsyncEnumerable<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase;
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
@@ -55,7 +55,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end);
+        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end);
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
@@ -65,7 +65,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType);
+        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType);
 
         /// <summary>
         /// Get archived event that matches <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
@@ -75,7 +75,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, int deviceId);
+        IAsyncEnumerable<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, int deviceId);
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
@@ -86,7 +86,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase;
+        IAsyncEnumerable<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase;
     }
 
     /// <summary>

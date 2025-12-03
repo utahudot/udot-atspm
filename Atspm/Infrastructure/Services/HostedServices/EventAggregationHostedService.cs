@@ -77,6 +77,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             return new Timeline<T>(startSlot, endSlot, span);
         }
+
         public static IEnumerable<string> ListDerivedTypes(this Type type)
         {
             var result = type.Assembly
@@ -87,6 +88,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             return result;
         }
+
+        public static Dictionary<string, Type> ToDictionary(this Type type)
+        {
+            var result = type.Assembly
+                .GetTypes()
+                .Where(t => t.IsSubclassOf(type))
+                .OrderBy(o => o.Name)
+                .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
+
+            return result;
+        }
+
         public static string ToSnakeCase(this string input)
         {
             ArgumentNullException.ThrowIfNull(input);
