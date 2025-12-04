@@ -19,9 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Binding;
-using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using System.Text.RegularExpressions;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
@@ -30,11 +28,9 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     {
         public AggregationCommand() : base("aggregate", "Run event aggregation")
         {
-            var values = typeof(AggregationModelBase).Assembly.GetTypes()
-                .Where(w => w.IsSubclassOf(typeof(AggregationModelBase)))
-                //TODO: I added a ToSnakeCase extension method for this
-                .Select(s => Regex.Replace(s.Name, @"(?<=[a-z])([A-Z])", @"_$1").ToLower())
-                .Prepend("all")
+            var values = typeof(AggregationModelBase)
+                .ListDerivedTypes()
+                .Select(s => s.ToSnakeCase())
                 .ToArray();
 
             AggregationTypeArgument.FromAmong(values);

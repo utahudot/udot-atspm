@@ -17,6 +17,7 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
@@ -122,7 +123,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="404">Location not found.</response>
         [HttpGet("[Action]/{locationIdentifier}")]
         [Produces("application/x-ndjson")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)] // NDJSON represented as text
+        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)] // NDJSON represented as text
+        [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> StreamData(
@@ -179,7 +181,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="400">Invalid date range or malformed request.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}")]
-        [Produces("application/json", "application/xml")]
+        [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -230,7 +232,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}/{dataType}")]
         [Produces("application/x-ndjson")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)] // NDJSON represented as text
+        [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> StreamData(
@@ -291,7 +294,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}/{dataType}")]
-        [Produces("application/json", "application/xml")]
+        [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

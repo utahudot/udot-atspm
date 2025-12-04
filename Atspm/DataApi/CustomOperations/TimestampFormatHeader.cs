@@ -20,26 +20,38 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Utah.Udot.Atspm.DataApi.CustomOperations
 {
+    /// <summary>
+    /// An <see cref="IOperationFilter"/> that adds a custom header parameter
+    /// (<c>X-Timestamp-Format</c>) to all API operations in the OpenAPI specification.
+    /// </summary>
+    /// <remarks>
+    /// This header allows clients to specify a custom timestamp format for CSV or other
+    /// formatted responses. The format string must follow the .NET custom date and time
+    /// format conventions:
+    /// https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+    /// </remarks>
     public class TimestampFormatHeader : IOperationFilter
     {
-
+        /// <summary>
+        /// Applies the filter to the given <see cref="OpenApiOperation"/> by adding
+        /// the <c>X-Timestamp-Format</c> header parameter definition.
+        /// </summary>
+        /// <param name="operation">
+        /// The OpenAPI operation to which the header parameter will be added.
+        /// </param>
+        /// <param name="context">
+        /// The filter context that provides metadata about the API operation.
+        /// </param>
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Parameters == null)
-                operation.Parameters = new List<OpenApiParameter>();
-
             operation.Parameters.Add(new OpenApiParameter
             {
                 Name = "X-Timestamp-Format",
-                Description = "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
                 In = ParameterLocation.Header,
                 Required = false,
-                Schema = new OpenApiSchema
-                {
-                    Type = "string"
-                }
+                Description = "Change CSV timestamp format. See: https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+                Schema = new OpenApiSchema { Type = "string" }
             });
         }
-
     }
 }

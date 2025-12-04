@@ -20,11 +20,37 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Utah.Udot.Atspm.DataApi.CustomOperations
 {
+    /// <summary>
+    /// A Swagger <see cref="IDocumentFilter"/> that ensures all event log model
+    /// subclasses are included in the generated OpenAPI schema.
+    /// </summary>
+    /// <remarks>
+    /// By default, Swashbuckle only generates schemas for types that are directly
+    /// referenced in controller actions. This filter scans the assembly containing
+    /// <see cref="EventLogModelBase"/> and registers schemas for all derived types
+    /// so they appear in the OpenAPI document. This is useful when you want API
+    /// consumers to see all possible event log models, even if they are not
+    /// directly returned by an endpoint.
+    /// </remarks>
     public class GenerateEventSchemas : IDocumentFilter
     {
+        /// <summary>
+        /// Applies the filter to the OpenAPI document by generating schemas for all
+        /// subclasses of <see cref="EventLogModelBase"/>.
+        /// </summary>
+        /// <param name="swaggerDoc">
+        /// The OpenAPI document being built. Not directly modified in this filter,
+        /// but required by the <see cref="IDocumentFilter"/> interface.
+        /// </param>
+        /// <param name="context">
+        /// Provides access to the schema generator and repository used to add new
+        /// type definitions to the document.
+        /// </param>
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            foreach (var i in typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))))
+            foreach (var i in typeof(EventLogModelBase).Assembly
+                         .GetTypes()
+                         .Where(w => w.IsSubclassOf(typeof(EventLogModelBase))))
             {
                 context.SchemaGenerator.GenerateSchema(i, context.SchemaRepository);
             }

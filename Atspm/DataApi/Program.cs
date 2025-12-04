@@ -51,14 +51,14 @@ builder.Host
             o.OutputFormatters.Add(new EventLogCsvFormatter());
             o.OutputFormatters.RemoveType<StringOutputFormatter>();
         })
-        .AddNewtonsoftJson()
-        .AddXmlDataContractSerializerFormatters();
+        .AddNewtonsoftJson();
         s.AddProblemDetails();
         s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
         s.AddConfiguredSwagger(builder.Configuration, o =>
         {
             o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"));
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+            o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
             o.AddJwtAuthorization();
 
