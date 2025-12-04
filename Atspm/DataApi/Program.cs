@@ -136,7 +136,7 @@ public static class HealthCheckExtensions
     public static IEndpointConventionBuilder MapJsonHealthChecks(
         this IEndpointRouteBuilder endpoints,
         string path = "/health",
-        bool writeIndented = true
+        bool writeIndented = true,
         Func<HealthCheckRegistration, bool>? predicate = null)
     {
         return endpoints.MapHealthChecks(path, new HealthCheckOptions
