@@ -17,15 +17,18 @@
 
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
@@ -51,10 +54,10 @@ builder.Host
         .AddNewtonsoftJson()
         .AddXmlDataContractSerializerFormatters();
         s.AddProblemDetails();
-        s.AddConfiguredCompression(new[]{ "application/json", "application/xml", "text/csv", "application/x-ndjson" });
-        s.AddConfiguredSwagger(builder.Configuration, o => 
+        s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
+        s.AddConfiguredSwagger(builder.Configuration, o =>
         {
-            o.IncludeXmlComments(typeof(Program));
+            o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"));
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.EnableAnnotations();
             o.AddJwtAuthorization();
@@ -80,15 +83,12 @@ builder.Host
         s.AddAtspmEFAggregationRepositories();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
-
         s.AddHealthChecks();
     });
 
 var app = builder.Build();
 
-
-
-//Middleware pipeline:
+#region Middleware Pipeline
 
 //Error handling
 if (!app.Environment.IsProduction())
@@ -117,9 +117,74 @@ app.UseConfiguredSwaggerUI();
 
 //Endpoints
 app.MapControllers();
-app.MapHealthChecks("/health");
+app.MapJsonHealthChecks();
+
+#endregion
 
 app.Run();
+
+
+public static class HealthCheckExtensions
+{
+    /// <summary>
+    /// Maps a health check endpoint that returns JSON.
+    /// </summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="path">The path for the health check endpoint (default: "/health").</param>
+    /// <param name="writeIndented">Whether to indent the JSON output (default: false).</param>
+    /// <param name="predicate">Optional predicate to filter which checks run (e.g. by tags).</param>
+    public static IEndpointConventionBuilder MapJsonHealthChecks(
+        this IEndpointRouteBuilder endpoints,
+        string path = "/health",
+        bool writeIndented = true
+        Func<HealthCheckRegistration, bool>? predicate = null)
+    {
+        return endpoints.MapHealthChecks(path, new HealthCheckOptions
+        {
+            Predicate = predicate ?? (_ => true),
+            ResponseWriter = async (context, report) =>
+            {
+                context.Response.ContentType = "application/json";
+
+                var result = System.Text.Json.JsonSerializer.Serialize(
+                    new
+                    {
+                        status = report.Status.ToString(),
+                        checks = report.Entries.Select(e => new
+                        {
+                            name = e.Key,
+                            status = e.Value.Status.ToString(),
+                            description = e.Value.Description
+                        })
+                    },
+                    new JsonSerializerOptions { WriteIndented = writeIndented });
+
+                await context.Response.WriteAsync(result);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Convenience overload: filter health checks by tags.
+    /// </summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="path">The path for the health check endpoint (default: "/health").</param>
+    /// <param name="writeIndented">Whether to indent the JSON output (default: false).</param>
+    /// <param name="tags">Tags to filter checks by.</param>
+    public static IEndpointConventionBuilder MapJsonHealthChecks(
+        this IEndpointRouteBuilder endpoints,
+        string path = "/health",
+        bool writeIndented = true,
+        params string[] tags)
+    {
+        return MapJsonHealthChecks(endpoints, path, writeIndented,
+            tags != null && tags.Length > 0
+                ? (Func<HealthCheckRegistration, bool>)(check => check.Tags.Any(t => tags.Contains(t)))
+                : null);
+    }
+}
+
+
 
 
 
