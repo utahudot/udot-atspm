@@ -198,15 +198,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (!await _devices.DeviceExists(deviceId))
                 return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
 
-            if (!typeof(EventLogModelBase).ToDictionary().TryGetValue(dataType, out var type))
-            {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid data type",
-                    Detail = $"The specified data type '{dataType}' is not recognized.",
-                    Status = StatusCodes.Status400BadRequest
-                });
-            }
+            var typeError = ValidateDataType(dataType, out var type);
+            if (typeError != null) return typeError;
 
             Response.ContentType = "application/x-ndjson";
 
@@ -269,15 +262,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (!await _devices.DeviceExists(deviceId))
                 return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
 
-            if (!typeof(EventLogModelBase).ToDictionary().TryGetValue(dataType, out var type))
-            {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid data type",
-                    Detail = $"The specified data type '{dataType}' is not recognized.",
-                    Status = StatusCodes.Status400BadRequest
-                });
-            }
+            var typeError = ValidateDataType(dataType, out var type);
+            if (typeError != null) return typeError;
 
             var list = await _repository.GetData(locationIdentifier, start, end, type, deviceId)
                                         .ToListAsync(cancellationToken);

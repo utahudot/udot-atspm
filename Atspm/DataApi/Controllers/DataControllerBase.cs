@@ -243,15 +243,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
-            if (!typeof(T2).ToDictionary().TryGetValue(dataType, out var type))
-            {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid data type",
-                    Detail = $"The specified data type '{dataType}' is not recognized.",
-                    Status = StatusCodes.Status400BadRequest
-                });
-            }
+            var typeError = ValidateDataType(dataType, out var type);
+            if (typeError != null) return typeError;
 
             Response.ContentType = "application/x-ndjson";
 
@@ -312,15 +305,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
-            if (!typeof(T1).ToDictionary().TryGetValue(dataType, out var type))
-            {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid data type",
-                    Detail = $"The specified data type '{dataType}' is not recognized.",
-                    Status = StatusCodes.Status400BadRequest
-                });
-            }
+            var typeError = ValidateDataType(dataType, out var type);
+            if (typeError != null) return typeError;
 
             var list = await _repository.GetData(locationIdentifier, start, end, type)
                                         .ToListAsync(cancellationToken);
@@ -359,5 +345,34 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
 
             return null; // success
         }
+
+        /// <summary>
+        /// Validates that the requested data type maps to a known CLR type.
+        /// </summary>
+        /// <param name="dataType">
+        /// The name of the data type requested.
+        /// </param>
+        /// <param name="type">
+        /// When validation succeeds, contains the resolved CLR <see cref="Type"/>.
+        /// </param>
+        /// <returns>
+        /// Returns <see cref="BadRequestObjectResult"/> if the data type is invalid,
+        /// or <c>null</c> if validation succeeds.
+        /// </returns>
+        protected ActionResult? ValidateDataType(string dataType, out Type? type)
+        {
+            if (!typeof(T1).ToDictionary().TryGetValue(dataType, out type))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid data type",
+                    Detail = $"The specified data type '{dataType}' is not recognized.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
+
+            return null; // success
+        }
+
     }
 }
