@@ -57,6 +57,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.22" />
 		<PackageReference Include="OData.Swagger" Version="1.0.0" />
 		<PackageReference Include="Parquet.Net" Version="3.10.0" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />

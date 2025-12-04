@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
@@ -36,6 +35,7 @@ using Utah.Udot.Atspm.Repositories;
 using Utah.Udot.Atspm.SqlDatabaseProvider;
 using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
 using Utah.Udot.NetStandardToolkit.Authentication;
+
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -137,6 +137,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddDbContext<AggregationContext>(db => db.DbDefaults<AggregationContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<EventLogContext>(db => db.DbDefaults<EventLogContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(host, QueryTrackingBehavior.NoTracking));
+
+            services.AddHealthChecks()
+                .AddDbContextCheck<ConfigContext>()
+                .AddDbContextCheck<AggregationContext>()
+                .AddDbContextCheck<EventLogContext>()
+                .AddDbContextCheck<IdentityContext>();
 
             return services;
         }

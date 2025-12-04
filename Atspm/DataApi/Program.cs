@@ -17,7 +17,6 @@
 
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -26,6 +25,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
@@ -33,182 +33,239 @@ using Utah.Udot.Atspm.DataApi.Formatters;
 using Utah.Udot.NetStandardToolkit.Authentication;
 using Utah.Udot.NetStandardToolkit.Services;
 
-//gitactions: IIII
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host
     .ApplyVolumeConfiguration()
-    .ConfigureLogging((h, l) =>
+    .ConfigureLogging((h, l) => l.AddGoogle(h))
+    .ConfigureServices((h, s) =>
     {
-        l.AddGoogle(h);
-    })
-.ConfigureServices((h, s) =>
-{
-    s.AddControllers(o =>
-    {
-        o.ReturnHttpNotAcceptable = true;
-        o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-        //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
-        o.OutputFormatters.Add(new EventLogCsvFormatter());
-        o.OutputFormatters.RemoveType<StringOutputFormatter>();
-    })
-    .AddNewtonsoftJson()
-    .AddXmlDataContractSerializerFormatters();
-    s.AddProblemDetails()
-
-    // Register response compression
-    .AddResponseCompression(options =>
-    {
-        options.EnableForHttps = true; // allow compression over HTTPS
-
-        // Add compression providers
-        options.Providers.Add<GzipCompressionProvider>();
-        options.Providers.Add<BrotliCompressionProvider>();
-
-        // Restrict to specific MIME types
-        options.MimeTypes = new[]
+        s.AddControllers(o =>
         {
-        "application/json",
-        "application/xml",
-        "text/csv",
-        "application/x-ndjson"
-    };
-    });
-
-    // Configure _provider options (optional)
-    s.Configure<GzipCompressionProviderOptions>(opts =>
-    {
-        opts.Level = System.IO.Compression.CompressionLevel.Fastest;
-    });
-
-    s.Configure<BrotliCompressionProviderOptions>(opts =>
-    {
-        opts.Level = System.IO.Compression.CompressionLevel.Optimal;
-    });
-
-    s.AddConfiguredSwagger(builder.Configuration, o =>
-    {
-        o.IncludeXmlComments(typeof(Program));
-        o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
-        o.EnableAnnotations();
-        o.AddJwtAuthorization();
-
-        o.OperationFilter<TimestampFormatHeader>();
-        o.OperationFilter<DataTypeEnumOperationFilter>();
-        o.DocumentFilter<GenerateAggregationSchemas>();
-        o.DocumentFilter<GenerateEventSchemas>();
-    });
-
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
-    s.AddCors(options =>
-    {
-        options.AddPolicy("CorsPolicy",
-        builder =>
+            o.ReturnHttpNotAcceptable = true;
+            o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+            //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
+            o.OutputFormatters.Add(new EventLogCsvFormatter());
+            o.OutputFormatters.RemoveType<StringOutputFormatter>();
+        })
+        .AddNewtonsoftJson()
+        .AddXmlDataContractSerializerFormatters();
+        s.AddProblemDetails();
+        s.AddConfiguredCompression(new[]{ "application/json", "application/xml", "text/csv", "application/x-ndjson" });
+        s.AddConfiguredSwagger(builder.Configuration, o => 
         {
-            builder.WithOrigins(allowedHosts.Split(','))
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+            o.IncludeXmlComments(typeof(Program));
+            o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+            o.EnableAnnotations();
+            o.AddJwtAuthorization();
+
+            o.OperationFilter<TimestampFormatHeader>();
+            o.OperationFilter<DataTypeEnumOperationFilter>();
+            o.DocumentFilter<GenerateAggregationSchemas>();
+            o.DocumentFilter<GenerateEventSchemas>();
         });
+        s.AddConfiguredCors(builder.Configuration);
+        s.AddHttpLogging(l =>
+        {
+            l.LoggingFields = HttpLoggingFields.All;
+            //l.RequestHeaders.Add("My-Request-Header");
+            //l.ResponseHeaders.Add("My-Response-Header");
+            //l.MediaTypeOptions.AddText("application/json");
+            l.RequestBodyLogLimit = 4096;
+            l.ResponseBodyLogLimit = 4096;
+        });
+        s.AddAtspmDbContext(h);
+        s.AddAtspmEFConfigRepositories();
+        s.AddAtspmEFEventLogRepositories();
+        s.AddAtspmEFAggregationRepositories();
+        s.AddPathBaseFilter(h);
+        s.AddAtspmIdentity(h);
+
+        s.AddHealthChecks();
     });
-
-    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
-    s.AddHttpLogging(l =>
-    {
-        l.LoggingFields = HttpLoggingFields.All;
-        //l.RequestHeaders.Add("My-Request-Header");
-        //l.ResponseHeaders.Add("My-Response-Header");
-        //l.MediaTypeOptions.AddText("application/json");
-        l.RequestBodyLogLimit = 4096;
-        l.ResponseBodyLogLimit = 4096;
-    });
-
-    builder.Services.Configure<RateLimitingOptions>(
-    builder.Configuration.GetSection("RateLimiting"));
-
-    builder.Services.AddSingleton<RateLimitingPolicyService>();
-
-    builder.Services.AddRateLimiter(options =>
-    {
-        var sp = builder.Services.BuildServiceProvider();
-        var policyService = sp.GetRequiredService<RateLimitingPolicyService>();
-        options.GlobalLimiter = policyService.CreateGlobalLimiter();
-    });
-
-
-    //builder.Services.AddRateLimiter(options =>
-    //{
-    //    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-    //    {
-    //        // Partition key: combine IP + user
-    //        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-    //        var user = httpContext.User.Identity?.Name ?? "anonymous";
-
-    //        // Example deny list
-    //        var blockedIps = new[] { "203.0.113.42", "198.51.100.77" };
-    //        var blockedUsers = new[] { "baduser@example.com", "spammer", "anonymous" };
-
-    //        // Block specific IPs outright
-    //        if (blockedIps.Contains(ip))
-    //        {
-    //            return RateLimitPartition.GetNoLimiter($"ip:{ip}");
-    //        }
-
-    //        // Block specific users outright
-    //        if (blockedUsers.Contains(user))
-    //        {
-    //            return RateLimitPartition.GetNoLimiter($"user:{user}");
-    //        }
-
-    //        // Otherwise apply a sliding window limiter per user+IP combo
-    //        var key = $"{user}:{ip}";
-    //        return RateLimitPartition.GetSlidingWindowLimiter(key, _ => new SlidingWindowRateLimiterOptions
-    //        {
-    //            PermitLimit = 10,                  // max 10 requests
-    //            Window = TimeSpan.FromMinutes(1),  // per 1 minute
-    //            SegmentsPerWindow = 2,             // smoother distribution
-    //            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-    //            QueueLimit = 0
-    //        });
-    //    });
-    //});
-
-
-    s.AddAtspmDbContext(h);
-    s.AddAtspmEFConfigRepositories();
-    s.AddAtspmEFEventLogRepositories();
-    s.AddAtspmEFAggregationRepositories();
-
-    s.AddPathBaseFilter(h);
-
-    s.AddAtspmIdentity(h);
-});
 
 var app = builder.Build();
 
+
+
+//Middleware pipeline:
+
+//Error handling
 if (!app.Environment.IsProduction())
 {
     app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseExceptionHandler("/error");
+}
 
-//app.UseRateLimiter();
-app.UseResponseCompression();
-app.UseCors("CorsPolicy");
-app.UseHttpLogging();
-app.UseConfiguredSwaggerUI();
-app.UseMiddleware<DownloadLoggingMiddleware>();
+//Security
 app.UseHttpsRedirection();
+app.UseCors("Default");
+app.UseAuthentication();
 app.UseAuthorization();
+
+//Cross-cutting
+app.UseResponseCompression();
+app.UseHttpLogging();
+//app.UseMiddleware<DownloadLoggingMiddleware>();
+
+//Swagger
+app.UseConfiguredSwaggerUI();
+
+//Endpoints
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
 
 
 
 
+public static class CompressionServiceCollectionExtensions
+{
+    /// <summary>
+    /// Adds and configures response compression middleware with optional Gzip and Brotli providers.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection"/> to which response compression services are added.
+    /// </param>
+    /// <param name="mimeTypes">
+    /// Optional list of MIME types to compress. If <c>null</c> or empty, the default set of 
+    /// <see cref="ResponseCompressionDefaults.MimeTypes"/> is used.
+    /// </param>
+    /// <param name="enableForHttps">
+    /// Indicates whether compression should be enabled for HTTPS requests. Defaults to <c>true</c>.
+    /// </param>
+    /// <param name="useGzip">
+    /// Whether to register the Gzip compression provider. Defaults to <c>true</c>.
+    /// </param>
+    /// <param name="useBrotli">
+    /// Whether to register the Brotli compression provider. Defaults to <c>true</c>.
+    /// </param>
+    /// <param name="compressionGzip">
+    /// Compression level to use for Gzip. Defaults to <see cref="CompressionLevel.Fastest"/>.
+    /// </param>
+    /// <param name="compressionBrotli">
+    /// Compression level to use for Brotli. Defaults to <see cref="CompressionLevel.Optimal"/>.
+    /// </param>
+    /// <returns>
+    /// The same <see cref="IServiceCollection"/> instance so that additional calls can be chained.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// This method configures the ASP.NET Core response compression middleware with flexible options:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>Allows enabling/disabling Gzip and Brotli providers independently.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Supports custom compression levels for each provider.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Permits overriding the default MIME types with a custom list.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Enables compression over HTTPS by default.</description>
+    ///   </item>
+    /// </list>
+    /// <para>
+    /// Use <c>app.UseResponseCompression()</c> in the middleware pipeline to activate compression.
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddConfiguredCompression(this IServiceCollection services, 
+        string[] mimeTypes = default, 
+        bool enableForHttps = true,
+        bool useGzip = true, 
+        bool useBrotli = true,
+        CompressionLevel compressionGzip = CompressionLevel.Fastest,
+        CompressionLevel compressionBrotli = CompressionLevel.Optimal)
+    {
+        services.AddResponseCompression(options =>
+        {
+            if (mimeTypes != null && mimeTypes.Length > 0)
+            {
+                options.MimeTypes = mimeTypes;
+            }
+
+            options.EnableForHttps = enableForHttps;
+
+            if (useGzip )options.Providers.Add<GzipCompressionProvider>();
+            if (useBrotli) options.Providers.Add<BrotliCompressionProvider>();
+        });
+
+        services.Configure<GzipCompressionProviderOptions>(opts =>
+        {
+            opts.Level = compressionGzip;
+        });
+
+        services.Configure<BrotliCompressionProviderOptions>(opts =>
+        {
+            opts.Level = compressionBrotli;
+        });
+
+        return services;
+    }
+}
+
+
+
+public class CorsPolicySettings
+{
+    public string[] Origins { get; set; } = Array.Empty<string>();
+    public string[] Methods { get; set; } = Array.Empty<string>();
+    public string[] Headers { get; set; } = Array.Empty<string>();
+    public bool AllowCredentials { get; set; } = false;
+}
+
+public static class CorsServiceCollectionExtensions
+{
+    /// <summary>
+    /// Adds configured CORS policies from configuration.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="config">The application configuration.</param>
+    /// <returns>The same service collection for chaining.</returns>
+    public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration config)
+    {
+        var corsPolicies = config.GetSection("CorsPolicies")
+                                 .Get<Dictionary<string, CorsPolicySettings>>();
+
+        services.AddCors(options =>
+        {
+            foreach (var kvp in corsPolicies)
+            {
+                options.AddPolicy(kvp.Key, policy =>
+                {
+                    if (kvp.Value.Origins.Length == 1 && kvp.Value.Origins[0] == "*")
+                        policy.AllowAnyOrigin();
+                    else
+                        policy.WithOrigins(kvp.Value.Origins);
+
+                    if (kvp.Value.Methods.Length == 1 && kvp.Value.Methods[0] == "*")
+                        policy.AllowAnyMethod();
+                    else
+                        policy.WithMethods(kvp.Value.Methods);
+
+                    if (kvp.Value.Headers.Length == 1 && kvp.Value.Headers[0] == "*")
+                        policy.AllowAnyHeader();
+                    else
+                        policy.WithHeaders(kvp.Value.Headers);
+
+                    if (kvp.Value.AllowCredentials)
+                        policy.AllowCredentials();
+                    else
+                        policy.DisallowCredentials();
+                });
+            }
+        });
+
+        return services;
+    }
+}
 
 
 
@@ -392,8 +449,56 @@ public static class SwaggerApplicationBuilderExtensions
     }
 }
 
+//builder.Services.Configure<RateLimitingOptions>(
+//builder.Configuration.GetSection("RateLimiting"));
 
+//builder.Services.AddSingleton<RateLimitingPolicyService>();
 
+//builder.Services.AddRateLimiter(options =>
+//{
+//    var sp = builder.Services.BuildServiceProvider();
+//    var policyService = sp.GetRequiredService<RateLimitingPolicyService>();
+//    options.GlobalLimiter = policyService.CreateGlobalLimiter();
+//});
+
+//builder.Services.AddRateLimiter(options =>
+//{
+//    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+//    {
+//        // Partition key: combine IP + user
+//        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+//        var user = httpContext.User.Identity?.Name ?? "anonymous";
+
+//        // Example deny list
+//        var blockedIps = new[] { "203.0.113.42", "198.51.100.77" };
+//        var blockedUsers = new[] { "baduser@example.com", "spammer", "anonymous" };
+
+//        // Block specific IPs outright
+//        if (blockedIps.Contains(ip))
+//        {
+//            return RateLimitPartition.GetNoLimiter($"ip:{ip}");
+//        }
+
+//        // Block specific users outright
+//        if (blockedUsers.Contains(user))
+//        {
+//            return RateLimitPartition.GetNoLimiter($"user:{user}");
+//        }
+
+//        // Otherwise apply a sliding window limiter per user+IP combo
+//        var key = $"{user}:{ip}";
+//        return RateLimitPartition.GetSlidingWindowLimiter(key, _ => new SlidingWindowRateLimiterOptions
+//        {
+//            PermitLimit = 10,                  // max 10 requests
+//            Window = TimeSpan.FromMinutes(1),  // per 1 minute
+//            SegmentsPerWindow = 2,             // smoother distribution
+//            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+//            QueueLimit = 0
+//        });
+//    });
+//});
+
+//app.UseRateLimiter();
 
 
 //"RateLimiting": {
