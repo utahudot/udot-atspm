@@ -361,7 +361,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// </returns>
         protected ActionResult? ValidateDataType(string dataType, out Type? type)
         {
-            if (!typeof(T1).ToDictionary().TryGetValue(dataType, out type))
+            if (!typeof(T2).ToDictionary().TryGetValue(dataType, out type))
             {
                 return BadRequest(new ProblemDetails
                 {
