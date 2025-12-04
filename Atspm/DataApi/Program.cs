@@ -48,7 +48,7 @@ builder.Host
             o.ReturnHttpNotAcceptable = true;
             o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
             //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
-            o.OutputFormatters.Add(new EventLogCsvFormatter());
+            //o.OutputFormatters.Add(new EventLogCsvFormatter());
             o.OutputFormatters.RemoveType<StringOutputFormatter>();
         })
         .AddNewtonsoftJson();
@@ -62,7 +62,7 @@ builder.Host
             o.EnableAnnotations();
             o.AddJwtAuthorization();
 
-            o.OperationFilter<TimestampFormatHeader>();
+            //o.OperationFilter<TimestampFormatHeader>();
             o.OperationFilter<DataTypeEnumOperationFilter>();
             o.DocumentFilter<GenerateAggregationSchemas>();
             o.DocumentFilter<GenerateEventSchemas>();

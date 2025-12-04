@@ -17,12 +17,28 @@
 
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
+using System.Globalization;
+using System.Reflection;
 using System.Text;
 
 namespace Utah.Udot.Atspm.DataApi.Formatters
 {
+    /// <summary>
+    /// A custom <see cref="TextOutputFormatter"/> that serializes collections of
+    /// <see cref="EventLogModelBase"/> derived types into CSV format.
+    /// </summary>
+    /// <remarks>
+    /// This formatter inspects the runtime type of the event log objects and uses reflection
+    /// to generate a CSV file with headers based on the public properties of the derived type.
+    /// It supports the <c>text/csv</c> media type and respects an optional
+    /// <c>X-Timestamp-Format</c> request header to control the formatting of <see cref="DateTime"/> values.
+    /// </remarks>
     public class EventLogCsvFormatter : TextOutputFormatter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventLogCsvFormatter"/> class.
+        /// Configures supported media types and encodings.
+        /// </summary>
         public EventLogCsvFormatter()
         {
             SupportedMediaTypes.Add(Microsoft.Net.Http.Headers.MediaTypeHeaderValue.Parse("text/csv"));
@@ -30,39 +46,73 @@ namespace Utah.Udot.Atspm.DataApi.Formatters
             SupportedEncodings.Add(Encoding.Unicode);
         }
 
-        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+        /// <summary>
+        /// Writes the response body as CSV when the object is an <see cref="IEnumerable{T}"/>
+        /// of <see cref="EventLogModelBase"/> instances.
+        /// </summary>
+        /// <param name="context">
+        /// Provides access to the object being written and the HTTP context.
+        /// </param>
+        /// <param name="selectedEncoding">
+        /// The character encoding to use when writing the response.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous write operation.
+        /// </returns>
+        public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            //if (context.Object is IEnumerable<EventLogModelBase> stuff)
-            //{
-            //    context.HttpContext.Request.Headers.TryGetValue("X-Timestamp-Format", out StringValues timestampFormat);
-            //    timestampFormat = string.IsNullOrEmpty(timestampFormat) ? "yyyy-MM-dd'T'HH:mm:ss.f" : timestampFormat;
-
-            //    Console.WriteLine($"--------------------------------------------------------{stuff.Count()}");
-
-            //    var csv = stuff.Select(x => $"{x.LocationIdentifier},{x.Timestamp.ToString(timestampFormat)}").ToList();
-
-            //    csv.Insert(0, "LocationId,Timestamp");
-
-            //    return context.HttpContext.Response.WriteAsync(string.Join("\n", csv), selectedEncoding);
-            //}
-
-            if (context.Object is IEnumerable<ControllerEventLog> result)
+            if (context.Object is IEnumerable<EventLogModelBase> result)
             {
+                // Retrieve timestamp format header (default if not provided)
                 context.HttpContext.Request.Headers.TryGetValue("X-Timestamp-Format", out StringValues timestampFormat);
-                timestampFormat = string.IsNullOrEmpty(timestampFormat) ? "yyyy-MM-dd'T'HH:mm:ss.f" : timestampFormat;
+                var tsFormat = string.IsNullOrEmpty(timestampFormat) ? "yyyy-MM-dd'T'HH:mm:ss.f" : timestampFormat.ToString();
 
-                var csv = result.Select(x => $"{x.SignalIdentifier},{x.Timestamp.ToString(timestampFormat)},{x.EventCode},{x.EventParam}").ToList();
-                csv.Insert(0, "locationId,Timestamp,EventCode,EventParam");
+                var sb = new StringBuilder();
 
-                return context.HttpContext.Response.WriteAsync(string.Join("\n", csv), selectedEncoding);
+                // Determine the runtime type of the first item
+                var first = result.FirstOrDefault();
+                if (first != null)
+                {
+                    var type = first.GetType();
+                    var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                    // Header row
+                    sb.AppendLine(string.Join(",", props.Select(p => p.Name)));
+
+                    // Data rows
+                    foreach (var item in result)
+                    {
+                        var values = props.Select(p =>
+                        {
+                            var val = p.GetValue(item);
+                            if (val == null) return string.Empty;
+
+                            // Special handling for DateTime
+                            if (val is DateTime dt)
+                                return dt.ToString(tsFormat, CultureInfo.InvariantCulture);
+
+                            // Escape commas/quotes
+                            var str = Convert.ToString(val, CultureInfo.InvariantCulture);
+                            if (str.Contains(",") || str.Contains("\""))
+                                str = $"\"{str.Replace("\"", "\"\"")}\"";
+
+                            return str;
+                        });
+
+                        sb.AppendLine(string.Join(",", values));
+                    }
+                }
+
+                await context.HttpContext.Response.WriteAsync(sb.ToString(), selectedEncoding);
+                return;
             }
 
-            return context.HttpContext.Response.CompleteAsync();
+            await context.HttpContext.Response.CompleteAsync();
         }
 
         protected override bool CanWriteType(Type type)
         {
-            return typeof(IEnumerable<ControllerEventLog>).IsAssignableFrom(type);// || typeof(IEnumerable<CompressedAggregationBase>).IsAssignableFrom(type);
+            return typeof(IEnumerable<CompressedEventLogBase>).IsAssignableFrom(type);
         }
     }
 }

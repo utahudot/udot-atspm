@@ -181,7 +181,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="400">Invalid date range or malformed request.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}")]
-        [Produces("application/json")]
+        [Produces("application/json", "text/csv")]
         [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
