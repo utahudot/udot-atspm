@@ -16,6 +16,8 @@
 #endregion
 
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -55,10 +57,10 @@ builder.Host
     })
     .AddNewtonsoftJson()
     .AddXmlDataContractSerializerFormatters();
-    s.AddProblemDetails();
+    s.AddProblemDetails()
 
     // Register response compression
-    builder.Services.AddResponseCompression(options =>
+    .AddResponseCompression(options =>
     {
         options.EnableForHttps = true; // allow compression over HTTPS
 
@@ -76,41 +78,18 @@ builder.Host
     };
     });
 
-    // Configure provider options (optional)
-    builder.Services.Configure<GzipCompressionProviderOptions>(opts =>
+    // Configure _provider options (optional)
+    s.Configure<GzipCompressionProviderOptions>(opts =>
     {
         opts.Level = System.IO.Compression.CompressionLevel.Fastest;
     });
 
-    builder.Services.Configure<BrotliCompressionProviderOptions>(opts =>
+    s.Configure<BrotliCompressionProviderOptions>(opts =>
     {
         opts.Level = System.IO.Compression.CompressionLevel.Optimal;
     });
 
-    //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
-    s.AddApiVersioning(o =>
-    {
-        o.ReportApiVersions = true;
-        o.DefaultApiVersion = new ApiVersion(1, 0);
-        o.AssumeDefaultVersionWhenUnspecified = true;
-
-        //Sunset policies
-        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
-
-    }).AddApiExplorer(o =>
-    {
-        o.GroupNameFormat = "'v'VVV";
-        o.SubstituteApiVersionInUrl = true;
-        //configure query options(which cannot otherwise be configured by OData conventions)
-        //o.QueryOptions.Controller<JurisdictionController>()
-        //                    .Action(c => c.Get(default))
-        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
-        //                        .AllowTop(100);
-    });
-
-    s.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    s.AddSwaggerGen(o =>
+    s.AddConfiguredSwagger(builder.Configuration, o =>
     {
         o.IncludeXmlComments(typeof(Program));
         o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
@@ -219,27 +198,203 @@ if (!app.Environment.IsProduction())
 app.UseResponseCompression();
 app.UseCors("CorsPolicy");
 app.UseHttpLogging();
-app.UseSwagger();
-app.UseSwaggerUI(o =>
-{
-    var descriptions = app.DescribeApiVersions();
-
-    // build a swagger endpoint for each discovered API version
-    foreach (var description in descriptions)
-    {
-        var url = $"{app.Configuration["PathBaseSettings:ApplicationPathBase"]}/swagger/{description.GroupName}/swagger.json";
-        var name = description.GroupName.ToUpperInvariant();
-        o.SwaggerEndpoint(url, name);
-    }
-});
-
+app.UseConfiguredSwaggerUI();
 app.UseMiddleware<DownloadLoggingMiddleware>();
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
+
+
+
+
+public class SwaggerSettings
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public ContactSettings Contact { get; set; }
+    public LicenseSettings License { get; set; }
+}
+
+public class ContactSettings
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string Url { get; set; }
+}
+
+public class LicenseSettings
+{
+    public string Name { get; set; }
+    public string Url { get; set; }
+}
+
+public class PathBaseSettings
+{
+    public string ApplicationPathBase { get; set; }
+}
+
+public class SwaggerUISettings
+{
+    public string DocExpansion { get; set; }
+    public int DefaultModelsExpandDepth { get; set; }
+    public bool DisplayRequestDuration { get; set; }
+}
+
+public class SunsetPolicySettings
+{
+    public int MajorVersion { get; set; }
+    public int MinorVersion { get; set; }
+    public int EffectiveDays { get; set; }
+    public string Link { get; set; }
+    public string Title { get; set; }
+    public string Type { get; set; }
+}
+
+public class ApiVersioningSettings
+{
+    public int DefaultMajorVersion { get; set; }
+    public int DefaultMinorVersion { get; set; }
+    public List<SunsetPolicySettings> SunsetPolicies { get; set; }
+}
+
+
+
+
+
+
+
+
+/// <summary>
+/// Adds and configures Swagger, API versioning, and related settings for the application.
+/// </summary>
+/// <param name="services">
+/// The <see cref="IServiceCollection"/> to which Swagger and API versioning services are added.
+/// </param>
+/// <param name="config">
+/// The application <see cref="IConfiguration"/> instance used to bind Swagger, 
+/// API versioning, path base, and UI settings from <c>appsettings.json</c>.
+/// </param>
+/// <param name="setupAction">
+/// An optional delegate to further configure <see cref="SwaggerGenOptions"/> 
+/// (e.g., XML comments, operation filters, document filters).
+/// </param>
+/// <returns>
+public static class SwaggerServiceCollectionExtensions
+{
+    public static IServiceCollection AddConfiguredSwagger(this IServiceCollection services, IConfiguration config, Action<SwaggerGenOptions> setupAction = null)
+    {
+        services.Configure<SwaggerSettings>(config.GetSection("Swagger"));
+        services.Configure<PathBaseSettings>(config.GetSection("PathBaseSettings"));
+        services.Configure<SwaggerUISettings>(config.GetSection("SwaggerUI"));
+        services.Configure<ApiVersioningSettings>(config.GetSection("ApiVersioning"));
+
+        services.AddApiVersioning(o =>
+        {
+            var versioning = config.GetSection("ApiVersioning").Get<ApiVersioningSettings>();
+            o.ReportApiVersions = true;
+            o.DefaultApiVersion = new ApiVersion(versioning.DefaultMajorVersion, versioning.DefaultMinorVersion);
+            o.AssumeDefaultVersionWhenUnspecified = true;
+
+            if (versioning.SunsetPolicies != null)
+            {
+                foreach (var policy in versioning.SunsetPolicies)
+                {
+                    var sunsetVersion = new ApiVersion(policy.MajorVersion, policy.MinorVersion);
+
+                    o.Policies.Sunset(sunsetVersion)
+                        .Effective(DateTimeOffset.Now.AddDays(policy.EffectiveDays))
+                        .Link(policy.Link)
+                        .Title(policy.Title)
+                        .Type(policy.Type);
+                }
+            }
+        })
+        .AddApiExplorer(o =>
+        {
+            o.GroupNameFormat = "'v'VVV";
+            o.SubstituteApiVersionInUrl = true;
+        });
+
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        services.AddSwaggerGen(setupAction);
+
+        return services;
+    }
+}
+
+public static class SwaggerApplicationBuilderExtensions
+{
+    /// <summary>
+    /// Adds and configures Swagger and Swagger UI middleware to the application pipeline.
+    /// </summary>
+    /// <param name="app">
+    /// The <see cref="IApplicationBuilder"/> used to configure the HTTP request pipeline.
+    /// </param>
+    /// <returns>
+    /// The same <see cref="IApplicationBuilder"/> instance so that additional calls can be chained.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// This method performs the following:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>Resolves <see cref="IApiVersionDescriptionProvider"/> to discover all API versions.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Reads <c>PathBaseSettings</c> and <c>SwaggerUI</c> configuration from <see cref="IConfiguration"/>.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Registers the Swagger middleware (<c>app.UseSwagger()</c>).</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Registers the Swagger UI middleware (<c>app.UseSwaggerUI()</c>) and builds endpoints for each API version.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Applies UI settings such as document expansion, model expand depth, and request duration display.</description>
+    ///   </item>
+    /// </list>
+    /// <para>
+    /// The first Swagger endpoint registered will be the default document shown when Swagger UI loads.
+    /// </para>
+    /// </remarks>
+    public static IApplicationBuilder UseConfiguredSwaggerUI(this IApplicationBuilder app)
+    {
+        var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+        var descriptions = provider.ApiVersionDescriptions;
+        var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+        var pathBase = config.GetValue<string>("PathBaseSettings:ApplicationPathBase");
+        var uiSettings = config.GetSection("SwaggerUI").Get<SwaggerUISettings>();
+
+        app.UseSwagger();
+        app.UseSwaggerUI(o =>
+        {
+            foreach (var description in descriptions)
+            {
+                var url = $"{pathBase}/swagger/{description.GroupName}/swagger.json";
+                var name = description.GroupName.ToUpperInvariant();
+                o.SwaggerEndpoint(url, name);
+            }
+
+            o.DocExpansion(Enum.Parse<Swashbuckle.AspNetCore.SwaggerUI.DocExpansion>(uiSettings.DocExpansion));
+            o.DefaultModelsExpandDepth(uiSettings.DefaultModelsExpandDepth);
+            if (uiSettings.DisplayRequestDuration)
+                o.DisplayRequestDuration();
+        });
+
+        return app;
+    }
+}
+
+
+
+
 
 //"RateLimiting": {
 //    "PermitLimit": 10,

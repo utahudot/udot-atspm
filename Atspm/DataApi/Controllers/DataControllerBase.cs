@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;

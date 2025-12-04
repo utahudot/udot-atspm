@@ -25,41 +25,91 @@ using System.Text;
 namespace Utah.Udot.Atspm.DataApi.Configuration
 {
     /// <summary>
-    /// Configures the Swagger generation options.
+    /// Configures Swagger generation options for each discovered API version.
     /// </summary>
-    /// <remarks>This allows API versioning to define a Swagger document per API version after the
-    /// <see cref="IApiVersionDescriptionProvider"/> service has been resolved from the service container.</remarks>                        
-    public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+    /// <remarks>
+    /// This class uses <see cref="IApiVersionDescriptionProvider"/> to dynamically create
+    /// Swagger documents for all API versions exposed by the application. It also enriches
+    /// each document with metadata from <see cref="SwaggerSettings"/>, including title,
+    /// description, contact, license, and optional sunset policy information.
+    /// </remarks>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
+    /// </remarks>
+    /// <param name="provider">
+    /// The <see cref="IApiVersionDescriptionProvider"/> used to enumerate all API versions.
+    /// </param>
+    /// <param name="settings">
+    /// The bound <see cref="SwaggerSettings"/> configuration section containing metadata
+    /// such as title, description, contact, and license information.
+    /// </param>
+    public class ConfigureSwaggerOptions(
+        IApiVersionDescriptionProvider provider,
+        IOptions<SwaggerSettings> settings) : IConfigureOptions<SwaggerGenOptions>
     {
-        private readonly IApiVersionDescriptionProvider provider;
+        private readonly IApiVersionDescriptionProvider _provider = provider;
+        private readonly SwaggerSettings _settings = settings.Value;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
+        /// Configures Swagger generation by registering a Swagger document for each API version.
         /// </summary>
-        /// <param name="provider">The <see cref="IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
-        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => this.provider = provider;
-
-        /// <inheritdoc />
+        /// <param name="options">
+        /// The <see cref="SwaggerGenOptions"/> to configure.
+        /// </param>
+        /// <remarks>
+        /// For each API version description provided by <see cref="IApiVersionDescriptionProvider"/>,
+        /// this method registers a Swagger document with metadata created by
+        /// <see cref="CreateInfoForApiVersion(ApiVersionDescription)"/>.
+        /// </remarks>
         public void Configure(SwaggerGenOptions options)
         {
-            // add a swagger document for each discovered API version
-            // note: you might choose to skip or document deprecated API versions differently
-            foreach (var description in provider.ApiVersionDescriptions)
+            foreach (var description in _provider.ApiVersionDescriptions)
             {
+                Console.WriteLine($"GroupName: '{description.GroupName}', Version: {description.ApiVersion}");
+
                 options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
             }
         }
 
-        private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
+        /// <summary>
+        /// Creates an <see cref="OpenApiInfo"/> instance for a given API version description.
+        /// </summary>
+        /// <param name="description">
+        /// The <see cref="ApiVersionDescription"/> representing the API version.
+        /// </param>
+        /// <returns>
+        /// An <see cref="OpenApiInfo"/> populated with metadata such as title, version,
+        /// contact, license, and optional sunset policy information.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// The description is enriched with:
+        /// </para>
+        /// <list type="bullet">
+        ///   <item><description>Deprecation notice if the version is marked as deprecated.</description></item>
+        ///   <item><description>Sunset policy details including effective date and links.</description></item>
+        ///   <item><description>Clickable Markdown links for sunset policy references.</description></item>
+        /// </list>
+        /// </remarks>
+        private OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
         {
-            var text = new StringBuilder("ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.");
-            var info = new OpenApiInfo()
+            var text = new StringBuilder(_settings.Description);
+
+            var info = new OpenApiInfo
             {
-                Title = "ATSPM Log Data Api",
+                Title = _settings.Title,
                 Version = description.ApiVersion.ToString(),
-                Contact = new OpenApiContact() { Name = "udotdevelopment", Email = "udotdevelopment@gmail.com", Url = new Uri("https://udottraffic.utah.gov/atspm/") },
-                License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
-                //TermsOfService = new Uri()
+                Contact = new OpenApiContact
+                {
+                    Name = _settings.Contact.Name,
+                    Email = _settings.Contact.Email,
+                    Url = new Uri(_settings.Contact.Url)
+                },
+                License = new OpenApiLicense
+                {
+                    Name = _settings.License.Name,
+                    Url = new Uri(_settings.License.Url)
+                }
             };
 
             if (description.IsDeprecated)
@@ -79,28 +129,19 @@ namespace Utah.Udot.Atspm.DataApi.Configuration
                 if (policy.HasLinks)
                 {
                     text.AppendLine();
-
-                    for (var i = 0; i < policy.Links.Count; i++)
+                    foreach (var link in policy.Links)
                     {
-                        var link = policy.Links[i];
-
                         if (link.Type == "text/html")
                         {
                             text.AppendLine();
-
-                            if (link.Title.HasValue)
-                            {
-                                text.Append(link.Title.Value).Append(": ");
-                            }
-
-                            text.Append(link.LinkTarget.OriginalString);
+                            var title = link.Title.HasValue ? link.Title.Value : "More info";
+                            text.Append($"[{title}]({link.LinkTarget.OriginalString})");
                         }
                     }
                 }
             }
 
             info.Description = text.ToString();
-
             return info;
         }
     }
