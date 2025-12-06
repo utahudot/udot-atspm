@@ -1,4 +1,4 @@
-import { useGetEventLogDataTypes } from '@/api/data/aTSPMLogDataApi'
+import { useGetEventLogDataTypes } from '@/api/data'
 import OptionsWrapper from '@/components/OptionsWrapper'
 import {
   Box,

@@ -1,8 +1,9 @@
 import { Location } from '@/api/config'
+import { useGetEventLogDataFromLocationIdentifierAndDataType } from '@/api/data'
 import OptionsWrapper from '@/components/OptionsWrapper'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import SelectDateTime from '@/components/selectTimeSpan'
-import { ResponseFormat, useEventLogs } from '@/features/data/api/getEventLogs'
+import { ResponseFormat } from '@/features/data/api/getEventLogs'
 import SelectDataType, {
   DataTypeOption,
 } from '@/features/data/components/selectDataType'
@@ -62,15 +63,15 @@ const ExportData = () => {
 
   // Todo: for now, the end date is the start date + 1 day for raw data
 
-  const { refetch: refetchEventLogs } = useEventLogs({
-    locationIdentifier: location?.locationIdentifier || '',
-    start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
-    end: isValid(startDateTime)
-      ? dateToTimestamp(addDays(startDateTime, 1))
-      : '',
-    dataType: selectedOption.name,
-    ResponseFormat: downloadFormat,
-  })
+  const { refetch: refetchEventLogs } =
+    useGetEventLogDataFromLocationIdentifierAndDataType(
+      location?.locationIdentifier || '',
+      selectedOption.name,
+      {
+        start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
+        end: isValid(endDateTime) ? dateToTimestamp(endDateTime) : '',
+      }
+    )
 
   const { refetch: refetchAggData } = useGetAggData(
     location?.locationIdentifier,
@@ -183,7 +184,6 @@ const ExportData = () => {
                 views={['year', 'month', 'day']}
                 startDateTime={startDateTime}
                 endDateTime={endDateTime}
-                startDateOnly={selectedOption.type === 'raw'}
                 changeStartDate={handleStartDateTimeChange}
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}

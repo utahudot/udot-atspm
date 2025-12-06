@@ -1,4 +1,4 @@
-import { getEventLogDaysWithEventLogsFromLocationIdentifier } from '@/api/data/aTSPMLogDataApi'
+import { getEventLogDataFromLocationIdentifierAndDataType } from '@/api/data'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   eachDayOfInterval,
@@ -26,10 +26,10 @@ const useMissingDays = (
     const computeMissingDays = async () => {
       try {
         const availableDaysRaw =
-          await getEventLogDaysWithEventLogsFromLocationIdentifier(
+          await getEventLogDataFromLocationIdentifierAndDataType(
             locationIdentifier,
+            dataType,
             {
-              dataType,
               start: dateToTimestamp(startDate),
               end: dateToTimestamp(endDate),
             }
