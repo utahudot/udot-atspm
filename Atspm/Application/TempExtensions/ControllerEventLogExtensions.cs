@@ -493,17 +493,33 @@ namespace Utah.Udot.Atspm.TempExtensions
         }
 
         public static IReadOnlyList<IndianaEvent> GetCycleEventsWithTimeExtension(
-           this IEnumerable<IndianaEvent> events,
-           int phaseNumber,
-           bool useOverlap,
-           DateTime start,
-           DateTime end)
+            this IEnumerable<IndianaEvent> events,
+            int phaseNumber,
+            bool useOverlap,
+            DateTime start,
+            DateTime end)
         {
-            return events.GetEventsByEventCodes(
+            var cycleEvents = events.GetEventsByEventCodes(
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
                 GetCycleEventCodes(useOverlap),
-                phaseNumber).OrderBy(e => e.Timestamp).ToList();
+                phaseNumber)
+                .OrderBy(e => e.Timestamp)
+                .ToList();
+
+            // Logic to clean out 65s if 64 exists
+            if (useOverlap)
+            {
+                bool has64 = cycleEvents.Any(e => e.EventCode == 64);
+                if (has64)
+                {
+                    cycleEvents = cycleEvents
+                        .Where(e => e.EventCode != 65)
+                        .ToList();
+                }
+            }
+
+            return cycleEvents;
         }
 
         public static List<short> GetCycleEventCodes(bool useOvelap)
@@ -514,6 +530,7 @@ namespace Utah.Udot.Atspm.TempExtensions
                     61,
                     63,
                     64,
+                    65, // Include, but will be filtered if 64s exist
                     66
                 }
                 : new List<short>

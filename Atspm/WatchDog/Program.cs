@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,12 +24,19 @@ using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
+using System.Diagnostics;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
+
+if (OperatingSystem.IsWindows())
+{
+    if (!EventLog.SourceExists("Atspm"))
+        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
+}
 
 var rootCmd = new WatchdogCommand();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -78,6 +86,7 @@ host =>
         }
     });
 });
+
 
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync(args);

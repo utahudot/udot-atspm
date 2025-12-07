@@ -32,6 +32,7 @@ namespace DatabaseInstaller.Commands
             AddCommand(TranslateEventLogsCommand);
             AddCommand(TransferDailyToHourlyEventLogsCommand);
             AddCommand(SetupTestCommand);
+            AddCommand(SearchEventsCommand);
         }
 
         public UpdateCommand UpdateCommand { get; set; } = new UpdateCommand();
@@ -42,6 +43,7 @@ namespace DatabaseInstaller.Commands
         public TranslateEventLogsCommand TranslateEventLogsCommand { get; set; } = new TranslateEventLogsCommand();
         public TransferDailyToHourlyEventLogsCommand TransferDailyToHourlyEventLogsCommand { get; set; } = new TransferDailyToHourlyEventLogsCommand();
         public SetupTestCommand SetupTestCommand { get; set; } = new SetupTestCommand();
+        public SearchEventsCommand SearchEventsCommand { get; set; } = new SearchEventsCommand();
 
     }
 }

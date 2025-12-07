@@ -107,8 +107,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                         RouteId = routeLocationDto.RouteId
                     };
 
-                    //HandleDistances(routeLocationDto, newLocation);
-
                     route.RouteLocations.Add(newLocation);
                 }
                 else
@@ -124,12 +122,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                     existingLocation.PreviousLocationDistanceId = routeLocationDto.PreviousLocationDistanceId;
                     existingLocation.NextLocationDistanceId = routeLocationDto.NextLocationDistanceId;
                     existingLocation.LocationIdentifier = routeLocationDto.LocationIdentifier;
-
-                    //HandleDistances(routeLocationDto, existingLocation);
                 }
             }
 
-            HandleDistances(orderedRouteLocations, route.RouteLocations.ToList());
+            var orderedRoute = route.RouteLocations.OrderBy(rl => rl.Order).ToList();
+
+            HandleDistances(orderedRouteLocations, orderedRoute);
 
 
             // Save changes

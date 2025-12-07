@@ -155,5 +155,49 @@ namespace Utah.Udot.Atspm
                 .All(a => a.EventCode == w.EventCode))
                 .ToList();
         }
+
+        public static double GetAverage(List<double> speeds)
+        {
+            return speeds.Average();
+        }
+
+        public static double Percentile(List<double> sequence, double percentile)
+        {
+            if (sequence == null || !sequence.Any())
+            {
+                throw new InvalidOperationException("The sequence must not be empty.");
+            }
+
+            if (percentile < 0 || percentile > 100)
+            {
+                throw new ArgumentOutOfRangeException("Percentile must be between 0 and 100.");
+            }
+
+            // Sort the list
+            sequence.Sort();
+
+            // Handle the case where there is only 1 number
+            if (sequence.Count == 1)
+            {
+                return sequence[0];
+            }
+
+            // Get the rank (position)
+            double rank = (percentile / 100.0) * (sequence.Count - 1);
+            int lowerIndex = (int)Math.Floor(rank);
+            int upperIndex = (int)Math.Ceiling(rank);
+
+            // If rank is an integer or lowerIndex equals upperIndex, return the value at that index
+            if (lowerIndex == upperIndex)
+            {
+                return sequence[lowerIndex];
+            }
+
+            // Otherwise, interpolate between the lower and upper values
+            double lowerValue = sequence[lowerIndex];
+            double upperValue = sequence[upperIndex];
+
+            return lowerValue + (upperValue - lowerValue) * (rank - lowerIndex);
+        }
     }
 }

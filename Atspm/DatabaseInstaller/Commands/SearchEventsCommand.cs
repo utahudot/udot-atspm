@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for DatabaseInstaller - DatabaseInstaller.Commands/TransferEventLogsCommand.cs
+// for DatabaseInstaller - DatabaseInstaller.Commands/MoveEventLogsSqlServerToPostgresCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,61 +21,50 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using System.Reflection;
 
 namespace DatabaseInstaller.Commands
 {
-    public class TransferEventLogsCommand : Command, ICommandOption<TransferCommandConfiguration>
+    public class SearchEventsCommand : Command, ICommandOption<TransferCommandConfiguration>
     {
-        public TransferEventLogsCommand() : base("transfer", "Transfer logs from 4.3 to 5.0")
+        public SearchEventsCommand() : base("search", "Apply migrations and optionally seed the admin user")
         {
-            AddOption(SourceOption);
             AddOption(StartOption);
             AddOption(EndOption);
-            AddOption(BatchOption);
-            AddOption(DeviceOption);
             AddOption(LocationsOption);
+            AddOption(DeviceOption);
+            AddOption(EventCodesOption);
+            AddOption(OutputCsvPathOption);
         }
 
-        public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
-        public Option<DateTime> StartOption { get; set; } = new("--start", "Start date");
-        public Option<DateTime> EndOption { get; set; } = new("--end", "End date");
-        public Option<int?> DeviceOption { get; set; } = new("--device", "Id of Device Type used to import events for just that device type") { IsRequired = false };
-        public Option<int?> BatchOption { get; set; } = new("--batch", "Size of batches for importing event logs") { IsRequired = false };
+        public Option<DateTime> StartOption { get; set; } = new("--start", "Start Date");
+        public Option<DateTime> EndOption { get; set; } = new("--end", "Start Date");
         public Option<string> LocationsOption { get; set; } = new("--locations", "Comma seperated list of location identifiers") { IsRequired = false };
+        public Option<int?> DeviceOption { get; set; } = new("--device", "Id of Device Type used to import events for just that device type") { IsRequired = false };
         public Option<string> EventCodesOption { get; set; } = new("--eventCodes", "Comma seperated list of event codes") { IsRequired = false };
+        public Option<string> OutputCsvPathOption { get; set; } = new("--outputPath", "Path to write csv") { IsRequired = false };
 
         public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
             var binder = new ModelBinder<TransferCommandConfiguration>();
 
-            binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Start, StartOption);
             binder.BindMemberFromValue(b => b.End, EndOption);
-            binder.BindMemberFromValue(b => b.Device, DeviceOption);
-            binder.BindMemberFromValue(b => b.Batch, BatchOption);
             binder.BindMemberFromValue(b => b.Locations, LocationsOption);
+            binder.BindMemberFromValue(b => b.Device, DeviceOption);
             binder.BindMemberFromValue(b => b.EventCodes, EventCodesOption);
+            binder.BindMemberFromValue(b => b.OutputCsvPath, OutputCsvPathOption);
 
             return binder;
         }
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
-            services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
             services.AddSingleton(GetOptionsBinder());
-            services.AddHostedService<TransferEventLogsHostedService>();
+            services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
+            services.AddHostedService<SearchEventsHostedService>();
         }
     }
 
-    public class TransferCommandConfiguration
-    {
-        public string Source { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public int? Device { get; set; }
-        public int? Batch { get; set; }
-        public string Locations { get; set; }
-        public string EventCodes { get; set; }
-        public string? OutputCsvPath { get;  set; }
-    }
+
 }

@@ -17,12 +17,31 @@ module.exports = {
   //     },
   //   },
   // },
-  config: {
+  // config: {
+  //   input: {
+  //     target: './config-spec.json',
+  //   },
+  //   output: {
+  //     workspace: './src/api/config',
+  //     target: './',
+  //     client: 'react-query',
+  //     mock: true,
+  //     templates: './orval-templates',
+  //     mode: 'tags-split',
+  //     override: {
+  //       mutator: {
+  //         path: '../../lib/axios.ts',
+  //         name: 'configRequest',
+  //       },
+  //     },
+  //   },
+  // },
+  data: {
     input: {
-      target: './config-spec.json',
+      target: './data-spec.json',
     },
     output: {
-      workspace: './src/api/config',
+      workspace: './src/api/data',
       target: './',
       client: 'react-query',
       mock: true,
@@ -31,7 +50,7 @@ module.exports = {
       override: {
         mutator: {
           path: '../../lib/axios.ts',
-          name: 'configRequest',
+          name: 'dataRequest',
         },
       },
     },

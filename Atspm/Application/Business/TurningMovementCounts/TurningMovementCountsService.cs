@@ -111,7 +111,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.DetectorCount)).ToList(),
                 totalDetectorCounts,
-                $"{peakHour.Key.ToShortTimeString()} - {peakHourEnd.ToShortTimeString()}",
+                $"{peakHour.Key:HH:mm} - {peakHourEnd:HH:mm}",
                 peakHour.Value / binMultiplier,
                 peakHourFactor,
                 flu

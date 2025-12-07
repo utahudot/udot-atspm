@@ -190,6 +190,7 @@ namespace Utah.Udot.Atspm.Business.Common
                 9 => RedToRedCycle.EventType.ChangeToRed,
                 11 => RedToRedCycle.EventType.ChangeToEndOfRedClearance,
                 64 => RedToRedCycle.EventType.ChangeToRed,
+                65 => RedToRedCycle.EventType.ChangeToRed,
                 66 => RedToRedCycle.EventType.OverLapDark,
                 _ => RedToRedCycle.EventType.Unknown,
             };

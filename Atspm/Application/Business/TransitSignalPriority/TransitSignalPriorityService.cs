@@ -367,22 +367,27 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 {
                     if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
                     {
+                        var matchingPhase = GetMatchingPhase(phase.PhaseNumber);
                         if (phase.PhaseNumber >= 1 && phase.PhaseNumber <= 4)
                         {
                             //This only really works if they have designated match phases in ring 1 and 2 ie 2,6 or 4,8
-                            phase.MaxExtension = Math.Min(ring1MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring1MaxReductionScenarios[phase.PhaseNumber] : ring2MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                            var existingMatchingPhase = ring2MaxReductionScenarios.Where(i => i.Key == matchingPhase);
+                            phase.MaxExtension = Math.Min(ring1MaxReductionScenarios[phase.PhaseNumber], existingMatchingPhase.IsNullOrEmpty() ? ring1MaxReductionScenarios[phase.PhaseNumber] : ring2MaxReductionScenarios[matchingPhase]);
                         }
                         else if (phase.PhaseNumber >= 5 && phase.PhaseNumber <= 8)
                         {
-                            phase.MaxExtension = Math.Min(ring2MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring2MaxReductionScenarios[phase.PhaseNumber] : ring1MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                            var existingMatchingPhase = ring1MaxReductionScenarios.Where(i => i.Key == matchingPhase);
+                            phase.MaxExtension = Math.Min(ring2MaxReductionScenarios[phase.PhaseNumber], existingMatchingPhase.IsNullOrEmpty() ? ring2MaxReductionScenarios[phase.PhaseNumber] : ring1MaxReductionScenarios[matchingPhase]);
                         }
                         else if (phase.PhaseNumber >= 9 && phase.PhaseNumber <= 12)
                         {
-                            phase.MaxExtension = Math.Min(ring3MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring3MaxReductionScenarios[phase.PhaseNumber] : ring4MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                            var existingMatchingPhase = ring4MaxReductionScenarios.Where(i => i.Key == matchingPhase);
+                            phase.MaxExtension = Math.Min(ring3MaxReductionScenarios[phase.PhaseNumber], existingMatchingPhase.IsNullOrEmpty() ? ring3MaxReductionScenarios[phase.PhaseNumber] : ring4MaxReductionScenarios[matchingPhase]);
                         }
                         else if (phase.PhaseNumber >= 13 && phase.PhaseNumber <= 16)
                         {
-                            phase.MaxExtension = Math.Min(ring4MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring4MaxReductionScenarios[phase.PhaseNumber] : ring3MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                            var existingMatchingPhase = ring3MaxReductionScenarios.Where(i => i.Key == matchingPhase);
+                            phase.MaxExtension = Math.Min(ring4MaxReductionScenarios[phase.PhaseNumber], existingMatchingPhase.IsNullOrEmpty() ? ring4MaxReductionScenarios[phase.PhaseNumber] : ring3MaxReductionScenarios[matchingPhase]);
                         }
                     }
                 }

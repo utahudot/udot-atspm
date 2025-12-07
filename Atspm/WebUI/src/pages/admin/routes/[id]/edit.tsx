@@ -1,4 +1,5 @@
 import {
+  Location,
   Route,
   RouteDistance,
   RouteLocation,
@@ -9,11 +10,11 @@ import {
 } from '@/api/config'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
-import { Location } from '@/features/locations/types'
 import RouteEditor from '@/features/routes/components/routeEditor'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
 import { fetchRouteDistance } from '@/utils/fetchRouteDistance'
+import { removeAuditFields } from '@/utils/removeAuditFields'
 import { navigateToPage } from '@/utils/routes'
 import { DropResult } from '@hello-pangea/dnd'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
@@ -44,7 +45,10 @@ const RouteAdmin = () => {
 
   useEffect(() => {
     if (routeDistancesData) {
-      setRouteDistances(routeDistancesData.value)
+      const distances = routeDistancesData.value.map((rd) =>
+        removeAuditFields(rd)
+      )
+      setRouteDistances(distances)
     }
   }, [routeDistancesData])
 
@@ -105,44 +109,68 @@ const RouteAdmin = () => {
     const [moved] = items.splice(result.source.index, 1)
     items.splice(result.destination.index, 0, moved)
 
-    const reIndexed = items.map((item, idx) => ({
-      ...item,
-      order: idx,
-    }))
+    const reIndexed = items.map((item, idx) => ({ ...item, order: idx }))
 
-    let affectedIndices: number[] = [result.destination.index]
-    if (result.destination.index > 0) {
-      affectedIndices.push(result.destination.index - 1)
-    }
-    if (result.destination.index > result.source.index) {
-      if (result.source.index > 0) {
-        affectedIndices.push(result.source.index - 1)
+    const touch = new Set<number>([
+      result.destination.index,
+      result.source.index,
+      result.destination.index - 1,
+      result.destination.index + 1,
+      result.source.index - 1,
+      result.source.index + 1,
+    ])
+    const affected = Array.from(touch)
+      .filter((i) => i >= 0 && i < reIndexed.length)
+      .sort((a, b) => a - b)
+
+    const recomputeAround = (arr: typeof reIndexed, i: number) => {
+      const curr = arr[i]
+      const prev = i > 0 ? arr[i - 1] : undefined
+      const next = i + 1 < arr.length ? arr[i + 1] : undefined
+
+      if (prev) {
+        const d = findRouteDistance(
+          prev,
+          curr.locationIdentifier,
+          routeDistances
+        )
+        curr.previousLocationDistance = d
+        curr.previousLocationDistanceId = d?.id
+        prev.nextLocationDistance = d
+        prev.nextLocationDistanceId = d?.id
+      } else {
+        curr.previousLocationDistance = null // first element: no previous
+        curr.previousLocationDistanceId = null
       }
-    } else {
-      affectedIndices.push(result.source.index)
-    }
-    affectedIndices = Array.from(new Set(affectedIndices))
 
-    affectedIndices.forEach((i) => {
-      const curr = reIndexed[i]
-      const next = reIndexed[i + 1]
+      // curr -> next
       if (next) {
-        curr.nextLocationDistance = findRouteDistance(
+        const d = findRouteDistance(
           curr,
           next.locationIdentifier,
           routeDistances
         )
+        curr.nextLocationDistance = d
+        curr.nextLocationDistanceId = d?.id
+        next.previousLocationDistance = d
+        next.previousLocationDistanceId = d?.id
       } else {
         curr.nextLocationDistance = null
+        curr.nextLocationDistanceId = null
       }
-    })
+    }
+
+    affected.forEach((i) => recomputeAround(reIndexed, i))
+
+    if (reIndexed.length > 0) {
+      reIndexed[0].previousLocationDistance = null
+      reIndexed[0].previousLocationDistanceId = null
+      reIndexed[reIndexed.length - 1].nextLocationDistance = null
+      reIndexed[reIndexed.length - 1].nextLocationDistanceId = null
+    }
 
     fetchRouteDistanceAndUpdatePolyline(reIndexed)
-
-    setUpdatedRoute((prev) => ({
-      ...prev!,
-      routeLocations: reIndexed,
-    }))
+    setUpdatedRoute((prev) => ({ ...prev, routeLocations: reIndexed }))
   }
 
   const onAddRoute = () => {
@@ -333,6 +361,7 @@ const RouteAdmin = () => {
           })
           if (!savedRoute.routeLocations) return
           savedRoute.routeLocations.sort((a, b) => a.order - b.order)
+          console.log('savedRoute', savedRoute)
           setUpdatedRoute(savedRoute)
         },
         onError: (err) => {
