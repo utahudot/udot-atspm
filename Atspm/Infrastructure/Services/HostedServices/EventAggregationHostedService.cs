@@ -19,12 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
-using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
@@ -65,53 +62,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 await workflow.Output.Completion;
                 await result.Completion;
             }
-        }
-    }
-
-    //TODO: move this into the toolkit
-    public static class TempToolkitExtensions
-    {
-        public static Timeline<T> CreateTimeline<T>(this DateTime date, TimeSpan span) where T : IStartEndRange, new()
-        {
-            var startSlot = date.Date;
-            var endSlot = date.Date.AddDays(1).AddTicks(-1);
-
-            return new Timeline<T>(startSlot, endSlot, span);
-        }
-
-        public static IEnumerable<string> ListDerivedTypes(this Type type)
-        {
-            var result = type.Assembly
-                .GetTypes()
-                .Where(t => t.IsSubclassOf(type))
-                .Select(t => t.Name)
-                .OrderBy(name => name);
-
-            return result;
-        }
-
-        public static Dictionary<string, Type> ToDictionary(this Type type)
-        {
-            var result = type.Assembly
-                .GetTypes()
-                .Where(t => t.IsSubclassOf(type))
-                .OrderBy(o => o.Name)
-                .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
-
-            return result;
-        }
-
-        public static string ToSnakeCase(this string input)
-        {
-            ArgumentNullException.ThrowIfNull(input);
-
-            var withUnderscores = Regex.Replace(
-                input,
-                @"([a-z0-9])([A-Z])|([A-Z])([A-Z][a-z])",
-                "$1$3_$2$4"
-            );
-
-            return withUnderscores.ToLower();
         }
     }
 }

@@ -22,7 +22,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.NetStandardToolkit.Interfaces;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 {

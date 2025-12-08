@@ -17,7 +17,7 @@
 
 using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Interfaces;
-using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Interfaces;
 
 #nullable disable
 

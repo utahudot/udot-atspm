@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Asp.Versioning;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
 using Identity.Business.Claims;
@@ -25,58 +24,33 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 
-//gitactions: IIII
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Host
     .ApplyVolumeConfiguration()
-    .ConfigureLogging((h, l) =>
-    {
-        l.AddGoogle(h);
-    })
+    .ConfigureLogging((h, l) => l.AddGoogle(h))
     .ConfigureServices((h, s) =>
     {
         s.AddControllers(o =>
         {
             o.ReturnHttpNotAcceptable = true;
             o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-            o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
+            o.Filters.Add(new ProducesAttribute("application/json"));
         });
         s.AddProblemDetails();
-        s.AddSwaggerGen(o =>
+        s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
+        s.AddConfiguredSwagger(builder.Configuration, o =>
         {
-            o.IncludeXmlComments(typeof(Program));
+            o.IncludeXmlComments(typeof(Program).Assembly);
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+            o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-
-            //TODO: Multi-documenets needs to be implemented on this
-            o.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "Atspm Authentication Api",
-                Version = "v1",
-                Contact = new OpenApiContact() { Name = "udotdevelopment", Email = "udotdevelopment@gmail.com", Url = new Uri("https://udottraffic.utah.gov/atspm/") },
-                License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
-            });
         });
-        var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
-        s.AddCors(options =>
-        {
-            options.AddPolicy("CorsPolicy",
-            builder =>
-            {
-                builder.WithOrigins(allowedHosts.Split(','))
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
-        });
-        //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
+        s.AddConfiguredCors(builder.Configuration);
         s.AddHttpLogging(l =>
         {
             l.LoggingFields = HttpLoggingFields.All;
@@ -86,19 +60,7 @@ builder.Host
             l.RequestBodyLogLimit = 4096;
             l.ResponseBodyLogLimit = 4096;
         });
-        s.AddApiVersioning(o =>
-        {
-            o.ReportApiVersions = true;
-            o.DefaultApiVersion = new ApiVersion(1, 0);
-            o.AssumeDefaultVersionWhenUnspecified = true;
-            //Sunset policies
-            o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
-        }).AddApiExplorer(o =>
-        {
-            o.GroupNameFormat = "'v'VVV";
-            o.SubstituteApiVersionInUrl = true;
-        });
-        s.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(h, QueryTrackingBehavior.NoTracking));
+        s.AddAtspmDbContext(h);
         s.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
         .AddEntityFrameworkStores<IdentityContext>()
         .AddDefaultTokenProviders();
@@ -113,28 +75,49 @@ builder.Host
         s.AddPathBaseFilter(h);
         s.AddAtspmAuthentication(h);
         s.AddAtspmAuthorization();
+        s.AddHealthChecks();
 
         s.AddDataProtection()
         .SetApplicationName("TestResetFlow");
 
-        //don't mind me, i'm just putting this in here to gitactions thinks I changed something
-
         s.Configure<IdentityConfiguration>(h.Configuration.GetSection(nameof(IdentityConfiguration)));
     });
+
 var app = builder.Build();
+
+#region Middleware Pipeline
+
+//Error handling
 if (!app.Environment.IsProduction())
 {
     app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
 }
-app.UseCors("CorsPolicy");
-app.UseHttpLogging();
-app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint($"{app.Configuration["PathBaseSettings:ApplicationPathBase"]}/swagger/v1/swagger.json", "v1"));
+else
+{
+    app.UseExceptionHandler("/error");
+}
+
+//Security
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseCookiePolicy();
+app.UseCors("Default");
 app.UseAuthentication();
 app.UseAuthorization();
+
+//Cross-cutting
+app.UseResponseCompression();
+app.UseHttpLogging();
+//app.UseMiddleware<DownloadLoggingMiddleware>();
+
+//Swagger
+app.UseConfiguredSwaggerUI();
+
+//Endpoints
+app.UseStaticFiles();
+app.UseCookiePolicy();
 app.MapControllers();
+app.MapJsonHealthChecks();
+
+#endregion
+
 app.Run();

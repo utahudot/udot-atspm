@@ -210,9 +210,9 @@ namespace Utah.Udot.Atspm.Extensions
                             PhaseNumber = group.Key.PhaseNumber,
                             Start = window[0].Timestamp,
                             End = window[cycleSequence.Count() - 1].Timestamp,
-                            GreenInterval = greenPair != null ? new IntervalSpan { Start = greenPair[0].Timestamp, End = greenPair[1].Timestamp } : null,
-                            YellowInterval = yellowPair != null ? new IntervalSpan { Start = yellowPair[0].Timestamp, End = yellowPair[1].Timestamp } : null,
-                            RedInterval = redPair != null ? new IntervalSpan { Start = redPair[0].Timestamp, End = redPair[1].Timestamp } : null
+                            GreenInterval = greenPair != null ? new StartEndRange { Start = greenPair[0].Timestamp, End = greenPair[1].Timestamp } : null,
+                            YellowInterval = yellowPair != null ? new StartEndRange { Start = yellowPair[0].Timestamp, End = yellowPair[1].Timestamp } : null,
+                            RedInterval = redPair != null ? new StartEndRange { Start = redPair[0].Timestamp, End = redPair[1].Timestamp } : null
                         };
                     });
                 })

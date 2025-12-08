@@ -92,7 +92,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                     var greenCycles = matchingEvents.IdentifyGreenToGreenCycles();
                     var cycles = redCycles.Concat<CycleBase>(greenCycles);
 
-                    var compare = new LambdaEqualityComparer<IntervalSpan>((a, b) => a.Start == b.Start && a.End == b.End);
+                    var compare = new LambdaEqualityComparer<StartEndRange>((a, b) => a.Start == b.Start && a.End == b.End);
                     var r = cycles.Select(s => s.RedInterval).Distinct(compare).ToList();
                     var y = cycles.Select(s => s.YellowInterval).Distinct(compare).ToList();
                     var g = cycles.Select(s => s.GreenInterval).Distinct(compare).ToList();
@@ -109,9 +109,9 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                             TotalRedToRedCycles = redCycles.Count(c => segment.InRange(c.Start)),
                             TotalGreenToGreenCycles = greenCycles.Count(c => segment.InRange(c.Start)),
                             PhaseBeginCount = matchingEvents.Count(c => c.EventCode == (short)IndianaEnumerations.PhaseOn && segment.InRange(c.Timestamp)),
-                            RedTime = (int)Math.Round(r.Where(w => segment.InRange(w.Start)).Sum(s => s.Span.TotalSeconds), MidpointRounding.AwayFromZero),
-                            YellowTime = (int)Math.Round(y.Where(w => segment.InRange(w.Start)).Sum(s => s.Span.TotalSeconds), MidpointRounding.AwayFromZero),
-                            GreenTime = (int)Math.Round(g.Where(w => segment.InRange(w.Start)).Sum(s => s.Span.TotalSeconds), MidpointRounding.AwayFromZero),
+                            RedTime = (int)Math.Round(r.Where(w => segment.InRange(w.Start)).Sum(s => s.Span().TotalSeconds), MidpointRounding.AwayFromZero),
+                            YellowTime = (int)Math.Round(y.Where(w => segment.InRange(w.Start)).Sum(s => s.Span().TotalSeconds), MidpointRounding.AwayFromZero),
+                            GreenTime = (int)Math.Round(g.Where(w => segment.InRange(w.Start)).Sum(s => s.Span().TotalSeconds), MidpointRounding.AwayFromZero),
                         };
 
                         return agg;

@@ -29,6 +29,7 @@ using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.ATSPM.ConfigApi.Utility;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 //gitactions: IIII
 
@@ -94,7 +95,7 @@ builder.Host
         builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         builder.Services.AddSwaggerGen(o =>
         {
-            o.IncludeXmlComments(typeof(Program));
+            o.IncludeXmlComments(typeof(Program).Assembly);
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.EnableAnnotations();
             o.AddJwtAuthorization();

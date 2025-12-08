@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.Common
 {
@@ -49,13 +50,13 @@ namespace Utah.Udot.Atspm.Analysis.Common
 
         #endregion
 
-        public IntervalSpan GreenInterval { get; set; }
-        public IntervalSpan RedInterval { get; set; }
-        public IntervalSpan YellowInterval { get; set; }
+        public StartEndRange GreenInterval { get; set; }
+        public StartEndRange RedInterval { get; set; }
+        public StartEndRange YellowInterval { get; set; }
 
         public override string ToString()
         {
-            return $"{GetType().Name}: {LocationIdentifier}|{PhaseNumber} {Start} - {RedInterval.Span.TotalSeconds} - {YellowInterval.Span.TotalSeconds} - {GreenInterval.Span.TotalSeconds}";
+            return $"{GetType().Name}: {LocationIdentifier}|{PhaseNumber} {Start} - {RedInterval.Span().TotalSeconds} - {YellowInterval.Span().TotalSeconds} - {GreenInterval.Span().TotalSeconds}";
         }
     }
 
@@ -72,16 +73,5 @@ namespace Utah.Udot.Atspm.Analysis.Common
 
     public class GreenToGreenCycle : CycleBase
     {
-    }
-
-    //HACK: the span needs to be added to StartEndRange
-    public class IntervalSpan : StartEndRange
-    {
-        public TimeSpan Span => End - Start;
-
-        public override string ToString()
-        {
-            return $"{GetType().Name}: {Start:HH:mm:ss.f} - {Span.TotalSeconds} - {End:HH:mm:ss.f}";
-        }
     }
 }

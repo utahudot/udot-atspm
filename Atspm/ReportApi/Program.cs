@@ -15,11 +15,8 @@
 // limitations under the License.
 #endregion
 
-using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -50,233 +47,188 @@ using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
-//gitactions: IIII
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host
     .ApplyVolumeConfiguration()
-    .ConfigureLogging((h, l) =>
-    {
-        l.AddGoogle(h);
-    })
+    .ConfigureLogging((h, l) => l.AddGoogle(h))
     .ConfigureServices((h, s) =>
-{
-    s.AddControllers(o =>
     {
-        o.ReturnHttpNotAcceptable = true;
-        o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-        o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
-    })
-    .AddXmlDataContractSerializerFormatters();
-    s.AddProblemDetails();
-
-    s.AddResponseCompression(o =>
-    {
-        o.EnableForHttps = true; // Enable compression for HTTPS requests
-                                 //o.Providers.Add<GzipCompressionProvider>(); // Enable GZIP compression
-                                 //o.Providers.Add<BrotliCompressionProvider>();
-
-        o.MimeTypes = new[] { "application/json", "application/xml" };
-    });
-
-    //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
-    s.AddApiVersioning(o =>
-    {
-        o.ReportApiVersions = true;
-        o.DefaultApiVersion = new ApiVersion(1, 0);
-        o.AssumeDefaultVersionWhenUnspecified = true;
-
-        //Sunset policies
-        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
-
-    }).AddApiExplorer(o =>
-    {
-        o.GroupNameFormat = "'v'VVV";
-        o.SubstituteApiVersionInUrl = true;
-
-        //configure query options(which cannot otherwise be configured by OData conventions)
-        //o.QueryOptions.Controller<JurisdictionController>()
-        //                    .Action(c => c.Get(default))
-        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
-        //                        .AllowTop(100);
-    });
-
-    s.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    s.AddSwaggerGen(o =>
-    {
-        o.IncludeXmlComments(typeof(Program));
-        o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
-        o.EnableAnnotations();
-        o.AddJwtAuthorization();
-    });
-
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
-    s.AddCors(options =>
-    {
-        options.AddPolicy("CorsPolicy",
-        builder =>
+        s.AddControllers(o =>
         {
-            builder.WithOrigins(allowedHosts.Split(','))
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+            o.ReturnHttpNotAcceptable = true;
+            o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+            o.Filters.Add(new ProducesAttribute("application/json"));
         });
+        s.AddProblemDetails();
+        s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
+        s.AddConfiguredSwagger(builder.Configuration, o =>
+        {
+            o.IncludeXmlComments(typeof(Program).Assembly);
+            o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+            o.CustomSchemaIds(type => type.Name);
+            o.EnableAnnotations();
+            o.AddJwtAuthorization();
+
+        });
+        s.AddConfiguredCors(builder.Configuration);
+        s.AddHttpLogging(l =>
+        {
+            l.LoggingFields = HttpLoggingFields.All;
+            //l.RequestHeaders.Add("My-Request-Header");
+            //l.ResponseHeaders.Add("My-Response-Header");
+            //l.MediaTypeOptions.AddText("application/json");
+            l.RequestBodyLogLimit = 4096;
+            l.ResponseBodyLogLimit = 4096;
+        });
+
+        s.AddAtspmDbContext(h);
+        s.AddAtspmEFEventLogRepositories();
+        s.AddAtspmEFConfigRepositories();
+        s.AddAtspmEFAggregationRepositories();
+
+        //report services
+        s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
+        s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
+        s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+        s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
+        s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
+        s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, LeftTurnGapDurationService>();
+        s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
+        s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
+        s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
+        s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+        s.AddScoped<IReportService<LeftTurnGapReportOptions, IEnumerable<LeftTurnGapReportResult>>, LeftTurnGapReportService>();
+        s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
+        s.AddScoped<LinkPivotReportService>();
+        s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
+        s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
+        s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
+        s.AddScoped<IReportService<PeakHourOptions, PeakHourResult>, LeftTurnPeakHourService>();
+        s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
+        s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
+        s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
+        s.AddScoped<IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>, PurdueCoordinationDiagramReportService>();
+        s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
+        s.AddScoped<IReportService<RampMeteringOptions, RampMeteringResult>, RampMeteringReportService>();
+        s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
+        s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
+        s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
+        s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
+        s.AddScoped<IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>, TransitSignalPriorityReportService>();
+        s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
+        s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
+        s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
+        s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
+        s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
+        s.AddScoped<WatchDogDashboardReportService>();
+
+        //AggregationResult Services
+        s.AddScoped<AggregationReportService>();
+        s.AddScoped<ApproachDelayService>();
+        s.AddScoped<ApproachSpeedService>();
+        s.AddScoped<ApproachVolumeService>();
+        s.AddScoped<ArrivalOnRedService>();
+        s.AddScoped<LeftTurnGapAnalysisService>();
+        s.AddScoped<LeftTurnGapReportDataCheckService>();
+        s.AddScoped<LeftTurnSplitFailService>();
+        s.AddScoped<LeftTurnPedActuationService>();
+        s.AddScoped<LeftTurnGapDurationService>();
+        s.AddScoped<LeftTurnVolumeService>();
+        s.AddScoped<LeftTurnGapReportService>();
+
+        //s.AddScoped<LeftTurnVolumeAnalysisService>();
+        s.AddScoped<PedDelayService>();
+        s.AddScoped<GreenTimeUtilizationService>();
+        s.AddScoped<LeftTurnPeakHourService>();
+        s.AddScoped<PreemptServiceService>();
+        s.AddScoped<PreemptServiceRequestService>();
+        s.AddScoped<PurdueCoordinationDiagramService>();
+        s.AddScoped<SplitFailPhaseService>();
+        s.AddScoped<SplitMonitorService>();
+        s.AddScoped<TimeSpaceDiagramForPhaseService>();
+        s.AddScoped<TimeSpaceAverageService>();
+        s.AddScoped<TimingAndActuationsForPhaseService>();
+        s.AddScoped<TransitSignalPriorityService>();
+        s.AddScoped<TurningMovementCountsService>();
+        s.AddScoped<WaitTimeService>();
+        s.AddScoped<YellowRedActivationsService>();
+        s.AddScoped<WatchDogReportService>();
+
+        //Aggregation Services
+        s.AddScoped<DetectorVolumeAggregationOptions>();
+        s.AddScoped<ApproachSpeedAggregationOptions>();
+        s.AddScoped<ApproachPcdAggregationOptions>();
+        s.AddScoped<PhaseCycleAggregationOptions>();
+        s.AddScoped<ApproachSplitFailAggregationOptions>();
+        s.AddScoped<ApproachYellowRedActivationsAggregationOptions>();
+        s.AddScoped<PreemptionAggregationOptions>();
+        s.AddScoped<PriorityAggregationOptions>();
+        s.AddScoped<SignalEventCountAggregationOptions>();
+        s.AddScoped<PhaseTerminationAggregationOptions>();
+        s.AddScoped<PhasePedAggregationOptions>();
+        s.AddScoped<PhaseLeftTurnGapAggregationOptions>();
+        s.AddScoped<PhaseSplitMonitorAggregationOptions>();
+
+        //Common Services
+        s.AddScoped<PlanService>();
+        s.AddScoped<PedActuationService>();
+        s.AddScoped<LocationPhaseService>();
+        s.AddScoped<CycleService>();
+        s.AddScoped<PedPhaseService>();
+        s.AddScoped<GapDurationService>();
+        s.AddScoped<AnalysisPhaseCollectionService>();
+        s.AddScoped<AnalysisPhaseService>();
+        s.AddScoped<PreemptDetailService>();
+        s.AddScoped<PhaseService>();
+        s.AddScoped<SplitFailService>();
+        s.AddScoped<LeftTurnReportService>();
+        s.AddScoped<VolumeService>();
+        s.AddScoped<LinkPivotService>();
+        s.AddScoped<LinkPivotPairService>();
+        s.AddScoped<LinkPivotPcdService>();
+        s.AddScoped<WatchDogIgnoreEventService>();
+        s.AddScoped<RampMeteringService>();
+
+        s.AddPathBaseFilter(h);
+
+        s.AddAtspmIdentity(h);
+        s.AddHealthChecks();
     });
-
-    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
-    s.AddHttpLogging(l =>
-    {
-        l.LoggingFields = HttpLoggingFields.All;
-        //l.RequestHeaders.Add("My-Request-Header");
-        //l.ResponseHeaders.Add("My-Response-Header");
-        //l.MediaTypeOptions.AddText("application/json");
-        l.RequestBodyLogLimit = 4096;
-        l.ResponseBodyLogLimit = 4096;
-    });
-
-    s.AddAtspmDbContext(h);
-    s.AddAtspmEFEventLogRepositories();
-    s.AddAtspmEFConfigRepositories();
-    s.AddAtspmEFAggregationRepositories();
-
-    //report services
-    s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
-    s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
-    s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
-    s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
-    s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, LeftTurnGapDurationService>();
-    s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
-    s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
-    s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
-    s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
-    s.AddScoped<IReportService<LeftTurnGapReportOptions, IEnumerable<LeftTurnGapReportResult>>, LeftTurnGapReportService>();
-    s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
-    s.AddScoped<LinkPivotReportService>();
-    s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
-    s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
-    s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
-    s.AddScoped<IReportService<PeakHourOptions, PeakHourResult>, LeftTurnPeakHourService>();
-    s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
-    s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
-    s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
-    s.AddScoped<IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>, PurdueCoordinationDiagramReportService>();
-    s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
-    s.AddScoped<IReportService<RampMeteringOptions, RampMeteringResult>, RampMeteringReportService>();
-    s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
-    s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
-    s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
-    s.AddScoped<IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>, TransitSignalPriorityReportService>();
-    s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
-    s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
-    s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
-    s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
-    s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
-    s.AddScoped<WatchDogDashboardReportService>();
-
-    //AggregationResult Services
-    s.AddScoped<AggregationReportService>();
-    s.AddScoped<ApproachDelayService>();
-    s.AddScoped<ApproachSpeedService>();
-    s.AddScoped<ApproachVolumeService>();
-    s.AddScoped<ArrivalOnRedService>();
-    s.AddScoped<LeftTurnGapAnalysisService>();
-    s.AddScoped<LeftTurnGapReportDataCheckService>();
-    s.AddScoped<LeftTurnSplitFailService>();
-    s.AddScoped<LeftTurnPedActuationService>();
-    s.AddScoped<LeftTurnGapDurationService>();
-    s.AddScoped<LeftTurnVolumeService>();
-    s.AddScoped<LeftTurnGapReportService>();
-
-    //s.AddScoped<LeftTurnVolumeAnalysisService>();
-    s.AddScoped<PedDelayService>();
-    s.AddScoped<GreenTimeUtilizationService>();
-    s.AddScoped<LeftTurnPeakHourService>();
-    s.AddScoped<PreemptServiceService>();
-    s.AddScoped<PreemptServiceRequestService>();
-    s.AddScoped<PurdueCoordinationDiagramService>();
-    s.AddScoped<SplitFailPhaseService>();
-    s.AddScoped<SplitMonitorService>();
-    s.AddScoped<TimeSpaceDiagramForPhaseService>();
-    s.AddScoped<TimeSpaceAverageService>();
-    s.AddScoped<TimingAndActuationsForPhaseService>();
-    s.AddScoped<TransitSignalPriorityService>();
-    s.AddScoped<TurningMovementCountsService>();
-    s.AddScoped<WaitTimeService>();
-    s.AddScoped<YellowRedActivationsService>();
-    s.AddScoped<WatchDogReportService>();
-
-    //Aggregation Services
-    s.AddScoped<DetectorVolumeAggregationOptions>();
-    s.AddScoped<ApproachSpeedAggregationOptions>();
-    s.AddScoped<ApproachPcdAggregationOptions>();
-    s.AddScoped<PhaseCycleAggregationOptions>();
-    s.AddScoped<ApproachSplitFailAggregationOptions>();
-    s.AddScoped<ApproachYellowRedActivationsAggregationOptions>();
-    s.AddScoped<PreemptionAggregationOptions>();
-    s.AddScoped<PriorityAggregationOptions>();
-    s.AddScoped<SignalEventCountAggregationOptions>();
-    s.AddScoped<PhaseTerminationAggregationOptions>();
-    s.AddScoped<PhasePedAggregationOptions>();
-    s.AddScoped<PhaseLeftTurnGapAggregationOptions>();
-    s.AddScoped<PhaseSplitMonitorAggregationOptions>();
-
-    //Common Services
-    s.AddScoped<PlanService>();
-    s.AddScoped<PedActuationService>();
-    s.AddScoped<LocationPhaseService>();
-    s.AddScoped<CycleService>();
-    s.AddScoped<PedPhaseService>();
-    s.AddScoped<GapDurationService>();
-    s.AddScoped<AnalysisPhaseCollectionService>();
-    s.AddScoped<AnalysisPhaseService>();
-    s.AddScoped<PreemptDetailService>();
-    s.AddScoped<PhaseService>();
-    s.AddScoped<SplitFailService>();
-    s.AddScoped<LeftTurnReportService>();
-    s.AddScoped<VolumeService>();
-    s.AddScoped<LinkPivotService>();
-    s.AddScoped<LinkPivotPairService>();
-    s.AddScoped<LinkPivotPcdService>();
-    s.AddScoped<WatchDogIgnoreEventService>();
-    s.AddScoped<RampMeteringService>();
-
-    s.AddPathBaseFilter(h);
-
-    s.AddAtspmIdentity(h);
-});
 
 var app = builder.Build();
 
+#region Middleware Pipeline
+
+//Error handling
 if (!app.Environment.IsProduction())
 {
     app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
 }
-
-app.UseResponseCompression();
-app.UseCors("CorsPolicy");
-app.UseHttpLogging();
-app.UseSwagger();
-app.UseSwaggerUI(o =>
+else
 {
-    var descriptions = app.DescribeApiVersions();
+    app.UseExceptionHandler("/error");
+}
 
-    // build a swagger endpoint for each discovered API version
-    foreach (var description in descriptions)
-    {
-        var url = $"{app.Configuration["PathBaseSettings:ApplicationPathBase"]}/swagger/{description.GroupName}/swagger.json";
-        var name = description.GroupName.ToUpperInvariant();
-        o.SwaggerEndpoint(url, name);
-    }
-});
-
+//Security
 app.UseHttpsRedirection();
+//app.UseCors("Default");
+app.UseAuthentication();
 app.UseAuthorization();
+
+//Cross-cutting
+app.UseResponseCompression();
+app.UseHttpLogging();
+//app.UseMiddleware<DownloadLoggingMiddleware>();
+
+//Swagger
+app.UseConfiguredSwaggerUI();
+
+//Endpoints
 app.MapControllers();
+app.MapJsonHealthChecks();
+
+#endregion
 
 app.Run();

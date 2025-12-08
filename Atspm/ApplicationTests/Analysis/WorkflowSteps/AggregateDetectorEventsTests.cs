@@ -29,6 +29,7 @@ using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
