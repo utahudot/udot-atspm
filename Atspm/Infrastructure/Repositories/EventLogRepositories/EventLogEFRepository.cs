@@ -34,8 +34,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
             var type = typeof(T);
 
             return GetList()
-                .FromSpecification(new CompressedDataSpecification<CompressedEventLogBase>(locationIdentifier, start, end))
-                .Where(w => w.DataType == type)
+                .FromSpecification(new CompressedDataSpecification<CompressedEventLogBase>(locationIdentifier, start, end, type))
                 .Cast<CompressedEventLogs<T>>()
                 .AsAsyncEnumerable();
         }
@@ -53,9 +52,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         public IAsyncEnumerable<CompressedEventLogBase> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId)
         {
             return GetList()
-                .FromSpecification(new CompressedDataSpecification<CompressedEventLogBase>(locationIdentifier, start, end))
+                .FromSpecification(new CompressedDataSpecification<CompressedEventLogBase>(locationIdentifier, start, end, dataType))
                 .Where(w => w.DeviceId == deviceId)
-                .Where(w => w.DataType == dataType)
                 .AsAsyncEnumerable();
         }
 

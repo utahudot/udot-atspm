@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     /// <inheritdoc cref="ICompressedDataRepository{T}"/>
-    public abstract class CompressedDataEFRepositoryBase<T>(DbContext db, ILogger<ATSPMRepositoryEFBase<T>> log) : ATSPMRepositoryEFBase<T>(db, log), ICompressedDataRepository<T> where T : CompressedDataBase
+    public abstract class CompressedDataEFRepositoryBase<T>(DbContext db, ILogger<CompressedDataEFRepositoryBase<T>> log) : ATSPMRepositoryEFBase<T>(db, log), ICompressedDataRepository<T> where T : CompressedDataBase
     {
         #region ICompressedDataRepository
 
@@ -37,8 +37,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         public IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType)
         {
             return GetList()
-                .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end))
-                .Where(w => w.DataType == dataType)
+                .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end, dataType))
                 .AsAsyncEnumerable();
         }
 

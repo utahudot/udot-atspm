@@ -15,9 +15,10 @@
 // limitations under the License.
 #endregion
 
-using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
@@ -317,6 +318,54 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         }
 
         /// <summary>
+        /// Retrieves the distinct days that contain data for a specific location and data type
+        /// within the given date range.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows anonymous access and returns a JSON array of <see cref="DateOnly"/> values.
+        /// Each value represents a day for which data exists. The request must specify a valid
+        /// location identifier, data type, and date range. If the inputs are invalid or the location/data type
+        /// cannot be resolved, an appropriate error response is returned.
+        /// </remarks>
+        /// <param name="locationIdentifier">
+        /// The unique identifier of the location whose data is requested.
+        /// </param>
+        /// <param name="dataType">
+        /// The name of the event log data type. Must map to a valid derived type of <c>EventLogModelBase</c>.
+        /// </param>
+        /// <param name="start">
+        /// The inclusive start date/time of the range. Must be less than or equal to <paramref name="end"/>.
+        /// </param>
+        /// <param name="end">
+        /// The inclusive end date/time of the range. Must be greater than or equal to <paramref name="start"/>.
+        /// </param>
+        /// <response code="200">Data successfully retrieved (may be empty).</response>
+        /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
+        /// <response code="404">Location not found.</response>
+        [AllowAnonymous]
+        [HttpGet("[action]/{locationIdentifier}/{dataType}")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<DateOnly>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithData(
+            [FromRoute] string locationIdentifier,
+            [FromRoute] string dataType,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
+
+            var typeError = ValidateDataType(dataType, out var type);
+            if (typeError != null) return typeError;
+
+            var result = _repository.GetDaysWithData(locationIdentifier, type, start, end);
+
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Validates common input parameters for data queries.
         /// </summary>
         /// <param name="locationIdentifier">
@@ -376,6 +425,5 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
 
             return null; // success
         }
-
     }
 }

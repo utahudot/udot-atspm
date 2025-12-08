@@ -32,8 +32,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
             var type = typeof(T);
 
             return GetList()
-                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationIdentifier, start, end))
-                .Where(w => w.DataType == type)
+                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationIdentifier, start, end, type))
                 .Cast<CompressedAggregations<T>>()
                 .AsAsyncEnumerable();
         }
