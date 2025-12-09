@@ -1,4 +1,6 @@
 name: Create Tag and Version Projects
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
