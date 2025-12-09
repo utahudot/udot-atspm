@@ -272,9 +272,9 @@ public class DownloadLoggingMiddleware
     {
         _next = next;
         _currentUserService = currentUserService;
-        
 
-    //_repo = repo;
+
+        //_repo = repo;
     }
 
     public async Task InvokeAsync(HttpContext context)

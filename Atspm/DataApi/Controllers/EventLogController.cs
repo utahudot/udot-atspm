@@ -30,8 +30,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// </summary>
     [ApiVersion("1.0")]
     [Authorize(Policy = "CanViewData")]
-    public class EventLogController(IEventLogRepository repository, ILocationRepository locations, IDeviceRepository devices, ILogger<EventLogController> log) 
-        : DataControllerBase<CompressedEventLogBase,EventLogModelBase>(repository, locations, log)
+    public class EventLogController(IEventLogRepository repository, ILocationRepository locations, IDeviceRepository devices, ILogger<EventLogController> log)
+        : DataControllerBase<CompressedEventLogBase, EventLogModelBase>(repository, locations, log)
     {
         private readonly IEventLogRepository _repository = repository;
         private readonly IDeviceRepository _devices = devices;

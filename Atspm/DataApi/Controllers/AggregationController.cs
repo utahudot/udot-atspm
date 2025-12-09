@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// <inheritdoc/>
     [ApiVersion("1.0")]
     [Authorize(Policy = "CanViewData")]
-    public class AggregationController(IAggregationRepository repository, ILocationRepository locations, ILogger<AggregationController> log) 
+    public class AggregationController(IAggregationRepository repository, ILocationRepository locations, ILogger<AggregationController> log)
         : DataControllerBase<CompressedAggregationBase, AggregationModelBase>(repository, locations, log)
     {
         private readonly IAggregationRepository _repository = repository;

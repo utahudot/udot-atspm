@@ -18,7 +18,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
-    
+
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     ///<inheritdoc cref="IAggregationRepository"/>

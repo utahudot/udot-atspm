@@ -16,7 +16,6 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.NetStandardToolkit.Interfaces;
 
 namespace Utah.Udot.Atspm.Analysis.Common
 {

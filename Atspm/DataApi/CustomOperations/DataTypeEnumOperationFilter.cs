@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for DataApi - Utah.Udot.Atspm.DataApi.CustomOperations/GenerateAggregationSchemas.cs
+// for DataApi - Utah.Udot.Atspm.DataApi.CustomOperations/DataTypeEnumOperationFilter.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.CustomOperations

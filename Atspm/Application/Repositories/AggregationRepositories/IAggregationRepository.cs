@@ -19,7 +19,7 @@ using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
 {
-    public interface ICompressedDataRepository<T> : IAsyncRepository<T>  where T : CompressedDataBase
+    public interface ICompressedDataRepository<T> : IAsyncRepository<T> where T : CompressedDataBase
     {
         /// <summary>
         /// Get all data that matches <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>

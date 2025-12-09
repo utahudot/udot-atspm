@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
 using Utah.Udot.Atspm.Analysis.PedestrianDelay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -136,9 +135,9 @@ namespace Utah.Udot.Atspm.Extensions
         {
             var expectedSequence = new List<short>()
             {
-                (short)IndianaEnumerations.PhaseEndYellowChange, 
-                (short)IndianaEnumerations.PhaseBeginGreen, 
-                (short)IndianaEnumerations.PhaseBeginYellowChange, 
+                (short)IndianaEnumerations.PhaseEndYellowChange,
+                (short)IndianaEnumerations.PhaseBeginGreen,
+                (short)IndianaEnumerations.PhaseBeginYellowChange,
                 (short)IndianaEnumerations.PhaseEndYellowChange };
 
             return events.IdentifyPhaseCycles<RedToRedCycle>(expectedSequence);
@@ -401,7 +400,7 @@ namespace Utah.Udot.Atspm.Extensions
 
             return result;
         }
-        
+
         /// <summary>
         /// Returns a list of <see cref="IndianaEvent"/> where, for the specified <paramref name="eventCode"/>,
         /// only the first occurrence in any sequence of consecutive events with that code is kept.
