@@ -1,10 +1,12 @@
 name: Publish NuGet Packages
-permissions:
-  contents: read
 
 on:
   release:
     types: [published]
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   publish-nuget:

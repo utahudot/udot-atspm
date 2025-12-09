@@ -1,6 +1,4 @@
 name: Create Tag and Version Projects
-permissions:
-  contents: write
 
 on:
   workflow_dispatch:
@@ -9,6 +7,10 @@ on:
         description: 'New version number (e.g., v1.2.3 or v1.2.3-rc1)'
         required: true
         type: string
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   bump-version:
