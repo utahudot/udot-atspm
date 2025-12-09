@@ -21,24 +21,38 @@ using Utah.Udot.NetStandardToolkit.Services;
 namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
     /// <summary>
-    /// Device repository
+    /// Repository interface for accessing and querying <see cref="Device"/> entities.
     /// </summary>
     public interface IDeviceRepository : IAsyncRepository<Device>
     {
         /// <summary>
-        /// Gets all <see cref="Device"/> from <paramref name="locationId"/> where <see cref="Device.DeviceStatus"/> equals <see cref="DeviceStatus.Active"/>
+        /// Retrieves all active <see cref="Device"/> entities assigned to the specified <see cref="Location"/>.
         /// </summary>
-        /// <param name="locationId">Id of <see cref="Location"/> to get assigned <see cref="Device"/> from</param>
-        /// <returns></returns>
+        /// <param name="locationId">
+        /// The unique identifier of the <see cref="Location"/> whose devices should be retrieved.
+        /// </param>
+        /// <returns>
+        /// A read-only list of <see cref="Device"/> records where <see cref="Device.DeviceStatus"/> equals <see cref="DeviceStatus.Active"/>.
+        /// </returns>
         IReadOnlyList<Device> GetActiveDevicesByLocation(int locationId);
 
         /// <summary>
-        /// Returns all <see cref="Device"/> from all latest version <see cref="Location"/>
+        /// Retrieves all active <see cref="Device"/> entities from the latest version of all <see cref="Location"/> records
         /// that are also enabled for logging.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A read-only list of <see cref="Device"/> records that are active and logging-enabled.
+        /// </returns>
         IReadOnlyList<Device> GetActiveDevicesByAllLatestLocations();
 
-        //IReadOnlyList<Device> GetDevicesForEventLogging();
+        /// <summary>
+        /// Determines whether a <see cref="Device"/> exists for the specified identifier.
+        /// </summary>
+        /// <param name="deviceId">The unique identifier of the device.</param>
+        /// <returns>
+        /// A task that resolves to <c>true</c> if the device exists; otherwise <c>false</c>.
+        /// </returns>
+        Task<bool> DeviceExists(int deviceId);
     }
+
 }

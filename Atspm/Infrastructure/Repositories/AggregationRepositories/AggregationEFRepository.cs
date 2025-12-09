@@ -15,46 +15,26 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
 
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     ///<inheritdoc cref="IAggregationRepository"/>
-    public class AggregationEFRepository : ATSPMRepositoryEFBase<CompressedAggregationBase>, IAggregationRepository
+    public class AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : CompressedDataEFRepositoryBase<CompressedAggregationBase>(db, log), IAggregationRepository
     {
-        ///<inheritdoc/>
-        public AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : base(db, log) { }
-
         #region IAggregationRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end, Type dataType)
-        {
-            return GetList()
-                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
-                .Where(w => w.DataType == dataType)
-                .ToList();
-        }
-
-        ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : AggregationModelBase
+        public IAsyncEnumerable<CompressedAggregations<T>> GetData<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase
         {
             var type = typeof(T);
 
             return GetList()
-                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
-                .Where(w => w.DataType == type)
+                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationIdentifier, start, end, type))
                 .Cast<CompressedAggregations<T>>()
-                .ToList();
-        }
-
-        ///<inheritdoc/>
-        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end)
-        {
-            return GetList()
-                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
-                .ToList();
+                .AsAsyncEnumerable();
         }
 
         #endregion

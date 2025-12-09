@@ -134,8 +134,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             }
 
             var peakStart = result.PeakHour.Value.Key;
-            const int AGG = 15;  
-            const int QUARTS = 4; 
+            const int AGG = 15;
+            const int QUARTS = 4;
 
             foreach (var lane in result.Table)
             {

@@ -15,8 +15,8 @@
 // limitations under the License.
 #endregion
 
-using System.Text.Json;
 using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.Common
 {
@@ -38,20 +38,8 @@ namespace Utah.Udot.Atspm.Analysis.Common
         DateTime YellowEvent { get; set; }
     }
 
-    /// <summary>
-    /// A cycle which is the time between two <see cref="9"/> events including
-    /// <see cref="1"/> and <see cref="8"/>
-    /// </summary>
-    public class RedToRedCycle : StartEndRange, IRedToRedCycle
+    public abstract class CycleBase : StartEndRange, ILocationPhaseLayer
     {
-        #region IRedToRedCycle
-
-        /// <inheritdoc/>
-        public DateTime GreenEvent { get; set; }
-
-        /// <inheritdoc/>
-        public DateTime YellowEvent { get; set; }
-
         #region ILocationPhaseLayer
 
         /// <inheritdoc/>
@@ -62,28 +50,28 @@ namespace Utah.Udot.Atspm.Analysis.Common
 
         #endregion
 
-        #region ICycle
+        public StartEndRange GreenInterval { get; set; }
+        public StartEndRange RedInterval { get; set; }
+        public StartEndRange YellowInterval { get; set; }
 
-        /// <inheritdoc/>
-        public double TotalGreenTime => (YellowEvent - GreenEvent).TotalSeconds;
-
-        /// <inheritdoc/>
-        public double TotalYellowTime => (End - YellowEvent).TotalSeconds;
-
-        /// <inheritdoc/>
-        public double TotalRedTime => (GreenEvent - Start).TotalSeconds;
-
-        /// <inheritdoc/>
-        public double TotalTime => (End - Start).TotalSeconds;
-
-        #endregion
-
-        #endregion
-
-        /// <inheritdoc/>
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this);
+            return $"{GetType().Name}: {LocationIdentifier}|{PhaseNumber} {Start} - {RedInterval.Span().TotalSeconds} - {YellowInterval.Span().TotalSeconds} - {GreenInterval.Span().TotalSeconds}";
         }
+    }
+
+    public class RedToRedCycle : CycleBase
+    {
+        /// <inheritdoc/>
+        [Obsolete]
+        public DateTime GreenEvent { get; set; }
+
+        /// <inheritdoc/>
+        [Obsolete]
+        public DateTime YellowEvent { get; set; }
+    }
+
+    public class GreenToGreenCycle : CycleBase
+    {
     }
 }

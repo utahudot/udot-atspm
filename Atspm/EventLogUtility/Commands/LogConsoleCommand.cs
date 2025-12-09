@@ -139,15 +139,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         }
     }
 
-    public class PrallelProcessesOption : Option<int>
-    {
-        public PrallelProcessesOption() : base("--parallel-processes", "Amount of processes that can be run in parallel")
-        {
-            AddAlias("-pp");
-            //SetDefaultValue(50);
-        }
-    }
-
     public class DeviceIncludeCommandOption : Option<IEnumerable<string>>
     {
         public DeviceIncludeCommandOption() : base("--include-device", "List of device identifiers to include")

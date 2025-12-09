@@ -251,7 +251,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 
 
 
-            //var filteredPreemptionData = new FilteredPreemptionData();
+            //var filteredPreemptionData = new FilterPreemptionDataProcessStep();
             //var groupEventLogsByParameter = new GroupEventLogsByParameter();
             //var filterLogsByLocationAndParamter = new BroadcastBlock<Tuple<Location, IEnumerable<IndianaEvent>, int>>(f =>
             //{

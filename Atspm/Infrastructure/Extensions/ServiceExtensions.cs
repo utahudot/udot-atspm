@@ -15,14 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Utility;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
@@ -36,6 +33,7 @@ using Utah.Udot.Atspm.Repositories;
 using Utah.Udot.Atspm.SqlDatabaseProvider;
 using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
 using Utah.Udot.NetStandardToolkit.Authentication;
+
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -137,6 +135,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddDbContext<AggregationContext>(db => db.DbDefaults<AggregationContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<EventLogContext>(db => db.DbDefaults<EventLogContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(host, QueryTrackingBehavior.NoTracking));
+
+            services.AddHealthChecks()
+                .AddDbContextCheck<ConfigContext>()
+                .AddDbContextCheck<AggregationContext>()
+                .AddDbContextCheck<EventLogContext>()
+                .AddDbContextCheck<IdentityContext>();
 
             return services;
         }
@@ -285,59 +289,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             }
 
             return services;
-        }
-
-        /// <summary>
-        /// Registers an <see cref="IStartupFilter"/> to set path base on web applications
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddPathBaseFilter(this IServiceCollection services, HostBuilderContext host)
-        {
-            services.Configure<PathBaseSettings>(host.Configuration.GetSection($"{nameof(PathBaseSettings)}"));
-
-            services.AddTransient<IStartupFilter, PathBaseStartupFilter>();
-
-            return services;
-        }
-    }
-
-    /// <summary>
-    /// Configuration settings to set path base of applications
-    /// </summary>
-    public class PathBaseSettings
-    {
-        /// <summary>
-        /// Path base of application
-        /// </summary>
-        public string ApplicationPathBase { get; set; }
-    }
-
-    /// <summary>
-    /// Adds a filter to web applications to set path base
-    /// </summary>
-    public class PathBaseStartupFilter : IStartupFilter
-    {
-        private readonly string _pathBase;
-
-        /// <summary>
-        /// Adds a filter to web applications to set path base
-        /// </summary>
-        /// <param name="options"></param>
-        public PathBaseStartupFilter(IOptions<PathBaseSettings> options)
-        {
-            _pathBase = options.Value.ApplicationPathBase;
-        }
-
-        /// <inheritdoc/>
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
-            {
-                app.UsePathBase(_pathBase);
-                next(app);
-            };
         }
     }
 }

@@ -19,23 +19,56 @@ using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
 {
-    /// <summary>
-    /// Aggregation repository
-    /// </summary>
-    public interface IAggregationRepository : IAsyncRepository<CompressedAggregationBase>
+    public interface ICompressedDataRepository<T> : IAsyncRepository<T> where T : CompressedDataBase
     {
         /// <summary>
-        /// Get all aggregations that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
+        /// Get all data that matches <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
+        /// </summary>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
+        IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end);
+
+        /// <summary>
+        /// Get all data that matches <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="dataType"></param>
         /// <returns></returns>
-        IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end, Type dataType);
+        IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType);
+    }
+
+
+
+    /// <summary>
+    /// Aggregation repository
+    /// </summary>
+    public interface IAggregationRepository : ICompressedDataRepository<CompressedAggregationBase>
+    {
+        ///// <summary>
+        ///// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
+        ///// </summary>
+        ///// <param name="locationIdentifier">Location identifier</param>
+        ///// <param name="start">Archive date of event to start with</param>
+        ///// <param name="end">Archive date of event to end with</param>
+        ///// <returns></returns>
+        //IAsyncEnumerable<CompressedAggregationBase> GetData(string locationIdentifier, DateTime start, DateTime end);
+
+        ///// <summary>
+        ///// Get all aggregations that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
+        ///// </summary>
+        ///// <param name="locationIdentifier">Location identifier</param>
+        ///// <param name="start">Archive date of event to start with</param>
+        ///// <param name="end">Archive date of event to end with</param>
+        ///// <param name="dataType"></param>
+        ///// <returns></returns>
+        //IAsyncEnumerable<CompressedAggregationBase> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType);
 
         /// <summary>
-        /// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
+        /// Get all data that matches <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
         /// Where date type of derrived from <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="AggregationModelBase"/></typeparam>
@@ -43,16 +76,7 @@ namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : AggregationModelBase;
-
-        /// <summary>
-        /// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event to start with</param>
-        /// <param name="end">Archive date of event to end with</param>
-        /// <returns></returns>
-        IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end);
+        IAsyncEnumerable<CompressedAggregations<T>> GetData<T>(string locationIdentifier, DateTime start, DateTime end) where T : AggregationModelBase;
     }
 
     /// <summary>

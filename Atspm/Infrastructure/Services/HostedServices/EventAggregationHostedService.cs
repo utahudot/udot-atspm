@@ -16,148 +16,52 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
-    /// <summary>
-    /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
-    /// </summary>
-    public class EventAggregationHostedService : IHostedService
+    public class EventAggregationHostedService(ILogger<EventAggregationHostedService> log, IServiceScopeFactory serviceProvider, IOptions<EventLogAggregateConfiguration> options) : HostedServiceBase(log, serviceProvider)
     {
-        private readonly ILogger _log;
-        private readonly IServiceScopeFactory _services;
-        private readonly IOptions<EventLogAggregateConfiguration> _options;
-
-        /// <summary>
-        /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="serviceProvider"></param>
-        /// <param name="options"></param>
-        public EventAggregationHostedService(ILogger<EventAggregationHostedService> log, IServiceScopeFactory serviceProvider, IOptions<EventLogAggregateConfiguration> options) =>
-            (_log, _services, _options) = (log, serviceProvider, options);
+        private readonly IOptions<EventLogAggregateConfiguration> _options = options;
 
         /// <inheritdoc/>
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
-            var serviceName = this.GetType().Name;
-            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
+            Console.WriteLine($"{_options.Value}");
+            Console.WriteLine($"{_options.Value.EventAggregationQueryOptions}");
 
-            cancellationToken.Register(() => logMessages.StartingCancelled(serviceName));
-            logMessages.StartingService(serviceName);
-
-            var sw = new Stopwatch();
-            sw.Start();
-
-            using (var scope = _services.CreateAsyncScope())
+            foreach (var date in _options.Value.Dates)
             {
-                //if (scope.ServiceProvider.GetService<IHostEnvironment>().IsDevelopment()) 
-                scope.ServiceProvider.PrintHostInformation();
+                var tl = date.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
 
-                //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
+                var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, _options.Value.ParallelProcesses, cancellationToken);
 
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
+                var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine($"output: {a}"));
+                workflow.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
 
+                var locations = scope.ServiceProvider.GetService<ILocationRepository>();
+                var eventLogs = scope.ServiceProvider.GetService<IEventLogRepository>();
 
+                await foreach (var l in locations.GetEventsForAggregation(date, _options.Value.EventAggregationQueryOptions))
+                {
+                    var events = await eventLogs.GetData(l.LocationIdentifier, tl.Start, tl.End).ToListAsync(cancellationToken);
 
+                    await workflow.Input.SendAsync(Tuple.Create<Location, IEnumerable<CompressedEventLogBase>>(l, events));
+                }
 
+                workflow.Input.Complete();
 
-
-
-
-
-
-                //var test1 = new UnboxArchivedEvents();
-                //var test2 = new DetectorEventCountAggregationWorkflow(new AggregationWorkflowOptions());
-
-                //test2.Initialize();
-
-                //var result = new ActionBlock<IEnumerable<DetectorEventCountAggregation>>(a => null); //Console.WriteLine($"events: {a.Count()}"));
-
-                //test1.LinkTo(test2.Input, new DataflowLinkOptions() { PropagateCompletion = true });
-                //test2.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-
-                //var eventRepo = scope.ServiceProvider.GetService<IEventLogRepository>();
-                //var locationRepo = scope.ServiceProvider.GetService<ILocationRepository>();
-
-                //foreach (var date in _options.Value.Dates)
-                //{
-                //    var locations = locationRepo.GetLatestVersionOfAllLocations(date);
-
-                //    foreach (var l in locations)
-                //    {
-                //        var events = eventRepo.GetArchivedEvents(l.LocationIdentifier, DateOnly.FromDateTime(date), DateOnly.FromDateTime(date));
-
-                //        //foreach (var e in events)
-                //        //{
-                //        //    Console.WriteLine($"location: {l} --- events: {e}");
-                //        //}
-
-                //        //var result = await test1.SendAsync.ExecuteAsync(Tuple.Create(l, events.AsEnumerable()));
-
-
-                //        await test1.SendAsync(Tuple.Create(l, events.AsEnumerable()));
-
-
-
-                //    }
-                //}
-
-                //test1.Complete();
-
-                ////await Task.WhenAll(test2.Steps.Select(s => s.Completion));
-
-                //await result.Completion;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
-                //{
-                //    await workflow.Input.SendAsync(d);
-                //}
-
-                //workflow.Input.Complete();
-
-                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                await workflow.Output.Completion;
+                await result.Completion;
             }
-
-            sw.Stop();
-
-            logMessages.CompletingService(serviceName, sw.Elapsed);
-        }
-
-        /// <inheritdoc/>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            var serviceName = this.GetType().Name;
-            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
-
-            cancellationToken.Register(() => logMessages.StoppingCancelled(serviceName));
-            logMessages.StoppingService(serviceName);
-
-            return Task.CompletedTask;
         }
     }
 }

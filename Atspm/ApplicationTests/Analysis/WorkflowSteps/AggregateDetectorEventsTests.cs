@@ -15,242 +15,94 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Attributes;
 using Utah.Udot.Atspm.ApplicationTests.Fixtures;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
-    public class AggregateDetectorEventsTests : IClassFixture<TextDetectorFixture>, IDisposable
+    public class AggregateDetectorEventsTests : IClassFixture<TestLocationFixture>, IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private readonly Detector _testDetector;
         private readonly Location _testLocation;
 
-        public AggregateDetectorEventsTests(ITestOutputHelper output, TextDetectorFixture testDetector)
+        public AggregateDetectorEventsTests(ITestOutputHelper output, TestLocationFixture testLocation)
         {
             _output = output;
-            _testDetector = testDetector.TestDetector;
-            _testLocation = _testDetector.Approach.Location;
+            _testLocation = testLocation.TestLocation;
         }
 
-        [Fact]
-        [Trait(nameof(AggregateDetectorEvents), "Cancellation")]
-        public async void AggregateDetectorEventsTestsCancellation()
+        [Fact(Skip = "skip")]
+        public async Task Stuff()
         {
-            var source = new CancellationTokenSource();
-            source.Cancel();
-
-            var testLogs = new List<IndianaEvent>
             {
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-            }.AsEnumerable();
+                var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\TempDetectorTestData.csv");
 
-            var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
+                var logs = File.ReadAllLines(file1.FullName)
+                       .Skip(1)
+                       .Select(x => x.Split(','))
+                       .Select(x => new IndianaEvent
+                       {
+                           LocationIdentifier = x[0],
+                           Timestamp = DateTime.Parse(x[1]),
+                           EventCode = short.Parse(x[2]),
+                           EventParam = short.Parse(x[3])
+                       }).ToList();
 
-            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
+                var result = new AggregateDetectorEventCountTestData()
+                {
+                    Configuration = _testLocation,
+                    Input = logs,
+                    Output = new List<DetectorEventCountAggregation>()
+                };
 
-            await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(testData, source.Token));
+                var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All,
+                    Formatting = Formatting.Indented
+                });
+                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\AggregateDetectorEventCountTestData1.json", test);
+            }
         }
 
-        /// <summary>
-        /// Tests that only events with a LocationIdentifier matching the test Location are forwarded
-        /// </summary>
-        [Fact]
-        [Trait(nameof(AggregateDetectorEvents), "Location")]
-        public async void AggregateDetectorEventsTestLocation()
+        [Theory]
+        [AnalysisTestData<AggregateDetectorEventCountTestData>]
+        [Trait(nameof(AggregateDetectorEventsStep), "From File")]
+        public async Task AggregatePedestrianPhasesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<DetectorEventCountAggregation> output)
         {
-            var testLogs = new List<IndianaEvent>
-            {
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:03.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:04:04.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-            }.AsEnumerable();
+            var testData = Tuple.Create(config, input);
 
-            var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
+            var aggDate = input
+                .GroupBy(dt => dt.Timestamp)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault().Key;
 
-            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
+            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
+
+            var sut = new AggregateDetectorEventsStep(tl);
 
             var actual = await sut.ExecuteAsync(testData);
 
-            var expected = new DetectorEventCountAggregation()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                ApproachId = _testDetector.ApproachId,
-                DetectorPrimaryId = _testDetector.Id,
-                EventCount = 2,
-                Start = DateTime.Parse("4/17/2023 00:00:00.0"),
-                End = DateTime.Parse("4/17/2023 00:15:00.0")
-            };
+            _output.WriteLine($"actual: {actual.Count()}");
 
-            Assert.Collection(actual,
-                a => Assert.Equivalent(expected, a));
-        }
+            var expected = output;
 
-        /// <summary>
-        /// Tests that only the event params that match the detector channel are forwarded
-        /// </summary>
-        [Fact]
-        [Trait(nameof(AggregateDetectorEvents), "Detector Filter")]
-        public async void AggregateDetectorEventsTestDetectorFilter()
-        {
-            var testLogs = new List<IndianaEvent>
-            {
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:03.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = 100},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:04:04.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = 100},
-            }.AsEnumerable();
+            _output.WriteLine($"expected: {expected.Count()}");
 
-            var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
-
-            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
-
-            var actual = await sut.ExecuteAsync(testData);
-
-            var expected = new DetectorEventCountAggregation()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                ApproachId = _testDetector.ApproachId,
-                DetectorPrimaryId = _testDetector.Id,
-                EventCount = 2,
-                Start = DateTime.Parse("4/17/2023 00:00:00.0"),
-                End = DateTime.Parse("4/17/2023 00:15:00.0")
-            };
-
-            Assert.Collection(actual,
-                a => Assert.Equivalent(expected, a));
-        }
-
-        /// <summary>
-        /// Tests that only IndianaEnumerations.VehicleDetectorOn events are forwarded
-        /// </summary>
-        [Fact]
-        [Trait(nameof(AggregateDetectorEvents), "Event Code Filter")]
-        public async void AggregateDetectorEventsTestEventCodeFilter()
-        {
-            var testLogs = Enumerable.Range(1, 256).Select(s => new IndianaEvent()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                Timestamp = DateTime.Parse("4/17/2023 00:00:01.0"),
-                EventCode = Convert.ToInt16(s),
-                EventParam = Convert.ToInt16(_testDetector.DetectorChannel)
-            }).ToList().AsEnumerable();
-
-            var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
-
-            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
-
-            var actual = await sut.ExecuteAsync(testData);
-
-            var expected = new DetectorEventCountAggregation()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                ApproachId = _testDetector.ApproachId,
-                DetectorPrimaryId = _testDetector.Id,
-                EventCount = 1,
-                Start = DateTime.Parse("4/17/2023 00:00:00.0"),
-                End = DateTime.Parse("4/17/2023 00:15:00.0")
-            };
-
-            Assert.Collection(actual,
-                a => Assert.Equivalent(expected, a));
-        }
-
-        /// <summary>
-        /// Tests if the timestamp of the event is equal to the start of the bin then it should be in that bin
-        /// </summary>
-        [Fact]
-        [Trait(nameof(AggregateDetectorEvents), "Bin Start")]
-        public async void AggregateDetectorEventsTestBinStart()
-        {
-            var testLogs = new List<IndianaEvent>
-            {
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:00:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:05:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:10:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-            }.AsEnumerable();
-
-            var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
-
-            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
-
-            var actual = await sut.ExecuteAsync(testData);
-
-            var expected = new DetectorEventCountAggregation()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                ApproachId = _testDetector.ApproachId,
-                DetectorPrimaryId = _testDetector.Id,
-                EventCount = 3,
-                Start = DateTime.Parse("4/17/2023 00:00:00.0"),
-                End = DateTime.Parse("4/17/2023 00:15:00.0")
-            };
-
-            Assert.Collection(actual,
-                a => Assert.Equivalent(expected, a));
-        }
-
-        /// <summary>
-        /// Tests that the event timestamps are organized into the correct bin
-        /// </summary>
-        [Fact]
-        [Trait(nameof(AggregateDetectorEvents), "Bin Groups")]
-        public async void AggregateDetectorEventsTestBinGroups()
-        {
-            var testLogs = new List<IndianaEvent>
-            {
-                //group a
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:00:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:05:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:10:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-
-                //group b
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:15:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:20:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-                new IndianaEvent() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:25:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = Convert.ToInt16(_testDetector.DetectorChannel)},
-            }.AsEnumerable();
-
-            var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
-
-            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
-
-            var actual = await sut.ExecuteAsync(testData);
-
-            var expectedA = new DetectorEventCountAggregation()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                ApproachId = _testDetector.ApproachId,
-                DetectorPrimaryId = _testDetector.Id,
-                EventCount = 3,
-                Start = DateTime.Parse("4/17/2023 00:00:00.0"),
-                End = DateTime.Parse("4/17/2023 00:15:00.0")
-            };
-
-            var expectedB = new DetectorEventCountAggregation()
-            {
-                LocationIdentifier = _testLocation.LocationIdentifier,
-                ApproachId = _testDetector.ApproachId,
-                DetectorPrimaryId = _testDetector.Id,
-                EventCount = 3,
-                Start = DateTime.Parse("4/17/2023 00:15:00.0"),
-                End = DateTime.Parse("4/17/2023 00:30:00.0")
-            };
-
-            Assert.Collection(actual,
-                a => Assert.Equivalent(expectedA, a),
-                a => Assert.Equivalent(expectedB, a));
+            Assert.Equivalent(actual, expected);
         }
 
         public void Dispose()

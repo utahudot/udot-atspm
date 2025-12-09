@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.Workflows/ApproachDelayWorkflow.cs
+// for Application - %Namespace%/ApproachDelayWorkflow.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
 
         protected JoinBlock<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
 
-        public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
-        public FilteredDetectorData FilteredDetectorData { get; private set; }
+        public FilterPhaseIntervalChangeDateProcessStep FilteredPhaseIntervalChanges { get; private set; }
+        public FilterDetectorDataProcessStep FilteredDetectorData { get; private set; }
 
         public GroupLocationsByApproaches GroupLocationsByApproaches1 { get; private set; }
         public GroupLocationsByApproaches GroupLocationsByApproaches2 { get; private set; }

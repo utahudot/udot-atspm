@@ -46,9 +46,6 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.Aggregation
                         .IsUnicode(false)
                         .HasColumnType("varchar(10)");
 
-                    b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("Date");
-
                     b.Property<string>("DataType")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
@@ -62,7 +59,7 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.Aggregation
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType", "Start", "End");
+                    b.HasKey("LocationIdentifier", "DataType", "Start", "End");
 
                     b.ToTable("CompressedAggregations", t =>
                         {

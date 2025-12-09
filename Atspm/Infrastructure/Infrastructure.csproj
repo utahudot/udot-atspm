@@ -57,13 +57,12 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.22" />
 		<PackageReference Include="OData.Swagger" Version="1.0.0" />
 		<PackageReference Include="Parquet.Net" Version="3.10.0" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />
 		<PackageReference Include="SSH.NET" Version="2024.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -91,6 +90,7 @@
 	  <Using Include="Utah.Udot.NetStandardToolkit.Configuration" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Exceptions" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Interfaces" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Specifications" />
 	</ItemGroup>

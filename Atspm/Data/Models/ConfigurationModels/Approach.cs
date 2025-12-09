@@ -103,6 +103,6 @@ namespace Utah.Udot.Atspm.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Description} - {DirectionTypeId}";
+        public override string ToString() => $"{Id} - {Description} - {ProtectedPhaseNumber} - {DirectionTypeId}";
     }
 }

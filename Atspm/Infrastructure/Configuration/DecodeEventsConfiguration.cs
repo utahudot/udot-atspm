@@ -1,4 +1,5 @@
-﻿#region license
+﻿
+#region license
 // Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Configuration/DecodeEventsConfiguration.cs
 // 

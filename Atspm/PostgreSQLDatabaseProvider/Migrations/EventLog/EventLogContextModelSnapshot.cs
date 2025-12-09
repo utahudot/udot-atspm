@@ -59,9 +59,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.EventLog
                     b.Property<DateTime>("End")
                         .HasColumnType("timestamp");
 
-                    b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("Date");
-
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
 

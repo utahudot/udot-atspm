@@ -26,8 +26,14 @@
 
 	<ItemGroup>
 		<Compile Remove="Analysis\PhaseTerminationAnalysis.cs" />
+		<Compile Remove="Analysis\WorkflowFilters\FilteredCallStatus.cs" />
+		<Compile Remove="Analysis\WorkflowFilters\FilteredIndicationData.cs" />
+		<Compile Remove="Analysis\WorkflowFilters\FilteredSplitsData.cs" />
+		<Compile Remove="Analysis\WorkflowFilters\FilteredTerminationStatus.cs" />
+		<Compile Remove="Analysis\WorkflowFilters\FilteredTimingActuationData.cs" />
+		<Compile Remove="Analysis\WorkflowFilters\FilterTspPriorityData.cs" />
+		<Compile Remove="Analysis\Workflows\ApproachDelayWorkflow.cs" />
 		<Compile Remove="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
-		<Compile Remove="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
 		<Compile Remove="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
 		<Compile Remove="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
 	</ItemGroup>
@@ -51,7 +57,6 @@
 		<Folder Include="Analysis\PhaseTermination\" />
 		<Folder Include="Analysis\TimingAndActuation\" />
 		<Folder Include="Analysis\PurdueSplitFailure\" />
-		<Folder Include="Analysis\PedestrianDelay\" />
 		<Folder Include="Analysis\YellowAndRedActuations\" />
 		<Folder Include="Analysis\TurningMovemen\" />
 		<Folder Include="Analysis\WaitTime\" />
@@ -62,8 +67,14 @@
 
 	<ItemGroup>
 		<None Include="Analysis\PhaseTerminationAnalysis.cs" />
+		<None Include="Analysis\WorkflowFilters\FilteredCallStatus.cs" />
+		<None Include="Analysis\WorkflowFilters\FilteredIndicationData.cs" />
+		<None Include="Analysis\WorkflowFilters\FilteredSplitsData.cs" />
+		<None Include="Analysis\WorkflowFilters\FilteredTerminationStatus.cs" />
+		<None Include="Analysis\WorkflowFilters\FilteredTimingActuationData.cs" />
+		<None Include="Analysis\WorkflowFilters\FilterTspPriorityData.cs" />
+		<None Include="Analysis\Workflows\ApproachDelayWorkflow.cs" />
 		<None Include="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
-		<None Include="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
 		<None Include="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
 		<None Include="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
 	</ItemGroup>
@@ -75,6 +86,7 @@
 	  <Using Include="Utah.Udot.Atspm.Data.Models" />
 	  <Using Include="Utah.Udot.Atspm.Enums" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Interfaces" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Workflows" />
 	  <Using Include="Utah.Udot.Atspm.Data.Models.MeasureOptions" />
 	</ItemGroup>

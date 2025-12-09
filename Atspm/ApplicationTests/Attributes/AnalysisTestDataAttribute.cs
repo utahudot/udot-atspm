@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.Data.Interfaces;
 using Xunit.Sdk;
 
 namespace Utah.Udot.Atspm.ApplicationTests.Attributes
@@ -40,6 +41,25 @@ namespace Utah.Udot.Atspm.ApplicationTests.Attributes
                     {
                         TypeNameHandling = TypeNameHandling.All,
                     });
+
+                    if (testFile.Configuration is ILocationLayer config)
+                    {
+                        if (testFile.Input is IEnumerable<ILocationLayer> input)
+                        {
+                            foreach (var i in input)
+                            {
+                                i.LocationIdentifier = config.LocationIdentifier;
+                            }
+                        }
+
+                        if (testFile.Output is IEnumerable<ILocationLayer> output)
+                        {
+                            foreach (var o in output)
+                            {
+                                o.LocationIdentifier = config.LocationIdentifier;
+                            }
+                        }
+                    }
 
                     yield return new object[] { testFile.Configuration, testFile.Input, testFile.Output };
                 }

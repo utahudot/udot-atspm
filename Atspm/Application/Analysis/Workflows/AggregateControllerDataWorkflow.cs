@@ -18,158 +18,9 @@
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.Plans;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.Workflows
 {
-    public class AggregationWorkflowOptions
-    {
-        public TimeSpan BinSize { get; set; } = TimeSpan.FromMinutes(15);
-        public int MaxDegreeOfParallelism { get; set; } = 1;
-        public CancellationToken CancellationToken { get; set; }
-    }
-
-    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<EventLogModelBase>>, IEnumerable<T>> where T : AggregationModelBase
-    {
-        protected AggregationWorkflowOptions workflowOptions;
-        protected ExecutionDataflowBlockOptions executionBlockOptions;
-
-        /// <inheritdoc/>
-        public AggregationWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken })
-        {
-            workflowOptions = options;
-            executionBlockOptions = new ExecutionDataflowBlockOptions()
-            {
-                CancellationToken = options.CancellationToken,
-                MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
-            };
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    public class UnboxArchivedEvents : TransformProcessStepBase<Tuple<Location, IEnumerable<CompressedEventLogBase>>, Tuple<Location, IEnumerable<EventLogModelBase>>>
-    {
-        /// <inheritdoc/>
-        public UnboxArchivedEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        /// <inheritdoc/>
-        protected override Task<Tuple<Location, IEnumerable<EventLogModelBase>>> Process(Tuple<Location, IEnumerable<CompressedEventLogBase>> input, CancellationToken cancelToken = default)
-        {
-            var location = input.Item1;
-            var events = input.Item2
-                .SelectMany(m => m.Data)
-                .FromSpecification(new EventLogSpecification(location))
-                .ToList()
-                .AsEnumerable();
-
-            return Task.FromResult(Tuple.Create(location, events));
-        }
-    }
-
-    public class FilterEventsByType<T> : TransformProcessStepBase<Tuple<Location, IEnumerable<EventLogModelBase>>, Tuple<Location, IEnumerable<T>>> where T : EventLogModelBase
-    {
-        /// <inheritdoc/>
-        public FilterEventsByType(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        /// <inheritdoc/>
-        protected override Task<Tuple<Location, IEnumerable<T>>> Process(Tuple<Location, IEnumerable<EventLogModelBase>> input, CancellationToken cancelToken = default)
-        {
-            var location = input.Item1;
-            var events = input.Item2
-                .FromSpecification(new EventLogSpecification(location))
-                .Where(w => w.GetType() == typeof(T))
-                .Cast<T>()
-                .ToList()
-                .AsEnumerable();
-
-            return Task.FromResult(Tuple.Create(location, events));
-        }
-    }
-
-
-
-
-
-
-
-    public class DetectorEventCountAggregationWorkflow : AggregationWorkflowBase<DetectorEventCountAggregation>
-    {
-        /// <inheritdoc/>
-        public DetectorEventCountAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
-        {
-        }
-
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
-        public FilteredDetectorData FilteredDetectorData { get; private set; }
-        public GroupLocationsByApproaches GroupApproachesForDetectors { get; private set; }
-        public GroupDetectorsByDetectorEvent GroupDetectorsByDetectorEvent { get; private set; }
-        public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
-
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            Steps.Add(FilterIndianaEvents);
-            Steps.Add(FilteredDetectorData);
-            Steps.Add(GroupApproachesForDetectors);
-            Steps.Add(GroupDetectorsByDetectorEvent);
-            Steps.Add(AggregateDetectorEvents);
-        }
-
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            FilterIndianaEvents = new(executionBlockOptions);
-            FilteredDetectorData = new(blockOptions);
-            GroupApproachesForDetectors = new(executionBlockOptions);
-            GroupDetectorsByDetectorEvent = new(executionBlockOptions);
-            AggregateDetectorEvents = new(TimeSpan.FromMinutes(15), executionBlockOptions);
-        }
-
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            FilterIndianaEvents.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredDetectorData.LinkTo(GroupApproachesForDetectors, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupApproachesForDetectors.LinkTo(GroupDetectorsByDetectorEvent, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupDetectorsByDetectorEvent.LinkTo(AggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            AggregateDetectorEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class PhaseTerminationAggregationWorkflow : AggregationWorkflowBase<PhaseTerminationAggregation>
     {
         private readonly int _consecutiveCount;
@@ -180,8 +31,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             _consecutiveCount = consecutiveCount;
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
-        public FilteredTerminations FilteredTerminations { get; private set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterTerminationsProcessStep FilteredTerminations { get; private set; }
         public GroupLocationsByApproaches GroupApproachesForTerminations { get; private set; }
         public GroupPhaseTerminationsByApproaches GroupApproachesByPhase { get; private set; }
         public IdentifyTerminationTypesAndTimes IdentifyTerminationTypesAndTimes { get; private set; }
@@ -230,8 +81,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
-        public FilteredPlanData FilteredPlanData { get; private set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterPlanDataProcessStep FilteredPlanData { get; private set; }
         public GroupLocationByParameter GroupLocationPlans { get; private set; }
         public CalculateTimingPlans<Plan> CalculateTimingPlans { get; private set; }
         public AggregateLocationPlans AggregateLocationPlans { get; private set; }
@@ -277,8 +128,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
-        public FilteredPreemptionData FilteredPreemptionData { get; private set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterPreemptionDataProcessStep FilteredPreemptionData { get; private set; }
         public GroupLocationByParameter GroupPreemptNumber { get; private set; }
         public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
 
@@ -320,8 +171,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
         }
 
-        public FilterEventsByType<IndianaEvent> FilterIndianaEvents { get; set; }
-        public FilterPriorityData FilterPriorityData { get; private set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
+        public FilterPriorityDataProcessStep FilterPriorityData { get; private set; }
         public GroupLocationByParameter GroupPriorityNumber { get; private set; }
         public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
 
@@ -353,146 +204,6 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
-    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<AggregationModelBase>>
-    {
-        //aggregate detector events
-        //public FilteredDetectorData FilteredDetectorData { get; private set; }
-        //public GroupLocationsByApproaches GroupApproachesForDetectors { get; private set; }
-        //public GroupDetectorsByDetectorEvent GroupDetectorsByDetectorEvent { get; private set; }
-        //public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
-
-        //aggregate termination events
-        //public FilteredTerminations FilteredTerminations { get; private set; }
-        //public GroupLocationsByApproaches GroupApproachesForTerminations { get; private set; }
-        //public GroupPhaseTerminationsByApproaches GroupPhaseTerminationsByApproaches { get; private set; }
-        //public IdentifyTerminationTypesAndTimes IdentifyTerminationTypesAndTimes { get; private set; }
-        //public AggregatePhaseTerminationEvents AggregatePhaseTerminationEvents { get; private set; }
-
-        //aggregate Location plans
-        //public FilteredPlanData FilteredPlanData { get; private set; }
-        //public GroupLocationByParameter GroupLocationPlans { get; private set; }
-        //public CalculateTimingPlans<Plan> CalculateTimingPlans { get; private set; }
-        //public AggregateLocationPlans AggregateLocationPlans { get; private set; }
-
-        //aggregate preempt codes
-        //public FilteredPreemptionData FilteredPreemptionData { get; private set; }
-        //public GroupLocationByParameter GroupPreemptNumber { get; private set; }
-        //public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
-
-        //aggregate priority codes
-        //public FilterPriorityData FilterPriorityData { get; private set; }
-        //public GroupLocationByParameter GroupPriorityNumber { get; private set; }
-        //public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
-
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            //aggregate detector events
-            //Steps.Add(FilteredDetectorData);
-            //Steps.Add(GroupApproachesForDetectors);
-            //Steps.Add(GroupDetectorsByDetectorEvent);
-            //Steps.Add(AggregateDetectorEvents);
-
-            //aggregate termination events
-            //Steps.Add(FilteredTerminations);
-            //Steps.Add(GroupApproachesForTerminations);
-            //Steps.Add(GroupPhaseTerminationsByApproaches);
-            //Steps.Add(IdentifyTerminationTypesAndTimes);
-            //Steps.Add(AggregatePhaseTerminationEvents);
-
-            //AggregateLocationPlans
-            //Steps.Add(FilteredPlanData);
-            //Steps.Add(GroupLocationPlans);
-            //Steps.Add(CalculateTimingPlans);
-            //Steps.Add(AggregateLocationPlans);
-
-            //aggregate preempt codes
-            //Steps.Add(FilteredPreemptionData);
-            //Steps.Add(GroupPreemptNumber);
-            //Steps.Add(AggregatePreemptCodes);
-
-            //aggregate priority codes
-            //Steps.Add(FilterPriorityData);
-            //Steps.Add(GroupPriorityNumber);
-            //Steps.Add(AggregatePriorityCodes);
-        }
-
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            //aggregate detector events
-            //FilteredDetectorData = new();
-            //GroupApproachesForDetectors = new();
-            //GroupDetectorsByDetectorEvent = new();
-            //AggregateDetectorEvents = new();
-
-            //aggregate termination events
-            //FilteredTerminations = new();
-            //GroupApproachesForTerminations = new();
-            //GroupPhaseTerminationsByApproaches = new();
-            //IdentifyTerminationTypesAndTimes = new();
-            //AggregatePhaseTerminationEvents = new();
-
-            //AggregateLocationPlans
-            //FilteredPlanData = new();
-            //GroupLocationPlans = new();
-            //CalculateTimingPlans = new();
-            //AggregateLocationPlans = new();
-
-            //aggregate preempt codes
-            //FilteredPreemptionData = new();
-            //GroupPreemptNumber = new();
-            //AggregatePreemptCodes = new();
-
-            //aggregate priority codes
-            //FilterPriorityData = new();
-            //GroupPriorityNumber = new();
-            //AggregatePriorityCodes = new();
-        }
-
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            //link input to event filters
-            //Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
-            //Input.LinkTo(FilteredTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
-            //Input.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
-            //Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
-            //Input.LinkTo(FilterPriorityData, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //aggregate detector events
-            //FilteredDetectorData.LinkTo(GroupApproachesForDetectors, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupApproachesForDetectors.LinkTo(GroupDetectorsByDetectorEvent, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupDetectorsByDetectorEvent.LinkTo(AggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //aggregate termination events
-            //FilteredTerminations.LinkTo(GroupApproachesForTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupApproachesForTerminations.LinkTo(GroupPhaseTerminationsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupPhaseTerminationsByApproaches.LinkTo(IdentifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
-            //IdentifyTerminationTypesAndTimes.LinkTo(AggregatePhaseTerminationEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //AggregateLocationPlans
-            //FilteredPlanData.LinkTo(GroupLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupLocationPlans.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            //CalculateTimingPlans.LinkTo(AggregateLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //aggregate preempt codes
-            //FilteredPreemptionData.LinkTo(GroupPreemptNumber, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupPreemptNumber.LinkTo(AggregatePreemptCodes, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //aggregate priority codes
-            //FilterPriorityData.LinkTo(GroupPriorityNumber, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //link output to aggregation results
-            //AggregateDetectorEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-            //AggregatePhaseTerminationEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-            //AggregateLocationPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-            //AggregatePreemptCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-            //AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 }

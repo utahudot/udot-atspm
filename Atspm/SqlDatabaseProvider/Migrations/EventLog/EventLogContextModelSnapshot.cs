@@ -59,9 +59,6 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.EventLog
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("Date");
-
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 

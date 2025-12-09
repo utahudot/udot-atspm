@@ -265,7 +265,7 @@ namespace DatabaseInstaller.Services
                 hourlyCompressedEvents.Add(new CompressedEventLogs<T>
                 {
                     LocationIdentifier = location.LocationIdentifier,
-                    ArchiveDate = DateOnly.FromDateTime(date),
+                    //ArchiveDate = DateOnly.FromDateTime(date),
                     DeviceId = deviceId.Value,
                     Start = start,
                     End = end,

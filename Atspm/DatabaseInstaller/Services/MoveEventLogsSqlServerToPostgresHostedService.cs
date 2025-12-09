@@ -119,26 +119,27 @@ namespace DatabaseInstaller.Services
 
         private async Task ProcessDateAsync(Location location, DateTime date, CancellationToken cancellationToken)
         {
-            using var scope = _serviceProvider.CreateScope();
-            var sqlContext = CreateSqlContext();
-            var sqlRepo = new IndianaEventLogEFRepository(sqlContext, scope.ServiceProvider.GetRequiredService<ILogger<IndianaEventLogEFRepository>>());
+            throw new NotImplementedException("I removed the archive date and didn't know how to change this -CB");
+            //using var scope = _serviceProvider.CreateScope();
+            //var sqlContext = CreateSqlContext();
+            //var sqlRepo = new IndianaEventLogEFRepository(sqlContext, scope.ServiceProvider.GetRequiredService<ILogger<IndianaEventLogEFRepository>>());
 
-            var allLogs = sqlRepo.GetList()
-                .Where(l => l.LocationIdentifier == location.LocationIdentifier && l.ArchiveDate == DateOnly.FromDateTime(date))
-                .AsNoTracking()
-                .AsEnumerable()
-                .SelectMany(m => m.Data)
-                .FromSpecification(new EventLogSpecification(location.LocationIdentifier, date, date.AddDays(1).AddMilliseconds(-1)))
-                .Cast<IndianaEvent>()
-                .ToList();
+            //var allLogs = sqlRepo.GetList()
+            //    .Where(l => l.LocationIdentifier == location.LocationIdentifier && l.ArchiveDate == DateOnly.FromDateTime(date))
+            //    .AsNoTracking()
+            //    .AsEnumerable()
+            //    .SelectMany(m => m.Data)
+            //    .FromSpecification(new EventLogSpecification(location.LocationIdentifier, date, date.AddDays(1).AddMilliseconds(-1)))
+            //    .Cast<IndianaEvent>()
+            //    .ToList();
 
-            for (int hour = 0; hour < 24; hour++)
-            {
-                var hourlyLogs = allLogs.Where(l => l.Timestamp.Hour == hour).ToList();
-                if (!hourlyLogs.Any()) continue;
+            //for (int hour = 0; hour < 24; hour++)
+            //{
+            //    var hourlyLogs = allLogs.Where(l => l.Timestamp.Hour == hour).ToList();
+            //    if (!hourlyLogs.Any()) continue;
 
-                await SaveHourlyLogsAsync(location, date, hourlyLogs, scope, cancellationToken);
-            }
+            //    await SaveHourlyLogsAsync(location, date, hourlyLogs, scope, cancellationToken);
+            //}
         }
 
         private async Task SaveHourlyLogsAsync(
@@ -164,7 +165,7 @@ namespace DatabaseInstaller.Services
 
                 var archiveLog = new CompressedEventLogs<IndianaEvent>
                 {
-                    ArchiveDate = DateOnly.FromDateTime(date),
+                    //ArchiveDate = DateOnly.FromDateTime(date),
                     LocationIdentifier = location.LocationIdentifier,
                     DeviceId = deviceId.Value,
                     Data = logs

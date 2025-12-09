@@ -16,10 +16,9 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Interfaces;
 
 #nullable disable
-#pragma warning disable
 
 namespace Utah.Udot.Atspm.Data.Models
 {

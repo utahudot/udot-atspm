@@ -548,7 +548,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         protected JoinBlock<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>> joinThree;
         internal MergePreemptionTimes mergePreemptionTimes;
 
-        public FilteredPreemptionData FilteredPreemptionData { get; private set; }
+        public FilterPreemptionDataProcessStep FilteredPreemptionData { get; private set; }
         public CalculateDwellTime CalculateDwellTime { get; private set; }
         public CalculateTrackClearTime CalculateTrackClearTime { get; private set; }
         public CalculateTimeToService CalculateTimeToService { get; private set; }
@@ -597,14 +597,14 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         /// <inheritdoc/>
         protected override void LinkSteps()
         {
-            //Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
+            //Input.LinkTo(FilterPreemptionDataProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            //FilteredPreemptionData.LinkTo(CalculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            //FilteredPreemptionData.LinkTo(CalculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            //FilteredPreemptionData.LinkTo(CalculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
-            //FilteredPreemptionData.LinkTo(CalculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
-            //FilteredPreemptionData.LinkTo(CalculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
-            //FilteredPreemptionData.LinkTo(CalculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterPreemptionDataProcessStep.LinkTo(CalculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterPreemptionDataProcessStep.LinkTo(CalculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterPreemptionDataProcessStep.LinkTo(CalculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterPreemptionDataProcessStep.LinkTo(CalculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterPreemptionDataProcessStep.LinkTo(CalculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilterPreemptionDataProcessStep.LinkTo(CalculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
 
             //joinOne.LinkTo(joinThree.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
             //joinTwo.LinkTo(joinThree.Target2, new DataflowLinkOptions() { PropagateCompletion = true });

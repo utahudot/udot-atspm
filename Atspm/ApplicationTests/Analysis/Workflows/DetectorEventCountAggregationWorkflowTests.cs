@@ -40,8 +40,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
         }
 
         [Theory]
-        [AnalysisTestData<DetectorEventCountAggregationTestData>]
-        [Trait(nameof(DetectorEventCountAggregationWorkflow), "From File")]
+        [AnalysisTestData<AggregateDetectorEventCountTestData>]
+        [Trait(nameof(AggregateDetectorEventCountWorkflow), "From File")]
         //public void DetectorEventCountAggregationWorkflowTestsFromFile(object stuff)
         public void DetectorEventCountAggregationWorkflowTestsFromFile(Location config, List<IndianaEvent> input, List<DetectorEventCountAggregation> output)
         {
@@ -54,7 +54,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
             var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
             var Location = JsonConvert.DeserializeObject<Location>(json);
 
-            var test = new DetectorEventCountAggregationTestData()
+            var test = new AggregateDetectorEventCountTestData()
             {
                 Configuration = Location,
                 Input = new List<IndianaEvent>(),
@@ -77,12 +77,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
 
             if (dir.Exists)
             {
-                foreach (var f in dir.GetFiles("*.json").Where(f => f.Name.Contains(typeof(DetectorEventCountAggregationTestData).Name)))
+                foreach (var f in dir.GetFiles("*.json").Where(f => f.Name.Contains(typeof(AggregateDetectorEventCountTestData).Name)))
                 {
                     _output.WriteLine($"{f.FullName}");
 
                     var json = File.ReadAllText(f.FullName);
-                    var testFile = JsonConvert.DeserializeObject<DetectorEventCountAggregationTestData>(json, new JsonSerializerSettings()
+                    var testFile = JsonConvert.DeserializeObject<AggregateDetectorEventCountTestData>(json, new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.All
                     });

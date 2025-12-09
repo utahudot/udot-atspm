@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationIdentifier, DateTime start, DateTime end)
         {
             var result = table
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
+                .FromSpecification(new CompressedDataSpecification<CompressedEventLogBase>(locationIdentifier, start, end))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)

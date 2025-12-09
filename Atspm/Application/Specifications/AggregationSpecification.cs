@@ -19,131 +19,31 @@ using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Specifications
 {
-    public class AggregationDateRangeSpecification : BaseSpecification<CompressedAggregationBase>
+    /// <summary>
+    /// A specification that filters <see cref="AggregationModelBase"/> entities
+    /// based on location and overlapping time range.
+    /// </summary>
+    public class AggregationSpecification : BaseSpecification<AggregationModelBase>
     {
-        public AggregationDateRangeSpecification(string locationId, DateOnly startDate, DateOnly endDate) : base()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregationSpecification"/> class
+        /// with the provided location identifier and time range.
+        /// </summary>
+        /// <param name="locationIdentifier">The unique identifier of the location to filter aggregations for.</param>
+        /// <param name="start">The start of the time window (inclusive boundary for overlap).</param>
+        /// <param name="end">The end of the time window (inclusive boundary for overlap).</param>
+        /// <remarks>
+        /// Aggregations are included if their <see cref="AggregationModelBase.End"/> is after <paramref name="start"/>
+        /// and their <see cref="AggregationModelBase.Start"/> is before <paramref name="end"/>.
+        /// This effectively selects all aggregations that overlap with the given time range.
+        /// </remarks>
+        public AggregationSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
         {
-            Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate;
-
-            ApplyOrderBy(o => o.ArchiveDate);
-        }
-    }
-
-    public class AggregationDateTimeRangeSpecification : BaseSpecification<AggregationModelBase>
-    {
-        public AggregationDateTimeRangeSpecification(DateTime startDate, DateTime endDate) : base()
-        {
-            Criteria = c => c.Start >= startDate && c.End <= endDate;
-
-            ApplyOrderBy(o => o.Start);
-        }
-
-        public AggregationDateTimeRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
-        {
-            Criteria = c => c.LocationIdentifier == locationId && c.Start >= startDate && c.End <= endDate;
-
-            ApplyOrderBy(o => o.Start);
-        }
-
-        public AggregationDateTimeRangeSpecification(int startHour, int startMinute, int endHour, int endMinute) : base()
-        {
-            Criteria = l => l.Start.Hour > startHour && l.End.Hour < endHour
-            || l.Start.Hour == startHour && l.End.Hour == endHour
-            && l.Start.Minute >= startMinute && l.End.Minute <= endMinute
-            || l.Start.Hour == startHour && l.End.Hour < endHour
-            && l.Start.Minute >= startMinute
-            || l.Start.Hour < startHour && l.End.Hour == endHour
-            && l.Start.Minute <= endMinute;
+            Criteria = c => c.LocationIdentifier == locationIdentifier
+                         && c.End > start
+                         && c.Start < end;
 
             ApplyOrderBy(o => o.Start);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //public class ControllerLogLocationFilterSpecification : BaseSpecification<ControllerEventLog>
-    //{
-    //    public ControllerLogLocationFilterSpecification(Location Location) : base()
-    //    {
-    //        base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-    //}
-
-    //public class ControllerLogLocationAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
-    //{
-    //    public ControllerLogLocationAndParamterFilterSpecification(Location Location, int param) : base()
-    //    {
-    //        base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier && c.EventParam == param;
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-    //}
-
-
-
-    //public class ControllerLogCodeAndParamSpecification : BaseSpecification<ControllerEventLog>
-    //{
-    //    public ControllerLogCodeAndParamSpecification(int eventCode) : base()
-    //    {
-    //        base.Criteria = c => c.EventCode == eventCode;
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-
-    //    public ControllerLogCodeAndParamSpecification(int eventCode, int param) : base()
-    //    {
-    //        base.Criteria = c => c.EventCode == eventCode && c.EventParam == param;
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-
-    //    public ControllerLogCodeAndParamSpecification(IEnumerable<int> eventCodes) : base()
-    //    {
-    //        base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode);
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-
-    //    public ControllerLogCodeAndParamSpecification(IEnumerable<int> eventCodes, int param) : base()
-    //    {
-    //        base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode) && c.EventParam == param;
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-
-    //    public ControllerLogCodeAndParamSpecification(IEnumerable<int> eventCodes, IEnumerable<int> paramCodes) : base()
-    //    {
-    //        base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode) && paramCodes != null && paramCodes.Contains(c.EventParam);
-
-    //        ApplyOrderBy(o => o.Timestamp);
-    //    }
-    //}
-
-
 }

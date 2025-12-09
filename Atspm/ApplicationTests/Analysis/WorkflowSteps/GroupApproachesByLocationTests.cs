@@ -203,7 +203,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             foreach (var k in test.Select(s => s.Key))
             {
-                _output.WriteLine($"{k}");
+                _output.WriteLine($"{k} - {test[k].Count()}");
             }
 
             //option 1
