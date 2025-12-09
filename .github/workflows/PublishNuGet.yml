@@ -1,4 +1,6 @@
 name: Publish NuGet Packages
+permissions:
+  contents: read
 
 on:
   release:
