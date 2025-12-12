@@ -364,6 +364,41 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
+        [HttpGet("[action]/{locationIdentifier}/{dataType}")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<DateOnly>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithEventLogs(
+        [FromRoute] string locationIdentifier,
+        [FromRoute] string dataType,
+        [FromQuery] DateTime start,
+        [FromQuery] DateTime end)
+        {
+            var error = await ValidateInputs(locationIdentifier, start, end);
+            if (error != null) return error;
+
+            Type type;
+            try
+            {
+                type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid data type",
+                    Detail = $"The specified data type '{dataType}' is not recognized.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
+
+            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
+
+            return Ok(result);
+        }
+
         /// <summary>
         /// Validates common input parameters for data queries.
         /// </summary>

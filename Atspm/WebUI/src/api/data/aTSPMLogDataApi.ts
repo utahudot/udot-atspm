@@ -1031,8 +1031,9 @@ export const getEventLogDaysWithEventLogsFromLocationIdentifier = (
   params?: GetEventLogDaysWithEventLogsFromLocationIdentifierParams,
   signal?: AbortSignal
 ) => {
-  return dataRequest<void>({
-    url: `/EventLog/GetDaysWithEventLogs/${locationIdentifier}`,
+    const { dataType, ...queryParams } = params || {}
+    return dataRequest<void>({
+    url: `/EventLog/GetDaysWithEventLogs/${locationIdentifier}/${dataType}`,
     method: 'GET',
     params,
     signal,

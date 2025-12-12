@@ -17,6 +17,8 @@
 
 using System.Collections;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
 {

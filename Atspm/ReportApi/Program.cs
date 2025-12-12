@@ -213,7 +213,7 @@ else
 
 //Security
 app.UseHttpsRedirection();
-//app.UseCors("Default");
+app.UseCors("Default");
 app.UseAuthentication();
 app.UseAuthorization();
 

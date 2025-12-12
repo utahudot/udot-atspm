@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Repositories.AggregationRepositories;
+using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
@@ -40,6 +41,17 @@ namespace Utah.Udot.Atspm.Extensions
         {
             return repo.GetList()
                 .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end, dataType))
+                .Select(x => DateOnly.FromDateTime(x.Start))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+        }
+
+        public static IReadOnlyList<DateOnly> GetDaysWithEventLogs<T>(this ICompressedDataRepository<T> repo, string locationIdentifier, Type dataType, DateTime start, DateTime end) where T : CompressedDataBase
+        {
+            return repo.GetList()
+                .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end, dataType))
+                .Where(x => x.DataType == dataType)
                 .Select(x => DateOnly.FromDateTime(x.Start))
                 .Distinct()
                 .OrderBy(d => d)
