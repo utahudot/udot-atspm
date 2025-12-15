@@ -15,12 +15,15 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.NetStandardToolkit.Authentication;
@@ -76,6 +79,25 @@ builder.Host
         s.AddHealthChecks();
     });
 
+/// Add AllowAll scheme only in Testing environment
+if (builder.Environment.IsEnvironment("Development"))
+{
+    builder.Services.AddAuthentication(options =>
+    {
+        // Override defaults to use AllowAll
+        options.DefaultAuthenticateScheme = "AllowAll";
+        options.DefaultChallengeScheme = "AllowAll";
+    })
+    .AddScheme<AuthenticationSchemeOptions, AllowAllAuthHandler>("AllowAll", _ => { });
+}
+
+// Add authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewData", policy =>
+        policy.RequireClaim("scope", "data.read"));
+});
+
 var app = builder.Build();
 
 #region Middleware Pipeline
@@ -112,6 +134,32 @@ app.MapJsonHealthChecks();
 #endregion
 
 app.Run();
+
+public class AllowAllAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+{
+    public AllowAllAuthHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder,
+        ISystemClock clock)
+        : base(options, logger, encoder, clock) { }
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        var identity = new ClaimsIdentity(new[]
+        {
+        new Claim(ClaimTypes.Name, "TestUser"),
+        new Claim("scope", "data.read") //satisfies CanViewData policy
+    }, "AllowAll");
+
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, "AllowAll");
+
+        return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+
+}
+
 
 
 //builder.Services.Configure<RateLimitingOptions>(
