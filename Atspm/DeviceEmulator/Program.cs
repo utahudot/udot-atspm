@@ -16,7 +16,6 @@
 #endregion
 
 using DeviceEmulator;
-using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHostedService<Worker>();
@@ -26,7 +25,8 @@ var app = builder.Build();
 // Serve XML logs from "/logs/{DeviceId}"
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider("/files"), //  match docker volume
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "data")),
     RequestPath = "/logs"
 });
 
