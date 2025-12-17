@@ -29,6 +29,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.RateLimiting;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.NetStandardToolkit.Authentication;
@@ -66,15 +67,6 @@ builder.Host
             o.DocumentFilter<GenerateEventSchemas>();
         });
         s.AddConfiguredCors(builder.Configuration);
-
-
-
-
-
-
-
-
-
 
 
 

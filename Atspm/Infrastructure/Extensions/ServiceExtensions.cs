@@ -98,7 +98,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 default:
                     {
-                        return builder.UseSqlServer(opt.ConnectionString, opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
+                        return builder.UseInMemoryDatabase(Guid.NewGuid().ToString());
                     }
             }
         }
