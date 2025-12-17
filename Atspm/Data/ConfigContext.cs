@@ -45,6 +45,11 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<Area> Areas { get; set; }
 
         /// <summary>
+        /// Data Download Logs table
+        /// </summary>
+        public virtual DbSet<DataDownloadLog> DataDownloadLogs { get; set;}
+
+        /// <summary>
         /// Detection type table
         /// </summary>
         public virtual DbSet<DetectionType> DetectionTypes { get; set; }
@@ -200,6 +205,7 @@ namespace Utah.Udot.Atspm.Data
         {
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
+            modelBuilder.ApplyConfiguration(new DataDownloadLogConfiguration());
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorCommentConfiguration());

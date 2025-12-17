@@ -110,6 +110,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<DataDownloaderLoggingMiddleware> _logger;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly Func<HttpContext, string>? _getUserId;
         private readonly Func<HttpContext, ControllerActionDescriptor?, bool> _useStreaming;
         private readonly Func<HttpContext, ControllerActionDescriptor?, bool> _useBuffering;
@@ -117,12 +118,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         public DataDownloaderLoggingMiddleware(
                 RequestDelegate next,
                 ILogger<DataDownloaderLoggingMiddleware> logger,
+                IServiceScopeFactory scopeFactory,
                 Func<HttpContext, ControllerActionDescriptor?, bool>? useStreaming = null,
                 Func<HttpContext, ControllerActionDescriptor?, bool>? useBuffering = null,
                 Func<HttpContext, string>? getUserId = null)
         {
             _next = next;
             _logger = logger;
+            _scopeFactory = scopeFactory;
             _useStreaming = useStreaming ?? ((ctx, ad) => false);
             _useBuffering = useBuffering ?? ((ctx, ad) => false);
             _getUserId = getUserId ?? (ctx => ctx.User?.FindFirst("sub")?.Value);
@@ -169,10 +172,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 if (_useStreaming(context, actionDescriptor) || _useBuffering(context, actionDescriptor))
                 {
                     var entry = CreateEntry(context, actionDescriptor, actionName, sw.ElapsedMilliseconds, resultCount, resultSizeBytes, errorMessage);
-                    
+
+                    using (var scope = _scopeFactory.CreateScope())
+                    {
+                        var repo = scope.ServiceProvider.GetService<IDataDownloadLogRepository>();
+                        await repo.AddAsync(entry);
+                    }
+
                     new DataDownloaderLogMessages(_logger, entry).DataDownloadSuccessful(entry);
                     
-                    Console.WriteLine($"log: {entry}");
+                    //Console.WriteLine($"log: {entry}");
                 }
 
                 context.Response.Body = originalBody; // restore

@@ -154,6 +154,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
             services.AddScoped<IAreaRepository, AreaEFRepository>();
+            services.AddScoped<IDataDownloadLogRepository, DataDownloadLogEFRepository>();
             services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
             services.AddScoped<IDetectorCommentRepository, DetectorCommentEFRepository>();
             services.AddScoped<IDetectorRepository, DetectorEFRepository>();

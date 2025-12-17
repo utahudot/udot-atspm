@@ -32,6 +32,7 @@ using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.Infrastructure.LogMessages;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.NetStandardToolkit.Authentication;
 using Utah.Udot.NetStandardToolkit.Services;
 
@@ -67,48 +68,15 @@ builder.Host
             o.DocumentFilter<GenerateEventSchemas>();
         });
         s.AddConfiguredCors(builder.Configuration);
-
-
-
-
-
-
-        //s.AddHttpLogging(l =>
-        //{
-        //    l.LoggingFields = HttpLoggingFields.All;
-        //    //l.RequestHeaders.Add("My-Request-Header");
-        //    //l.ResponseHeaders.Add("My-Response-Header");
-        //    //l.MediaTypeOptions.AddText("application/json");
-        //    l.RequestBodyLogLimit = 4096;
-        //    l.ResponseBodyLogLimit = 4096;
-        //});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        s.AddHttpLogging(l =>
+        {
+            l.LoggingFields = HttpLoggingFields.All;
+            //l.RequestHeaders.Add("My-Request-Header");
+            //l.ResponseHeaders.Add("My-Response-Header");
+            //l.MediaTypeOptions.AddText("application/json");
+            l.RequestBodyLogLimit = 4096;
+            l.ResponseBodyLogLimit = 4096;
+        });
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
@@ -141,15 +109,7 @@ app.UseAuthorization();
 
 //Cross-cutting
 app.UseResponseCompression();
-
-
-
-
-//app.UseHttpLogging();
-
-
-
-
+app.UseHttpLogging();
 app.UseMiddleware<DataDownloaderLoggingMiddleware>(
     (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "StreamData",
     (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "GetData",

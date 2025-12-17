@@ -19,6 +19,7 @@
 using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.Atspm.Data.Relationships;
+using Utah.Udot.NetStandardToolkit.Interfaces;
 
 namespace Utah.Udot.Atspm.Data.Models
 {
@@ -26,7 +27,7 @@ namespace Utah.Udot.Atspm.Data.Models
     /// Represents a log entry for a data download request, capturing request, response,
     /// performance, and user-related metadata.
     /// </summary>
-    public class DataDownloadLog : AtspmConfigModelBase<int>
+    public class DataDownloadLog : AtspmConfigModelBase<int>, ITimestamp
     {
         /// <summary>
         /// Gets or sets the UTC timestamp when the log entry was created.
