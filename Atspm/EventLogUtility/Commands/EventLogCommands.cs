@@ -29,6 +29,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddCommand(TransferCommand);
             AddCommand(ExtractCommand);
             AddCommand(DecodeEventsCommand);
+            AddCommand(ProcessParquetCommand);
         }
 
         public AggregationCommand AggregationCommand { get; set; } = new AggregationCommand();
@@ -36,5 +37,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public TransferLogsConsoleCommand TransferCommand { get; set; } = new TransferLogsConsoleCommand();
         public ExtractConsoleCommand ExtractCommand { get; set; } = new ExtractConsoleCommand();
         public DecodeEventsCommand DecodeEventsCommand { get; set; } = new DecodeEventsCommand();
+        public ProcessParquetCommand ProcessParquetCommand { get; set; } = new ProcessParquetCommand();
     }
 }
