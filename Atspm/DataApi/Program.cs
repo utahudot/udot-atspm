@@ -1,4 +1,4 @@
-#region license
+﻿#region license
 // Copyright 2025 Utah Departement of Transportation
 // for DataApi - %Namespace%/Program.cs
 // 
@@ -16,6 +16,7 @@
 #endregion
 
 using Google.Api;
+using Lextm.SharpSnmpLib.Security;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -157,7 +158,10 @@ app.UseResponseCompression();
 
 
 
-app.UseMiddleware<DataDownloaderLoggingMiddleware>();
+app.UseMiddleware<DataDownloaderLoggingMiddleware>(
+    (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "StreamData",
+    (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "GetData",
+    (HttpContext ctx) => ctx.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? ctx.User?.Identity?.Name);
 
 //Swagger
 app.UseConfiguredSwaggerUI();
@@ -318,174 +322,3 @@ public class RateLimitingPolicyService
         });
     }
 }
-
-public class LoggingStream : Stream
-{
-    private readonly Stream _inner;
-    private long _bytesWritten = 0;
-    private int _ndJsonCount = 0;
-    private string _lineBuffer = "";
-
-    public LoggingStream(Stream inner)
-    {
-        _inner = inner;
-    }
-
-
-    public long BytesWritten => _bytesWritten;
-
-
-    public int NdJsonCount => _ndJsonCount;
-
-    public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-    {
-        _bytesWritten += count;
-        var chunk = Encoding.UTF8.GetString(buffer, offset, count);
-
-        _lineBuffer += chunk;
-        var lines = _lineBuffer.Split('\n');
-
-        _lineBuffer = lines[^1];
-
-        for (int i = 0; i < lines.Length - 1; i++)
-        {
-            var line = lines[i];
-            if (!string.IsNullOrWhiteSpace(line) && line.TrimStart().StartsWith("{"))
-                _ndJsonCount++;
-        }
-
-        await _inner.WriteAsync(buffer, offset, count, cancellationToken);
-    }
-
-    public override bool CanRead => _inner.CanRead;
-    public override bool CanSeek => _inner.CanSeek;
-    public override bool CanWrite => _inner.CanWrite;
-    public override long Length => _inner.Length;
-    public override long Position { get => _inner.Position; set => _inner.Position = value; }
-    public override Task FlushAsync(CancellationToken cancellationToken) => _inner.FlushAsync(cancellationToken);
-    public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
-    public override long Seek(long offset, SeekOrigin origin) => _inner.Seek(offset, origin);
-    public override void SetLength(long value) => _inner.SetLength(value);
-    public override void Write(byte[] buffer, int offset, int count) => _inner.Write(buffer, offset, count);
-    public override void Flush() => _inner.Flush();
-}
-
-
-public class DataDownloaderLoggingMiddleware(
-    RequestDelegate next,
-    ILogger<DataDownloaderLoggingMiddleware> logger)
-    //ICurrentUserService<JwtUserSession> currentUserService)
-{
-    private readonly RequestDelegate _next = next;
-    private readonly ILogger<DataDownloaderLoggingMiddleware> _logger = logger;
-    //private readonly ICurrentUserService<JwtUserSession> _currentUserService = currentUserService;
-    //private readonly IDownloadLogRepository _repo;
-
-    public async Task InvokeAsync(HttpContext context)
-    {
-        var sw = Stopwatch.StartNew();
-        var originalBody = context.Response.Body;
-
-        string? errorMessage = null;
-        LoggingStream? loggingStream = null;
-        MemoryStream? bufferStream = null;
-
-        var endpoint = context.GetEndpoint();
-        var actionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
-        var actionName = actionDescriptor?.ActionName;
-
-        try
-        {
-            if (string.Equals(actionName, "StreamData", StringComparison.OrdinalIgnoreCase))
-            {
-                // Wrap with LoggingStream for ND-JSON
-                loggingStream = new LoggingStream(originalBody);
-                context.Response.Body = loggingStream;
-            }
-            else if (string.Equals(actionName, "GetData", StringComparison.OrdinalIgnoreCase))
-            {
-                // Buffer into MemoryStream for application/json
-                bufferStream = new MemoryStream();
-                context.Response.Body = bufferStream;
-            }
-
-            await _next(context);
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            throw;
-        }
-        finally
-        {
-            sw.Stop();
-
-            int? resultCount = null;
-            long? resultSizeBytes = null;
-
-            if (string.Equals(actionName, "GetData", StringComparison.OrdinalIgnoreCase) && bufferStream != null)
-            {
-                // Copy buffered content back to original response
-                bufferStream.Position = 0;
-                await bufferStream.CopyToAsync(originalBody);
-
-                resultSizeBytes = bufferStream.Length;
-
-                try
-                {
-                    var json = Encoding.UTF8.GetString(bufferStream.ToArray());
-                    if (json.TrimStart().StartsWith("["))
-                    {
-                        using var doc = JsonDocument.Parse(json);
-                        if (doc.RootElement.ValueKind == JsonValueKind.Array)
-                            resultCount = doc.RootElement.GetArrayLength();
-                    }
-                }
-                catch
-                {
-                }
-            }
-            else if (string.Equals(actionName, "StreamData", StringComparison.OrdinalIgnoreCase) && loggingStream != null)
-            {
-                resultCount = loggingStream.NdJsonCount;
-                resultSizeBytes = loggingStream.BytesWritten;
-            }
-
-            if (actionName is "GetData" or "StreamData")
-            {
-                var log = new DataDownloadLog
-                {
-                    Timestamp = DateTime.UtcNow,
-                    TraceId = context.TraceIdentifier,
-                    ConnectionId = context.Connection.Id,
-                    RemoteIp = context.Connection.RemoteIpAddress?.ToString(),
-                    UserAgent = context.Request.Headers["User-Agent"].ToString(),
-                    UserId = context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                             ?? context.User?.FindFirst("sub")?.Value
-                             ?? context.User?.Identity?.Name,
-                    Route = context.Request.Path,
-                    QueryString = context.Request.QueryString.ToString(),
-                    Method = context.Request.Method,
-                    StatusCode = context.Response.StatusCode,
-                    DurationMs = sw.ElapsedMilliseconds,
-                    Controller = actionDescriptor?.ControllerName,
-                    Action = actionName,
-                    ResultSizeBytes = resultSizeBytes,
-                    ResultCount = resultCount,
-                    Success = context.Response.StatusCode is >= 200 and < 300,
-                    ErrorMessage = errorMessage
-                };
-
-                var dataDownloaderLogger = new DataDownloaderLogMessages(_logger, log);
-                dataDownloaderLogger.DataDownloadSuccessful(log);
-
-                Console.WriteLine($"log: {log}");
-            }
-
-            context.Response.Body = originalBody;
-        }
-    }
-}
-
-
-
