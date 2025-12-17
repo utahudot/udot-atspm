@@ -17,10 +17,12 @@
 
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.NetStandardToolkit.Authentication;
@@ -262,6 +264,62 @@ public class RateLimitingPolicyService
     }
 }
 
+public class LoggingStream : Stream
+{
+    private readonly Stream _inner;
+    private readonly StringBuilder _buffer = new(); // for non-streaming JSON
+    private long _bytesWritten = 0;
+    private int _ndJsonCount = 0;
+    private readonly string _contentType;
+
+    public LoggingStream(Stream inner, string contentType)
+    {
+        _inner = inner;
+        _contentType = contentType ?? "";
+    }
+
+    public long BytesWritten => _bytesWritten;
+    public int NdJsonCount => _ndJsonCount;
+    public string BufferedContent => _buffer.ToString();
+
+    public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        _bytesWritten += count;
+        var chunk = Encoding.UTF8.GetString(buffer, offset, count);
+
+        if (_contentType.Contains("nd-json") || _contentType.Contains("x-ndjson"))
+        {
+            // Count ND-JSON objects line by line
+            foreach (var line in chunk.Split('\n'))
+            {
+                if (!string.IsNullOrWhiteSpace(line) && line.TrimStart().StartsWith("{"))
+                    _ndJsonCount++;
+            }
+        }
+        else if (_contentType.Contains("application/json"))
+        {
+            // Buffer JSON for later parsing
+            _buffer.Append(chunk);
+        }
+
+        await _inner.WriteAsync(buffer, offset, count, cancellationToken);
+    }
+
+    // Delegate other members
+    public override bool CanRead => _inner.CanRead;
+    public override bool CanSeek => _inner.CanSeek;
+    public override bool CanWrite => _inner.CanWrite;
+    public override long Length => _inner.Length;
+    public override long Position { get => _inner.Position; set => _inner.Position = value; }
+    public override void Flush() => _inner.Flush();
+    public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
+    public override long Seek(long offset, SeekOrigin origin) => _inner.Seek(offset, origin);
+    public override void SetLength(long value) => _inner.SetLength(value);
+    public override void Write(byte[] buffer, int offset, int count) => _inner.Write(buffer, offset, count);
+}
+
+
+
 public class DownloadLoggingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -281,9 +339,9 @@ public class DownloadLoggingMiddleware
     {
         var sw = Stopwatch.StartNew();
 
-        var originalBodyStream = context.Response.Body;
-        using var memStream = new MemoryStream();
-        context.Response.Body = memStream;
+        var originalBody = context.Response.Body;
+        var loggingStream = new LoggingStream(originalBody, context.Response.ContentType);
+        context.Response.Body = loggingStream;
 
         string errorMessage = null;
         try
@@ -298,16 +356,16 @@ public class DownloadLoggingMiddleware
         finally
         {
             sw.Stop();
-            memStream.Seek(0, SeekOrigin.Begin);
-            var resultSizeBytes = memStream.Length;
 
-            // Optionally, try to parse result count if response is JSON array
             int? resultCount = null;
-            if (context.Response.ContentType?.Contains("application/json") == true)
+
+            // Decide based on Content-Type
+            var contentType = context.Response.ContentType ?? "";
+            if (contentType.Contains("application/json") && !contentType.Contains("ndjson"))
             {
                 try
                 {
-                    var json = await new StreamReader(memStream).ReadToEndAsync();
+                    var json = loggingStream.BufferedContent;
                     if (json.TrimStart().StartsWith("["))
                     {
                         var array = System.Text.Json.JsonDocument.Parse(json).RootElement;
@@ -316,14 +374,16 @@ public class DownloadLoggingMiddleware
                     }
                 }
                 catch { /* ignore parse errors */ }
-                memStream.Seek(0, SeekOrigin.Begin);
+            }
+            else if (contentType.Contains("ndjson"))
+            {
+                resultCount = loggingStream.NdJsonCount;
             }
 
-            var routeData = context.GetRouteData();
-            var controller = routeData.Values["controller"]?.ToString();
-            var action = routeData.Values["action"]?.ToString();
-
             var test = _currentUserService.GetCurrentUser();
+
+            var endpoint = context.GetEndpoint();
+            var actionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
 
             var log = new DownloadLog
             {
@@ -338,51 +398,46 @@ public class DownloadLoggingMiddleware
                 Method = context.Request.Method,
                 StatusCode = context.Response.StatusCode,
                 DurationMs = sw.ElapsedMilliseconds,
-                Controller = controller,
-                Action = action,
+                Controller = actionDescriptor?.ControllerName,
+                Action = actionDescriptor?.ActionName,
+                ResultSizeBytes = loggingStream.BytesWritten,
                 ResultCount = resultCount,
-                ResultSizeBytes = resultSizeBytes,
                 Success = context.Response.StatusCode >= 200 && context.Response.StatusCode < 300,
                 ErrorMessage = errorMessage
             };
 
-            //await _repo.LogAsync(log);
-
             Console.WriteLine($"log: {log}");
 
-            memStream.Seek(0, SeekOrigin.Begin);
-            await memStream.CopyToAsync(originalBodyStream);
-            context.Response.Body = originalBodyStream;
+            context.Response.Body = originalBody; // restore
         }
     }
 
-}
-
-public class DownloadLog
-{
-    public int Id { get; set; } // Optional: for database primary key
-    public DateTime Timestamp { get; set; }
-    public string TraceId { get; set; }
-    public string ConnectionId { get; set; }
-    public string RemoteIp { get; set; }
-    public string UserAgent { get; set; }
-    public string UserId { get; set; }
-    public string Route { get; set; }
-    public string QueryString { get; set; }
-    public string Method { get; set; }
-    public int StatusCode { get; set; }
-    public long DurationMs { get; set; }
-    // Optionally add more fields as needed:
-    public string Controller { get; set; }
-    public string Action { get; set; }
-    public int? ResultCount { get; set; }
-    public long? ResultSizeBytes { get; set; }
-    public bool Success { get; set; }
-    public string ErrorMessage { get; set; }
-
-    public override string? ToString()
+    public class DownloadLog
     {
-        return JsonConvert.SerializeObject(this, formatting: Formatting.Indented);
+        public int Id { get; set; } // Optional: for database primary key
+        public DateTime Timestamp { get; set; }
+        public string TraceId { get; set; }
+        public string ConnectionId { get; set; }
+        public string RemoteIp { get; set; }
+        public string UserAgent { get; set; }
+        public string UserId { get; set; }
+        public string Route { get; set; }
+        public string QueryString { get; set; }
+        public string Method { get; set; }
+        public int StatusCode { get; set; }
+        public long DurationMs { get; set; }
+        // Optionally add more fields as needed:
+        public string Controller { get; set; }
+        public string Action { get; set; }
+        public int? ResultCount { get; set; }
+        public long? ResultSizeBytes { get; set; }
+        public bool Success { get; set; }
+        public string ErrorMessage { get; set; }
+
+        public override string? ToString()
+        {
+            return JsonConvert.SerializeObject(this, formatting: Formatting.Indented);
+        }
     }
 }
 
