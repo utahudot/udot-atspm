@@ -202,7 +202,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                     using (var scope = _scopeFactory.CreateScope())
                     {
-                        var repo = scope.ServiceProvider.GetService<IDataDownloadLogRepository>();
+                        var repo = scope.ServiceProvider.GetService<IUsageEntryRepository>();
                         await repo.AddAsync(entry);
                     }
                 }

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/AreaOdataConfiguration.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/UsageEntryOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
     /// <summary>
     /// Area oData configuration
     /// </summary>
-    public class AreaOdataConfiguration : IModelConfiguration
+    public class UAreaOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)

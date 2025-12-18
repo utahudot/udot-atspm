@@ -20,11 +20,11 @@ using Utah.Udot.Atspm.Data;
 
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
-    ///<inheritdoc cref="IDataDownloadLogRepository"/>
-    public class DataDownloadLogEFRepository : ATSPMRepositoryEFBase<UsageEntry>, IDataDownloadLogRepository
+    ///<inheritdoc cref="IUsageEntryRepository"/>
+    public class UsageEntryEFRepository : ATSPMRepositoryEFBase<UsageEntry>, IUsageEntryRepository
     {
         /// <inheritdoc/>
-        public DataDownloadLogEFRepository(ConfigContext db, ILogger<DataDownloadLogEFRepository> log) : base(db, log) { }
+        public UsageEntryEFRepository(ConfigContext db, ILogger<UsageEntryEFRepository> log) : base(db, log) { }
 
         #region Overrides
 
@@ -36,7 +36,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 
         #endregion
 
-        #region IDataDownloadLogRepository
+        #region IUsageEntryRepository
 
         #endregion
     }

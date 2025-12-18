@@ -20,9 +20,9 @@ using Utah.Udot.NetStandardToolkit.Services;
 namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
     /// <summary>
-    /// Data Download Logs Repository
+    /// Usage Entry Repository
     /// </summary>
-    public interface IDataDownloadLogRepository : IAsyncRepository<UsageEntry>
+    public interface IUsageEntryRepository : IAsyncRepository<UsageEntry>
     {
     }
 }

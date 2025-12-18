@@ -27,12 +27,12 @@ namespace Utah.Udot.Atspm.Data.Models
     /// Represents a log entry for API usage, capturing details about requests, responses,
     /// performance, and user-related metadata.
     /// </summary>
-    public class UsageEntry : ITimestamp
+    public class UsageEntry : AtspmConfigModelBase<int>, ITimestamp
     {
-        /// <summary>
-        /// Database identifier for the log entry.
-        /// </summary>
-        public int Id { get; set; }
+        ///// <summary>
+        ///// Database identifier for the log entry.
+        ///// </summary>
+        //public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the API endpoint accessed.
