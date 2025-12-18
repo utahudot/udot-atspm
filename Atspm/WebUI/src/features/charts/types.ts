@@ -19,115 +19,115 @@ import { ApproachVolumeSummaryData } from './approachVolume/types'
 import { ChartType, ToolType } from './common/types'
 
 export interface ExtendedEChartsOption extends EChartsOption {
-    displayProp?: {
-        height: number
-        description: string
-    }
+  displayProp?: {
+    height: number
+    description: string
+  }
 }
 
 interface ApproachVolumeChart {
-    chart: ExtendedEChartsOption
-    table: ApproachVolumeSummaryData
+  chart: ExtendedEChartsOption
+  table: ApproachVolumeSummaryData
 }
 
 export interface StandardChart {
-    chart: ExtendedEChartsOption
+  chart: ExtendedEChartsOption
 }
 
 export interface TransformedDefaultResponse {
-    type: ChartType
-    data: {
-        charts: StandardChart[]
-    }
+  type: ChartType
+  data: {
+    charts: StandardChart[]
+  }
 }
 
 export interface TransformedToolResponse {
-    type: ToolType
-    data: {
-        charts: StandardChart[]
-    }
+  type: ToolType
+  data: {
+    charts: StandardChart[]
+  }
 }
 
 export interface TransformedApproachVolumeResponse {
-    type: ChartType.ApproachVolume
-    data: {
-        charts: ApproachVolumeChart[]
-    }
+  type: ChartType.ApproachVolume
+  data: {
+    charts: ApproachVolumeChart[]
+  }
 }
 
 export interface TransformedPreemptDetailsResponse {
-    type: ChartType
-    data: {
-        charts: StandardChart[]
-    }
+  type: ChartType
+  data: {
+    charts: StandardChart[]
+  }
 }
 
 export type TableRow = (string | number)[]
 export type ColumnGroup = { title: string | null; columns: string[] }
 
 export interface Labels {
-    columnGroups: ColumnGroup[]
-    flatColumns: string[]
+  columnGroups: ColumnGroup[]
+  flatColumns: string[]
 }
 
 export interface TransformedTurningMovementCountsResponse {
-    type: ChartType
-    data: {
-        labels: Labels
-        table: TableRow[]
-        charts: StandardChart[]
-        peakHour?: {
-            peakHourFactor: number | null
-            peakHourData: TableRow[]
-        } | null
-    }
+  type: ChartType
+  data: {
+    labels: Labels
+    table: TableRow[]
+    charts: StandardChart[]
+    peakHour?: {
+      peakHourFactor: number | null
+      peakHourData: TableRow[]
+    } | null
+  }
 }
 
 export interface TransformedTimingAndActuationResponse {
-    type: ChartType
-    data: {
-        title: EChartsOption
-        charts: StandardChart[]
-        legends: EChartsOption[]
-    }
+  type: ChartType
+  data: {
+    title: EChartsOption
+    charts: StandardChart[]
+    legends: EChartsOption[]
+  }
 }
 
 export interface TransformedRampMeteringResponse {
-    type: ChartType
-    data: {
-        charts: StandardChart[]
-    }
+  type: ChartType
+  data: {
+    charts: StandardChart[]
+  }
 }
 
 export type TransformedChartResponse =
-    | TransformedDefaultResponse
-    | TransformedApproachVolumeResponse
-    | TransformedPreemptDetailsResponse
-    | TransformedTimingAndActuationResponse
-    | TransformedTurningMovementCountsResponse
-    | TransformedToolResponse
+  | TransformedDefaultResponse
+  | TransformedApproachVolumeResponse
+  | TransformedPreemptDetailsResponse
+  | TransformedTimingAndActuationResponse
+  | TransformedTurningMovementCountsResponse
+  | TransformedToolResponse
 
 export type ChartDefaults = {
-    abbreviation: string
-    name: string
-    id: number
-    chartType: ChartType
-    showOnWebsite: boolean
-    showOnAggregationSite: boolean
-    displayOrder: number
-    measureOptions: Default[]
+  abbreviation: string
+  name: string
+  id: number
+  chartType: ChartType
+  showOnWebsite: boolean
+  showOnAggregationSite: boolean
+  displayOrder: number
+  measureOptions: Default[]
 }
 
 export type Default = {
-    id: number
-    option: string
-    value: string | number | boolean | number[]
+  id: number
+  option: string
+  value: string | number | boolean | number[]
 }
 export interface MeasureType {
-    id: number
-    name: string
-    abbreviation: string
-    showOnWebsite: boolean
-    showOnAggregationSite: boolean
-    displayOrder: number
+  id: number
+  name: string
+  abbreviation: string
+  showOnWebsite: boolean
+  showOnAggregationSite: boolean
+  displayOrder: number
 }
