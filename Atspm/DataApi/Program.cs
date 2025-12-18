@@ -25,6 +25,8 @@ using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host

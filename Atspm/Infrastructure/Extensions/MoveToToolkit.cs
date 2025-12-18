@@ -200,10 +200,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     if (!entry.Success) log.CallWarning(entry, entry.StatusCode);
                     if (error != null) log.CallError(entry, error);
 
-                    using (var scope = _scopeFactory.CreateScope())
+                    try
                     {
-                        var repo = scope.ServiceProvider.GetService<IUsageEntryRepository>();
-                        await repo.AddAsync(entry);
+                        using (var scope = _scopeFactory.CreateScope())
+                        {
+                            var repo = scope.ServiceProvider.GetService<IUsageEntryRepository>();
+                            await repo.AddAsync(entry);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"stuff: {e.Message}");
                     }
                 }
 
