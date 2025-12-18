@@ -45,11 +45,6 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<Area> Areas { get; set; }
 
         /// <summary>
-        /// Data Download Logs table
-        /// </summary>
-        public virtual DbSet<DataDownloadLog> DataDownloadLogs { get; set;}
-
-        /// <summary>
         /// Detection type table
         /// </summary>
         public virtual DbSet<DetectionType> DetectionTypes { get; set; }
@@ -150,6 +145,11 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
+        /// Usage entries table
+        /// </summary>
+        public virtual DbSet<UsageEntry> UsageEntries { get; set; }
+
+        /// <summary>
         /// User areas table
         /// </summary>
         public virtual DbSet<UserArea> UserAreas { get; set; }
@@ -205,7 +205,6 @@ namespace Utah.Udot.Atspm.Data
         {
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
-            modelBuilder.ApplyConfiguration(new DataDownloadLogConfiguration());
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorCommentConfiguration());
@@ -226,6 +225,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteDistanceConfiguration());
             modelBuilder.ApplyConfiguration(new RouteLocationConfiguration());
+            modelBuilder.ApplyConfiguration(new UsageEntryConfiguration());
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());

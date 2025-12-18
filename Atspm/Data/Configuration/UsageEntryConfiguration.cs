@@ -21,17 +21,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
-    /// Entity Framework configuration for the <see cref="DataDownloadLog"/> entity.
+    /// Entity Framework configuration for the <see cref="UsageEntry"/> entity.
     /// Defines table mapping, property constraints, and indexes.
     /// </summary>
-    public class DataDownloadLogConfiguration : IEntityTypeConfiguration<DataDownloadLog>
+    public class UsageEntryConfiguration : IEntityTypeConfiguration<UsageEntry>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<DataDownloadLog> builder)
+        public void Configure(EntityTypeBuilder<UsageEntry> builder)
         {
-            // Table name
-            builder.ToTable("DataDownloadLogs");
-
             // Primary key
             builder.HasKey(x => x.Id);
 
@@ -49,6 +46,9 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .IsRequired();
 
             // Strings with sensible max lengths
+            builder.Property(x => x.ApiName)
+               .HasMaxLength(32);
+
             builder.Property(x => x.TraceId)
                 .HasMaxLength(100);
 

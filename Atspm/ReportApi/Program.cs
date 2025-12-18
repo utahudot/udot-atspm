@@ -17,6 +17,8 @@
 
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Reflection;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -46,6 +48,8 @@ using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -220,7 +224,11 @@ app.UseAuthorization();
 //Cross-cutting
 app.UseResponseCompression();
 app.UseHttpLogging();
-//app.UseMiddleware<DownloadLoggingMiddleware>();
+app.UseMiddleware<UsageLoggingMiddleware>(
+    (HttpContext ctx) => Assembly.GetEntryAssembly()?.GetName().Name,
+    (HttpContext ctx, ControllerActionDescriptor? ad) => false,
+    (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "GetReportData",
+    (HttpContext ctx) => ctx.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? ctx.User?.Identity?.Name);
 
 //Swagger
 app.UseConfiguredSwaggerUI();

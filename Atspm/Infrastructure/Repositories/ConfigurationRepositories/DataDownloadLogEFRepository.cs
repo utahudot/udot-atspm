@@ -21,7 +21,7 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IDataDownloadLogRepository"/>
-    public class DataDownloadLogEFRepository : ATSPMRepositoryEFBase<DataDownloadLog>, IDataDownloadLogRepository
+    public class DataDownloadLogEFRepository : ATSPMRepositoryEFBase<UsageEntry>, IDataDownloadLogRepository
     {
         /// <inheritdoc/>
         public DataDownloadLogEFRepository(ConfigContext db, ILogger<DataDownloadLogEFRepository> log) : base(db, log) { }
@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         #region Overrides
 
         /// <inheritdoc/>
-        public override IQueryable<DataDownloadLog> GetList()
+        public override IQueryable<UsageEntry> GetList()
         {
             return base.GetList().OrderBy(o => o.Timestamp);
         }

@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Security.Claims;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Utah.Udot.NetStandardToolkit.Authentication;
-using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -106,19 +104,37 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         public override void Flush() => _inner.Flush();
     }
 
-    public class DataDownloaderLoggingMiddleware
+
+    /// <summary>
+    /// Middleware that logs API usage details, including request/response metadata,
+    /// execution duration, and result metrics. Supports streaming and buffering modes
+    /// for capturing response content.
+    /// </summary>
+    public class UsageLoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<DataDownloaderLoggingMiddleware> _logger;
+        private readonly ILogger<UsageLoggingMiddleware> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly Func<HttpContext, string>? _getUserId;
+        private readonly Func<HttpContext, string>? _apiName;
         private readonly Func<HttpContext, ControllerActionDescriptor?, bool> _useStreaming;
         private readonly Func<HttpContext, ControllerActionDescriptor?, bool> _useBuffering;
 
-        public DataDownloaderLoggingMiddleware(
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsageLoggingMiddleware"/> class.
+        /// </summary>
+        /// <param name="next">The next middleware in the pipeline.</param>
+        /// <param name="logger">The logger used to emit structured usage logs.</param>
+        /// <param name="scopeFactory">Factory for creating service scopes to resolve repositories.</param>
+        /// <param name="apiName">Optional delegate to resolve the API name for the current request. Defaults to entry assembly name.</param>
+        /// <param name="useStreaming">Optional delegate to determine whether streaming mode should be used for the response.</param>
+        /// <param name="useBuffering">Optional delegate to determine whether buffering mode should be used for the response.</param>
+        /// <param name="getUserId">Optional delegate to resolve the user ID from the <see cref="HttpContext"/>.</param>
+        public UsageLoggingMiddleware(
                 RequestDelegate next,
-                ILogger<DataDownloaderLoggingMiddleware> logger,
+                ILogger<UsageLoggingMiddleware> logger,
                 IServiceScopeFactory scopeFactory,
+                Func<HttpContext, string>? apiName = null,
                 Func<HttpContext, ControllerActionDescriptor?, bool>? useStreaming = null,
                 Func<HttpContext, ControllerActionDescriptor?, bool>? useBuffering = null,
                 Func<HttpContext, string>? getUserId = null)
@@ -126,22 +142,27 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             _next = next;
             _logger = logger;
             _scopeFactory = scopeFactory;
+            _apiName = apiName ?? (ctx => Assembly.GetEntryAssembly()?.GetName().Name);
             _useStreaming = useStreaming ?? ((ctx, ad) => false);
             _useBuffering = useBuffering ?? ((ctx, ad) => false);
             _getUserId = getUserId ?? (ctx => ctx.User?.FindFirst("sub")?.Value);
         }
 
+        /// <summary>
+        /// Invokes the middleware logic for the current HTTP request.
+        /// Captures response metrics, logs usage details, and persists entries to the repository.
+        /// </summary>
+        /// <param name="context">The current HTTP context.</param>
         public async Task InvokeAsync(HttpContext context)
         {
             var sw = Stopwatch.StartNew();
             var originalBody = context.Response.Body;
 
-            string? errorMessage = null;
+            Exception error = null;
             LoggingStream? loggingStream = null;
             MemoryStream? bufferStream = null;
 
             var actionDescriptor = context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
-            var actionName = actionDescriptor?.ActionName;
 
             try
             {
@@ -160,7 +181,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             }
             catch (Exception ex)
             {
-                errorMessage = ex.Message;
+                error = ex;
                 throw;
             }
             finally
@@ -171,23 +192,33 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 if (_useStreaming(context, actionDescriptor) || _useBuffering(context, actionDescriptor))
                 {
-                    var entry = CreateEntry(context, actionDescriptor, actionName, sw.ElapsedMilliseconds, resultCount, resultSizeBytes, errorMessage);
+                    var entry = CreateEntry(context, actionDescriptor, sw.ElapsedMilliseconds, resultCount ?? 0, resultSizeBytes, error?.Message);
+
+                    var log = new ApiUsageLogMessage(_logger, entry);
+
+                    if (entry.Success) log.CallSuccessful(entry);
+                    if (!entry.Success) log.CallWarning(entry, entry.StatusCode);
+                    if (error != null) log.CallError(entry, error);
 
                     using (var scope = _scopeFactory.CreateScope())
                     {
                         var repo = scope.ServiceProvider.GetService<IDataDownloadLogRepository>();
                         await repo.AddAsync(entry);
                     }
-
-                    new DataDownloaderLogMessages(_logger, entry).DataDownloadSuccessful(entry);
-                    
-                    //Console.WriteLine($"log: {entry}");
                 }
 
                 context.Response.Body = originalBody; // restore
             }
         }
 
+        /// <summary>
+        /// Extracts result metrics (count and size) from the response stream.
+        /// Supports both buffered JSON responses and streaming NDJSON responses.
+        /// </summary>
+        /// <param name="bufferStream">The buffered response stream, if buffering was enabled.</param>
+        /// <param name="loggingStream">The logging stream, if streaming was enabled.</param>
+        /// <param name="originalBody">The original response body stream.</param>
+        /// <returns>A tuple containing the result count (if available) and the response size in bytes.</returns>
         private static async Task<(int? count, long? size)> GetResultMetricsAsync(
             MemoryStream? bufferStream,
             LoggingStream? loggingStream,
@@ -224,17 +255,27 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             return (null, null);
         }
 
-        private DataDownloadLog CreateEntry(
+        /// <summary>
+        /// Creates a <see cref="UsageEntry"/> object representing the logged API usage details.
+        /// </summary>
+        /// <param name="context">The current HTTP context.</param>
+        /// <param name="actionDescriptor">The controller action descriptor, if available.</param>
+        /// <param name="durationMs">The duration of the request in milliseconds.</param>
+        /// <param name="resultCount">The number of items returned in the response, if available.</param>
+        /// <param name="resultSizeBytes">The size of the response in bytes, if available.</param>
+        /// <param name="errorMessage">The error message if an exception occurred, otherwise null.</param>
+        /// <returns>A populated <see cref="UsageEntry"/> representing the API call.</returns>
+        private UsageEntry CreateEntry(
             HttpContext context,
             ControllerActionDescriptor? actionDescriptor,
-            string? actionName,
             long durationMs,
             int? resultCount,
             long? resultSizeBytes,
             string? errorMessage)
         {
-            return new DataDownloadLog
+            return new UsageEntry
             {
+                ApiName = _apiName(context),
                 Timestamp = DateTime.UtcNow,
                 TraceId = context.TraceIdentifier,
                 ConnectionId = context.Connection.Id,
@@ -247,7 +288,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 StatusCode = context.Response.StatusCode,
                 DurationMs = durationMs,
                 Controller = actionDescriptor?.ControllerName,
-                Action = actionName,
+                Action = actionDescriptor?.ActionName,
                 ResultSizeBytes = resultSizeBytes,
                 ResultCount = resultCount,
                 Success = context.Response.StatusCode is >= 200 and < 300,
@@ -255,4 +296,5 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             };
         }
     }
+
 }

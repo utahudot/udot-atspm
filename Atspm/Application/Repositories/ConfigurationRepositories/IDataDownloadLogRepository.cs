@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
     /// <summary>
     /// Data Download Logs Repository
     /// </summary>
-    public interface IDataDownloadLogRepository : IAsyncRepository<DataDownloadLog>
+    public interface IDataDownloadLogRepository : IAsyncRepository<UsageEntry>
     {
     }
 }

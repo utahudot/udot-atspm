@@ -15,26 +15,15 @@
 // limitations under the License.
 #endregion
 
-using Google.Api;
-using Lextm.SharpSnmpLib.Security;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System.Diagnostics;
+using System.Reflection;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
 using System.Threading.RateLimiting;
-using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
-using Utah.Udot.Atspm.Infrastructure.LogMessages;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.NetStandardToolkit.Authentication;
-using Utah.Udot.NetStandardToolkit.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -110,7 +99,8 @@ app.UseAuthorization();
 //Cross-cutting
 app.UseResponseCompression();
 app.UseHttpLogging();
-app.UseMiddleware<DataDownloaderLoggingMiddleware>(
+app.UseMiddleware<UsageLoggingMiddleware>(
+    (HttpContext ctx) => Assembly.GetEntryAssembly()?.GetName().Name,
     (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "StreamData",
     (HttpContext ctx, ControllerActionDescriptor? ad) => ad?.ActionName == "GetData",
     (HttpContext ctx) => ctx.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? ctx.User?.Identity?.Name);

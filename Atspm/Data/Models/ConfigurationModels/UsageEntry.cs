@@ -24,11 +24,21 @@ using Utah.Udot.NetStandardToolkit.Interfaces;
 namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
-    /// Represents a log entry for a data download request, capturing request, response,
+    /// Represents a log entry for API usage, capturing details about requests, responses,
     /// performance, and user-related metadata.
     /// </summary>
-    public class DataDownloadLog : AtspmConfigModelBase<int>, ITimestamp
+    public class UsageEntry : ITimestamp
     {
+        /// <summary>
+        /// Database identifier for the log entry.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the API endpoint accessed.
+        /// </summary>
+        public string ApiName { get; set; }
+
         /// <summary>
         /// Gets or sets the UTC timestamp when the log entry was created.
         /// </summary>
