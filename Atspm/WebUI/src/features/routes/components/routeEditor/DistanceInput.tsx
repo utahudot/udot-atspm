@@ -1,4 +1,4 @@
-import { RouteLocation } from '@/features/routes/types'
+import { RouteLocation } from '@/api/config'
 import { useNotificationStore } from '@/stores/notifications'
 import { fetchRouteDistance } from '@/utils/fetchRouteDistance'
 import RefreshIcon from '@mui/icons-material/Refresh'
