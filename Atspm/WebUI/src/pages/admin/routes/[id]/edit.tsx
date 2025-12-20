@@ -361,7 +361,6 @@ const RouteAdmin = () => {
           })
           if (!savedRoute.routeLocations) return
           savedRoute.routeLocations.sort((a, b) => a.order - b.order)
-          console.log('savedRoute', savedRoute)
           setUpdatedRoute(savedRoute)
         },
         onError: (err) => {

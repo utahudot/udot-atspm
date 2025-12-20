@@ -1,35 +1,30 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "ATSPM Log Data Api",
-    "description": "ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.",
+    "title": "My API",
+    "description": "Internal API for XYZ system The API will be sunset on 12/18/2026.\r\n\r\n[API v1 Sunset Policy](https://example.com/api/v1-sunset)",
     "contact": {
-      "name": "udotdevelopment",
-      "url": "https://udottraffic.utah.gov/atspm/",
-      "email": "udotdevelopment@gmail.com"
+      "name": "API Support",
+      "url": "https://example.com/support",
+      "email": "support@example.com"
     },
     "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
     },
     "version": "1.0"
   },
+  "servers": [
+    {
+      "url": "/dataapi"
+    }
+  ],
   "paths": {
     "/api/v1/Aggregation/GetDataTypes": {
       "get": {
         "tags": ["Aggregation"],
         "summary": "Retrieves the available derived data types defined in the system.",
         "operationId": "GetAggregationDataTypes",
-        "parameters": [
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "406": {
             "description": "Not Acceptable",
@@ -100,14 +95,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -122,11 +109,11 @@
             }
           },
           "200": {
-            "description": "Data successfully streamed (may be empty).",
+            "description": "Data successfully streamed",
             "content": {
               "application/x-ndjson": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CompressedDataBase"
                 }
               }
             }
@@ -187,14 +174,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -206,7 +185,7 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -224,7 +203,7 @@
                   }
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -242,7 +221,7 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -257,7 +236,7 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -325,14 +304,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -347,11 +318,11 @@
             }
           },
           "200": {
-            "description": "Data successfully streamed (may be empty).",
+            "description": "Data successfully streamed",
             "content": {
               "application/x-ndjson": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CompressedDataBase"
                 }
               }
             }
@@ -437,14 +408,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -452,11 +415,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -473,14 +431,6 @@
                     "$ref": "#/components/schemas/CompressedDataBase"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CompressedDataBase"
-                  }
-                }
               }
             }
           },
@@ -488,11 +438,6 @@
             "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -506,8 +451,111 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Aggregation/GetDaysWithData/{locationIdentifier}/{dataType}": {
+      "get": {
+        "tags": ["Aggregation"],
+        "summary": "Retrieves the distinct days that contain data for a specific location and data type\r\nwithin the given date range.",
+        "description": "This endpoint allows anonymous access and returns a JSON array of System.DateOnly values.\r\nEach value represents a day for which data exists. The request must specify a valid\r\nlocation identifier, data type, and date range. If the inputs are invalid or the location/data type\r\ncannot be resolved, an appropriate error response is returned.",
+        "operationId": "GetAggregationDaysWithDataFromLocationIdentifierAndDataType",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "The unique identifier of the location whose data is requested.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dataType",
+            "in": "path",
+            "description": "The name of the event log data type. Must map to a valid derived type of `EventLogModelBase`.",
+            "required": true,
+            "schema": {
+              "enum": [
+                "ApproachPcdAggregation",
+                "ApproachSpeedAggregation",
+                "ApproachSplitFailAggregation",
+                "ApproachYellowRedActivationAggregation",
+                "DetectorEventCountAggregation",
+                "PhaseCycleAggregation",
+                "PhaseLeftTurnGapAggregation",
+                "PhasePedAggregation",
+                "PhaseSplitMonitorAggregation",
+                "PhaseTerminationAggregation",
+                "PreemptionAggregation",
+                "PriorityAggregation",
+                "SignalEventCountAggregation",
+                "SignalPlanAggregation"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "The inclusive start date/time of the range. Must be less than or equal to end.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "The inclusive end date/time of the range. Must be greater than or equal to start.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Data successfully retrieved (may be empty).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range, malformed request, or invalid data type.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Location not found.",
+            "content": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -560,14 +608,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -582,11 +622,11 @@
             }
           },
           "200": {
-            "description": "Data successfully streamed (may be empty).",
+            "description": "Data successfully streamed",
             "content": {
               "application/x-ndjson": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CompressedDataBase"
                 }
               }
             }
@@ -657,14 +697,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -672,11 +704,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -693,14 +720,6 @@
                     "$ref": "#/components/schemas/CompressedEventLogBase"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CompressedEventLogBase"
-                  }
-                }
               }
             }
           },
@@ -711,11 +730,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -723,11 +737,6 @@
             "description": "Location not found.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -790,14 +799,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -812,11 +813,11 @@
             }
           },
           "200": {
-            "description": "Data successfully streamed (may be empty).",
+            "description": "Data successfully streamed",
             "content": {
               "application/x-ndjson": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CompressedDataBase"
                 }
               }
             }
@@ -897,14 +898,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -912,11 +905,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -933,14 +921,6 @@
                     "$ref": "#/components/schemas/CompressedEventLogBase"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CompressedEventLogBase"
-                  }
-                }
               }
             }
           },
@@ -951,11 +931,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -963,11 +938,6 @@
             "description": "Location not found.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -982,16 +952,6 @@
         "tags": ["EventLog"],
         "summary": "Retrieves the available derived data types defined in the system.",
         "operationId": "GetEventLogDataTypes",
-        "parameters": [
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "406": {
             "description": "Not Acceptable",
@@ -1062,14 +1022,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1084,11 +1036,11 @@
             }
           },
           "200": {
-            "description": "Data successfully streamed (may be empty).",
+            "description": "Data successfully streamed",
             "content": {
               "application/x-ndjson": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CompressedDataBase"
                 }
               }
             }
@@ -1149,14 +1101,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1168,7 +1112,7 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1186,7 +1130,7 @@
                   }
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1204,7 +1148,7 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1219,7 +1163,7 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
-              "application/xml": {
+              "text/csv": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1272,14 +1216,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1294,11 +1230,11 @@
             }
           },
           "200": {
-            "description": "Data successfully streamed (may be empty).",
+            "description": "Data successfully streamed",
             "content": {
               "application/x-ndjson": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CompressedDataBase"
                 }
               }
             }
@@ -1369,14 +1305,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "X-Timestamp-Format",
-            "in": "header",
-            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1384,11 +1312,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1405,14 +1328,6 @@
                     "$ref": "#/components/schemas/CompressedDataBase"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CompressedDataBase"
-                  }
-                }
               }
             }
           },
@@ -1420,11 +1335,6 @@
             "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1438,8 +1348,96 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/EventLog/GetDaysWithData/{locationIdentifier}/{dataType}": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Retrieves the distinct days that contain data for a specific location and data type\r\nwithin the given date range.",
+        "description": "This endpoint allows anonymous access and returns a JSON array of System.DateOnly values.\r\nEach value represents a day for which data exists. The request must specify a valid\r\nlocation identifier, data type, and date range. If the inputs are invalid or the location/data type\r\ncannot be resolved, an appropriate error response is returned.",
+        "operationId": "GetEventLogDaysWithDataFromLocationIdentifierAndDataType",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "The unique identifier of the location whose data is requested.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dataType",
+            "in": "path",
+            "description": "The name of the event log data type. Must map to a valid derived type of `EventLogModelBase`.",
+            "required": true,
+            "schema": {
+              "enum": ["IndianaEvent", "PedestrianCounter", "SpeedEvent"],
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "The inclusive start date/time of the range. Must be less than or equal to end.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "The inclusive end date/time of the range. Must be greater than or equal to start.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Data successfully retrieved (may be empty).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range, malformed request, or invalid data type.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Location not found.",
+            "content": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1455,46 +1453,46 @@
       "ApproachPcdAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "IsProtectedPhase": {
+          "isProtectedPhase": {
             "type": "boolean"
           },
-          "ArrivalsOnGreen": {
+          "arrivalsOnGreen": {
             "type": "integer",
             "format": "int32"
           },
-          "ArrivalsOnRed": {
+          "arrivalsOnRed": {
             "type": "integer",
             "format": "int32"
           },
-          "ArrivalsOnYellow": {
+          "arrivalsOnYellow": {
             "type": "integer",
             "format": "int32"
           },
-          "Volume": {
+          "volume": {
             "type": "integer",
             "format": "int32"
           },
-          "TotalDelay": {
+          "totalDelay": {
             "type": "integer",
             "format": "int32"
           }
@@ -1504,35 +1502,35 @@
       "ApproachSpeedAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "SummedSpeed": {
+          "summedSpeed": {
             "type": "integer",
             "format": "int32"
           },
-          "SpeedVolume": {
+          "speedVolume": {
             "type": "integer",
             "format": "int32"
           },
-          "Speed85th": {
+          "speed85th": {
             "type": "integer",
             "format": "int32"
           },
-          "Speed15th": {
+          "speed15th": {
             "type": "integer",
             "format": "int32"
           }
@@ -1542,50 +1540,50 @@
       "ApproachSplitFailAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "IsProtectedPhase": {
+          "isProtectedPhase": {
             "type": "boolean"
           },
-          "SplitFailures": {
+          "splitFailures": {
             "type": "integer",
             "format": "int32"
           },
-          "GreenOccupancySum": {
+          "greenOccupancySum": {
             "type": "integer",
             "format": "int32"
           },
-          "RedOccupancySum": {
+          "redOccupancySum": {
             "type": "integer",
             "format": "int32"
           },
-          "GreenTimeSum": {
+          "greenTimeSum": {
             "type": "integer",
             "format": "int32"
           },
-          "RedTimeSum": {
+          "redTimeSum": {
             "type": "integer",
             "format": "int32"
           },
-          "Cycles": {
+          "cycles": {
             "type": "integer",
             "format": "int32"
           }
@@ -1595,46 +1593,46 @@
       "ApproachYellowRedActivationAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "IsProtectedPhase": {
+          "isProtectedPhase": {
             "type": "boolean"
           },
-          "SevereRedLightViolations": {
+          "severeRedLightViolations": {
             "type": "integer",
             "format": "int32"
           },
-          "TotalRedLightViolations": {
+          "totalRedLightViolations": {
             "type": "integer",
             "format": "int32"
           },
-          "YellowActivations": {
+          "yellowActivations": {
             "type": "integer",
             "format": "int32"
           },
-          "ViolationTime": {
+          "violationTime": {
             "type": "integer",
             "format": "int32"
           },
-          "Cycles": {
+          "cycles": {
             "type": "integer",
             "format": "int32"
           }
@@ -1644,7 +1642,7 @@
       "Assembly": {
         "type": "object",
         "properties": {
-          "DefinedTypes": {
+          "definedTypes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TypeInfo"
@@ -1652,7 +1650,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "ExportedTypes": {
+          "exportedTypes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Type"
@@ -1660,47 +1658,47 @@
             "nullable": true,
             "readOnly": true
           },
-          "CodeBase": {
+          "codeBase": {
             "type": "string",
             "nullable": true,
             "readOnly": true,
             "deprecated": true
           },
-          "EntryPoint": {
+          "entryPoint": {
             "$ref": "#/components/schemas/MethodInfo"
           },
-          "FullName": {
+          "fullName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "ImageRuntimeVersion": {
+          "imageRuntimeVersion": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "IsDynamic": {
+          "isDynamic": {
             "type": "boolean",
             "readOnly": true
           },
-          "Location": {
+          "location": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "ReflectionOnly": {
+          "reflectionOnly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFullyTrusted": {
+          "isFullyTrusted": {
             "type": "boolean",
             "readOnly": true
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -1708,16 +1706,16 @@
             "nullable": true,
             "readOnly": true
           },
-          "EscapedCodeBase": {
+          "escapedCodeBase": {
             "type": "string",
             "nullable": true,
             "readOnly": true,
             "deprecated": true
           },
-          "ManifestModule": {
+          "manifestModule": {
             "$ref": "#/components/schemas/Module"
           },
-          "Modules": {
+          "modules": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Module"
@@ -1725,17 +1723,17 @@
             "nullable": true,
             "readOnly": true
           },
-          "GlobalAssemblyCache": {
+          "globalAssemblyCache": {
             "type": "boolean",
             "readOnly": true,
             "deprecated": true
           },
-          "HostContext": {
+          "hostContext": {
             "type": "integer",
             "format": "int64",
             "readOnly": true
           },
-          "SecurityRuleSet": {
+          "securityRuleSet": {
             "$ref": "#/components/schemas/SecurityRuleSet"
           }
         },
@@ -1749,22 +1747,22 @@
       "CompressedDataBase": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "DataType": {
+          "dataType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Data": {
+          "data": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ILocationLayer"
@@ -1777,29 +1775,29 @@
       "CompressedEventLogBase": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "DataType": {
+          "dataType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Data": {
+          "data": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EventLogModelBase"
             },
             "nullable": true
           },
-          "DeviceId": {
+          "deviceId": {
             "type": "integer",
             "format": "int32"
           }
@@ -1809,21 +1807,21 @@
       "ConstructorInfo": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -1831,108 +1829,108 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/MethodAttributes"
           },
-          "MethodImplementationFlags": {
+          "methodImplementationFlags": {
             "$ref": "#/components/schemas/MethodImplAttributes"
           },
-          "CallingConvention": {
+          "callingConvention": {
             "$ref": "#/components/schemas/CallingConventions"
           },
-          "IsAbstract": {
+          "isAbstract": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructor": {
+          "isConstructor": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFinal": {
+          "isFinal": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsHideBySig": {
+          "isHideBySig": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsStatic": {
+          "isStatic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVirtual": {
+          "isVirtual": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAssembly": {
+          "isAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamily": {
+          "isFamily": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyAndAssembly": {
+          "isFamilyAndAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyOrAssembly": {
+          "isFamilyOrAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPrivate": {
+          "isPrivate": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPublic": {
+          "isPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructedGenericMethod": {
+          "isConstructedGenericMethod": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethod": {
+          "isGenericMethod": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethodDefinition": {
+          "isGenericMethodDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "ContainsGenericParameters": {
+          "containsGenericParameters": {
             "type": "boolean",
             "readOnly": true
           },
-          "MethodHandle": {
+          "methodHandle": {
             "$ref": "#/components/schemas/RuntimeMethodHandle"
           },
-          "IsSecurityCritical": {
+          "isSecurityCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecuritySafeCritical": {
+          "isSecuritySafeCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityTransparent": {
+          "isSecurityTransparent": {
             "type": "boolean",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           }
         },
@@ -1941,13 +1939,13 @@
       "CustomAttributeData": {
         "type": "object",
         "properties": {
-          "AttributeType": {
+          "attributeType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Constructor": {
+          "constructor": {
             "$ref": "#/components/schemas/ConstructorInfo"
           },
-          "ConstructorArguments": {
+          "constructorArguments": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeTypedArgument"
@@ -1955,7 +1953,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "NamedArguments": {
+          "namedArguments": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeNamedArgument"
@@ -1969,18 +1967,18 @@
       "CustomAttributeNamedArgument": {
         "type": "object",
         "properties": {
-          "MemberInfo": {
+          "memberInfo": {
             "$ref": "#/components/schemas/MemberInfo"
           },
-          "TypedValue": {
+          "typedValue": {
             "$ref": "#/components/schemas/CustomAttributeTypedArgument"
           },
-          "MemberName": {
+          "memberName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "IsField": {
+          "isField": {
             "type": "boolean",
             "readOnly": true
           }
@@ -1990,10 +1988,10 @@
       "CustomAttributeTypedArgument": {
         "type": "object",
         "properties": {
-          "ArgumentType": {
+          "argumentType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Value": {
+          "value": {
             "nullable": true
           }
         },
@@ -2002,27 +2000,27 @@
       "DetectorEventCountAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "DetectorPrimaryId": {
+          "detectorPrimaryId": {
             "type": "integer",
             "format": "int32"
           },
-          "EventCount": {
+          "eventCount": {
             "type": "integer",
             "format": "int32"
           }
@@ -2037,21 +2035,21 @@
       "EventInfo": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2059,39 +2057,39 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/EventAttributes"
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "AddMethod": {
+          "addMethod": {
             "$ref": "#/components/schemas/MethodInfo"
           },
-          "RemoveMethod": {
+          "removeMethod": {
             "$ref": "#/components/schemas/MethodInfo"
           },
-          "RaiseMethod": {
+          "raiseMethod": {
             "$ref": "#/components/schemas/MethodInfo"
           },
-          "IsMulticast": {
+          "isMulticast": {
             "type": "boolean",
             "readOnly": true
           },
-          "EventHandlerType": {
+          "eventHandlerType": {
             "$ref": "#/components/schemas/Type"
           }
         },
@@ -2100,11 +2098,11 @@
       "EventLogModelBase": {
         "type": "object",
         "properties": {
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "Timestamp": {
+          "timestamp": {
             "type": "string",
             "format": "date-time"
           }
@@ -2122,21 +2120,21 @@
       "FieldInfo": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2144,86 +2142,86 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/FieldAttributes"
           },
-          "FieldType": {
+          "fieldType": {
             "$ref": "#/components/schemas/Type"
           },
-          "IsInitOnly": {
+          "isInitOnly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsLiteral": {
+          "isLiteral": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNotSerialized": {
+          "isNotSerialized": {
             "type": "boolean",
             "readOnly": true,
             "deprecated": true
           },
-          "IsPinvokeImpl": {
+          "isPinvokeImpl": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsStatic": {
+          "isStatic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAssembly": {
+          "isAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamily": {
+          "isFamily": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyAndAssembly": {
+          "isFamilyAndAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyOrAssembly": {
+          "isFamilyOrAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPrivate": {
+          "isPrivate": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPublic": {
+          "isPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityCritical": {
+          "isSecurityCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecuritySafeCritical": {
+          "isSecuritySafeCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityTransparent": {
+          "isSecurityTransparent": {
             "type": "boolean",
             "readOnly": true
           },
-          "FieldHandle": {
+          "fieldHandle": {
             "$ref": "#/components/schemas/RuntimeFieldHandle"
           }
         },
@@ -2241,7 +2239,7 @@
       "ILocationLayer": {
         "type": "object",
         "properties": {
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           }
@@ -2251,19 +2249,19 @@
       "IndianaEvent": {
         "type": "object",
         "properties": {
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "Timestamp": {
+          "timestamp": {
             "type": "string",
             "format": "date-time"
           },
-          "EventCode": {
+          "eventCode": {
             "type": "integer",
             "format": "int32"
           },
-          "EventParam": {
+          "eventParam": {
             "type": "integer",
             "format": "int32"
           }
@@ -2282,24 +2280,24 @@
       "MemberInfo": {
         "type": "object",
         "properties": {
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2307,11 +2305,11 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
@@ -2335,24 +2333,24 @@
       "MethodBase": {
         "type": "object",
         "properties": {
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2360,104 +2358,104 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/MethodAttributes"
           },
-          "MethodImplementationFlags": {
+          "methodImplementationFlags": {
             "$ref": "#/components/schemas/MethodImplAttributes"
           },
-          "CallingConvention": {
+          "callingConvention": {
             "$ref": "#/components/schemas/CallingConventions"
           },
-          "IsAbstract": {
+          "isAbstract": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructor": {
+          "isConstructor": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFinal": {
+          "isFinal": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsHideBySig": {
+          "isHideBySig": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsStatic": {
+          "isStatic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVirtual": {
+          "isVirtual": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAssembly": {
+          "isAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamily": {
+          "isFamily": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyAndAssembly": {
+          "isFamilyAndAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyOrAssembly": {
+          "isFamilyOrAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPrivate": {
+          "isPrivate": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPublic": {
+          "isPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructedGenericMethod": {
+          "isConstructedGenericMethod": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethod": {
+          "isGenericMethod": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethodDefinition": {
+          "isGenericMethodDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "ContainsGenericParameters": {
+          "containsGenericParameters": {
             "type": "boolean",
             "readOnly": true
           },
-          "MethodHandle": {
+          "methodHandle": {
             "$ref": "#/components/schemas/RuntimeMethodHandle"
           },
-          "IsSecurityCritical": {
+          "isSecurityCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecuritySafeCritical": {
+          "isSecuritySafeCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityTransparent": {
+          "isSecurityTransparent": {
             "type": "boolean",
             "readOnly": true
           }
@@ -2472,21 +2470,21 @@
       "MethodInfo": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2494,117 +2492,117 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/MethodAttributes"
           },
-          "MethodImplementationFlags": {
+          "methodImplementationFlags": {
             "$ref": "#/components/schemas/MethodImplAttributes"
           },
-          "CallingConvention": {
+          "callingConvention": {
             "$ref": "#/components/schemas/CallingConventions"
           },
-          "IsAbstract": {
+          "isAbstract": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructor": {
+          "isConstructor": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFinal": {
+          "isFinal": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsHideBySig": {
+          "isHideBySig": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsStatic": {
+          "isStatic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVirtual": {
+          "isVirtual": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAssembly": {
+          "isAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamily": {
+          "isFamily": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyAndAssembly": {
+          "isFamilyAndAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFamilyOrAssembly": {
+          "isFamilyOrAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPrivate": {
+          "isPrivate": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPublic": {
+          "isPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructedGenericMethod": {
+          "isConstructedGenericMethod": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethod": {
+          "isGenericMethod": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethodDefinition": {
+          "isGenericMethodDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "ContainsGenericParameters": {
+          "containsGenericParameters": {
             "type": "boolean",
             "readOnly": true
           },
-          "MethodHandle": {
+          "methodHandle": {
             "$ref": "#/components/schemas/RuntimeMethodHandle"
           },
-          "IsSecurityCritical": {
+          "isSecurityCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecuritySafeCritical": {
+          "isSecuritySafeCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityTransparent": {
+          "isSecurityTransparent": {
             "type": "boolean",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "ReturnParameter": {
+          "returnParameter": {
             "$ref": "#/components/schemas/ParameterInfo"
           },
-          "ReturnType": {
+          "returnType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReturnTypeCustomAttributes": {
+          "returnTypeCustomAttributes": {
             "$ref": "#/components/schemas/ICustomAttributeProvider"
           }
         },
@@ -2613,38 +2611,38 @@
       "Module": {
         "type": "object",
         "properties": {
-          "Assembly": {
+          "assembly": {
             "$ref": "#/components/schemas/Assembly"
           },
-          "FullyQualifiedName": {
+          "fullyQualifiedName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "MDStreamVersion": {
+          "mdStreamVersion": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "ModuleVersionId": {
+          "moduleVersionId": {
             "type": "string",
             "format": "uuid",
             "readOnly": true
           },
-          "ScopeName": {
+          "scopeName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "ModuleHandle": {
+          "moduleHandle": {
             "$ref": "#/components/schemas/ModuleHandle"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2652,7 +2650,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
@@ -2663,7 +2661,7 @@
       "ModuleHandle": {
         "type": "object",
         "properties": {
-          "MDStreamVersion": {
+          "mdStreamVersion": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
@@ -2679,58 +2677,58 @@
       "ParameterInfo": {
         "type": "object",
         "properties": {
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/ParameterAttributes"
           },
-          "Member": {
+          "member": {
             "$ref": "#/components/schemas/MemberInfo"
           },
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "ParameterType": {
+          "parameterType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Position": {
+          "position": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "IsIn": {
+          "isIn": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsLcid": {
+          "isLcid": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsOptional": {
+          "isOptional": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsOut": {
+          "isOut": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsRetval": {
+          "isRetval": {
             "type": "boolean",
             "readOnly": true
           },
-          "DefaultValue": {
+          "defaultValue": {
             "nullable": true,
             "readOnly": true
           },
-          "RawDefaultValue": {
+          "rawDefaultValue": {
             "nullable": true,
             "readOnly": true
           },
-          "HasDefaultValue": {
+          "hasDefaultValue": {
             "type": "boolean",
             "readOnly": true
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -2738,7 +2736,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
@@ -2749,19 +2747,19 @@
       "PedestrianCounter": {
         "type": "object",
         "properties": {
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "Timestamp": {
+          "timestamp": {
             "type": "string",
             "format": "date-time"
           },
-          "In": {
+          "in": {
             "type": "integer",
             "format": "int32"
           },
-          "Out": {
+          "out": {
             "type": "integer",
             "format": "int32"
           }
@@ -2771,47 +2769,47 @@
       "PhaseCycleAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "RedTime": {
+          "redTime": {
             "type": "integer",
             "format": "int32"
           },
-          "YellowTime": {
+          "yellowTime": {
             "type": "integer",
             "format": "int32"
           },
-          "GreenTime": {
+          "greenTime": {
             "type": "integer",
             "format": "int32"
           },
-          "TotalRedToRedCycles": {
+          "totalRedToRedCycles": {
             "type": "integer",
             "format": "int32"
           },
-          "TotalGreenToGreenCycles": {
+          "totalGreenToGreenCycles": {
             "type": "integer",
             "format": "int32"
           },
-          "PhaseBeginCount": {
+          "phaseBeginCount": {
             "type": "integer",
             "format": "int32"
           }
@@ -2821,83 +2819,83 @@
       "PhaseLeftTurnGapAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "ApproachId": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount1": {
+          "gapCount1": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount2": {
+          "gapCount2": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount3": {
+          "gapCount3": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount4": {
+          "gapCount4": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount5": {
+          "gapCount5": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount6": {
+          "gapCount6": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount7": {
+          "gapCount7": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount8": {
+          "gapCount8": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount9": {
+          "gapCount9": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount10": {
+          "gapCount10": {
             "type": "integer",
             "format": "int32"
           },
-          "GapCount11": {
+          "gapCount11": {
             "type": "integer",
             "format": "int32"
           },
-          "SumGapDuration1": {
+          "sumGapDuration1": {
             "type": "number",
             "format": "double"
           },
-          "SumGapDuration2": {
+          "sumGapDuration2": {
             "type": "number",
             "format": "double"
           },
-          "SumGapDuration3": {
+          "sumGapDuration3": {
             "type": "number",
             "format": "double"
           },
-          "SumGreenTime": {
+          "sumGreenTime": {
             "type": "number",
             "format": "double"
           }
@@ -2907,55 +2905,55 @@
       "PhasePedAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "PedCycles": {
+          "pedCycles": {
             "type": "integer",
             "format": "int32"
           },
-          "PedDelay": {
+          "pedDelay": {
             "type": "number",
             "format": "double"
           },
-          "MinPedDelay": {
+          "minPedDelay": {
             "type": "number",
             "format": "double"
           },
-          "MaxPedDelay": {
+          "maxPedDelay": {
             "type": "number",
             "format": "double"
           },
-          "ImputedPedCallsRegistered": {
+          "imputedPedCallsRegistered": {
             "type": "integer",
             "format": "int32"
           },
-          "UniquePedDetections": {
+          "uniquePedDetections": {
             "type": "integer",
             "format": "int32"
           },
-          "PedBeginWalkCount": {
+          "pedBeginWalkCount": {
             "type": "integer",
             "format": "int32"
           },
-          "PedCallsRegisteredCount": {
+          "pedCallsRegisteredCount": {
             "type": "integer",
             "format": "int32"
           },
-          "PedRequests": {
+          "pedRequests": {
             "type": "integer",
             "format": "int32"
           }
@@ -2965,27 +2963,27 @@
       "PhaseSplitMonitorAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "EightyFifthPercentileSplit": {
+          "eightyFifthPercentileSplit": {
             "type": "integer",
             "format": "int32"
           },
-          "SkippedCount": {
+          "skippedCount": {
             "type": "integer",
             "format": "int32"
           }
@@ -2995,35 +2993,35 @@
       "PhaseTerminationAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PhaseNumber": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "GapOuts": {
+          "gapOuts": {
             "type": "integer",
             "format": "int32"
           },
-          "ForceOffs": {
+          "forceOffs": {
             "type": "integer",
             "format": "int32"
           },
-          "MaxOuts": {
+          "maxOuts": {
             "type": "integer",
             "format": "int32"
           },
-          "Unknown": {
+          "unknown": {
             "type": "integer",
             "format": "int32"
           }
@@ -3033,27 +3031,27 @@
       "PreemptionAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PreemptNumber": {
+          "preemptNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "PreemptRequests": {
+          "preemptRequests": {
             "type": "integer",
             "format": "int32"
           },
-          "PreemptServices": {
+          "preemptServices": {
             "type": "integer",
             "format": "int32"
           }
@@ -3063,31 +3061,31 @@
       "PriorityAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PriorityNumber": {
+          "priorityNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "PriorityRequests": {
+          "priorityRequests": {
             "type": "integer",
             "format": "int32"
           },
-          "PriorityServiceEarlyGreen": {
+          "priorityServiceEarlyGreen": {
             "type": "integer",
             "format": "int32"
           },
-          "PriorityServiceExtendedGreen": {
+          "priorityServiceExtendedGreen": {
             "type": "integer",
             "format": "int32"
           }
@@ -3129,21 +3127,21 @@
       "PropertyInfo": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -3151,40 +3149,40 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "PropertyType": {
+          "propertyType": {
             "$ref": "#/components/schemas/Type"
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/PropertyAttributes"
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "CanRead": {
+          "canRead": {
             "type": "boolean",
             "readOnly": true
           },
-          "CanWrite": {
+          "canWrite": {
             "type": "boolean",
             "readOnly": true
           },
-          "GetMethod": {
+          "getMethod": {
             "$ref": "#/components/schemas/MethodInfo"
           },
-          "SetMethod": {
+          "setMethod": {
             "$ref": "#/components/schemas/MethodInfo"
           }
         },
@@ -3193,7 +3191,7 @@
       "RuntimeFieldHandle": {
         "type": "object",
         "properties": {
-          "Value": {
+          "value": {
             "$ref": "#/components/schemas/IntPtr"
           }
         },
@@ -3202,7 +3200,7 @@
       "RuntimeMethodHandle": {
         "type": "object",
         "properties": {
-          "Value": {
+          "value": {
             "$ref": "#/components/schemas/IntPtr"
           }
         },
@@ -3211,7 +3209,7 @@
       "RuntimeTypeHandle": {
         "type": "object",
         "properties": {
-          "Value": {
+          "value": {
             "$ref": "#/components/schemas/IntPtr"
           }
         },
@@ -3225,19 +3223,19 @@
       "SignalEventCountAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "EventCount": {
+          "eventCount": {
             "type": "integer",
             "format": "int32"
           }
@@ -3247,19 +3245,19 @@
       "SignalPlanAggregation": {
         "type": "object",
         "properties": {
-          "Start": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "End": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "PlanNumber": {
+          "planNumber": {
             "type": "integer",
             "format": "int32"
           }
@@ -3269,23 +3267,23 @@
       "SpeedEvent": {
         "type": "object",
         "properties": {
-          "LocationIdentifier": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "Timestamp": {
+          "timestamp": {
             "type": "string",
             "format": "date-time"
           },
-          "DetectorId": {
+          "detectorId": {
             "type": "string",
             "nullable": true
           },
-          "Mph": {
+          "mph": {
             "type": "integer",
             "format": "int32"
           },
-          "Kph": {
+          "kph": {
             "type": "integer",
             "format": "int32"
           }
@@ -3295,11 +3293,11 @@
       "StructLayoutAttribute": {
         "type": "object",
         "properties": {
-          "TypeId": {
+          "typeId": {
             "nullable": true,
             "readOnly": true
           },
-          "Value": {
+          "value": {
             "$ref": "#/components/schemas/LayoutKind"
           }
         },
@@ -3308,12 +3306,12 @@
       "Type": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -3321,124 +3319,124 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "IsInterface": {
+          "isInterface": {
             "type": "boolean",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "Namespace": {
+          "namespace": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "AssemblyQualifiedName": {
+          "assemblyQualifiedName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "FullName": {
+          "fullName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "Assembly": {
+          "assembly": {
             "$ref": "#/components/schemas/Assembly"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "IsNested": {
+          "isNested": {
             "type": "boolean",
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "DeclaringMethod": {
+          "declaringMethod": {
             "$ref": "#/components/schemas/MethodBase"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "UnderlyingSystemType": {
+          "underlyingSystemType": {
             "$ref": "#/components/schemas/Type"
           },
-          "IsTypeDefinition": {
+          "isTypeDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsArray": {
+          "isArray": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsByRef": {
+          "isByRef": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPointer": {
+          "isPointer": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructedGenericType": {
+          "isConstructedGenericType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericParameter": {
+          "isGenericParameter": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericTypeParameter": {
+          "isGenericTypeParameter": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethodParameter": {
+          "isGenericMethodParameter": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericType": {
+          "isGenericType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericTypeDefinition": {
+          "isGenericTypeDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSZArray": {
+          "isSZArray": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVariableBoundArray": {
+          "isVariableBoundArray": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsByRefLike": {
+          "isByRefLike": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFunctionPointer": {
+          "isFunctionPointer": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsUnmanagedFunctionPointer": {
+          "isUnmanagedFunctionPointer": {
             "type": "boolean",
             "readOnly": true
           },
-          "HasElementType": {
+          "hasElementType": {
             "type": "boolean",
             "readOnly": true
           },
-          "GenericTypeArguments": {
+          "genericTypeArguments": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Type"
@@ -3446,160 +3444,160 @@
             "nullable": true,
             "readOnly": true
           },
-          "GenericParameterPosition": {
+          "genericParameterPosition": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "GenericParameterAttributes": {
+          "genericParameterAttributes": {
             "$ref": "#/components/schemas/GenericParameterAttributes"
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/TypeAttributes"
           },
-          "IsAbstract": {
+          "isAbstract": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsImport": {
+          "isImport": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSealed": {
+          "isSealed": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsClass": {
+          "isClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedAssembly": {
+          "isNestedAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedFamANDAssem": {
+          "isNestedFamANDAssem": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedFamily": {
+          "isNestedFamily": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedFamORAssem": {
+          "isNestedFamORAssem": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedPrivate": {
+          "isNestedPrivate": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedPublic": {
+          "isNestedPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNotPublic": {
+          "isNotPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPublic": {
+          "isPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAutoLayout": {
+          "isAutoLayout": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsExplicitLayout": {
+          "isExplicitLayout": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsLayoutSequential": {
+          "isLayoutSequential": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAnsiClass": {
+          "isAnsiClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAutoClass": {
+          "isAutoClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsUnicodeClass": {
+          "isUnicodeClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsCOMObject": {
+          "isCOMObject": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsContextful": {
+          "isContextful": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsEnum": {
+          "isEnum": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsMarshalByRef": {
+          "isMarshalByRef": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPrimitive": {
+          "isPrimitive": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsValueType": {
+          "isValueType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSignatureType": {
+          "isSignatureType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityCritical": {
+          "isSecurityCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecuritySafeCritical": {
+          "isSecuritySafeCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityTransparent": {
+          "isSecurityTransparent": {
             "type": "boolean",
             "readOnly": true
           },
-          "StructLayoutAttribute": {
+          "structLayoutAttribute": {
             "$ref": "#/components/schemas/StructLayoutAttribute"
           },
-          "TypeInitializer": {
+          "typeInitializer": {
             "$ref": "#/components/schemas/ConstructorInfo"
           },
-          "TypeHandle": {
+          "typeHandle": {
             "$ref": "#/components/schemas/RuntimeTypeHandle"
           },
-          "GUID": {
+          "guid": {
             "type": "string",
             "format": "uuid",
             "readOnly": true
           },
-          "BaseType": {
+          "baseType": {
             "$ref": "#/components/schemas/Type"
           },
-          "IsSerializable": {
+          "isSerializable": {
             "type": "boolean",
             "readOnly": true,
             "deprecated": true
           },
-          "ContainsGenericParameters": {
+          "containsGenericParameters": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVisible": {
+          "isVisible": {
             "type": "boolean",
             "readOnly": true
           }
@@ -3617,12 +3615,12 @@
       "TypeInfo": {
         "type": "object",
         "properties": {
-          "Name": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "CustomAttributes": {
+          "customAttributes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CustomAttributeData"
@@ -3630,124 +3628,124 @@
             "nullable": true,
             "readOnly": true
           },
-          "IsCollectible": {
+          "isCollectible": {
             "type": "boolean",
             "readOnly": true
           },
-          "MetadataToken": {
+          "metadataToken": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "IsInterface": {
+          "isInterface": {
             "type": "boolean",
             "readOnly": true
           },
-          "MemberType": {
+          "memberType": {
             "$ref": "#/components/schemas/MemberTypes"
           },
-          "Namespace": {
+          "namespace": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "AssemblyQualifiedName": {
+          "assemblyQualifiedName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "FullName": {
+          "fullName": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "Assembly": {
+          "assembly": {
             "$ref": "#/components/schemas/Assembly"
           },
-          "Module": {
+          "module": {
             "$ref": "#/components/schemas/Module"
           },
-          "IsNested": {
+          "isNested": {
             "type": "boolean",
             "readOnly": true
           },
-          "DeclaringType": {
+          "declaringType": {
             "$ref": "#/components/schemas/Type"
           },
-          "DeclaringMethod": {
+          "declaringMethod": {
             "$ref": "#/components/schemas/MethodBase"
           },
-          "ReflectedType": {
+          "reflectedType": {
             "$ref": "#/components/schemas/Type"
           },
-          "UnderlyingSystemType": {
+          "underlyingSystemType": {
             "$ref": "#/components/schemas/Type"
           },
-          "IsTypeDefinition": {
+          "isTypeDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsArray": {
+          "isArray": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsByRef": {
+          "isByRef": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPointer": {
+          "isPointer": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsConstructedGenericType": {
+          "isConstructedGenericType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericParameter": {
+          "isGenericParameter": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericTypeParameter": {
+          "isGenericTypeParameter": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericMethodParameter": {
+          "isGenericMethodParameter": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericType": {
+          "isGenericType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsGenericTypeDefinition": {
+          "isGenericTypeDefinition": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSZArray": {
+          "isSZArray": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVariableBoundArray": {
+          "isVariableBoundArray": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsByRefLike": {
+          "isByRefLike": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsFunctionPointer": {
+          "isFunctionPointer": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsUnmanagedFunctionPointer": {
+          "isUnmanagedFunctionPointer": {
             "type": "boolean",
             "readOnly": true
           },
-          "HasElementType": {
+          "hasElementType": {
             "type": "boolean",
             "readOnly": true
           },
-          "GenericTypeArguments": {
+          "genericTypeArguments": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Type"
@@ -3755,164 +3753,164 @@
             "nullable": true,
             "readOnly": true
           },
-          "GenericParameterPosition": {
+          "genericParameterPosition": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "GenericParameterAttributes": {
+          "genericParameterAttributes": {
             "$ref": "#/components/schemas/GenericParameterAttributes"
           },
-          "Attributes": {
+          "attributes": {
             "$ref": "#/components/schemas/TypeAttributes"
           },
-          "IsAbstract": {
+          "isAbstract": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsImport": {
+          "isImport": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSealed": {
+          "isSealed": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSpecialName": {
+          "isSpecialName": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsClass": {
+          "isClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedAssembly": {
+          "isNestedAssembly": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedFamANDAssem": {
+          "isNestedFamANDAssem": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedFamily": {
+          "isNestedFamily": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedFamORAssem": {
+          "isNestedFamORAssem": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedPrivate": {
+          "isNestedPrivate": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNestedPublic": {
+          "isNestedPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsNotPublic": {
+          "isNotPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPublic": {
+          "isPublic": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAutoLayout": {
+          "isAutoLayout": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsExplicitLayout": {
+          "isExplicitLayout": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsLayoutSequential": {
+          "isLayoutSequential": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAnsiClass": {
+          "isAnsiClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsAutoClass": {
+          "isAutoClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsUnicodeClass": {
+          "isUnicodeClass": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsCOMObject": {
+          "isCOMObject": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsContextful": {
+          "isContextful": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsEnum": {
+          "isEnum": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsMarshalByRef": {
+          "isMarshalByRef": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsPrimitive": {
+          "isPrimitive": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsValueType": {
+          "isValueType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSignatureType": {
+          "isSignatureType": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityCritical": {
+          "isSecurityCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecuritySafeCritical": {
+          "isSecuritySafeCritical": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsSecurityTransparent": {
+          "isSecurityTransparent": {
             "type": "boolean",
             "readOnly": true
           },
-          "StructLayoutAttribute": {
+          "structLayoutAttribute": {
             "$ref": "#/components/schemas/StructLayoutAttribute"
           },
-          "TypeInitializer": {
+          "typeInitializer": {
             "$ref": "#/components/schemas/ConstructorInfo"
           },
-          "TypeHandle": {
+          "typeHandle": {
             "$ref": "#/components/schemas/RuntimeTypeHandle"
           },
-          "GUID": {
+          "guid": {
             "type": "string",
             "format": "uuid",
             "readOnly": true
           },
-          "BaseType": {
+          "baseType": {
             "$ref": "#/components/schemas/Type"
           },
-          "IsSerializable": {
+          "isSerializable": {
             "type": "boolean",
             "readOnly": true,
             "deprecated": true
           },
-          "ContainsGenericParameters": {
+          "containsGenericParameters": {
             "type": "boolean",
             "readOnly": true
           },
-          "IsVisible": {
+          "isVisible": {
             "type": "boolean",
             "readOnly": true
           },
-          "GenericTypeParameters": {
+          "genericTypeParameters": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Type"
@@ -3920,7 +3918,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredConstructors": {
+          "declaredConstructors": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ConstructorInfo"
@@ -3928,7 +3926,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredEvents": {
+          "declaredEvents": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EventInfo"
@@ -3936,7 +3934,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredFields": {
+          "declaredFields": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/FieldInfo"
@@ -3944,7 +3942,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredMembers": {
+          "declaredMembers": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MemberInfo"
@@ -3952,7 +3950,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredMethods": {
+          "declaredMethods": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MethodInfo"
@@ -3960,7 +3958,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredNestedTypes": {
+          "declaredNestedTypes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TypeInfo"
@@ -3968,7 +3966,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "DeclaredProperties": {
+          "declaredProperties": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PropertyInfo"
@@ -3976,7 +3974,7 @@
             "nullable": true,
             "readOnly": true
           },
-          "ImplementedInterfaces": {
+          "implementedInterfaces": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Type"

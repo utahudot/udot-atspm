@@ -67,7 +67,7 @@ export const generateFilename = (
     : `${baseName}_${endStr}.${downloadFormat}`
 }
 
-export const downloadData = (
+export const downloadData = async (
   data: CompressedDataBase[],
   filename: string,
   mimeType: string

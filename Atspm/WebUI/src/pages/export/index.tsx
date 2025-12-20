@@ -13,7 +13,9 @@ import {
 } from '@/features/data/components/dataTypeSelector'
 import { downloadData, generateFilename } from '@/features/data/utils'
 import SelectLocation from '@/features/locations/components/selectLocation'
+import useMissingDays from '@/hooks/useMissingDays'
 import Authorization from '@/lib/Authorization'
+import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp } from '@/utils/dateTime'
 import DownloadIcon from '@mui/icons-material/Download'
 import { LoadingButton } from '@mui/lab'
@@ -67,6 +69,7 @@ const mimeTypeForFormat = (format: ResponseFormat): string => {
 
 const ExportData = () => {
   const theme = useTheme()
+  const { addNotification } = useNotificationStore()
   const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
 
   const [location, setLocation] = useState<Location | null>(null)
@@ -88,12 +91,13 @@ const ExportData = () => {
     endOfWeek(endOfMonth(startOfToday()))
   )
 
-  // const missingDays = useMissingDays(
-  //   location?.locationIdentifier ?? '',
-  //   selectedDataType.type === 'raw' ? selectedDataType.name : '',
-  //   calendarStartDate,
-  //   calendarEndDate
-  // )
+  const missingDays = useMissingDays(
+    location?.locationIdentifier ?? '',
+    selectedDataType.name,
+    selectedDataType.type,
+    calendarStartDate,
+    calendarEndDate
+  )
 
   const handleStartDateTimeChange = (date: Date) => setStartDateTime(date)
   const handleEndDateTimeChange = (date: Date) => setEndDateTime(date)
@@ -134,7 +138,11 @@ const ExportData = () => {
       )
 
       const mimeType = mimeTypeForFormat(downloadFormat)
-      downloadData(data, filename, mimeType)
+      await downloadData(data, filename, mimeType)
+      addNotification({
+        type: 'success',
+        title: 'Download completed.',
+      })
     } catch (err) {
       console.error('Error fetching data:', err)
       setError(true)
@@ -177,9 +185,7 @@ const ExportData = () => {
                 changeStartDate={handleStartDateTimeChange}
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
-                // markDays={
-                //   selectedDataType.type === 'raw' ? missingDays : undefined
-                // }
+                markDays={missingDays}
                 onChange={handleDateChange}
                 onMonthChange={handleDateChange}
               />
