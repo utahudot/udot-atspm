@@ -53,11 +53,7 @@ export default function transformTurningMovementCountsData(
   response: RawTurningMovementCountsResponse
 ): TransformedChartResponse {
   const charts = response.data.charts.map((data) => {
-    const chartOptions = transformData(
-      data,
-      response.data.peakHour,
-      response.data.peakHourFactor
-    )
+    const chartOptions = transformData(data)
     return {
       chart: chartOptions,
     }
@@ -117,24 +113,23 @@ export default function transformTurningMovementCountsData(
   }
 }
 
-function transformData(
-  data: RawTurningMovementCountsData,
-  peakHour: { key: string; value: number } | null,
-  peakHourFactor: number | null
-): EChartsOption {
-  const { lanes, plans, totalHourlyVolumes } = data
+function transformData(data: RawTurningMovementCountsData): EChartsOption {
+  const {
+    lanes,
+    plans,
+    totalHourlyVolumes,
+    peakHour,
+    peakHourFactor,
+    peakHourVolume,
+    laneUtilizationFactor,
+  } = data
 
   const info = createInfoString(
     ['Total Volume: ', `${data.totalVolume.toLocaleString()}`],
-    [
-      'Peak Hour: ',
-      peakHour
-        ? `${formatTime(peakHour.key)} - ${formatTime(addHours(new Date(peakHour.key), 1))}`
-        : 'N/A',
-    ],
-    ['Peak Hour Volume: ', peakHour ? peakHour.value.toLocaleString() : 'N/A'],
-    ['Peak Hour Factor: ', peakHourFactor?.toFixed(2) || 'N/A'],
-    ['fLU: ', data.laneUtilizationFactor.toFixed(2)]
+    ['Peak Hour: ', peakHour ?? 'N/A'],
+    ['Peak Hour Volume: ', peakHourVolume.toLocaleString() ?? 'N/A'],
+    ['Peak Hour Factor: ', peakHourFactor?.toFixed(2) ?? 'N/A'],
+    ['fLU: ', laneUtilizationFactor.toFixed(2)]
   )
 
   const titleHeader = `Turning Movement Counts\n${data.locationDescription} - ${data.direction} ${data.movementType} - ${data.laneType}`
