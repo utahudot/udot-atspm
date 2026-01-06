@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
+using Utah.Udot.NetStandardToolkit.Configuration;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -117,6 +118,57 @@ app.MapJsonHealthChecks();
 #endregion
 
 app.Run();
+
+public static class TempCorsExtension
+{
+    public static IServiceCollection AddConfiguredCors( this IServiceCollection services, IConfiguration config)
+    {
+        var corsPolicies = config.GetSection("CorsPolicies").Get<Dictionary<string, CorsPolicyConfiguration>>();
+
+        services.AddCors(options =>
+        {
+            if (corsPolicies == null || corsPolicies.Count == 0)
+            {
+                options.AddPolicy("Default", builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+
+                return;
+            }
+
+            foreach (var kvp in corsPolicies)
+            {
+                options.AddPolicy(kvp.Key, policy =>
+                {
+                    var cfg = kvp.Value;
+
+                    if (cfg.Origins.Length == 1 && cfg.Origins[0] == "*")
+                        policy.AllowAnyOrigin();
+                    else
+                        policy.WithOrigins(cfg.Origins);
+
+                    if (cfg.Methods.Length == 1 && cfg.Methods[0] == "*")
+                        policy.AllowAnyMethod();
+                    else
+                        policy.WithMethods(cfg.Methods);
+
+                    if (cfg.Headers.Length == 1 && cfg.Headers[0] == "*")
+                        policy.AllowAnyHeader();
+                    else
+                        policy.WithHeaders(cfg.Headers);
+
+                    if (cfg.AllowCredentials)
+                        policy.AllowCredentials();
+                    else
+                        policy.DisallowCredentials();
+                });
+            }
+        });
+
+        return services;
+    }
+}
 
 
 //builder.Services.Configure<RateLimitingOptions>(
