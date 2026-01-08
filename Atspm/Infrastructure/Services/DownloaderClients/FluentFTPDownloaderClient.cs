@@ -112,9 +112,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 _client.Config.NoopInterval = r8;
             }
 
-
-
-
             if (connectionProperties != null && connectionProperties.TryGetValue("AutoConnect", out string v4) && bool.TryParse(v4, out bool r4) && r4)
             {
                 var result = await _client.AutoConnect(token);
