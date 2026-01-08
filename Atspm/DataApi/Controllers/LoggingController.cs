@@ -71,7 +71,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 }).Build();
 
             var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
-            var devices = _repository.GetList().Where(device => deviceIdList.Contains(device.Id)).ToList();
+            var devices = _repository.GetList().Where(device => device.LoggingEnabled == true && deviceIdList.Contains(device.Id)).ToList();
             DateTime end = DateTime.Now.AddHours(1); // Set end time to one hour in the future to ensure we capture all events up to now
             DateTime start = end.Date.AddDays(-1);
 
