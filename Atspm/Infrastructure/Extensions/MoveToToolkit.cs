@@ -6,9 +6,132 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Provides access to XML documentation comments generated for an assembly.
+    /// This reader loads the assembly's XML documentation file, parses its contents,
+    /// and exposes lookup methods for retrieving summaries for types, properties,
+    /// fields, and methods.
+    /// </summary>
+    public class XmlDocReader
+    {
+        /// <summary>
+        /// A lookup table mapping XML documentation member keys
+        /// (e.g., <c>T:Namespace.Type</c>, <c>P:Namespace.Type.Property</c>)
+        /// to their normalized documentation text.
+        /// </summary>
+        private readonly Dictionary<string, string> _lookup;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmlDocReader"/> class
+        /// and loads the XML documentation associated with the specified assembly.
+        /// </summary>
+        /// <param name="assembly">
+        /// The assembly whose XML documentation file should be read.
+        /// The file is expected to have the same name and path as the assembly,
+        /// with a <c>.xml</c> extension.
+        /// </param>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown when the XML documentation file cannot be found.
+        /// </exception>
+        public XmlDocReader(Assembly assembly)
+        {
+            var xmlPath = Path.ChangeExtension(assembly.Location, ".xml");
+
+            if (!File.Exists(xmlPath))
+                throw new FileNotFoundException($"XML documentation file not found: {xmlPath}");
+
+            var doc = XDocument.Load(xmlPath);
+
+            _lookup = doc
+                .Descendants("member")
+                .Where(m => m.Attribute("name") != null)
+                .ToDictionary(
+                    m => m.Attribute("name")!.Value,
+                    m => Normalize(m.Value)
+                );
+        }
+
+        /// <summary>
+        /// Normalizes raw XML documentation text by collapsing whitespace,
+        /// preserving paragraph breaks, and trimming leading and trailing spaces.
+        /// </summary>
+        /// <param name="raw">The raw XML documentation text.</param>
+        /// <returns>
+        /// A cleaned and normalized version of the documentation text,
+        /// or <c>null</c> if the input is empty or whitespace.
+        /// </returns>
+        private static string? Normalize(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                return null;
+
+            // Preserve paragraph breaks
+            raw = Regex.Replace(raw, @"(\r?\n){2,}", "\n\n");
+
+            // Collapse everything else
+            var cleaned = Regex.Replace(raw, @"\s+", " ");
+
+            return cleaned.Trim();
+        }
+
+        /// <summary>
+        /// Retrieves the XML documentation summary associated with the specified type.
+        /// </summary>
+        /// <param name="type">The type whose documentation should be retrieved.</param>
+        /// <returns>
+        /// The normalized documentation summary, or <c>null</c> if no documentation exists.
+        /// </returns>
+        public string? GetTypeComment(Type type)
+        {
+            var key = $"T:{type.FullName}";
+            return _lookup.TryGetValue(key, out var comment) ? comment : null;
+        }
+
+        /// <summary>
+        /// Retrieves the XML documentation summary associated with the specified property.
+        /// </summary>
+        /// <param name="prop">The property whose documentation should be retrieved.</param>
+        /// <returns>
+        /// The normalized documentation summary, or <c>null</c> if no documentation exists.
+        /// </returns>
+        public string? GetPropertyComment(PropertyInfo prop)
+        {
+            var key = $"P:{prop.DeclaringType!.FullName}.{prop.Name}";
+            return _lookup.TryGetValue(key, out var comment) ? comment : null;
+        }
+
+        /// <summary>
+        /// Retrieves the XML documentation summary associated with the specified field.
+        /// </summary>
+        /// <param name="field">The field whose documentation should be retrieved.</param>
+        /// <returns>
+        /// The normalized documentation summary, or <c>null</c> if no documentation exists.
+        /// </returns>
+        public string? GetFieldComment(FieldInfo field)
+        {
+            var key = $"F:{field.DeclaringType!.FullName}.{field.Name}";
+            return _lookup.TryGetValue(key, out var comment) ? comment : null;
+        }
+
+        /// <summary>
+        /// Retrieves the XML documentation summary associated with the specified method.
+        /// </summary>
+        /// <param name="method">The method whose documentation should be retrieved.</param>
+        /// <returns>
+        /// The normalized documentation summary, or <c>null</c> if no documentation exists.
+        /// </returns>
+        public string? GetMethodComment(MethodInfo method)
+        {
+            var key = $"M:{method.DeclaringType!.FullName}.{method.Name}";
+            return _lookup.TryGetValue(key, out var comment) ? comment : null;
+        }
+    }
+
     /// <summary>
     /// A wrapper stream that intercepts writes to an inner stream
     /// and logs metrics about the response body.
