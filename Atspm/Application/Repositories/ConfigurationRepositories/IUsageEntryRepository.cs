@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Repositories.ConfigurationRepositories/IVersionHistoryRepository.cs
+// for Application - Utah.Udot.Atspm.Repositories.ConfigurationRepositories/IAreaRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ using Utah.Udot.NetStandardToolkit.Services;
 namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
     /// <summary>
-    /// Version history repository
+    /// Usage Entry Repository
     /// </summary>
-    public interface IVersionHistoryRepository : IAsyncRepository<VersionHistory>
+    public interface IUsageEntryRepository : IAsyncRepository<UsageEntry>
     {
     }
 }

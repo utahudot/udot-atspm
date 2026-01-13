@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories/VersionHistoryEFRepository.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories/AreaEFRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,32 +15,28 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
 
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
-    ///<inheritdoc cref="IVersionHistoryRepository"/>
-    public class VersionHistoryEFRepository : ATSPMRepositoryEFBase<VersionHistory>, IVersionHistoryRepository
+    ///<inheritdoc cref="IUsageEntryRepository"/>
+    public class UsageEntryEFRepository : ATSPMRepositoryEFBase<UsageEntry>, IUsageEntryRepository
     {
         /// <inheritdoc/>
-        public VersionHistoryEFRepository(ConfigContext db, ILogger<VersionHistoryEFRepository> log) : base(db, log) { }
+        public UsageEntryEFRepository(ConfigContext db, ILogger<UsageEntryEFRepository> log) : base(db, log) { }
 
         #region Overrides
 
         /// <inheritdoc/>
-        public override IQueryable<VersionHistory> GetList()
+        public override IQueryable<UsageEntry> GetList()
         {
-            return base.GetList()
-                .Include(i => i.Parent)
-                .Include(i => i.Children)
-                .OrderBy(o => o.Version);
+            return base.GetList().OrderBy(o => o.Timestamp);
         }
 
         #endregion
 
-        #region IVersionHistoryRepository
+        #region IUsageEntryRepository
 
         #endregion
     }

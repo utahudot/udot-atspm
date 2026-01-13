@@ -145,6 +145,11 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
+        /// Usage entries table
+        /// </summary>
+        public virtual DbSet<UsageEntry> UsageEntries { get; set; }
+
+        /// <summary>
         /// User areas table
         /// </summary>
         public virtual DbSet<UserArea> UserAreas { get; set; }
@@ -158,11 +163,6 @@ namespace Utah.Udot.Atspm.Data
         /// User regions table
         /// </summary>
         public virtual DbSet<UserRegion> UserRegions { get; set; }
-
-        /// <summary>
-        /// Version history table
-        /// </summary>
-        public virtual DbSet<VersionHistory> VersionHistory { get; set; }
 
         /// <summary>
         /// Watchdog log events
@@ -220,10 +220,10 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteDistanceConfiguration());
             modelBuilder.ApplyConfiguration(new RouteLocationConfiguration());
+            modelBuilder.ApplyConfiguration(new UsageEntryConfiguration());
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
-            modelBuilder.ApplyConfiguration(new VersionHistoryConfiguration());
             //modelBuilder.ApplyConfiguration(new WatchDogIgnoreEventConfiguration());
 
 
