@@ -1,22 +1,22 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "My API",
-    "description": "Internal API for XYZ system The API will be sunset on 12/18/2026.\r\n\r\n[API v1 Sunset Policy](https://example.com/api/v1-sunset)",
+    "title": "ATSPM Data Api",
+    "description": "ATSPM Data with OpenAPI, Swashbuckle, and API versioning.",
     "contact": {
-      "name": "API Support",
-      "url": "https://example.com/support",
-      "email": "support@example.com"
+      "name": "udotdevelopment",
+      "url": "https://udottraffic.utah.gov/atspm/",
+      "email": "udotdevelopment@gmail.com"
     },
     "license": {
-      "name": "Apache 2.0",
-      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      "name": "Apache",
+      "url": "http://www.apache.org/licenses/LICENSE-2."
     },
     "version": "1.0"
   },
   "servers": [
     {
-      "url": "/dataapi"
+      "url": "/report"
     }
   ],
   "paths": {
@@ -43,7 +43,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/DataTypeMeta"
                   }
                 }
               }
@@ -269,6 +269,7 @@
             "required": true,
             "schema": {
               "enum": [
+                "AggregationApproachBase",
                 "ApproachPcdAggregation",
                 "ApproachSpeedAggregation",
                 "ApproachSplitFailAggregation",
@@ -373,6 +374,7 @@
             "required": true,
             "schema": {
               "enum": [
+                "AggregationApproachBase",
                 "ApproachPcdAggregation",
                 "ApproachSpeedAggregation",
                 "ApproachSplitFailAggregation",
@@ -480,6 +482,7 @@
             "required": true,
             "schema": {
               "enum": [
+                "AggregationApproachBase",
                 "ApproachPcdAggregation",
                 "ApproachSpeedAggregation",
                 "ApproachSplitFailAggregation",
@@ -970,7 +973,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/DataTypeMeta"
                   }
                 }
               }
@@ -1450,6 +1453,28 @@
   },
   "components": {
     "schemas": {
+      "AggregationApproachBase": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "ApproachPcdAggregation": {
         "type": "object",
         "properties": {
@@ -1465,16 +1490,9 @@
             "type": "string",
             "nullable": true
           },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
           "approachId": {
             "type": "integer",
             "format": "int32"
-          },
-          "isProtectedPhase": {
-            "type": "boolean"
           },
           "arrivalsOnGreen": {
             "type": "integer",
@@ -1488,11 +1506,18 @@
             "type": "integer",
             "format": "int32"
           },
-          "volume": {
+          "isProtectedPhase": {
+            "type": "boolean"
+          },
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
           "totalDelay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "volume": {
             "type": "integer",
             "format": "int32"
           }
@@ -1518,11 +1543,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "summedSpeed": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "speedVolume": {
+          "speed15th": {
             "type": "integer",
             "format": "int32"
           },
@@ -1530,7 +1551,11 @@
             "type": "integer",
             "format": "int32"
           },
-          "speed15th": {
+          "speedVolume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "summedSpeed": {
             "type": "integer",
             "format": "int32"
           }
@@ -1552,18 +1577,11 @@
             "type": "string",
             "nullable": true
           },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "isProtectedPhase": {
-            "type": "boolean"
-          },
-          "splitFailures": {
+          "cycles": {
             "type": "integer",
             "format": "int32"
           },
@@ -1571,11 +1589,18 @@
             "type": "integer",
             "format": "int32"
           },
-          "redOccupancySum": {
+          "greenTimeSum": {
             "type": "integer",
             "format": "int32"
           },
-          "greenTimeSum": {
+          "isProtectedPhase": {
+            "type": "boolean"
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "redOccupancySum": {
             "type": "integer",
             "format": "int32"
           },
@@ -1583,7 +1608,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "cycles": {
+          "splitFailures": {
             "type": "integer",
             "format": "int32"
           }
@@ -1605,16 +1630,20 @@
             "type": "string",
             "nullable": true
           },
-          "phaseNumber": {
+          "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "approachId": {
+          "cycles": {
             "type": "integer",
             "format": "int32"
           },
           "isProtectedPhase": {
             "type": "boolean"
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
           },
           "severeRedLightViolations": {
             "type": "integer",
@@ -1624,15 +1653,11 @@
             "type": "integer",
             "format": "int32"
           },
-          "yellowActivations": {
-            "type": "integer",
-            "format": "int32"
-          },
           "violationTime": {
             "type": "integer",
             "format": "int32"
           },
-          "cycles": {
+          "yellowActivations": {
             "type": "integer",
             "format": "int32"
           }
@@ -1996,6 +2021,31 @@
           }
         },
         "additionalProperties": false
+      },
+      "DataTypeMeta": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the property being described.",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "The XML documentation summary associated with the property, if available.",
+            "nullable": true
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PropertyMeta"
+            },
+            "description": "The collection of properties defined on the data type, each including\r\nits name and associated XML documentation summary.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents metadata describing a data type, including its own documentation\r\nand the metadata for each of its public properties."
       },
       "DetectorEventCountAggregation": {
         "type": "object",
@@ -2785,6 +2835,14 @@
             "type": "integer",
             "format": "int32"
           },
+          "greenTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phaseBeginCount": {
+            "type": "integer",
+            "format": "int32"
+          },
           "phaseNumber": {
             "type": "integer",
             "format": "int32"
@@ -2793,11 +2851,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "yellowTime": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "greenTime": {
+          "totalGreenToGreenCycles": {
             "type": "integer",
             "format": "int32"
           },
@@ -2805,11 +2859,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "totalGreenToGreenCycles": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "phaseBeginCount": {
+          "yellowTime": {
             "type": "integer",
             "format": "int32"
           }
@@ -2831,15 +2881,19 @@
             "type": "string",
             "nullable": true
           },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
           "gapCount1": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount10": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount11": {
             "type": "integer",
             "format": "int32"
           },
@@ -2875,11 +2929,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "gapCount10": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "gapCount11": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
@@ -2921,30 +2971,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "pedCycles": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pedDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "minPedDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxPedDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "imputedPedCallsRegistered": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "uniquePedDetections": {
-            "type": "integer",
-            "format": "int32"
-          },
           "pedBeginWalkCount": {
             "type": "integer",
             "format": "int32"
@@ -2953,7 +2979,31 @@
             "type": "integer",
             "format": "int32"
           },
+          "pedCycles": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pedDelay": {
+            "type": "number",
+            "format": "double"
+          },
           "pedRequests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imputedPedCallsRegistered": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPedDelay": {
+            "type": "number",
+            "format": "double"
+          },
+          "minPedDelay": {
+            "type": "number",
+            "format": "double"
+          },
+          "uniquePedDetections": {
             "type": "integer",
             "format": "int32"
           }
@@ -2975,11 +3025,11 @@
             "type": "string",
             "nullable": true
           },
-          "phaseNumber": {
+          "eightyFifthPercentileSplit": {
             "type": "integer",
             "format": "int32"
           },
-          "eightyFifthPercentileSplit": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
@@ -3005,7 +3055,7 @@
             "type": "string",
             "nullable": true
           },
-          "phaseNumber": {
+          "forceOffs": {
             "type": "integer",
             "format": "int32"
           },
@@ -3013,11 +3063,11 @@
             "type": "integer",
             "format": "int32"
           },
-          "forceOffs": {
+          "maxOuts": {
             "type": "integer",
             "format": "int32"
           },
-          "maxOuts": {
+          "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
@@ -3187,6 +3237,23 @@
           }
         },
         "additionalProperties": false
+      },
+      "PropertyMeta": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the property being described.",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "The XML documentation summary associated with the property, if available.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents metadata describing a single property within a data type.\r\nUsed to expose property names and their associated XML documentation\r\nwhen generating API metadata."
       },
       "RuntimeFieldHandle": {
         "type": "object",
