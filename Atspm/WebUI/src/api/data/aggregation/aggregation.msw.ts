@@ -18,7 +18,7 @@ import {
 import type {
   CompressedDataBase,
   DataTypeMeta
-} from '../aTSPMDataApi.schemas';
+} from '../data-api.schemas';
 
 
 export const getGetAggregationDataTypesResponseMock = (): DataTypeMeta[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), description: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), properties: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), description: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined])})), undefined])})))

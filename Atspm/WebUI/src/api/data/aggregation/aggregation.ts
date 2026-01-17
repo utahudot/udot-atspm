@@ -24,7 +24,7 @@ import type {
   GetAggregationStreamDataFromLocationIdentifierAndDataTypeParams,
   GetAggregationStreamDataFromLocationIdentifierParams,
   ProblemDetails
-} from '../aTSPMDataApi.schemas';
+} from '../data-api.schemas';
 
 import { dataRequest } from '../../../lib/axios';
 
