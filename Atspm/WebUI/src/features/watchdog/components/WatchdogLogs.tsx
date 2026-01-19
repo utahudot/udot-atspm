@@ -75,9 +75,12 @@ const watchdogLogsSchema = z.object({
 // Schema for ignoring events
 const ignoreEventSchema = z.object({
   start: z.date().nullable(),
-  end: z.date().nullable().refine((value) => value !== null, {
-    message: 'End date is required',
-  }),
+  end: z
+    .date()
+    .nullable()
+    .refine((value) => value !== null, {
+      message: 'End date is required',
+    }),
 })
 
 const WatchDogLogs = () => {
@@ -204,7 +207,7 @@ const WatchDogLogs = () => {
     const response = await Promise.all(
       selectedRows.map(async (rowId) => {
         const eventToIgnore = clickedRows?.[rowId]
-        if (!eventToIgnore || !data.start || !data.end)
+        if (!eventToIgnore || !data.start)
           return { rowId, success: false, error: 'Event not found' }
 
         try {
@@ -216,7 +219,7 @@ const WatchDogLogs = () => {
             componentId: eventToIgnore.componentId,
             phase: eventToIgnore.phase,
             start: toUTCDateStamp(data.start),
-            end: toUTCDateStamp(data.end),
+            end: data?.end ? toUTCDateStamp(data.end) : null,
           })
           return { rowId, success: true }
         } catch (error) {

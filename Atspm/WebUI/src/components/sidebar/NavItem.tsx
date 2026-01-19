@@ -38,11 +38,13 @@ const NavItem = ({ icon, text, url }: MenuItemProps) => {
         '&:hover': { backgroundColor: baseColor + '30' },
       }}
     >
-      <Link href={url} passHref legacyBehavior>
+      <Link
+        href={url}
+        style={{ width: '100%', textDecoration: 'none', color: 'inherit' }}
+      >
         <ListItemButton
           onClick={handleClick}
           selected={isSelected}
-          LinkComponent={'a'}
           sx={{
             py: 0.5,
             color: theme.palette.text.primary,
