@@ -11,7 +11,6 @@ import {
 import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp, toUTCDateStamp } from '@/utils/dateTime'
-import { addSpaces } from '@/utils/string'
 import { zodResolver } from '@hookform/resolvers/zod'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -209,6 +208,8 @@ const WatchDogLogs = () => {
         const eventToIgnore = clickedRows?.[rowId]
         if (!eventToIgnore || !data.start)
           return { rowId, success: false, error: 'Event not found' }
+
+        console.log('Ignoring event:', eventToIgnore)
 
         try {
           await addWatchdogIgnoreEvents({
