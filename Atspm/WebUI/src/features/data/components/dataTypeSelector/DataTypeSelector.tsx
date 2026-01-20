@@ -319,7 +319,9 @@ const toOptions = (
 
         return {
           name: dataType.name,
-          displayName: createDisplayName(dataType.name),
+          displayName: dataType?.name
+            ? createDisplayName(dataType.name)
+            : 'unknown',
           description: dataType.description ?? null,
           fields: ordered.map((f) => ({
             name: f.name,

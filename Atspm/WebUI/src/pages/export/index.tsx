@@ -30,12 +30,12 @@ import {
   useTheme,
 } from '@mui/material'
 import {
+  add,
   endOfMonth,
   endOfWeek,
   isValid,
   startOfMonth,
   startOfToday,
-  startOfTomorrow,
   startOfWeek,
 } from 'date-fns'
 import { useState } from 'react'
@@ -76,7 +76,6 @@ const ExportData = () => {
   const [error, setError] = useState(false)
 
   const [startDateTime, setStartDateTime] = useState(startOfToday())
-  const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
 
   const [selectedDataType, setSelectedDataType] =
     useState<DataTypeOption>(DEFAULT_DATA_TYPE)
@@ -100,7 +99,6 @@ const ExportData = () => {
   )
 
   const handleStartDateTimeChange = (date: Date) => setStartDateTime(date)
-  const handleEndDateTimeChange = (date: Date) => setEndDateTime(date)
 
   const handleCalendarRangeChange = (start: Date, end: Date) => {
     setCalendarStartDate(start)
@@ -117,6 +115,8 @@ const ExportData = () => {
   const downloadEventLogs = async () => {
     setIsDownloading(true)
     setError(false)
+
+    const endDateTime = add(startDateTime, { days: 1 })
 
     try {
       const locationId = location?.locationIdentifier || ''
@@ -181,9 +181,8 @@ const ExportData = () => {
                 dateFormat="MMM d, yyyy"
                 views={['year', 'month', 'day']}
                 startDateTime={startDateTime}
-                endDateTime={endDateTime}
+                startDateOnly
                 changeStartDate={handleStartDateTimeChange}
-                changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
                 markDays={missingDays}
                 onChange={handleDateChange}
