@@ -124,6 +124,15 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                             };
                         }
                     }
+                    catch (Exception)
+                    {
+                        return new DeviceEventDownload
+                        {
+                            DeviceId = device.Id,
+                            Ipaddress = device.Ipaddress,
+                            DeviceType = device.DeviceType,
+                        };
+                    }
                     finally
                     {
                         semaphore.Release();
