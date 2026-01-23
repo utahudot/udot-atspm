@@ -29,8 +29,10 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// Event log controller
     /// for querying raw device log data
     /// </summary>
+    [ApiController]
     [ApiVersion("1.0")]
     [Authorize(Policy = "CanEditData")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class EventLogImportController : ControllerBase
     {
         private EventLogImporterService _eventLogImporterService;
