@@ -69,6 +69,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeviceEmulator", "DeviceEmu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApiTests", "ConfigApiTests\ConfigApiTests.csproj", "{51C7E2BA-9F23-4E06-AA5A-9DB3C8350064}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateDocuments", "..\GenerateDocuments\GenerateDocuments.csproj", "{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7CD987F-6522-4FE0-9285-0AF80C572979} = {B7CD987F-6522-4FE0-9285-0AF80C572979}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -265,6 +270,14 @@ Global
 		{51C7E2BA-9F23-4E06-AA5A-9DB3C8350064}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51C7E2BA-9F23-4E06-AA5A-9DB3C8350064}.Release|x86.ActiveCfg = Release|Any CPU
 		{51C7E2BA-9F23-4E06-AA5A-9DB3C8350064}.Release|x86.Build.0 = Release|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Debug|x86.Build.0 = Debug|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Release|x86.ActiveCfg = Release|Any CPU
+		{9A3FE1B6-BDC5-477F-A843-B5D1FA628CE7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

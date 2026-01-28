@@ -1,0 +1,11 @@
+{
+  "ConfigApi": [
+    "Redis"
+  ],
+  "DataApi": [
+    "Redis"
+  ],
+  "ReportApi": [
+    "Redis"
+  ]
+}
