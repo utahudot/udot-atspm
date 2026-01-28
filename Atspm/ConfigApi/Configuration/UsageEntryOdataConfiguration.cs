@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
-            var model = builder.EntitySet<UsageEntry>("UsageEntries")
+            var model = builder.EntitySet<UsageEntry>("UsageEntry")
                 .EntityType
                 .Page(default, default);
 

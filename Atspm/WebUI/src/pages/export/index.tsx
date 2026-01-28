@@ -1,15 +1,21 @@
 import { Location } from '@/api/config'
+import {
+  getAggregationDataFromLocationIdentifierAndDataType,
+  getEventLogDataFromLocationIdentifierAndDataType,
+} from '@/api/data'
 import OptionsWrapper from '@/components/OptionsWrapper'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import SelectDateTime from '@/components/selectTimeSpan'
-import { ResponseFormat, useEventLogs } from '@/features/data/api/getEventLogs'
-import SelectDataType, {
+import { ResponseFormat } from '@/features/data/api/getEventLogs'
+import {
   DataTypeOption,
-} from '@/features/data/components/selectDataType'
-import { useGetAggData } from '@/features/data/exportData/api/getAggData'
+  DataTypeSelector,
+} from '@/features/data/components/dataTypeSelector'
+import { downloadData, generateFilename } from '@/features/data/utils'
 import SelectLocation from '@/features/locations/components/selectLocation'
 import useMissingDays from '@/hooks/useMissingDays'
 import Authorization from '@/lib/Authorization'
+import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp } from '@/utils/dateTime'
 import DownloadIcon from '@mui/icons-material/Download'
 import { LoadingButton } from '@mui/lab'
@@ -24,33 +30,59 @@ import {
   useTheme,
 } from '@mui/material'
 import {
-  addDays,
+  add,
   endOfMonth,
   endOfWeek,
   isValid,
   startOfMonth,
   startOfToday,
-  startOfTomorrow,
   startOfWeek,
 } from 'date-fns'
 import { useState } from 'react'
 
-const options = ['csv', 'json']
+const DEFAULT_DATA_TYPE: DataTypeOption = {
+  name: 'IndianaEvent',
+  displayName: 'Indiana Event',
+  type: 'raw',
+}
+
+const EXPORT_FORMATS: ResponseFormat[] = ['csv', 'json']
+
+const REQUIRED_CLAIM = 'Data:View'
+
+const buildRangeParams = (start: Date, end: Date) => ({
+  start: isValid(start) ? dateToTimestamp(start) : '',
+  end: isValid(end) ? dateToTimestamp(end) : '',
+})
+
+const mimeTypeForFormat = (format: ResponseFormat): string => {
+  switch (format) {
+    case 'json':
+      return 'application/json'
+    case 'xml':
+      return 'application/xml'
+    case 'csv':
+    default:
+      return 'text/csv'
+  }
+}
 
 const ExportData = () => {
   const theme = useTheme()
+  const { addNotification } = useNotificationStore()
+  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
 
   const [location, setLocation] = useState<Location | null>(null)
   const [error, setError] = useState(false)
+
   const [startDateTime, setStartDateTime] = useState(startOfToday())
-  const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
-  const [selectedOption, setSelectedOption] = useState<DataTypeOption>({
-    name: 'IndianaEvent',
-    type: 'raw',
-  })
-  const [isDownloading, setIsDownloading] = useState<boolean>(false)
+
+  const [selectedDataType, setSelectedDataType] =
+    useState<DataTypeOption>(DEFAULT_DATA_TYPE)
+
+  const [isDownloading, setIsDownloading] = useState(false)
   const [downloadFormat, setDownloadFormat] = useState<ResponseFormat>('csv')
-  const [selectedIndex, setSelectedIndex] = useState(0)
+
   const [calendarStartDate, setCalendarStartDate] = useState<Date>(
     startOfWeek(startOfMonth(startOfToday()))
   )
@@ -58,84 +90,15 @@ const ExportData = () => {
     endOfWeek(endOfMonth(startOfToday()))
   )
 
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
-
-  // Todo: for now, the end date is the start date + 1 day for raw data
-
-  const { refetch: refetchEventLogs } = useEventLogs({
-    locationIdentifier: location?.locationIdentifier || '',
-    start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
-    end: isValid(startDateTime)
-      ? dateToTimestamp(addDays(startDateTime, 1))
-      : '',
-    dataType: selectedOption.name,
-    ResponseFormat: downloadFormat,
-  })
-
-  const { refetch: refetchAggData } = useGetAggData(
-    location?.locationIdentifier,
-    selectedOption.name,
-    isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
-    isValid(startDateTime) ? dateToTimestamp(addDays(startDateTime, 1)) : ''
-  )
-
   const missingDays = useMissingDays(
     location?.locationIdentifier ?? '',
-    selectedOption.name ?? '',
+    selectedDataType.name,
+    selectedDataType.type,
     calendarStartDate,
     calendarEndDate
-    // selectedOption.type === 'aggregation'
   )
 
   const handleStartDateTimeChange = (date: Date) => setStartDateTime(date)
-  const handleEndDateTimeChange = (date: Date) => setEndDateTime(date)
-
-  const downloadEventLogs = async () => {
-    setIsDownloading(true)
-    setError(false)
-    try {
-      let response, data
-      if (selectedOption.type === 'raw') {
-        response = await refetchEventLogs()
-        if (response.status === 'error') {
-          setError(true)
-          return
-        }
-        data = response.data
-      } else {
-        response = await refetchAggData()
-        data = response.data
-      }
-
-      const filename = generateFilename(
-        location,
-        selectedOption,
-        startDateTime,
-        endDateTime,
-        downloadFormat
-      )
-
-      let mimeType = ''
-      switch (downloadFormat) {
-        case 'json':
-          mimeType = 'application/json'
-          break
-        case 'xml':
-          mimeType = 'application/xml'
-          break
-        case 'csv':
-        default:
-          mimeType = 'text/csv'
-          break
-      }
-      downloadData(data, filename, mimeType)
-    } catch (err) {
-      console.error('Error fetching data:', err)
-      setError(true)
-    } finally {
-      setIsDownloading(false)
-    }
-  }
 
   const handleCalendarRangeChange = (start: Date, end: Date) => {
     setCalendarStartDate(start)
@@ -149,29 +112,65 @@ const ExportData = () => {
     handleCalendarRangeChange(newStart, newEnd)
   }
 
-  const requiredClaim = 'Data:View'
+  const downloadEventLogs = async () => {
+    setIsDownloading(true)
+    setError(false)
+
+    const endDateTime = add(startDateTime, { days: 1 })
+
+    try {
+      const locationId = location?.locationIdentifier || ''
+      const range = buildRangeParams(startDateTime, endDateTime)
+
+      const fetchFn =
+        selectedDataType.type === 'raw'
+          ? getEventLogDataFromLocationIdentifierAndDataType
+          : getAggregationDataFromLocationIdentifierAndDataType
+
+      const data = await fetchFn(locationId, selectedDataType.name, range)
+
+      const filename = generateFilename(
+        location,
+        selectedDataType,
+        startDateTime,
+        endDateTime,
+        downloadFormat
+      )
+
+      const mimeType = mimeTypeForFormat(downloadFormat)
+      await downloadData(data, filename, mimeType)
+      addNotification({
+        type: 'success',
+        title: 'Download completed.',
+      })
+    } catch (err) {
+      console.error('Error fetching data:', err)
+      setError(true)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
+  const canDownload = !!location
+
   return (
-    <Authorization requiredClaim={requiredClaim}>
-      <ResponsivePageLayout title={'Export Data'}>
+    <Authorization requiredClaim={REQUIRED_CLAIM}>
+      <ResponsivePageLayout title="Export Data">
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
           <Paper
             sx={{
               flexGrow: 1,
               minWidth: '350px',
-              padding: 3,
+              p: 3,
             }}
           >
-            <SelectLocation
-              location={location}
-              setLocation={setLocation}
-              mapHeight={'350px'}
-            />
+            <SelectLocation location={location} setLocation={setLocation} />
           </Paper>
 
           <Box display="flex" sx={{ gap: '15px', flexWrap: 'wrap' }}>
             <Paper
               sx={{
-                padding: 3,
+                p: 3,
                 width: '336px',
                 [theme.breakpoints.down('sm')]: {
                   width: '100%',
@@ -182,16 +181,15 @@ const ExportData = () => {
                 dateFormat="MMM d, yyyy"
                 views={['year', 'month', 'day']}
                 startDateTime={startDateTime}
-                endDateTime={endDateTime}
-                startDateOnly={selectedOption.type === 'raw'}
+                startDateOnly
                 changeStartDate={handleStartDateTimeChange}
-                changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
-                markDays={location ? missingDays : undefined}
+                markDays={missingDays}
                 onChange={handleDateChange}
                 onMonthChange={handleDateChange}
               />
             </Paper>
+
             <Box
               sx={{
                 minWidth: '23.188rem',
@@ -201,30 +199,26 @@ const ExportData = () => {
                 gap: 2,
               }}
             >
-              <SelectDataType
-                selectedDataType={selectedOption}
-                setSelectedDataType={setSelectedOption}
+              <DataTypeSelector
+                selectedDataType={selectedDataType}
+                setSelectedDataType={setSelectedDataType}
               />
-              <Box display="flex" flexDirection="column">
-                <OptionsWrapper header="Export Options" noPadding>
-                  <Box sx={{ overflow: 'auto' }}>
-                    <List sx={{ marginTop: '-8px' }}>
-                      {options.map((opt, index) => (
-                        <ListItemButton
-                          key={opt}
-                          onClick={() => {
-                            setSelectedIndex(index)
-                            setDownloadFormat(opt as ResponseFormat)
-                          }}
-                          selected={selectedIndex === index}
-                        >
-                          <ListItemText primary={opt.toUpperCase()} />
-                        </ListItemButton>
-                      ))}
-                    </List>
-                  </Box>
-                </OptionsWrapper>
-              </Box>
+
+              <OptionsWrapper header="Export Options" noPadding>
+                <Box sx={{ overflow: 'auto' }}>
+                  <List sx={{ mt: '-8px' }}>
+                    {EXPORT_FORMATS.map((opt) => (
+                      <ListItemButton
+                        key={opt}
+                        onClick={() => setDownloadFormat(opt)}
+                        selected={downloadFormat === opt}
+                      >
+                        <ListItemText primary={opt.toUpperCase()} />
+                      </ListItemButton>
+                    ))}
+                  </List>
+                </Box>
+              </OptionsWrapper>
             </Box>
           </Box>
         </Box>
@@ -236,7 +230,7 @@ const ExportData = () => {
             loading={isDownloading}
             variant="contained"
             onClick={downloadEventLogs}
-            disabled={!location}
+            disabled={!canDownload}
           >
             Download Data
           </LoadingButton>
@@ -253,80 +247,3 @@ const ExportData = () => {
 }
 
 export default ExportData
-
-const formatData = (data: any, type: string): string => {
-  if (type === 'application/json') {
-    return JSON.stringify(data)
-  }
-  if (type === 'text/csv' || type === 'application/xml') {
-    const eventLogData = data.flatMap((d) => d.data)
-    if (eventLogData.length === 0) return ''
-
-    const headers = Object.keys(eventLogData[0])
-    if (type === 'text/csv') {
-      // Build CSV string
-      let csv = headers.join(',') + '\n'
-      eventLogData.forEach((eventLog: any) => {
-        const row = headers
-          .map((header) => {
-            if (header === 'timestamp') {
-              return eventLog[header].replace('T', ' ')
-            }
-            // Wrap string with commas in quotes
-            if (
-              typeof eventLog[header] === 'string' &&
-              eventLog[header].includes(',')
-            ) {
-              return `"${eventLog[header]}"`
-            }
-            return eventLog[header]
-          })
-          .join(',')
-        csv += row + '\n'
-      })
-      return csv
-    } else if (type === 'application/xml') {
-      // Build XML string
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<eventLogs>\n'
-      eventLogData.forEach((eventLog: any) => {
-        xml += '  <eventLog>\n'
-        headers.forEach((header) => {
-          xml += `    <${header}>${eventLog[header]}</${header}>\n`
-        })
-        xml += '  </eventLog>\n'
-      })
-      xml += '</eventLogs>'
-      return xml
-    }
-  }
-  return data // Fallback for other formats
-}
-
-const generateFilename = (
-  location: Location | null,
-  selectedDataType: DataTypeOption | null,
-  start: Date,
-  end: Date,
-  downloadFormat: ResponseFormat
-): string => {
-  const startStr = dateToTimestamp(start)
-  const endStr = dateToTimestamp(end)
-  const baseName = `${location?.locationIdentifier}_${selectedDataType?.name.replace(/\s+/g, '')}_${startStr}`
-
-  return selectedDataType?.type === 'raw'
-    ? `${baseName}.${downloadFormat}`
-    : `${baseName}_${endStr}.${downloadFormat}`
-}
-
-const downloadData = (data: any, filename: string, mimeType: string) => {
-  const formattedData = formatData(data, mimeType)
-  const blob = new Blob([formattedData], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
