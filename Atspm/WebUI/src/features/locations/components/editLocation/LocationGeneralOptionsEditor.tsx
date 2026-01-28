@@ -6,6 +6,7 @@ import {
   usePutLocationFromKey,
 } from '@/api/config'
 import CustomSelect from '@/components/customSelect'
+import LocationCoordinatePicker from '@/features/locations/components/editLocation/LocationCoordinatesPicker'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp } from '@/utils/dateTime'
@@ -17,6 +18,7 @@ import {
   Checkbox,
   Divider,
   FormControlLabel,
+  Grid,
   Paper,
   SelectChangeEvent,
   TextField,
@@ -99,7 +101,6 @@ const LocationGeneralOptionsEditor = () => {
 
     generalInfo.start = format(parseISO(location.start), 'yyyy-MM-dd')
 
-    // remove audit fields
     const generalInfoDto = removeAuditFields(generalInfo)
     generalInfoDto.areas = location?.areas?.map(removeAuditFields)
 
@@ -143,186 +144,239 @@ const LocationGeneralOptionsEditor = () => {
           Save General Info
         </Button>
       </Box>
-      <Paper sx={{ padding: 2 }}>
-        <Box display="flex" marginTop={2}>
-          {/* Left Column */}
-          <Box flex={1} marginRight={3}>
-            <Typography variant="h4" fontWeight={'bold'} component="p">
-              Version Information
-            </Typography>
-            <Box
-              marginBottom={3}
-              marginTop={2}
-              minHeight={'84px'}
-              display={'flex'}
-              alignItems={'center'}
+
+      <Paper sx={{ p: 3 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={0}
+              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
             >
-              <TextField
-                label="Label"
-                name="note"
-                value={location.note}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange('note', e)
-                }
-                sx={{ marginRight: 2, marginBottom: 1 }}
-              />
-              <DatePicker
-                label="Start"
-                name="start"
-                value={location.start ? new Date(location.start) : null}
-                onChange={handleDateChange}
-                sx={{
-                  marginRight: 2,
-                  marginBottom: 1,
-                  maxWidth: '226px',
-                }}
-              />
-            </Box>
-            <Divider />
-            <Typography variant="h4" fontWeight={'bold'} marginY={3}>
-              Address & Coordinates
-            </Typography>
-            <Box marginY={3}>
-              <TextField
-                label="Primary Name"
-                name="primaryName"
-                value={location.primaryName}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange('primaryName', e)
-                }
-                sx={{ marginRight: 2, marginBottom: 1 }}
-              />
-              <TextField
-                label="Secondary Name"
-                name="secondaryName"
-                value={location.secondaryName}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange('secondaryName', e)
-                }
-                sx={{ marginRight: 2, marginBottom: 1 }}
-              />
-            </Box>
-            <Box marginY={3}>
-              <TextField
-                label="Latitude"
-                name="latitude"
-                value={location.latitude}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange('latitude', e)
-                }
-                sx={{ marginRight: 2, marginBottom: 1 }}
-              />
-              <TextField
-                label="Longitude"
-                name="longitude"
-                value={location.longitude}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange('longitude', e)
-                }
-                sx={{ marginRight: 2, marginBottom: 1 }}
-              />
-            </Box>
-          </Box>
-          {/* Right Column */}
-          <Box flex={1}>
-            <Typography variant="h4" fontWeight={'bold'}>
-              Configuration
-            </Typography>
-            <Box marginY={3} display={'flex'} alignItems={'center'}>
-              <CustomSelect
-                label="Location Type"
-                name="locationTypeId"
-                value={location.locationTypeId}
-                data={locationTypeData?.value.map((type) => ({
-                  id: type.id,
-                  name: type.name,
-                }))}
-                onChange={(e) => handleSelectChange('locationTypeId', e)}
-                displayProperty="name"
-                sx={{
-                  marginRight: 2,
-                  minWidth: '226px',
-                }}
-              />
-              <Box display={'flex'} flexDirection={'column'}>
-                <FormControlLabel
-                  control={<Checkbox onChange={handleCheckboxChange} />}
-                  name="chartEnabled"
-                  label={
-                    <Tooltip
-                      title={
-                        'Allow charts to be displayed for this location. If disabled, the location will not be visible in the charts section.'
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Version Information
+              </Typography>
+              <Grid container spacing={2} mb={1}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Label"
+                    name="note"
+                    value={location.note}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleChange('note', e)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <DatePicker
+                    label="Start"
+                    name="start"
+                    value={location.start ? new Date(location.start) : null}
+                    onChange={handleDateChange}
+                    sx={{ width: '100%' }}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={0}
+              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Configuration
+              </Typography>
+              <Grid container spacing={2} mb={1}>
+                <Grid item xs={12}>
+                  <Box display="flex" flexDirection="row" gap={4}>
+                    <CustomSelect
+                      label="Location Type"
+                      name="locationTypeId"
+                      value={location.locationTypeId}
+                      data={locationTypeData?.value.map((type) => ({
+                        id: type.id,
+                        name: type.name,
+                      }))}
+                      onChange={(e) => handleSelectChange('locationTypeId', e)}
+                      displayProperty="name"
+                      fullWidth
+                    />
+                    <FormControlLabel
+                      sx={{ minWidth: 150 }}
+                      control={
+                        <Checkbox
+                          onChange={handleCheckboxChange}
+                          name="chartEnabled"
+                          checked={location.chartEnabled}
+                        />
                       }
-                    >
-                      <Typography
-                        sx={{
-                          textDecoration: 'underline',
-                          textDecorationStyle: 'dotted',
-                          textUnderlineOffset: '5px',
-                        }}
-                      >
-                        Enable Charts
-                      </Typography>
-                    </Tooltip>
-                  }
-                  checked={location.chartEnabled}
-                  sx={{
-                    minWidth: '226px',
-                  }}
-                />
-              </Box>
-            </Box>
-            <Divider />
-            <Typography variant="h4" fontWeight={'bold'} marginY={3}>
-              Categories
-            </Typography>
-            <Box marginY={3} width={'100%'}>
-              <CustomSelect
-                label="Region"
-                name="regionId"
-                value={location.regionId}
-                data={regionsData?.value}
-                onChange={(e) => handleSelectChange('regionId', e)}
-                displayProperty="description"
-                sx={{
-                  marginRight: 2,
-                  marginBottom: 1,
-                  minWidth: '226px',
-                }}
-              />
-              <CustomSelect
-                label="Jurisdiction"
-                name="jurisdictionId"
-                value={location.jurisdictionId}
-                data={jurisdictionData?.value}
-                onChange={(e) => handleSelectChange('jurisdictionId', e)}
-                displayProperty="name"
-                sx={{
-                  marginRight: 2,
-                  marginBottom: 1,
-                  minWidth: '226px',
-                }}
-              />
-            </Box>
-            <Box>
-              <CustomSelect
-                label="Areas"
-                name="areas"
-                value={location?.areas?.map((area) => area.id)}
-                data={areasData?.value}
-                onChange={handleAreaChange}
-                onDelete={handleAreaDelete}
-                displayProperty="name"
-                sx={{
-                  marginRight: 2,
-                  marginBottom: 1,
-                  width: 470,
-                }}
-                multiple
-              />
-            </Box>
-          </Box>
-        </Box>
+                      label={
+                        <Tooltip
+                          title={
+                            'Allow charts to be displayed for this location. If disabled, the location will not be visible in the charts section.'
+                          }
+                        >
+                          <Typography
+                            sx={{
+                              textDecoration: 'underline',
+                              textDecorationStyle: 'dotted',
+                              textUnderlineOffset: '5px',
+                            }}
+                          >
+                            Enable Charts
+                          </Typography>
+                        </Tooltip>
+                      }
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          <Divider />
+
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={0}
+              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Address &amp; Coordinates
+              </Typography>
+              <Grid container spacing={2} mb={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Primary Name"
+                    name="primaryName"
+                    value={location.primaryName}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleChange('primaryName', e)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Secondary Name"
+                    name="secondaryName"
+                    value={location.secondaryName}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleChange('secondaryName', e)
+                    }
+                  />
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Latitude"
+                    name="latitude"
+                    value={location.latitude}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleChange('latitude', e)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <TextField
+                      fullWidth
+                      label="Longitude"
+                      name="longitude"
+                      value={location.longitude}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleChange('longitude', e)
+                      }
+                    />
+                    <LocationCoordinatePicker
+                      onChange={(lat, lng) => {
+                        const latStr = lat.toFixed(6)
+                        const lngStr = lng.toFixed(6)
+                        handleLocationEdit('latitude', latStr)
+                        handleLocationEdit('longitude', lngStr)
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={0}
+              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Categories
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <CustomSelect
+                    label="Region"
+                    name="regionId"
+                    value={location.regionId}
+                    data={regionsData?.value}
+                    onChange={(e) => handleSelectChange('regionId', e)}
+                    displayProperty="description"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CustomSelect
+                    label="Jurisdiction"
+                    name="jurisdictionId"
+                    value={location.jurisdictionId}
+                    data={jurisdictionData?.value}
+                    onChange={(e) => handleSelectChange('jurisdictionId', e)}
+                    displayProperty="name"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <CustomSelect
+                    label="Areas"
+                    name="areas"
+                    value={location?.areas?.map((area) => area.id)}
+                    data={areasData?.value}
+                    onChange={handleAreaChange}
+                    onDelete={handleAreaDelete}
+                    displayProperty="name"
+                    sx={{ height: '56px' }}
+                    fullWidth
+                    multiple
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
       </Paper>
     </>
   )
