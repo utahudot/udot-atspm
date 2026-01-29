@@ -20,6 +20,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
     /// <summary>
     /// Options pattern model for services that implement <see cref="IEventLogImporter"/>
     /// </summary>
+    [ConfigurationSection(nameof(EventLogImporterConfiguration), "Configuration for importing raw datalogs from devices")]
     public class EventLogImporterConfiguration
     {
         /// <summary>

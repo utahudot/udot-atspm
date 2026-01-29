@@ -18,6 +18,10 @@
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
+    /// <summary>
+    /// Configuration for event logs decoders
+    /// </summary>
+    [ConfigurationSection(nameof(DecodeEventsConfiguration), "Configuration event log decoders")]
     public class DecodeEventsConfiguration
     {
         /// <summary>

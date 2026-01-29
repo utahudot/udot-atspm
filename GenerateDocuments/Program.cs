@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 
@@ -30,19 +31,12 @@ foreach (var container in containerMap)
     WriteContainerMarkdown(container.Key, container.Value, configTypes, xml, outputDir);
 }
 
-
-
-
 static string GetRepoRoot()
 {
     // AppContext.BaseDirectory = .../GenerateDocuments/bin/Debug/net8.0/
     // Go up 4 levels to reach repo root
     return Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.Parent!.FullName;
 }
-
-
-
-
 
 static void WriteContainerMarkdown(
     string containerName,
@@ -107,7 +101,6 @@ static void WriteConfigSectionMarkdown(
     sb.AppendLine("---\n");
 }
 
-
 static void WriteSettingsTable(
     StringBuilder sb,
     Type type,
@@ -141,49 +134,4 @@ static string GenerateEnvVarName(Type type, PropertyInfo prop)
 {
     var section = type.GetCustomAttribute<ConfigurationSectionAttribute>()!.SectionName;
     return $"{section}__{prop.Name}";
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
-public sealed class ConfigurationSectionAttribute : Attribute
-{
-    public string SectionName { get; }
-    public string? Description { get; }
-
-    public ConfigurationSectionAttribute(string sectionName, string? description = null)
-    {
-        SectionName = sectionName;
-        Description = description;
-    }
-}
-
-[ConfigurationSection("Redis", "Redis cache configuration")]
-public class RedisOptions
-{
-    /// <summary>
-    /// The hostname of the Redis server.
-    /// </summary>
-    public string Host { get; set; } = "localhost";
-
-    /// <summary>
-    /// The port Redis listens on.
-    /// </summary>
-    public int Port { get; set; } = 6379;
-
-    /// <summary>
-    /// Optional password for Redis authentication.
-    /// </summary>
-    public string? Password { get; set; }
 }

@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
     /// <summary>
     /// Configuration options for device event logging
     /// </summary>
+    [ConfigurationSection(nameof(DeviceEventLoggingConfiguration), "Configuration logging event log data from devices")]
     public class DeviceEventLoggingConfiguration
     {
         /// <summary>

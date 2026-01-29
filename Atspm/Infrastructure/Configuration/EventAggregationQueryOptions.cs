@@ -19,6 +19,9 @@ using System.Text;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
+    /// <summary>
+    /// Options for event aggregation queries
+    /// </summary>
     public class EventAggregationQueryOptions
     {
         /// <summary>

@@ -1,11 +1,25 @@
 {
-  "ConfigApi": [
-    "Redis"
+  "Config API": [
+    "DecodeEventsConfiguration"
   ],
-  "DataApi": [
-    "Redis"
+  "Data API": [
+    "DecodeEventsConfiguration"
   ],
-  "ReportApi": [
-    "Redis"
+  "Identity API": [
+    "DecodeEventsConfiguration"
+  ],
+  "Report API": [
+    "DecodeEventsConfiguration"
+  ],
+  "Event Log Utility": [
+    "DecodeEventsConfiguration",
+    "DeviceDownloaderConfiguration",
+    "EventLogAggregateConfiguration",
+    "EventLogExtractConfiguration",
+    "EventLogImporterConfiguration",
+    "EventLogTransferOptions"
+  ],
+  "Watchdog": [
+    "DecodeEventsConfiguration"
   ]
 }
