@@ -311,7 +311,7 @@ function extractDetectorsNames(data: RawTimingAndActuationData): string[] {
   return names
 }
 
-enum CycleColor {
+export enum CycleColor {
   Default = Color.PlanB,
   Green = Color.Green,
   LightGreen = '#8ef08d',
@@ -493,7 +493,7 @@ function getEventDetails(eventValue: number) {
   return { name: 'Unknown Event', color: CycleColor.Default }
 }
 
-const EVENT_GROUPS = [
+export const EVENT_GROUPS = [
   {
     codes: [1, 61],
     name: 'Phase Begin Green (1)\nOverlap Begin Green (61)',

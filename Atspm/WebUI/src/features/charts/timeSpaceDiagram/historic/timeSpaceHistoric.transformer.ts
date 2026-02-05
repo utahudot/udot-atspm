@@ -41,11 +41,17 @@ import {
 } from '@/features/charts/utils'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
+  CustomSeriesRenderItemReturn,
   DataZoomComponentOption,
   EChartsOption,
   GridComponentOption,
   SeriesOption,
 } from 'echarts'
+import {
+  CycleColor,
+  EVENT_GROUPS,
+} from '../../timingAndActuation/timingAndActuation.transformer'
+import { PedestrianInterval } from '../../timingAndActuation/types'
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
@@ -74,15 +80,6 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   const dateRange = formatChartDateTimeRange(data[0].start, data[0].end)
 
-  const title = createTitle({
-    title: 'Time Space Diagram • Historic',
-    location: `Primary: ${primaryPhaseData[0].approachDescription} • Opposing: ${opposingPhaseData[0].approachDescription}`,
-    dateRange,
-    info: `Route data from ${primaryPhaseData[0].locationDescription} to ${
-      primaryPhaseData[primaryPhaseData.length - 1].locationDescription
-    }`,
-  })
-
   const xAxis = createXAxis(data[0].start, data[0].end)
 
   let initialDistance = 250
@@ -102,6 +99,25 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     axisLabel: {
       show: false,
     },
+  })
+
+  const primaryPOG = primaryPhaseData.map((phase, index) => {
+    return `  ${phase.locationIdentifier} => ${phase.percentArrivalOnGreen}s`
+  })
+
+  const opposingPOG = opposingPhaseData.map((phase, index) => {
+    return `  ${phase.locationIdentifier} => ${phase.percentArrivalOnGreen}s`
+  })
+
+  const title = createTitle({
+    title: 'Time Space Diagram • Historic',
+    location: `Primary: ${primaryPhaseData[0].approachDescription} • Opposing: ${opposingPhaseData[0].approachDescription}`,
+    dateRange,
+    info: `Route data from ${primaryPhaseData[0].locationDescription} to ${
+      primaryPhaseData[primaryPhaseData.length - 1].locationDescription
+    } \n 
+    POG for ${primaryDirection}: ${primaryPOG} \n
+    POG for ${opposingDirection}: ${opposingPOG}`,
   })
 
   const start = new Date(data[0].end)
@@ -196,6 +212,19 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       true
     )
   )
+
+  series.push(
+    ...generatePedestrianIntervalLines(
+      primaryPhaseData,
+      distanceData,
+      primaryDirection
+    )
+  )
+
+  series.push(
+    ...generateTMCEvent(primaryPhaseData, distanceData, primaryDirection)
+  )
+
   const locationLabels = getLocationsLabelOption(primaryPhaseData, distanceData)
   series.push(locationLabels)
   series.push(
@@ -255,6 +284,14 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   )
 
   series.push(
+    ...generatePedestrianIntervalLines(
+      opposingPhaseData,
+      reverseDistanceData,
+      opposingDirection
+    )
+  )
+
+  series.push(
     generateCycleLabels(distanceData, primaryDirection, locationLabels.gridLeft)
   )
   series.push(
@@ -298,7 +335,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   } as const
 
   const grid: GridComponentOption = {
-    top: 170,
+    top: 210,
     left: locationLabels.gridLeft + 80,
     right: 300,
     bottom: 100,
@@ -355,6 +392,22 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
         name: `Stop Bar Presence ${opposingDirection}`,
         itemStyle: { color: 'orange' },
       },
+      {
+        name: `Pedestrian Interval ${primaryDirection}`,
+        itemStyle: { color: 'grey' },
+      },
+      {
+        name: `Pedestrian Interval ${opposingDirection}`,
+        itemStyle: { color: 'grey' },
+      },
+      {
+        name: `Left Turn ${primaryDirection}`,
+        itemStyle: { color: 'black' },
+      },
+      {
+        name: `Right Turn ${primaryDirection}`,
+        itemStyle: { color: 'black' },
+      },
     ],
     selected: {
       [`Cycles ${primaryDirection}`]: true,
@@ -367,6 +420,10 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       [`Advance Count ${opposingDirection}`]: false,
       [`Stop Bar Presence ${primaryDirection}`]: false,
       [`Stop Bar Presence ${opposingDirection}`]: false,
+      [`Pedestrian Interval ${primaryDirection}`]: false,
+      [`Pedestrian Interval ${opposingDirection}`]: false,
+      [`Left Turn ${primaryDirection}`]: false,
+      [`Right Turn ${primaryDirection}`]: false,
     },
   })
 
@@ -383,6 +440,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     displayProps,
     animation: true,
   }
+  console.log(chartOptions)
 
   return chartOptions
 }
@@ -423,78 +481,7 @@ function generateLaneByLaneCountEventLines(
     seriesOptions.push(series)
   })
   return seriesOptions
-  // return {
-  //   name: `Lane by Lane Count ${phaseType?.length && phaseType}`,
-  //   id: `LLC ${data[i].locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
-  //   type: 'line',
-  //   symbol: 'none',
-  //   lineStyle: {
-  //     width: 2,
-  //     color,
-  //   },
-  //   data: data.reduce((result, location, i) => {
-  //     if (location.laneByLaneCountDetectors) {
-  //       const points: any[] = location.laneByLaneCountDetectors.flatMap(
-  //         (events) => {
-  //           const initialX = events.detectorOn
-  //           const finalX = getArrivalTime(
-  //             location.distanceToNextLocation,
-  //             location.speed,
-  //             initialX
-  //           )
-  //           const values = [
-  //             [initialX, distanceData[i]],
-  //             [finalX, distanceData[i + 1]],
-  //             null,
-  //           ]
-  //           return values
-  //         }
-  //       )
-  //       points.push(null)
-  //       result.push(...points)
-  //     }
-  //     return result
-  //   }, [] as any[]),
-  // }
 }
-
-// function calculateTimeSpaceResult(
-//   events: TimeSpaceDetectorEventWithDistanceDTO[],
-//   speed: number,
-//   distanceToNextLocation: number
-// ): TimeSpaceEvent[] {
-//   const results: TimeSpaceEvent[] = []
-
-//   if (!events || events.length < 1) {
-//     return results
-//   }
-
-//   for (const detectorEvent of events) {
-//     if (!detectorEvent.detectorOn) {
-//       continue
-//     }
-
-//     const speedLimit = speed
-
-//     const currentDetectorOn = detectorEvent.detectorOn
-
-//     const arrivalTime = getArrivalTime(
-//       distanceToNextLocation,
-//       speedLimit,
-//       currentDetectorOn
-//     )
-
-//     const resultOn: TimeSpaceEvent = {
-//       initialX: currentDetectorOn,
-//       finalX: arrivalTime,
-//       isDetectorOn: null,
-//     }
-
-//     results.push(resultOn)
-//   }
-
-//   return results
-// }
 
 function getArrivalTime(
   distanceToNextLocation: number,
@@ -557,102 +544,7 @@ function generateAdvanceCountEventLines(
     }
   })
   return seriesOptions
-  // return {
-  //   name: `Advance Count ${phaseType?.length && phaseType}`,
-  //   type: 'line',
-  //   symbol: 'none',
-  //   lineStyle: {
-  //     width: 2,
-  //     color,
-  //   },
-  //   data: data.reduce((result, location, i) => {
-  //     if (location.advanceCountDetectors) {
-  //       const points: any[] = location.advanceCountDetectors.flatMap(
-  //         (events) => {
-  //           const finalX = getArrivalTime(
-  //             events.distanceToStopBar,
-  //             location.speed,
-  //             events.detectorOn
-  //           )
-
-  //           const initialX = getArrivalTime(
-  //             -location.distanceToPreviousLocation,
-  //             location.speed,
-  //             finalX
-  //           )
-  //           const values = [
-  //             [initialX, distanceData[i - 1]],
-  //             [finalX, distanceData[i]],
-  //             null,
-  //           ]
-  //           return values
-  //         }
-  //       )
-  //       // points.push(null)
-  //       result.push(...points)
-  //     }
-  //     return result
-  //   }, [] as any[]),
-  // }
 }
-
-// function generateStopBarPresenceEventLines(
-//   data: RawTimeSpaceHistoricData[],
-//   distanceData: number[],
-//   color: string,
-//   phaseType?: string
-// ): SeriesOption[] {
-//   const dataPoints = getStopBarPresenceDataPoints(data, distanceData)
-//   const chunkSize = 1000
-//   const options: SeriesOption[] = []
-
-//   for (let i = 0, j = 0; i < dataPoints.length; i += chunkSize, j++) {
-//     const startIndex = j * chunkSize
-//     const endIndex = Math.min((j + 1) * chunkSize, dataPoints.length)
-//     const chunk = dataPoints.slice(startIndex, endIndex)
-
-//     options.push({
-//       name: `Stop Bar Presence ${phaseType?.length && phaseType}`,
-//       type: 'custom',
-//       data: chunk,
-//       clip: true,
-//       selectedMode: false,
-//       renderItem: function (params, api) {
-//         if (params.context.rendered) {
-//           return
-//         }
-//         params.context.rendered = true
-//         let points = []
-//         const polygons: any[] = []
-//         for (let j = 0; j < chunk.length; j++) {
-//           if (chunk[j] === null) {
-//             polygons.push({
-//               type: 'polygon',
-//               transition: ['shape'],
-//               shape: {
-//                 points: points,
-//               },
-//               style: {
-//                 opacity: 1,
-//                 fill: color,
-//                 lineWidth: 3,
-//               },
-//             })
-//             points = []
-//           } else {
-//             points.push(api.coord(chunk[j]))
-//           }
-//         }
-//         return {
-//           type: 'group',
-//           children: polygons,
-//         }
-//       },
-//     })
-//   }
-
-//   return options
-// }
 
 function generateStopBarPresenceEventLines(
   data: RawTimeSpaceHistoricData[],
@@ -702,6 +594,7 @@ function generateStopBarPresenceEventLines(
           api.coord([nextPointFinalX, (y2 as number) + distanceToNext]),
           api.coord([currPointFinalX, (y1 as number) + distanceToNext]),
         ]
+        console.log('this is stopbar', points[0], points[1])
         return {
           type: 'polygon',
           transition: ['shape'],
@@ -736,51 +629,127 @@ function getStopBarPresenceDataPoints(
   }
 }
 
-// function getStopBarPresenceDataPoints(
-//   data: RawTimeSpaceHistoricData[],
-//   distanceData: number[]
-// ) {
-//   return data.reduce((result, location, index) => {
-//     if (location.stopBarPresenceDetectors) {
-//       const stopBarEvents = location.stopBarPresenceDetectors
-//       for (let i = 0; i < stopBarEvents.length; ) {
-//         const currPoint = stopBarEvents[i]
-//         const nextPoint = stopBarEvents[i + 1]
-//         if (i === 0 && currPoint.isDetectorOn === false) {
-//           result.push(
-//             [location.start, distanceData[index]],
-//             [currPoint.initialX, distanceData[index]],
-//             [currPoint.finalX, distanceData[index + 1]],
-//             [location.start, distanceData[index + 1]],
-//             null
-//           )
-//           i++
-//         } else if (
-//           i === stopBarEvents.length - 1 &&
-//           currPoint.isDetectorOn === true
-//         ) {
-//           result.push(
-//             [currPoint.initialX, distanceData[index]],
-//             [location.end, distanceData[index]],
-//             [location.end, distanceData[index + 1]],
-//             [currPoint.finalX, distanceData[index + 1]],
-//             null
-//           )
-//           i++
-//         } else {
-//           result.push(
-//             ...[
-//               [currPoint.initialX, distanceData[index]],
-//               [nextPoint.initialX, distanceData[index]],
-//               [nextPoint.finalX, distanceData[index + 1]],
-//               [currPoint.finalX, distanceData[index + 1]],
-//               null,
-//             ]
-//           )
-//           i += 2
-//         }
-//       }
-//     }
-//     return result
-//   }, [] as any)
-// }
+function generatePedestrianIntervalLines(
+  data: RawTimeSpaceHistoricData[],
+  distanceData: number[],
+  phaseType?: string
+): SeriesOption[] {
+  const seriesOptions: SeriesOption[] = []
+
+  data.forEach((location, i) => {
+    if (!location.pedestrianIntervals?.length) return
+
+    const pedData = generatePedData(
+      location.pedestrianIntervals,
+      distanceData[i]
+    )
+
+    const series: SeriesOption = {
+      name: `Pedestrian Interval ${phaseType?.length ? phaseType : ''}`,
+      id: `PI ${location.locationIdentifier} ${phaseType ?? ''}`,
+      type: 'custom',
+      clip: true,
+      data: pedData,
+      encode: {
+        x: [1, 2],
+        y: [3],
+      },
+      z: 6,
+      renderItem: (param, api): CustomSeriesRenderItemReturn => {
+        const x1 = api.value(0)
+        const x2 = api.value(1)
+        const interval = api.value(2)
+        const distance = api.value(3)
+        const { color } = getEventDetails(interval as number)
+        const p1 = api.coord([x1, distance])
+        const p2 = api.coord([x2, distance])
+        return {
+          type: 'rect',
+          shape: {
+            x: p1[0],
+            y: p1[1] + 2.5,
+            width: p2[0] - p1[0],
+            height: 5,
+          },
+          style: {
+            fill: color,
+          },
+        }
+      },
+    }
+
+    seriesOptions.push(series)
+  })
+
+  return seriesOptions
+}
+
+function generatePedData(
+  pedestrianIntervals: PedestrianInterval[],
+  distance: number
+) {
+  return pedestrianIntervals.map((interval, index, array) => {
+    const startCoord = interval.start
+    const endCoord =
+      index < array.length - 1 ? array[index + 1].start : startCoord
+
+    return [startCoord, endCoord, interval.value, distance]
+  })
+}
+
+function getEventDetails(eventValue: number) {
+  for (const group of EVENT_GROUPS) {
+    if (group.codes.includes(eventValue)) {
+      return { name: group.name, color: group.color }
+    }
+  }
+  return { name: 'Unknown Event', color: CycleColor.Default }
+}
+
+function generateTMCEvent(
+  data: RawTimeSpaceHistoricData[],
+  distanceData: number[],
+  phaseType?: string
+) {
+  const seriesOptions: SeriesOption[] = []
+
+  const leftTurnEvents: [string, number][] = []
+  const rightTurnEvents: [string, number][] = []
+
+  data.forEach((location, i) => {
+    if (!location.tmcForPhase) return
+
+    location.tmcForPhase.leftTurnEvents.forEach((lEvent) => {
+      leftTurnEvents.push([lEvent.start, distanceData[i] - 100])
+    })
+
+    location.tmcForPhase.rightTurnEvents.forEach((rEvent) => {
+      rightTurnEvents.push([rEvent.start, distanceData[i] - 100])
+    })
+  })
+
+  seriesOptions.push(
+    {
+      name: `Left Turn ${phaseType}`,
+      type: 'scatter',
+      data: leftTurnEvents,
+      symbol: 'triangle',
+      symbolRotate: 270,
+      symbolSize: 5,
+      z: 10,
+      color: 'black',
+    },
+    {
+      name: `Right Turn ${phaseType}`,
+      type: 'scatter',
+      data: rightTurnEvents,
+      symbol: 'triangle',
+      symbolRotate: 90,
+      symbolSize: 5,
+      z: 10,
+      color: 'black',
+    }
+  )
+
+  return seriesOptions
+}

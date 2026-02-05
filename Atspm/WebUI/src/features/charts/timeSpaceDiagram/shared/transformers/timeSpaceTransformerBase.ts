@@ -68,6 +68,7 @@ export function generateCycles(
           },
           style: {
             fill: getSegmentColor(v1 as number, v2 as number),
+            opacity: 0.9,
           },
         }
       },
