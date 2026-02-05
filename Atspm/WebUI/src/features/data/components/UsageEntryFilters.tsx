@@ -1,3 +1,4 @@
+import { UserDTO } from '@/api/identity/atspmAuthenticationApi.schemas'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import {
@@ -24,17 +25,6 @@ function toDateOrNull(iso?: string): Date | null {
   return Number.isNaN(d.getTime()) ? null : d
 }
 
-export type IdentityUserLite = {
-  firstName?: string | null
-  lastName?: string | null
-  agency?: string | null
-  email?: string | null
-  userName?: string | null
-  userId: string
-  fullName?: string | null
-  roles?: string[] | null
-}
-
 export type UsageEntryFiltersState = {
   fromUtc?: string
   toUtc?: string
@@ -55,7 +45,7 @@ export default function UsageEntryFilters({
   value?: UsageEntryFiltersState
   onChange: (next: UsageEntryFiltersState) => void
   onReset: () => void
-  users?: IdentityUserLite[]
+  users?: UserDTO[]
   usersLoading?: boolean
 }) {
   const value: UsageEntryFiltersState = valueProp ?? {
@@ -81,7 +71,7 @@ export default function UsageEntryFilters({
     return users?.find((u) => u.userId === uid) ?? null
   }, [value.userId, users])
 
-  const userLabel = (u: IdentityUserLite) => {
+  const userLabel = (u: UserDTO) => {
     const name =
       u.fullName?.trim() || `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim()
     const email = u.email || u.userName || ''
@@ -89,70 +79,73 @@ export default function UsageEntryFilters({
     return name || email || u.userId
   }
 
-  const content = (
-    <Stack spacing={2}>
-      <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        sx={{ flexWrap: 'wrap' }}
-      >
-        <FilterAltIcon fontSize="small" />
-        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-          Filters
-        </Typography>
-
-        <Box sx={{ flex: 1 }} />
-
-        <Button size="small" startIcon={<RestartAltIcon />} onClick={onReset}>
-          Reset
-        </Button>
-      </Stack>
-
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        sx={{ flexWrap: 'wrap' }}
-      >
-        <DatePicker
-          label="From"
-          value={toDateOrNull(value.fromUtc)}
-          onChange={(v) => set('fromUtc', toIsoUtcOrUndefined(v))}
-          slotProps={{
-            textField: { size: 'small', sx: { minWidth: 220 } },
-          }}
-        />
-
-        <DatePicker
-          label="To"
-          value={toDateOrNull(value.toUtc)}
-          onChange={(v) => set('toUtc', toIsoUtcOrUndefined(v))}
-          slotProps={{
-            textField: { size: 'small', sx: { minWidth: 220 } },
-          }}
-        />
-
-        <Autocomplete
-          size="small"
-          sx={{ minWidth: 320 }}
-          options={users ?? []}
-          loading={Boolean(usersLoading)}
-          value={selectedUser}
-          onChange={(_, next) => set('userId', next?.userId ?? '')}
-          isOptionEqualToValue={(a, b) => a.userId === b.userId}
-          getOptionLabel={userLabel}
-          renderInput={(params) => (
-            <TextField {...params} label="User" placeholder="All users" />
-          )}
-        />
-      </Stack>
-    </Stack>
-  )
-
   return (
     <Card sx={{ mt: 0, pt: 0 }}>
-      <CardContent>{content}</CardContent>
+      <CardContent>
+        {' '}
+        <Stack spacing={2}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{ flexWrap: 'wrap' }}
+          >
+            <FilterAltIcon fontSize="small" />
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              Filters
+            </Typography>
+
+            <Box sx={{ flex: 1 }} />
+
+            <Button
+              size="small"
+              startIcon={<RestartAltIcon />}
+              onClick={onReset}
+            >
+              Reset
+            </Button>
+          </Stack>
+
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            sx={{ flexWrap: 'wrap' }}
+          >
+            <DatePicker
+              label="From"
+              value={toDateOrNull(value.fromUtc)}
+              onChange={(v) => set('fromUtc', toIsoUtcOrUndefined(v))}
+              slotProps={{
+                textField: { size: 'small', sx: { minWidth: 220 } },
+              }}
+            />
+
+            <DatePicker
+              label="To"
+              value={toDateOrNull(value.toUtc)}
+              onChange={(v) => set('toUtc', toIsoUtcOrUndefined(v))}
+              slotProps={{
+                textField: { size: 'small', sx: { minWidth: 220 } },
+              }}
+            />
+
+            <Autocomplete
+              size="small"
+              sx={{ minWidth: 320 }}
+              options={users ?? []}
+              loading={Boolean(usersLoading)}
+              value={selectedUser}
+              onChange={(_, next) => set('userId', next?.userId ?? '')}
+              isOptionEqualToValue={(a, b) => a.userId === b.userId}
+              getOptionLabel={userLabel}
+              renderInput={(params) => (
+                <TextField {...params} label="User" placeholder="All users" />
+              )}
+            />
+          </Stack>
+        </Stack>
+      </CardContent>
     </Card>
   )
 }

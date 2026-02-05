@@ -1,4 +1,5 @@
 import { UsageEntry } from '@/api/config'
+import { UserDTO } from '@/api/identity/atspmAuthenticationApi.schemas'
 import ReportsApiInsightsCard from '@/features/data/components/ReportApiInsightsCard/ReportApiInsightsCard'
 import UsageEntryFilters, {
   UsageEntryFiltersState,
@@ -9,13 +10,18 @@ import { Card, CardContent, Paper, Stack, Typography } from '@mui/material'
 import * as React from 'react'
 
 interface UsageSummaryTabProps {
-  rows: UsageEntry[]
-  users?: any
+  rows: UsageEntryWithUser[]
+  users?: UserDTO[]
   usersLoading?: boolean
+  usageLoading?: boolean
   filters: UsageEntryFiltersState
   onFiltersChange: (next: UsageEntryFiltersState) => void
   onResetFilters: () => void
   dateRange?: { start: string | undefined; end: string | undefined }
+}
+
+interface UsageEntryWithUser extends UsageEntry {
+  user: string
 }
 
 function StatCard({ label, value }: { label: string; value: React.ReactNode }) {
@@ -40,6 +46,7 @@ export default function UsageSummaryTab({
   onFiltersChange,
   onResetFilters,
   usersLoading,
+  usageLoading,
   dateRange,
 }: UsageSummaryTabProps) {
   const reportRows = React.useMemo(
@@ -52,8 +59,6 @@ export default function UsageSummaryTab({
     [rows]
   )
 
-  const totalReportsGenerated = reportRows.length
-
   const totalDataDownloaded = React.useMemo(() => {
     let total = 0
     for (const r of dataRows) total += r.resultSizeBytes ?? 0
@@ -62,10 +67,10 @@ export default function UsageSummaryTab({
 
   const tableData = React.useMemo(() => {
     return reportRows.map((r) => {
-      const user = users?.find((u: any) => u.userId === r.userId)
-      if (user) (r as any).user = user.userName
+      const user = users?.find((u) => u.userId === r.userId)
+      r.user = user ? user.userName : 'Anonymous'
       return r
-    })
+    }) as UsageEntryWithUser[]
   }, [reportRows, users])
 
   return (
@@ -85,26 +90,25 @@ export default function UsageSummaryTab({
 
         <StatCard
           label="Reports generated"
-          value={totalReportsGenerated.toLocaleString()}
+          value={reportRows.length.toLocaleString()}
         />
 
         <StatCard label="Total data downloaded" value={totalDataDownloaded} />
       </Stack>
 
-      {/* Keep everything else exactly like before */}
       <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
         <ReportsApiInsightsCard
           rows={rows}
           users={users}
-          usersLoading={usersLoading}
           dateRange={dateRange}
+          isLoading={usageLoading}
         />
       </Stack>
 
       <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
         <Card sx={{ width: '100%' }}>
           <CardContent sx={{ p: 0 }}>
-            <UsageTable isLoading={false} rows={tableData} />
+            <UsageTable isLoading={usageLoading} rows={tableData} />
           </CardContent>
         </Card>
       </Stack>

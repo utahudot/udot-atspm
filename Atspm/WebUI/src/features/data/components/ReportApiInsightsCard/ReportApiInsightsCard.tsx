@@ -1,7 +1,7 @@
 import { UsageEntry } from '@/api/config'
 import { formatChartDateTimeRange } from '@/features/charts/utils'
 import { IdentityUser } from '@/features/data/components/ReportApiAgencyCard'
-import InsightsBarChart from '@/features/data/components/ReportApiInsightsCard/InsightsBarChart'
+import InsightsChart from '@/features/data/components/ReportApiInsightsCard/InsightsChart'
 import InsightsHeader, {
   GroupBy,
   Metric,
@@ -45,17 +45,21 @@ function viewTitle(view: ViewKey) {
         : 'Agency'
 }
 
+interface ReportsApiInsightsCardProps {
+  rows: UsageEntry[]
+  users?: any
+  maxBars?: number
+  dateRange?: { start: string | undefined; end: string | undefined }
+  isLoading?: boolean
+}
+
 export default function ReportsApiInsightsCard({
   rows,
   users,
   maxBars = 30,
   dateRange,
-}: {
-  rows: UsageEntry[]
-  users?: any
-  maxBars?: number
-  dateRange?: { start: string | undefined; end: string | undefined }
-}) {
+  isLoading,
+}: ReportsApiInsightsCardProps) {
   const [view, setView] = React.useState<ViewKey>('type')
   const [groupBy, setGroupBy] = React.useState<GroupBy>('day')
   const [sortBy, setSortBy] = React.useState<SortBy>('Amount')
@@ -138,7 +142,9 @@ export default function ReportsApiInsightsCard({
 
       <CardContent sx={{ pt: 1 }}>
         <Box sx={{ height }}>
-          <InsightsBarChart
+          <InsightsChart
+            chartHeight={height}
+            loading={isLoading}
             horizontal={horizontal}
             metric={metric}
             title={fullTitle}

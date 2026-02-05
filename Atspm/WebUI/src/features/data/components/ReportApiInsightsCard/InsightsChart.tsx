@@ -1,38 +1,44 @@
 import ApacheEChart from '@/features/charts/components/apacheEChart'
 import { Color } from '@/features/charts/utils'
 import { formatBytes } from '@/utils/formatting'
-import { Box } from '@mui/material'
+import { Box, Skeleton } from '@mui/material'
 import { memo } from 'react'
 import type { Metric } from './InsightsHeader'
 
 export type ChartItem = { name: string; value: number }
 
-function InsightsBarChart({
-  horizontal,
-  items,
-  title,
-  subtitle,
-  metric,
-}: {
+interface InsightChartProps {
+  chartHeight: number
   horizontal: boolean
   items: ChartItem[]
   title?: string
   subtitle?: string
   metric: Metric
-}) {
+  loading?: boolean
+}
+
+function InsightsChart({
+  chartHeight,
+  horizontal,
+  items,
+  title,
+  subtitle,
+  metric,
+  loading,
+}: InsightChartProps) {
   const isBytes = metric === 'DataDownloaded'
 
   const valueLabel = (n: number) =>
     isBytes ? formatBytes(n) : `${Math.round(n)}`
 
-  const isLoading = items.length === 0
-
-  return (
+  return loading ? (
+    <Skeleton height={chartHeight ?? 400} width={'100%'} />
+  ) : (
     <Box sx={{ height: '100%', width: '100%' }}>
       <ApacheEChart
+        key={items.length}
         id="insights-chart"
         hideInteractionMessage
-        loading={isLoading}
         option={
           horizontal
             ? {
@@ -124,4 +130,4 @@ function InsightsBarChart({
   )
 }
 
-export default memo(InsightsBarChart)
+export default memo(InsightsChart)

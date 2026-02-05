@@ -131,10 +131,10 @@ export default function ApacheEChart({
   }, [option, settings, theme, isActive, yAxisMaxStore])
 
   useEffect(() => {
+    console.log('checking loading state a')
     if (chartInstance.current) {
-      loading
-        ? chartInstance.current.showLoading()
-        : chartInstance.current.hideLoading()
+      console.log('checking loading state')
+      loading ? chartInstance.current.showLoading() : null
     }
   }, [loading])
 

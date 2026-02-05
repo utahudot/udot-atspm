@@ -14,13 +14,12 @@ import {
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
 import React from 'react'
 
-export default function UsageTable({
-  isLoading,
-  rows,
-}: {
+interface UsageTableProps {
   isLoading: boolean
   rows: UsageEntry[]
-}) {
+}
+
+export default function UsageTable({ isLoading, rows }: UsageTableProps) {
   const [active, setActive] = React.useState<UsageEntry | null>(null)
 
   const columns = React.useMemo<GridColDef<UsageEntry>[]>(
@@ -90,9 +89,9 @@ export default function UsageTable({
         rows={rows}
         columns={columns}
         loading={isLoading}
-        paginationMode="server"
         onRowClick={(p) => setActive(p.row)}
         slots={{ toolbar: UsageGridToolbar }}
+        hideFooterSelectedRowCount
         sx={{
           border: 0,
           '& .MuiDataGrid-toolbarContainer': { px: 1 },
