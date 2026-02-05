@@ -15,7 +15,10 @@
 // limitations under the License.
 // #endregion
 import { BaseChartData, ToolType } from '@/features/charts/common/types'
-import { Cycle } from '@/features/charts/timingAndActuation/types'
+import {
+  Cycle,
+  PedestrianInterval,
+} from '@/features/charts/timingAndActuation/types'
 import { GpxPoint } from './gpxFileParser'
 
 // export interface TimeSpaceDetectorEvent {
@@ -100,6 +103,23 @@ export interface RawTimeSpaceHistoricData extends RawTimeSpaceBaseData {
   advanceCountDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
   stopBarPresenceDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
   cycleAllEvents: Cycle[] | null
+  pedestrianIntervals: PedestrianInterval[] | []
+  percentArrivalOnGreen: number
+  tmcForPhase: TmcForPhaseDto
+}
+
+export interface TmcForPhaseDto {
+  leftTurnEvents: TmcEventDto[]
+  rightTurnEvents: TmcEventDto[]
+}
+
+export interface TmcEventDto {
+  start: string
+  value: number
+  isRightTurnEvent: boolean
+  isLeftTurnEvent: boolean
+  laneType: string
+  directionTypes: string
 }
 
 export type TimeSpaceResponseData =

@@ -249,18 +249,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             string phaseType,
             int order)
         {
-            eventCodes.AddRange(timeSpaceDiagramReportService.GetCycleCodes(currentPhase.UseOverlap));
-            var approachEvents = currentControllerEventLogs.GetEventsByEventCodes(
-                parameter.Start.AddMinutes(-15),
-                parameter.End.AddMinutes(15),
-            eventCodes).ToList();
+            //eventCodes.AddRange(timeSpaceDiagramReportService.GetCycleCodes(currentPhase.UseOverlap));
+            //var approachEvents = currentControllerEventLogs.GetEventsByEventCodes(
+            //    parameter.Start.AddMinutes(-15),
+            //    parameter.End.AddMinutes(15),
+            //eventCodes).ToList();
 
             var planEvents = currentControllerEventLogs.GetPlanEvents(parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             var locationPhase = await LocationPhaseService.GetLocationPhaseData(currentPhase, parameter.Start, parameter.End, 0, null, currentControllerEventLogs, planEvents, false);
 
             var viewModel = timeSpaceDiagramReportService.GetChartDataForPhase(parameter,
                 currentPhase,
-                approachEvents,
+                currentControllerEventLogs,
                 programmedCycleLength,
                 programmedSplits,
                 distanceToNextLocation,
@@ -306,7 +306,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                                     d.LaneType == LaneTypes.V)
                         .ToList()
                 })
-                .Where(x => x.Detectors.Any()).FirstOrDefault();
+                .FirstOrDefault(x => x.Detectors.Any());
 
             var leftTurnApproachesWithDetectors = location.Approaches
                 .Where(a => a.DirectionTypeId == leftTurnDirection)
@@ -318,7 +318,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                                     d.LaneType == LaneTypes.V)
                         .ToList()
                 })
-                .Where(x => x.Detectors.Any()).FirstOrDefault();
+                .FirstOrDefault(x => x.Detectors.Any());
 
             //var approachForRightTurn = location.Approaches.FirstOrDefault(a => a.DirectionTypeId == rightTurnDirection);
             //var approachForLeftTurn = location.Approaches.FirstOrDefault(a => a.DirectionTypeId == leftTurnDirection);
@@ -326,8 +326,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             //var rightTurnDetectors = approachForRightTurn.Detectors.Where(d => rightTurnMovementTypes.Contains(d.MovementType) && d.LaneType == LaneTypes.V).ToList();
             //var leftTurnDetectors = approachForLeftTurn.Detectors.Where(d => leftTurnMovementTypes.Contains(d.MovementType) && d.LaneType == LaneTypes.V).ToList();
 
-            var rightTurnTmc = GetTMCEvents(parameter, currentControllerEventLogs, rightTurnApproachesWithDetectors.Detectors, LaneTypes.V, rightTurnDirection, true);
-            var leftTurnTmc = GetTMCEvents(parameter, currentControllerEventLogs, leftTurnApproachesWithDetectors.Detectors, LaneTypes.V, leftTurnDirection, false);
+            var rightTurnTmc = GetTMCEvents(parameter, currentControllerEventLogs, rightTurnApproachesWithDetectors?.Detectors ?? [], LaneTypes.V, rightTurnDirection, true);
+            var leftTurnTmc = GetTMCEvents(parameter, currentControllerEventLogs, leftTurnApproachesWithDetectors?.Detectors ?? [], LaneTypes.V, leftTurnDirection, false);
 
             return new TmcForPhaseDto() { LeftTurnEvents = leftTurnTmc, RightTurnEvents = rightTurnTmc };
         }
