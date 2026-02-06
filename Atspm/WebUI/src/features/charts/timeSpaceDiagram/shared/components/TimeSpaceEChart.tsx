@@ -6,14 +6,20 @@ import { useEffect, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
 import { GpxUploadOptions } from '../types'
 
-export default function TimeSpaceEChart(prop: ApacheEChartsProps) {
-  const { id, option, style, theme, gpxEntries } = prop
+export interface TimeSpaceChartProps extends ApacheEChartsProps {
+  gpxEntries?: GpxUploadOptions[]
+  ignoredLocations?: string[]
+}
+
+export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
+  const { id, option, style, theme, gpxEntries, ignoredLocations } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstanceRef = useRef<ECharts | null>(null)
   const [chart, setChart] = useState<ECharts | null>(null)
 
   useTimeSpaceHandler(chart)
+  // useTimeSpaceIgnoreLocationHandler(chart, ignoredLocations)
   const animator = useGpxAnimationHandler(
     chart,
     gpxEntries as GpxUploadOptions[]
@@ -35,8 +41,11 @@ export default function TimeSpaceEChart(prop: ApacheEChartsProps) {
     const c = init(dom, theme, { useDirtyRect: true })
     chartInstanceRef.current = c
     setChart(c)
-
-    if (option) c.setOption(option, { notMerge: true })
+    if (option)
+      c.setOption(option, {
+        notMerge: true,
+        replaceMerge: ['series', 'xAxis', 'yAxis'],
+      })
 
     const resizeChart = () => c.resize()
     window.addEventListener('resize', resizeChart)

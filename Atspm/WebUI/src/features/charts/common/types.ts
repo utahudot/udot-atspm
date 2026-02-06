@@ -89,7 +89,7 @@ import { RawRampMeteringResponse } from '../rampMetering/types'
 import {
   RawTimeSpaceDiagramResponse,
   TimeSpaceOptions,
-} from '../timeSpaceDiagram/types'
+} from '../timeSpaceDiagram/shared/types'
 
 export interface BaseChartOptions {
   locationIdentifier: string

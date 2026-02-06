@@ -1,5 +1,5 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { useTools } from '@/features/charts/api/getTools'
+import { useTimeSpaceCall } from '@/features/charts/api/getTools'
 import { ToolType } from '@/features/charts/common/types'
 import TimeSpaceChart from '@/features/charts/components/defaultToolResults/DefaultToolResults'
 import { AverageOptionsComponent } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions'
@@ -10,7 +10,6 @@ import {
   TimeSpaceAverageOptions,
   TimeSpaceOptions,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
-import { TransformedToolResponse } from '@/features/charts/types'
 import { useGetRoute } from '@/features/routes/api/getRoutes'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab'
@@ -24,9 +23,9 @@ const TimeSpaceDiagram = () => {
   const searchParams = useSearchParams()
   const appliedUrlRef = useRef(false)
 
-  const [currentTab, setCurrentTab] = useState<ToolType>(
-    ToolType.TimeSpaceHistoric
-  )
+  const [currentTab, setCurrentTab] = useState<
+    ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage
+  >(ToolType.TimeSpaceHistoric)
   const [hasAttemptedGenerate, setHasAttemptedGenerate] = useState(false)
 
   const { data: routesData, isLoading: isLoadingRoutes } = useGetRoute()
@@ -53,7 +52,7 @@ const TimeSpaceDiagram = () => {
     isError,
     isLoading,
     error,
-  } = useTools({
+  } = useTimeSpaceCall({
     toolType: currentTab,
     toolOptions: submittedOptions,
   })
@@ -90,7 +89,10 @@ const TimeSpaceDiagram = () => {
     setShouldFetch(false)
   }, [shouldFetch, refetch])
 
-  const handleChange = (_: React.SyntheticEvent, newValue: ToolType) => {
+  const handleChange = (
+    _: React.SyntheticEvent,
+    newValue: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage
+  ) => {
     setCurrentTab(newValue)
     setHasAttemptedGenerate(false)
   }
@@ -186,11 +188,7 @@ const TimeSpaceDiagram = () => {
               )}
             </Box>
 
-            {chartData && (
-              <TimeSpaceChart
-                chartData={chartData as TransformedToolResponse}
-              />
-            )}
+            {chartData && <TimeSpaceChart timeSpaceData={chartData} />}
           </Box>
         </Box>
       </TabContext>

@@ -38,7 +38,7 @@ import {
   RawTimeSpaceAverageData,
   RawTimeSpaceDiagramResponse,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
-import { TransformedToolResponse } from '@/features/charts/types'
+import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
@@ -53,15 +53,13 @@ import {
 
 export default function transformTimeSpaceAverageData(
   response: RawTimeSpaceDiagramResponse
-): TransformedToolResponse {
-  const chart = {
+): TransformedTimeSpaceResponse {
+  const data = {
     chart: transformData(response.data as RawTimeSpaceAverageData[]),
   }
   return {
     type: ToolType.TimeSpaceHistoric,
-    data: {
-      charts: [chart],
-    },
+    data,
   }
 }
 

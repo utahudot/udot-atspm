@@ -207,7 +207,7 @@ function getCycleEvents(
   data: Cycle[] | null,
   distanceData: number
 ): [string, number, number][] {
-  if (data === null) return
+  if (!data) return
 
   return data.map((e) => [e.start, distanceData, e.value])
 }
@@ -248,6 +248,7 @@ export function generateGreenEventLines(
   const seriesOptions: SeriesOption[] = []
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
+    if (!location.greenTimeEvents) continue
     const dataPoints = getGreenEventsDataPoints(
       location.greenTimeEvents,
       distanceData[i],
@@ -266,20 +267,20 @@ export function generateGreenEventLines(
           return
         }
         const distanceToNext = isPrimary
-          ? location.distanceToNextLocation
-          : -location.distanceToNextLocation
+          ? location.calculatedDistanceToNext
+          : -location.calculatedDistanceToNext
 
         const nextIndex = i + 1
         const [x1, y1] = [api.value(0), api.value(1)]
 
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
         const currPointFinalX = getArrivalTime(
-          location.distanceToNextLocation,
+          location.calculatedDistanceToNext,
           location.speed,
           x1 as string
         )
         const nextPointFinalX = getArrivalTime(
-          location.distanceToNextLocation,
+          location.calculatedDistanceToNext,
           location.speed,
           x2 as string
         )

@@ -88,7 +88,12 @@ export interface RawTimeSpaceBaseData extends BaseChartData {
   phaseType: 'Primary' | 'Opposing'
 }
 
-export interface RawTimeSpaceAverageData extends RawTimeSpaceBaseData {
+export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
+  calculatedDistanceToNext: number
+  calculatedDistanceToPrevious: number
+}
+
+export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {
   offset: number
   cycleLength: number
   programmedSplit: number
@@ -97,7 +102,7 @@ export interface RawTimeSpaceAverageData extends RawTimeSpaceBaseData {
   cycleAllEvents: Cycle[] | null
 }
 
-export interface RawTimeSpaceHistoricData extends RawTimeSpaceBaseData {
+export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   greenTimeEvents: TimeSpaceDetectorEvent[] | []
   laneByLaneCountDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
   advanceCountDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
