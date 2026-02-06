@@ -18,9 +18,11 @@ import { reportsAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { dateToTimestamp } from '@/utils/dateTime'
 import { useQuery } from 'react-query'
-import { RawToolResponse, ToolOptions, ToolType } from '../common/types'
-import { TransformedToolResponse } from '../types'
-import { transformToolData } from './transformData'
+import { ToolOptions, ToolType } from '../common/types'
+import {
+  RawTimeSpaceDiagramResponse,
+  TimeSpaceResponseData,
+} from '../timeSpaceDiagram/shared/types'
 
 export const toolTypeApiMap: Record<ToolType, string> = {
   [ToolType.TimeSpaceHistoric]: '/TimeSpaceDiagram/GetReportData',
@@ -36,7 +38,7 @@ type BaseOptions = {
 }
 
 type UseToolsOptions = BaseOptions & {
-  toolType: ToolType
+  toolType: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage
   toolOptions: ToolOptions
 }
 
@@ -63,9 +65,9 @@ export const mapStringBooleansToBoolean = (obj: ToolOptions) => {
 }
 
 export const getTools = async (
-  type: ToolType,
+  type: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage,
   options: ToolOptions
-): Promise<TransformedToolResponse> => {
+): Promise<RawTimeSpaceDiagramResponse> => {
   const endpoint = toolTypeApiMap[type]
 
   const transformedOptions = mapStringBooleansToBoolean(options)
@@ -75,15 +77,18 @@ export const getTools = async (
     transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)
   }
 
-  const response = await reportsAxios.post(endpoint, transformedOptions)
+  const response = (await reportsAxios.post(
+    endpoint,
+    transformedOptions
+  )) as TimeSpaceResponseData
 
-  return transformToolData({
-    type: type,
+  return {
+    type,
     data: response,
-  } as unknown as RawToolResponse)
+  }
 }
 
-export const useTools = ({
+export const useTimeSpaceCall = ({
   toolType,
   toolOptions,
   config,

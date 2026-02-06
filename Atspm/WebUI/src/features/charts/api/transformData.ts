@@ -21,7 +21,6 @@ import transformArrivalsOnRedData from '@/features/charts/arrivalsOnRed/arrivals
 import {
   ChartType,
   RawChartResponse,
-  RawToolResponse,
   ToolType,
 } from '@/features/charts/common/types'
 import transformGreenTimeUtilizationData from '@/features/charts/greenTimeUtilization/greenTimeUtilization.transformer'
@@ -40,10 +39,11 @@ import transformTimingAndActuationData from '@/features/charts/timingAndActuatio
 import transformTurningMovementCountsData from '@/features/charts/turningMovementCounts/turningMovementCounts.transformer'
 import {
   TransformedChartResponse,
-  TransformedToolResponse,
+  TransformedTimeSpaceResponse,
 } from '@/features/charts/types'
 import transformWaitTimeData from '@/features/charts/waitTime/waitTime.transformer'
 import transformYellowAndRedActuationsData from '@/features/charts/yellowAndRedActuations/yellowAndRedActuations.transformer'
+import { RawTimeSpaceDiagramResponse } from '../timeSpaceDiagram/shared/types'
 
 export const transformChartData = (
   response: RawChartResponse
@@ -90,9 +90,9 @@ export const transformChartData = (
   }
 }
 
-export const transformToolData = (
-  response: RawToolResponse
-): TransformedToolResponse => {
+export const transformTimeSpaceData = (
+  response: RawTimeSpaceDiagramResponse
+): TransformedTimeSpaceResponse => {
   switch (response.type) {
     case ToolType.TimeSpaceHistoric:
       return transformTimeSpaceHistoricData(response)

@@ -48,6 +48,11 @@ export interface TransformedToolResponse {
   }
 }
 
+export interface TransformedTimeSpaceResponse {
+  type: ToolType
+  data: StandardChart
+}
+
 export interface TransformedApproachVolumeResponse {
   type: ChartType.ApproachVolume
   data: {

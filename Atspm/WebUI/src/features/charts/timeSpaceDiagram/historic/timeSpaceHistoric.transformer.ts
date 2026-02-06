@@ -34,7 +34,7 @@ import {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
-import { TransformedToolResponse } from '@/features/charts/types'
+import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
   formatChartDateTimeRange,
   SolidLineSeriesSymbol,
@@ -55,15 +55,13 @@ import { PedestrianInterval } from '../../timingAndActuation/types'
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
-): TransformedToolResponse {
-  const chart = {
+): TransformedTimeSpaceResponse {
+  const data = {
     chart: transformData(response.data as RawTimeSpaceHistoricData[]),
   }
   return {
     type: ToolType.TimeSpaceHistoric,
-    data: {
-      charts: [chart],
-    },
+    data,
   }
 }
 
@@ -453,6 +451,7 @@ function generateLaneByLaneCountEventLines(
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
+    if (!location.laneByLaneCountDetectors) return
     const series: SeriesOption = {
       name: `Lane by Lane Count ${phaseType?.length && phaseType}`,
       id: `LLC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
@@ -466,7 +465,7 @@ function generateLaneByLaneCountEventLines(
       data: location.laneByLaneCountDetectors.flatMap((events) => {
         const initialX = events.detectorOn
         const finalX = getArrivalTime(
-          location.distanceToNextLocation,
+          location.calculatedDistanceToNext,
           location.speed,
           initialX
         )
@@ -509,39 +508,39 @@ function generateAdvanceCountEventLines(
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
-    if (location.advanceCountDetectors.length) {
-      const series: SeriesOption = {
-        name: `Advance Count ${phaseType?.length && phaseType}`,
-        id: `AC ${i !== 0 ? data[i - 1].locationIdentifier : location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
-        type: 'line',
-        symbol: 'none',
-        lineStyle: {
-          width: 2,
-          color,
-          opacity,
-        },
-        data: location.advanceCountDetectors.flatMap((events) => {
-          const finalX = getArrivalTime(
-            events.distanceToStopBar,
-            location.speed,
-            events.detectorOn
-          )
+    if (i === 0) return
+    if (!location.advanceCountDetectors) return
+    const series: SeriesOption = {
+      name: `Advance Count ${phaseType?.length && phaseType}`,
+      id: `AC ${i !== 0 ? data[i - 1].locationIdentifier : location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      type: 'line',
+      symbol: 'none',
+      lineStyle: {
+        width: 2,
+        color,
+        opacity,
+      },
+      data: location.advanceCountDetectors.flatMap((events) => {
+        const finalX = getArrivalTime(
+          events.distanceToStopBar,
+          location.speed,
+          events.detectorOn
+        )
 
-          const initialX = getArrivalTime(
-            -location.distanceToPreviousLocation,
-            location.speed,
-            finalX
-          )
-          const values = [
-            [initialX, distanceData[i - 1]],
-            [finalX, distanceData[i]],
-            null,
-          ]
-          return values
-        }),
-      }
-      seriesOptions.push(series)
+        const initialX = getArrivalTime(
+          -location.calculatedDistanceToPrevious,
+          location.speed,
+          finalX
+        )
+        const values = [
+          [initialX, distanceData[i - 1]],
+          [finalX, distanceData[i]],
+          null,
+        ]
+        return values
+      }),
     }
+    seriesOptions.push(series)
   })
   return seriesOptions
 }
@@ -557,6 +556,7 @@ function generateStopBarPresenceEventLines(
 
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
+    if (!location.stopBarPresenceDetectors) continue
     const dataPoints = getStopBarPresenceDataPoints(location, distanceData[i])
 
     const seriesOption: SeriesOption = {
@@ -573,18 +573,18 @@ function generateStopBarPresenceEventLines(
         }
         const nextIndex = i + 1
         const distanceToNext = isPrimary
-          ? location.distanceToNextLocation
-          : -location.distanceToNextLocation
+          ? location.calculatedDistanceToNext
+          : -location.calculatedDistanceToNext
         const [x1, y1] = [api.value(0), api.value(1)]
 
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
         const currPointFinalX = getArrivalTime(
-          location.distanceToNextLocation,
+          location.calculatedDistanceToNext,
           location.speed,
           x1 as string
         )
         const nextPointFinalX = getArrivalTime(
-          location.distanceToNextLocation,
+          location.calculatedDistanceToNext,
           location.speed,
           x2 as string
         )
@@ -713,39 +713,60 @@ function generateTMCEvent(
 ) {
   const seriesOptions: SeriesOption[] = []
 
-  const leftTurnEvents: [string, number][] = []
-  const rightTurnEvents: [string, number][] = []
+  const leftTurnEvents: ((string | number)[] | null)[] = []
+  const rightTurnEvents: ((string | number)[] | null)[] = []
 
   data.forEach((location, i) => {
     if (!location.tmcForPhase) return
-
-    location.tmcForPhase.leftTurnEvents.forEach((lEvent) => {
-      leftTurnEvents.push([lEvent.start, distanceData[i] - 100])
+    const leftTurns = location.tmcForPhase.leftTurnEvents.flatMap((lEvent) => {
+      const initialX = lEvent.start
+      const finalX = getArrivalTime(
+        location.calculatedDistanceToNext,
+        location.speed,
+        initialX
+      )
+      const values = [
+        [initialX, distanceData[i]],
+        [finalX, distanceData[i + 1]],
+        null,
+      ]
+      return values
     })
+    leftTurnEvents.push(...leftTurns)
 
-    location.tmcForPhase.rightTurnEvents.forEach((rEvent) => {
-      rightTurnEvents.push([rEvent.start, distanceData[i] - 100])
-    })
+    const rightTurns = location.tmcForPhase.rightTurnEvents.flatMap(
+      (rEvent) => {
+        const initialX = rEvent.start
+        const finalX = getArrivalTime(
+          location.calculatedDistanceToNext,
+          location.speed,
+          initialX
+        )
+        const values = [
+          [initialX, distanceData[i]],
+          [finalX, distanceData[i + 1]],
+          null,
+        ]
+        return values
+      }
+    )
+    rightTurnEvents.push(...rightTurns)
   })
 
   seriesOptions.push(
     {
       name: `Left Turn ${phaseType}`,
-      type: 'scatter',
+      type: 'line',
       data: leftTurnEvents,
-      symbol: 'triangle',
-      symbolRotate: 270,
-      symbolSize: 5,
+      symbol: 'none',
       z: 10,
       color: 'black',
     },
     {
       name: `Right Turn ${phaseType}`,
-      type: 'scatter',
+      type: 'line',
       data: rightTurnEvents,
-      symbol: 'triangle',
-      symbolRotate: 90,
-      symbolSize: 5,
+      symbol: 'none',
       z: 10,
       color: 'black',
     }
