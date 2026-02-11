@@ -1313,6 +1313,50 @@ export interface TurningMovementCountsOptions {
   readonly metricTypeId?: number;
 }
 
+export interface UsageEntry {
+  id?: number;
+  /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
+  /** @nullable */
+  apiName?: string | null;
+  timestamp?: string;
+  /** @nullable */
+  traceId?: string | null;
+  /** @nullable */
+  connectionId?: string | null;
+  /** @nullable */
+  remoteIp?: string | null;
+  /** @nullable */
+  userAgent?: string | null;
+  /** @nullable */
+  userId?: string | null;
+  /** @nullable */
+  route?: string | null;
+  /** @nullable */
+  queryString?: string | null;
+  /** @nullable */
+  method?: string | null;
+  statusCode?: number;
+  durationMs?: number;
+  /** @nullable */
+  controller?: string | null;
+  /** @nullable */
+  action?: string | null;
+  /** @nullable */
+  resultCount?: number | null;
+  /** @nullable */
+  resultSizeBytes?: number | null;
+  success?: boolean;
+  /** @nullable */
+  errorMessage?: string | null;
+}
+
 export interface UserArea {
   /** @nullable */
   userId?: string | null;
@@ -1332,30 +1376,6 @@ export interface UserRegion {
   userId?: string | null;
   regionId?: number;
   region?: Region;
-}
-
-export interface VersionHistory {
-  /** @nullable */
-  name?: string | null;
-  /** @nullable */
-  notes?: string | null;
-  date?: string;
-  /** @nullable */
-  version?: string | null;
-  /** @nullable */
-  parentId?: number | null;
-  id?: number;
-  /** @nullable */
-  created?: string | null;
-  /** @nullable */
-  modified?: string | null;
-  /** @nullable */
-  createdBy?: string | null;
-  /** @nullable */
-  modifiedBy?: string | null;
-  parent?: VersionHistory;
-  /** @nullable */
-  children?: VersionHistory[] | null;
 }
 
 export interface VolumeOptions {
@@ -2882,7 +2902,7 @@ select?: string;
 expand?: string;
 };
 
-export type GetVersionHistoryParams = {
+export type GetUsageEntryParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -2892,12 +2912,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type PostVersionHistoryParams = {
+export type PostUsageEntryParams = {
 select?: string;
 expand?: string;
 };
 
-export type GetVersionHistoryCountParams = {
+export type GetUsageEntryCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -2907,17 +2927,17 @@ skip?: number;
 count?: boolean;
 };
 
-export type GetVersionHistoryFromKeyParams = {
+export type GetUsageEntryFromKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type PutVersionHistoryFromKeyParams = {
+export type PutUsageEntryFromKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type PatchVersionHistoryFromKeyParams = {
+export type PatchUsageEntryFromKeyParams = {
 select?: string;
 expand?: string;
 };
