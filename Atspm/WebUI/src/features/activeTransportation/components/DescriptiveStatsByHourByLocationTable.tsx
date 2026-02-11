@@ -55,7 +55,7 @@ const DescriptiveStatsByHourByLocationTable = ({
           <thead>
             <tr>
               <th style={th}>Signal ID</th>
-              <th style={th}>Count</th>
+              <th style={th}>Total Sum</th>
               <th style={th}>Mean</th>
               <th style={th}>Std Dev</th>
               <th style={th}>Min</th>

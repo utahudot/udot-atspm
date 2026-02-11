@@ -27,7 +27,6 @@ const activeTransportationSchema = z.object({
       locationIdentifier: z.string(),
     })
   ),
-  daysOfWeek: z.array(z.number()),
   timeUnit: z.number(),
   startDate: z.date(),
   endDate: z.date(),
@@ -54,7 +53,6 @@ const ActiveTransportation = () => {
     resolver: zodResolver(activeTransportationSchema),
     defaultValues: {
       locations: [],
-      daysOfWeek: [0],
       timeUnit: 0,
       startDate: startOfDay(subYears(new Date(), 1)),
       endDate: startOfDay(new Date()),
@@ -67,7 +65,6 @@ const ActiveTransportation = () => {
   const [data, setData] = useState<PedatLocationData[] | null>(null)
 
   const locations = watch('locations')
-  const daysOfWeek = watch('daysOfWeek')
   const timeUnit = watch('timeUnit')
   const startDate = watch('startDate')
   const endDate = watch('endDate')
@@ -75,7 +72,7 @@ const ActiveTransportation = () => {
 
   useEffect(() => {
     setData(null)
-  }, [locations, daysOfWeek, timeUnit, startDate, endDate, phase])
+  }, [locations, timeUnit, startDate, endDate, phase])
 
   function renderErrorAlert() {
     if (errorState.type === 'NO_LOCATIONS') {
@@ -198,13 +195,11 @@ const ActiveTransportation = () => {
       <ActiveTransportationOptions
         errorState={errorState}
         locations={locations}
-        daysOfWeek={daysOfWeek}
         timeUnit={timeUnit}
         startDate={startDate}
         endDate={endDate}
         phase={phase}
         setLocations={setLocations}
-        setDaysOfWeek={(days) => setValue('daysOfWeek', days)}
         setTimeUnit={(unit) => setValue('timeUnit', unit)}
         setStartDate={(date) => setValue('startDate', date)}
         setEndDate={(date) => setValue('endDate', date)}

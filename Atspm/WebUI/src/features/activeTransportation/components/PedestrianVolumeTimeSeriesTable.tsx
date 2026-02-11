@@ -67,7 +67,7 @@ const PedestrianVolumeTimeSeriesTable = ({
               {phase && phase !== 'All' && <th style={thStyle}>Phase</th>}
               <th style={thStyle}>Address</th>
               <th style={thStyle}>Timestamp</th>
-              <th style={thStyle}>Count</th>
+              <th style={thStyle}>Pedestrians</th>
               <th style={thStyle}>City</th>
               <th style={thStyle}>Latitude</th>
               <th style={thStyle}>Longitude</th>

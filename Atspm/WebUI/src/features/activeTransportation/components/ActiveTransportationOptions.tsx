@@ -3,7 +3,6 @@ import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/Multip
 import SelectDateTime from '@/components/selectTimeSpan'
 import { StyledPaper } from '@/components/StyledPaper'
 import LocationsDisplay from '@/features/activeTransportation/components/LocationsDisplay'
-import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
 import { ATErrorState } from '@/pages/reports/active-transportation'
 import { DropResult } from '@hello-pangea/dnd'
 import {
@@ -19,13 +18,11 @@ import {
 interface ActiveTransportationOptionsProps {
   errorState: ATErrorState
   locations: Location[]
-  daysOfWeek: number[]
   timeUnit: string
   startDate: Date
   endDate: Date
   phase?: number | ''
   setLocations: (locations: Location[]) => void
-  setDaysOfWeek: (days: number[]) => void
   setTimeUnit: (unit: string) => void
   setStartDate: (date: Date) => void
   setEndDate: (date: Date) => void
@@ -35,25 +32,13 @@ interface ActiveTransportationOptionsProps {
   onUpdateLocation: (updatedLocation: Location) => void
 }
 
-const daysOfWeekList = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-]
-
 export const ActiveTransportationOptions = ({
   locations,
-  daysOfWeek,
   timeUnit,
   startDate,
   endDate,
   phase,
   setLocations,
-  setDaysOfWeek,
   setTimeUnit,
   setStartDate,
   setEndDate,
@@ -112,15 +97,6 @@ export const ActiveTransportationOptions = ({
             </Select>
           </FormControl>
         </StyledPaper>
-
-        <Paper sx={{ maxWidth: '390px' }}>
-          <MultiSelectCheckbox
-            itemList={daysOfWeekList}
-            selectedItems={daysOfWeek}
-            setSelectedItems={setDaysOfWeek}
-            header="Days"
-          />
-        </Paper>
       </Box>
     </Box>
   )
