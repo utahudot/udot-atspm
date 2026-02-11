@@ -1,7 +1,7 @@
 import ApacheEChart from '@/features/charts/components/apacheEChart'
 import { Color } from '@/features/charts/utils'
 import { formatBytes } from '@/utils/formatting'
-import { Box, Skeleton } from '@mui/material'
+import { Box, Skeleton, Typography } from '@mui/material'
 import { memo } from 'react'
 import type { Metric } from './InsightsHeader'
 
@@ -30,6 +30,22 @@ function InsightsChart({
 
   const valueLabel = (n: number) =>
     isBytes ? formatBytes(n) : `${Math.round(n)}`
+
+  if (loading)
+    return (
+      <Box>
+        <Skeleton height={chartHeight ?? 400} width={'100%'} />
+      </Box>
+    )
+
+  if (items.length === 0)
+    return (
+      <Box>
+        <Typography variant="h6" color="text.secondary">
+          No data available for the selected metric and date range.
+        </Typography>
+      </Box>
+    )
 
   return loading ? (
     <Skeleton height={chartHeight ?? 400} width={'100%'} />

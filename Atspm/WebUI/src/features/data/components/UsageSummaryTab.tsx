@@ -8,6 +8,7 @@ import UsageTable from '@/features/data/components/UsageTable'
 import { formatBytes } from '@/utils/formatting'
 import { Card, CardContent, Paper, Stack, Typography } from '@mui/material'
 import * as React from 'react'
+import { memo } from 'react'
 
 interface UsageSummaryTabProps {
   rows: UsageEntryWithUser[]
@@ -39,7 +40,7 @@ function StatCard({ label, value }: { label: string; value: React.ReactNode }) {
   )
 }
 
-export default function UsageSummaryTab({
+function UsageSummaryTab({
   rows,
   users,
   filters,
@@ -115,3 +116,5 @@ export default function UsageSummaryTab({
     </Stack>
   )
 }
+
+export default memo(UsageSummaryTab)

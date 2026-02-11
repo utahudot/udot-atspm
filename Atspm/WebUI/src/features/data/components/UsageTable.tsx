@@ -1,5 +1,4 @@
 import { UsageEntry } from '@/api/config'
-import UsageEntryDrawer from '@/features/data/components/UsageEntryDrawer'
 import { formatMs } from '@/utils/formatting'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
@@ -20,8 +19,6 @@ interface UsageTableProps {
 }
 
 export default function UsageTable({ isLoading, rows }: UsageTableProps) {
-  const [active, setActive] = React.useState<UsageEntry | null>(null)
-
   const columns = React.useMemo<GridColDef<UsageEntry>[]>(
     () => [
       {
@@ -89,8 +86,8 @@ export default function UsageTable({ isLoading, rows }: UsageTableProps) {
         rows={rows}
         columns={columns}
         loading={isLoading}
-        onRowClick={(p) => setActive(p.row)}
         slots={{ toolbar: UsageGridToolbar }}
+        disableRowSelectionOnClick
         hideFooterSelectedRowCount
         sx={{
           border: 0,
@@ -98,7 +95,6 @@ export default function UsageTable({ isLoading, rows }: UsageTableProps) {
           '@media print': { zoom: 0.65 },
         }}
       />
-      <UsageEntryDrawer active={active} setActive={setActive} />
     </Box>
   )
 }
