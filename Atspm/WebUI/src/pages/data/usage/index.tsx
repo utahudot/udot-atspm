@@ -28,8 +28,9 @@ export default function UsageEntriesPage() {
 
   const usageParams = useMemo(() => buildUsageEntryParams(filters), [filters])
 
-  const { data: usageData, isLoading: usageLoading } =
+  const { data: usageData, isFetching: usageLoading } =
     useGetUsageEntry(usageParams)
+
   const { data: userData, isLoading: usersLoading } = useGetAllUsers()
 
   const rows = useMemo(

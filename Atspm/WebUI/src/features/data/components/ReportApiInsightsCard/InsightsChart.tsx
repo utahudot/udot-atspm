@@ -52,7 +52,6 @@ function InsightsChart({
   ) : (
     <Box sx={{ height: '100%', width: '100%' }}>
       <ApacheEChart
-        key={items.length}
         id="insights-chart"
         hideInteractionMessage
         option={

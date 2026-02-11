@@ -1,6 +1,6 @@
 import { UsageEntry } from '@/api/config'
+import { UserDTO } from '@/api/identity/atspmAuthenticationApi.schemas'
 import { formatChartDateTimeRange } from '@/features/charts/utils'
-import { IdentityUser } from '@/features/data/components/ReportApiAgencyCard'
 import InsightsChart from '@/features/data/components/ReportApiInsightsCard/InsightsChart'
 import InsightsHeader, {
   GroupBy,
@@ -17,6 +17,7 @@ import {
 } from '@/features/data/components/ReportApiInsightsCard/utils'
 import { Box, Card, CardContent } from '@mui/material'
 import * as React from 'react'
+import { memo } from 'react'
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
@@ -47,13 +48,13 @@ function viewTitle(view: ViewKey) {
 
 interface ReportsApiInsightsCardProps {
   rows: UsageEntry[]
-  users?: any
+  users?: UserDTO[]
   maxBars?: number
   dateRange?: { start: string | undefined; end: string | undefined }
   isLoading?: boolean
 }
 
-export default function ReportsApiInsightsCard({
+function ReportsApiInsightsCard({
   rows,
   users,
   maxBars = 30,
@@ -68,7 +69,7 @@ export default function ReportsApiInsightsCard({
   const usersList = React.useMemo(() => normalizeUsers(users), [users])
 
   const userById = React.useMemo(() => {
-    const m = new Map<string, IdentityUser>()
+    const m = new Map<string, UserDTO>()
     for (const u of usersList) {
       if (u?.userId) m.set(u.userId, u)
     }
@@ -156,3 +157,5 @@ export default function ReportsApiInsightsCard({
     </Card>
   )
 }
+
+export default memo(ReportsApiInsightsCard)
