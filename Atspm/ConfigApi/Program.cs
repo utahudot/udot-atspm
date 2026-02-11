@@ -120,7 +120,6 @@ app.UseAuthorization();
 //Cross-cutting
 app.UseResponseCompression();
 app.UseHttpLogging();
-//app.UseMiddleware<DownloadLoggingMiddleware>();
 
 //Swagger
 app.UseConfiguredSwaggerUI();
@@ -165,4 +164,6 @@ public static class Extensions
         return services;
     }
 }
+
+
 
