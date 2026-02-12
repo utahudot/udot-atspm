@@ -128,7 +128,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                 errors.AddRange(pmErrors);
 
-                OtherErrorThings(scanDateForErrors, emailOptions, pmErrors, recordsFromTheDayBefore,
+                GetErrorsWithHistoricalRecuringData(scanDateForErrors, emailOptions, pmErrors, recordsFromTheDayBefore,
                     newIssues, dailyRecurringIssues, recurringIssues);
             }
 
@@ -148,7 +148,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                 errors.AddRange(amErrors);
 
-                OtherErrorThings(scanDateForErrors, emailOptions, amErrors, recordsFromTheDayBefore,
+                GetErrorsWithHistoricalRecuringData(scanDateForErrors, emailOptions, amErrors, recordsFromTheDayBefore,
                     newIssues, dailyRecurringIssues, recurringIssues);
             }
 
@@ -168,7 +168,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                 errors.AddRange(rampErrors);
 
-                OtherErrorThings(scanDateForErrors, emailOptions, rampErrors, recordsFromTheDayBefore,
+                GetErrorsWithHistoricalRecuringData(scanDateForErrors, emailOptions, rampErrors, recordsFromTheDayBefore,
                     newIssues, dailyRecurringIssues, recurringIssues);
             }
 
@@ -190,7 +190,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     recordsFromTheDayBefore);
         }
 
-        private void OtherErrorThings(DateTime scanDate, WatchdogEmailOptions emailOptions, List<WatchDogLogEvent> errors, List<WatchDogLogEvent> recordsFromTheDayBefore, List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
+        private void GetErrorsWithHistoricalRecuringData(DateTime scanDate, WatchdogEmailOptions emailOptions, List<WatchDogLogEvent> errors, List<WatchDogLogEvent> recordsFromTheDayBefore, List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
         {
             var filteredErrors = ignoreEventService.GetFilteredWatchDogEventsForEmail(errors, scanDate);
             var (newErrorsScanDate, dailyRecurringErrorsScanDate, recurringErrorsScanDate) = segmentedErrorsService.GetSegmentedErrors(filteredErrors, emailOptions.WeekdayOnly, emailOptions.Sort, scanDate);
