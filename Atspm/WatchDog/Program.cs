@@ -17,7 +17,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -46,12 +45,12 @@ cmdBuilder.UseHost(hostBuilder =>
     {
         l.AddGoogle(h);
     })
-    .ConfigureAppConfiguration((h, c) =>
-    {
-        c.AddUserSecrets<Program>(optional: true); // Load secrets first
-        c.AddCommandLine(args);                    // Override with command-line args
+    //.ConfigureAppConfiguration((h, c) =>
+    //{
+    //    c.AddUserSecrets<Program>(optional: true); // Load secrets first
+    //    c.AddCommandLine(args);                    // Override with command-line args
 
-    })
+    //})
     .ConfigureServices((h, s) =>
     {
         s.AddEmailServices(h);
