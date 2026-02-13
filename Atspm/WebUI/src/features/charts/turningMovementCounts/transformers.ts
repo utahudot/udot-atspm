@@ -34,7 +34,6 @@ import { ChartType } from '@/features/charts/common/types'
 import {
   ColumnGroup,
   Labels,
-  TableRow,
   TransformedChartResponse,
 } from '@/features/charts/types'
 import {
@@ -52,12 +51,9 @@ import {
 export default function transformTurningMovementCountsData(
   response: RawTurningMovementCountsResponse
 ): TransformedChartResponse {
-  const charts = response.data.charts.map((data) => {
-    const chartOptions = transformData(data)
-    return {
-      chart: chartOptions,
-    }
-  })
+  const charts = response.data.charts.map((data) => ({
+    chart: transformData(data),
+  }))
 
   charts.sort((a, b) => {
     const directionOrder = ['North', 'South', 'East', 'West']
@@ -88,7 +84,6 @@ export default function transformTurningMovementCountsData(
     directions
   )
   const labels = buildLabels(directions, movementTypes)
-  const table = buildMatrix(response.data.table, directions, movementTypes)
 
   const peakRow = buildPeakHourRow(
     response.data.table,
@@ -101,7 +96,7 @@ export default function transformTurningMovementCountsData(
     type: ChartType.TurningMovementCounts,
     data: {
       labels,
-      table,
+      table: response.data.table,
       charts,
       peakHour: response.data.peakHour
         ? {
@@ -282,60 +277,6 @@ function buildLabels(
 
   const flatColumns = columnGroups.flatMap((g) => g.columns)
   return { columnGroups, flatColumns }
-}
-
-function buildMatrix(
-  table: RawTurningMovementCountsResponse['data']['table'],
-  directions: string[],
-  movementTypes: Record<string, string[]>
-): TableRow[] {
-  const timestamps = Array.from(
-    new Set(table.flatMap((d) => d.volumes.map((v) => v.timestamp)))
-  ).sort((a, b) => a.localeCompare(b))
-
-  const valueAt = (dir: string, mt: string, ts: string) =>
-    table
-      .filter((r) => r.direction === dir && r.movementType === mt)
-      .flatMap((r) => r.volumes)
-      .find((v) => v.timestamp === ts)?.value ?? 0
-
-  const rows: TableRow[] = timestamps.map((ts) => {
-    const row: TableRow = [formatTime(ts)]
-    let binTotal = 0
-
-    directions.forEach((dir) => {
-      let dirSum = 0
-      movementTypes[dir].forEach((mt) => {
-        const v = valueAt(dir, mt, ts)
-        row.push(v)
-        dirSum += v
-      })
-      row.push(dirSum)
-      binTotal += dirSum
-    })
-
-    row.push(binTotal)
-    return row
-  })
-
-  /* footer (grand totals) */
-  const footer: TableRow = ['Total']
-  let grand = 0
-
-  directions.forEach((dir) => {
-    let dirSum = 0
-    movementTypes[dir].forEach((mt) => {
-      const tot = timestamps.reduce((s, ts) => s + valueAt(dir, mt, ts), 0)
-      footer.push(tot)
-      dirSum += tot
-    })
-    footer.push(dirSum)
-    grand += dirSum
-  })
-
-  footer.push(grand)
-  rows.push(footer)
-  return rows
 }
 
 function buildPeakHourRow(
