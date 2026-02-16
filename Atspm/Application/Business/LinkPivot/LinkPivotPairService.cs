@@ -38,43 +38,40 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             Approach downSignalApproach,
             LinkPivotOptions options,
             List<DateOnly> daysToInclude,
-            int linkNumber,
-            int cycleLength)
+            int linkNumber)
         {
             LinkPivotPair linkPivotPair = new LinkPivotPair();
 
             linkPivotPair.UpstreamLocationApproach = signalApproach;
             linkPivotPair.DownstreamLocationApproach = downSignalApproach;
-            linkPivotPair.StartDate = DateOnly.FromDateTime(options.Start);
+            linkPivotPair.StartDate = options.StartDate;
             linkPivotPair.LinkNumber = linkNumber;
             if (IsApproachNull(linkPivotPair))
             {
                 throw new Exception("Route approaches are misconfigured");
             }
 
-
-            double bias = options.Bias ?? 0;
             string biasDirection = options.BiasDirection ?? "Primary";
 
-            await SetPcds(TimeOnly.FromDateTime(options.Start), TimeOnly.FromDateTime(options.End), daysToInclude, cycleLength, linkPivotPair);
+            await SetPcds(options.StartTime, options.EndTime, daysToInclude, options.CycleLength, linkPivotPair);
             //Check to see if both directions have detection if so analyze both
             if (linkPivotPair.UpstreamPcd.Count > 0 && linkPivotPair.DownstreamPcd.Count > 0)
-                if (bias.AreNotEqual(0d))
-                    GetBiasedLinkPivot(cycleLength, bias, biasDirection, daysToInclude, linkPivotPair);
+                if (options.Bias.AreNotEqual(0d))
+                    GetBiasedLinkPivot(options.CycleLength, options.Bias, biasDirection, daysToInclude, linkPivotPair);
                 //If no bias is provided
                 else
-                    GetUnbiasedLinkPivot(cycleLength, daysToInclude, linkPivotPair);
+                    GetUnbiasedLinkPivot(options.CycleLength, daysToInclude, linkPivotPair);
             //If only upstream has detection do analysis for upstream only
             else if (linkPivotPair.DownstreamPcd.Count == 0 && linkPivotPair.UpstreamPcd.Count > 0)
                 //not equal to zero
-                if (bias.AreNotEqual(0d))
+                if (options.Bias.AreNotEqual(0d))
                 {
                     double upstreamBias = 1;
                     double downstreamBias = 1;
-                    if (biasDirection == "Primary")
-                        downstreamBias = 1 + bias / 100;
+                    if (options.BiasDirection == "Downstream")
+                        downstreamBias = 1 + options.Bias / 100;
                     else
-                        upstreamBias = 1 + bias / 100;
+                        upstreamBias = 1 + options.Bias / 100;
                     //set the original values to compare against
                     var maxBiasArrivalOnGreen = linkPivotPair.AogDownstreamBefore * downstreamBias +
                                                 linkPivotPair.AogUpstreamBefore * upstreamBias;
@@ -89,7 +86,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                         : (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
 
-                    for (var i = 1; i <= cycleLength; i++)
+                    for (var i = 1; i <= options.CycleLength; i++)
                     {
                         double totalBiasArrivalOnGreen = 0;
                         double totalArrivalOnGreen = 0;
@@ -139,7 +136,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                     linkPivotPair.AogUpstreamPredicted = linkPivotPair.AogUpstreamBefore;
                     linkPivotPair.PaogUpstreamPredicted = linkPivotPair.TotalVolumeUpstream.AreEqual(0d) ? 0 : (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
-                    for (var i = 1; i <= cycleLength; i++)
+                    for (var i = 1; i <= options.CycleLength; i++)
                     {
                         double totalArrivalOnGreen = 0;
                         double totalUpstreamAog = 0;
@@ -169,14 +166,14 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 }
             //If downsteam only has detection
             else if (linkPivotPair.UpstreamPcd.Count == 0 && linkPivotPair.DownstreamPcd.Count > 0)
-                if (bias.AreNotEqual(0d))
+                if (options.Bias.AreNotEqual(0d))
                 {
                     double upstreamBias = 1;
                     double downstreamBias = 1;
-                    if (biasDirection == "Primary")
-                        downstreamBias = 1 + bias / 100;
+                    if (options.BiasDirection == "Downstream")
+                        downstreamBias = 1 + options.Bias / 100;
                     else
-                        upstreamBias = 1 + bias / 100;
+                        upstreamBias = 1 + options.Bias / 100;
                     //set the original values to compare against
                     var maxBiasArrivalOnGreen = linkPivotPair.AogDownstreamBefore * downstreamBias;
                     linkPivotPair.MaxArrivalOnGreen = linkPivotPair.AogDownstreamBefore + linkPivotPair.AogUpstreamBefore;
@@ -187,7 +184,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                     linkPivotPair.PaogDownstreamPredicted = linkPivotPair.TotalVolumeDownstream.AreEqual(0d) ? 0 : (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
 
-                    for (var i = 1; i <= cycleLength; i++)
+                    for (var i = 1; i <= options.CycleLength; i++)
                     {
                         double totalBiasArrivalOnGreen = 0;
                         double totalArrivalOnGreen = 0;
@@ -228,7 +225,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                     linkPivotPair.PaogDownstreamPredicted = linkPivotPair.TotalVolumeDownstream.AreEqual(0d) ? 0 : (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
 
-                    for (var i = 1; i <= cycleLength; i++)
+                    for (var i = 1; i <= options.CycleLength; i++)
                     {
                         double totalArrivalOnGreen = 0;
                         double totalDownstreamAog = 0;
@@ -314,7 +311,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         {
             double upstreamBias = 1;
             double downstreamBias = 1;
-            if (biasDirection == "Primary")
+            if (biasDirection == "Downstream")
                 downstreamBias = 1 + bias / 100;
             else
                 upstreamBias = 1 + bias / 100;

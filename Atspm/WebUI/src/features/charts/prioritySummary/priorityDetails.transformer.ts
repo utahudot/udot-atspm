@@ -262,7 +262,7 @@ function transformCyclesOnly(rows: PriorityDetailsResult[]): EChartsOption {
       { ...yAxisBottom[0], gridIndex: 1 },
     ],
     legend,
-    dataZoom,
+    // dataZoom,
     toolbox,
     tooltip,
     animation: false,

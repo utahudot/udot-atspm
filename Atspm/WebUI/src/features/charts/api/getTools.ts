@@ -29,6 +29,7 @@ export const toolTypeApiMap: Record<ToolType, string> = {
   [ToolType.TimeSpaceAverage]: '/TimeSpaceDiagramAverage/GetReportData',
   [ToolType.LinkPivot]: '/LinkPivot/GetReportData',
   [ToolType.LpPcd]: '/LinkPivot/getPcdData',
+  [ToolType.LpTsd]: '/LinkPivot/getLinkPivotForTsd',
 }
 
 type QueryFnType = typeof getTools

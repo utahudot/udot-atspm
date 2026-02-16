@@ -2,6 +2,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useTimeSpaceCall } from '@/features/charts/api/getTools'
 import { ToolType } from '@/features/charts/common/types'
 import TimeSpaceChart from '@/features/charts/components/defaultToolResults/DefaultToolResults'
+import { useLinkPivotForTsd } from '@/features/charts/timeSpaceDiagram/api/getLinkPivotForTsd'
 import { AverageOptionsComponent } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions'
 import { useAverageOptionsHandler } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions/timeSpaceAverageOptions.handler'
 import HistoricOptionsComponent from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/TimeSpaceHistoricOptions'
@@ -57,6 +58,11 @@ const TimeSpaceDiagram = () => {
     toolOptions: submittedOptions,
   })
 
+  const { refetch: fetchLp, data: lpTsdData } = useLinkPivotForTsd({
+    toolType: ToolType.LpTsd,
+    toolOptions: submittedOptions,
+  })
+
   useEffect(() => {
     if (!searchParams) return
     if (appliedUrlRef.current) return
@@ -86,8 +92,9 @@ const TimeSpaceDiagram = () => {
   useEffect(() => {
     if (!shouldFetch) return
     refetch()
+    fetchLp()
     setShouldFetch(false)
-  }, [shouldFetch, refetch])
+  }, [shouldFetch, refetch, fetchLp])
 
   const handleChange = (
     _: React.SyntheticEvent,
@@ -188,7 +195,12 @@ const TimeSpaceDiagram = () => {
               )}
             </Box>
 
-            {chartData && <TimeSpaceChart timeSpaceData={chartData} />}
+            {chartData && (
+              <TimeSpaceChart
+                timeSpaceData={chartData}
+                linkPivotTsdData={lpTsdData ?? []}
+              />
+            )}
           </Box>
         </Box>
       </TabContext>

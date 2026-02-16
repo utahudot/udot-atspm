@@ -228,6 +228,7 @@ export enum ToolType {
   TimeSpaceAverage = 'TimeSpaceAverage',
   LinkPivot = 'LinkPivot',
   LpPcd = 'LpPcd',
+  LpTsd = 'LpTsd',
 }
 
 export const chartTypeToString = (chartType: ChartType) => {
