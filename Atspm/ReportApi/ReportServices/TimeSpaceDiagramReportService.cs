@@ -45,7 +45,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             IRouteLocationsRepository routeLocationsRepository,
             IRouteRepository routeRepository,
             LocationPhaseService locationPhaseService,
-            IRouteRepository routeRepository,
             PriorityDetailsReportService priorityDetailsReportService)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
@@ -340,10 +339,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         {
             viewModel.LocationDescription = phase.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = phase.Approach.Description;
-                isLastElement,
-                priorityDetails);
-            viewModel.LocationDescription = currentPhase.Approach.Location.LocationDescription();
-            viewModel.ApproachDescription = currentPhase.Approach.Description;
             viewModel.PhaseType = phaseType;
             viewModel.Order = order;
             viewModel.TmcForPhase = tmcEventsForPhase;
@@ -374,6 +369,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 new(),
                 new(),
                 new(),
+                new(),
+                true,
+                0,
+                0,
+                0,
+                0,
+                [],
                 new())
             {
                 LocationDescription = phase.Approach.Location.LocationDescription(),
