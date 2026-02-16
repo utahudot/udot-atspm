@@ -294,9 +294,29 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
             foreach (var i in _value.Split('[', ']').ToArray())
             {
-                if (i.StartsWith("DateTime"))
+                if (i.StartsWith("EndDateTime"))
                 {
-                    builder.AppendFormat("{0" + i.Replace("DateTime", "") + "}", DateTime.Now);
+                    if (_obj is Device d && d.DeviceConfiguration != null)
+                    {
+                        DateTime nowToMinute = DateTime.Now
+                            .AddSeconds(-DateTime.Now.Second)
+                            .AddMilliseconds(-DateTime.Now.Millisecond)
+                            .AddMinutes(-d.DeviceConfiguration.LoggingOffset);
+
+                        DateTimeOffset dto = new DateTimeOffset(nowToMinute);
+                        builder.AppendFormat("{0" + i.Replace("EndDateTime", "") + "}", dto.ToString("yyyy-MM-dd'T'HH:mm:sszzz"));
+                    }
+                }
+
+                else if (i.StartsWith("DateTime"))
+                {
+                    DateTime nowToMinute = DateTime.Now
+                    .AddSeconds(-DateTime.Now.Second)
+                    .AddMilliseconds(-DateTime.Now.Millisecond)
+                    .AddMinutes(-30);
+
+                    DateTimeOffset dto = new DateTimeOffset(nowToMinute);
+                    builder.AppendFormat("{0" + i.Replace("DateTime", "") + "}", dto.ToString("yyyy-MM-dd'T'HH:mm:sszzz"));
                 }
 
                 else if (i.StartsWith("LogStartTime"))
