@@ -14,7 +14,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
             var response = rootStats.Select(x => new EnhancedEventLog
             {
                 LocationIdentifier = device.Location.LocationIdentifier,
-                Timestamp = x.time,
+                Timestamp = DateTime.SpecifyKind(x.time.ToLocalTime(), DateTimeKind.Unspecified),
                 DetectorId = "device.Id",
                 Mph = (int)Math.Round(x.speed),
                 Kph = ConvertMphToKph(x.speed),
