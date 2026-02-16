@@ -438,7 +438,6 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     displayProps,
     animation: true,
   }
-  console.log(chartOptions)
 
   return chartOptions
 }
