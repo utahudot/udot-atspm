@@ -70,7 +70,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return finalResultcheck;
         }
 
-        private async Task<PriorityDetailsResult> GetChartDataForPhase(
+        public async Task<PriorityDetailsResult> GetChartDataForPhase(
             PriorityDetailsOptions options,
             List<IndianaEvent> controllerEventLogs,
             PhaseDetail phaseDetail,

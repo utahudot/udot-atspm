@@ -91,6 +91,7 @@ export interface RawTimeSpaceBaseData extends BaseChartData {
 export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
   calculatedDistanceToNext: number
   calculatedDistanceToPrevious: number
+  isIgnoredLocation: boolean
 }
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {

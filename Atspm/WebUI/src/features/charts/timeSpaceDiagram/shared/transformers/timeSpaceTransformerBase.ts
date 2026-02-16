@@ -22,7 +22,66 @@ import {
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { Color } from '@/features/charts/utils'
 import { dateToTimestamp } from '@/utils/dateTime'
-import { CustomSeriesRenderItemReturn, SeriesOption } from 'echarts'
+import {
+  CustomSeriesRenderItemAPI,
+  CustomSeriesRenderItemParams,
+  CustomSeriesRenderItemReturn,
+  SeriesOption,
+} from 'echarts'
+
+// export function generateCycles(
+//   data: TimeSpaceResponseData,
+//   distanceData: number[],
+//   colorMap: Map<number, string>,
+//   phaseType?: string
+// ): SeriesOption[] {
+//   const seriesOptions: SeriesOption[] = []
+//   for (let i = 0; i < data.length; i++) {
+//     const cycleEvents = getCycleEvents(data[i].cycleAllEvents, distanceData[i])
+//     const seriesOption: SeriesOption = {
+//       name: `Cycles ${phaseType?.length ? phaseType : ''}`,
+//       id: `Cycles ${data[i].locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+//       type: 'custom',
+//       clip: true,
+//       z: 5,
+//       silent: true,
+//       data: cycleEvents,
+//       renderItem: (param, api): CustomSeriesRenderItemReturn => {
+//         const i = param.dataIndex
+//         if (!cycleEvents || i >= cycleEvents.length - 1) {
+//           return
+//         }
+//         const nextIndex = i + 1
+
+//         const [x1, y1, v1] = [api.value(0), api.value(1), api.value(2)]
+
+//         const [x2, y2, v2] = [
+//           api.value(0, nextIndex),
+//           api.value(1, nextIndex),
+//           api.value(2, nextIndex),
+//         ]
+//         const newX2 = new Date(x2).getTime()
+//         const p1 = api.coord([x1, y1])
+//         const p2 = api.coord([newX2, y2])
+//         return {
+//           type: 'rect',
+//           shape: {
+//             x: p1[0],
+//             y: p1[1],
+//             width: p2[0] - p1[0],
+//             height: 10,
+//           },
+//           style: {
+//             fill: getSegmentColor(v1 as number, v2 as number),
+//             opacity: 0.9,
+//           },
+//         }
+//       },
+//     }
+//     seriesOptions.push(seriesOption)
+//   }
+//   return seriesOptions
+// }
 
 export function generateCycles(
   data: TimeSpaceResponseData,
@@ -30,53 +89,126 @@ export function generateCycles(
   colorMap: Map<number, string>,
   phaseType?: string
 ): SeriesOption[] {
-  const seriesOptions: SeriesOption[] = []
-  for (let i = 0; i < data.length; i++) {
-    const cycleEvents = getCycleEvents(data[i].cycleAllEvents, distanceData[i])
-    const seriesOption: SeriesOption = {
-      name: `Cycles ${phaseType?.length ? phaseType : ''}`,
-      id: `Cycles ${data[i].locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+  return data.map((phase, index) => {
+    const distance = distanceData[index]
+    const nextDistance = distanceData[index + 1] ?? distance + 300 // or whatever spacing you use
+    const hasData = hasCycleData(phase.cycleAllEvents)
+
+    const cycleEvents = hasData
+      ? getCycleEvents(phase.cycleAllEvents, distance)
+      : [[0, distance, 0]]
+
+    return {
+      name: `Cycles ${phaseType ?? ''}`,
+      id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
       type: 'custom',
       clip: true,
       z: 5,
       silent: true,
       data: cycleEvents,
       renderItem: (param, api): CustomSeriesRenderItemReturn => {
-        const i = param.dataIndex
-        if (!cycleEvents || i >= cycleEvents.length - 1) {
-          return
+        if (!hasData) {
+          // console.log(
+          //   `${phase.locationIdentifier} has no cycles for ${phaseType}`
+          // )
+          return renderMissingCycle(api, param, distance, nextDistance)
+          // return renderMissingCycle(param, distance)
         }
-        const nextIndex = i + 1
 
-        const [x1, y1, v1] = [api.value(0), api.value(1), api.value(2)]
-
-        const [x2, y2, v2] = [
-          api.value(0, nextIndex),
-          api.value(1, nextIndex),
-          api.value(2, nextIndex),
-        ]
-        const newX2 = new Date(x2).getTime()
-        const p1 = api.coord([x1, y1])
-        const p2 = api.coord([newX2, y2])
-        return {
-          type: 'rect',
-          shape: {
-            x: p1[0],
-            y: p1[1],
-            width: p2[0] - p1[0],
-            height: 10,
-          },
-          style: {
-            fill: getSegmentColor(v1 as number, v2 as number),
-            opacity: 0.9,
-          },
-        }
+        return renderCycleSegment(api, cycleEvents, param.dataIndex)
       },
     }
-    seriesOptions.push(seriesOption)
-  }
-  return seriesOptions
+  })
 }
+
+function renderCycleSegment(
+  api: CustomSeriesRenderItemAPI,
+  cycleEvents: any[],
+  index: number
+): CustomSeriesRenderItemReturn {
+  if (index >= cycleEvents.length - 1) return
+
+  const [x1, y1, v1] = [api.value(0), api.value(1), api.value(2)]
+
+  const [x2, y2, v2] = [
+    api.value(0, index + 1),
+    api.value(1, index + 1),
+    api.value(2, index + 1),
+  ]
+
+  const p1 = api.coord([x1, y1])
+  const p2 = api.coord([new Date(x2).getTime(), y2])
+
+  return {
+    type: 'rect',
+    shape: {
+      x: p1[0],
+      y: p1[1],
+      width: p2[0] - p1[0],
+      height: 10,
+    },
+    style: {
+      fill: getSegmentColor(v1 as number, v2 as number),
+      opacity: 0.9,
+    },
+  }
+}
+
+function hasCycleData(cycleAllEvents: Cycle[] | null): boolean {
+  return Array.isArray(cycleAllEvents) && cycleAllEvents.length > 1
+}
+
+function renderMissingCycle(
+  api: CustomSeriesRenderItemAPI,
+  param: CustomSeriesRenderItemParams,
+  distance: number
+): CustomSeriesRenderItemReturn {
+  const coordSys = param.coordSys as any
+  const y = api.coord([0, distance])[1]
+
+  return {
+    type: 'rect',
+    shape: {
+      x: coordSys.x,
+      y,
+      width: coordSys.width,
+      height: 10,
+    },
+    style: {
+      fill: '#d0d0d0',
+      opacity: 0.75,
+    },
+  }
+}
+
+// function renderMissingCycle(
+//   api: CustomSeriesRenderItemAPI,
+//   param: CustomSeriesRenderItemParams,
+//   distance: number,
+//   nextDistance: number
+// ): CustomSeriesRenderItemReturn {
+//   const coordSys = param.coordSys as any
+
+//   const y1 = api.coord([0, distance])[1]
+//   const y2 = api.coord([0, nextDistance])[1]
+
+//   const y = Math.min(y1, y2)
+//   const height = Math.abs(y2 - y1)
+
+//   return {
+//     type: 'rect',
+//     shape: {
+//       x: coordSys.x,
+//       y,
+//       width: coordSys.width,
+//       height: 10,
+//     },
+//     style: {
+//       fill: '#d0d0d0',
+//       opacity: 0.35,
+//     },
+//   }
+// }
 
 function getSegmentColor(from: number, to: number): string {
   if (from === 1 && to === 3) return 'lightgreen'
@@ -248,6 +380,7 @@ export function generateGreenEventLines(
   const seriesOptions: SeriesOption[] = []
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
+    // const distanceToNext = getEffectiveDistanceToNext(data, i, isPrimary)
     if (!location.greenTimeEvents) continue
     const dataPoints = getGreenEventsDataPoints(
       location.greenTimeEvents,
@@ -275,12 +408,12 @@ export function generateGreenEventLines(
 
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
         const currPointFinalX = getArrivalTime(
-          location.calculatedDistanceToNext,
+          Math.abs(distanceToNext),
           location.speed,
           x1 as string
         )
         const nextPointFinalX = getArrivalTime(
-          location.calculatedDistanceToNext,
+          Math.abs(distanceToNext),
           location.speed,
           x2 as string
         )
@@ -307,6 +440,26 @@ export function generateGreenEventLines(
     seriesOptions.push(seriesOption)
   }
   return seriesOptions
+}
+
+export function getEffectiveDistanceToNext(
+  data: TimeSpaceResponseData,
+  index: number,
+  isPrimary?: boolean
+): number {
+  let totalDistance = data[index].calculatedDistanceToNext
+
+  const nextIndex = index + 1
+  // while (
+  //   nextIndex < data.length &&
+  //   !hasCycleData(data[nextIndex].cycleAllEvents)
+  // ) {
+  if (nextIndex < data.length)
+    totalDistance += data[nextIndex].calculatedDistanceToNext
+  //   nextIndex++
+  // }
+
+  return isPrimary ? totalDistance : -totalDistance
 }
 
 function getGreenEventsDataPoints(

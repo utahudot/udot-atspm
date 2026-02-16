@@ -25,6 +25,7 @@ type PriorityEvent = {
 }
 
 type CycleWindow = {
+  // phaseKey no longer used for y-axis, but keeping for minimal churn
   phaseKey: string
   tspNumber: number
   checkInMs: number
@@ -65,6 +66,7 @@ function flattenTspEvents(rows: PriorityDetailsResult[]): PriorityEvent[] {
     if (!tspEvents?.length) continue
     out.push(...tspEvents)
   }
+  console.log('flattened TSP events:', out)
   return out
 }
 
@@ -76,6 +78,7 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     height: 70,
   })
 
+  // y-axis is now TSP eventParam categories (hard-coded)
   const yAxisTop = createYAxis(false, {
     type: 'category',
     name: 'TSP Number',
@@ -91,6 +94,7 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     data: [...TSP_Y_CATEGORIES],
   })
 
+  // Build everything from the flattened events so we don’t depend on phase rows
   const allEvents = flattenTspEvents(rows)
 
   const { requestRects, serviceRects, intersectionLines } =
@@ -130,6 +134,7 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     )
   }
 
+  // event markers (112/113/114/115/118/119)
   const checkIns: Array<[string, number]> = []
   const earlyGreens: Array<[string, number]> = []
   const extendGreens: Array<[string, number]> = []
@@ -168,6 +173,20 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     }
   }
 
+  if (checkIns.length) {
+    series.push({
+      name: 'Check In (112)',
+      type: 'scatter',
+      xAxisIndex: 0,
+      yAxisIndex: 0,
+      data: checkIns,
+      symbol: 'circle',
+      symbolSize: 9,
+      itemStyle: { color: Color.Black },
+      z: 10,
+    })
+  }
+
   if (earlyGreens.length) {
     series.push({
       name: 'Early Green (113)',
@@ -198,6 +217,7 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     })
   }
 
+  // dashed intersection lines down into the phase chart
   if (intersectionLines.length) {
     series.push(
       ...buildVerticalIntersectionLinesSeries(
@@ -297,6 +317,7 @@ function buildCycleWindowsFromEvents(
   for (const e of allEvents) {
     const tsp = typeof e.eventParam === 'number' ? e.eventParam : NaN
     if (!Number.isFinite(tsp)) continue
+    // only keep the TSPs we actually chart
     if (tspRowIndex(tsp) == null) continue
 
     const arr = byTsp.get(tsp) ?? []
@@ -442,6 +463,7 @@ function renderThinRect(
       y: start[1] - height / 2 + yOffsetPx,
       width: Math.max(0, end[0] - start[0]),
       height,
+      r: 1,
     },
     {
       x: params.coordSys.x,
