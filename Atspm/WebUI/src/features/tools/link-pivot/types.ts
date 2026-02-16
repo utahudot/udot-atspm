@@ -139,6 +139,11 @@ export interface RawLinkPivotData extends CorridorSummary {
   approachLinks: ApproachLinksDto[]
 }
 
+export interface RawLinkPivotForTsdData {
+  direction: 'Primary' | 'Opposing'
+  data: RawLinkPivotData
+}
+
 export interface RawLinkPivotPcdData
   extends RawExistingPcdData,
     RawPredictedPcdData {}

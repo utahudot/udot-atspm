@@ -1,5 +1,8 @@
 import TimeSpaceEChart from '@/features/charts/timeSpaceDiagram/shared/components/TimeSpaceEChart'
-import { Box, Paper, useTheme } from '@mui/material'
+import LinkPivotAdjustmentTable from '@/features/tools/link-pivot/components/LinkPivotAdjustmentTable'
+import { LinkPivotApproachLinkComponent } from '@/features/tools/link-pivot/components/LinkPivotApproachLinkComponent'
+import { RawLinkPivotForTsdData } from '@/features/tools/link-pivot/types'
+import { Box, Paper, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { transformTimeSpaceData } from '../../api'
 import { GpxUploadAccordion } from '../../timeSpaceDiagram/shared/components/GpxUploader/GpxUploadAccordion'
@@ -12,6 +15,7 @@ import {
 
 export interface TimeSpaceChartProps {
   timeSpaceData: RawTimeSpaceDiagramResponse
+  linkPivotTsdData: RawLinkPivotForTsdData[]
 }
 
 function createEmptyEntry(
@@ -113,10 +117,16 @@ function addDefaultValues(
   }
 }
 
-export default function TimeSpaceChart({ timeSpaceData }: TimeSpaceChartProps) {
+export default function TimeSpaceChart({
+  timeSpaceData,
+  linkPivotTsdData,
+}: TimeSpaceChartProps) {
   const theme = useTheme()
+  const [activeTab, setActiveTab] = useState(0)
+
   const [baseTimeSpaceData, setBaseTimeSpaceData] =
     useState<RawTimeSpaceDiagramResponse>(addDefaultValues(timeSpaceData))
+
   const [transformedData, setTransformedData] = useState(() =>
     transformTimeSpaceData(timeSpaceData)
   )
@@ -131,7 +141,6 @@ export default function TimeSpaceChart({ timeSpaceData }: TimeSpaceChartProps) {
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
 
   useEffect(() => {
-    // Only recompute if there are ignored locations
     const recalculatedData =
       ignoredLocations.length > 0
         ? recomputeTimeSpaceData(baseTimeSpaceData.data, ignoredLocations)
@@ -154,68 +163,117 @@ export default function TimeSpaceChart({ timeSpaceData }: TimeSpaceChartProps) {
         left: 0,
       }}
     >
-      <Paper
-        sx={{
-          p: 0,
-          mt: 3,
-          marginLeft: '2px',
-          backgroundColor: 'white',
-        }}
+      {/* 🔹 Tabs Outside Paper */}
+      <Tabs
+        value={activeTab}
+        onChange={(_, newValue) => setActiveTab(newValue)}
+        sx={{ mt: 2 }}
       >
-        <Box
+        <Tab label="Time Space Chart" />
+        <Tab label="Link Pivot" />
+      </Tabs>
+
+      {/* 🔹 Default Tab — Existing Paper Layout */}
+      {activeTab === 0 && (
+        <Paper
           sx={{
-            display: 'flex',
-            width: '100%',
-            minHeight: '100%',
+            p: 0,
+            mt: 2,
+            marginLeft: '2px',
+            backgroundColor: 'white',
           }}
         >
-          {/* LEFT SIDE — GPX OPTIONS */}
           <Box
             sx={{
-              width: '20%', // 👈 20–30% sweet spot
-              minWidth: 260,
-              borderRight: '1px solid',
-              borderColor: 'divider',
-              p: 2,
+              display: 'flex',
+              width: '100%',
+              minHeight: '100%',
             }}
           >
-            <GpxUploadAccordion
-              locations={locations}
-              entries={gpxEntries}
-              setEntries={setGpxEntries}
-            />
-            <IgnoreLocationsAccordion
-              locations={locations}
-              ignoredLocations={ignoredLocations}
-              setIgnoredLocations={setIgnoredLocation}
-            />
-          </Box>
-
-          {/* RIGHT SIDE — CHART */}
-          <Box
-            sx={{
-              width: '80%',
-              p: 2,
-            }}
-          >
-            <TimeSpaceEChart
-              id="time-space-chart"
-              option={transformedData.data.chart}
-              theme={theme.palette.mode}
-              style={{
-                width: '100%',
-                height:
-                  locations.length < 5
-                    ? locations.length * 200 + 160 + 'px'
-                    : locations.length * 150 + 160 + 'px',
-                position: 'relative',
+            {/* LEFT SIDE — GPX OPTIONS */}
+            <Box
+              sx={{
+                width: '20%',
+                minWidth: 260,
+                borderRight: '1px solid',
+                borderColor: 'divider',
+                p: 2,
               }}
-              gpxEntries={gpxEntries}
-              ignoredLocations={ignoredLocations}
-            />
+            >
+              <GpxUploadAccordion
+                locations={locations}
+                entries={gpxEntries}
+                setEntries={setGpxEntries}
+              />
+              <IgnoreLocationsAccordion
+                locations={locations}
+                ignoredLocations={ignoredLocations}
+                setIgnoredLocations={setIgnoredLocation}
+              />
+            </Box>
+
+            {/* RIGHT SIDE — CHART */}
+            <Box
+              sx={{
+                width: '80%',
+                p: 2,
+              }}
+            >
+              <TimeSpaceEChart
+                id="time-space-chart"
+                option={transformedData.data.chart}
+                theme={theme.palette.mode}
+                style={{
+                  width: '100%',
+                  height:
+                    locations.length < 5
+                      ? locations.length * 200 + 160 + 'px'
+                      : locations.length * 150 + 160 + 'px',
+                  position: 'relative',
+                }}
+                gpxEntries={gpxEntries}
+                ignoredLocations={ignoredLocations}
+              />
+            </Box>
           </Box>
+        </Paper>
+      )}
+
+      {/* 🔹 Second Tab — LinkPivot (Outside Paper) */}
+      {activeTab === 1 && (
+        <Box>
+          {linkPivotTsdData.map((pivot) => (
+            <Box key={pivot.direction} sx={{ mb: 6 }}>
+              <Typography variant="h4" fontWeight="bold" sx={{ my: 3 }}>
+                {pivot.direction} Direction
+              </Typography>
+
+              {/* Adjustments */}
+              <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
+                Adjustments
+              </Typography>
+              <Paper sx={{ mb: 3 }}>
+                <LinkPivotAdjustmentTable
+                  data={pivot.data.adjustments}
+                  cycleLength={baseTimeSpaceData.data[0].cycleLength}
+                />
+              </Paper>
+
+              {/* Approach Link Comparison */}
+              <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
+                Approach Link Comparison
+              </Typography>
+              <Paper>
+                <LinkPivotApproachLinkComponent
+                  data={pivot.data.approachLinks}
+                  corridorSummary={pivot.data}
+                  lpHandler={null}
+                />
+              </Paper>
+            </Box>
+          ))}
         </Box>
-      </Paper>
+      )}
     </Box>
   )
 }

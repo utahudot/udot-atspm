@@ -16,11 +16,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.Atspm.Business.LinkPivot
 {
@@ -39,12 +37,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         public async Task<LinkPivotResult> GetData(LinkPivotOptions options, List<RouteLocation> routeLocations)
         {
-            LinkPivot linkPivot = new LinkPivot(options.Start, options.End);
-            var direction = options.Direction ?? "Primary";
-
-            int cycleLength = options.CycleLength ?? GetModeCycleLength(options, routeLocations);
-
-            var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations, cycleLength);
+            LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
+            var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
 
             if (lp.Count == 0 || pairedApproches.Count == 0)
             {
@@ -137,57 +131,13 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             return linkPivotResult;
         }
 
-        private int GetModeCycleLength(LinkPivotOptions options, List<RouteLocation> routeLocations)
+        private async Task<(List<AdjustmentObject>, List<LinkPivotPair>)> GetAdjustmentObjectsAsync(LinkPivotOptions options, List<RouteLocation> routeLocations)
         {
-            List<int> cycleLengths = new List<int>();
-            var locationIdentifiers = routeLocations.Select(i => i.LocationIdentifier).ToList();
-            foreach (var locationIdentifier in locationIdentifiers)
-            {
-                var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(locationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
-
-                if (controllerEventLogs.IsNullOrEmpty())
-                {
-                    throw new Exception($"No Controller Event Logs found for Location {locationIdentifier}");
-                }
-                var programmedCycleForPlan = controllerEventLogs.GetEventsByEventCodes(options.Start.AddHours(-12), options.End.AddHours(12), new List<short>() { 132 });
-                cycleLengths.Add(GetEventOverlappingTime(options.Start, programmedCycleForPlan, "CycleLength").FirstOrDefault().EventParam);
-
-            }
-            int mode = cycleLengths.Any()
-                ? cycleLengths
-                    .GroupBy(x => x)
-                    .OrderByDescending(g => g.Count())
-                    .First().Key
-                : 90;
-            return mode;
-        }
-
-        private List<IndianaEvent> GetEventOverlappingTime(DateTime start, IReadOnlyList<IndianaEvent> programmedCycleForPlan, string eventType)
-        {
-            var planEvent = programmedCycleForPlan.Where(e => e.Timestamp == start).ToList();
-            if (planEvent.Count == 0)
-            {
-                var planEventInTimeSpan = programmedCycleForPlan.Where(e => e.Timestamp < start)
-                    ?.GroupBy(log => log.EventCode)
-                    ?.Select(group => group.OrderByDescending(e => e.Timestamp).FirstOrDefault())
-                    .ToList();
-
-                if (planEventInTimeSpan != null && planEventInTimeSpan.Count != 0)
-                    planEvent = planEventInTimeSpan;
-            }
-
-            return planEvent.ToList();
-        }
-
-        private async Task<(List<AdjustmentObject>, List<LinkPivotPair>)> GetAdjustmentObjectsAsync(LinkPivotOptions options, List<RouteLocation> routeLocations, int cycleLength)
-        {
-            var direction = options.Direction ?? "Primary";
-
             List<LinkPivotPair> pairedApproaches = new List<LinkPivotPair>();
             List<AdjustmentObject> adjustments = new List<AdjustmentObject>();
             var indices = new List<int>();
 
-            if (direction == "Opposing")
+            if (options.Direction == "Upstream")
             {
                 for (var i = routeLocations.Count - 1; i > 0; i--)
                 {
@@ -203,8 +153,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             int[] daysOfWeek = options.DaysOfWeek ?? Array.Empty<int>();
-            var daysToInclude = GetDaysToProcess(DateOnly.FromDateTime(options.Start), DateOnly.FromDateTime(options.End), daysOfWeek);
-            await CreatePairedApproaches(options, routeLocations, pairedApproaches, indices, daysToInclude, cycleLength);
+            var daysToInclude = GetDaysToProcess(options.StartDate, options.EndDate, options.DaysOfWeek);
+            await CreatePairedApproaches(options, routeLocations, pairedApproaches, indices, daysToInclude);
 
             //Cycle through the LinkPivotPair list and add the statistics to the LinkPivotadjustmentTable
             foreach (var i in indices)
@@ -246,7 +196,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
             //Set the end row to have zero for the ajustments. No adjustment can be made because 
             //downstream is unknown. The end row is determined by the starting point seleceted by the user
-            if (direction == "Opposing")
+            if (options.Direction == "Upstream")
             {
                 AddLastAdjusment(routeLocations.FirstOrDefault(), adjustments);
             }
@@ -262,10 +212,10 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             {
                 //if the new adjustment is greater than the cycle time than the adjustment should subtract
                 // the cycle time from the current adjustment and the result should be the new adjustment
-                if (cumulativeChange + adjustments[i].Delta > cycleLength)
+                if (cumulativeChange + adjustments[i].Delta > options.CycleLength)
                 {
-                    adjustments[i].Adjustment = cumulativeChange + adjustments[i].Delta - cycleLength;
-                    cumulativeChange = cumulativeChange + adjustments[i].Delta - cycleLength;
+                    adjustments[i].Adjustment = cumulativeChange + adjustments[i].Delta - options.CycleLength;
+                    cumulativeChange = cumulativeChange + adjustments[i].Delta - options.CycleLength;
                 }
                 else
                 {
@@ -309,20 +259,19 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
         }
 
-        private async Task CreatePairedApproaches(LinkPivotOptions options, List<RouteLocation> routeLocations, List<LinkPivotPair> PairedApproaches, List<int> indices, List<DateOnly> daysToInclude, int cycleLength)
+        private async Task CreatePairedApproaches(LinkPivotOptions options, List<RouteLocation> routeLocations, List<LinkPivotPair> PairedApproaches, List<int> indices, List<DateOnly> daysToInclude)
         {
-            var direction = options.Direction ?? "Primary";
             foreach (var i in indices)
             {
-                var location = locationRepository.GetLatestVersionOfLocation(routeLocations[direction == "Opposing" ? i - 1 : i].LocationIdentifier);
+                var location = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i - 1 : i].LocationIdentifier);
                 var primaryPhase = routeLocations[i].PrimaryPhase;
-                var downstreamPrimaryPhase = routeLocations[direction == "Opposing" ? i - 1 : i + 1].OpposingPhase;
+                var downstreamPrimaryPhase = routeLocations[options.Direction == "Upstream" ? i - 1 : i + 1].OpposingPhase;
                 if (downstreamPrimaryPhase != null)
                 {
-                    var downstreamLocation = locationRepository.GetLatestVersionOfLocation(routeLocations[direction == "Opposing" ? i : i + 1].LocationIdentifier);
-                    var downstreamApproach = getDownstreamApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, direction);
-                    var approach = getApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, direction);
-                    var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(approach, downstreamApproach, options, daysToInclude, i + 1, cycleLength);
+                    var downstreamLocation = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i : i + 1].LocationIdentifier);
+                    var downstreamApproach = getDownstreamApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, options.Direction);
+                    var approach = getApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, options.Direction);
+                    var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(approach, downstreamApproach, options, daysToInclude, i + 1);
                     PairedApproaches.Add(linkPivotPair);
                 }
             }
@@ -330,7 +279,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         private Approach getDownstreamApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
         {
-            if (direction == "Opposing")
+            if (direction == "Upstream")
             {
                 return location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == primaryPhase);
             }
@@ -342,7 +291,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         private Approach getApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
         {
-            if (direction == "Opposing")
+            if (direction == "Upstream")
             {
                 return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase);
             }
