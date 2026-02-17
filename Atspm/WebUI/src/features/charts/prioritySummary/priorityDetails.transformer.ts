@@ -16,7 +16,6 @@
 // #endregion
 
 import {
-  DetectorEventBase,
   DetectorEventDto,
   IndianaEvent,
   PriorityDetailsResult,
@@ -63,27 +62,27 @@ const TSP_CODES = {
 
 const CYCLE_INDICATIONS = [
   {
-    name: 'Phase Begin Green (1)\nOverlap Begin Green (61)',
+    name: 'Phase Min Green',
     codes: [1, 61],
     color: Color.Green,
   },
   {
-    name: 'Phase Min Complete (3)\nOverlap Begin Trailing Green (Extension) (62)',
+    name: 'Phase Green',
     codes: [3, 62],
     color: '#8ef08d',
   },
   {
-    name: 'Phase Begin Yellow Clearance (8)\nBegin Overlap Yellow (63)',
+    name: 'Phase Yellow Clearance',
     codes: [8, 63],
     color: Color.Yellow,
   },
   {
-    name: 'Phase End Yellow Clearance (9)\nOverlap Begin Red Clearance (64)',
+    name: 'Phase Red Clearance',
     codes: [9, 64],
     color: '#FF0000',
   },
   {
-    name: 'Phase End Red Clearance (11)\nOverlap Off (Inactive with Red Indication) (65)',
+    name: 'Phase Red',
     codes: [11, 65],
     color: '#f0807f',
   },
@@ -171,9 +170,9 @@ function transformCyclesOnly(rows: PriorityDetailsResult[]): EChartsOption {
   })
 
   const gridBottom = createGrid({
-    top: 230,
+    top: gridTop.height + 160,
     left: 65,
-    right: 330,
+    right: 210,
   })
 
   const dataZoom: EChartsOption['dataZoom'] = [
@@ -231,23 +230,29 @@ function transformCyclesOnly(rows: PriorityDetailsResult[]): EChartsOption {
   series.push(...buildCycleEventMarkersOnCyclesSeries(rows, categories))
   series.push(...buildDetectorOnOffOnCyclesSeries(rows, categories))
 
-  const legend = createLegend({
-    top: gridTop.top,
-    data: [
-      ...legendItems,
-      ...CYCLE_INDICATIONS.map((x) => ({
-        name: x.name,
-        itemStyle: { color: x.color },
-      })),
-      {
-        name: 'Detection Event',
-        icon: 'image:///DetectionEvent.svg',
-      },
-    ],
-  })
+  const legend = [
+    createLegend({
+      top: gridTop.top,
+      data: legendItems,
+    }),
+    createLegend({
+      top: gridTop.top + 130,
+      data: [
+        ...CYCLE_INDICATIONS.map((x) => ({
+          name: x.name,
+          itemStyle: { color: x.color },
+        })),
+        {
+          name: 'Detection Event',
+          icon: 'image:///DetectionEvent.svg',
+        },
+      ],
+    }),
+  ]
 
   const displayProps = createDisplayProps({
     description: 'Priority Details',
+    height: gridTop.height + 500,
   })
 
   const chartOptions: EChartsOption = {
@@ -503,11 +508,6 @@ function buildCycleEventMarkersOnCyclesSeries(
   }
 
   return out
-}
-
-type BasicDetectors = {
-  name: string
-  events: DetectorEventBase[]
 }
 
 function buildDetectorOnOffOnCyclesSeries(

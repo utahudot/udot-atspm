@@ -60,8 +60,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<PriorityDetailsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
             var phaseDetails = phaseService.GetPhases(Location);
+            var protectedPhases = phaseDetails.Where(p => p.IsPermissivePhase == false);
             var tasks = new List<Task<PriorityDetailsResult>>();
-            foreach (var phase in phaseDetails)
+            foreach (var phase in protectedPhases)
             {
                 tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, phase.IsPermissivePhase));
             }

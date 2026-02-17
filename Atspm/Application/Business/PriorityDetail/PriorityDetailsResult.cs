@@ -28,6 +28,7 @@ namespace Utah.Udot.Atspm.Business.PriorityDetails
             DateTime start,
             DateTime end,
             int phaseNumber,
+            int? transitSignalPriorityNumber,
             bool phaseOrOverlap,
             string phaseNumberSort,
             string phaseType,
@@ -41,6 +42,7 @@ namespace Utah.Udot.Atspm.Business.PriorityDetails
             List<DetectorEventDto> priorityAndPreemptionEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
+            TransitSignalPriorityNumber = transitSignalPriorityNumber;
             IsPhaseOverLap = phaseOrOverlap;
             PhaseNumberSort = phaseNumberSort;
             PhaseType = phaseType;
@@ -54,6 +56,7 @@ namespace Utah.Udot.Atspm.Business.PriorityDetails
         }
 
         public int PhaseNumber { get; set; }
+        public int? TransitSignalPriorityNumber { get; set; }
         public bool IsPhaseOverLap { get; set; }
         public string PhaseNumberSort { get; set; }
         public string PhaseType { get; set; }

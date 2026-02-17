@@ -603,9 +603,17 @@ export function createLegend(legendConfig?: Partial<LegendComponentOption>) {
 }
 
 export function createTooltip(tooltip?: TooltipComponentOption) {
-  const defaultTooltip = {
+  const defaultTooltip: TooltipComponentOption = {
     trigger: 'axis',
+    valueFormatter: (v: unknown) => {
+      if (v == null) return ''
+      if (typeof v === 'number' && Number.isFinite(v)) return v.toFixed(1)
+
+      const n = typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN
+      return Number.isFinite(n) ? n.toFixed(1) : String(v)
+    },
   }
+
   return {
     ...defaultTooltip,
     ...tooltip,
