@@ -9,7 +9,7 @@ import {
 import { useNotificationStore } from '@/stores/notifications'
 import { toUTCDateStamp } from '@/utils/dateTime'
 import { Box } from '@mui/material'
-import { addDays, format } from 'date-fns'
+import { addDays } from 'date-fns'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 type ComponentType = 'Location' | 'Approach' | 'Detector' | null
@@ -31,33 +31,12 @@ type WatchdogIgnoreEvent = {
 }
 
 function componentLabel(e: WatchdogIgnoreEvent) {
-  if (!e.componentType) return 'Global'
+  if (!e.componentType) return 'Location'
   if (e.componentType === 'Location')
     return `Location (${e.componentId ?? '—'})`
   if (e.componentType === 'Approach')
     return `Approach (${e.componentId ?? '—'})`
   return `Detector (${e.componentId ?? '—'})`
-}
-
-function formatMetaLine(row: WatchdogIgnoreEvent) {
-  const created = row.created
-    ? format(new Date(row.created), 'MM/dd/yyyy')
-    : null
-  const modified = row.modified
-    ? format(new Date(row.modified), 'MM/dd/yyyy')
-    : null
-
-  const createdBy = row.createdBy ?? '—'
-  const modifiedBy = row.modifiedBy ?? '—'
-
-  const createdPart = created
-    ? `Created ${created} by ${createdBy}`
-    : `Created by ${createdBy}`
-  const modifiedPart = modified
-    ? `Modified ${modified} by ${modifiedBy}`
-    : `Modified by ${modifiedBy}`
-
-  return `${createdPart} / ${modifiedPart}`
 }
 
 type IgnoreEventEditorModalProps = {
@@ -94,30 +73,17 @@ function IgnoreEventEditorModal({
   }
 
   return (
-    <Box
-      // gives WatchDogDatePopup a stable anchor element
-      ref={anchorRef}
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: 1,
-        height: 1,
-        pointerEvents: 'none',
-      }}
-    >
-      <WatchDogDatePopup
-        open={isOpen}
-        anchorEl={anchorRef.current}
-        handlePopoverClose={onClose}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
-        handleIgnoreEvent={handleIgnoreEvent}
-        handleRemoveIgnore={() => {}}
-      />
-    </Box>
+    <WatchDogDatePopup
+      open={isOpen}
+      anchorEl={anchorRef.current}
+      handlePopoverClose={onClose}
+      startDate={startDate}
+      setStartDate={setStartDate}
+      endDate={endDate}
+      setEndDate={setEndDate}
+      handleIgnoreEvent={handleIgnoreEvent}
+      handleRemoveIgnore={undefined}
+    />
   )
 }
 
@@ -144,38 +110,22 @@ export default function WatchdogIgnoredEvents() {
   if (isLoading) return <Box height="500px">Loading…</Box>
 
   const tableData = rows.map((r) => ({
-    id: r.id,
-    locationIdentifier: r.locationIdentifier,
+    ...r,
     component: componentLabel(r),
-    issueType: r.issueType,
     phase: r.phase ?? '—',
-    start: r.start,
-    end: r.end,
-    meta: formatMetaLine(r),
-    // keep the full row available for edit/delete modals
-    _raw: r,
   }))
 
-  const headers = [
-    'Location',
-    'Component',
-    'Issue',
-    'Phase',
-    'Start',
-    'End',
-    'Meta',
-  ]
-  const headerKeys = [
-    'locationIdentifier',
-    'component',
-    'issueType',
-    'phase',
-    'start',
-    'end',
-    'meta',
+  const cells = [
+    { key: 'locationIdentifier', label: 'Location' },
+    { key: 'component', label: 'Component' },
+    { key: 'issueType', label: 'Issue' },
+    { key: 'phase', label: 'Phase' },
+    { key: 'start', label: 'Start' },
+    { key: 'end', label: 'End' },
   ]
 
   const handleEditRow = async (updated: WatchdogIgnoreEvent) => {
+    console.log('handleEditRow', updated)
     try {
       await editIgnore({
         id: updated.id,
@@ -187,7 +137,6 @@ export default function WatchdogIgnoredEvents() {
           end: updated.end,
           componentType: updated.componentType,
           componentId: updated.componentId,
-          phase: updated.phase,
         },
       })
 
@@ -212,20 +161,18 @@ export default function WatchdogIgnoredEvents() {
 
   return (
     <AdminTable
+      cells={cells}
       pageName="Ignored Event"
-      headers={headers}
-      headerKeys={headerKeys}
       data={tableData}
-      // swap these to your real claims if you want to gate buttons
       hasEditPrivileges={true}
       hasDeletePrivileges={true}
-      editModal={
-        <IgnoreEventEditorModal
-          isOpen={true}
-          onSave={handleEditRow}
-          onClose={() => {}}
-        />
-      }
+      // editModal={
+      //   <IgnoreEventEditorModal
+      //     isOpen={true}
+      //     onSave={handleEditRow}
+      //     onClose={() => {}}
+      //   />
+      // }
       deleteModal={
         <DeleteModal
           id={0}
