@@ -11,7 +11,6 @@ export * from './faq/faq';
 export * from './jurisdiction/jurisdiction';
 export * from './location/location';
 export * from './location-type/location-type';
-export * from './map-layer/map-layer';
 export * from './measure-comment/measure-comment';
 export * from './measure-option/measure-option';
 export * from './measure-option-preset/measure-option-preset';

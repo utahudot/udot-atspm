@@ -33,7 +33,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         #region IAggregationRepository
 
         ///<inheritdoc/>
-        public virtual IReadOnlyList<T> GetAggregationsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
+        public virtual IReadOnlyList<T> GetAggregationsBetweenDates(string locationIdentifier, DateTime startTime, DateTime endTime)
         {
             var result = table
                 .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationId, startTime, endTime))

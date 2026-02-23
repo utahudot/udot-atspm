@@ -17,41 +17,42 @@ module.exports = {
   //     },
   //   },
   // },
-  config: {
-    input: {
-      target: './config-spec.json',
-    },
-    output: {
-      workspace: './src/api/config',
-      target: './',
-      client: 'react-query',
-      mock: true,
-      templates: './orval-templates',
-      mode: 'tags-split',
-      override: {
-        mutator: {
-          path: '../../lib/axios.ts',
-          name: 'configRequest',
-        },
-      },
-    },
-  },
-  // reports: {
+  // config: {
   //   input: {
-  //     target: './orval-api-specs/reports-spec.json',
+  //     target: './config-spec.json',
   //   },
   //   output: {
-  //     target: './src/api/reports',
+  //     workspace: './src/api/config',
+  //     target: './',
   //     client: 'react-query',
-  //     templates: './orval-templates',
   //     mock: true,
-  //     mode: 'split',
+  //     templates: './orval-templates',
+  //     mode: 'tags-split',
   //     override: {
   //       mutator: {
-  //         path: './src/lib/axios.ts',
-  //         name: 'reportsRequest',
+  //         path: '../../lib/axios.ts',
+  //         name: 'configRequest',
   //       },
   //     },
   //   },
   // },
+  reports: {
+    input: {
+      target: './reports-spec.json',
+    },
+    output: {
+      workspace: './src/api/reports',
+      target: './',
+      client: 'react-query',
+      templates: './orval-templates',
+      mock: true,
+      mode: 'tags-split',
+      override: {
+        mutator: {
+          path: '../../lib/axios.ts',
+          name: 'reportsRequest',
+        },
+      },
+    },
+  },
 }

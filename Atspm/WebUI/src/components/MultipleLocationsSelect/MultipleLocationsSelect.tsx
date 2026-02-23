@@ -9,6 +9,7 @@ import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
 import { ChevronRight } from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
 import {
   Box,
   Button,
@@ -27,11 +28,13 @@ interface MultipleLocationsSelectProps {
   zoom?: number
   mapHeight?: number | string
   route?: number[][]
+  removeRouteSelect?: boolean
 }
 
 const MultipleLocationsSelect = ({
   selectedLocations,
   setLocations,
+  removeRouteSelect,
 }: MultipleLocationsSelectProps) => {
   const { data: routesData } = useGetRoute({ expand: 'routeLocations' })
   const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
@@ -114,41 +117,42 @@ const MultipleLocationsSelect = ({
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          mb: 2,
-        }}
-      >
-        <FormControl fullWidth>
-          <InputLabel htmlFor="route-select">Route</InputLabel>
-          <Select
-            label="Route"
-            variant="outlined"
-            fullWidth
-            value={selectedRoute?.id || ''}
-            onChange={onRouteChange}
-            inputProps={{ id: 'route-select' }}
-          >
-            {routes?.map((route) => (
-              <MenuItem key={route.id} value={route.id}>
-                {route.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button
-          variant="contained"
-          endIcon={<ChevronRight />}
-          onClick={onAddRoute}
-          sx={{ ml: 2, width: 100 }}
-          disabled={!selectedRoute?.routeLocations}
+      {!removeRouteSelect && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            mb: 2,
+          }}
         >
-          Add
-        </Button>
-      </Box>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="route-select">Route</InputLabel>
+            <Select
+              label="Route"
+              variant="outlined"
+              fullWidth
+              value={selectedRoute?.id || ''}
+              onChange={onRouteChange}
+              inputProps={{ id: 'route-select' }}
+            >
+              {routes?.map((route) => (
+                <MenuItem key={route.id} value={route.id}>
+                  {route.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={onAddRoute}
+            sx={{ ml: 2, width: 100 }}
+          >
+            Add
+          </Button>
+        </Box>
+      )}
       <Box
         sx={{
           display: 'flex',
