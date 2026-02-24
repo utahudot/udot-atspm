@@ -1,4 +1,4 @@
-import { Location } from '@/api/config'
+import { getLocation, Location } from '@/api/config'
 import {
   PedatLocationData,
   useGetPedestrianAggregationLocationData,
@@ -15,8 +15,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box } from '@mui/material'
-import { startOfDay, subYears } from 'date-fns'
-import { useEffect, useState } from 'react'
+import { format, isValid, parseISO, startOfDay, subYears } from 'date-fns'
+import {
+  createParser,
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from 'nuqs'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -47,18 +54,76 @@ export type ATErrorState =
   | { type: '400' }
   | { type: 'UNKNOWN'; message: string }
 
+const ymdDateParser = createParser<Date>({
+  parse: (value) => {
+    const d = parseISO(value)
+    return isValid(d) ? d : null
+  },
+  serialize: (date) => format(date, 'yyyy-MM-dd'),
+  eq: (a, b) => a.getTime() === b.getTime(),
+})
+
+const phaseParser = createParser<number | 'All'>({
+  parse: (value) => {
+    if (value === 'All') return 'All'
+    const n = Number(value)
+    return Number.isFinite(n) ? n : null
+  },
+  serialize: (value) => String(value),
+  eq: (a, b) => a === b,
+})
+
+async function resolveLocationsByIdentifier(
+  identifiers: string[]
+): Promise<Location[]> {
+  const ids = identifiers
+    .map((s) => s?.trim())
+    .filter((s): s is string => Boolean(s))
+
+  if (ids.length === 0) return []
+
+  const odataString = (v: string) => `'${v.replace(/'/g, "''")}'`
+
+  const filter = ids
+    .map((id) => `locationIdentifier eq ${odataString(id)}`)
+    .join(' or ')
+
+  const resp = await getLocation({
+    filter,
+    expand: 'approaches',
+  })
+
+  const found = resp?.value ?? []
+
+  const byIdentifier = new Map(found.map((l) => [l.locationIdentifier, l]))
+  return ids.map((id) => byIdentifier.get(id)).filter(Boolean) as Location[]
+}
+
 const ActiveTransportation = () => {
   const { mutateAsync: fetchPedestrianData, isLoading } =
     useGetPedestrianAggregationLocationData()
+
+  const defaultStart = useMemo(() => startOfDay(subYears(new Date(), 1)), [])
+  const defaultEnd = useMemo(() => startOfDay(new Date()), [])
+  const [qs, setQs] = useQueryStates(
+    {
+      locations: parseAsArrayOf(parseAsString, ',').withDefault([]),
+      timeUnit: parseAsInteger.withDefault(0),
+      start: ymdDateParser.withDefault(defaultStart),
+      end: ymdDateParser.withDefault(defaultEnd),
+      phase: phaseParser,
+    },
+    { history: 'replace' }
+  )
 
   const form = useForm<ActiveTransportationForm>({
     resolver: zodResolver(activeTransportationSchema),
     defaultValues: {
       locations: [],
       timeUnit: 0,
-      startDate: startOfDay(subYears(new Date(), 1)),
-      endDate: startOfDay(new Date()),
-      phase: null,
+      startDate: defaultStart,
+      endDate: defaultEnd,
+      phase: 'All',
     },
   })
 
@@ -71,6 +136,25 @@ const ActiveTransportation = () => {
   const startDate = watch('startDate')
   const endDate = watch('endDate')
   const phase = watch('phase')
+
+  useEffect(() => {
+    setValue('timeUnit', qs.timeUnit)
+    setValue('startDate', qs.start)
+    setValue('endDate', qs.end)
+    setValue('phase', qs.phase ?? null)
+
+    if (qs.locations.length > 0) {
+      void (async () => {
+        const hydrated = await resolveLocationsByIdentifier(qs.locations)
+        const ordered = hydrated.sort(
+          (a, b) =>
+            qs.locations.indexOf(a.locationIdentifier) -
+            qs.locations.indexOf(b.locationIdentifier)
+        )
+        if (ordered.length > 0) setValue('locations', ordered)
+      })()
+    }
+  }, [qs.locations, qs.timeUnit, qs.start, qs.end, qs.phase])
 
   useEffect(() => {
     setData(null)
@@ -152,6 +236,14 @@ const ActiveTransportation = () => {
       return
     }
     setErrorState({ type: 'NONE' })
+
+    await setQs({
+      locations: formData.locations.map((l) => l.locationIdentifier),
+      timeUnit: formData.timeUnit,
+      start: formData.startDate,
+      end: formData.endDate,
+      phase: formData.phase ?? null,
+    })
 
     const charts = await fetchPedestrianData({
       data: {

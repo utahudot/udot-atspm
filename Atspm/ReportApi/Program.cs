@@ -199,6 +199,16 @@ builder.Host
 
         s.AddPathBaseFilter(h);
 
+        s.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            );
+        });
+
         s.AddAtspmIdentity(h);
         s.AddHealthChecks();
     });
@@ -220,7 +230,7 @@ else
 
 //Security
 app.UseHttpsRedirection();
-//app.UseCors("Default");
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
