@@ -32,6 +32,7 @@ const HourlyPedVolByHourOfDayChart = ({
         id="hourly-ped-vol-hour-of-day"
         option={option}
         style={{ width: '100%', height: '400px' }}
+        hideInteractionMessage
       />
     </Paper>
   )

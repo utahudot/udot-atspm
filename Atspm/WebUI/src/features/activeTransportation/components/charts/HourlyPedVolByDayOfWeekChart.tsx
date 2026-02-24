@@ -44,6 +44,7 @@ const HourlyPedVolByDayOfWeekChart = ({
         id="hourly-ped-vol-day-of-week"
         option={option}
         style={{ width: '100%', height: '400px' }}
+        hideInteractionMessage
       />
     </Paper>
   )

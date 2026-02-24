@@ -23,6 +23,7 @@ const TimeSeriesByHourByLocationChart = ({
         id="ped-vol-time-series-hour"
         option={option}
         style={{ width: '100%', height: '400px' }}
+        hideInteractionMessage
       />
     </Paper>
   )

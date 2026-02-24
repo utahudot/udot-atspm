@@ -187,8 +187,25 @@ const ActiveTransportation = () => {
       location.statisticData.count = roundTo(location.statisticData?.count, 0)
       location.statisticData.max = roundTo(location.statisticData?.max, 0)
       location.statisticData.min = roundTo(location.statisticData?.min, 0)
+      location.statisticData.totalVolume = roundTo(
+        location.statisticData?.totalVolume,
+        0
+      )
+      location.statisticData.mean = roundTo(location.statisticData?.mean, 0)
+      location.statisticData.std = roundTo(location.statisticData?.std, 0)
+      location.statisticData.fiftiethPercentile = roundTo(
+        location.statisticData?.fiftiethPercentile,
+        0
+      )
+      location.statisticData.seventyFifthPercentile = roundTo(
+        location.statisticData?.seventyFifthPercentile,
+        0
+      )
+      location.statisticData.twentyFifthPercentile = roundTo(
+        location.statisticData?.twentyFifthPercentile,
+        0
+      )
     })
-
     setData(charts)
   }
 

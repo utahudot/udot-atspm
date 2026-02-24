@@ -6,6 +6,7 @@ import {
   transformBlockChartTransformer,
   transformPieChartTransformer,
 } from '@/features/charts/pedat/totalPedVolByLocationTransformer'
+import { roundTo } from '@/utils/numberFormat'
 import { Box, Paper, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
@@ -18,7 +19,10 @@ const TotalPedVolByLocationCharts = ({
     .reduce((a, b) => a + b, 0)
   const percentageData = data?.map((loc) => ({
     locationIdentifier: loc.locationIdentifier,
-    percentage: totalVolume ? ((loc.totalVolume || 0) / totalVolume) * 100 : 0,
+    percentage: roundTo(
+      totalVolume ? ((loc.totalVolume || 0) / totalVolume) * 100 : 0,
+      0
+    ),
   }))
   const pieOption = transformPieChartTransformer(percentageData || [])
   const blockOption = transformBlockChartTransformer(percentageData || [])
@@ -54,6 +58,7 @@ const TotalPedVolByLocationCharts = ({
             id="ped-vol-pie"
             option={pie}
             style={{ height: '100%' }}
+            hideInteractionMessage
           />
         </Box>
         <Box sx={{ width: '50%', height: 400 }}>
@@ -61,6 +66,7 @@ const TotalPedVolByLocationCharts = ({
             id="ped-vol-block"
             option={block}
             style={{ height: '100%' }}
+            hideInteractionMessage
           />
         </Box>
       </Box>

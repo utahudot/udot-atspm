@@ -25,13 +25,13 @@ export function transformPieChartTransformer(
         type: 'pie',
         radius: '70%',
         center: ['50%', '50%'],
+        colorBy: 'data',
         data: data.map((d) => ({
+          id: d.locationIdentifier,
           name: d.locationIdentifier,
           value: d.percentage,
         })),
-        label: {
-          formatter: '{d}%',
-        },
+        label: { formatter: '{d}%' },
       },
     ],
   }
@@ -47,15 +47,16 @@ export function transformBlockChartTransformer(
     series: [
       {
         type: 'treemap',
+        sort: null,
+        colorMappingBy: 'id',
         data: data.map((d) => ({
+          id: d.locationIdentifier,
           name: d.locationIdentifier,
           value: d.percentage,
         })),
-        label: {
-          show: true,
-          formatter: '{b}',
-        },
+        label: { show: true, formatter: '{b}' },
         roam: false,
+        breadcrumb: { show: false },
       },
     ],
   }

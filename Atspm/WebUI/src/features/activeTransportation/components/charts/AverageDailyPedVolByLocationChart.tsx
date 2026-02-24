@@ -22,6 +22,7 @@ const AverageDailyPedVolByLocationChart = ({
         id="avg-daily-ped-vol"
         option={option}
         style={{ width: '100%', height: '400px' }}
+        hideInteractionMessage
       />
     </Paper>
   )

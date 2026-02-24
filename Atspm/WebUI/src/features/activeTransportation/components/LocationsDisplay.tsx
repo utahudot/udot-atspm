@@ -116,7 +116,7 @@ const LocationsDisplay = ({
 
       <Box
         sx={{
-          maxHeight: '505px',
+          maxHeight: '350px',
           minWidth: '450px',
           maxWidth: '600px',
           overflowY: 'auto',

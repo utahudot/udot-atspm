@@ -50,6 +50,7 @@ const DailyPedVolByMonthChart = ({
         id="daily-ped-vol-month"
         option={option}
         style={{ width: '100%', height: '400px' }}
+        hideInteractionMessage
       />
     </Paper>
   )

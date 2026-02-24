@@ -23,6 +23,7 @@ const BoxPlotByLocationChart = ({
         id="ped-vol-boxplot-location"
         option={option}
         style={{ width: '100%', height: '400px' }}
+        hideInteractionMessage
       />
     </Paper>
   )
