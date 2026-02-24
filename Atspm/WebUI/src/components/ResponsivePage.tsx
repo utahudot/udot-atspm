@@ -26,7 +26,7 @@ export const ResponsivePageLayout = ({
   width = '100%',
 }: ResponsivePageLayoutProps) => {
   const theme = useTheme()
-  const { openRightSidebar } = useSidebarStore()
+  const { toggleRightSidebar } = useSidebarStore()
 
   return (
     <Box
@@ -67,7 +67,7 @@ export const ResponsivePageLayout = ({
               <Tooltip title="Page info">
                 <IconButton
                   aria-label="Open page info"
-                  onClick={openRightSidebar}
+                  onClick={toggleRightSidebar}
                   sx={{ mb: 2, p: 0 }}
                 >
                   <InfoOutlinedIcon />
