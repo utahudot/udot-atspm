@@ -3,7 +3,7 @@ import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/Multip
 import SelectDateTime from '@/components/selectTimeSpan'
 import { StyledPaper } from '@/components/StyledPaper'
 import LocationsDisplay from '@/features/activeTransportation/components/LocationsDisplay'
-import { ATErrorState } from '@/pages/reports/active-transportation'
+import { ATErrorState } from '@/pages/reports/pedestrian-activity'
 import { DropResult } from '@hello-pangea/dnd'
 import {
   Box,

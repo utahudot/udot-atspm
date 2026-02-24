@@ -4,8 +4,10 @@ import {
   useGetPedestrianAggregationLocationData,
 } from '@/api/reports'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
+import RightSidebar from '@/components/RightSidebar'
 import { ActiveTransportationOptions } from '@/features/activeTransportation/components/ActiveTransportationOptions'
 import PedatChartsContainer from '@/features/activeTransportation/components/PedatChartsContainer'
+import PedestrianActivityInfoPanel from '@/features/activeTransportation/components/PedestrianActivityInfoPanel'
 import { dateToTimestamp } from '@/utils/dateTime'
 import { roundTo } from '@/utils/numberFormat'
 import { DropResult } from '@hello-pangea/dnd'
@@ -191,7 +193,15 @@ const ActiveTransportation = () => {
   }
 
   return (
-    <ResponsivePageLayout title="Active Transportation">
+    <ResponsivePageLayout
+      title="Pedestrian Activity"
+      subtitle="Utah State University"
+      hasRightSidebar
+    >
+      <RightSidebar title="Pedestrian Activity">
+        <PedestrianActivityInfoPanel />
+      </RightSidebar>
+
       <ActiveTransportationOptions
         errorState={errorState}
         locations={locations}
@@ -208,6 +218,7 @@ const ActiveTransportation = () => {
         onReorderLocations={handleReorderLocations}
         onUpdateLocation={handleUpdateLocation}
       />
+
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
         <LoadingButton
           loading={isLoading}
@@ -221,6 +232,7 @@ const ActiveTransportation = () => {
         </LoadingButton>
         {renderErrorAlert()}
       </Box>
+
       {data && (
         <PedatChartsContainer data={data} phase={phase} timeUnit={timeUnit} />
       )}
