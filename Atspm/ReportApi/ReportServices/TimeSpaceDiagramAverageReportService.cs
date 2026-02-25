@@ -259,7 +259,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                             137,
                             138,
                             139,
-                            140 });
+                            140,
+                            141});
                         currentProgrammedSplitsForTimePeriod.AddRange(GetEventOverallapingTime(start, programmedSplits, "Program Splits"));
                     }
 

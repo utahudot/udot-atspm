@@ -123,6 +123,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
                 result.LogEvents.Add(
                     new WatchDogLogEventDTO(
+                        e.Id,
                         e.LocationId,
                         e.LocationIdentifier,
                         e.Timestamp,

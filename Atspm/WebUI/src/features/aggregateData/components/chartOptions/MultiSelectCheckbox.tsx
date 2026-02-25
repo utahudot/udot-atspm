@@ -62,7 +62,7 @@ export const MultiSelectCheckbox = ({
         }
 
   return (
-    <Paper sx={paperStyles}>
+    <Box sx={paperStyles}>
       {direction === 'vertical' ? (
         <StyledComponentHeader header={header} />
       ) : (
@@ -71,6 +71,6 @@ export const MultiSelectCheckbox = ({
         </Box>
       )}
       <Box sx={checkboxContainerStyles}>{itemList.map(renderCheckbox)}</Box>
-    </Paper>
+    </Box>
   )
 }
