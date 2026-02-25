@@ -33,3 +33,4 @@ export * from './wait-time/wait-time';
 export * from './watchdog/watchdog';
 export * from './watch-dog-dashboard/watch-dog-dashboard';
 export * from './yellow-red-activations/yellow-red-activations';
+export * from './report-api.schemas';

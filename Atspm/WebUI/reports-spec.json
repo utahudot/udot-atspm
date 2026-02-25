@@ -1,19 +1,24 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "ATSPM Report Data Api",
-    "description": "ATSPM Report Data with OpenAPI, Swashbuckle, and API versioning.",
+    "title": "ATSPM Report Api",
+    "description": "ATSPM Reporting with OpenAPI, Swashbuckle, and API versioning.",
     "contact": {
       "name": "udotdevelopment",
       "url": "https://udottraffic.utah.gov/atspm/",
       "email": "udotdevelopment@gmail.com"
     },
     "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
+      "name": "Apache",
+      "url": "http://www.apache.org/licenses/LICENSE-2."
     },
     "version": "1.0"
   },
+  "servers": [
+    {
+      "url": "/report"
+    }
+  ],
   "paths": {
     "/api/v1/Aggregation/test": {
       "get": {
@@ -28,11 +33,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -40,14 +40,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AggregationResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -82,21 +74,6 @@
               "schema": {
                 "$ref": "#/components/schemas/AggregationOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/AggregationOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/AggregationOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/AggregationOptions"
-              }
             }
           }
         },
@@ -105,11 +82,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -126,14 +98,6 @@
                     "$ref": "#/components/schemas/AggregationResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AggregationResult"
-                  }
-                }
               }
             }
           },
@@ -141,11 +105,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -168,11 +127,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -180,14 +134,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApproachDelayResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -222,21 +168,6 @@
               "schema": {
                 "$ref": "#/components/schemas/ApproachDelayOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachDelayOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachDelayOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachDelayOptions"
-              }
             }
           }
         },
@@ -245,11 +176,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -266,14 +192,6 @@
                     "$ref": "#/components/schemas/ApproachDelayResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApproachDelayResult"
-                  }
-                }
               }
             }
           },
@@ -281,11 +199,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -308,11 +221,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -320,14 +228,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApproachSpeedResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -362,21 +262,6 @@
               "schema": {
                 "$ref": "#/components/schemas/ApproachSpeedOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachSpeedOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachSpeedOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachSpeedOptions"
-              }
             }
           }
         },
@@ -385,11 +270,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -406,14 +286,6 @@
                     "$ref": "#/components/schemas/ApproachSpeedResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApproachSpeedResult"
-                  }
-                }
               }
             }
           },
@@ -421,11 +293,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -448,11 +315,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -460,14 +322,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApproachVolumeResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -502,21 +356,6 @@
               "schema": {
                 "$ref": "#/components/schemas/ApproachVolumeOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachVolumeOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachVolumeOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachVolumeOptions"
-              }
             }
           }
         },
@@ -525,11 +364,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -546,14 +380,6 @@
                     "$ref": "#/components/schemas/ApproachVolumeResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApproachVolumeResult"
-                  }
-                }
               }
             }
           },
@@ -561,11 +387,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -588,11 +409,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -600,14 +416,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ArrivalOnRedResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -642,21 +450,6 @@
               "schema": {
                 "$ref": "#/components/schemas/ArrivalOnRedOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ArrivalOnRedOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ArrivalOnRedOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ArrivalOnRedOptions"
-              }
             }
           }
         },
@@ -665,11 +458,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -686,14 +474,6 @@
                     "$ref": "#/components/schemas/ArrivalOnRedResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ArrivalOnRedResult"
-                  }
-                }
               }
             }
           },
@@ -701,11 +481,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -728,11 +503,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -740,14 +510,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GreenTimeUtilizationResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -782,21 +544,6 @@
               "schema": {
                 "$ref": "#/components/schemas/GreenTimeUtilizationOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/GreenTimeUtilizationOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/GreenTimeUtilizationOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/GreenTimeUtilizationOptions"
-              }
             }
           }
         },
@@ -805,11 +552,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -826,14 +568,6 @@
                     "$ref": "#/components/schemas/GreenTimeUtilizationResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GreenTimeUtilizationResult"
-                  }
-                }
               }
             }
           },
@@ -841,11 +575,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -868,11 +597,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -880,14 +604,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeftTurnGapAnalysisResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -922,21 +638,6 @@
               "schema": {
                 "$ref": "#/components/schemas/LeftTurnGapAnalysisOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapAnalysisOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapAnalysisOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapAnalysisOptions"
-              }
             }
           }
         },
@@ -945,11 +646,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -966,14 +662,6 @@
                     "$ref": "#/components/schemas/LeftTurnGapAnalysisResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeftTurnGapAnalysisResult"
-                  }
-                }
               }
             }
           },
@@ -981,11 +669,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1008,11 +691,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1020,11 +698,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GapDurationResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/GapDurationResult"
                 }
@@ -1056,21 +729,6 @@
               "schema": {
                 "$ref": "#/components/schemas/GapDurationOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/GapDurationOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/GapDurationOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/GapDurationOptions"
-              }
             }
           }
         },
@@ -1079,11 +737,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1097,11 +750,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/GapDurationResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/GapDurationResult"
-                }
               }
             }
           },
@@ -1109,11 +757,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1136,11 +779,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1148,14 +786,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeftTurnGapReportResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1190,21 +820,6 @@
               "schema": {
                 "$ref": "#/components/schemas/LeftTurnGapReportOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapReportOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapReportOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapReportOptions"
-              }
             }
           }
         },
@@ -1213,11 +828,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1234,14 +844,6 @@
                     "$ref": "#/components/schemas/LeftTurnGapReportResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeftTurnGapReportResult"
-                  }
-                }
               }
             }
           },
@@ -1249,11 +851,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1276,11 +873,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1288,11 +880,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeftTurnGapDataCheckResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/LeftTurnGapDataCheckResult"
                 }
@@ -1324,21 +911,6 @@
               "schema": {
                 "$ref": "#/components/schemas/LeftTurnGapDataCheckOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapDataCheckOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapDataCheckOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnGapDataCheckOptions"
-              }
             }
           }
         },
@@ -1347,11 +919,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1365,11 +932,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/LeftTurnGapDataCheckResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeftTurnGapDataCheckResult"
-                }
               }
             }
           },
@@ -1377,11 +939,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1404,11 +961,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1416,11 +968,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PeakHourResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/PeakHourResult"
                 }
@@ -1452,21 +999,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PeakHourOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PeakHourOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PeakHourOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PeakHourOptions"
-              }
             }
           }
         },
@@ -1475,11 +1007,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1493,11 +1020,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/PeakHourResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/PeakHourResult"
-                }
               }
             }
           },
@@ -1505,11 +1027,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1532,11 +1049,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1544,11 +1056,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PedActuationResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/PedActuationResult"
                 }
@@ -1580,21 +1087,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PedActuationOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedActuationOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedActuationOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedActuationOptions"
-              }
             }
           }
         },
@@ -1603,11 +1095,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1621,11 +1108,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/PedActuationResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/PedActuationResult"
-                }
               }
             }
           },
@@ -1633,11 +1115,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1660,11 +1137,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1672,11 +1144,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeftTurnSplitFailResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/LeftTurnSplitFailResult"
                 }
@@ -1708,21 +1175,6 @@
               "schema": {
                 "$ref": "#/components/schemas/LeftTurnSplitFailOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnSplitFailOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnSplitFailOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LeftTurnSplitFailOptions"
-              }
             }
           }
         },
@@ -1731,11 +1183,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1749,11 +1196,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/LeftTurnSplitFailResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeftTurnSplitFailResult"
-                }
               }
             }
           },
@@ -1761,11 +1203,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1788,11 +1225,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -1800,11 +1232,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VolumeResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/VolumeResult"
                 }
@@ -1836,21 +1263,6 @@
               "schema": {
                 "$ref": "#/components/schemas/VolumeOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VolumeOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VolumeOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VolumeOptions"
-              }
             }
           }
         },
@@ -1859,11 +1271,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1877,11 +1284,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/VolumeResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/VolumeResult"
-                }
               }
             }
           },
@@ -1889,11 +1291,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1923,21 +1320,6 @@
               "schema": {
                 "$ref": "#/components/schemas/LinkPivotPcdOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkPivotPcdOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkPivotPcdOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkPivotPcdOptions"
-              }
             }
           }
         },
@@ -1946,11 +1328,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1964,11 +1341,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/LinkPivotPcdResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkPivotPcdResult"
-                }
               }
             }
           },
@@ -1976,11 +1348,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2003,11 +1370,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2015,11 +1377,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkPivotResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/LinkPivotResult"
                 }
@@ -2051,21 +1408,6 @@
               "schema": {
                 "$ref": "#/components/schemas/LinkPivotOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkPivotOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkPivotOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkPivotOptions"
-              }
             }
           }
         },
@@ -2074,11 +1416,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2092,11 +1429,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/LinkPivotResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkPivotResult"
-                }
               }
             }
           },
@@ -2104,11 +1436,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2131,11 +1458,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2143,14 +1465,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PedDelayResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -2185,21 +1499,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PedDelayOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedDelayOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedDelayOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedDelayOptions"
-              }
             }
           }
         },
@@ -2208,11 +1507,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2229,14 +1523,6 @@
                     "$ref": "#/components/schemas/PedDelayResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PedDelayResult"
-                  }
-                }
               }
             }
           },
@@ -2244,11 +1530,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2271,11 +1552,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2286,11 +1562,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2322,21 +1593,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PedatLocationDataQuery"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedatLocationDataQuery"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedatLocationDataQuery"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PedatLocationDataQuery"
-              }
             }
           }
         },
@@ -2345,11 +1601,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2366,14 +1617,6 @@
                     "$ref": "#/components/schemas/PedatLocationData"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PedatLocationData"
-                  }
-                }
               }
             }
           },
@@ -2381,11 +1624,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2408,11 +1646,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2420,11 +1653,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PreemptDetailResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/PreemptDetailResult"
                 }
@@ -2456,21 +1684,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PreemptDetailOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptDetailOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptDetailOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptDetailOptions"
-              }
             }
           }
         },
@@ -2479,11 +1692,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2497,11 +1705,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/PreemptDetailResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/PreemptDetailResult"
-                }
               }
             }
           },
@@ -2509,11 +1712,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2536,11 +1734,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2548,11 +1741,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PreemptServiceResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/PreemptServiceResult"
                 }
@@ -2584,21 +1772,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PreemptServiceOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptServiceOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptServiceOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptServiceOptions"
-              }
             }
           }
         },
@@ -2607,11 +1780,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2625,11 +1793,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/PreemptServiceResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/PreemptServiceResult"
-                }
               }
             }
           },
@@ -2637,11 +1800,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2664,11 +1822,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2676,11 +1829,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PreemptServiceRequestResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/PreemptServiceRequestResult"
                 }
@@ -2712,21 +1860,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PreemptServiceRequestOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptServiceRequestOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptServiceRequestOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PreemptServiceRequestOptions"
-              }
             }
           }
         },
@@ -2735,11 +1868,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2753,11 +1881,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/PreemptServiceRequestResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/PreemptServiceRequestResult"
-                }
               }
             }
           },
@@ -2765,11 +1888,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2792,11 +1910,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2804,14 +1917,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PurdueCoordinationDiagramResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -2846,21 +1951,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PurdueCoordinationDiagramOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PurdueCoordinationDiagramOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PurdueCoordinationDiagramOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PurdueCoordinationDiagramOptions"
-              }
             }
           }
         },
@@ -2869,11 +1959,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2890,14 +1975,6 @@
                     "$ref": "#/components/schemas/PurdueCoordinationDiagramResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PurdueCoordinationDiagramResult"
-                  }
-                }
               }
             }
           },
@@ -2905,11 +1982,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2932,11 +2004,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -2944,11 +2011,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PhaseTerminationResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/PhaseTerminationResult"
                 }
@@ -2980,21 +2042,6 @@
               "schema": {
                 "$ref": "#/components/schemas/PurduePhaseTerminationOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PurduePhaseTerminationOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PurduePhaseTerminationOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PurduePhaseTerminationOptions"
-              }
             }
           }
         },
@@ -3003,11 +2050,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3021,11 +2063,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/PhaseTerminationResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/PhaseTerminationResult"
-                }
               }
             }
           },
@@ -3033,11 +2070,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3060,11 +2092,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3072,11 +2099,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RampMeteringResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/RampMeteringResult"
                 }
@@ -3108,21 +2130,6 @@
               "schema": {
                 "$ref": "#/components/schemas/RampMeteringOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RampMeteringOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RampMeteringOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RampMeteringOptions"
-              }
             }
           }
         },
@@ -3131,11 +2138,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3149,11 +2151,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/RampMeteringResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/RampMeteringResult"
-                }
               }
             }
           },
@@ -3161,11 +2158,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3188,11 +2180,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3200,14 +2187,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SplitFailsResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3242,21 +2221,6 @@
               "schema": {
                 "$ref": "#/components/schemas/SplitFailOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/SplitFailOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/SplitFailOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/SplitFailOptions"
-              }
             }
           }
         },
@@ -3265,11 +2229,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3286,14 +2245,6 @@
                     "$ref": "#/components/schemas/SplitFailsResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SplitFailsResult"
-                  }
-                }
               }
             }
           },
@@ -3301,11 +2252,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3328,11 +2274,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3340,14 +2281,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SplitMonitorResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3382,21 +2315,6 @@
               "schema": {
                 "$ref": "#/components/schemas/SplitMonitorOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/SplitMonitorOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/SplitMonitorOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/SplitMonitorOptions"
-              }
             }
           }
         },
@@ -3405,11 +2323,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3426,14 +2339,6 @@
                     "$ref": "#/components/schemas/SplitMonitorResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SplitMonitorResult"
-                  }
-                }
               }
             }
           },
@@ -3441,11 +2346,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3468,11 +2368,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3480,14 +2375,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TimeSpaceDiagramResultForPhase"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3522,21 +2409,6 @@
               "schema": {
                 "$ref": "#/components/schemas/TimeSpaceDiagramOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimeSpaceDiagramOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimeSpaceDiagramOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimeSpaceDiagramOptions"
-              }
             }
           }
         },
@@ -3545,11 +2417,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3566,14 +2433,6 @@
                     "$ref": "#/components/schemas/TimeSpaceDiagramResultForPhase"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TimeSpaceDiagramResultForPhase"
-                  }
-                }
               }
             }
           },
@@ -3581,11 +2440,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3608,11 +2462,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3620,14 +2469,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TimeSpaceDiagramAverageResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3662,21 +2503,6 @@
               "schema": {
                 "$ref": "#/components/schemas/TimeSpaceDiagramAverageOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimeSpaceDiagramAverageOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimeSpaceDiagramAverageOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimeSpaceDiagramAverageOptions"
-              }
             }
           }
         },
@@ -3685,11 +2511,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3706,14 +2527,6 @@
                     "$ref": "#/components/schemas/TimeSpaceDiagramAverageResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TimeSpaceDiagramAverageResult"
-                  }
-                }
               }
             }
           },
@@ -3721,11 +2534,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3748,11 +2556,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3760,14 +2563,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TimingAndActuationsForPhaseResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3802,21 +2597,6 @@
               "schema": {
                 "$ref": "#/components/schemas/TimingAndActuationsOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimingAndActuationsOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimingAndActuationsOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TimingAndActuationsOptions"
-              }
             }
           }
         },
@@ -3825,11 +2605,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3846,14 +2621,6 @@
                     "$ref": "#/components/schemas/TimingAndActuationsForPhaseResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TimingAndActuationsForPhaseResult"
-                  }
-                }
               }
             }
           },
@@ -3861,11 +2628,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3888,11 +2650,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -3900,14 +2657,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TransitSignalPriorityResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3942,21 +2691,6 @@
               "schema": {
                 "$ref": "#/components/schemas/TransitSignalPriorityOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TransitSignalPriorityOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TransitSignalPriorityOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TransitSignalPriorityOptions"
-              }
             }
           }
         },
@@ -3965,11 +2699,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3986,14 +2715,6 @@
                     "$ref": "#/components/schemas/TransitSignalPriorityResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TransitSignalPriorityResult"
-                  }
-                }
               }
             }
           },
@@ -4001,11 +2722,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4028,11 +2744,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -4040,11 +2751,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TurningMovementCountsResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/TurningMovementCountsResult"
                 }
@@ -4076,21 +2782,6 @@
               "schema": {
                 "$ref": "#/components/schemas/TurningMovementCountsOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TurningMovementCountsOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TurningMovementCountsOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/TurningMovementCountsOptions"
-              }
             }
           }
         },
@@ -4099,11 +2790,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4117,11 +2803,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/TurningMovementCountsResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/TurningMovementCountsResult"
-                }
               }
             }
           },
@@ -4129,11 +2810,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4156,11 +2832,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -4168,14 +2839,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WaitTimeResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -4210,21 +2873,6 @@
               "schema": {
                 "$ref": "#/components/schemas/WaitTimeOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WaitTimeOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WaitTimeOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WaitTimeOptions"
-              }
             }
           }
         },
@@ -4233,11 +2881,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4254,14 +2897,6 @@
                     "$ref": "#/components/schemas/WaitTimeResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WaitTimeResult"
-                  }
-                }
               }
             }
           },
@@ -4269,11 +2904,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4292,11 +2922,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4319,11 +2944,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -4331,11 +2951,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WatchDogResult"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/WatchDogResult"
                 }
@@ -4367,21 +2982,6 @@
               "schema": {
                 "$ref": "#/components/schemas/WatchDogOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogOptions"
-              }
             }
           }
         },
@@ -4390,11 +2990,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4408,11 +3003,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/WatchDogResult"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/WatchDogResult"
-                }
               }
             }
           },
@@ -4420,11 +3010,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4454,21 +3039,6 @@
               "schema": {
                 "$ref": "#/components/schemas/WatchDogDashboardOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogDashboardOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogDashboardOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogDashboardOptions"
-              }
             }
           }
         },
@@ -4477,11 +3047,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4495,11 +3060,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/WatchDogIssueTypeGroup"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/WatchDogIssueTypeGroup"
-                }
               }
             }
           },
@@ -4507,11 +3067,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4534,11 +3089,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
               }
             }
           },
@@ -4546,14 +3096,6 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/YellowRedActivationsResult"
-                  }
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -4588,21 +3130,6 @@
               "schema": {
                 "$ref": "#/components/schemas/YellowRedActivationsOptions"
               }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/YellowRedActivationsOptions"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/YellowRedActivationsOptions"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/YellowRedActivationsOptions"
-              }
             }
           }
         },
@@ -4611,11 +3138,6 @@
             "description": "Not Acceptable",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -4632,14 +3154,6 @@
                     "$ref": "#/components/schemas/YellowRedActivationsResult"
                   }
                 }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/YellowRedActivationsResult"
-                  }
-                }
               }
             }
           },
@@ -4647,11 +3161,6 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -5372,20 +3881,6 @@
         },
         "additionalProperties": false
       },
-      "DateTimeInt32KeyValuePair": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "value": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
       "DayOfWeek": {
         "enum": [0, 1, 2, 3, 4, 5, 6],
         "type": "integer",
@@ -5725,6 +4220,20 @@
           "volume": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "KeyValuePair`2": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -9725,7 +8234,7 @@
             "nullable": true
           },
           "peakHour": {
-            "$ref": "#/components/schemas/DateTimeInt32KeyValuePair"
+            "$ref": "#/components/schemas/KeyValuePair`2"
           },
           "peakHourFactor": {
             "type": "number",
@@ -9981,23 +8490,6 @@
         },
         "additionalProperties": false
       },
-      "WatchDogFirmwareCountWatchDogModel": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "firmware": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/WatchDogFirmwareCount"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "WatchDogIssueTypeGroup": {
         "type": "object",
         "properties": {
@@ -10089,6 +8581,23 @@
         },
         "additionalProperties": false
       },
+      "WatchDogModel`1": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "firmware": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WatchDogFirmwareCount"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "WatchDogOptions": {
         "type": "object",
         "properties": {
@@ -10140,7 +8649,7 @@
           "model": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/WatchDogFirmwareCountWatchDogModel"
+              "$ref": "#/components/schemas/WatchDogModel`1"
             },
             "nullable": true
           }
