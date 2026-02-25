@@ -18,7 +18,7 @@ export default function transformAvgDailyPedVolByLocation(
   data: PedestrianVolumeByLocation[]
 ): EChartsOption {
   const title = {
-    text: 'Average Daily Pedestrian Volume by Location',
+    text: 'Average Daily Pedestrian Volume, by Location',
     left: 'center',
   }
 

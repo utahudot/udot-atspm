@@ -17,7 +17,7 @@ export default function transformDailyPedVolByMonthTransformer(
   data: MonthlyPedestrianVolume[]
 ): EChartsOption {
   const title = {
-    text: 'Average Daily Pedestrian Volume by Month of Year',
+    text: 'Average Daily Pedestrian Volume, by Month of Year',
     left: 'center',
   }
 

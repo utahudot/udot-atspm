@@ -17,7 +17,7 @@ export default function transformHourlyPedVolByHourOfDay(
   data: HourlyPedestrianVolume[]
 ): EChartsOption {
   const title = {
-    text: 'Average Hourly Pedestrian Volume by Hour of Day',
+    text: 'Average Hourly Pedestrian Volume, by Hour of Day',
     left: 'center',
   }
 

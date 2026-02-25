@@ -31,7 +31,7 @@ export default function transformHourlyPedVolByDayOfWeekTransformer(
   )
 
   const title = {
-    text: 'Average Hourly Pedestrian Volume by Day of Week',
+    text: 'Average Hourly Pedestrian Volume, by Day of Week',
     left: 'center',
   }
 
