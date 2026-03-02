@@ -5,6 +5,7 @@ import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import QueryStatsIcon from '@mui/icons-material/QueryStats'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
 import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
@@ -29,6 +30,7 @@ export default function Sidebar() {
       text: 'Transit Signal Priority',
       url: '/reports/transit-signal-priority',
     },
+    { text: 'Pedestrian Activity', url: '/reports/pedestrian-activity' },
   ]
   if (hasLTGRPermission) {
     reportsList.push({ text: 'Left Turn Gap', url: '/reports/left-turn-gap' })
@@ -126,7 +128,12 @@ export default function Sidebar() {
               <NavItem
                 icon={<FileDownloadIcon />}
                 text={'Export'}
-                url={'/export'}
+                url={'/data/export'}
+              />
+              <NavItem
+                icon={<QueryStatsIcon />}
+                text={'Usage'}
+                url={'/data/usage'}
               />
             </SubMenu>
           )}

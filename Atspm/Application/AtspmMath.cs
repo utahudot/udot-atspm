@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using System.Numerics;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -155,5 +156,69 @@ namespace Utah.Udot.Atspm
                 .All(a => a.EventCode == w.EventCode))
                 .ToList();
         }
+
+        public static double Percentile<T>(IEnumerable<T> sequence, double percentile) where T : INumber<T>
+        {
+            if (sequence == null || !sequence.Any())
+            {
+                throw new InvalidOperationException("The sequence must not be empty.");
+            }
+
+            if (percentile < 0 || percentile > 100)
+            {
+                throw new ArgumentOutOfRangeException("Percentile must be between 0 and 100.");
+            }
+
+            var sorted = sequence.Select(x => Convert.ToDouble(x)).OrderBy(x => x).ToList();
+            // Sort the list
+            sorted.Sort();
+
+            // Handle the case where there is only 1 number
+            if (sorted.Count == 1)
+            {
+                return sorted[0];
+            }
+
+            // Get the rank (position)
+            double rank = (percentile / 100.0) * (sorted.Count - 1);
+            int lowerIndex = (int)Math.Floor(rank);
+            int upperIndex = (int)Math.Ceiling(rank);
+
+            // If rank is an integer or lowerIndex equals upperIndex, return the value at that index
+            if (lowerIndex == upperIndex)
+            {
+                return sorted[lowerIndex];
+            }
+
+            // Otherwise, interpolate between the lower and upper values
+            double lowerValue = sorted[lowerIndex];
+            double upperValue = sorted[upperIndex];
+
+            return lowerValue + (upperValue - lowerValue) * (rank - lowerIndex);
+        }
+
+        public static double Mean<T>(IEnumerable<T> sequence) where T : INumber<T>
+        => sequence?.Select(x => Convert.ToDouble(x)).Average()
+           ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double Min<T>(IEnumerable<T> sequence) where T : INumber<T>
+            => sequence?.Select(x => Convert.ToDouble(x)).Min()
+               ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double Max<T>(IEnumerable<T> sequence) where T : INumber<T>
+            => sequence?.Select(x => Convert.ToDouble(x)).Max()
+               ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double SampleStandardDeviation<T>(IEnumerable<T> sequence) where T : INumber<T>
+        {
+            if (sequence == null || sequence.Count() < 2)
+                return 0;
+
+            double mean = Mean(sequence);
+            double sumOfSquares = sequence.Sum(x => Math.Pow(Convert.ToDouble(x) - mean, 2));
+
+            return Math.Sqrt(sumOfSquares / (sequence.Count() - 1));
+        }
+
     }
 }
