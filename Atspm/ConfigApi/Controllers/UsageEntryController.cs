@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/VersionHistoryController.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/AreaController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,18 +22,13 @@ using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Version history controller
+    /// Usage entry Controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class VersionHistoryController : GeneralPolicyControllerBase<VersionHistory, int>
+    public class UsageEntryController(IUsageEntryRepository repository) : LocationPolicyControllerBase<UsageEntry, int>(repository)
     {
-        private readonly IVersionHistoryRepository _repository;
-
-        /// <inheritdoc/>
-        public VersionHistoryController(IVersionHistoryRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IUsageEntryRepository _repository = repository;
 
         #region NavigationProperties
 

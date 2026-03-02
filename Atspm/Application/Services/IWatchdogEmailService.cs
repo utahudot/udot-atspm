@@ -42,6 +42,7 @@ namespace Utah.Udot.Atspm.Services
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> locations,
-            List<WatchDogLogEvent> logsFromPreviousDay);
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            bool rampEmail = false);
     }
 }

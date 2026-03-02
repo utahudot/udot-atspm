@@ -18,8 +18,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Concurrent;
+using System.Reflection;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.ATSPM.DataApi.Dtos;
 
 namespace Utah.Udot.ATSPM.DataApi.Controllers
 {
@@ -47,6 +50,10 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// </summary>
         protected readonly ILogger _log = log;
 
+        private static readonly XmlDocReader XmlDocs = new XmlDocReader(typeof(T2).Assembly);
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyCache = new();
+        private static PropertyInfo[] GetCachedProperties(Type t) => _propertyCache.GetOrAdd(t, x => x.GetProperties());
+
         /// <summary>
         /// Retrieves the available derived data types defined in the system.
         /// </summary>
@@ -61,16 +68,31 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// </response>
         [HttpGet("[Action]")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IReadOnlyList<DataTypeMeta>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public ActionResult<IReadOnlyList<string>> GetDataTypes()
+        public ActionResult<IReadOnlyList<DataTypeMeta>> GetDataTypes()
         {
             try
             {
-                var result = typeof(T2)
-                    .ListDerivedTypes()
-                    .ToList()
-                    .AsReadOnly();
+                var xml = XmlDocs;
+                var types = typeof(T2).ToDictionary();
+
+                var result = types.Where(t => !t.Value.IsAbstract)
+                    .Select(t => 
+                    { 
+                        var type = t.Value; 
+                        var typeComment = xml.GetTypeComment(type); 
+                        var props = GetCachedProperties(type)
+                        .Select(p => new PropertyMeta { Name = p.Name, Description = xml.GetPropertyComment(p) })
+                        .ToList(); 
+                        
+                        return new DataTypeMeta 
+                        {
+                            Name = t.Key, 
+                            Description = typeComment, 
+                            Properties = props 
+                        }; 
+                    }).ToList();
 
                 return Ok(result);
             }

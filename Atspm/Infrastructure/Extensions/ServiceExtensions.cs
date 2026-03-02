@@ -98,7 +98,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 default:
                     {
-                        return builder.UseSqlServer(opt.ConnectionString, opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
+                        return builder.UseInMemoryDatabase(Guid.NewGuid().ToString());
                     }
             }
         }
@@ -154,6 +154,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
             services.AddScoped<IAreaRepository, AreaEFRepository>();
+            services.AddScoped<IUsageEntryRepository, UsageEntryEFRepository>();
             services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
             services.AddScoped<IDetectorCommentRepository, DetectorCommentEFRepository>();
             services.AddScoped<IDetectorRepository, DetectorEFRepository>();
@@ -177,7 +178,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IUserAreaRepository, UserAreaEFRepository>();
             services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
             services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
-            services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
 

@@ -66,5 +66,15 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// Stuck Queue Detection
         /// </summary>
         StuckQueueDetection = 9,
+
+        /// <summary>
+        /// Low Ramp Detector Hits
+        /// </summary>
+        LowRampDetectorHits = 10,
+
+        /// <summary>
+        /// Ramp Missed Detector Hits
+        /// </summary>
+        RampMissedDetectorHits = 11,
     }
 }
