@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Business.Watchdog
     public class WatchDogLogEventDTO : WatchDogLogEvent
     {
         public WatchDogLogEventDTO(
+            int id,
             int locationId,
             string locationIdentifier,
             DateTime timestamp,
@@ -36,6 +37,7 @@ namespace Utah.Udot.Atspm.Business.Watchdog
             string jurisdictionName,
             IEnumerable<AreaDTO> areas) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, phase)
         {
+            Id = id;
             RegionId = regionId;
             RegionDescription = regionDescription;
             JurisdictionId = jurisdictionId;

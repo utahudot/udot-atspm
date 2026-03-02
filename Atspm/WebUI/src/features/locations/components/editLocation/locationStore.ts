@@ -205,6 +205,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
           ...rest,
           id: Math.round(Math.random() * 10000),
           isNew: true,
+          detectorChannel: null,
         })),
       }
       set({ approaches: [...approaches, newApproach] })
@@ -221,7 +222,15 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
           console.error(err)
         }
       }
-      set({ approaches: filtered })
+
+      const approachDetectors = approach.detectors.map((d) => d.id)
+      const { channelMap } = get()
+      approachDetectors.forEach((id) => channelMap.delete(id))
+      set({
+        approaches: filtered,
+        savedApproaches: toBaseline(filtered),
+        channelMap: new Map(channelMap),
+      })
     },
 
     resetStore: () => {
@@ -320,10 +329,19 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         }
       }
 
-      set({ approaches: updatedApproaches })
+      set({
+        approaches: updatedApproaches,
+        savedApproaches: toBaseline(updatedApproaches),
+        channelMap: new Map(channelMap),
+      })
     },
   }))
 )
+
+const deepClone = <T>(v: T): T => JSON.parse(JSON.stringify(v))
+
+const toBaseline = (approaches: ConfigApproach[]) =>
+  deepClone(approaches.map(stripUIFlags))
 
 const normalize = (v: any): any => {
   if (Array.isArray(v)) return v.map(normalize)

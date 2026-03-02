@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using System.Numerics;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -155,5 +156,89 @@ namespace Utah.Udot.Atspm
                 .All(a => a.EventCode == w.EventCode))
                 .ToList();
         }
+
+        /// <summary>
+        /// Calculates the specified percentile value from a sequence of numeric values.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The numeric type of the elements in the sequence. Must implement <see cref="INumber{T}"/>.
+        /// </typeparam>
+        /// <param name="sequence">
+        /// The sequence of numeric values from which to compute the percentile.
+        /// </param>
+        /// <param name="percentile">
+        /// The desired percentile (0–100). Values outside this range will cause an exception.
+        /// </param>
+        /// <returns>
+        /// The computed percentile value, using linear interpolation when the percentile falls between two data points.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the sequence is null or contains no elements.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="percentile"/> is less than 0 or greater than 100.
+        /// </exception>
+        /// <remarks>
+        /// The method sorts the sequence, computes the rank based on the percentile,
+        /// and performs linear interpolation when necessary.
+        /// </remarks>
+        public static double Percentile<T>(IEnumerable<T> sequence, double percentile) where T : INumber<T>
+        {
+            if (sequence == null || !sequence.Any())
+            {
+                throw new InvalidOperationException("The sequence must not be empty.");
+            }
+
+            if (percentile < 0 || percentile > 100)
+            {
+                throw new ArgumentOutOfRangeException("Percentile must be between 0 and 100.");
+            }
+
+            var sorted = sequence.Select(x => Convert.ToDouble(x)).OrderBy(x => x).ToList();
+            sorted.Sort();
+
+            if (sorted.Count == 1)
+            {
+                return sorted[0];
+            }
+
+            double rank = (percentile / 100.0) * (sorted.Count - 1);
+            int lowerIndex = (int)Math.Floor(rank);
+            int upperIndex = (int)Math.Ceiling(rank);
+
+            if (lowerIndex == upperIndex)
+            {
+                return sorted[lowerIndex];
+            }
+
+            double lowerValue = sorted[lowerIndex];
+            double upperValue = sorted[upperIndex];
+
+            return lowerValue + (upperValue - lowerValue) * (rank - lowerIndex);
+        }
+
+        public static double Mean<T>(IEnumerable<T> sequence) where T : INumber<T>
+        => sequence?.Select(x => Convert.ToDouble(x)).Average()
+           ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double Min<T>(IEnumerable<T> sequence) where T : INumber<T>
+            => sequence?.Select(x => Convert.ToDouble(x)).Min()
+               ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double Max<T>(IEnumerable<T> sequence) where T : INumber<T>
+            => sequence?.Select(x => Convert.ToDouble(x)).Max()
+               ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double SampleStandardDeviation<T>(IEnumerable<T> sequence) where T : INumber<T>
+        {
+            if (sequence == null || sequence.Count() < 2)
+                return 0;
+
+            double mean = Mean(sequence);
+            double sumOfSquares = sequence.Sum(x => Math.Pow(Convert.ToDouble(x) - mean, 2));
+
+            return Math.Sqrt(sumOfSquares / (sequence.Count() - 1));
+        }
+
     }
 }

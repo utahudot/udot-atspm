@@ -16,7 +16,7 @@
   },
   "servers": [
     {
-      "url": "/config"
+      "url": "/report"
     }
   ],
   "paths": {
@@ -401,14 +401,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Detector"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -814,14 +806,6 @@
                     "$ref": "#/components/schemas/Detector"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Detector"
-                  }
-                }
               }
             }
           },
@@ -1059,16 +1043,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachDto"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproachDto"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/ApproachDto"
               }
@@ -1520,14 +1494,6 @@
                     "$ref": "#/components/schemas/Approach"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Approach"
-                  }
-                }
               }
             }
           },
@@ -1753,16 +1719,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Approach"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Approach"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Approach"
               }
@@ -2165,14 +2121,6 @@
                     "$ref": "#/components/schemas/Approach"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Approach"
-                  }
-                }
               }
             }
           },
@@ -2417,11 +2365,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Approach"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Approach"
-                }
               }
             }
           },
@@ -2656,16 +2599,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Approach"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Approach"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Approach"
               }
@@ -2913,16 +2846,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Approach"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Approach"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Approach"
               }
@@ -3361,14 +3284,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -3762,14 +3677,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -4171,14 +4078,6 @@
                     "$ref": "#/components/schemas/Area"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Area"
-                  }
-                }
               }
             }
           },
@@ -4404,16 +4303,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Area"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Area"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Area"
               }
@@ -4816,14 +4705,6 @@
                     "$ref": "#/components/schemas/Area"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Area"
-                  }
-                }
               }
             }
           },
@@ -5068,11 +4949,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Area"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Area"
-                }
               }
             }
           },
@@ -5307,16 +5183,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Area"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Area"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Area"
               }
@@ -5564,16 +5430,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Area"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Area"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Area"
               }
@@ -6011,14 +5867,6 @@
                     "$ref": "#/components/schemas/Detector"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Detector"
-                  }
-                }
               }
             }
           },
@@ -6411,14 +6259,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Detector"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -6823,14 +6663,6 @@
                     "$ref": "#/components/schemas/MeasureType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureType"
-                  }
-                }
               }
             }
           },
@@ -7223,14 +7055,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureType"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -7632,14 +7456,6 @@
                     "$ref": "#/components/schemas/DetectionType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionType"
-                  }
-                }
               }
             }
           },
@@ -7865,16 +7681,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectionType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectionType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DetectionType"
               }
@@ -8277,14 +8083,6 @@
                     "$ref": "#/components/schemas/DetectionType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionType"
-                  }
-                }
               }
             }
           },
@@ -8528,11 +8326,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/DetectionType"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/DetectionType"
-                }
               }
             }
           },
@@ -8766,16 +8559,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectionType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectionType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DetectionType"
               }
@@ -9022,16 +8805,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectionType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectionType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DetectionType"
               }
@@ -9469,14 +9242,6 @@
                     "$ref": "#/components/schemas/DetectorComment"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectorComment"
-                  }
-                }
               }
             }
           },
@@ -9870,14 +9635,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectorComment"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -10283,14 +10040,6 @@
                     "$ref": "#/components/schemas/DetectionType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionType"
-                  }
-                }
               }
             }
           },
@@ -10684,14 +10433,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionType"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -11093,14 +10834,6 @@
                     "$ref": "#/components/schemas/Detector"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Detector"
-                  }
-                }
               }
             }
           },
@@ -11326,16 +11059,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Detector"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Detector"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Detector"
               }
@@ -11738,14 +11461,6 @@
                     "$ref": "#/components/schemas/Detector"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Detector"
-                  }
-                }
               }
             }
           },
@@ -11990,11 +11705,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Detector"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Detector"
-                }
               }
             }
           },
@@ -12229,16 +11939,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Detector"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Detector"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Detector"
               }
@@ -12486,16 +12186,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Detector"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Detector"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Detector"
               }
@@ -12930,14 +12620,6 @@
                     "$ref": "#/components/schemas/DetectorComment"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectorComment"
-                  }
-                }
               }
             }
           },
@@ -13163,16 +12845,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectorComment"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectorComment"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DetectorComment"
               }
@@ -13575,14 +13247,6 @@
                     "$ref": "#/components/schemas/DetectorComment"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectorComment"
-                  }
-                }
               }
             }
           },
@@ -13827,11 +13491,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/DetectorComment"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/DetectorComment"
-                }
               }
             }
           },
@@ -14066,16 +13725,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectorComment"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectorComment"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DetectorComment"
               }
@@ -14323,16 +13972,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectorComment"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DetectorComment"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DetectorComment"
               }
@@ -14770,14 +14409,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           }
@@ -15155,14 +14786,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DeviceGroup"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -15558,14 +15181,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           },
@@ -15791,16 +15406,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Device"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Device"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Device"
               }
@@ -16203,14 +15808,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           },
@@ -16455,11 +16052,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Device"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Device"
-                }
               }
             }
           },
@@ -16694,16 +16286,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Device"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Device"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Device"
               }
@@ -16951,16 +16533,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Device"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Device"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Device"
               }
@@ -17399,14 +16971,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           },
@@ -17806,14 +17370,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           },
@@ -18197,14 +17753,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -18600,14 +18148,6 @@
                     "$ref": "#/components/schemas/DeviceConfiguration"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DeviceConfiguration"
-                  }
-                }
               }
             }
           },
@@ -18833,16 +18373,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceConfiguration"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceConfiguration"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DeviceConfiguration"
               }
@@ -19245,14 +18775,6 @@
                     "$ref": "#/components/schemas/DeviceConfiguration"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DeviceConfiguration"
-                  }
-                }
               }
             }
           },
@@ -19497,11 +19019,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/DeviceConfiguration"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceConfiguration"
-                }
               }
             }
           },
@@ -19736,16 +19253,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceConfiguration"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceConfiguration"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DeviceConfiguration"
               }
@@ -19993,16 +19500,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceConfiguration"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceConfiguration"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DeviceConfiguration"
               }
@@ -20440,14 +19937,6 @@
                     "$ref": "#/components/schemas/Approach"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Approach"
-                  }
-                }
               }
             }
           },
@@ -20840,14 +20329,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Approach"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -21252,14 +20733,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -21652,14 +21125,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -22064,14 +21529,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -22464,14 +21921,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -22873,14 +22322,6 @@
                     "$ref": "#/components/schemas/DirectionType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DirectionType"
-                  }
-                }
               }
             }
           },
@@ -23106,16 +22547,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DirectionType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DirectionType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DirectionType"
               }
@@ -23518,14 +22949,6 @@
                     "$ref": "#/components/schemas/DirectionType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DirectionType"
-                  }
-                }
               }
             }
           },
@@ -23769,11 +23192,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/DirectionType"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/DirectionType"
-                }
               }
             }
           },
@@ -24007,16 +23425,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DirectionType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DirectionType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DirectionType"
               }
@@ -24263,16 +23671,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DirectionType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DirectionType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/DirectionType"
               }
@@ -24706,14 +24104,6 @@
                     "$ref": "#/components/schemas/Faq"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Faq"
-                  }
-                }
               }
             }
           },
@@ -24939,16 +24329,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Faq"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Faq"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Faq"
               }
@@ -25351,14 +24731,6 @@
                     "$ref": "#/components/schemas/Faq"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Faq"
-                  }
-                }
               }
             }
           },
@@ -25603,11 +24975,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Faq"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Faq"
-                }
               }
             }
           },
@@ -25842,16 +25209,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Faq"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Faq"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Faq"
               }
@@ -26099,16 +25456,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Faq"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Faq"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Faq"
               }
@@ -26547,14 +25894,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -26948,14 +26287,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -27357,14 +26688,6 @@
                     "$ref": "#/components/schemas/Jurisdiction"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Jurisdiction"
-                  }
-                }
               }
             }
           },
@@ -27590,16 +26913,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Jurisdiction"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Jurisdiction"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Jurisdiction"
               }
@@ -28002,14 +27315,6 @@
                     "$ref": "#/components/schemas/Jurisdiction"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Jurisdiction"
-                  }
-                }
               }
             }
           },
@@ -28254,11 +27559,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Jurisdiction"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Jurisdiction"
-                }
               }
             }
           },
@@ -28493,16 +27793,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Jurisdiction"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Jurisdiction"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Jurisdiction"
               }
@@ -28750,16 +28040,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Jurisdiction"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Jurisdiction"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Jurisdiction"
               }
@@ -29205,14 +28485,6 @@
                     "$ref": "#/components/schemas/Approach"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Approach"
-                  }
-                }
               }
             }
           },
@@ -29613,14 +28885,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Approach"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -30033,14 +29297,6 @@
                     "$ref": "#/components/schemas/Area"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Area"
-                  }
-                }
               }
             }
           },
@@ -30441,14 +29697,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Area"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -30861,14 +30109,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           },
@@ -31275,14 +30515,6 @@
                     "$ref": "#/components/schemas/Device"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
-                }
               }
             }
           },
@@ -31537,11 +30769,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Location"
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/Location"
                 }
@@ -31881,11 +31108,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Location"
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/Location"
                 }
@@ -32284,14 +31506,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -32672,14 +31886,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -33071,14 +32277,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionTypeGroup"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -33504,14 +32702,6 @@
                     "$ref": "#/components/schemas/SearchLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SearchLocation"
-                  }
-                }
               }
             }
           },
@@ -33904,14 +33094,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -34137,16 +33319,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Location"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Location"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Location"
               }
@@ -34549,14 +33721,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -34801,11 +33965,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Location"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Location"
-                }
               }
             }
           },
@@ -35040,16 +34199,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Location"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Location"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Location"
               }
@@ -35297,16 +34446,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Location"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Location"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Location"
               }
@@ -35745,14 +34884,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -36146,14 +35277,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -36555,14 +35678,6 @@
                     "$ref": "#/components/schemas/LocationType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LocationType"
-                  }
-                }
               }
             }
           },
@@ -36788,16 +35903,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/LocationType"
               }
@@ -37200,14 +36305,6 @@
                     "$ref": "#/components/schemas/LocationType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LocationType"
-                  }
-                }
               }
             }
           },
@@ -37452,11 +36549,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/LocationType"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/LocationType"
-                }
               }
             }
           },
@@ -37691,16 +36783,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/LocationType"
               }
@@ -37948,16 +37030,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/LocationType"
               }
@@ -38396,14 +37468,6 @@
                     "$ref": "#/components/schemas/MeasureType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureType"
-                  }
-                }
               }
             }
           },
@@ -38797,14 +37861,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureType"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -39206,14 +38262,6 @@
                     "$ref": "#/components/schemas/MeasureComment"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureComment"
-                  }
-                }
               }
             }
           },
@@ -39439,16 +38487,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureComment"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureComment"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureComment"
               }
@@ -39851,14 +38889,6 @@
                     "$ref": "#/components/schemas/MeasureComment"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureComment"
-                  }
-                }
               }
             }
           },
@@ -40103,11 +39133,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/MeasureComment"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MeasureComment"
-                }
               }
             }
           },
@@ -40342,16 +39367,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureComment"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureComment"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureComment"
               }
@@ -40599,16 +39614,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureComment"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureComment"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureComment"
               }
@@ -41043,14 +40048,6 @@
                     "$ref": "#/components/schemas/MeasureOption"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureOption"
-                  }
-                }
               }
             }
           },
@@ -41276,16 +40273,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOption"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOption"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureOption"
               }
@@ -41688,14 +40675,6 @@
                     "$ref": "#/components/schemas/MeasureOption"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureOption"
-                  }
-                }
               }
             }
           },
@@ -41940,11 +40919,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/MeasureOption"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MeasureOption"
-                }
               }
             }
           },
@@ -42179,16 +41153,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOption"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOption"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureOption"
               }
@@ -42436,16 +41400,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOption"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOption"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureOption"
               }
@@ -42874,14 +41828,6 @@
                     "type": "string"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
               }
             }
           }
@@ -43271,14 +42217,6 @@
                     "$ref": "#/components/schemas/MeasureOptionPreset"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureOptionPreset"
-                  }
-                }
               }
             }
           },
@@ -43504,16 +42442,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOptionPreset"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOptionPreset"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureOptionPreset"
               }
@@ -43916,14 +42844,6 @@
                     "$ref": "#/components/schemas/MeasureOptionPreset"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureOptionPreset"
-                  }
-                }
               }
             }
           },
@@ -44168,11 +43088,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/MeasureOptionPreset"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MeasureOptionPreset"
-                }
               }
             }
           },
@@ -44407,16 +43322,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOptionPreset"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOptionPreset"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureOptionPreset"
               }
@@ -44664,16 +43569,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOptionPreset"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureOptionPreset"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureOptionPreset"
               }
@@ -45112,14 +44007,6 @@
                     "$ref": "#/components/schemas/DetectionType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionType"
-                  }
-                }
               }
             }
           },
@@ -45513,14 +44400,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DetectionType"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -45926,14 +44805,6 @@
                     "$ref": "#/components/schemas/MeasureComment"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureComment"
-                  }
-                }
               }
             }
           },
@@ -46327,14 +45198,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureComment"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -46740,14 +45603,6 @@
                     "$ref": "#/components/schemas/MeasureOptionPreset"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureOptionPreset"
-                  }
-                }
               }
             }
           },
@@ -47141,14 +45996,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureOptionPreset"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -47550,14 +46397,6 @@
                     "$ref": "#/components/schemas/MeasureType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureType"
-                  }
-                }
               }
             }
           },
@@ -47783,16 +46622,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureType"
               }
@@ -48195,14 +47024,6 @@
                     "$ref": "#/components/schemas/MeasureType"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MeasureType"
-                  }
-                }
               }
             }
           },
@@ -48447,11 +47268,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/MeasureType"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MeasureType"
-                }
               }
             }
           },
@@ -48686,16 +47502,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureType"
               }
@@ -48943,16 +47749,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureType"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MeasureType"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MeasureType"
               }
@@ -49387,14 +48183,6 @@
                     "$ref": "#/components/schemas/MenuItem"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MenuItem"
-                  }
-                }
               }
             }
           },
@@ -49620,16 +48408,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MenuItem"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MenuItem"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MenuItem"
               }
@@ -50032,14 +48810,6 @@
                     "$ref": "#/components/schemas/MenuItem"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MenuItem"
-                  }
-                }
               }
             }
           },
@@ -50284,11 +49054,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/MenuItem"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MenuItem"
-                }
               }
             }
           },
@@ -50523,16 +49288,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MenuItem"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MenuItem"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MenuItem"
               }
@@ -50780,16 +49535,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MenuItem"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MenuItem"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/MenuItem"
               }
@@ -51224,14 +49969,6 @@
                     "$ref": "#/components/schemas/Product"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Product"
-                  }
-                }
               }
             }
           },
@@ -51457,16 +50194,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Product"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Product"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Product"
               }
@@ -51869,14 +50596,6 @@
                     "$ref": "#/components/schemas/Product"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Product"
-                  }
-                }
               }
             }
           },
@@ -52121,11 +50840,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Product"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Product"
-                }
               }
             }
           },
@@ -52360,16 +51074,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Product"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Product"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Product"
               }
@@ -52617,16 +51321,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Product"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Product"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Product"
               }
@@ -53065,14 +51759,6 @@
                     "$ref": "#/components/schemas/Location"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
               }
             }
           },
@@ -53466,14 +52152,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Location"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -53875,14 +52553,6 @@
                     "$ref": "#/components/schemas/Region"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Region"
-                  }
-                }
               }
             }
           },
@@ -54108,16 +52778,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Region"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Region"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Region"
               }
@@ -54520,14 +53180,6 @@
                     "$ref": "#/components/schemas/Region"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Region"
-                  }
-                }
               }
             }
           },
@@ -54772,11 +53424,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Region"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Region"
-                }
               }
             }
           },
@@ -55011,16 +53658,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Region"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Region"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Region"
               }
@@ -55268,16 +53905,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Region"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Region"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Region"
               }
@@ -55716,14 +54343,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -56123,14 +54742,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -56370,16 +54981,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDto"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDto"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/RouteDto"
               }
@@ -56838,14 +55439,6 @@
                     "$ref": "#/components/schemas/Route"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Route"
-                  }
-                }
               }
             }
           },
@@ -57071,16 +55664,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Route"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Route"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Route"
               }
@@ -57483,14 +56066,6 @@
                     "$ref": "#/components/schemas/Route"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Route"
-                  }
-                }
               }
             }
           },
@@ -57735,11 +56310,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Route"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/Route"
-                }
               }
             }
           },
@@ -57974,16 +56544,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Route"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Route"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Route"
               }
@@ -58231,16 +56791,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Route"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/Route"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/Route"
               }
@@ -58679,14 +57229,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -59080,14 +57622,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -59493,14 +58027,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -59900,14 +58426,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -60153,11 +58671,6 @@
                 }
               },
               "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDistance"
-                }
-              },
-              "text/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/RouteDistance"
                 }
@@ -60553,14 +59066,6 @@
                     "$ref": "#/components/schemas/RouteDistance"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteDistance"
-                  }
-                }
               }
             }
           },
@@ -60786,16 +59291,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDistance"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDistance"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/RouteDistance"
               }
@@ -61198,14 +59693,6 @@
                     "$ref": "#/components/schemas/RouteDistance"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteDistance"
-                  }
-                }
               }
             }
           },
@@ -61450,11 +59937,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/RouteDistance"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDistance"
-                }
               }
             }
           },
@@ -61689,16 +60171,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDistance"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDistance"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/RouteDistance"
               }
@@ -61946,16 +60418,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDistance"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteDistance"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/RouteDistance"
               }
@@ -62390,14 +60852,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -62623,16 +61077,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteLocation"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteLocation"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/RouteLocation"
               }
@@ -63035,14 +61479,6 @@
                     "$ref": "#/components/schemas/RouteLocation"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteLocation"
-                  }
-                }
               }
             }
           },
@@ -63287,11 +61723,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/RouteLocation"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteLocation"
-                }
               }
             }
           },
@@ -63526,16 +61957,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteLocation"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteLocation"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/RouteLocation"
               }
@@ -63786,16 +62207,6 @@
               "schema": {
                 "$ref": "#/components/schemas/RouteLocation"
               }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteLocation"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteLocation"
-              }
             }
           }
         },
@@ -63844,10 +62255,10 @@
         }
       }
     },
-    "/VersionHistory": {
+    "/UsageEntry": {
       "get": {
-        "tags": ["VersionHistory"],
-        "operationId": "GetVersionHistory",
+        "tags": ["UsageEntry"],
+        "operationId": "GetUsageEntry",
         "parameters": [
           {
             "name": "select",
@@ -63912,7 +62323,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63920,7 +62331,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63928,7 +62339,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63936,7 +62347,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63944,7 +62355,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63952,7 +62363,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63960,7 +62371,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63968,7 +62379,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63976,7 +62387,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63984,7 +62395,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -63992,7 +62403,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64000,7 +62411,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64008,7 +62419,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64016,7 +62427,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64024,7 +62435,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64032,7 +62443,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64040,7 +62451,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64048,7 +62459,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64056,7 +62467,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64064,7 +62475,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64072,7 +62483,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64080,7 +62491,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64088,7 +62499,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64096,7 +62507,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64104,7 +62515,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64112,7 +62523,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64120,7 +62531,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64128,7 +62539,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64136,7 +62547,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64144,7 +62555,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64152,7 +62563,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64160,7 +62571,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64168,7 +62579,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64176,7 +62587,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64184,7 +62595,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64192,7 +62603,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64200,7 +62611,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64208,7 +62619,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64216,7 +62627,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64224,15 +62635,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
-                  }
-                }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               }
@@ -64244,8 +62647,8 @@
         }
       },
       "post": {
-        "tags": ["VersionHistory"],
-        "operationId": "PostVersionHistory",
+        "tags": ["UsageEntry"],
+        "operationId": "PostUsageEntry",
         "parameters": [
           {
             "name": "select",
@@ -64266,212 +62669,202 @@
           "content": {
             "application/json;odata.metadata=minimal;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "text/plain": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             }
           }
@@ -64489,10 +62882,10 @@
         }
       }
     },
-    "/VersionHistory/$count": {
+    "/UsageEntry/$count": {
       "get": {
-        "tags": ["VersionHistory"],
-        "operationId": "GetVersionHistoryCount",
+        "tags": ["UsageEntry"],
+        "operationId": "GetUsageEntryCount",
         "parameters": [
           {
             "name": "select",
@@ -64557,7 +62950,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64565,7 +62958,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64573,7 +62966,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64581,7 +62974,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64589,7 +62982,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64597,7 +62990,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64605,7 +62998,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64613,7 +63006,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64621,7 +63014,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64629,7 +63022,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64637,7 +63030,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64645,7 +63038,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64653,7 +63046,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64661,7 +63054,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64669,7 +63062,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64677,7 +63070,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64685,7 +63078,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64693,7 +63086,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64701,7 +63094,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64709,7 +63102,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64717,7 +63110,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64725,7 +63118,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64733,7 +63126,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64741,7 +63134,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64749,7 +63142,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64757,7 +63150,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64765,7 +63158,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64773,7 +63166,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64781,7 +63174,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64789,7 +63182,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64797,7 +63190,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64805,7 +63198,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64813,7 +63206,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64821,7 +63214,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64829,7 +63222,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64837,7 +63230,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64845,7 +63238,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64853,7 +63246,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64861,7 +63254,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               },
@@ -64869,15 +63262,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
-                  }
-                }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               }
@@ -64889,10 +63274,10 @@
         }
       }
     },
-    "/VersionHistory/{key}": {
+    "/UsageEntry/{key}": {
       "get": {
-        "tags": ["VersionHistory"],
-        "operationId": "GetVersionHistoryFromKey",
+        "tags": ["UsageEntry"],
+        "operationId": "GetUsageEntryFromKey",
         "parameters": [
           {
             "name": "key",
@@ -64927,207 +63312,202 @@
             "content": {
               "application/json;odata.metadata=minimal;odata.streaming=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;odata.streaming=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;odata.streaming=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;odata.streaming=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;odata.streaming=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;odata.streaming=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.streaming=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.streaming=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=minimal;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=full;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.metadata=none;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.streaming=true;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.streaming=true;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.streaming=false;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;odata.streaming=false;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;IEEE754Compatible=false": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/json;IEEE754Compatible=true": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
-                }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               }
             }
@@ -65138,8 +63518,8 @@
         }
       },
       "put": {
-        "tags": ["VersionHistory"],
-        "operationId": "PutVersionHistoryFromKey",
+        "tags": ["UsageEntry"],
+        "operationId": "PutUsageEntryFromKey",
         "parameters": [
           {
             "name": "key",
@@ -65169,212 +63549,202 @@
           "content": {
             "application/json;odata.metadata=minimal;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "text/plain": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             }
           }
@@ -65395,8 +63765,8 @@
         }
       },
       "patch": {
-        "tags": ["VersionHistory"],
-        "operationId": "PatchVersionHistoryFromKey",
+        "tags": ["UsageEntry"],
+        "operationId": "PatchUsageEntryFromKey",
         "parameters": [
           {
             "name": "key",
@@ -65426,212 +63796,202 @@
           "content": {
             "application/json;odata.metadata=minimal;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=minimal;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=full;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.metadata=none;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=true;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;odata.streaming=false;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;IEEE754Compatible=false": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/json;IEEE754Compatible=true": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "text/plain": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             }
           }
@@ -65652,8 +64012,8 @@
         }
       },
       "delete": {
-        "tags": ["VersionHistory"],
-        "operationId": "DeleteVersionHistoryFromKey",
+        "tags": ["UsageEntry"],
+        "operationId": "DeleteUsageEntryFromKey",
         "parameters": [
           {
             "name": "key",
@@ -66064,14 +64424,6 @@
                     "$ref": "#/components/schemas/WatchDogIgnoreEvent"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-                  }
-                }
               }
             }
           },
@@ -66297,16 +64649,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/WatchDogIgnoreEvent"
               }
@@ -66709,14 +65051,6 @@
                     "$ref": "#/components/schemas/WatchDogIgnoreEvent"
                   }
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-                  }
-                }
               }
             }
           },
@@ -66961,11 +65295,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/WatchDogIgnoreEvent"
                 }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-                }
               }
             }
           },
@@ -67200,16 +65529,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/WatchDogIgnoreEvent"
               }
@@ -67457,16 +65776,6 @@
               }
             },
             "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/WatchDogIgnoreEvent"
-              }
-            },
-            "application/*+xml": {
               "schema": {
                 "$ref": "#/components/schemas/WatchDogIgnoreEvent"
               }
@@ -68431,18 +66740,6 @@
       "Faq": {
         "type": "object",
         "properties": {
-          "header": {
-            "type": "string",
-            "nullable": true
-          },
-          "body": {
-            "type": "string",
-            "nullable": true
-          },
-          "displayOrder": {
-            "type": "integer",
-            "format": "int32"
-          },
           "id": {
             "type": "integer",
             "format": "int32"
@@ -68464,6 +66761,18 @@
           "modifiedBy": {
             "type": "string",
             "nullable": true
+          },
+          "header": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -69780,22 +68089,6 @@
       "Product": {
         "type": "object",
         "properties": {
-          "manufacturer": {
-            "type": "string",
-            "nullable": true
-          },
-          "model": {
-            "type": "string",
-            "nullable": true
-          },
-          "webPage": {
-            "type": "string",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "nullable": true
-          },
           "id": {
             "type": "integer",
             "format": "int32"
@@ -69815,6 +68108,22 @@
             "nullable": true
           },
           "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "webPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
             "type": "string",
             "nullable": true
           }
@@ -70690,6 +68999,107 @@
         },
         "additionalProperties": false
       },
+      "UsageEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "apiName": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "traceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "connectionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "remoteIp": {
+            "type": "string",
+            "nullable": true
+          },
+          "userAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "route": {
+            "type": "string",
+            "nullable": true
+          },
+          "queryString": {
+            "type": "string",
+            "nullable": true
+          },
+          "method": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "durationMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "controller": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "type": "string",
+            "nullable": true
+          },
+          "resultCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "resultSizeBytes": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "UserArea": {
         "type": "object",
         "properties": {
@@ -70737,65 +69147,6 @@
           },
           "region": {
             "$ref": "#/components/schemas/Region"
-          }
-        },
-        "additionalProperties": false
-      },
-      "VersionHistory": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "nullable": true
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "version": {
-            "type": "string",
-            "nullable": true
-          },
-          "parentId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "created": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "modified": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "createdBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "modifiedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "parent": {
-            "$ref": "#/components/schemas/VersionHistory"
-          },
-          "children": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VersionHistory"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
