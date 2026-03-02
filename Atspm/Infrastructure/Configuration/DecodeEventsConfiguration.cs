@@ -1,6 +1,5 @@
-﻿
-#region license
-// Copyright 2025 Utah Departement of Transportation
+﻿#region license
+// Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Configuration/DecodeEventsConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
