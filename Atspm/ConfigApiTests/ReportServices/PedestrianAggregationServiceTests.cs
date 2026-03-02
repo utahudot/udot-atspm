@@ -1,12 +1,13 @@
 ﻿using Moq;
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.AggregationModels;
+using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.Atspm.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.ATSPM.ReportApi.DataAggregation;
 
-namespace Utah.Udot.Atspm.ReportApi.ReportServices.Tests
+namespace ConfigApiTests.ReportServices
 {
     [TestClass()]
     public class PedestrianAggregationServiceTests

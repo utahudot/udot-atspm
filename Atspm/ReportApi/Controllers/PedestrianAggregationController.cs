@@ -19,8 +19,8 @@
 using Asp.Versioning;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models.AggregationModels;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
+using Utah.Udot.ATSPM.ReportApi.DataAggregation;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
 {

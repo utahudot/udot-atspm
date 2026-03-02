@@ -157,6 +157,31 @@ namespace Utah.Udot.Atspm
                 .ToList();
         }
 
+        /// <summary>
+        /// Calculates the specified percentile value from a sequence of numeric values.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The numeric type of the elements in the sequence. Must implement <see cref="INumber{T}"/>.
+        /// </typeparam>
+        /// <param name="sequence">
+        /// The sequence of numeric values from which to compute the percentile.
+        /// </param>
+        /// <param name="percentile">
+        /// The desired percentile (0–100). Values outside this range will cause an exception.
+        /// </param>
+        /// <returns>
+        /// The computed percentile value, using linear interpolation when the percentile falls between two data points.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the sequence is null or contains no elements.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="percentile"/> is less than 0 or greater than 100.
+        /// </exception>
+        /// <remarks>
+        /// The method sorts the sequence, computes the rank based on the percentile,
+        /// and performs linear interpolation when necessary.
+        /// </remarks>
         public static double Percentile<T>(IEnumerable<T> sequence, double percentile) where T : INumber<T>
         {
             if (sequence == null || !sequence.Any())
@@ -170,27 +195,22 @@ namespace Utah.Udot.Atspm
             }
 
             var sorted = sequence.Select(x => Convert.ToDouble(x)).OrderBy(x => x).ToList();
-            // Sort the list
             sorted.Sort();
 
-            // Handle the case where there is only 1 number
             if (sorted.Count == 1)
             {
                 return sorted[0];
             }
 
-            // Get the rank (position)
             double rank = (percentile / 100.0) * (sorted.Count - 1);
             int lowerIndex = (int)Math.Floor(rank);
             int upperIndex = (int)Math.Ceiling(rank);
 
-            // If rank is an integer or lowerIndex equals upperIndex, return the value at that index
             if (lowerIndex == upperIndex)
             {
                 return sorted[lowerIndex];
             }
 
-            // Otherwise, interpolate between the lower and upper values
             double lowerValue = sorted[lowerIndex];
             double upperValue = sorted[upperIndex];
 
