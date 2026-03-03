@@ -32,14 +32,31 @@ jobs:
           for tag in $(git tag -l); do
             commit=$(git rev-list -n 1 "$tag")
 
-            # Skip if commit modifies workflow files (RELIABLE CHECK)
+            # 1. Skip if commit does NOT exist in fork
+            if ! git cat-file -e "$commit" 2>/dev/null; then
+              echo "Skipping $tag (commit not in fork)"
+              SKIPPED="$SKIPPED\n- $tag (commit not in fork)"
+              continue
+            fi
+
+            # 2. Skip if commit contains workflow files the fork does NOT have
+            if git show --pretty="" --name-only "$commit" | grep -q '^.github/workflows/'; then
+              # Check if fork has those workflow files
+              if ! git ls-tree -r HEAD --name-only | grep -q '^.github/workflows/'; then
+                echo "Skipping $tag (workflow files not present in fork)"
+                SKIPPED="$SKIPPED\n- $tag (workflow files not present in fork)"
+                continue
+              fi
+            fi
+
+            # 3. Skip if commit modifies workflow files
             if git show --pretty="" --name-only "$commit" | grep -q '^.github/workflows/'; then
               echo "Skipping $tag (workflow-modifying commit)"
               SKIPPED="$SKIPPED\n- $tag (workflow-modifying commit)"
               continue
             fi
 
-            # Push only missing tags
+            # 4. Push only missing tags
             if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
               echo "Pushing safe tag: $tag"
               git push origin "$tag"
