@@ -30,7 +30,7 @@ jobs:
 
       - name: 📁 Get Working Dir
         run: |
-          docker_dir="$(cat .github/filters.json | jq '."${{matrix.name}}"' | tr -d '**\n"')"
+          docker_dir="$(cat .github/filters.json | jq ".\"${{ matrix.name }}\"" | tr -d '**\n"')"
           echo DOCKERFILE_DIR=${docker_dir} >> $GITHUB_ENV
 
       - name: 🐳 Set up Docker Buildx
@@ -44,35 +44,33 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏷️ Set tags for GHCR
-        id: meta
-        run: |
-          IMAGE_REPO=$(echo "ghcr.io/${{ github.repository }}/${{ matrix.name }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_TAGS=${IMAGE_REPO}:${GITHUB_REF#refs/tags/},${IMAGE_REPO}:latest" >> $GITHUB_ENV
-
       - name: 📦 Build and push image (non-WebUI)
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name != 'atspm-webui'}}
+        if: ${{ matrix.name != 'atspm-webui' }}
         with:
           builder: ${{ steps.builder.outputs.name }}
-          tags: ${{ env.IMAGE_TAGS }}
           context: Atspm/
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          tags: |
+            ghcr.io/${{ toLower(github.repository) }}/${{ matrix.name }}:${{ github.ref_name }}
+            ghcr.io/${{ toLower(github.repository) }}/${{ matrix.name }}:latest
           labels: |
             org.opencontainers.image.description=${{ github.event.release.body }}
 
       - name: 📦 Build and push image WebUI
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name == 'atspm-webui'}}
+        if: ${{ matrix.name == 'atspm-webui' }}
         with:
           builder: ${{ steps.builder.outputs.name }}
-          tags: ${{ env.IMAGE_TAGS }}
           context: ${{ env.DOCKERFILE_DIR }}
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          tags: |
+            ghcr.io/${{ toLower(github.repository) }}/${{ matrix.name }}:${{ github.ref_name }}
+            ghcr.io/${{ toLower(github.repository) }}/${{ matrix.name }}:latest
           labels: |
             org.opencontainers.image.description=${{ github.event.release.body }}
