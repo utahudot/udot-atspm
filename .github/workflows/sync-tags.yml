@@ -21,23 +21,24 @@ jobs:
       - name: Add upstream remote
         run: git remote add upstream https://github.com/utahudot/udot-atspm.git
 
-      - name: Sync fork main with upstream
-        run: |
-          git fetch upstream
-          git checkout main
-          git merge upstream/main --ff-only || true
-          git push origin main
-
       - name: Fetch upstream tags
         run: git fetch upstream --tags
 
-      - name: Push only missing tags
+      - name: Sync only safe tags
         run: |
           # Loop through upstream tags
           for tag in $(git tag -l); do
-            # Check if tag exists in fork
+            commit=$(git rev-list -n 1 "$tag")
+
+            # Skip tags whose commit modifies workflow files
+            if git diff-tree --no-commit-id --name-only -r "$commit" | grep -q '^.github/workflows/'; then
+              echo "Skipping tag $tag because it modifies workflow files"
+              continue
+            fi
+
+            # Push only missing tags
             if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
-              echo "Pushing missing tag: $tag"
+              echo "Pushing safe tag: $tag"
               git push origin "$tag"
             else
               echo "Tag already exists: $tag"
