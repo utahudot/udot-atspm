@@ -25,54 +25,62 @@ jobs:
           - atspm-eventlogutil
 
     steps:
-      - name: ⬇️ Set up code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 📁 Get Working Dir
+      - name: Get Working Dir
         run: |
-          docker_dir="$(cat .github/filters.json | jq '."${{matrix.name}}"' | tr -d '**\n"')"
-          echo DOCKERFILE_DIR=${docker_dir} >> $GITHUB_ENV
+          docker_dir=$(cat .github/filters.json | jq ".\"${{ matrix.name }}\"" | tr -d '"')
+          echo "DOCKERFILE_DIR=$docker_dir" >> $GITHUB_ENV
 
-      - name: 🐳 Set up Docker Buildx
+      - name: Set up Docker Buildx
         id: builder
         uses: docker/setup-buildx-action@v3
 
-      - name: 🗝️ Log in to GitHub Container Registry
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏷️ Set tags for GHCR
+      - name: Compute image tags (prerelease-aware)
         id: meta
         run: |
-          IMAGE_REPO="ghcr.io/${{ github.repository }}/${{ matrix.name }}"
-          echo "IMAGE_TAGS=${IMAGE_REPO}:${GITHUB_REF#refs/tags/},${IMAGE_REPO}:latest" >> $GITHUB_ENV
+          IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY}/${{ matrix.name }}"
+          IMAGE_REPO_LC=$(echo "$IMAGE_REPO" | tr '[:upper:]' '[:lower:]')
 
-      - name: 📦 Build and push image (non-WebUI)
+          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+            # prerelease → do NOT tag latest
+            echo "image_tags=${IMAGE_REPO_LC}:${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            # normal release → tag latest
+            echo "image_tags=${IMAGE_REPO_LC}:${GITHUB_REF_NAME},${IMAGE_REPO_LC}:latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push (non-WebUI)
+        if: ${{ matrix.name != 'atspm-webui' }}
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name != 'atspm-webui'}}
         with:
           builder: ${{ steps.builder.outputs.name }}
-          tags: ${{ env.IMAGE_TAGS }}
           context: Atspm/
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.image_tags }}
           labels: |
             org.opencontainers.image.description=${{ github.event.release.body }}
 
-      - name: 📦 Build and push image WebUI
+      - name: Build and push (WebUI)
+        if: ${{ matrix.name == 'atspm-webui' }}
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name == 'atspm-webui'}}
         with:
           builder: ${{ steps.builder.outputs.name }}
-          tags: ${{ env.IMAGE_TAGS }}
           context: ${{ env.DOCKERFILE_DIR }}
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.image_tags }}
           labels: |
             org.opencontainers.image.description=${{ github.event.release.body }}
