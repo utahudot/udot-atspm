@@ -120,7 +120,7 @@ const CustomSelect = ({
   }
 
   return (
-    <FormControl fullWidth={fullWidth} error={error}>
+    <FormControl fullWidth={fullWidth} error={error} sx={{ height: '56px' }}>
       {!hideLabel && <InputLabel htmlFor={labelId}>{label}</InputLabel>}
       <Select
         inputProps={{ id: labelId }}
