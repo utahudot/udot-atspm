@@ -1,4 +1,4 @@
-name: Sync Tags From Upstream
+name: Sync Safe Tags From Upstream
 
 on:
   push:
@@ -32,21 +32,21 @@ jobs:
           for tag in $(git tag -l); do
             commit=$(git rev-list -n 1 "$tag")
 
-            # 1. Skip if commit does NOT exist in fork
+            # Skip if commit does NOT exist in fork
             if ! git cat-file -e "$commit" 2>/dev/null; then
               echo "Skipping $tag (commit not in fork)"
               SKIPPED="$SKIPPED\n- $tag (commit not in fork)"
               continue
             fi
 
-            # 2. Skip if commit modifies workflow files
+            # Skip if commit modifies workflow files
             if git diff-tree --no-commit-id --name-only -r "$commit" | grep -q '^.github/workflows/'; then
               echo "Skipping $tag (workflow-modifying commit)"
               SKIPPED="$SKIPPED\n- $tag (workflow-modifying commit)"
               continue
             fi
 
-            # 3. Push only missing tags
+            # Push only missing tags
             if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
               echo "Pushing safe tag: $tag"
               git push origin "$tag"
@@ -56,7 +56,6 @@ jobs:
             fi
           done
 
-          # Export results for summary
           echo "skipped<<EOF" >> $GITHUB_OUTPUT
           echo -e "$SKIPPED" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
