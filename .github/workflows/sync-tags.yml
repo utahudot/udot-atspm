@@ -39,8 +39,8 @@ jobs:
               continue
             fi
 
-            # Skip if commit modifies workflow files
-            if git diff-tree --no-commit-id --name-only -r "$commit" | grep -q '^.github/workflows/'; then
+            # Skip if commit modifies workflow files (reliable check)
+            if git show --pretty="" --name-only "$commit" | grep -q '^.github/workflows/'; then
               echo "Skipping $tag (workflow-modifying commit)"
               SKIPPED="$SKIPPED\n- $tag (workflow-modifying commit)"
               continue
@@ -68,17 +68,4 @@ jobs:
         run: |
           echo "## Tag Sync Summary" >> $GITHUB_STEP_SUMMARY
 
-          echo "### Synced Tags" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ steps.sync.outputs.synced }}" ]; then
-            echo "${{ steps.sync.outputs.synced }}" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "_No tags were synced._" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Skipped Tags" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ steps.sync.outputs.skipped }}" ]; then
-            echo "${{ steps.sync.outputs.skipped }}" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "_No tags were skipped._" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "### Synced Tags" >> $GITHUB
