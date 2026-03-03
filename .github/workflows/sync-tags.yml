@@ -29,23 +29,15 @@ jobs:
           SKIPPED=""
           SYNCED=""
 
-          # List workflow files present in the fork's default branch
-          FORK_WORKFLOWS=$(git ls-tree -r HEAD --name-only | grep '^.github/workflows/' || true)
-
           for tag in $(git tag -l); do
             commit=$(git rev-list -n 1 "$tag")
 
-            # List workflow files present in the tag's commit
-            TAG_WORKFLOWS=$(git show --pretty="" --name-only "$commit" | grep '^.github/workflows/' || true)
-
-            # If the tag's commit contains workflow files the fork does not have, skip it
-            for wf in $TAG_WORKFLOWS; do
-              if ! echo "$FORK_WORKFLOWS" | grep -q "$wf"; then
-                echo "Skipping $tag (workflow file $wf not present in fork default branch)"
-                SKIPPED="$SKIPPED\n- $tag (workflow file $wf not present in fork)"
-                continue 2
-              fi
-            done
+            # 🚨 REAL FIX: skip tags whose commits are not in the fork
+            if ! git merge-base --is-ancestor "$commit" HEAD 2>/dev/null; then
+              echo "Skipping $tag (commit not in fork history)"
+              SKIPPED="$SKIPPED\n- $tag (commit not in fork history)"
+              continue
+            fi
 
             # Push only missing tags
             if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
