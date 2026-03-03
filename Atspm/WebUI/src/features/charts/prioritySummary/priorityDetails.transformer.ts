@@ -56,9 +56,13 @@ type CycleIndication = {
   color: string
 }
 
-const TSP_CODES = {
+export const TSP_CODES = {
+  CheckIn: 112,
   EarlyGreen: 113,
   ExtendGreen: 114,
+  CheckOut: 115,
+  ServiceStart: 118,
+  ServiceEnd: 119,
 } as const
 
 const CYCLE_INDICATIONS = [

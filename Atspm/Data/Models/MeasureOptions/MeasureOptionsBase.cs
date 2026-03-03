@@ -120,6 +120,8 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
 
         public double ExtendStartStopSearch { get; set; }
         public bool ShowAllLanesInfo { get; set; }
+        public bool IncludeSrmSearch { get; set; }
+        public string? SrmCsvContentBase64 { get; set; }
         // public string LocationIdentifier { get; set; }
     }
 

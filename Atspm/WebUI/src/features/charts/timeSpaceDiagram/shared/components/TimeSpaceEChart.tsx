@@ -12,24 +12,21 @@ export interface TimeSpaceChartProps extends ApacheEChartsProps {
 }
 
 export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
-  const { id, option, style, theme, gpxEntries, ignoredLocations } = prop
+  const { id, option, style, theme, gpxEntries } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstanceRef = useRef<ECharts | null>(null)
   const [chart, setChart] = useState<ECharts | null>(null)
 
   useTimeSpaceHandler(chart)
-  // useTimeSpaceIgnoreLocationHandler(chart, ignoredLocations)
+
   const animator = useGpxAnimationHandler(
     chart,
     gpxEntries as GpxUploadOptions[]
   )
 
   useEffect(() => {
-    if (gpxEntries) {
-      animator.play()
-      // animator.stepForward()
-    }
+    if (gpxEntries) animator.play()
   }, [animator, gpxEntries])
 
   useEffect(() => {
@@ -41,26 +38,42 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     const c = init(dom, theme, { useDirtyRect: true })
     chartInstanceRef.current = c
     setChart(c)
-    if (option)
-      c.setOption(option, {
-        notMerge: true,
-        replaceMerge: ['series', 'xAxis', 'yAxis'],
-      })
 
-    const resizeChart = () => c.resize()
-    window.addEventListener('resize', resizeChart)
+    if (option) {
+      c.setOption(option)
+    }
+
+    // ✅ ResizeObserver: resize CURRENT instance (don’t close over c)
+    const ro = new ResizeObserver(() => {
+      const inst = chartInstanceRef.current
+      const el = chartRef.current
+      if (!inst || !el) return
+      const { width, height } = el.getBoundingClientRect()
+      if (width > 0 && height > 0) inst.resize()
+    })
+    ro.observe(dom)
+
+    // ✅ Window resize: resize CURRENT instance
+    const onWindowResize = () => {
+      chartInstanceRef.current?.resize()
+    }
+    window.addEventListener('resize', onWindowResize)
 
     return () => {
-      window.removeEventListener('resize', resizeChart)
+      window.removeEventListener('resize', onWindowResize)
+      ro.disconnect()
       c.dispose()
       chartInstanceRef.current = null
       setChart(null)
     }
-  }, [theme, option])
+    // ❗ remove option from deps
+  }, [theme])
 
+  // ✅ Apply option updates without re-init
   useEffect(() => {
-    if (!chartInstanceRef.current || !option) return
-    chartInstanceRef.current.setOption(option, { notMerge: true })
+    const inst = chartInstanceRef.current
+    if (!inst || !option) return
+    inst.setOption(option)
   }, [option])
 
   return (

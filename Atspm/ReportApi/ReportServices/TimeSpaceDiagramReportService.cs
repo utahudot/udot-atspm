@@ -37,6 +37,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IRouteLocationsRepository routeLocationsRepository;
         private readonly IRouteRepository routeRepository;
         private readonly PriorityDetailsReportService priorityDetailsReportService;
+        private readonly TimeSpaceDiagramSrmCsvService timeSpaceDiagramSrmCsvService;
 
         public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository locationRepository,
@@ -45,7 +46,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             IRouteLocationsRepository routeLocationsRepository,
             IRouteRepository routeRepository,
             LocationPhaseService locationPhaseService,
-            PriorityDetailsReportService priorityDetailsReportService)
+            PriorityDetailsReportService priorityDetailsReportService,
+            TimeSpaceDiagramSrmCsvService timeSpaceDiagramSrmCsvService)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             LocationRepository = locationRepository;
@@ -55,6 +57,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.routeRepository = routeRepository;
             this.LocationPhaseService = locationPhaseService;
             this.priorityDetailsReportService = priorityDetailsReportService;
+            this.timeSpaceDiagramSrmCsvService = timeSpaceDiagramSrmCsvService;
         }
 
         /// <inheritdoc/>
@@ -66,6 +69,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 throw new Exception($"No locations present for route");
             }
+            var srmTracks = parameter.IncludeSrmSearch
+                ? timeSpaceDiagramSrmCsvService.GetTracks(
+                    parameter.Start,
+                    parameter.End,
+                    routeLocations,
+                    parameter.SrmCsvContentBase64)
+                : new List<SrmEntityTrack>();
 
             var eventCodes = new List<short>() { 82, 81 };
             var tasks = new List<Task<TimeSpaceDiagramResultForPhase>>();
@@ -92,6 +102,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     primaryPhaseDetails[i],
                     programmedCycleLength[i],
                     primaryTmcEvents[i],
+                    routeLocations[i],
+                    srmTracks,
                     programmedSplits,
                     eventCodes,
                     nextLocationDistance,
@@ -113,6 +125,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     opposingPhaseDetails[i],
                     programmedCycleLength[i],
                     opposingTmcEvents[i],
+                    routeLocations[i],
+                    srmTracks,
                     programmedSplits,
                     eventCodes,
                     nextLocationDistance,
@@ -263,6 +277,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             PhaseDetail currentPhase,
             int programmedCycleLength,
             TmcForPhaseDto tmcEventsForPhase,
+            RouteLocation routeLocation,
+            List<SrmEntityTrack> srmTracks,
             List<IndianaEvent> programmedSplits,
             List<short> eventCodes,
             double distanceToNextLocation,
@@ -278,6 +294,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     parameter,
                     currentPhase,
                     tmcEventsForPhase,
+                    routeLocation,
+                    srmTracks,
                     distanceToNextLocation,
                     distanceToPreviousLocation,
                     phaseType,
@@ -326,6 +344,12 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 viewModel.PercentArrivalOnGreen = locationPhase.PercentArrivalOnGreen;
             }
+            PopulateSrmTracks(
+                viewModel,
+                routeLocation,
+                srmTracks,
+                isFirstElement,
+                isLastElement);
 
             return viewModel;
         }
@@ -348,12 +372,14 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             TimeSpaceDiagramOptions parameter,
             PhaseDetail phase,
             TmcForPhaseDto tmcEventsForPhase,
+            RouteLocation routeLocation,
+            List<SrmEntityTrack> srmTracks,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             string phaseType,
             int order)
         {
-            return new TimeSpaceDiagramResultForPhase(
+            var result = new TimeSpaceDiagramResultForPhase(
                 phase.Approach.Id,
                 phase.Approach.Location.LocationIdentifier,
                 parameter.Start,
@@ -383,7 +409,108 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 PhaseType = phaseType,
                 Order = order,
                 PercentArrivalOnGreen = 0,
-                TmcForPhase = tmcEventsForPhase
+                TmcForPhase = tmcEventsForPhase,
+            };
+            PopulateSrmTracks(
+                result,
+                routeLocation,
+                srmTracks,
+                isFirstElement: false,
+                isLastElement: false);
+            return result;
+        }
+
+        private static List<SrmEntityTrack> FilterSrmTracksForLocation(
+            List<SrmEntityTrack> tracks,
+            string locationIdentifier)
+        {
+            if (tracks == null || tracks.Count == 0 || string.IsNullOrWhiteSpace(locationIdentifier))
+            {
+                return new List<SrmEntityTrack>();
+            }
+
+            return tracks
+                .Where(t => string.Equals(
+                    t.StartingIntersection,
+                    locationIdentifier,
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        private static void PopulateSrmTracks(
+            TimeSpaceDiagramResultForPhase viewModel,
+            RouteLocation routeLocation,
+            List<SrmEntityTrack> srmTracks,
+            bool isFirstElement,
+            bool isLastElement)
+        {
+            if (viewModel == null || routeLocation == null)
+            {
+                return;
+            }
+
+            if (
+                (string.Equals(viewModel.PhaseType, "Primary", StringComparison.OrdinalIgnoreCase) &&
+                 isLastElement) ||
+                (string.Equals(viewModel.PhaseType, "Opposing", StringComparison.OrdinalIgnoreCase) &&
+                 isFirstElement)
+            )
+            {
+                viewModel.SrmEntityTracks = new List<SrmEntityTrack>();
+                return;
+            }
+
+            var allForLocation = FilterSrmTracksForLocation(
+                srmTracks,
+                routeLocation.LocationIdentifier);
+
+            var targetDirection =
+                string.Equals(viewModel.PhaseType, "Opposing", StringComparison.OrdinalIgnoreCase)
+                    ? routeLocation.OpposingDirectionId
+                    : routeLocation.PrimaryDirectionId;
+
+            viewModel.SrmEntityTracks = allForLocation
+                .Where(t => IsDirectionMatch(t.HeadingDirection, targetDirection))
+                .ToList();
+        }
+
+        private static bool IsDirectionMatch(DirectionTypes heading, DirectionTypes target)
+        {
+            if (heading == DirectionTypes.NA || target == DirectionTypes.NA)
+            {
+                return false;
+            }
+
+            if (heading == target)
+            {
+                return true;
+            }
+
+            var headingDegrees = DirectionToDegrees(heading);
+            var targetDegrees = DirectionToDegrees(target);
+            if (!headingDegrees.HasValue || !targetDegrees.HasValue)
+            {
+                return false;
+            }
+
+            var diff = Math.Abs(headingDegrees.Value - targetDegrees.Value);
+            var circularDiff = Math.Min(diff, 360 - diff);
+            return circularDiff <= 45.0;
+        }
+
+        private static double? DirectionToDegrees(DirectionTypes direction)
+        {
+            return direction switch
+            {
+                DirectionTypes.NB => 0,
+                DirectionTypes.NE => 45,
+                DirectionTypes.EB => 90,
+                DirectionTypes.SE => 135,
+                DirectionTypes.SB => 180,
+                DirectionTypes.SW => 225,
+                DirectionTypes.WB => 270,
+                DirectionTypes.NW => 315,
+                _ => null
             };
         }
 

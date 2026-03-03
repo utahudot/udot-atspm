@@ -14,12 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
+import { DetectorEventDto, IndianaEvent } from '@/api/reports'
 import { BaseChartData, ToolType } from '@/features/charts/common/types'
 import {
   Cycle,
   PedestrianInterval,
 } from '@/features/charts/timingAndActuation/types'
 import { GpxPoint } from './gpxFileParser'
+import type { SrmEntityTrack } from './srmFileParser'
 
 // export interface TimeSpaceDetectorEvent {
 //   initialX: string
@@ -70,6 +72,9 @@ export interface TimeSpaceHistoricOptions {
   locationIdentifier: string
   extendStartStopSearch: number
   showAllLanesInfo: boolean
+  includeSrmSearch: boolean
+  srmCsvContentBase64?: string
+  srmCsvFile?: File | null
   routeId: string
   chartType: string
   speedLimit: number | null
@@ -112,6 +117,32 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   pedestrianIntervals: PedestrianInterval[] | []
   percentArrivalOnGreen: number
   tmcForPhase: TmcForPhaseDto
+
+  order: number
+  cycleLength: number
+  isPhaseOverLap: boolean
+
+  tspNumberCheckins: number
+  tspNumberCheckouts: number
+  tspNumberEarlyGreens: number
+  tspNumberExtendedGreens: number
+
+  tspEvents?: IndianaEvent[] | null
+  priorityAndPreemptionEvents?: DetectorEventDto[] | null
+  srmEntityTracks?: SrmHistoricEntityTrack[] | null
+}
+
+export interface SrmHistoricPoint {
+  time: string
+  distance: number
+  timestampMs: number
+}
+
+export interface SrmHistoricEntityTrack {
+  entityId: string
+  points: SrmHistoricPoint[]
+  startingIntersection?: string
+  headingDirection?: number | string
 }
 
 export interface TmcForPhaseDto {
@@ -145,6 +176,7 @@ export interface GpxUploadOptions {
   id: string
   file?: File
   parsedData?: GpxPoint[]
+  parsedEntityData?: SrmEntityTrack[]
   startLocation: string
   endLocation: string
   primary?: boolean
