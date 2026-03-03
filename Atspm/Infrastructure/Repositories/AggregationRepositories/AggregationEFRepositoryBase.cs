@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories/AggregationEFRepositoryBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,15 +33,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
         #region IAggregationRepository
 
         ///<inheritdoc/>
-        public virtual IReadOnlyList<T> GetAggregationsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
+        public virtual IReadOnlyList<T> GetAggregationsBetweenDates(string locationIdentifier, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationId, startTime, endTime))
+                .FromSpecification(new CompressedDataSpecification<CompressedAggregationBase>(locationIdentifier, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)
                 .Where(c => c.Start >= startTime && c.End <= endTime)
-                .FromSpecification(new AggregationSpecification(locationId, startTime, endTime))
+                .FromSpecification(new AggregationSpecification(locationIdentifier, startTime, endTime))
             .Cast<T>()
             .ToList();
             return result;

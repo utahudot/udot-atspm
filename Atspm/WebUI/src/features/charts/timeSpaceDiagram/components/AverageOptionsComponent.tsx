@@ -43,13 +43,15 @@ export const AverageOptionsComponent = (props: Props) => {
           />
         </Paper>
         <Box display={'flex'} flexDirection={'column'} gap={2}>
-          <MultiSelectCheckbox
-            itemList={daysOfWeekList}
-            selectedItems={handler.selectedDays}
-            setSelectedItems={handler.updateDaysOfWeek}
-            header="Days To Include"
-            direction="horizontal"
-          />
+          <Paper>
+            <MultiSelectCheckbox
+              itemList={daysOfWeekList}
+              selectedItems={handler.selectedDays}
+              setSelectedItems={handler.updateDaysOfWeek}
+              header="Days To Include"
+              direction="horizontal"
+            />
+          </Paper>
           <SequenceAndCoordinationComponent
             locationWithSequence={handler.routeLocationWithSequence}
             locationWithCoordPhases={handler.routeLocationWithCoordPhases}

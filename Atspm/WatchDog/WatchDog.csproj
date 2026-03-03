@@ -13,7 +13,7 @@
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>4a25a28a-6471-4d98-ae56-b46fe556756b</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<Version>5.1.3</Version>
+		<Version>5.1.4</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -44,6 +44,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\Atspm\Atspm\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
       <Using Include="Utah.Udot.Atspm.Infrastructure.Configuration" />
 	  <Using Include="Utah.Udot.Atspm.Business.Common" />
 	  <Using Include="Utah.Udot.Atspm.Extensions" />
@@ -51,6 +57,7 @@
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
 	</ItemGroup>
 
 	<ItemGroup>

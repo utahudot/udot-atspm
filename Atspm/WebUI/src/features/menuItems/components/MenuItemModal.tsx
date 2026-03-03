@@ -19,15 +19,21 @@ interface ModalProps {
   data?: MenuItems
   onSave: (menuItem: MenuItems) => void
   onClose: () => void
+  isOpen: boolean
+  data?: MenuItems
+  onSave: (menuItem: MenuItems) => void
+  onClose: () => void
 }
 
 const menuItemSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(1, 'Name is required'),
+  name: z.string().min(1, 'Name is required'),
   icon: z.string().nullable().optional(),
   displayOrder: z.coerce
     .number()
     .int()
+    .min(0, 'Display order must be a non-negative integer'),
     .min(0, 'Display order must be a non-negative integer'),
   link: z.string().nullable().optional(),
   parentId: z.preprocess(
@@ -38,6 +44,7 @@ const menuItemSchema = z.object({
 })
 
 type MenuItemFormData = z.infer<typeof menuItemSchema>
+type MenuItemFormData = z.infer<typeof menuItemSchema>
 
 const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
   const { data: menuItemsData } = useGetMenuItems()
@@ -47,11 +54,14 @@ const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
       id: 0,
       name: '',
       icon: '',
+      name: '',
+      icon: '',
       displayOrder: 0,
       link: '',
       parentId: 0,
       children: [],
     },
+  })
   })
 
   useEffect(() => {
@@ -59,6 +69,9 @@ const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
       Object.entries(data).forEach(([key, value]) => {
         setValue(
           key as keyof MenuItemFormData,
+          key === 'displayOrder' ? Number(value) : value
+        )
+      })
           key === 'displayOrder' ? Number(value) : value
         )
       })
@@ -72,6 +85,7 @@ const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
       setValue('children', [])
     }
   }, [data, setValue])
+  }, [data, setValue])
 
   const onSubmit = async (formData: MenuItemFormData) => {
     try {
@@ -83,7 +97,9 @@ const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
       onClose()
     } catch (error) {
       console.error('Error occurred while saving menu item:', error)
+      console.error('Error occurred while saving menu item:', error)
     }
+  }
   }
 
   const topLevelMenuItems = useMemo(
@@ -91,18 +107,24 @@ const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
       menuItemsData?.value.filter((item: MenuItems) => item.parentId === null),
     [menuItemsData]
   )
+  )
 
   const parentItem = useMemo(
     () =>
       menuItemsData?.value.find(
         (item: MenuItems) => item.id === watch('parentId')
+        (item: MenuItems) => item.id === watch('parentId')
       ),
     [menuItemsData, watch]
+  )
   )
 
   const validateLinkAndChildren = (link: string, id: number | null) => {
     const children = menuItemsData?.value.filter(
       (item: MenuItems) => item.parentId === id
+    )
+    return !(children && children.length > 0 && link)
+  }
     )
     return !(children && children.length > 0 && link)
   }
@@ -215,4 +237,5 @@ const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
   )
 }
 
+export default MenuItemsModal
 export default MenuItemsModal

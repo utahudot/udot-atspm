@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   publish-nuget:
+    if: ${{ github.repository == 'utahudot/udot-atspm' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
