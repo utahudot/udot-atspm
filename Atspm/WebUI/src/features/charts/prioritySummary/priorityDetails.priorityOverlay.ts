@@ -18,7 +18,7 @@ const TSP_CODES = {
   ServiceEnd: 119,
 } as const
 
-type PriorityEvent = {
+export type PriorityEvent = {
   eventCode: number
   eventParam?: number | null
   timestamp: string
@@ -39,7 +39,7 @@ type CycleWindow = {
   extendGreenMs?: number[]
 }
 
-type RectDatum = {
+export type RectDatum = {
   name: string
   value: [number, string, string, number]
   itemStyle: { color: string }
@@ -229,7 +229,7 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
   }
 }
 
-function buildRectsAndLinesFromEvents(allEvents: PriorityEvent[]) {
+export function buildRectsAndLinesFromEvents(allEvents: PriorityEvent[]) {
   const requestRects: RectDatum[] = []
   const serviceRects: RectDatum[] = []
   const intersectionLines: Array<{ t: string; y: number }> = []
@@ -295,7 +295,7 @@ function buildRectsAndLinesFromEvents(allEvents: PriorityEvent[]) {
   return { requestRects, serviceRects, intersectionLines }
 }
 
-function buildCycleWindowsFromEvents(
+export function buildCycleWindowsFromEvents(
   allEvents: PriorityEvent[]
 ): CycleWindow[] {
   const byTsp = new Map<number, PriorityEvent[]>()

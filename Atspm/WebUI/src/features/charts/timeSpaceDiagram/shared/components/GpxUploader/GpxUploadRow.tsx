@@ -15,7 +15,6 @@ interface GpxUploadRowProps {
   entry: GpxUploadOptions
   index: number
   locations: string[]
-  previousEntry?: GpxUploadOptions
   canDelete: boolean
   onDelete: () => void
   onChange: (updates: Partial<GpxUploadOptions>) => void
@@ -24,7 +23,6 @@ interface GpxUploadRowProps {
 export const GpxUploadRow = ({
   entry,
   index,
-  previousEntry,
   canDelete,
   onDelete,
   onChange,
@@ -60,7 +58,12 @@ export const GpxUploadRow = ({
 
             try {
               const parsed = await parseGpxFile(file)
-              onChange({ file, parsedData: parsed, error: null })
+              onChange({
+                file,
+                parsedData: parsed,
+                parsedEntityData: undefined,
+                error: null,
+              })
             } catch {
               onChange({ error: 'Invalid GPX file' })
             }
@@ -79,6 +82,7 @@ export const GpxUploadRow = ({
         <TextField
           select
           label="Start Location"
+          size="small"
           value={entry.startLocation}
           onChange={(e) =>
             onChange({
@@ -98,6 +102,7 @@ export const GpxUploadRow = ({
         <TextField
           select
           label="End Location"
+          size="small"
           value={entry.endLocation}
           onChange={(e) =>
             onChange({
@@ -113,29 +118,6 @@ export const GpxUploadRow = ({
           ))}
         </TextField>
       </Stack>
-
-      {/* {(entry.startLocationMode === 'new' ||
-        entry.endLocationMode === 'new') && (
-        <Stack direction="row" spacing={2} mt={2}>
-          {entry.startLocationMode === 'new' && (
-            <TextField
-              label="Start Identifier"
-              value={entry.startLocation || ''}
-              onChange={(e) => onChange({ startLocation: e.target.value })}
-              fullWidth
-            />
-          )}
-
-          {entry.endLocationMode === 'new' && (
-            <TextField
-              label="End Identifier"
-              value={entry.endLocation || ''}
-              onChange={(e) => onChange({ endLocation: e.target.value })}
-              fullWidth
-            />
-          )}
-        </Stack>
-      )} */}
     </Box>
   )
 }

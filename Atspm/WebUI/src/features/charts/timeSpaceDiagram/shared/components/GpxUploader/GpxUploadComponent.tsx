@@ -43,7 +43,6 @@ export const GpxUploadComponent = (prop: Prop) => {
             key={`${index} ${entry.id}`}
             entry={entry}
             index={index}
-            previousEntry={entries[index - 1]}
             locations={locations}
             canDelete={!entry.primary}
             onDelete={() => deleteEntry(entry.id)}

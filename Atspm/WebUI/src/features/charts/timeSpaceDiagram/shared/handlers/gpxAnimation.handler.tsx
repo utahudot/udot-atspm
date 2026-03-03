@@ -1,13 +1,15 @@
-import { ECharts } from 'echarts'
+import { ECharts, SeriesOption } from 'echarts'
 import { useMemo, useRef } from 'react'
+import { GpxPoint } from '../gpxFileParser'
 import { GpxUploadOptions } from '../types'
 
 function buildShiftedGpxData(
   chart: ECharts,
-  upload: GpxUploadOptions
+  upload: GpxUploadOptions,
+  points: GpxPoint[]
 ): [string, number][] {
-  const { parsedData, startLocation, endLocation } = upload
-  if (!parsedData?.length) return []
+  const { startLocation, endLocation } = upload
+  if (!points?.length) return []
 
   const options = chart?.getOption()
   const locations = options.displayProps.locations
@@ -27,7 +29,7 @@ function buildShiftedGpxData(
   const min = Math.min(startValue, endValue)
   const max = Math.max(startValue, endValue)
 
-  return parsedData.map((p) => {
+  return points.map((p) => {
     const raw = startValue + direction * p.distance
     const clipped = Math.min(Math.max(raw, min), max)
 
@@ -44,21 +46,48 @@ export const useGpxAnimationHandler = (
 
   const processedSeries = useMemo(() => {
     if (!chart) return []
-    return uploads
+
+    const series: SeriesOption[] = []
+
+    uploads
       .filter((u) => !u.error)
-      .map((upload) => ({
-        id: `gpx-${upload.id}`,
-        type: 'line',
-        data: buildShiftedGpxData(chart, upload),
-        color: 'black',
-        symbol: 'none',
-        silent: true,
-        lineStyle: {
-          width: 3,
-          color: 'black',
-        },
-        clip: true,
-      }))
+      .forEach((upload) => {
+        if (upload.parsedData?.length) {
+          series.push({
+            id: `gpx-${upload.id}`,
+            type: 'line',
+            data: buildShiftedGpxData(chart, upload, upload.parsedData),
+            color: 'black',
+            symbol: 'none',
+            silent: true,
+            lineStyle: {
+              width: 3,
+              color: 'black',
+            },
+            clip: true,
+          })
+        }
+
+        const entityTracks = upload.parsedEntityData ?? []
+        entityTracks.forEach((track, index) => {
+          series.push({
+            id: `srm-${upload.id}-${track.entityId}-${index}`,
+            name: `SRM ${track.entityId}`,
+            type: 'line',
+            data: buildShiftedGpxData(chart, upload, track.points),
+            color: 'black',
+            symbol: 'none',
+            silent: true,
+            lineStyle: {
+              width: 2,
+              color: 'black',
+            },
+            clip: true,
+          })
+        })
+      })
+
+    return series
   }, [chart, uploads])
 
   const maxTime = useMemo(

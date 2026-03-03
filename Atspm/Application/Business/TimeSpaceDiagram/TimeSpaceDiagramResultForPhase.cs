@@ -91,5 +91,6 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public double TSPNumberExtendedGreens { get; set; }
         public ICollection<IndianaEvent> TspEvents { get; set; }
         public List<DetectorEventDto> PriorityAndPreemptionEvents { get; set; }
+        public List<SrmEntityTrack> SrmEntityTracks { get; set; } = new();
     }
 }
