@@ -47,7 +47,7 @@ jobs:
       - name: 🏷️ Set tags for GHCR
         id: meta
         run: |
-          IMAGE_REPO="ghcr.io/${{ github.repository }}/${{ matrix.name }}"
+          IMAGE_REPO=$(echo "ghcr.io/${{ github.repository }}/${{ matrix.name }}" | tr '[:upper:]' '[:lower:]')
           echo "IMAGE_TAGS=${IMAGE_REPO}:${GITHUB_REF#refs/tags/},${IMAGE_REPO}:latest" >> $GITHUB_ENV
 
       - name: 📦 Build and push image (non-WebUI)
