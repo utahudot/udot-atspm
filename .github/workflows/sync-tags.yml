@@ -15,24 +15,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout fork
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Add upstream remote
         run: git remote add upstream https://github.com/utahudot/udot-atspm.git
+
+      - name: Sync fork main with upstream
+        run: |
+          git fetch upstream
+          git checkout main
+          git merge upstream/main --ff-only || true
+          git push origin main
 
       - name: Fetch upstream tags
         run: git fetch upstream --tags
 
       - name: Push only missing tags
         run: |
-          # List tags from upstream
           for tag in $(git tag -l); do
-            # Check if tag exists in fork
-            if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
-              echo "Pushing missing tag: $tag"
-              git push origin "$tag"
-            else
-              echo "Tag already exists: $tag"
-            fi
-          done
+            if ! git ls-remote --tags origin |
