@@ -1,4 +1,4 @@
-name: Sync Safe Tags From Upstream
+name: Sync Fork and Tags From Upstream
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  sync-tags:
+  sync:
     if: ${{ github.repository != 'utahudot/udot-atspm' }}
     runs-on: ubuntu-latest
 
@@ -20,32 +20,34 @@ jobs:
       - name: Add upstream remote
         run: git remote add upstream https://github.com/utahudot/udot-atspm.git
 
+      - name: Sync fork main with upstream
+        run: |
+          git fetch upstream
+          git checkout main
+          git merge upstream/main --ff-only || true
+          git push origin main
+
       - name: Fetch upstream tags
         run: git fetch upstream --tags
 
-      - name: Sync only safe tags
+      - name: Sync tags
         id: sync
         run: |
           SKIPPED=""
           SYNCED=""
 
           for tag in $(git tag -l); do
-            commit=$(git rev-list -n 1 "$tag")
-
-            # 🚨 REAL FIX: skip tags whose commits are not in the fork
-            if ! git merge-base --is-ancestor "$commit" HEAD 2>/dev/null; then
-              echo "Skipping $tag (commit not in fork history)"
-              SKIPPED="$SKIPPED\n- $tag (commit not in fork history)"
+            # Skip if tag already exists in fork
+            if git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
+              echo "Tag already exists: $tag"
               continue
             fi
 
-            # Push only missing tags
-            if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
-              echo "Pushing safe tag: $tag"
-              git push origin "$tag"
+            echo "Pushing tag: $tag"
+            if git push origin "$tag"; then
               SYNCED="$SYNCED\n- $tag"
             else
-              echo "Tag already exists: $tag"
+              SKIPPED="$SKIPPED\n- $tag (push rejected)"
             fi
           done
 
@@ -57,7 +59,7 @@ jobs:
           echo -e "$SYNCED" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Write summary
+      - name: Summary
         run: |
           echo "## Tag Sync Summary" >> $GITHUB_STEP_SUMMARY
 
@@ -65,7 +67,7 @@ jobs:
           if [ -n "${{ steps.sync.outputs.synced }}" ]; then
             echo "${{ steps.sync.outputs.synced }}" >> $GITHUB_STEP_SUMMARY
           else
-            echo "_No tags were synced._" >> $GITHUB_STEP_SUMMARY
+            echo "_No tags synced._" >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -73,5 +75,5 @@ jobs:
           if [ -n "${{ steps.sync.outputs.skipped }}" ]; then
             echo "${{ steps.sync.outputs.skipped }}" >> $GITHUB_STEP_SUMMARY
           else
-            echo "_No tags were skipped._" >> $GITHUB_STEP_SUMMARY
+            echo "_No tags skipped._" >> $GITHUB_STEP_SUMMARY
           fi
