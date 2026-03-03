@@ -6,9 +6,11 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   sync-tags:
-    # Only run if this is NOT the main upstream repo
     if: ${{ github.repository != 'utahudot/udot-atspm' }}
     runs-on: ubuntu-latest
 
