@@ -3,6 +3,7 @@ name: Build Containers and Publish to GHCR (On Release)
 on:
   release:
     types: [published]
+  workflow_dispatch:  
 
 permissions:
   contents: read
@@ -70,7 +71,7 @@ jobs:
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.image_tags }}
           labels: |
-            org.opencontainers.image.description=${{ github.event.release.body }}
+            org.opencontainers.image.description=${{ github.event.release.body || '' }}
 
       - name: Build and push (WebUI)
         if: ${{ matrix.name == 'atspm-webui' }}
@@ -83,4 +84,4 @@ jobs:
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.image_tags }}
           labels: |
-            org.opencontainers.image.description=${{ github.event.release.body }}
+            org.opencontainers.image.description=${{ github.event.release.body || '' }}
