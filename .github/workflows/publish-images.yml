@@ -30,8 +30,8 @@ jobs:
 
       - name: Get Working Dir
         run: |
-          docker_dir=$(cat .github/filters.json | jq ".\"${{ matrix.name }}\"" | tr -d '"')
-          echo "DOCKERFILE_DIR=$docker_dir" >> $GITHUB_ENV
+          docker_dir="$(cat .github/filters.json | jq '."${{matrix.name}}"' | tr -d '**\n"')"
+          echo DOCKERFILE_DIR=${docker_dir} >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         id: builder
