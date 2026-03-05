@@ -41,6 +41,7 @@ const PerformanceMeasures = () => {
   const missingDays = useMissingDays(
     location?.locationIdentifier ?? '',
     chartType === ChartType.ApproachSpeed ? 'SpeedEvent' : 'IndianaEvent',
+    'raw',
     calendarStartDate,
     calendarEndDate
   )

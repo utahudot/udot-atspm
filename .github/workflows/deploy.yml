@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   env:
+    if: ${{ github.repository == 'utahudot/udot-atspm' }}
     name: Determine ENV
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +24,7 @@ jobs:
         run: |
           echo environment="at" >> $GITHUB_ENV
     outputs:
-      env: ${{ env.environment }}
+      env: ${{ env.environment || '' }}
 
 
   deploy_service:

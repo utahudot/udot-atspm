@@ -206,6 +206,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                 PedestrianDetectors = approach.PedestrianDetectors,
                 LocationId = approach.LocationId,
                 DirectionTypeId = approach.DirectionTypeId,
+                CreatedBy = approach.CreatedBy,
+                Created = approach.Created,
+                Modified = approach.Modified,
+                ModifiedBy = approach.ModifiedBy,
                 Detectors = approach.Detectors.Select(d => new DetectorDto
                 {
                     Id = d.Id,
@@ -223,6 +227,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                     MovementDelay = d.MovementDelay,
                     LatencyCorrection = d.LatencyCorrection,
                     ApproachId = d.ApproachId,
+                    Created = d.Created,
+                    CreatedBy = d.CreatedBy,
+                    Modified = d.Modified,
+                    ModifiedBy = d.ModifiedBy,
                     DetectionTypes = ExtractDetectionTypesToDto(d.DetectionTypes.ToList())
                 }).ToList()
             };
