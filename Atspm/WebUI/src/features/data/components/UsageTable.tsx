@@ -67,6 +67,7 @@ export default function UsageTable({ isLoading, rows }: UsageTableProps) {
         valueFormatter: (v) => formatMs(Number(v)),
       },
       { field: 'user', headerName: 'User', width: 160 },
+      { field: 'remoteIp', headerName: 'IP Address', width: 160 },
       { field: 'route', headerName: 'Route', width: 280 },
       { field: 'controller', headerName: 'Controller', width: 160 },
       { field: 'action', headerName: 'Action', width: 160 },

@@ -8,8 +8,10 @@ import {
   useGetRouteRouteViewFromId,
   useUpsertRouteRoute,
 } from '@/api/config'
+import AuditInfo from '@/components/AuditInfo'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
+import { useGetRoutes } from '@/features/routes/api'
 import RouteEditor from '@/features/routes/components/routeEditor'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
@@ -29,6 +31,7 @@ const RouteAdmin = () => {
   const { addNotification } = useNotificationStore()
 
   const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
+  const { data: routes } = useGetRoutes()
   const { data: route } = useGetRouteRouteViewFromId(id as unknown as number)
   const { data: routeDistancesData } = useGetRouteDistance()
   const { mutate: updateRoute } = useUpsertRouteRoute()
@@ -40,6 +43,8 @@ const RouteAdmin = () => {
   const [hasLoaded, setHasLoaded] = useState(false)
   const [hasErrors, setHasErrors] = useState(false)
   const [routeDistances, setRouteDistances] = useState<RouteDistance[]>([])
+
+  const routeInfo = routes?.value.find((r) => r.id.toString() === id)
 
   const locations = locationsData?.value
 
@@ -388,12 +393,23 @@ const RouteAdmin = () => {
         >
           <ChevronLeftIcon /> Back to Routes
         </Button>
-        <TextField
-          label="Route Name"
-          value={updatedRoute.name || ''}
-          onChange={handleEditRouteName}
-          sx={{ fontSize: '30px', mb: 2, minWidth: '250px' }}
-        />
+        <Box
+          display="flex"
+          flexDirection="row"
+          minWidth={800}
+          gap={2}
+          alignContent={'center'}
+          alignItems={'center'}
+          mb={2}
+        >
+          <TextField
+            label="Route Name"
+            value={updatedRoute.name || ''}
+            onChange={handleEditRouteName}
+            sx={{ fontSize: '30px', minWidth: '250px' }}
+          />
+          <AuditInfo obj={routeInfo} />
+        </Box>
       </Box>
       <Box sx={{ display: 'flex' }}>
         <Paper sx={{ flexGrow: 1, minWidth: '400px', p: 3 }}>

@@ -1,16 +1,9 @@
+import ATSPMDialog from '@/components/ATSPMDialog'
 import { useGetClaims } from '@/features/identity/api/getClaims'
 import { useGetRoles } from '@/features/identity/api/getRoles'
 import { Role } from '@/features/identity/types/roles'
 import PageClaimsCard from '@/features/roles/components/PageClaimsCard'
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from '@mui/material'
+import { Box, TextField } from '@mui/material'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -64,27 +57,6 @@ const RoleModal = ({ isOpen, onSave, onClose, data }: ModalProps) => {
     setValue('claims', claims)
   }
 
-  const checkMaxPermissions = () => {
-    if (!claimsData || claimsData.length === 0 || roleId === 'Admin')
-      return false
-
-    const uniquePermissions = Array.from(
-      new Set(claimsData.map((claim) => claim.split(':')[0]))
-    ).filter((perm) => perm !== 'Admin')
-
-    const hasMaxPermission = (permission: string) => {
-      const availableClaims = claimsData.filter((c) => c.startsWith(permission))
-      const maxLevel = availableClaims.some((c) => c.endsWith('Delete'))
-        ? `${permission}:Delete`
-        : availableClaims.some((c) => c.endsWith('Edit'))
-          ? `${permission}:Edit`
-          : `${permission}:View`
-      return userClaims.includes(maxLevel)
-    }
-
-    return uniquePermissions.every(hasMaxPermission)
-  }
-
   const onSubmit = (formData: RoleFormData) => {
     if (!formData.roleName) return
     onSave({
@@ -98,8 +70,8 @@ const RoleModal = ({ isOpen, onSave, onClose, data }: ModalProps) => {
     role.role.toLowerCase()
   )
   const isDuplicateRoleName =
-    isNewRole &&
-    watchedRoleName &&
+    Boolean(isNewRole) &&
+    Boolean(watchedRoleName) &&
     existingRoleNames.includes(watchedRoleName.toLowerCase())
 
   if (rolesIsLoading || claimsIsLoading) return null
@@ -108,73 +80,47 @@ const RoleModal = ({ isOpen, onSave, onClose, data }: ModalProps) => {
   }
 
   return (
-    <Dialog
-      open={isOpen}
+    <ATSPMDialog
+      isOpen={isOpen}
       onClose={onClose}
-      aria-labelledby="role-permissions-label"
-      sx={{
-        '& .MuiDialog-paper': {
-          width: 'auto',
-          maxWidth: 'none',
-          minWidth: '600px',
-        },
-      }}
+      title={isNewRole ? 'Create New Role' : `Role Permissions - ${roleId}`}
+      auditInfo={data}
+      onSubmit={handleSubmit(onSubmit)}
+      dialogProps={{ sx: { minWidth: 600 } }}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle
-          sx={{ fontSize: '1.3rem', mb: 0 }}
-          id="role-permissions-label"
-        >
-          {isNewRole ? 'Create New Role' : `Role Permissions - ${roleId}`}
-        </DialogTitle>
-        <DialogContent>
-          {isNewRole && (
-            <Box sx={{ mb: 3, mt: 1 }}>
-              <TextField
-                fullWidth
-                label="Role Name"
-                {...register('roleName', {
-                  required: 'Role name is required',
-                  validate: (value) => {
-                    if (!value || value.trim() === '') return true
-                    return (
-                      !existingRoleNames.includes(value.toLowerCase()) ||
-                      'Role name already exists'
-                    )
-                  },
-                })}
-                error={!!errors.roleName || isDuplicateRoleName}
-                helperText={errors.roleName ? errors.roleName.message : ''}
-              />
-            </Box>
-          )}
-
-          <PageClaimsCard
-            id={isNewRole ? watchedRoleName : (roleId ?? '')}
-            currentClaims={rolesData || []}
-            onClaimsChange={handleClaimsChange}
-            currentRole={currentRole}
-            setCurrentRole={setCurrentRole}
-            userClaims={userClaims}
-            setUserClaims={setUserClaims}
-            claimsData={claimsData}
-            isNewRole={isNewRole}
+      {isNewRole && (
+        <Box sx={{ mb: 3, mt: 1 }}>
+          <TextField
+            fullWidth
+            label="Role Name"
+            {...register('roleName', {
+              required: 'Role name is required',
+              validate: (value) => {
+                if (!value || value.trim() === '') return true
+                return (
+                  !existingRoleNames.includes(value.toLowerCase()) ||
+                  'Role name already exists'
+                )
+              },
+            })}
+            error={!!errors.roleName || isDuplicateRoleName}
+            helperText={errors.roleName ? errors.roleName.message : ''}
           />
-        </DialogContent>
-        <DialogActions>
-          <Box sx={{ mr: 2, mb: 2 }}>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button
-              variant="contained"
-              type="submit"
-              disabled={!isValid || isDuplicateRoleName}
-            >
-              {isNewRole ? 'Create Role' : 'Update Role'}
-            </Button>
-          </Box>
-        </DialogActions>
-      </form>
-    </Dialog>
+        </Box>
+      )}
+
+      <PageClaimsCard
+        id={isNewRole ? watchedRoleName : (roleId ?? '')}
+        currentClaims={rolesData || []}
+        onClaimsChange={handleClaimsChange}
+        currentRole={currentRole}
+        setCurrentRole={setCurrentRole}
+        userClaims={userClaims}
+        setUserClaims={setUserClaims}
+        claimsData={claimsData}
+        isNewRole={isNewRole}
+      />
+    </ATSPMDialog>
   )
 }
 

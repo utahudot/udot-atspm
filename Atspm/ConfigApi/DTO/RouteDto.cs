@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 
 namespace Utah.Udot.ATSPM.ConfigApi.DTO
 {
@@ -24,7 +25,7 @@ namespace Utah.Udot.ATSPM.ConfigApi.DTO
         public int RouteId { get; set; }
     }
 
-    public class RouteDto
+    public class RouteDto: AtspmConfigModelBase<int>
     {
         public int? Id { get; set; }
         public string Name { get; set; }

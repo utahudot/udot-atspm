@@ -3,11 +3,13 @@ import {
   useGetJurisdiction,
   useGetLocationType,
   useGetRegion,
-  usePutLocationFromKey,
+  usePatchLocationFromKey,
 } from '@/api/config'
+import AuditInfo from '@/components/AuditInfo'
 import CustomSelect from '@/components/customSelect'
 import LocationCoordinatePicker from '@/features/locations/components/editLocation/LocationCoordinatesPicker'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import { getLocation } from '@/pages/admin/locations/[[...id]]'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp } from '@/utils/dateTime'
 import { removeAuditFields } from '@/utils/removeAuditFields'
@@ -39,7 +41,7 @@ const LocationGeneralOptionsEditor = () => {
   const { data: jurisdictionData } = useGetJurisdiction()
   const { data: locationTypeData } = useGetLocationType()
 
-  const { mutateAsync: updateGeneralInfo } = usePutLocationFromKey()
+  const { mutateAsync: updateGeneralInfo } = usePatchLocationFromKey()
 
   const handleAreaDelete = (id: number | string) => {
     setLocation({
@@ -95,7 +97,7 @@ const LocationGeneralOptionsEditor = () => {
     handleLocationEdit(name, value as string)
   }
 
-  const handleSaveGeneralLocation = () => {
+  const handleSaveGeneralLocation = async () => {
     const { approaches, region, jurisdiction, devices, ...generalInfo } =
       location
 
@@ -111,8 +113,10 @@ const LocationGeneralOptionsEditor = () => {
           data: generalInfoDto,
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
             queryClient.invalidateQueries()
+            const updatedLocation = await getLocation(location.id)
+            setLocation(updatedLocation)
           },
         }
       )
@@ -134,7 +138,14 @@ const LocationGeneralOptionsEditor = () => {
 
   return (
     <>
-      <Box display="flex" justifyContent="flex-end" mb={1}>
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        mb={1}
+        gap={2}
+        alignItems="flex-end"
+      >
+        <AuditInfo obj={location} />
         <Button
           variant="contained"
           color="success"

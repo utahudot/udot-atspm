@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Data.Utility
                     }
                     else if (entry.State == EntityState.Modified)
                     {
-                        auditProperties.Modified = DateTime.UtcNow;
+                        auditProperties.Modified = DateTime.Now;
 
                         var user = _currentUserService.GetCurrentUser();
 

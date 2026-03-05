@@ -44,7 +44,7 @@ export const initializeAxiosInstances = async () => {
     )
   }
   if (env.REPORTS_URL) {
-    reportsAxios = createAxiosInstance(env.REPORTS_URL + BASE_PATH)
+    reportsAxios = createAxiosInstance(env.REPORTS_URL)
   }
   if (env.IDENTITY_URL) {
     identityAxios = createAxiosInstance(env.IDENTITY_URL + BASE_PATH)

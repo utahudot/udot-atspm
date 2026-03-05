@@ -1,5 +1,5 @@
 import { Box, MenuItem, Select, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface PageClaimsCardProps {
   currentClaims: { role: string; claims: string[] }[]
@@ -20,16 +20,20 @@ const PageClaimsCard = ({
   claimsData,
   isNewRole,
 }: PageClaimsCardProps) => {
-  const claims = claimsData?.filter((claim) => claim !== 'Admin') || []
-  const roleCurrentClaims =
-    currentClaims.find((item) => item.role === id)?.claims || []
+  const claims = useMemo(
+    () => claimsData?.filter((claim) => claim !== 'Admin') || [],
+    [claimsData]
+  )
 
   const [selectedPermissions, setSelectedPermissions] = useState<{
     [key: string]: string
   }>({})
 
   const getPermissionName = (claim: string) => claim.split(':')[0]
-  const uniquePermissions = Array.from(new Set(claims.map(getPermissionName)))
+  const uniquePermissions = useMemo(
+    () => Array.from(new Set(claims.map(getPermissionName))),
+    [claims]
+  )
 
   const getAvailableOptions = (permission: string) => {
     const availableClaims = claims.filter((c) => c.startsWith(permission))
@@ -56,6 +60,9 @@ const PageClaimsCard = ({
   useEffect(() => {
     if (!id || !claims.length) return
 
+    const roleCurrentClaims =
+      currentClaims.find((item) => item.role === id)?.claims || []
+
     const initialPermissions: { [key: string]: string } = {}
     const initialClaims = isNewRole
       ? userClaims
@@ -77,7 +84,14 @@ const PageClaimsCard = ({
     })
 
     setSelectedPermissions(initialPermissions)
-  }, [id, roleCurrentClaims, isNewRole])
+  }, [
+    id,
+    currentClaims,
+    isNewRole,
+    claims.length,
+    uniquePermissions,
+    userClaims,
+  ])
 
   const formatPermissionName = (permission: string) =>
     permission.replace(/(?<!^)([A-Z])/g, ' $1')
