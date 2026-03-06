@@ -77,10 +77,11 @@ export default function SelectDateTime({
   const handleCalendarChange = (newDate: Date | null) => {
     onChange?.(newDate as Date)
     if (!newDate) return
-    if (!endDateTime || !startDateTime) return
 
     changeStartDate(newDate)
     const newEndDate = new Date(newDate)
+    if (!endDateTime || !startDateTime) return
+
     newEndDate.setHours(endDateTime.getHours())
     newEndDate.setMinutes(endDateTime.getMinutes())
     if (
