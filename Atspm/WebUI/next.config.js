@@ -31,6 +31,7 @@ module.exports = withBundleAnalyzer({
     config.experiments = { ...config.experiments, topLevelAwait: true }
     return config
   },
+  turbopack: {},
   async redirects() {
     return [
       {
@@ -53,10 +54,10 @@ module.exports = withBundleAnalyzer({
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  experimental: {
-    instrumentationHook: true,
-  },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
+  // experimental: {
+  //   instrumentationHook: true,
+  // },
 })
