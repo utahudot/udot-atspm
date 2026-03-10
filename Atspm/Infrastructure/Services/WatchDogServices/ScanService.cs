@@ -36,7 +36,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly WatchDogLogService logService;
+        private readonly WatchDogAmLogService logAmService;
+        private readonly WatchDogPmLogService logPmService;
+        private readonly WatchDogRampLogService logRampService;
         private readonly IWatchdogEmailService emailService;
         private readonly SegmentedErrorsService segmentedErrorsService;
         private readonly ILogger<ScanService> logger;
@@ -52,7 +54,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             IUserAreaRepository userAreaRepository,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            WatchDogLogService logService,
+            WatchDogAmLogService logAmService,
+            WatchDogPmLogService logPmService,
+            WatchDogRampLogService logRampService,
             IWatchdogEmailService emailService,
             ILogger<ScanService> logger,
             SegmentedErrorsService segmentedErrorsService,
@@ -68,7 +72,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.userAreaRepository = userAreaRepository;
             this.userManager = userManager;
             this.roleManager = roleManager;
-            this.logService = logService;
+            this.logAmService = logAmService;
+            this.logPmService = logPmService;
+            this.logRampService = logRampService;
             this.emailService = emailService;
             this.logger = logger;
             this.segmentedErrorsService = segmentedErrorsService;
@@ -79,18 +85,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             WatchdogEmailOptions emailOptions,
             CancellationToken cancellationToken)
         {
+            DateTime scanDate = emailOptions.EmailAmErrors ? emailOptions.AmScanDate : emailOptions.EmailPmErrors
+                ? emailOptions.PmScanDate : emailOptions.EmailRampErrors ? emailOptions.RampMissedDetectorHitsStartScanDate
+                : throw new InvalidOperationException("No email options are enabled.");
+
             //need a version of this that gets the Location version for date of the scan
-            var locations = LocationRepository.GetLatestVersionOfAllLocations(emailOptions.ScanDate).ToList();
-            var errors = new List<WatchDogLogEvent>();
-            if (watchDogLogEventRepository.GetList().Where(e => e.Timestamp == emailOptions.ScanDate).Any())
-            {
-                errors = watchDogLogEventRepository.GetList().Where(e => e.Timestamp == emailOptions.ScanDate).ToList();
-            }
-            else
-            {
-                errors = await logService.GetWatchDogIssues(loggingOptions, locations, cancellationToken);
-                SaveErrorLogs(errors);
-            }
+            var locations = LocationRepository.GetLatestVersionOfAllLocations(scanDate).ToList();
 
             var regions = regionsRepository.GetList().ToList();
             var userRegions = userRegionRepository.GetList();
@@ -98,38 +98,87 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var areas = areaRepository.GetList().ToList();
             var userAreas = userAreaRepository.GetList().ToList();
 
-            var jurisdictions = jurisdictionRepository.GetList().ToList();
+            var jurisdictions = jurisdictionRepository.GetList().ToList(); // only look for ramp in jurisdiction if only .....
             var userJurisdictions = userJurisdictionRepository.GetList();
 
             var users = await GetUsersWithWatchDogClaimAsync();
 
-            var filteredErrors = ignoreEventService.GetFilteredWatchDogEventsForEmail(errors, emailOptions.ScanDate);
-            var (newErrors, dailyRecurringErrors, recurringErrors) = segmentedErrorsService.GetSegmentedErrors(filteredErrors, emailOptions);
+            var errors = new List<WatchDogLogEvent>();
+            var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
 
+            List<WatchDogLogEventWithCountAndDate> newIssues = new();
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues = new();
+            List<WatchDogLogEventWithCountAndDate> recurringIssues = new();
 
-            if (!emailOptions.WeekdayOnly || emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
-               emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday)
+            var existingEvents = watchDogLogEventRepository.GetList();
+
+            // PM
+            if (emailOptions.EmailPmErrors)
             {
-                var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
-                if (!emailOptions.EmailAllErrors)
+                var scanDateForErrors = emailOptions.PmScanDate;
+
+                var pmErrors = existingEvents.Where(e => e.Timestamp == scanDateForErrors).ToList();
+
+                if (!pmErrors.Any())
                 {
-                    //compare to error log to see if this was failing yesterday
-                    if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
-                        recordsFromTheDayBefore =
-                            watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
-                                w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
-                    else
-                        recordsFromTheDayBefore =
-                            watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
-                                w.Timestamp < emailOptions.ScanDate).ToList();
+                    var pmOptions = BreakOutPmOptions(loggingOptions);
+                    pmErrors = await logPmService.GetWatchDogIssues(pmOptions, locations, cancellationToken);
+                    SaveErrorLogs(pmErrors);
                 }
 
+                errors.AddRange(pmErrors);
 
-                await emailService.SendAllEmails(
+                GetErrorsWithHistoricalRecuringData(scanDateForErrors, emailOptions, pmErrors, recordsFromTheDayBefore,
+                    newIssues, dailyRecurringIssues, recurringIssues);
+            }
+
+            // AM
+            if (emailOptions.EmailAmErrors)
+            {
+                var scanDateForErrors = emailOptions.AmScanDate;
+
+                var amErrors = existingEvents.Where(e => e.Timestamp == scanDateForErrors).ToList();
+
+                if (!amErrors.Any())
+                {
+                    var amOptions = BreakOutAmOptions(loggingOptions);
+                    amErrors = await logAmService.GetWatchDogIssues(amOptions, locations, cancellationToken);
+                    SaveErrorLogs(amErrors);
+                }
+
+                errors.AddRange(amErrors);
+
+                GetErrorsWithHistoricalRecuringData(scanDateForErrors, emailOptions, amErrors, recordsFromTheDayBefore,
+                    newIssues, dailyRecurringIssues, recurringIssues);
+            }
+
+            // Ramp
+            if (emailOptions.EmailRampErrors)
+            {
+                var scanDateForErrors = emailOptions.RampMissedDetectorHitsStartScanDate;
+
+                var rampErrors = existingEvents.Where(e => e.Timestamp == scanDateForErrors).ToList();
+
+                if (!rampErrors.Any())
+                {
+                    var rampOptions = BreakOutRampOptions(loggingOptions);
+                    rampErrors = await logRampService.GetWatchDogIssues(rampOptions, locations, cancellationToken);
+                    SaveErrorLogs(rampErrors);
+                }
+
+                errors.AddRange(rampErrors);
+
+                GetErrorsWithHistoricalRecuringData(scanDateForErrors, emailOptions, rampErrors, recordsFromTheDayBefore,
+                    newIssues, dailyRecurringIssues, recurringIssues);
+            }
+
+            recordsFromTheDayBefore = recordsFromTheDayBefore.DistinctBy(e => e.Id).ToList();
+
+            await emailService.SendAllEmails(
                     emailOptions,
-                    newErrors,
-                    dailyRecurringErrors,
-                    recurringErrors,
+                    newIssues,
+                    dailyRecurringIssues,
+                    recurringIssues,
                     locations,
                     users,
                     jurisdictions,
@@ -139,9 +188,37 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     regions,
                     userRegions.ToList(),
                     recordsFromTheDayBefore);
-            }
         }
 
+        private void GetErrorsWithHistoricalRecuringData(DateTime scanDate, WatchdogEmailOptions emailOptions, List<WatchDogLogEvent> errors, List<WatchDogLogEvent> recordsFromTheDayBefore, List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
+        {
+            var filteredErrors = ignoreEventService.GetFilteredWatchDogEventsForEmail(errors, scanDate);
+            var (newErrorsScanDate, dailyRecurringErrorsScanDate, recurringErrorsScanDate) = segmentedErrorsService.GetSegmentedErrors(filteredErrors, emailOptions.WeekdayOnly, emailOptions.Sort, scanDate);
+            newIssues.AddRange(newErrorsScanDate);
+            dailyRecurringIssues.AddRange(dailyRecurringErrorsScanDate);
+            recurringIssues.AddRange(recurringErrorsScanDate);
+
+            if (!emailOptions.WeekdayOnly || emailOptions.WeekdayOnly && scanDate.DayOfWeek != DayOfWeek.Saturday &&
+               scanDate.DayOfWeek != DayOfWeek.Sunday)
+            {
+
+                if (!emailOptions.EmailAllErrors)
+                {
+                    var recordsFromTheDayBeforeTemp = new List<WatchDogLogEvent>();
+                    //compare to error log to see if this was failing yesterday
+                    if (emailOptions.WeekdayOnly && scanDate.DayOfWeek == DayOfWeek.Monday)
+                        recordsFromTheDayBeforeTemp =
+                            watchDogLogEventRepository.GetList(w => w.Timestamp >= scanDate.AddDays(-3) &&
+                                w.Timestamp < scanDate.AddDays(-2)).ToList();
+                    else
+                        recordsFromTheDayBeforeTemp =
+                            watchDogLogEventRepository.GetList(w => w.Timestamp >= scanDate.AddDays(-1) &&
+                                w.Timestamp < scanDate).ToList();
+
+                    recordsFromTheDayBefore.AddRange(recordsFromTheDayBeforeTemp);
+                }
+            }
+        }
 
         public void SaveErrorLogs(List<WatchDogLogEvent> errors)
         {
@@ -210,6 +287,59 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
             return usersWithWatchDogClaim;
         }
+
+
+        private WatchdogAmLoggingOptions BreakOutAmOptions(WatchdogLoggingOptions options)
+        {
+            return new WatchdogAmLoggingOptions
+            {
+                AmScanDate = options.AmScanDate,
+                AmStartHour = options.AmStartHour,
+                AmEndHour = options.AmEndHour,
+                ConsecutiveCount = options.ConsecutiveCount,
+                MinPhaseTerminations = options.MinPhaseTerminations,
+                PercentThreshold = options.PercentThreshold,
+                MaximumPedestrianEvents = options.MaximumPedestrianEvents
+            };
+        }
+
+        private WatchdogPmLoggingOptions BreakOutPmOptions(WatchdogLoggingOptions options)
+        {
+            return new WatchdogPmLoggingOptions
+            {
+                PmScanDate = options.PmScanDate,
+                PmPeakStartHour = options.PmPeakStartHour,
+                PmPeakEndHour = options.PmPeakEndHour,
+                RampMainlineStartHour = options.RampMainlineStartHour,
+                RampMainlineEndHour = options.RampMainlineEndHour,
+                RampStuckQueueStartHour = options.RampStuckQueueStartHour,
+                RampStuckQueueEndHour = options.RampStuckQueueEndHour,
+                MinimumRecords = options.MinimumRecords,
+                LowHitThreshold = options.LowHitThreshold
+            };
+        }
+
+        private WatchdogRampLoggingOptions BreakOutRampOptions(WatchdogLoggingOptions options)
+        {
+            return new WatchdogRampLoggingOptions
+            {
+                RampMissedDetectorHitsStartScanDate = options.RampMissedDetectorHitsStartScanDate,
+                RampMissedDetectorHitsEndScanDate = options.RampMissedDetectorHitsEndScanDate,
+                RampMissedDetectorHitStartHour = options.RampMissedDetectorHitStartHour,
+                RampMissedDetectorHitEndHour = options.RampMissedDetectorHitEndHour,
+                RampDetectorStartHour = options.RampDetectorStartHour,
+                RampDetectorEndHour = options.RampDetectorEndHour,
+                RampMissedEventsThreshold = options.RampMissedEventsThreshold,
+                LowHitRampThreshold = options.LowHitRampThreshold
+            };
+        }
+
+
+
+
+
+
+
 
     }
 

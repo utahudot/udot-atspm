@@ -44,6 +44,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\Atspm\Atspm\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
       <Using Include="Utah.Udot.Atspm.Infrastructure.Configuration" />
 	  <Using Include="Utah.Udot.Atspm.Business.Common" />
 	  <Using Include="Utah.Udot.Atspm.Extensions" />
@@ -51,6 +57,7 @@
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -61,7 +61,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                                               && !userJurisdictions.Any(uj => uj.UserId == u.Id)
                                               && !userAreas.Any(ua => ua.UserId == u.Id)).ToList();
             await SendAdminEmail(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, "All Locations", otherUsers, logsFromPreviousDay);
-
         }
 
         private async Task SendAdminEmail(
@@ -74,13 +73,27 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<ApplicationUser> users,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            var subject = $"All Locations ATSPM Alerts for {options.ScanDate.ToShortDateString()}";
-            var emailBody = await CreateEmailBody(options, newErrors, dailyRecurringErrors, recurringErrors
-                , locations, logsFromPreviousDay);
+            if (options.EmailPmErrors || options.EmailAmErrors)
+            {
+                string emailScanDatesString = BuildEmailScanDatesShortString(options);
+                var subject = $"All Locations ATSPM Alerts for {emailScanDatesString}";
+                var emailBody = await CreateEmailBody(options, newErrors, dailyRecurringErrors, recurringErrors
+                    , locations, logsFromPreviousDay);
 
-            //await mailService.SendEmailAsync(options.DefaultEmailAddress, users, subject, emailBody);
+                await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), subject, emailBody, true);
+            }
 
-            await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), subject, emailBody, true);
+            //This will send the ramp email.
+            if (options.EmailRampErrors)
+            {
+                var emailScanDatesString = BuildEmailScanDatesShortString(options, true);
+                var rampsubject = $"All Ramp ATSPM Alerts for {emailScanDatesString}";
+                var rampEmailBody = await CreateEmailBody(options, newErrors, dailyRecurringErrors, recurringErrors
+                    , locations, logsFromPreviousDay, true);
+
+
+                await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), rampsubject, rampEmailBody, true);
+            }
 
         }
 
@@ -102,17 +115,39 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     continue;
                 var usersByJurisdiction = users.Where(u => userIdsByJurisdiction.Any(uj => uj.UserId == u.Id)).ToList();
                 var LocationsByJurisdiction = Locations.Where(s => s.JurisdictionId == jurisdiction.Id).ToList();
-                var subject = $"{jurisdiction.Name} ATSPM Alerts for {options.ScanDate.ToShortDateString()}";
-                if (!userIdsByJurisdiction.IsNullOrEmpty() && !LocationsByJurisdiction.IsNullOrEmpty())
-                {
-                    var emailBody = await CreateEmailBody(
-                        options,
-                        newErrors, dailyRecurringErrors, recurringErrors,
-                        LocationsByJurisdiction,
-                        logsFromPreviousDay);
-                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
 
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
+                string emailScanDatesString = BuildEmailScanDatesShortString(options);
+                //This is the ramp email.
+                if (jurisdiction.Name.ToLower().Contains("ramp"))
+                {
+                    emailScanDatesString = BuildEmailScanDatesShortString(options, true);
+                    var subject = $"{jurisdiction.Name} ATSPM Ramp Alerts for {emailScanDatesString}";
+                    if (!userIdsByJurisdiction.IsNullOrEmpty() && !LocationsByJurisdiction.IsNullOrEmpty())
+                    {
+                        var emailBody = await CreateEmailBody(
+                            options,
+                            newErrors, dailyRecurringErrors, recurringErrors,
+                            LocationsByJurisdiction,
+                            logsFromPreviousDay, true);
+
+                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
+                    }
+                }
+                else if (options.EmailPmErrors || options.EmailAmErrors)
+                {
+
+                    var subject = $"{jurisdiction.Name} ATSPM Alerts for {emailScanDatesString}";
+                    if (!userIdsByJurisdiction.IsNullOrEmpty() && !LocationsByJurisdiction.IsNullOrEmpty())
+                    {
+                        var emailBody = await CreateEmailBody(
+                            options,
+                            newErrors, dailyRecurringErrors, recurringErrors,
+                            LocationsByJurisdiction,
+                            logsFromPreviousDay);
+                        //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
+
+                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
+                    }
                 }
             }
         }
@@ -128,6 +163,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<UserArea> userAreas,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
+            if (!(options.EmailPmErrors || options.EmailAmErrors))
+            {
+                return;
+            }
             foreach (var area in areas)
             {
                 var userIdsByArea = userAreas.Where(ua => ua.AreaId == area.Id).ToList();
@@ -135,7 +174,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     continue;
                 var usersByArea = users.Where(u => userIdsByArea.Any(ua => ua.UserId == u.Id)).ToList();
                 var LocationsByArea = Locations.Where(s => s.Areas.Select(a => a.Id).Contains(area.Id)).ToList();
-                var subject = $"{area.Name} ATSPM Alerts for {options.ScanDate.ToShortDateString()}";
+                string emailScanDatesString = BuildEmailScanDatesShortString(options);
+                var subject = $"{area.Name} ATSPM Alerts for {emailScanDatesString}";
                 if (!userIdsByArea.IsNullOrEmpty() && !LocationsByArea.IsNullOrEmpty())
                 {
                     var emailBody = await CreateEmailBody(
@@ -161,6 +201,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<UserRegion> userRegions,
                 List<WatchDogLogEvent> logsFromPreviousDay)
         {
+            if (!(options.EmailPmErrors || options.EmailAmErrors))
+            {
+                return;
+            }
             foreach (var region in regions)
             {
                 var userIdsByRegion = userRegions.Where(ur => ur.RegionId == region.Id).ToList();
@@ -168,7 +212,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     continue;
                 var usersByRegion = users.Where(u => userIdsByRegion.Any(ur => ur.UserId == u.Id)).ToList();
                 var LocationsByRegion = Locations.Where(s => s.RegionId == region.Id).ToList();
-                var subject = $"{region.Description} ATSPM Alerts for {options.ScanDate.ToShortDateString()}";
+                string emailScanDatesString = BuildEmailScanDatesShortString(options);
+                var subject = $"{region.Description} ATSPM Alerts for {emailScanDatesString}";
                 if (!userIdsByRegion.IsNullOrEmpty() && !LocationsByRegion.IsNullOrEmpty())
                 {
                     var emailBody = await CreateEmailBody(
@@ -190,18 +235,20 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> locations,
-            List<WatchDogLogEvent> logsFromPreviousDay)
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            bool rampEmail = false)
         {
             var emailBodyBuilder = new StringBuilder();
+            string emailScanDatesString = BuildEmailScanDatesString(options, rampEmail);
 
             // Process New Errors
-            emailBodyBuilder.Append(ProcessErrorList("New Errors", $"Errors that occurred on {options.ScanDate.ToString("M/d/yyyy")} that have not occured within the last 12 months.", newErrors, options, locations, logsFromPreviousDay, false, false));
+            emailBodyBuilder.Append(ProcessErrorList("New Errors", $"Errors that occurred on {emailScanDatesString} that have not occured within the last 12 months.", newErrors, options, locations, logsFromPreviousDay, false, false, rampEmail));
 
             // Process Daily Recurring Errors
-            emailBodyBuilder.Append(ProcessErrorList("Daily Recurring Errors", $"Errors that occurred on {options.ScanDate.ToString("M/d/yyyy")} that also occurred the day prior to the proccessing date.", dailyRecurringErrors, options, locations, logsFromPreviousDay, true, true));
+            emailBodyBuilder.Append(ProcessErrorList("Daily Recurring Errors", $"Errors that occurred on {emailScanDatesString} that also occurred the day prior to the proccessing date.", dailyRecurringErrors, options, locations, logsFromPreviousDay, true, true, rampEmail));
 
             // Process Recurring Errors
-            emailBodyBuilder.Append(ProcessErrorList("Recurring Errors", $"Errors that occurred on {options.ScanDate.ToString("M/d/yyyy")} that did not occur on the day prior to processing but have occured at least one time in the last 12 months.", recurringErrors, options, locations, logsFromPreviousDay, true, false));
+            emailBodyBuilder.Append(ProcessErrorList("Recurring Errors", $"Errors that occurred on {emailScanDatesString} that did not occur on the day prior to processing but have occured at least one time in the last 12 months.", recurringErrors, options, locations, logsFromPreviousDay, true, false, rampEmail));
 
             return emailBodyBuilder.ToString();
         }
@@ -214,17 +261,19 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Location> locations,
             List<WatchDogLogEvent> logsFromPreviousDay,
             bool includeErrorCounts,
-            bool includeConsecutive)
+            bool includeConsecutive,
+            bool rampEmail = false)
         {
             if (errors == null || !errors.Any())
             {
                 return $"<h2>{errorTitle}</h2><h4>{errorSubHeader}</h4><p>No errors found for this category.</p>";
             }
+            var emailAllErrors = options.EmailAllErrors;
 
             // Categorize errors
             GetEventsByIssueType(errors, out var missingErrorsLogs, out var forceErrorsLogs, out var maxErrorsLogs,
                 out var countErrorsLogs, out var stuckPedErrorsLogs, out var configurationErrorsLogs,
-                out var unconfiguredDetectorErrorsLogs);
+                out var unconfiguredDetectorErrorsLogs, out var rampDetectorThresholdErrorsLogs, out var rampMainlineErrorsLogs);
 
             var bodyBuilder = new StringBuilder();
 
@@ -253,14 +302,39 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             bodyBuilder.Append(body);
             bodyBuilder.Append($"<h2 class='shaded-header'>{errorTitle} ({errorSubHeader})</h2>");
             var locationDictionary = locations.ToDictionary(l => l.Id, l => l);
+
+
             // Build HTML sections for each error type
-            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {options.ScanDate.Date.ToShortDateString()}", missingErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
-            bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", forceErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
-            bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", maxErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
-            bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", $"The following Locations had unusually low advanced detection counts on {options.ScanDate.Date.ToShortDateString()}", countErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
-            bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", stuckPedErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
-            bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", "", configurationErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
-            bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", "", unconfiguredDetectorErrorsLogs, locationDictionary, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+            if (options.EmailRampErrors && rampEmail)
+            {
+                var emailScanDate = options.RampMissedDetectorHitsStartScanDate.Date.ToShortDateString();
+                bodyBuilder.Append(BuildErrorSection("Ramp Mainline Errors", $"The following Ramps had too many records failure in the database on {emailScanDate}",
+                    rampMainlineErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                bodyBuilder.Append(BuildErrorSection("Ramp Detectors Threshold Errors", $"The following Ramps encountered errors above the set threshold on {emailScanDate} between {options.RampDetectorStartHour}:00 and {options.RampDetectorEndHour}:00",
+                    rampDetectorThresholdErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+            }
+            if (options.EmailPmErrors && !rampEmail)
+            {
+                var emailScanDate = options.PmScanDate.Date.ToShortDateString();
+                bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {emailScanDate}",
+                    missingErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", $"The following Locations had unusually low advanced detection counts on {emailScanDate}",
+                    countErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", $"The following Approaches flagged as unconfigured on {emailScanDate}",
+                    configurationErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", $"The following Detectors flagged as unconfigured on {emailScanDate}",
+                    unconfiguredDetectorErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+            }
+            if (options.EmailAmErrors && !rampEmail)
+            {
+                var emailScanDate = options.RampMissedDetectorHitsStartScanDate.Date.ToShortDateString();
+                bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.AmStartHour}:00 and {options.AmEndHour}:00 on {emailScanDate}",
+                    forceErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {options.AmStartHour}:00 and {options.AmEndHour}:00 on {emailScanDate}",
+                    maxErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.AmStartHour}:00 and {options.AmEndHour}:00 on {emailScanDate}",
+                    stuckPedErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+            }
 
             return bodyBuilder.ToString();
         }
@@ -270,7 +344,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             string sectionTimeDescription,
             List<WatchDogLogEventWithCountAndDate> errorLogs,
             Dictionary<int, Location> locations,
-            WatchdogEmailOptions options,
+            bool emailAllErrors,
             List<WatchDogLogEvent> logsFromPreviousDay,
             bool includeErrorCounts,
             bool includeConsecutive)
@@ -298,7 +372,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 sectionBuilder.Append("</tr></thead><tbody>");
 
                 // Build table rows
-                sectionBuilder.Append(GetMessage(locations, errorLogs, options, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
+                sectionBuilder.Append(GetMessage(locations, errorLogs, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
 
                 sectionBuilder.Append("</tbody></table><br/>");
             }
@@ -346,7 +420,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             out List<WatchDogLogEventWithCountAndDate> countErrorsLogs,
             out List<WatchDogLogEventWithCountAndDate> stuckpedErrorsLogs,
             out List<WatchDogLogEventWithCountAndDate> configurationErrorsLogs,
-            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs
+            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> rampDetectorThresholdErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> rampMainlineErrorsLogs
         )
         {
             // Handle null container
@@ -380,6 +456,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             unconfiguredDetectorErrorsLogs = eventsContainer
                 .Where(e => e?.IssueType == WatchDogIssueTypes.UnconfiguredDetector)
                 .ToList();
+
+            rampDetectorThresholdErrorsLogs = eventsContainer
+                .Where(e => e?.IssueType == WatchDogIssueTypes.LowRampDetectorHits)
+                .ToList();
+
+            rampMainlineErrorsLogs = eventsContainer
+                .Where(e => e?.IssueType == WatchDogIssueTypes.RampMissedDetectorHits)
+                .ToList();
         }
 
 
@@ -387,12 +471,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         public string GetMessage(
             Dictionary<int, Location> locationDictionary,
             List<WatchDogLogEventWithCountAndDate> issues,
-            WatchdogEmailOptions options,
+            bool emailAllErrors,
             List<WatchDogLogEvent> logsFromPreviousDay,
             bool includeErrorCounts,
             bool includeConsecutive)
         {
-            if (locationDictionary is null || issues is null || options is null || logsFromPreviousDay is null)
+            if (locationDictionary is null || issues is null || logsFromPreviousDay is null)
             {
                 logger.LogError("Null parameter passed to GetMessage");
                 return string.Empty;
@@ -400,7 +484,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var errorMessage = "";
             foreach (var error in issues)
             {
-                if (options.EmailAllErrors || !logsFromPreviousDay.Contains(error))
+                if (emailAllErrors || !logsFromPreviousDay.Contains(error))
                 {
                     if (locationDictionary.ContainsKey(error.LocationId))
                     {
@@ -433,6 +517,128 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             return errorMessage;
         }
 
+        private string BuildScanDateString(
+            WatchdogEmailOptions emailOptions,
+            IEnumerable<WatchdogScanType> scanTypes)
+        {
+            var parts = new List<string>();
 
+            foreach (var scanType in scanTypes)
+            {
+                switch (scanType)
+                {
+                    case WatchdogScanType.Pm when emailOptions.EmailPmErrors:
+                        parts.Add($"PM {emailOptions.PmScanDate:M/d/yyyy}");
+                        break;
+
+                    case WatchdogScanType.Am when emailOptions.EmailAmErrors:
+                        parts.Add($"AM {emailOptions.AmScanDate:M/d/yyyy}");
+                        break;
+
+                    case WatchdogScanType.Ramp when emailOptions.EmailRampErrors:
+                        parts.Add($"Ramp {emailOptions.RampMissedDetectorHitsStartScanDate:M/d/yyyy}");
+                        break;
+                }
+            }
+
+            return string.Join(", ", parts);
+        }
+
+        private string BuildScanDateShortString(
+            WatchdogEmailOptions emailOptions,
+            IEnumerable<WatchdogScanType> scanTypes)
+        {
+            var parts = new List<string>();
+
+            foreach (var scanType in scanTypes)
+            {
+                switch (scanType)
+                {
+                    case WatchdogScanType.Pm when emailOptions.EmailPmErrors:
+                        parts.Add($"PM {emailOptions.PmScanDate.Date.ToShortDateString()}");
+                        break;
+
+                    case WatchdogScanType.Am when emailOptions.EmailAmErrors:
+                        parts.Add($"AM {emailOptions.AmScanDate.Date.ToShortDateString()}");
+                        break;
+
+                    case WatchdogScanType.Ramp when emailOptions.EmailRampErrors:
+                        parts.Add($"Ramp {emailOptions.RampMissedDetectorHitsStartScanDate.Date.ToShortDateString()}");
+                        break;
+                }
+            }
+
+            return string.Join(", ", parts);
+        }
+
+        private string BuildEmailScanDatesString(
+            WatchdogEmailOptions options,
+            bool rampEmail = false)
+        {
+            if (options.EmailRampErrors && rampEmail)
+            {
+                return BuildScanDateString(
+                    options,
+                    new[] { WatchdogScanType.Ramp });
+            }
+
+            if (options.EmailPmErrors && options.EmailAmErrors)
+            {
+                return BuildScanDateString(
+                    options,
+                    new[] { WatchdogScanType.Pm, WatchdogScanType.Am });
+            }
+
+            if (options.EmailPmErrors)
+            {
+                return BuildScanDateString(
+                    options,
+                    new[] { WatchdogScanType.Pm });
+            }
+
+            if (options.EmailAmErrors)
+            {
+                return BuildScanDateString(
+                    options,
+                    new[] { WatchdogScanType.Am });
+            }
+
+            return string.Empty;
+        }
+
+        private string BuildEmailScanDatesShortString(
+            WatchdogEmailOptions options,
+            bool rampEmail = false)
+        {
+            if (options.EmailRampErrors && rampEmail)
+            {
+                return BuildScanDateShortString(
+                    options,
+                    new[] { WatchdogScanType.Ramp });
+            }
+
+            if (options.EmailPmErrors && options.EmailAmErrors)
+            {
+                return BuildScanDateShortString(
+                    options,
+                    new[] { WatchdogScanType.Pm, WatchdogScanType.Am });
+            }
+
+            if (options.EmailPmErrors)
+            {
+                return BuildScanDateShortString(
+                    options,
+                    new[] { WatchdogScanType.Pm });
+            }
+
+            if (options.EmailAmErrors)
+            {
+                return BuildScanDateShortString(
+                    options,
+                    new[] { WatchdogScanType.Am });
+            }
+
+            return string.Empty;
+        }
     }
 }
