@@ -3,6 +3,7 @@ name: Build Containers and Publish to GHCR (On Release)
 on:
   release:
     types: [published]
+  workflow_dispatch:  
 
 permissions:
   contents: read
@@ -30,8 +31,8 @@ jobs:
 
       - name: Get Working Dir
         run: |
-          docker_dir=$(cat .github/filters.json | jq ".\"${{ matrix.name }}\"" | tr -d '"')
-          echo "DOCKERFILE_DIR=$docker_dir" >> $GITHUB_ENV
+          docker_dir="$(cat .github/filters.json | jq '."${{matrix.name}}"' | tr -d '**\n"')"
+          echo DOCKERFILE_DIR=${docker_dir} >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         id: builder
@@ -70,7 +71,7 @@ jobs:
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.image_tags }}
           labels: |
-            org.opencontainers.image.description=${{ github.event.release.body }}
+            org.opencontainers.image.description=${{ github.event.release.body || '' }}
 
       - name: Build and push (WebUI)
         if: ${{ matrix.name == 'atspm-webui' }}
@@ -83,4 +84,4 @@ jobs:
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.image_tags }}
           labels: |
-            org.opencontainers.image.description=${{ github.event.release.body }}
+            org.opencontainers.image.description=${{ github.event.release.body || '' }}
