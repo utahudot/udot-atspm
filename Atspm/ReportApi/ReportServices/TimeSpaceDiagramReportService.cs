@@ -27,8 +27,20 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
     /// <summary>
     /// Time space diagram report service
     /// </summary>
-    public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>
+    public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramPhaseResult>>
     {
+        private sealed class ProcessedRouteLocation
+        {
+            public required RouteLocation RouteLocation { get; set; }
+            public List<IndianaEvent> ControllerEventLogs { get; set; } = [];
+            public PhaseDetail? PrimaryPhaseDetail { get; set; }
+            public PhaseDetail? OpposingPhaseDetail { get; set; }
+            public int ProgrammedCycleLength { get; set; }
+            public TmcForPhaseDto PrimaryTmcEvents { get; set; } = new();
+            public TmcForPhaseDto OpposingTmcEvents { get; set; } = new();
+            public string? ErrorMessage { get; set; }
+        }
+
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService;
@@ -61,13 +73,15 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<TimeSpaceDiagramResultForPhase>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<IEnumerable<TimeSpaceDiagramPhaseResult>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
             var routeName = GetRouteNameFromId(parameter.RouteId);
+            var routeLabel = GetRouteLabel(parameter.RouteId, routeName);
             if (routeLocations.Count == 0)
             {
-                throw new Exception($"No locations present for route");
+                throw new InvalidOperationException(
+                    $"No route locations are configured for {routeLabel}. Add at least one route location before running this report.");
             }
             var srmTracks = parameter.IncludeSrmSearch
                 ? timeSpaceDiagramSrmCsvService.GetTracks(
@@ -78,64 +92,99 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 : new List<SrmEntityTrack>();
 
             var eventCodes = new List<short>() { 82, 81 };
-            var tasks = new List<Task<TimeSpaceDiagramResultForPhase>>();
+            var tasks = new List<Task<TimeSpaceDiagramPhaseResult>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
-
-            //Throw exception when no distance is found
-            foreach (var routeLocation in routeLocations)
-            {
-                if (routeLocation.NextLocationDistance == null && routeLocation.PreviousLocationDistance == null)
-                {
-                    throw new Exception($"Distance not configured for route: {routeName}");
-                }
-            }
-
-            var (controllerEventLogsList, primaryPhaseDetails, opposingPhaseDetails, programmedCycleLength, primaryTmcEvents, opposingTmcEvents, programmedSplits) = ProcessRouteLocations(routeLocations, parameter);
+            var (processedRouteLocations, programmedSplits) =
+                ProcessRouteLocations(routeLocations, parameter, routeLabel);
 
             for (int i = 0; i < routeLocations.Count; i++)
             {
-                var nextLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
-                var previousLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
+                var nextLocationDistance = i == routeLocations.Count - 1
+                    ? 0
+                    : routeLocations[i].NextLocationDistance?.Distance ?? 0;
+                var previousLocationDistance = i == 0
+                    ? 0
+                    : routeLocations[i].PreviousLocationDistance?.Distance ?? 0;
+                var processedRouteLocation = processedRouteLocations[i];
 
-                tasks.Add(GetChartDataForPhase(parameter,
-                    controllerEventLogsList[i],
-                    primaryPhaseDetails[i],
-                    programmedCycleLength[i],
-                    primaryTmcEvents[i],
-                    routeLocations[i],
-                    srmTracks,
-                    programmedSplits,
-                    eventCodes,
-                    nextLocationDistance,
-                    previousLocationDistance,
-                    isFirstElement: i == 0,
-                    isLastElement: i == routeLocations.Count - 1,
-                    "Primary",
-                    i
-                ));
+                if (processedRouteLocation.ErrorMessage != null ||
+                    processedRouteLocation.PrimaryPhaseDetail == null)
+                {
+                    tasks.Add(Task.FromResult(CreateErrorPhaseResult(
+                        parameter,
+                        processedRouteLocation.RouteLocation,
+                        processedRouteLocation.PrimaryPhaseDetail,
+                        phaseType: "Primary",
+                        order: i,
+                        distanceToNextLocation: nextLocationDistance,
+                        distanceToPreviousLocation: previousLocationDistance,
+                        errorMessage: processedRouteLocation.ErrorMessage ??
+                                      $"Primary phase is not configured for location {processedRouteLocation.RouteLocation.LocationIdentifier} (expected phase {processedRouteLocation.RouteLocation.PrimaryPhase}, direction {processedRouteLocation.RouteLocation.PrimaryDirection})")));
+                }
+                else
+                {
+                    tasks.Add(GetChartDataForPhase(
+                        parameter,
+                        processedRouteLocation.ControllerEventLogs,
+                        processedRouteLocation.PrimaryPhaseDetail,
+                        processedRouteLocation.ProgrammedCycleLength,
+                        processedRouteLocation.PrimaryTmcEvents,
+                        routeLocations[i],
+                        srmTracks,
+                        programmedSplits,
+                        eventCodes,
+                        nextLocationDistance,
+                        previousLocationDistance,
+                        i == 0,
+                        i == routeLocations.Count - 1,
+                        "Primary",
+                        i));
+                }
             }
 
             for (int i = routeLocations.Count - 1, j = 0; i >= 0; i--, j++)
             {
-                var nextLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
-                var previousLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
+                var nextLocationDistance = i == 0
+                    ? 0
+                    : routeLocations[i].PreviousLocationDistance?.Distance ?? 0;
+                var previousLocationDistance = i == routeLocations.Count - 1
+                    ? 0
+                    : routeLocations[i].NextLocationDistance?.Distance ?? 0;
+                var processedRouteLocation = processedRouteLocations[i];
 
-                tasks.Add(GetChartDataForPhase(parameter,
-                    controllerEventLogsList[i],
-                    opposingPhaseDetails[i],
-                    programmedCycleLength[i],
-                    opposingTmcEvents[i],
-                    routeLocations[i],
-                    srmTracks,
-                    programmedSplits,
-                    eventCodes,
-                    nextLocationDistance,
-                    previousLocationDistance,
-                    isFirstElement: i == routeLocations.Count - 1,
-                    isLastElement: i == 0,
-                    "Opposing",
-                    j
-                ));
+                if (processedRouteLocation.ErrorMessage != null ||
+                    processedRouteLocation.OpposingPhaseDetail == null)
+                {
+                    tasks.Add(Task.FromResult(CreateErrorPhaseResult(
+                        parameter,
+                        processedRouteLocation.RouteLocation,
+                        processedRouteLocation.OpposingPhaseDetail,
+                        phaseType: "Opposing",
+                        order: j,
+                        distanceToNextLocation: nextLocationDistance,
+                        distanceToPreviousLocation: previousLocationDistance,
+                        errorMessage: processedRouteLocation.ErrorMessage ??
+                                      $"Opposing phase is not configured for location {processedRouteLocation.RouteLocation.LocationIdentifier} (expected phase {processedRouteLocation.RouteLocation.OpposingPhase}, direction {processedRouteLocation.RouteLocation.OpposingDirection})")));
+                }
+                else
+                {
+                    tasks.Add(GetChartDataForPhase(
+                        parameter,
+                        processedRouteLocation.ControllerEventLogs,
+                        processedRouteLocation.OpposingPhaseDetail,
+                        processedRouteLocation.ProgrammedCycleLength,
+                        processedRouteLocation.OpposingTmcEvents,
+                        routeLocations[i],
+                        srmTracks,
+                        programmedSplits,
+                        eventCodes,
+                        nextLocationDistance,
+                        previousLocationDistance,
+                        isFirstElement: i == routeLocations.Count - 1,
+                        isLastElement: i == 0,
+                        "Opposing",
+                        j));
+                }
             }
 
             var results = await Task.WhenAll(tasks);
@@ -148,130 +197,176 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return routeName != null ? routeName : "";
         }
 
-        private (
-            List<List<IndianaEvent>> controllerEventLogsList,
-            List<PhaseDetail> primaryPhaseDetails,
-            List<PhaseDetail> opposingPhaseDetails,
-            List<int> programmedCycleLength,
-            List<TmcForPhaseDto> primaryTmcEvents,
-            List<TmcForPhaseDto> opposingTmcEvents,
-            List<IndianaEvent> programmedSplits)
-        ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOptions parameter)
+        private static string GetRouteLabel(int routeId, string routeName)
         {
-            var controllerEventLogsList = new List<List<IndianaEvent>>();
-            var primaryPhaseDetails = new List<PhaseDetail>();
-            var opposingPhaseDetails = new List<PhaseDetail>();
-            var programmedCycleLength = new List<int>();
-            var primaryTmcEvents = new List<TmcForPhaseDto>();
-            var opposingTmcEvents = new List<TmcForPhaseDto>();
+            return string.IsNullOrWhiteSpace(routeName)
+                ? $"route id {routeId}"
+                : $"route '{routeName}' (id {routeId})";
+        }
+
+        private (
+            List<ProcessedRouteLocation> processedRouteLocations,
+            List<IndianaEvent> programmedSplits)
+        ProcessRouteLocations(
+            IEnumerable<RouteLocation> routeLocations,
+            TimeSpaceDiagramOptions parameter,
+            string routeLabel)
+        {
+            var processedRouteLocations = new List<ProcessedRouteLocation>();
             var programmedSplitsForTimePeriod = new List<IndianaEvent>();
 
             foreach (var routeLocation in routeLocations)
             {
-                var location = LocationRepository.GetLatestVersionOfLocation(
-                    routeLocation.LocationIdentifier,
-                    parameter.Start);
-
-                if (location == null)
+                var processedRouteLocation = new ProcessedRouteLocation
                 {
-                    throw new Exception("Issue fetching location from route");
-                }
+                    RouteLocation = routeLocation
+                };
 
-                var phases = phaseService.GetPhases(location);
-
-                var primaryPhaseDetail = phases.Find(p =>
-                    p.Approach.ProtectedPhaseNumber == routeLocation.PrimaryPhase &&
-                    p.Approach.DirectionType == routeLocation.PrimaryDirection);
-
-                var opposingPhaseDetail = phases.Find(p =>
-                    p.Approach.ProtectedPhaseNumber == routeLocation.OpposingPhase &&
-                    p.Approach.DirectionType == routeLocation.OpposingDirection);
-
-                if (primaryPhaseDetail == null || opposingPhaseDetail == null)
+                try
                 {
-                    throw new Exception("Error grabbing phase details");
-                }
-
-                if (parameter.SpeedLimit == null &&
-                    (primaryPhaseDetail.Approach.Mph == null ||
-                     opposingPhaseDetail.Approach.Mph == null))
-                {
-                    throw new Exception("Speed not configured in route for all phases");
-                }
-
-                var controllerEventLogs =
-                    controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            location.LocationIdentifier,
-                            parameter.Start.AddHours(-12),
-                            parameter.End.AddHours(12))
-                        .ToList();
-
-                int currentProgrammedCycleLength = 0;
-
-                if (controllerEventLogs.Any())
-                {
-                    var programmedCycleEvents = controllerEventLogs.GetEventsByEventCodes(
-                        parameter.Start.AddHours(-12),
-                        parameter.End.AddHours(12),
-                        new List<short> { 132 });
-
-                    currentProgrammedCycleLength =
-                        GetEventOverlappingTime(parameter.Start, programmedCycleEvents, "CycleLength")
-                            .FirstOrDefault()?.EventParam ?? 0;
-
-                    if (!programmedSplitsForTimePeriod.Any())
+                    if (routeLocation.NextLocationDistance == null &&
+                        routeLocation.PreviousLocationDistance == null)
                     {
-                        var splitEvents = controllerEventLogs.GetEventsByEventCodes(
+                        processedRouteLocation.ErrorMessage =
+                            $"Distance is not configured for {routeLabel} at location {routeLocation.LocationIdentifier}. Configure next and/or previous location distance.";
+                        processedRouteLocations.Add(processedRouteLocation);
+                        continue;
+                    }
+
+                    var location = LocationRepository.GetLatestVersionOfLocation(
+                        routeLocation.LocationIdentifier,
+                        parameter.Start);
+
+                    if (location == null)
+                    {
+                        processedRouteLocation.ErrorMessage =
+                            $"Unable to load location details for {routeLocation.LocationIdentifier} in {routeLabel}.";
+                        processedRouteLocations.Add(processedRouteLocation);
+                        continue;
+                    }
+
+                    var phases = phaseService.GetPhases(location);
+
+                    var primaryPhaseDetail = phases.Find(p =>
+                        p.Approach.ProtectedPhaseNumber == routeLocation.PrimaryPhase &&
+                        p.Approach.DirectionType == routeLocation.PrimaryDirection);
+
+                    var opposingPhaseDetail = phases.Find(p =>
+                        p.Approach.ProtectedPhaseNumber == routeLocation.OpposingPhase &&
+                        p.Approach.DirectionType == routeLocation.OpposingDirection);
+
+                    if (primaryPhaseDetail == null || opposingPhaseDetail == null)
+                    {
+                        processedRouteLocation.ErrorMessage =
+                            $"Missing phase configuration at {location.LocationDescription()} ({location.LocationIdentifier}) in {routeLabel}. Expected primary phase {routeLocation.PrimaryPhase} ({routeLocation.PrimaryDirection}) and opposing phase {routeLocation.OpposingPhase} ({routeLocation.OpposingDirection}).";
+                        processedRouteLocations.Add(processedRouteLocation);
+                        continue;
+                    }
+
+                    if (parameter.SpeedLimit == null &&
+                        (primaryPhaseDetail.Approach.Mph == null ||
+                         opposingPhaseDetail.Approach.Mph == null))
+                    {
+                        var missingSpeedForPrimary = primaryPhaseDetail.Approach.Mph == null;
+                        var missingSpeedForOpposing = opposingPhaseDetail.Approach.Mph == null;
+                        var missingSpeedParts = new List<string>();
+                        if (missingSpeedForPrimary)
+                        {
+                            missingSpeedParts.Add($"primary phase {routeLocation.PrimaryPhase} ({routeLocation.PrimaryDirection})");
+                        }
+
+                        if (missingSpeedForOpposing)
+                        {
+                            missingSpeedParts.Add($"opposing phase {routeLocation.OpposingPhase} ({routeLocation.OpposingDirection})");
+                        }
+
+                        processedRouteLocation.ErrorMessage =
+                            $"Speed is not configured at {location.LocationDescription()} ({location.LocationIdentifier}) in {routeLabel} for {string.Join(" and ", missingSpeedParts)} and no report speed override was provided.";
+                        processedRouteLocations.Add(processedRouteLocation);
+                        continue;
+                    }
+
+                    var controllerEventLogs =
+                        controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                location.LocationIdentifier,
+                                parameter.Start.AddHours(-12),
+                                parameter.End.AddHours(12))
+                            .ToList();
+
+                    int currentProgrammedCycleLength = 0;
+
+                    if (controllerEventLogs.Any())
+                    {
+                        var programmedCycleEvents = controllerEventLogs.GetEventsByEventCodes(
                             parameter.Start.AddHours(-12),
                             parameter.End.AddHours(12),
-                            new List<short> { 134, 135, 136, 137, 138, 139, 140 });
+                            new List<short> { 132 });
 
-                        programmedSplitsForTimePeriod.AddRange(
-                            GetEventOverallapingTime(parameter.Start, splitEvents, "Program Splits"));
+                        currentProgrammedCycleLength =
+                            GetEventOverlappingTime(parameter.Start, programmedCycleEvents, "CycleLength")
+                                .FirstOrDefault()?.EventParam ?? 0;
+
+                        if (!programmedSplitsForTimePeriod.Any())
+                        {
+                            var splitEvents = controllerEventLogs.GetEventsByEventCodes(
+                                parameter.Start.AddHours(-12),
+                                parameter.End.AddHours(12),
+                                new List<short> { 134, 135, 136, 137, 138, 139, 140 });
+
+                            programmedSplitsForTimePeriod.AddRange(
+                                GetEventOverallapingTime(parameter.Start, splitEvents, "Program Splits"));
+                        }
                     }
+
+                    processedRouteLocation.ControllerEventLogs = controllerEventLogs;
+                    processedRouteLocation.PrimaryPhaseDetail = primaryPhaseDetail;
+                    processedRouteLocation.OpposingPhaseDetail = opposingPhaseDetail;
+                    processedRouteLocation.ProgrammedCycleLength = currentProgrammedCycleLength;
+                    processedRouteLocation.PrimaryTmcEvents =
+                        GetTMCDataForPhase(location, primaryPhaseDetail, controllerEventLogs, parameter);
+                    processedRouteLocation.OpposingTmcEvents =
+                        GetTMCDataForPhase(location, opposingPhaseDetail, controllerEventLogs, parameter);
+                    processedRouteLocations.Add(processedRouteLocation);
                 }
-
-                primaryTmcEvents.Add(
-                    GetTMCDataForPhase(location, primaryPhaseDetail, controllerEventLogs, parameter));
-
-                opposingTmcEvents.Add(
-                    GetTMCDataForPhase(location, opposingPhaseDetail, controllerEventLogs, parameter));
-
-                controllerEventLogsList.Add(controllerEventLogs);
-                primaryPhaseDetails.Add(primaryPhaseDetail);
-                opposingPhaseDetails.Add(opposingPhaseDetail);
-                programmedCycleLength.Add(currentProgrammedCycleLength);
+                catch (Exception ex)
+                {
+                    processedRouteLocation.ErrorMessage =
+                        $"Unexpected error while processing {routeLabel} at location {routeLocation.LocationIdentifier}: {ex.Message}";
+                    processedRouteLocations.Add(processedRouteLocation);
+                }
             }
 
-            return (
-                controllerEventLogsList,
-                primaryPhaseDetails,
-                opposingPhaseDetails,
-                programmedCycleLength,
-                primaryTmcEvents,
-                opposingTmcEvents,
-                programmedSplitsForTimePeriod);
+            return (processedRouteLocations, programmedSplitsForTimePeriod);
         }
 
-        private List<IndianaEvent> GetEventOverallapingTime(DateTime start, IReadOnlyList<IndianaEvent> programmedCycleForPlan, string eventType)
+        private List<IndianaEvent> GetEventOverallapingTime(
+            DateTime start,
+            IReadOnlyList<IndianaEvent> programmedCycleForPlan,
+            string eventType)
         {
-            var planEvent = programmedCycleForPlan.Where(e => e.Timestamp == start).ToList();
+            if (programmedCycleForPlan == null || programmedCycleForPlan.Count == 0)
+                return new List<IndianaEvent>();
 
+            // First try: exact timestamp match
+            var exactMatches = programmedCycleForPlan
+                .Where(e => e.Timestamp == start)
+                .ToList();
 
-            if (!planEvent.Any())
-                planEvent = programmedCycleForPlan.Where(e => e.Timestamp < start)
-                    ?.GroupBy(log => log.EventCode)
-                    ?.Select(group => group.OrderByDescending(e => e.Timestamp).FirstOrDefault())
-                    ?.ToList();
+            if (exactMatches.Count > 0)
+                return exactMatches;
 
-            if (!planEvent.Any())
-                throw new NullReferenceException($"Error grabbing {eventType}");
+            // Fallback: latest event per EventCode before the given start
+            var fallbackMatches = programmedCycleForPlan
+                .Where(e => e.Timestamp < start)
+                .GroupBy(e => e.EventCode)
+                .Select(g => g.OrderByDescending(e => e.Timestamp).First())
+                .ToList();
 
-            return planEvent.ToList();
+            return fallbackMatches; // will be empty if nothing found
         }
 
-        private async Task<TimeSpaceDiagramResultForPhase> GetChartDataForPhase(
+        private async Task<TimeSpaceDiagramPhaseResult> GetChartDataForPhase(
             TimeSpaceDiagramOptions parameter,
             List<IndianaEvent> currentControllerEventLogs,
             PhaseDetail currentPhase,
@@ -299,59 +394,71 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     distanceToNextLocation,
                     distanceToPreviousLocation,
                     phaseType,
+                    $"No controller event logs found for location {currentPhase.Approach.Location.LocationIdentifier}, phase {currentPhase.Approach.ProtectedPhaseNumber} ({phaseType}), in time range {parameter.Start:u} to {parameter.End:u}.",
                     order);
             }
 
-            var planEvents = currentControllerEventLogs
-                .GetPlanEvents(parameter.Start.AddHours(-12), parameter.End.AddHours(12))
-                .ToList();
-
-            var locationPhase = await LocationPhaseService.GetLocationPhaseData(
-                currentPhase,
-                parameter.Start,
-                parameter.End,
-                0,
-                null,
-                currentControllerEventLogs,
-                planEvents,
-                false);
-
-            PriorityDetailsOptions priorityDetailsOptions = new PriorityDetailsOptions
+            try
             {
-                Start = parameter.Start,
-                End = parameter.End,
-            };
-            PriorityDetailsResult priorityDetails = await priorityDetailsReportService.GetChartDataForPhase(
-                priorityDetailsOptions,
-                currentControllerEventLogs,
-                currentPhase,
-                currentPhase.IsPermissivePhase);
+                var planEvents = currentControllerEventLogs
+                    .GetPlanEvents(parameter.Start.AddHours(-12), parameter.End.AddHours(12))
+                    .ToList();
 
-            var viewModel = timeSpaceDiagramReportService.GetChartDataForPhase(parameter,
-                currentPhase,
-                currentControllerEventLogs,
-                programmedCycleLength,
-                programmedSplits,
-                distanceToNextLocation,
-                distanceToPreviousLocation,
-                isFirstElement,
-                isLastElement,
-                priorityDetails);
+                var locationPhase = await LocationPhaseService.GetLocationPhaseData(
+                    currentPhase,
+                    parameter.Start,
+                    parameter.End,
+                    0,
+                    null,
+                    currentControllerEventLogs,
+                    planEvents,
+                    false);
 
-            PopulateCommonPhaseFields(viewModel, currentPhase, phaseType, order, tmcEventsForPhase);
+                PriorityDetailsOptions priorityDetailsOptions = new PriorityDetailsOptions
+                {
+                    Start = parameter.Start,
+                    End = parameter.End,
+                };
+                PriorityDetailsResult priorityDetails = await priorityDetailsReportService.GetChartDataForPhase(
+                    priorityDetailsOptions,
+                    currentControllerEventLogs,
+                    currentPhase,
+                    currentPhase.IsPermissivePhase);
 
-            if (locationPhase != null)
-            {
-                viewModel.PercentArrivalOnGreen = locationPhase.PercentArrivalOnGreen;
+                var viewModel = timeSpaceDiagramReportService.GetChartDataForPhase(parameter,
+                    currentPhase,
+                    currentControllerEventLogs,
+                    programmedCycleLength,
+                    programmedSplits,
+                    distanceToNextLocation,
+                    distanceToPreviousLocation,
+                    isFirstElement,
+                    isLastElement,
+                    priorityDetails);
+
+                PopulateCommonPhaseFields(viewModel, currentPhase, phaseType, order, tmcEventsForPhase);
+
+                if (locationPhase != null)
+                {
+                    viewModel.PercentArrivalOnGreen = locationPhase.PercentArrivalOnGreen;
+                }
+
+                return TimeSpaceDiagramPhaseResult.Success(viewModel);
             }
-            PopulateSrmTracks(
-                viewModel,
-                routeLocation,
-                srmTracks,
-                isFirstElement,
-                isLastElement);
-
-            return viewModel;
+            catch (Exception ex)
+            {
+                return CreateEmptyPhaseResult(
+                    parameter,
+                    currentPhase,
+                    tmcEventsForPhase,
+                    routeLocation,
+                    srmTracks,
+                    distanceToNextLocation,
+                    distanceToPreviousLocation,
+                    phaseType,
+                    $"Error building time-space data for location {currentPhase.Approach.Location.LocationIdentifier}, phase {currentPhase.Approach.ProtectedPhaseNumber} ({phaseType}), in time range {parameter.Start:u} to {parameter.End:u}: {ex.Message}",
+                    order);
+            }
         }
 
         private void PopulateCommonPhaseFields(
@@ -368,7 +475,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             viewModel.TmcForPhase = tmcEventsForPhase;
         }
 
-        private TimeSpaceDiagramResultForPhase CreateEmptyPhaseResult(
+        private TimeSpaceDiagramPhaseResult CreateEmptyPhaseResult(
             TimeSpaceDiagramOptions parameter,
             PhaseDetail phase,
             TmcForPhaseDto tmcEventsForPhase,
@@ -377,141 +484,23 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             string phaseType,
+            string? error,
             int order)
         {
-            var result = new TimeSpaceDiagramResultForPhase(
-                phase.Approach.Id,
-                phase.Approach.Location.LocationIdentifier,
-                parameter.Start,
-                parameter.End,
-                phase.Approach.ProtectedPhaseNumber,
-                phase.Approach.ProtectedPhaseNumber.ToString(),
-                distanceToNextLocation,
-                distanceToPreviousLocation,
-                parameter.SpeedLimit ?? phase.Approach.Mph ?? 0,
-                0,
-                new(),
-                new(),
-                new(),
-                new(),
-                new(),
-                new(),
-                true,
-                0,
-                0,
-                0,
-                0,
-                [],
-                new())
-            {
-                LocationDescription = phase.Approach.Location.LocationDescription(),
-                ApproachDescription = phase.Approach.Description,
-                PhaseType = phaseType,
-                Order = order,
-                PercentArrivalOnGreen = 0,
-                TmcForPhase = tmcEventsForPhase,
-            };
-            PopulateSrmTracks(
-                result,
-                routeLocation,
-                srmTracks,
-                isFirstElement: false,
-                isLastElement: false);
-            return result;
+            return TimeSpaceDiagramPhaseResult.Failure(error ?? "Unknown error");
         }
 
-        private static List<SrmEntityTrack> FilterSrmTracksForLocation(
-            List<SrmEntityTrack> tracks,
-            string locationIdentifier)
-        {
-            if (tracks == null || tracks.Count == 0 || string.IsNullOrWhiteSpace(locationIdentifier))
-            {
-                return new List<SrmEntityTrack>();
-            }
-
-            return tracks
-                .Where(t => string.Equals(
-                    t.StartingIntersection,
-                    locationIdentifier,
-                    StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
-
-        private static void PopulateSrmTracks(
-            TimeSpaceDiagramResultForPhase viewModel,
+        private TimeSpaceDiagramPhaseResult CreateErrorPhaseResult(
+            TimeSpaceDiagramOptions parameter,
             RouteLocation routeLocation,
-            List<SrmEntityTrack> srmTracks,
-            bool isFirstElement,
-            bool isLastElement)
+            PhaseDetail? phase,
+            string phaseType,
+            int order,
+            double distanceToNextLocation,
+            double distanceToPreviousLocation,
+            string errorMessage)
         {
-            if (viewModel == null || routeLocation == null)
-            {
-                return;
-            }
-
-            if (
-                (string.Equals(viewModel.PhaseType, "Primary", StringComparison.OrdinalIgnoreCase) &&
-                 isLastElement) ||
-                (string.Equals(viewModel.PhaseType, "Opposing", StringComparison.OrdinalIgnoreCase) &&
-                 isFirstElement)
-            )
-            {
-                viewModel.SrmEntityTracks = new List<SrmEntityTrack>();
-                return;
-            }
-
-            var allForLocation = FilterSrmTracksForLocation(
-                srmTracks,
-                routeLocation.LocationIdentifier);
-
-            var targetDirection =
-                string.Equals(viewModel.PhaseType, "Opposing", StringComparison.OrdinalIgnoreCase)
-                    ? routeLocation.OpposingDirectionId
-                    : routeLocation.PrimaryDirectionId;
-
-            viewModel.SrmEntityTracks = allForLocation
-                .Where(t => IsDirectionMatch(t.HeadingDirection, targetDirection))
-                .ToList();
-        }
-
-        private static bool IsDirectionMatch(DirectionTypes heading, DirectionTypes target)
-        {
-            if (heading == DirectionTypes.NA || target == DirectionTypes.NA)
-            {
-                return false;
-            }
-
-            if (heading == target)
-            {
-                return true;
-            }
-
-            var headingDegrees = DirectionToDegrees(heading);
-            var targetDegrees = DirectionToDegrees(target);
-            if (!headingDegrees.HasValue || !targetDegrees.HasValue)
-            {
-                return false;
-            }
-
-            var diff = Math.Abs(headingDegrees.Value - targetDegrees.Value);
-            var circularDiff = Math.Min(diff, 360 - diff);
-            return circularDiff <= 45.0;
-        }
-
-        private static double? DirectionToDegrees(DirectionTypes direction)
-        {
-            return direction switch
-            {
-                DirectionTypes.NB => 0,
-                DirectionTypes.NE => 45,
-                DirectionTypes.EB => 90,
-                DirectionTypes.SE => 135,
-                DirectionTypes.SB => 180,
-                DirectionTypes.SW => 225,
-                DirectionTypes.WB => 270,
-                DirectionTypes.NW => 315,
-                _ => null
-            };
+            return TimeSpaceDiagramPhaseResult.Failure(errorMessage);
         }
 
         private TmcForPhaseDto GetTMCDataForPhase(Location location, PhaseDetail currentPhase, List<IndianaEvent> currentControllerEventLogs, TimeSpaceDiagramOptions parameter)

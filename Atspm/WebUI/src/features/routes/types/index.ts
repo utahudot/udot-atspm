@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { LocationExpanded } from '@/features/locations/types'
+import { Approach, LocationExpanded } from '@/features/locations/types'
 
 export interface RouteApproaches {
   id: number
@@ -27,12 +27,15 @@ export interface RouteApproaches {
 }
 
 export interface RouteLocation {
+  approaches: Approach[]
   locationIdentifier: string
   order: number
   primaryPhase: string | null
   opposingPhase: string | null
   primaryDirectionId: string | null
   opposingDirectionId: string | null
+  primaryDirectionDescription: string
+  opposingDirectionDescription: string
   primaryDirection?: {
     abbreviation: string
     description: string

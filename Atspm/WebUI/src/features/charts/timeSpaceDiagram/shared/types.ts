@@ -159,7 +159,20 @@ export interface TmcEventDto {
   directionTypes: string
 }
 
+// Wrapper type that matches C# TimeSpaceDiagramPhaseResult
+export interface TimeSpaceDiagramPhaseResult<T extends TimeSpaceBaseData> {
+  error: string | null
+  result: T | null
+  isSuccess: boolean
+}
+
+// API response contains wrapped results
 export type TimeSpaceResponseData =
+  | TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[]
+  | TimeSpaceDiagramPhaseResult<RawTimeSpaceAverageData>[]
+
+// Unwrapped data for processing
+export type TimeSpaceUnwrappedData =
   | RawTimeSpaceHistoricData[]
   | RawTimeSpaceAverageData[]
 
