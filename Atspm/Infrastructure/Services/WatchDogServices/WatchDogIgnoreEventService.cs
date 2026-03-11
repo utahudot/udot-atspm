@@ -45,7 +45,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     logEvent.Timestamp <= ignoreEvent.End &&
                     (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) &&
                     (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
-                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)))
+                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)
+                    )
+                )
                 .ToList();
 
             return result;
@@ -56,14 +58,16 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var ignoreEvents = watchDogIgnoreEventLogRepository.GetList()
                 .Where(ignoreEvent => ignoreEvent.End >= parameter.End).ToList();
             var watchDogLogEvents = watchDogEventLogRepository.GetList()
-                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp < parameter.End).ToList();
+                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp <= parameter.End).ToList();
 
             var result = watchDogLogEvents
                 .Where(logEvent => !ignoreEvents.Exists(ignoreEvent =>
-                    ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier &&
-                    (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) &&
-                    (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
-                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)));
+                    ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier && 
+                    (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) && 
+                    (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) && 
+                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)
+                    )
+                );
 
             return result.ToList();
         }
