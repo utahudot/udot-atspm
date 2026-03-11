@@ -209,11 +209,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     if (emailOptions.WeekdayOnly && scanDate.DayOfWeek == DayOfWeek.Monday)
                         recordsFromTheDayBeforeTemp =
                             watchDogLogEventRepository.GetList(w => w.Timestamp >= scanDate.AddDays(-3) &&
-                                w.Timestamp < scanDate.AddDays(-2)).ToList();
+                                w.Timestamp <= scanDate.AddDays(-2)).ToList();
                     else
                         recordsFromTheDayBeforeTemp =
                             watchDogLogEventRepository.GetList(w => w.Timestamp >= scanDate.AddDays(-1) &&
-                                w.Timestamp < scanDate).ToList();
+                                w.Timestamp <= scanDate).ToList();
 
                     recordsFromTheDayBefore.AddRange(recordsFromTheDayBeforeTemp);
                 }
