@@ -31,7 +31,6 @@ module.exports = withBundleAnalyzer({
     config.experiments = { ...config.experiments, topLevelAwait: true }
     return config
   },
-  turbopack: {},
   async redirects() {
     return [
       {

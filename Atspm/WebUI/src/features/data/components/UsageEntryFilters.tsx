@@ -1,4 +1,5 @@
 import { UserDTO } from '@/api/identity/atspmAuthenticationApi.schemas'
+import { dateToTimestamp } from '@/utils/dateTime'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import {
@@ -14,9 +15,9 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import * as React from 'react'
 
-function toIsoUtcOrUndefined(d: Date | null): string | undefined {
+function toTimestampOrUndefined(d: Date | null): string | undefined {
   if (!d) return undefined
-  return d.toISOString()
+  return dateToTimestamp(d)
 }
 
 function toDateOrNull(iso?: string): Date | null {
@@ -80,59 +81,77 @@ export default function UsageEntryFilters({
   }
 
   return (
-    <Card sx={{ mt: 0, pt: 0 }}>
+    <Card sx={{ mt: 0, pt: 0, width: '100%', height: '100%' }}>
       <CardContent>
-        {' '}
         <Stack spacing={2}>
           <Stack
-            direction="row"
+            direction={{ xs: 'column', sm: 'row' }}
             spacing={1}
-            alignItems="center"
-            sx={{ flexWrap: 'wrap' }}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            justifyContent="space-between"
           >
-            <FilterAltIcon fontSize="small" />
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              Filters
-            </Typography>
-
-            <Box sx={{ flex: 1 }} />
+            <Stack direction="row" spacing={1} alignItems="center">
+              <FilterAltIcon fontSize="small" />
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                Filters
+              </Typography>
+            </Stack>
 
             <Button
               size="small"
               startIcon={<RestartAltIcon />}
               onClick={onReset}
+              sx={{ alignSelf: { xs: 'flex-start', sm: 'auto' } }}
             >
               Reset
             </Button>
           </Stack>
 
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            sx={{ flexWrap: 'wrap' }}
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: {
+                xs: 'minmax(0, 1fr)',
+                sm: 'repeat(2, minmax(0, 1fr))',
+                xl: 'minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr)',
+              },
+              alignItems: 'start',
+            }}
           >
             <DatePicker
+              sx={{
+                width: '100%',
+                minWidth: 0,
+              }}
               label="From"
               value={toDateOrNull(value.fromUtc)}
-              onChange={(v) => set('fromUtc', toIsoUtcOrUndefined(v))}
+              onChange={(v) => set('fromUtc', toTimestampOrUndefined(v))}
               slotProps={{
-                textField: { size: 'small', sx: { minWidth: 220 } },
+                textField: { fullWidth: true, size: 'small' },
               }}
             />
 
             <DatePicker
+              sx={{
+                width: '100%',
+                minWidth: 0,
+              }}
               label="To"
               value={toDateOrNull(value.toUtc)}
-              onChange={(v) => set('toUtc', toIsoUtcOrUndefined(v))}
+              onChange={(v) => set('toUtc', toTimestampOrUndefined(v))}
               slotProps={{
-                textField: { size: 'small', sx: { minWidth: 220 } },
+                textField: { fullWidth: true, size: 'small' },
               }}
             />
 
             <Autocomplete
               size="small"
-              sx={{ minWidth: 320 }}
+              sx={{
+                width: '100%',
+                minWidth: 0,
+                gridColumn: { xs: 'auto', sm: '1 / -1', xl: 'auto' },
+              }}
               options={users ?? []}
               loading={Boolean(usersLoading)}
               value={selectedUser}
@@ -140,10 +159,15 @@ export default function UsageEntryFilters({
               isOptionEqualToValue={(a, b) => a.userId === b.userId}
               getOptionLabel={userLabel}
               renderInput={(params) => (
-                <TextField {...params} label="User" placeholder="All users" />
+                <TextField
+                  {...params}
+                  fullWidth
+                  label="User"
+                  placeholder="All users"
+                />
               )}
             />
-          </Stack>
+          </Box>
         </Stack>
       </CardContent>
     </Card>
