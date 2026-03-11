@@ -51,10 +51,6 @@ import {
   SeriesOption,
 } from 'echarts'
 import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
-import {
-  CycleColor,
-  EVENT_GROUPS,
-} from '../../timingAndActuation/timingAndActuation.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
 const opacity = 0.4
@@ -104,6 +100,12 @@ export default function transformTimeSpaceHistoricData(
 
   return result
 }
+const PEDESTRIAN_LINE_WIDTH = 0.8
+const PEDESTRIAN_LINE_Y_OFFSET = 10
+const PEDESTRIAN_ZIGZAG_AMPLITUDE = 2
+const PEDESTRIAN_ZIGZAG_STEP_PX = 3
+const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
+const PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT = PEDESTRIAN_ZIGZAG_AMPLITUDE
 
 function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryPhaseData = data.filter(
@@ -482,11 +484,13 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Pedestrian Interval ${primaryDirection}`,
-        itemStyle: { color: 'grey' },
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `Pedestrian Interval ${opposingDirection}`,
-        itemStyle: { color: 'grey' },
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `SRM Entity ${primaryDirection}`,
@@ -780,26 +784,21 @@ function generatePedestrianIntervalLines(
         y: [3],
       },
       z: 6,
-      renderItem: (param, api): CustomSeriesRenderItemReturn => {
+      renderItem: (_param, api): CustomSeriesRenderItemReturn => {
         const x1 = api.value(0)
         const x2 = api.value(1)
         const interval = api.value(2)
         const distance = api.value(3)
-        const { color } = getEventDetails(interval as number)
         const p1 = api.coord([x1, distance])
         const p2 = api.coord([x2, distance])
-        return {
-          type: 'rect',
-          shape: {
-            x: p1[0],
-            y: p1[1] + 2.5,
-            width: p2[0] - p1[0],
-            height: 5,
-          },
-          style: {
-            fill: color,
-          },
-        }
+        const y = p1[1] + PEDESTRIAN_LINE_Y_OFFSET
+
+        return createPedestrianIntervalShape(
+          interval as number,
+          p1[0],
+          p2[0],
+          y
+        )
       },
     }
 
@@ -822,13 +821,90 @@ function generatePedData(
   })
 }
 
-function getEventDetails(eventValue: number) {
-  for (const group of EVENT_GROUPS) {
-    if (group.codes.includes(eventValue)) {
-      return { name: group.name, color: group.color }
+function createPedestrianIntervalShape(
+  intervalValue: number,
+  startX: number,
+  endX: number,
+  y: number
+): CustomSeriesRenderItemReturn {
+  const baseStyle = {
+    stroke: Color.Black,
+    lineWidth: PEDESTRIAN_LINE_WIDTH,
+    fill: 'none',
+    lineCap: 'round',
+    lineJoin: 'round',
+  }
+  const boundaryTick = {
+    type: 'line',
+    shape: {
+      x1: startX,
+      y1: y - PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT,
+      x2: startX,
+      y2: y + PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT,
+    },
+    style: baseStyle,
+  }
+  let intervalShape
+
+  if (intervalValue === 22 || intervalValue === 68) {
+    intervalShape = {
+      type: 'line',
+      shape: { x1: startX, y1: y, x2: endX, y2: y },
+      style: { ...baseStyle, lineDash: PEDESTRIAN_CLEARANCE_DOT_PATTERN },
+    }
+  } else if (intervalValue === 23 || intervalValue === 69) {
+    intervalShape = {
+      type: 'polyline',
+      shape: {
+        points: buildPedestrianZigZagPoints(startX, endX, y),
+      },
+      style: baseStyle,
+    }
+  } else {
+    intervalShape = {
+      type: 'line',
+      shape: { x1: startX, y1: y, x2: endX, y2: y },
+      style: baseStyle,
     }
   }
-  return { name: 'Unknown Event', color: CycleColor.Default }
+
+  return {
+    type: 'group',
+    children: [intervalShape, boundaryTick],
+  }
+}
+
+function buildPedestrianZigZagPoints(
+  startX: number,
+  endX: number,
+  baseY: number
+): Array<[number, number]> {
+  const width = endX - startX
+  if (Math.abs(width) <= PEDESTRIAN_ZIGZAG_STEP_PX) {
+    return [
+      [startX, baseY],
+      [endX, baseY],
+    ]
+  }
+
+  const segmentCount = Math.max(
+    3,
+    Math.ceil(Math.abs(width) / PEDESTRIAN_ZIGZAG_STEP_PX)
+  )
+  const step = width / segmentCount
+  const points: Array<[number, number]> = [[startX, baseY]]
+
+  for (let i = 1; i < segmentCount; i++) {
+    const x = startX + step * i
+    const y =
+      baseY +
+      (i % 2 === 0 ? PEDESTRIAN_ZIGZAG_AMPLITUDE : -PEDESTRIAN_ZIGZAG_AMPLITUDE)
+    points.push([x, y])
+  }
+
+  points.push([endX, baseY])
+
+  return points
 }
 
 function generateTMCEvent(

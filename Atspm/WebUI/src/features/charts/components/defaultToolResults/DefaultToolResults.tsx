@@ -18,7 +18,6 @@ import {
 import { useEffect, useState } from 'react'
 import { transformTimeSpaceData } from '../../api'
 import { GpxUploadAccordion } from '../../timeSpaceDiagram/shared/components/GpxUploader/GpxUploadAccordion'
-import { IgnoreLocationsAccordion } from '../../timeSpaceDiagram/shared/components/IgnoredLocations/IgnoredLocations'
 import type {
   GpxUploadOptions,
   RawTimeSpaceAverageData,
@@ -232,6 +231,14 @@ export default function TimeSpaceChart({
   ])
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
 
+  const toggleIgnoredLocation = (location: string) => {
+    setIgnoredLocation((prev) =>
+      prev.includes(location)
+        ? prev.filter((current) => current !== location)
+        : [...prev, location]
+    )
+  }
+
   useEffect(() => {
     const recalculatedData =
       ignoredLocations.length > 0
@@ -357,11 +364,6 @@ export default function TimeSpaceChart({
                     entries={gpxEntries}
                     setEntries={setGpxEntries}
                   />
-                  <IgnoreLocationsAccordion
-                    locations={locations}
-                    ignoredLocations={ignoredLocations}
-                    setIgnoredLocations={setIgnoredLocation}
-                  />
                 </Box>
               </Box>
 
@@ -430,6 +432,7 @@ export default function TimeSpaceChart({
                 }}
                 gpxEntries={gpxEntries}
                 ignoredLocations={ignoredLocations}
+                onToggleIgnoredLocation={toggleIgnoredLocation}
               />
             </Box>
           </Box>

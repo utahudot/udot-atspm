@@ -667,6 +667,20 @@ function getLongestLabelLineWidth(
   return Math.ceil(max)
 }
 
+export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
+  gridGap: 70,
+  dotOffset: 10,
+  cardGapToDot: 12,
+  cardWidth: 180,
+  cardRadius: 8,
+  headerHeight: 26,
+  bodyHeight: 48,
+  bodyPaddingLeft: 12,
+  bodyPaddingRight: 12,
+  headerActionSize: 12,
+  headerActionRight: 10,
+} as const
+
 export function getLocationsLabelOption(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
@@ -674,18 +688,18 @@ export function getLocationsLabelOption(
 ): SeriesOption {
   const gridLeft = (grid.left as number) ?? 0
 
-  const GRID_GAP = 70 // distance from grid start (left) to the "label anchor" line
-  const DOT_OFFSET = 10 // dot sits DOT_OFFSET to the right of the label anchor
-  const CARD_GAP_TO_DOT = 12 // gap between card and dot
-
-  const CARD_WIDTH = 180
-  const CARD_RADIUS = 8
-
-  const HEADER_H = 26
-  const BODY_H = 48
-  const CARD_H = HEADER_H + BODY_H
-
-  const BODY_PAD_LEFT = 12
+  const {
+    gridGap,
+    dotOffset,
+    cardGapToDot,
+    cardWidth,
+    cardRadius,
+    headerHeight,
+    bodyHeight,
+    bodyPaddingLeft,
+    bodyPaddingRight,
+  } = TIME_SPACE_LOCATION_CARD_LAYOUT
+  const CARD_H = headerHeight + bodyHeight
 
   const series: SeriesOption = {
     name: 'Location axis',
@@ -698,13 +712,13 @@ export function getLocationsLabelOption(
 
       const [, y] = api.coord([api.value(0), api.value(1)])
 
-      const xTextRight = gridLeft - GRID_GAP
-      const xDot = xTextRight + DOT_OFFSET
+      const xTextRight = gridLeft - gridGap
+      const xDot = xTextRight + dotOffset
 
-      const cardRight = xDot - CARD_GAP_TO_DOT
-      const cardLeft = cardRight - CARD_WIDTH
+      const cardRight = xDot - cardGapToDot
+      const cardLeft = cardRight - cardWidth
       const cardTop = y - CARD_H / 2
-      const textX = cardLeft + BODY_PAD_LEFT
+      const textX = cardLeft + bodyPaddingLeft
 
       const children: any[] = []
 
@@ -752,9 +766,9 @@ export function getLocationsLabelOption(
             shape: {
               x: cardLeft,
               y: cardTop,
-              width: CARD_WIDTH,
+              width: cardWidth,
               height: CARD_H,
-              r: CARD_RADIUS,
+              r: cardRadius,
             },
             style: {
               fill: '#FFFFFF',
@@ -774,9 +788,9 @@ export function getLocationsLabelOption(
             shape: {
               x: cardLeft,
               y: cardTop,
-              width: CARD_WIDTH,
-              height: HEADER_H,
-              r: [CARD_RADIUS, CARD_RADIUS, 0, 0],
+              width: cardWidth,
+              height: headerHeight,
+              r: [cardRadius, cardRadius, 0, 0],
             },
             style: { fill: '#EEF1F5' },
           },
@@ -786,8 +800,8 @@ export function getLocationsLabelOption(
             type: 'text',
             z2: 20,
             style: {
-              x: cardLeft + CARD_WIDTH / 2,
-              y: cardTop + HEADER_H / 2,
+              x: cardLeft + cardWidth / 2,
+              y: cardTop + headerHeight / 2,
               text: ident,
               textAlign: 'center',
               textVerticalAlign: 'middle',
@@ -803,9 +817,9 @@ export function getLocationsLabelOption(
             z2: 20,
             style: {
               x: textX,
-              y: cardTop + HEADER_H + 5,
+              y: cardTop + headerHeight + 5,
               text: name,
-              width: CARD_WIDTH - BODY_PAD_LEFT * 2,
+              width: cardWidth - bodyPaddingLeft - bodyPaddingRight,
               overflow: 'break',
               lineHeight: 18,
               textAlign: 'left',

@@ -247,8 +247,10 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     )
   )
 
-  series.push(getLocationsLabelOption(primaryPhaseData, distanceData))
-  series.push(getDistancesLabelOption(primaryPhaseData, distanceData))
+  series.push(getLocationsLabelOption(primaryPhaseData, distanceData, grid))
+  series.push(
+    getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
+  )
   series.push(
     getOffsetAndProgramSplitLabel(
       primaryPhaseData,
