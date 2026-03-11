@@ -127,7 +127,7 @@ function ReportsApiInsightsCard({
   const subtitle = formatChartDateTimeRange(dateRange?.start, dateRange?.end)
 
   return (
-    <Card sx={{ flex: '1 1 980px', minWidth: 980 }}>
+    <Card sx={{ width: '100%', minWidth: 0 }}>
       <CardContent sx={{ pb: 1 }}>
         <InsightsHeader
           view={view}
