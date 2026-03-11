@@ -9,9 +9,9 @@ namespace Utah.Udot.ATSPM.ConfigApi.Configuration
     {
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
-            builder.Function("GetCurrentVersion").Returns<GitHubReleaseDto>().Parameter<bool>("PreRelease");
-            builder.Function("GetVersionHistory").ReturnsCollection<GitHubReleaseHistoryDto>().Parameter<bool>("PreRelease");
-            builder.Function("GetLatestRelease").Returns<GitHubReleaseDto>().Parameter<bool>("PreRelease");
+            builder.Function("GetCurrentVersion").Returns<GitHubRelease>().Parameter<bool>("PreRelease");
+            builder.Function("GetVersionHistory").ReturnsCollection<GitHubRelease>().Parameter<bool>("PreRelease");
+            builder.Function("GetLatestRelease").Returns<GitHubRelease>().Parameter<bool>("PreRelease");
         }
     }
 }
