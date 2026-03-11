@@ -139,8 +139,8 @@ const WatchDogLogs = () => {
   useMemo(() => {
     const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
     if (logEvents) {
-      const rows = logEvents.map((logEvent, index) => ({
-        id: index,
+      const rows = logEvents.map((logEvent) => ({
+        id: logEvent.id,
         locationId: logEvent.locationId,
         locationIdentifier: logEvent.locationIdentifier,
         timestamp: logEvent.timestamp,
@@ -294,8 +294,7 @@ const WatchDogLogs = () => {
         headerName: 'Issue Type',
         flex: 1,
         headerAlign: 'center',
-        valueGetter: (params) =>
-          addSpaces(issueTypes?.[params as number]) ?? '',
+        valueGetter: (params) => addSpaces(params) ?? '',
       },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {
@@ -324,7 +323,7 @@ const WatchDogLogs = () => {
     }
 
     return baseColumns
-  }, [selectedRows, isIconClicked, handleRowSelection, issueTypes])
+  }, [selectedRows, isIconClicked, handleRowSelection])
 
   const CustomToolbar = useCallback(
     () => (
