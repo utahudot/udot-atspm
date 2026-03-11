@@ -134,7 +134,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 }
                 var programmedCycleForPlan = controllerEventLogs
                     .GetEventsByEventCodes(options.StartDate.ToDateTime(options.StartTime).AddHours(-12), options.EndDate.ToDateTime(options.EndTime).AddHours(12), new List<short>() { 132 });
-                cycleLengths.Add(GetEventOverlappingTime(options.StartDate.ToDateTime(options.StartTime), programmedCycleForPlan, "CycleLength").FirstOrDefault().EventParam);
+                var cycleLength = GetEventOverlappingTime(options.StartDate.ToDateTime(options.StartTime), programmedCycleForPlan, "CycleLength").FirstOrDefault();
+                if (cycleLength != null)
+                    cycleLengths.Add(cycleLength.EventParam);
 
             }
             int mode = cycleLengths.Any()

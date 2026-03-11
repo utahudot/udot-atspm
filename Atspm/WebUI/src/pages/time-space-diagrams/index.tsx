@@ -17,6 +17,7 @@ import { useGetRoute } from '@/features/routes/api/getRoutes'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab'
 import { Alert, Box, Tab, Typography } from '@mui/material'
+import { AxiosError } from 'axios'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -186,7 +187,7 @@ const TimeSpaceDiagram = () => {
 
               {isError && (
                 <Alert severity="error" sx={{ marginLeft: 1 }}>
-                  {String((error as any)?.message ?? 'Error')}
+                  {String((error as AxiosError).response?.data ?? 'Error')}
                 </Alert>
               )}
 

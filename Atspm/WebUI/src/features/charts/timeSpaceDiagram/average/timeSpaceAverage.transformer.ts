@@ -37,6 +37,7 @@ import {
 import {
   RawTimeSpaceAverageData,
   RawTimeSpaceDiagramResponse,
+  TimeSpaceDiagramPhaseResult,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
@@ -53,10 +54,47 @@ import {
 
 export default function transformTimeSpaceAverageData(
   response: RawTimeSpaceDiagramResponse
-): TransformedTimeSpaceResponse {
-  const data = {
-    chart: transformData(response.data as RawTimeSpaceAverageData[]),
+): TransformedTimeSpaceResponse & { errors?: string[] } {
+  // Extract successful results and filter out errors
+  const wrappedData =
+    response.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceAverageData>[]
+
+  // Collect error messages
+  const errorMessages = wrappedData
+    .filter((item) => !item.isSuccess && item.error)
+    .map((item) => item.error as string)
+
+  // Extract only successful results
+  const successfulData = wrappedData
+    .filter((item) => item.isSuccess && item.result)
+    .map((item) => item.result as RawTimeSpaceAverageData)
+
+  if (successfulData.length === 0) {
+    // Return error information instead of throwing
+    return {
+      type: ToolType.TimeSpaceAverage,
+      data: { chart: {} },
+      errors:
+        errorMessages.length > 0
+          ? errorMessages
+          : [
+              'No valid time space diagram data available. All phases returned errors.',
+            ],
+    }
   }
+
+  const result: TransformedTimeSpaceResponse & { errors?: string[] } = {
+    type: ToolType.TimeSpaceAverage,
+    data: {
+      chart: transformData(successfulData),
+    },
+  }
+
+  // Include errors if some phases failed but we still have partial data
+  if (errorMessages.length > 0) {
+    result.errors = errorMessages
+  }
+
   return {
     type: ToolType.TimeSpaceHistoric,
     data,

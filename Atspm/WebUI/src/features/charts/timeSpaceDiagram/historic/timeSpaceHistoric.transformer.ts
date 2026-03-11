@@ -33,6 +33,7 @@ import {
 import {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
+  TimeSpaceDiagramPhaseResult,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
@@ -56,19 +57,53 @@ import {
 } from '../../timingAndActuation/timingAndActuation.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
+const opacity = 0.4
+
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
-): TransformedTimeSpaceResponse {
-  const data = {
-    chart: transformData(response.data as RawTimeSpaceHistoricData[]),
-  }
-  return {
-    type: ToolType.TimeSpaceHistoric,
-    data,
-  }
-}
+): TransformedTimeSpaceResponse & { errors?: string[] } {
+  // Extract successful results and filter out errors
+  const wrappedData =
+    response.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[]
 
-const opacity = 0.4
+  // Collect error messages
+  const errorMessages = wrappedData
+    .filter((item) => !item.isSuccess && item.error)
+    .map((item) => item.error as string)
+
+  // Extract only successful results
+  const successfulData = wrappedData
+    .filter((item) => item.isSuccess && item.result)
+    .map((item) => item.result as RawTimeSpaceHistoricData)
+
+  if (successfulData.length === 0) {
+    // Return error information instead of throwing
+    return {
+      type: ToolType.TimeSpaceHistoric,
+      data: { chart: {} },
+      errors:
+        errorMessages.length > 0
+          ? errorMessages
+          : [
+              'No valid time space diagram data available. All phases returned errors.',
+            ],
+    }
+  }
+
+  const result: TransformedTimeSpaceResponse & { errors?: string[] } = {
+    type: ToolType.TimeSpaceHistoric,
+    data: {
+      chart: transformData(successfulData),
+    },
+  }
+
+  // Include errors if some phases failed but we still have partial data
+  if (errorMessages.length > 0) {
+    result.errors = errorMessages
+  }
+
+  return result
+}
 
 function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryPhaseData = data.filter(
@@ -349,7 +384,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryLabelSeries = generateCycleLabels(
     distanceData,
     primaryDirection,
-    grid.left,
+    grid.left as number,
     primaryLinesByIndex,
     'down'
   )
@@ -357,7 +392,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const opposingLabelSeries = generateCycleLabels(
     distanceData,
     opposingDirection,
-    grid.left,
+    grid.left as number,
     opposingLinesByIndex,
     'up'
   )

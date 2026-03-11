@@ -15,7 +15,7 @@
 // limitations under the License.
 // #endregion
 import { useGetRequest } from '@/hooks/useGetRequest'
-import { RouteWithExpandedLocations } from '../types'
+import { Route } from '../types'
 
 type UseDataOptions = {
   routeId: string
@@ -27,5 +27,5 @@ export const useGetRouteWithExpandedLocations = ({
   includeLocationDetail,
 }: UseDataOptions) => {
   const route = `GetRouteView/${routeId}?includeLocationDetail=${includeLocationDetail}`
-  return useGetRequest<RouteWithExpandedLocations>({ route, enabled: false })
+  return useGetRequest<Route>({ route, enabled: false })
 }
