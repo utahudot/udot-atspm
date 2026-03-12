@@ -25,7 +25,7 @@ namespace Utah.Udot.ATSPM.ConfigApi.DTO
         public int RouteId { get; set; }
     }
 
-    public class RouteDto: AtspmConfigModelBase<int>
+    public class RouteDto : AtspmConfigModelBase<int>
     {
         public int? Id { get; set; }
         public string Name { get; set; }

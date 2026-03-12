@@ -123,7 +123,7 @@ app.Run();
 
 public static class TempCorsExtension
 {
-    public static IServiceCollection AddConfiguredCors( this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration config)
     {
         var corsPolicies = config.GetSection("CorsPolicies").Get<Dictionary<string, CorsPolicyConfiguration>>();
 
