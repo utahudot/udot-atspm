@@ -61,16 +61,19 @@ function EditLocation() {
           <Tab label="Watchdog" value="4" />
         </TabList>
 
-        <TabPanel value="1" sx={{ padding: 0 }}>
+        <TabPanel value="1" sx={{ padding: 0, minHeight: '400px' }}>
           <LocationGeneralOptionsEditor />
         </TabPanel>
-        <TabPanel value="2" sx={{ padding: 0, marginBottom: '100px' }}>
+        <TabPanel
+          value="2"
+          sx={{ padding: 0, marginBottom: '100px', minHeight: '400px' }}
+        >
           <EditDevices />
         </TabPanel>
         <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
           <ApproachesTab />
         </TabPanel>
-        <TabPanel value="4" sx={{ padding: 0 }}>
+        <TabPanel value="4" sx={{ padding: 0, minHeight: '400px' }}>
           <WatchdogEditor />
         </TabPanel>
       </TabContext>

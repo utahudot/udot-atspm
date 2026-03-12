@@ -85,7 +85,7 @@ const RolesAdmin = () => {
 
   const HandleDeleteRole = async (roleName: string) => {
     if (protectedRoles.includes(roleName)) {
-      return;
+      return
     }
     try {
       await deleteMutation({ roleName })
@@ -98,8 +98,8 @@ const RolesAdmin = () => {
   }
 
   const HandleEditRole = async (roleData: {
-    roleName: string;
-    claims: string[];
+    roleName: string
+    claims: string[]
   }) => {
     try {
       await editMutation({
@@ -118,8 +118,8 @@ const RolesAdmin = () => {
   }
 
   const HandleCreateRole = async (roleData: {
-    roleName: string;
-    claims: string[];
+    roleName: string
+    claims: string[]
   }) => {
     try {
       await createMutation({
@@ -131,7 +131,7 @@ const RolesAdmin = () => {
         await editMutation({
           roleName: roleData.roleName,
           claims: roleData.claims,
-        });
+        })
       }
       refetchRoles()
       addNotification({
@@ -145,23 +145,23 @@ const RolesAdmin = () => {
   }
 
   if (pageAccess.isLoading) {
-    return;
+    return
   }
 
   const onModalClose = () => {
     //do something?? potentially just delete
-  };
+  }
 
   if (isLoading) {
     return (
       <Backdrop open>
         <CircularProgress color="inherit" />
       </Backdrop>
-    );
+    )
   }
 
   if (!roles) {
-    return <div>Error returning data</div>;
+    return <div>Error returning data</div>
   }
 
   const customRoleFilteredData = roles
@@ -180,11 +180,12 @@ const RolesAdmin = () => {
     }
   })
 
-  const defaultRoleHeaders = ['Name', 'Description']
-  const defaultRoleKeys = ['name', 'description']
+  const defaultRoleCells = [
+    { key: 'name', label: 'Name' },
+    { key: 'description', label: 'Description' },
+  ]
 
-  const customRolesHeaders = ['Name']
-  const customRoleKeys = ['role']
+  const customRoleCells = [{ key: 'role', label: 'Name' }]
 
   return (
     <ResponsivePageLayout title="Manage Roles" noBottomMargin>
@@ -194,9 +195,9 @@ const RolesAdmin = () => {
         </Typography>
         <AdminTable
           pageName="Role"
-          headers={defaultRoleHeaders}
-          headerKeys={defaultRoleKeys}
+          cells={defaultRoleCells}
           data={filteredDefaultRoles}
+          hideAuditProperties
         />
       </Box>
       <Typography variant="h5" fontWeight={'bold'} sx={{ mb: -2 }}>
@@ -204,9 +205,9 @@ const RolesAdmin = () => {
       </Typography>
       <AdminTable
         pageName="Custom Role"
-        headers={customRolesHeaders}
-        headerKeys={customRoleKeys}
+        cells={customRoleCells}
         data={customRoleFilteredData}
+        hideAuditProperties
         hasEditPrivileges={hasRoleEditClaim}
         hasDeletePrivileges={hasRolesDeleteClaim}
         protectedFromDeleteItems={protectedRoles}
@@ -240,7 +241,7 @@ const RolesAdmin = () => {
         }
       />
     </ResponsivePageLayout>
-  );
-};
+  )
+}
 
-export default RolesAdmin;
+export default RolesAdmin

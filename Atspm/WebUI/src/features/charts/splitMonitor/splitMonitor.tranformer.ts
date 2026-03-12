@@ -245,8 +245,8 @@ function transformData(data: RawSplitMonitorData) {
   const plansSeries = createPlans(plans, yAxis.length, planOptions, 90)
 
   const displayProps = createDisplayProps({
-    description: 'ph' + data.phaseNumber.toLocaleString(),
-    plans,
+    description: data.phaseDescription,
+    plans: plans,
     phaseNumber: data.phaseNumber,
   })
 

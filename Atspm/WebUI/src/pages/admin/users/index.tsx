@@ -5,10 +5,7 @@ import { useDeleteUser } from '@/features/identity/api/deleteUser'
 import { useEditUsers } from '@/features/identity/api/editUsers'
 import { useGetAllUsers } from '@/features/identity/api/getAllUsers'
 import UserModal from '@/features/identity/components/users/UserModal'
-import {
-  CustomCellConfig,
-  UserRolesCell,
-} from '@/features/identity/components/users/UserRolesCell'
+import { UserRolesCell } from '@/features/identity/components/users/UserRolesCell'
 import {
   PageNames,
   useUserHasClaim,
@@ -16,6 +13,7 @@ import {
 } from '@/features/identity/pagesCheck'
 import UserDto from '@/features/identity/types/userDto'
 import { useNotificationStore } from '@/stores/notifications'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const UsersAdmin = () => {
@@ -85,19 +83,36 @@ const UsersAdmin = () => {
 
   const filteredData = users?.map((user) => {
     return {
-      userId: user.userId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      fullName: user.fullName,
-      userName: user.userName,
-      agency: user.agency,
-      email: user.email,
+      ...user,
       roles: user.roles?.sort(),
+      created: user.created ? toUTCDateStamp(user.created) : '',
+      modified: user.modified ? toUTCDateStamp(user.modified) : '',
     }
   })
 
-  const headers = ['Full Name', 'Username', 'Agency', 'Email', 'Roles']
-  const headerKeys = ['fullName', 'userName', 'agency', 'email', 'roles']
+  const cells = [
+    {
+      key: 'fullName',
+      label: 'Full Name',
+    },
+    {
+      key: 'userName',
+      label: 'Username',
+    },
+    {
+      key: 'email',
+      label: 'Email',
+    },
+    {
+      key: 'agency',
+      label: 'Agency',
+    },
+    {
+      key: 'roles',
+      label: 'Roles',
+      component: UserRolesCell,
+    },
+  ]
 
   if (usersIsLoading) {
     return (
@@ -111,25 +126,15 @@ const UsersAdmin = () => {
     return <div>Error returning data</div>
   }
 
-  const customCellRender: CustomCellConfig[] = [
-    {
-      headerKey: 'roles',
-      component: (value: string, row: string[]) => (
-        <UserRolesCell value={value} row={row} headerKey="roles" />
-      ),
-    },
-  ]
-
   return (
     <ResponsivePageLayout title="Manage Users" noBottomMargin>
       <AdminTable
         pageName="User"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
-        customCellRender={customCellRender}
         hasEditPrivileges={hasUserEditClaim}
         hasDeletePrivileges={hasUserDeleteClaim}
+        hideAuditProperties
         editModal={
           <UserModal isOpen={true} onSave={handleEditUser} data={null} />
         }

@@ -105,14 +105,14 @@ export const LinkPivotOptionsComponent = (props: Props) => {
           noCalendar
         />
       </StyledPaper>
-      <Box display="flex">
+      <StyledPaper display="flex">
         <MultiSelectCheckbox
           itemList={daysOfWeekList}
           selectedItems={handler.selectedDays}
           setSelectedItems={handler.updateDaysOfWeek}
           header="Days To Include"
         />
-      </Box>
+      </StyledPaper>
       <StyledPaper
         sx={{
           padding: 3,

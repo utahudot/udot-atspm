@@ -6,7 +6,7 @@ import UsageEntryFilters, {
 } from '@/features/data/components/UsageEntryFilters'
 import UsageTable from '@/features/data/components/UsageTable'
 import { formatBytes } from '@/utils/formatting'
-import { Card, CardContent, Paper, Stack, Typography } from '@mui/material'
+import { Box, Card, CardContent, Paper, Stack, Typography } from '@mui/material'
 import * as React from 'react'
 import { memo } from 'react'
 
@@ -27,12 +27,26 @@ interface UsageEntryWithUser extends UsageEntry {
 
 function StatCard({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <Paper sx={{ minWidth: 240, flex: '1 1 240px' }}>
-      <CardContent>
-        <Typography variant="h5" color="text.secondary">
+    <Paper sx={{ width: '100%', minWidth: 0, height: '100%' }}>
+      <CardContent
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography variant="subtitle1" color="text.secondary">
           {label}
         </Typography>
-        <Typography variant="h3" sx={{ fontWeight: 600 }}>
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 600,
+            fontSize: { xs: '1.85rem', sm: '2.25rem' },
+            overflowWrap: 'anywhere',
+          }}
+        >
           {value}
         </Typography>
       </CardContent>
@@ -76,18 +90,32 @@ function UsageSummaryTab({
 
   return (
     <Stack spacing={2}>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ flexWrap: 'wrap', alignItems: 'stretch' }}
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          alignItems: 'stretch',
+          gridTemplateColumns: {
+            xs: 'minmax(0, 1fr)',
+            sm: 'repeat(2, minmax(0, 1fr))',
+            xl: 'minmax(0, 2fr) repeat(2, minmax(0, 1fr))',
+          },
+        }}
       >
-        <UsageEntryFilters
-          value={filters}
-          onChange={onFiltersChange}
-          onReset={onResetFilters}
-          users={users}
-          usersLoading={usersLoading}
-        />
+        <Box
+          sx={{
+            minWidth: 0,
+            gridColumn: { xs: 'auto', sm: '1 / -1', xl: 'auto' },
+          }}
+        >
+          <UsageEntryFilters
+            value={filters}
+            onChange={onFiltersChange}
+            onReset={onResetFilters}
+            users={users}
+            usersLoading={usersLoading}
+          />
+        </Box>
 
         <StatCard
           label="Reports generated"
@@ -95,24 +123,24 @@ function UsageSummaryTab({
         />
 
         <StatCard label="Total data downloaded" value={totalDataDownloaded} />
-      </Stack>
+      </Box>
 
-      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
+      <Box sx={{ width: '100%', minWidth: 0 }}>
         <ReportsApiInsightsCard
           rows={rows}
           users={users}
           dateRange={dateRange}
           isLoading={usageLoading}
         />
-      </Stack>
+      </Box>
 
-      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
-        <Card sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%', minWidth: 0 }}>
+        <Card sx={{ width: '100%', minWidth: 0 }}>
           <CardContent sx={{ p: 0 }}>
             <UsageTable isLoading={usageLoading} rows={tableData} />
           </CardContent>
         </Card>
-      </Stack>
+      </Box>
     </Stack>
   )
 }

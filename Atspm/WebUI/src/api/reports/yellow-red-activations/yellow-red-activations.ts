@@ -27,33 +27,6 @@ import type {
 
 import { reportsRequest } from '../../../lib/axios';
 
-// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
-type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
-T,
->() => T extends Y ? 1 : 2
-? A
-: B;
-
-type WritableKeys<T> = {
-[P in keyof T]-?: IfEquals<
-  { [Q in P]: T[P] },
-  { -readonly [Q in P]: T[P] },
-  P
->;
-}[keyof T];
-
-type UnionToIntersection<U> =
-  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
-type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
-
-type Writable<T> = Pick<T, WritableKeys<T>>;
-type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
-  [P in keyof Writable<T>]: T[P] extends object
-    ? NonReadonly<NonNullable<T[P]>>
-    : T[P];
-} : DistributeReadOnlyOverUnions<T>;
-
-
 
 
 
@@ -124,7 +97,7 @@ export function useGetYellowRedActivationsTestData<TData = Awaited<ReturnType<ty
  * @summary Get report data
  */
 export const getYellowRedActivationsReportData = (
-    yellowRedActivationsOptions: NonReadonly<YellowRedActivationsOptions>,
+    yellowRedActivationsOptions: YellowRedActivationsOptions,
  signal?: AbortSignal
 ) => {
       
@@ -140,8 +113,8 @@ export const getYellowRedActivationsReportData = (
 
 
 export const getGetYellowRedActivationsReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, TError,{data: NonReadonly<YellowRedActivationsOptions>}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, TError,{data: NonReadonly<YellowRedActivationsOptions>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, TError,{data: YellowRedActivationsOptions}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, TError,{data: YellowRedActivationsOptions}, TContext> => {
 
 const mutationKey = ['getYellowRedActivationsReportData'];
 const {mutation: mutationOptions} = options ?
@@ -153,7 +126,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, {data: NonReadonly<YellowRedActivationsOptions>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, {data: YellowRedActivationsOptions}> = (props) => {
           const {data} = props ?? {};
 
           return  getYellowRedActivationsReportData(data,)
@@ -165,18 +138,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetYellowRedActivationsReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>>
-    export type GetYellowRedActivationsReportDataMutationBody = NonReadonly<YellowRedActivationsOptions>
+    export type GetYellowRedActivationsReportDataMutationBody = YellowRedActivationsOptions
     export type GetYellowRedActivationsReportDataMutationError = ProblemDetails
 
     /**
  * @summary Get report data
  */
 export const useGetYellowRedActivationsReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, TError,{data: NonReadonly<YellowRedActivationsOptions>}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getYellowRedActivationsReportData>>, TError,{data: YellowRedActivationsOptions}, TContext>, }
  ): UseMutationResult<
         Awaited<ReturnType<typeof getYellowRedActivationsReportData>>,
         TError,
-        {data: NonReadonly<YellowRedActivationsOptions>},
+        {data: YellowRedActivationsOptions},
         TContext
       > => {
 

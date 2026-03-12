@@ -22,11 +22,37 @@ import type {
 import type {
   ApproachSpeedOptions,
   ApproachSpeedResult,
-  CompressedDataBase,
   ProblemDetails
 } from '../report-api.schemas';
 
 import { reportsRequest } from '../../../lib/axios';
+
+// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+T,
+>() => T extends Y ? 1 : 2
+? A
+: B;
+
+type WritableKeys<T> = {
+[P in keyof T]-?: IfEquals<
+  { [Q in P]: T[P] },
+  { -readonly [Q in P]: T[P] },
+  P
+>;
+}[keyof T];
+
+type UnionToIntersection<U> =
+  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
+
+type Writable<T> = Pick<T, WritableKeys<T>>;
+type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
+  [P in keyof Writable<T>]: T[P] extends object
+    ? NonReadonly<NonNullable<T[P]>>
+    : T[P];
+} : DistributeReadOnlyOverUnions<T>;
+
 
 
 
@@ -98,12 +124,12 @@ export function useGetApproachSpeedTestData<TData = Awaited<ReturnType<typeof ge
  * @summary Get report data
  */
 export const getApproachSpeedReportData = (
-    approachSpeedOptions: ApproachSpeedOptions,
+    approachSpeedOptions: NonReadonly<ApproachSpeedOptions>,
  signal?: AbortSignal
 ) => {
       
       
-      return reportsRequest<CompressedDataBase[]>(
+      return reportsRequest<ApproachSpeedResult[]>(
       {url: `/api/v1/ApproachSpeed/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: approachSpeedOptions, signal
@@ -114,8 +140,8 @@ export const getApproachSpeedReportData = (
 
 
 export const getGetApproachSpeedReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachSpeedReportData>>, TError,{data: ApproachSpeedOptions}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof getApproachSpeedReportData>>, TError,{data: ApproachSpeedOptions}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachSpeedReportData>>, TError,{data: NonReadonly<ApproachSpeedOptions>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getApproachSpeedReportData>>, TError,{data: NonReadonly<ApproachSpeedOptions>}, TContext> => {
 
 const mutationKey = ['getApproachSpeedReportData'];
 const {mutation: mutationOptions} = options ?
@@ -127,7 +153,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApproachSpeedReportData>>, {data: ApproachSpeedOptions}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApproachSpeedReportData>>, {data: NonReadonly<ApproachSpeedOptions>}> = (props) => {
           const {data} = props ?? {};
 
           return  getApproachSpeedReportData(data,)
@@ -139,18 +165,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetApproachSpeedReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof getApproachSpeedReportData>>>
-    export type GetApproachSpeedReportDataMutationBody = ApproachSpeedOptions
+    export type GetApproachSpeedReportDataMutationBody = NonReadonly<ApproachSpeedOptions>
     export type GetApproachSpeedReportDataMutationError = ProblemDetails
 
     /**
  * @summary Get report data
  */
 export const useGetApproachSpeedReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachSpeedReportData>>, TError,{data: ApproachSpeedOptions}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachSpeedReportData>>, TError,{data: NonReadonly<ApproachSpeedOptions>}, TContext>, }
  ): UseMutationResult<
         Awaited<ReturnType<typeof getApproachSpeedReportData>>,
         TError,
-        {data: ApproachSpeedOptions},
+        {data: NonReadonly<ApproachSpeedOptions>},
         TContext
       > => {
 

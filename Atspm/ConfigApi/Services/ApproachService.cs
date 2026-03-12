@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Services/ApproachService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -209,6 +209,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                 TransitSignalPriorityNumber = approach.TransitSignalPriorityNumber,
                 LocationId = approach.LocationId,
                 DirectionTypeId = approach.DirectionTypeId,
+                CreatedBy = approach.CreatedBy,
+                Created = approach.Created,
+                Modified = approach.Modified,
+                ModifiedBy = approach.ModifiedBy,
                 Detectors = approach.Detectors.Select(d => new DetectorDto
                 {
                     Id = d.Id,
@@ -226,6 +230,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                     MovementDelay = d.MovementDelay,
                     LatencyCorrection = d.LatencyCorrection,
                     ApproachId = d.ApproachId,
+                    Created = d.Created,
+                    CreatedBy = d.CreatedBy,
+                    Modified = d.Modified,
+                    ModifiedBy = d.ModifiedBy,
                     DetectionTypes = ExtractDetectionTypesToDto(d.DetectionTypes.ToList())
                 }).ToList()
             };

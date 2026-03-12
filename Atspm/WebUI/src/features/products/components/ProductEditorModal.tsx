@@ -1,13 +1,7 @@
 import { Product } from '@/api/config'
+import ATSPMDialog from '@/components/ATSPMDialog'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from '@mui/material'
+import { TextField } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -54,62 +48,51 @@ const ProductEditorModal = ({
   }
 
   return (
-    <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Edit product</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            {...register('manufacturer')}
-            autoFocus
-            margin="dense"
-            id="manufacturer"
-            label="Manufacturer"
-            type="text"
-            fullWidth
-            error={!!errors.manufacturer}
-            helperText={errors.manufacturer ? errors.manufacturer.message : ''}
-          />
-          <TextField
-            {...register('model')}
-            margin="dense"
-            id="model"
-            label="Model"
-            type="text"
-            fullWidth
-            error={!!errors.model}
-            helperText={errors.model ? errors.model.message : ''}
-          />
-          <TextField
-            {...register('webPage')}
-            margin="dense"
-            id="webPage"
-            label="Web Page"
-            type="text"
-            fullWidth
-            error={!!errors.webPage}
-            helperText={errors.webPage ? errors.webPage.message : ''}
-          />
-          <TextField
-            {...register('notes')}
-            margin="dense"
-            id="notes"
-            label="Notes"
-            type="text"
-            fullWidth
-            error={!!errors.notes}
-            helperText={errors.notes ? errors.notes.message : ''}
-          />
-          <DialogActions>
-            <Button onClick={onClose} color="primary">
-              Cancel
-            </Button>
-            <Button type="submit" color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <ATSPMDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={handleSubmit(onSubmit)}
+      title="Edit product"
+      auditInfo={product}
+    >
+      <TextField
+        {...register('manufacturer')}
+        autoFocus
+        margin="dense"
+        id="manufacturer"
+        label="Manufacturer"
+        type="text"
+        fullWidth
+        error={!!errors.manufacturer}
+      />
+      <TextField
+        {...register('model')}
+        margin="dense"
+        id="model"
+        label="Model"
+        type="text"
+        fullWidth
+        error={!!errors.model}
+      />
+      <TextField
+        {...register('webPage')}
+        margin="dense"
+        id="webPage"
+        label="Web Page"
+        type="text"
+        fullWidth
+        error={!!errors.webPage}
+      />
+      <TextField
+        {...register('notes')}
+        margin="dense"
+        id="notes"
+        label="Notes"
+        type="text"
+        fullWidth
+        error={!!errors.notes}
+      />
+    </ATSPMDialog>
   )
 }
 

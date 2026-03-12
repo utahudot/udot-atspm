@@ -15,8 +15,12 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { useNotificationStore } from '@/stores/notifications'
-import { Backdrop, CircularProgress } from '@mui/material'
+import { toUTCDateStamp } from '@/utils/dateTime'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Backdrop, Box, Button, CircularProgress } from '@mui/material'
 import { Markup } from 'interweave'
+import { useMemo, useState } from 'react'
 
 const FaqAdmin = () => {
   const pageAccess = useViewPage(PageNames.FAQs)
@@ -48,11 +52,10 @@ const FaqAdmin = () => {
   }
 
   const HandleEditFaq = async (faqData: Faq) => {
-    const { id, header, body, displayOrder } = faqData
     try {
       await editMutation({
         data: faqData,
-        key: id,
+        key: faqData.id,
       })
       refetchFaqData()
       addNotification({ type: 'success', title: 'FAQ Edited' })
@@ -91,34 +94,62 @@ const FaqAdmin = () => {
 
   const filteredData = faqs.map((obj: Faq) => {
     return {
-      id: obj.id,
-      header: obj.header,
-      body: obj.body,
-      displayOrder: obj.displayOrder,
+      ...obj,
+      created: obj.created ? toUTCDateStamp(obj.created) : undefined,
+      modified: obj.modified ? toUTCDateStamp(obj.modified) : undefined,
     }
   })
 
-  const FaqBodyCell = ({ value }: { value: string }) => {
-    return <Markup content={value} />
-  }
-  const customCellRender = [
-    {
-      headerKey: 'body',
-      component: (value: string) => <FaqBodyCell value={value} />,
-    },
-  ]
+  const FaqBodyCell = ({
+    value,
+    maxChars = 300,
+  }: {
+    value: string
+    maxChars?: number
+  }) => {
+    const [expanded, setExpanded] = useState(false)
 
-  const headers = ['Header', 'Body', 'Display Order']
-  const headerKeys = ['header', 'body', 'displayOrder']
+    const { preview, needsTruncate } = useMemo(() => {
+      const chars = Array.from(value)
+      if (chars.length <= maxChars) {
+        return { preview: value, needsTruncate: false }
+      }
+      const sliced = chars.slice(0, maxChars).join('').replace(/\s+$/, '')
+      return { preview: `${sliced}...`, needsTruncate: true }
+    }, [value, maxChars])
+
+    return (
+      <Box sx={{ minWidth: 400, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+          <Markup content={expanded || !needsTruncate ? value : preview} />
+        </Box>
+
+        {needsTruncate && (
+          <Button
+            size="small"
+            endIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            onClick={() => setExpanded((v) => !v)}
+            sx={{ textTransform: 'none' }}
+          >
+            {expanded ? 'Show less' : 'Show more'}
+          </Button>
+        )}
+      </Box>
+    )
+  }
+
+  const cells = [
+    { key: 'header', label: 'Header' },
+    { key: 'body', label: 'Body', component: FaqBodyCell },
+    { key: 'displayOrder', label: 'Display Order', align: 'right' },
+  ]
 
   return (
     <ResponsivePageLayout title="Manage FAQs" noBottomMargin>
       <AdminTable
         pageName="Faqs"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
-        customCellRender={customCellRender}
         hasEditPrivileges={hasGeneralEditClaim}
         hasDeletePrivileges={hasGeneralDeleteClaim}
         editModal={

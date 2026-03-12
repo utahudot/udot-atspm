@@ -20,7 +20,6 @@ import type {
 } from 'react-query';
 
 import type {
-  CompressedDataBase,
   ProblemDetails,
   TimeSpaceDiagramAverageOptions,
   TimeSpaceDiagramAverageResult
@@ -103,7 +102,7 @@ export const getTimeSpaceDiagramAverageReportData = (
 ) => {
       
       
-      return reportsRequest<CompressedDataBase[]>(
+      return reportsRequest<TimeSpaceDiagramAverageResult[]>(
       {url: `/api/v1/TimeSpaceDiagramAverage/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: timeSpaceDiagramAverageOptions, signal

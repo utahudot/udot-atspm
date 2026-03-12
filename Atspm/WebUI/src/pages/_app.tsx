@@ -11,6 +11,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
+import { NuqsAdapter } from 'nuqs/adapters/next/pages'
 import { useEffect, useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
@@ -36,23 +37,25 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <ColorModeContext.Provider value={colorMode}>
-            <ThemeProvider theme={theme}>
-              <Layout>
-                <CssBaseline />
-                <Head>
-                  <meta
-                    name="viewport"
-                    content="width=device-width, minimum-scale=1, maximum-scale=5"
-                  />
-                </Head>
-                <Component {...pageProps} />
-                {process.env.NODE_ENV === 'development' && (
-                  <ReactQueryDevtools initialIsOpen={false} />
-                )}
-              </Layout>
-            </ThemeProvider>
-          </ColorModeContext.Provider>
+          <NuqsAdapter>
+            <ColorModeContext.Provider value={colorMode}>
+              <ThemeProvider theme={theme}>
+                <Layout>
+                  <CssBaseline />
+                  <Head>
+                    <meta
+                      name="viewport"
+                      content="width=device-width, minimum-scale=1, maximum-scale=5"
+                    />
+                  </Head>
+                  <Component {...pageProps} />
+                  {process.env.NODE_ENV === 'development' && (
+                    <ReactQueryDevtools initialIsOpen={false} />
+                  )}
+                </Layout>
+              </ThemeProvider>
+            </ColorModeContext.Provider>
+          </NuqsAdapter>
         </LocalizationProvider>
       </Hydrate>
     </QueryClientProvider>

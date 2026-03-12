@@ -30,6 +30,7 @@ export default function Sidebar() {
       text: 'Transit Signal Priority',
       url: '/reports/transit-signal-priority',
     },
+    { text: 'Pedestrian Activity', url: '/reports/pedestrian-activity' },
   ]
   if (hasLTGRPermission) {
     reportsList.push({ text: 'Left Turn Gap', url: '/reports/left-turn-gap' })

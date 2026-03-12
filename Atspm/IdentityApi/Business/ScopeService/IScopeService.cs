@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Identity.Business.ScopeService/IScopeService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");

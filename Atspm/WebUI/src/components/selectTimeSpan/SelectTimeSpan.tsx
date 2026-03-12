@@ -16,7 +16,7 @@ import {
   PickersDayProps,
   TimePicker,
 } from '@mui/x-date-pickers'
-import { add, isSameDay, startOfToday } from 'date-fns'
+import { add, isSameDay, startOfToday, startOfYesterday } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SelectDateTimeProps {
@@ -77,10 +77,11 @@ export default function SelectDateTime({
   const handleCalendarChange = (newDate: Date | null) => {
     onChange?.(newDate as Date)
     if (!newDate) return
-    if (!endDateTime || !startDateTime) return
 
     changeStartDate(newDate)
     const newEndDate = new Date(newDate)
+    if (!endDateTime || !startDateTime) return
+
     newEndDate.setHours(endDateTime.getHours())
     newEndDate.setMinutes(endDateTime.getMinutes())
     if (
@@ -94,7 +95,7 @@ export default function SelectDateTime({
   }
 
   const handleResetDate = () => {
-    const newStart = startOfToday()
+    const newStart = startOfYesterday()
     const newEnd = startOfToday()
 
     changeStartDate(newStart)

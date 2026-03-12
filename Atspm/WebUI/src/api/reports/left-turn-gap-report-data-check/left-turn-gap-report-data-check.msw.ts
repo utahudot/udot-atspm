@@ -6,6 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import {
+  faker
+} from '@faker-js/faker';
+
+import {
   HttpResponse,
   delay,
   http
@@ -16,9 +20,9 @@ import type {
 } from '../report-api.schemas';
 
 
-export const getGetLeftTurnGapReportDataCheckTestDataResponseMock = (): LeftTurnGapDataCheckResult => ({})
+export const getGetLeftTurnGapReportDataCheckTestDataResponseMock = (overrideResponse: Partial< LeftTurnGapDataCheckResult > = {}): LeftTurnGapDataCheckResult => ({start: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), end: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), locationIdentifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), locationDescription: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), approachId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), approachDescription: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), leftTurnVolumeOk: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), gapOutOk: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), pedCycleOk: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientDetectorEventCount: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientCycleAggregation: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientPhaseTermination: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientPedAggregations: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientSplitFailAggregations: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientLeftTurnGapAggregations: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
 
-export const getGetLeftTurnGapReportDataCheckReportDataResponseMock = (): LeftTurnGapDataCheckResult => ({})
+export const getGetLeftTurnGapReportDataCheckReportDataResponseMock = (overrideResponse: Partial< LeftTurnGapDataCheckResult > = {}): LeftTurnGapDataCheckResult => ({start: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), end: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), locationIdentifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), locationDescription: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), approachId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), approachDescription: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), leftTurnVolumeOk: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), gapOutOk: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), pedCycleOk: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientDetectorEventCount: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientCycleAggregation: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientPhaseTermination: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientPedAggregations: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientSplitFailAggregations: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), insufficientLeftTurnGapAggregations: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
 
 
 export const getGetLeftTurnGapReportDataCheckTestDataMockHandler = (overrideResponse?: LeftTurnGapDataCheckResult | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<LeftTurnGapDataCheckResult> | LeftTurnGapDataCheckResult)) => {

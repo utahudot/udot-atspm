@@ -6,12 +6,17 @@
  * OpenAPI spec version: 1.0
  */
 import {
-  useMutation
+  useMutation,
+  useQuery
 } from 'react-query';
 import type {
   MutationFunction,
+  QueryFunction,
+  QueryKey,
   UseMutationOptions,
-  UseMutationResult
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
 } from 'react-query';
 
 import type {
@@ -22,6 +27,69 @@ import type {
 
 import { reportsRequest } from '../../../lib/axios';
 
+
+
+
+/**
+ * @summary Get example data for testing
+ */
+export const getRampMeteringTestData = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return reportsRequest<RampMeteringResult>(
+      {url: `/api/v1/RampMetering/test`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetRampMeteringTestDataQueryKey = () => {
+    return [`/api/v1/RampMetering/test`] as const;
+    }
+
+    
+export const getGetRampMeteringTestDataQueryOptions = <TData = Awaited<ReturnType<typeof getRampMeteringTestData>>, TError = ProblemDetails>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRampMeteringTestData>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRampMeteringTestDataQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRampMeteringTestData>>> = ({ signal }) => getRampMeteringTestData(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRampMeteringTestData>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRampMeteringTestDataQueryResult = NonNullable<Awaited<ReturnType<typeof getRampMeteringTestData>>>
+export type GetRampMeteringTestDataQueryError = ProblemDetails
+
+
+/**
+ * @summary Get example data for testing
+ */
+
+export function useGetRampMeteringTestData<TData = Awaited<ReturnType<typeof getRampMeteringTestData>>, TError = ProblemDetails>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRampMeteringTestData>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRampMeteringTestDataQueryOptions(options)
+
+  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
 
 
 

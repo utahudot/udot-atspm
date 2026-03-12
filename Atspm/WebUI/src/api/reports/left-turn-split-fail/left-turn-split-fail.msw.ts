@@ -6,6 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import {
+  faker
+} from '@faker-js/faker';
+
+import {
   HttpResponse,
   delay,
   http
@@ -16,9 +20,13 @@ import type {
 } from '../report-api.schemas';
 
 
-export const getGetLeftTurnSplitFailTestDataResponseMock = (): LeftTurnSplitFailResult => ({})
+export const getGetLeftTurnSplitFailTestDataResponseMock = (overrideResponse: Partial< LeftTurnSplitFailResult > = {}): LeftTurnSplitFailResult => ({splitFailPercent: faker.helpers.arrayElement([faker.number.float(), undefined]), cyclesWithSplitFails: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), percentCyclesWithSplitFailList: faker.helpers.arrayElement([{
+        [faker.string.alphanumeric(5)]: faker.number.float()
+      }, undefined]), direction: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), ...overrideResponse})
 
-export const getGetLeftTurnSplitFailReportDataResponseMock = (): LeftTurnSplitFailResult => ({})
+export const getGetLeftTurnSplitFailReportDataResponseMock = (overrideResponse: Partial< LeftTurnSplitFailResult > = {}): LeftTurnSplitFailResult => ({splitFailPercent: faker.helpers.arrayElement([faker.number.float(), undefined]), cyclesWithSplitFails: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), percentCyclesWithSplitFailList: faker.helpers.arrayElement([{
+        [faker.string.alphanumeric(5)]: faker.number.float()
+      }, undefined]), direction: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), ...overrideResponse})
 
 
 export const getGetLeftTurnSplitFailTestDataMockHandler = (overrideResponse?: LeftTurnSplitFailResult | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<LeftTurnSplitFailResult> | LeftTurnSplitFailResult)) => {
