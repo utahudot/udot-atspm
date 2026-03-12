@@ -5,7 +5,7 @@ import {
   useGetMeasureType,
   useGetMeasureTypeMeasureOptionPresetsFromKey,
 } from '@/api/config'
-import { useGetTransitSignalPriorityReportData } from '@/api/reports/aTSPMReportDataApi'
+import { useGetTransitSignalPriorityReportData } from '@/api/reports'
 import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
 import MultipleLocationsSelect, {
   getLocationWithApproaches,

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models/WatchDogLogEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -103,12 +103,8 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
+            if (obj is not WatchDogLogEvent other)
                 return false;
-            }
-
-            WatchDogLogEvent other = (WatchDogLogEvent)obj;
 
             return LocationIdentifier == other.LocationIdentifier &&
                     Timestamp == other.Timestamp &&
@@ -117,6 +113,8 @@ namespace Utah.Udot.Atspm.Data.Models
                    IssueType == other.IssueType &&
                        Phase == other.Phase;
         }
+
+        protected virtual bool CanEqual(object other) => other is WatchDogLogEvent;
 
         /// <inheritdoc/>
         public override int GetHashCode()

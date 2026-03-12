@@ -1,13 +1,7 @@
 import { Jurisdiction } from '@/api/config'
+import ATSPMDialog from '@/components/ATSPMDialog'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from '@mui/material'
+import { Box, TextField } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -54,64 +48,58 @@ const JurisdictionEditorModal = ({
   }
 
   return (
-    <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Edit Jurisdiction</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            {...register('name')}
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            error={!!errors.name}
-            helperText={errors.name ? errors.name.message : ''}
-          />
-          <TextField
-            {...register('mpo')}
-            margin="dense"
-            id="mpo"
-            label="Mpo"
-            type="text"
-            fullWidth
-            error={!!errors.mpo}
-            helperText={errors.mpo ? errors.mpo.message : ''}
-          />
-          <TextField
-            {...register('countyParish')}
-            margin="dense"
-            id="countyParish"
-            label="County Parish"
-            type="text"
-            fullWidth
-            error={!!errors.countyParish}
-            helperText={errors.countyParish ? errors.countyParish.message : ''}
-          />
-          <TextField
-            {...register('otherPartners')}
-            margin="dense"
-            id="otherPartners"
-            label="Other Partners"
-            type="text"
-            fullWidth
-            error={!!errors.otherPartners}
-            helperText={
-              errors.otherPartners ? errors.otherPartners.message : ''
-            }
-          />
-          <DialogActions>
-            <Button onClick={onClose} color="primary">
-              Cancel
-            </Button>
-            <Button type="submit" color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <ATSPMDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit Jurisdiction"
+      auditInfo={jurisdiction}
+      onSubmit={handleSubmit(onSubmit)}
+      dialogProps={{ sx: { minWidth: 500, pt: 0 } }}
+    >
+      <Box display={'flex'} flexDirection="column">
+        <TextField
+          {...register('name')}
+          autoFocus
+          margin="dense"
+          id="name"
+          label="Name *"
+          type="text"
+          fullWidth
+          error={!!errors.name}
+          helperText={errors.name ? errors.name.message : ''}
+        />
+        <TextField
+          {...register('mpo')}
+          margin="dense"
+          id="mpo"
+          label="Mpo"
+          type="text"
+          fullWidth
+          error={!!errors.mpo}
+          helperText={errors.mpo ? errors.mpo.message : ''}
+        />
+        <TextField
+          {...register('countyParish')}
+          margin="dense"
+          id="countyParish"
+          label="County/Parish"
+          type="text"
+          fullWidth
+          error={!!errors.countyParish}
+          helperText={errors.countyParish ? errors.countyParish.message : ''}
+        />
+        <TextField
+          {...register('otherPartners')}
+          margin="dense"
+          id="otherPartners"
+          label="Other Partners"
+          type="text"
+          fullWidth
+          error={!!errors.otherPartners}
+          helperText={errors.otherPartners ? errors.otherPartners.message : ''}
+        />
+      </Box>
+    </ATSPMDialog>
   )
 }
 

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Services/RouteServices.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -330,6 +330,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             var routeDto = new RouteDto();
             routeDto.Id = route.Id;
             routeDto.Name = route.Name;
+            routeDto.Created = route.Created;
+            routeDto.CreatedBy = route.CreatedBy;
+            routeDto.Modified = route.Modified;
+            routeDto.ModifiedBy = route.ModifiedBy;
             routeDto.RouteLocations = new List<RouteLocationDto>();
             foreach (var routeLocation in route.RouteLocations)
             {

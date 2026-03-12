@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Enums/WatchDogIssueTypes.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,5 +66,15 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// Stuck Queue Detection
         /// </summary>
         StuckQueueDetection = 9,
+
+        /// <summary>
+        /// Low Ramp Detector Hits
+        /// </summary>
+        LowRampDetectorHits = 10,
+
+        /// <summary>
+        /// Ramp Missed Detector Hits
+        /// </summary>
+        RampMissedDetectorHits = 11,
     }
 }

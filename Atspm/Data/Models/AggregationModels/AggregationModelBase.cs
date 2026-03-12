@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models/AggregationModelBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public string LocationIdentifier { get; set; }
     }
 
-    public abstract class  AggregationApproachBase : AggregationModelBase, ILocationApproachLayer
+    public abstract class AggregationApproachBase : AggregationModelBase, ILocationApproachLayer
     {
         /// <summary>
         /// Id of approach assigned to the location

@@ -53,10 +53,10 @@ module.exports = withBundleAnalyzer({
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  experimental: {
-    instrumentationHook: true,
-  },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
+  // experimental: {
+  //   instrumentationHook: true,
+  // },
 })

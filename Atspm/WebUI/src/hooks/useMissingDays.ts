@@ -1,4 +1,7 @@
-import { getEventLogDaysWithEventLogsFromLocationIdentifier } from '@/api/data/aTSPMLogDataApi'
+import {
+  getAggregationDaysWithDataFromLocationIdentifierAndDataType,
+  getEventLogDaysWithDataFromLocationIdentifierAndDataType,
+} from '@/api/data'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   eachDayOfInterval,
@@ -12,6 +15,7 @@ import { useEffect, useState } from 'react'
 const useMissingDays = (
   locationIdentifier: string,
   dataType: string,
+  dataCategory: 'raw' | 'aggregation',
   startDate: Date,
   endDate: Date
 ): Date[] => {
@@ -25,15 +29,28 @@ const useMissingDays = (
 
     const computeMissingDays = async () => {
       try {
-        const availableDaysRaw =
-          await getEventLogDaysWithEventLogsFromLocationIdentifier(
-            locationIdentifier,
-            {
+        let availableDaysRaw = []
+        if (dataCategory === 'raw') {
+          availableDaysRaw =
+            await getEventLogDaysWithDataFromLocationIdentifierAndDataType(
+              locationIdentifier,
               dataType,
-              start: dateToTimestamp(startDate),
-              end: dateToTimestamp(endDate),
-            }
-          )
+              {
+                start: dateToTimestamp(startDate),
+                end: dateToTimestamp(endDate),
+              }
+            )
+        } else {
+          availableDaysRaw =
+            await getAggregationDaysWithDataFromLocationIdentifierAndDataType(
+              locationIdentifier,
+              dataType,
+              {
+                start: dateToTimestamp(startDate),
+                end: dateToTimestamp(endDate),
+              }
+            )
+        }
 
         const availableDays = availableDaysRaw.map((dayStr: string) =>
           parse(dayStr, 'yyyy-MM-dd', new Date())
@@ -55,7 +72,7 @@ const useMissingDays = (
     }
 
     computeMissingDays()
-  }, [locationIdentifier, dataType, startDate, endDate])
+  }, [locationIdentifier, dataType, startDate, endDate, dataCategory])
 
   return missingDays
 }

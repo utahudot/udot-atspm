@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Watchdog/WatchDogLogEventWithCountAndDate.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,5 +28,8 @@ namespace Utah.Udot.Atspm.Business.Watchdog
         public int EventCount { get; set; }
         public DateTime DateOfFirstInstance { get; set; }
         public int ConsecutiveOccurenceCount { get; set; }
+
+        protected override bool CanEqual(object other) =>
+        other is WatchDogLogEventWithCountAndDate;
     }
 }

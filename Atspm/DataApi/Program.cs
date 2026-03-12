@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for DataApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,8 @@ using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.NetStandardToolkit.Configuration;
+
+//git 1
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -121,7 +123,7 @@ app.Run();
 
 public static class TempCorsExtension
 {
-    public static IServiceCollection AddConfiguredCors( this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration config)
     {
         var corsPolicies = config.GetSection("CorsPolicies").Get<Dictionary<string, CorsPolicyConfiguration>>();
 

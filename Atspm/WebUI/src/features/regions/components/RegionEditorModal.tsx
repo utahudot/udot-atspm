@@ -1,13 +1,7 @@
+import ATSPMDialog from '@/components/ATSPMDialog'
 import { Region } from '@/features/regions/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from '@mui/material'
+import { TextField } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -48,32 +42,26 @@ const RegionEditorModal = ({
   }
 
   return (
-    <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Edit Region</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            {...register('description')}
-            autoFocus
-            margin="dense"
-            id="description"
-            label="Name"
-            type="text"
-            fullWidth
-            error={!!errors.description}
-            helperText={errors.description ? errors.description.message : ''}
-          />
-          <DialogActions>
-            <Button onClick={onClose} color="primary">
-              Cancel
-            </Button>
-            <Button type="submit" color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <ATSPMDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit Region"
+      auditInfo={region}
+      onSubmit={handleSubmit(onSubmit)}
+      dialogProps={{ sx: { minWidth: 400, pt: 0 } }}
+    >
+      <TextField
+        {...register('description')}
+        autoFocus
+        margin="dense"
+        id="description"
+        label="Name"
+        type="text"
+        fullWidth
+        error={!!errors.description}
+        helperText={errors.description ? errors.description.message : ''}
+      />
+    </ATSPMDialog>
   )
 }
 

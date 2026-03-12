@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.ATSPM.ConfigApi.DTO/ApproachDto.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,11 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 
 namespace Utah.Udot.ATSPM.ConfigApi.DTO
 {
-    public class ApproachDto
+    public class ApproachDto : AtspmConfigModelBase<int>
     {
         public int? Id { get; set; }
         public string Description { get; set; }

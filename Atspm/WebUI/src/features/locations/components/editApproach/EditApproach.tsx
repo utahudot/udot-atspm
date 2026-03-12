@@ -5,6 +5,7 @@ import {
   LaneTypes,
   MovementTypes,
 } from '@/api/config'
+import AuditInfo from '@/components/AuditInfo'
 import { Color } from '@/features/charts/utils'
 import { useEditApproach } from '@/features/locations/api/approach'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
@@ -60,6 +61,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproach)
 
   const [open, setOpen] = useState(false)
+  const [openHistory, setOpenHistory] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [deleteMode, setDeleteMode] = useState(false)
   const [selectedDetectorIds, setSelectedDetectorIds] = useState<number[]>([])
@@ -179,7 +181,8 @@ function EditApproach({ approach }: ApproachAdminProps) {
           : Number(det.latencyCorrection)
 
       det.dectectorIdentifier =
-        (locationIdentifier || '') + (det.detectorChannel || '')
+        det?.dectectorIdentifier ||
+        locationIdentifier + (det.detectorChannel || '')
 
       det.detectionTypes.forEach((dType) => {
         dType.id = findDetectionType(dType.abbreviation)?.value
@@ -345,60 +348,66 @@ function EditApproach({ approach }: ApproachAdminProps) {
           <>
             <EditApproachGrid approach={approach} />
 
-            <Box display="flex" justifyContent="flex-end" mb={1}>
-              {!deleteMode && (
-                <>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    onClick={() => addDetectorInStore(approach.id)}
-                    sx={{ m: 1, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                  >
-                    Add Detector
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    onClick={() => setDeleteMode(true)}
-                    sx={{ m: 1, textTransform: 'none' }}
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete Detectors
-                  </Button>
-                </>
-              )}
-              {deleteMode && (
-                <>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      setDeleteMode(false)
-                      setSelectedDetectorIds([])
-                    }}
-                    sx={{ m: 1, textTransform: 'none' }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    color="error"
-                    disabled={selectedDetectorIds.length === 0}
-                    onClick={() => setConfirmDelete(true)}
-                    sx={{ m: 1, textTransform: 'none' }}
-                  >
-                    Delete Selected Detectors
-                  </Button>
-                </>
-              )}
+            <Box display="flex" justifyContent="space-between" m={1}>
+              <Box alignContent={'center'}>
+                <AuditInfo obj={approach} />
+              </Box>
+              <Box display="flex" alignItems="center" gap={2}>
+                {!deleteMode && (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      size="small"
+                      onClick={() => addDetectorInStore(approach.id)}
+                      sx={{ textTransform: 'none' }}
+                      startIcon={<AddIcon />}
+                    >
+                      Add Detector
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      onClick={() => setDeleteMode(true)}
+                      sx={{ textTransform: 'none' }}
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete Detectors
+                    </Button>
+                  </>
+                )}
+                {deleteMode && (
+                  <>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => {
+                        setDeleteMode(false)
+                        setSelectedDetectorIds([])
+                      }}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="error"
+                      disabled={selectedDetectorIds.length === 0}
+                      onClick={() => setConfirmDelete(true)}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Delete Selected Detectors
+                    </Button>
+                  </>
+                )}
+              </Box>
             </Box>
 
             <Box sx={{ mt: 1, ml: '1px' }}>
               <EditDetectors
+                showHistory={openHistory}
                 approach={approach}
                 deleteMode={deleteMode}
                 onSelectionChange={(ids) => setSelectedDetectorIds(ids)}

@@ -27,24 +27,28 @@ import { useQuery } from 'react-query'
 import { transformChartData } from './transformData'
 
 export const TypeApiMap: Record<ChartType, string> = {
-  [ChartType.ApproachDelay]: '/ApproachDelay/GetReportData',
-  [ChartType.ApproachSpeed]: '/ApproachSpeed/GetReportData',
-  [ChartType.ApproachVolume]: '/ApproachVolume/GetReportData',
-  [ChartType.ArrivalsOnRed]: '/ArrivalOnRed/GetReportData',
+  [ChartType.ApproachDelay]: '/api/v1/ApproachDelay/GetReportData',
+  [ChartType.ApproachSpeed]: '/api/v1/ApproachSpeed/GetReportData',
+  [ChartType.ApproachVolume]: '/api/v1/ApproachVolume/GetReportData',
+  [ChartType.ArrivalsOnRed]: '/api/v1/ArrivalOnRed/GetReportData',
   [ChartType.PurdueCoordinationDiagram]:
-    '/PurdueCoordinationDiagram/GetReportData',
-  [ChartType.GreenTimeUtilization]: '/GreenTimeUtilization/GetReportData',
-  [ChartType.LeftTurnGapAnalysis]: '/LeftTurnGapAnalysis/GetReportData',
-  [ChartType.PedestrianDelay]: '/PedDelay/GetReportData',
-  [ChartType.PurduePhaseTermination]: '/PurduePhaseTermination/GetReportData',
-  [ChartType.PreemptionDetails]: '/PreemptDetail/GetReportData',
-  [ChartType.PurdueSplitFailure]: '/SplitFail/GetReportData',
-  [ChartType.SplitMonitor]: '/SplitMonitor/GetReportData',
-  [ChartType.TimingAndActuation]: '/TimingAndActuation/GetReportData',
-  [ChartType.TurningMovementCounts]: '/TurningMovementCounts/GetReportData',
-  [ChartType.WaitTime]: '/WaitTime/GetReportData',
-  [ChartType.YellowAndRedActuations]: '/YellowRedActivations/GetReportData', // Todo: Fix spelling
-  [ChartType.RampMetering]: '/RampMetering/GetReportData',
+    '/api/v1/PurdueCoordinationDiagram/GetReportData',
+  [ChartType.GreenTimeUtilization]:
+    '/api/v1/GreenTimeUtilization/GetReportData',
+  [ChartType.LeftTurnGapAnalysis]: '/api/v1/LeftTurnGapAnalysis/GetReportData',
+  [ChartType.PedestrianDelay]: '/api/v1/PedDelay/GetReportData',
+  [ChartType.PurduePhaseTermination]:
+    '/api/v1/PurduePhaseTermination/GetReportData',
+  [ChartType.PreemptionDetails]: '/api/v1/PreemptDetail/GetReportData',
+  [ChartType.PurdueSplitFailure]: '/api/v1/SplitFail/GetReportData',
+  [ChartType.SplitMonitor]: '/api/v1/SplitMonitor/GetReportData',
+  [ChartType.TimingAndActuation]: '/api/v1/TimingAndActuation/GetReportData',
+  [ChartType.TurningMovementCounts]:
+    '/api/v1/TurningMovementCounts/GetReportData',
+  [ChartType.WaitTime]: '/api/v1/WaitTime/GetReportData',
+  [ChartType.YellowAndRedActuations]:
+    '/api/v1/YellowRedActivations/GetReportData', // Todo: Fix spelling
+  [ChartType.RampMetering]: '/api/v1/RampMetering/GetReportData',
 }
 
 type StringBooleanMap = Record<string, boolean | string | Date>
@@ -77,7 +81,6 @@ export const getCharts = async (
   const transformedOptions = mapStringBooleansToBoolean(options)
   transformedOptions.start = dateToTimestamp(transformedOptions.start as Date)
   transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)
-
 
   const response = await reportsAxios.post(endpoint, transformedOptions)
   return transformChartData({

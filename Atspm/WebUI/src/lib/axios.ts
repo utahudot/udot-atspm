@@ -44,13 +44,13 @@ export const initializeAxiosInstances = async () => {
     )
   }
   if (env.REPORTS_URL) {
-    reportsAxios = createAxiosInstance(env.REPORTS_URL + BASE_PATH)
+    reportsAxios = createAxiosInstance(env.REPORTS_URL)
   }
   if (env.IDENTITY_URL) {
     identityAxios = createAxiosInstance(env.IDENTITY_URL + BASE_PATH)
   }
   if (env.DATA_URL) {
-    dataAxios = createAxiosInstance(env.DATA_URL + BASE_PATH)
+    dataAxios = createAxiosInstance(env.DATA_URL)
   }
   if (env.SPEED_URL) {
     speedAxios = createAxiosInstance(env.SPEED_URL + BASE_PATH)

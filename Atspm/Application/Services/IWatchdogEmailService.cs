@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Services/IWatchdogEmailService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,7 @@ namespace Utah.Udot.Atspm.Services
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> locations,
-            List<WatchDogLogEvent> logsFromPreviousDay);
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            bool rampEmail = false);
     }
 }

@@ -281,25 +281,30 @@ export const AggregateDataOptions = ({ handler }: props) => {
             gap: 2,
           }}
         >
-          <MultiSelectCheckbox
-            itemList={daysOfWeekList}
-            selectedItems={handler.selectedDays}
-            setSelectedItems={handler.changeSelectedDays}
-            header="Days"
-          />
-          <MultiSelectCheckbox
-            itemList={directionFilter}
-            selectedItems={handler.selectedDirections}
-            setSelectedItems={handler.changeSelectedDirections}
-            header="Directional Filters"
-          />
-
-          <MultiSelectCheckbox
-            itemList={movementList}
-            selectedItems={handler.selectedMovements}
-            setSelectedItems={handler.changeSelectedMovements}
-            header="Movement Filters"
-          />
+          <StyledPaper sx={{ display: 'flex' }}>
+            <MultiSelectCheckbox
+              itemList={daysOfWeekList}
+              selectedItems={handler.selectedDays}
+              setSelectedItems={handler.changeSelectedDays}
+              header="Days"
+            />
+          </StyledPaper>
+          <StyledPaper sx={{ display: 'flex' }}>
+            <MultiSelectCheckbox
+              itemList={directionFilter}
+              selectedItems={handler.selectedDirections}
+              setSelectedItems={handler.changeSelectedDirections}
+              header="Directional Filters"
+            />
+          </StyledPaper>
+          <StyledPaper sx={{ display: 'flex' }}>
+            <MultiSelectCheckbox
+              itemList={movementList}
+              selectedItems={handler.selectedMovements}
+              setSelectedItems={handler.changeSelectedMovements}
+              header="Movement Filters"
+            />
+          </StyledPaper>
         </Box>
       </Box>
       {renderAggregateChartOptions()}

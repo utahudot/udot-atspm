@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/UsageEntryOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
-            var model = builder.EntitySet<UsageEntry>("UsageEntries")
+            var model = builder.EntitySet<UsageEntry>("UsageEntry")
                 .EntityType
                 .Page(default, default);
 

@@ -21,5 +21,3 @@ export const UserRolesCell = ({ value }: CustomCellProps) => {
     </Stack>
   )
 }
-
-export type { CustomCellConfig }

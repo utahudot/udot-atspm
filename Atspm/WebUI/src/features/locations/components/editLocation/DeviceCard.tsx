@@ -1,4 +1,5 @@
 import { Device } from '@/api/config'
+import AuditBadge from '@/components/AuditInfo'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
 import CircleIcon from '@mui/icons-material/Circle'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
@@ -84,9 +85,14 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         minWidth: '400px',
         maxWidth: '400px',
         minHeight: '400px',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <Box mx={2}>
+      <Box
+        mx={2}
+        sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -202,6 +208,17 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
             <StyledLabel>Notes</StyledLabel>
           </Box>
           <Typography variant="body1">{device.notes}</Typography>
+        </Box>
+        <Box
+          sx={{
+            mt: 'auto',
+            pr: 2,
+            alignSelf: 'flex-end',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <AuditBadge obj={device} dense />
         </Box>
       </Box>
     </Card>
