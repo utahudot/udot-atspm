@@ -27,6 +27,33 @@ import type {
 
 import { reportsRequest } from '../../../lib/axios';
 
+// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+T,
+>() => T extends Y ? 1 : 2
+? A
+: B;
+
+type WritableKeys<T> = {
+[P in keyof T]-?: IfEquals<
+  { [Q in P]: T[P] },
+  { -readonly [Q in P]: T[P] },
+  P
+>;
+}[keyof T];
+
+type UnionToIntersection<U> =
+  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
+
+type Writable<T> = Pick<T, WritableKeys<T>>;
+type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
+  [P in keyof Writable<T>]: T[P] extends object
+    ? NonReadonly<NonNullable<T[P]>>
+    : T[P];
+} : DistributeReadOnlyOverUnions<T>;
+
+
 
 
 
@@ -37,14 +64,14 @@ export const getWatchdogIssueTypes = (
       
       
       return reportsRequest<unknown>(
-      {url: `/Watchdog/GetIssueTypes`, method: 'GET', signal
+      {url: `/api/v1/Watchdog/GetIssueTypes`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetWatchdogIssueTypesQueryKey = () => {
-    return [`/Watchdog/GetIssueTypes`] as const;
+    return [`/api/v1/Watchdog/GetIssueTypes`] as const;
     }
 
     
@@ -97,14 +124,14 @@ export const getWatchdogTestData = (
       
       
       return reportsRequest<WatchDogResult>(
-      {url: `/Watchdog/test`, method: 'GET', signal
+      {url: `/api/v1/Watchdog/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetWatchdogTestDataQueryKey = () => {
-    return [`/Watchdog/test`] as const;
+    return [`/api/v1/Watchdog/test`] as const;
     }
 
     
@@ -154,13 +181,13 @@ export function useGetWatchdogTestData<TData = Awaited<ReturnType<typeof getWatc
  * @summary Get report data
  */
 export const getWatchdogReportData = (
-    watchDogOptions: WatchDogOptions,
+    watchDogOptions: NonReadonly<WatchDogOptions>,
  signal?: AbortSignal
 ) => {
       
       
       return reportsRequest<WatchDogResult>(
-      {url: `/Watchdog/getReportData`, method: 'POST',
+      {url: `/api/v1/Watchdog/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: watchDogOptions, signal
     },
@@ -170,8 +197,8 @@ export const getWatchdogReportData = (
 
 
 export const getGetWatchdogReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getWatchdogReportData>>, TError,{data: WatchDogOptions}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof getWatchdogReportData>>, TError,{data: WatchDogOptions}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getWatchdogReportData>>, TError,{data: NonReadonly<WatchDogOptions>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getWatchdogReportData>>, TError,{data: NonReadonly<WatchDogOptions>}, TContext> => {
 
 const mutationKey = ['getWatchdogReportData'];
 const {mutation: mutationOptions} = options ?
@@ -183,7 +210,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getWatchdogReportData>>, {data: WatchDogOptions}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getWatchdogReportData>>, {data: NonReadonly<WatchDogOptions>}> = (props) => {
           const {data} = props ?? {};
 
           return  getWatchdogReportData(data,)
@@ -195,18 +222,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetWatchdogReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof getWatchdogReportData>>>
-    export type GetWatchdogReportDataMutationBody = WatchDogOptions
+    export type GetWatchdogReportDataMutationBody = NonReadonly<WatchDogOptions>
     export type GetWatchdogReportDataMutationError = ProblemDetails
 
     /**
  * @summary Get report data
  */
 export const useGetWatchdogReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getWatchdogReportData>>, TError,{data: WatchDogOptions}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getWatchdogReportData>>, TError,{data: NonReadonly<WatchDogOptions>}, TContext>, }
  ): UseMutationResult<
         Awaited<ReturnType<typeof getWatchdogReportData>>,
         TError,
-        {data: WatchDogOptions},
+        {data: NonReadonly<WatchDogOptions>},
         TContext
       > => {
 

@@ -67,14 +67,14 @@ export const getTurningMovementCountsTestData = (
       
       
       return reportsRequest<TurningMovementCountsResult>(
-      {url: `/TurningMovementCounts/test`, method: 'GET', signal
+      {url: `/api/v1/TurningMovementCounts/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetTurningMovementCountsTestDataQueryKey = () => {
-    return [`/TurningMovementCounts/test`] as const;
+    return [`/api/v1/TurningMovementCounts/test`] as const;
     }
 
     
@@ -130,7 +130,7 @@ export const getTurningMovementCountsReportData = (
       
       
       return reportsRequest<TurningMovementCountsResult>(
-      {url: `/TurningMovementCounts/getReportData`, method: 'POST',
+      {url: `/api/v1/TurningMovementCounts/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: turningMovementCountsOptions, signal
     },

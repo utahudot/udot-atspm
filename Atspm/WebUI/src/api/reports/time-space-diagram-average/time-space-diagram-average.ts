@@ -20,6 +20,7 @@ import type {
 } from 'react-query';
 
 import type {
+  CompressedDataBase,
   ProblemDetails,
   TimeSpaceDiagramAverageOptions,
   TimeSpaceDiagramAverageResult
@@ -40,14 +41,14 @@ export const getTimeSpaceDiagramAverageTestData = (
       
       
       return reportsRequest<TimeSpaceDiagramAverageResult[]>(
-      {url: `/TimeSpaceDiagramAverage/test`, method: 'GET', signal
+      {url: `/api/v1/TimeSpaceDiagramAverage/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetTimeSpaceDiagramAverageTestDataQueryKey = () => {
-    return [`/TimeSpaceDiagramAverage/test`] as const;
+    return [`/api/v1/TimeSpaceDiagramAverage/test`] as const;
     }
 
     
@@ -102,8 +103,8 @@ export const getTimeSpaceDiagramAverageReportData = (
 ) => {
       
       
-      return reportsRequest<TimeSpaceDiagramAverageResult[]>(
-      {url: `/TimeSpaceDiagramAverage/getReportData`, method: 'POST',
+      return reportsRequest<CompressedDataBase[]>(
+      {url: `/api/v1/TimeSpaceDiagramAverage/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: timeSpaceDiagramAverageOptions, signal
     },

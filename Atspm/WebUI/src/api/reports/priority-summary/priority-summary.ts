@@ -40,14 +40,14 @@ export const getPrioritySummaryTestData = (
       
       
       return reportsRequest<PrioritySummaryResult>(
-      {url: `/PrioritySummary/test`, method: 'GET', signal
+      {url: `/api/v1/PrioritySummary/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetPrioritySummaryTestDataQueryKey = () => {
-    return [`/PrioritySummary/test`] as const;
+    return [`/api/v1/PrioritySummary/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getPrioritySummaryReportData = (
       
       
       return reportsRequest<PrioritySummaryResult>(
-      {url: `/PrioritySummary/getReportData`, method: 'POST',
+      {url: `/api/v1/PrioritySummary/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: prioritySummaryOptions, signal
     },

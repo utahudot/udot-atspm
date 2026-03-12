@@ -40,14 +40,14 @@ export const getPreemptDetailTestData = (
       
       
       return reportsRequest<PreemptDetailResult>(
-      {url: `/PreemptDetail/test`, method: 'GET', signal
+      {url: `/api/v1/PreemptDetail/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetPreemptDetailTestDataQueryKey = () => {
-    return [`/PreemptDetail/test`] as const;
+    return [`/api/v1/PreemptDetail/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getPreemptDetailReportData = (
       
       
       return reportsRequest<PreemptDetailResult>(
-      {url: `/PreemptDetail/getReportData`, method: 'POST',
+      {url: `/api/v1/PreemptDetail/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: preemptDetailOptions, signal
     },

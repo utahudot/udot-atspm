@@ -27,33 +27,6 @@ import type {
 
 import { reportsRequest } from '../../../lib/axios';
 
-// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
-type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
-T,
->() => T extends Y ? 1 : 2
-? A
-: B;
-
-type WritableKeys<T> = {
-[P in keyof T]-?: IfEquals<
-  { [Q in P]: T[P] },
-  { -readonly [Q in P]: T[P] },
-  P
->;
-}[keyof T];
-
-type UnionToIntersection<U> =
-  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
-type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
-
-type Writable<T> = Pick<T, WritableKeys<T>>;
-type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
-  [P in keyof Writable<T>]: T[P] extends object
-    ? NonReadonly<NonNullable<T[P]>>
-    : T[P];
-} : DistributeReadOnlyOverUnions<T>;
-
-
 
 
 
@@ -67,14 +40,14 @@ export const getApproachVolumeTestData = (
       
       
       return reportsRequest<ApproachVolumeResult[]>(
-      {url: `/ApproachVolume/test`, method: 'GET', signal
+      {url: `/api/v1/ApproachVolume/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetApproachVolumeTestDataQueryKey = () => {
-    return [`/ApproachVolume/test`] as const;
+    return [`/api/v1/ApproachVolume/test`] as const;
     }
 
     
@@ -124,13 +97,13 @@ export function useGetApproachVolumeTestData<TData = Awaited<ReturnType<typeof g
  * @summary Get report data
  */
 export const getApproachVolumeReportData = (
-    approachVolumeOptions: NonReadonly<ApproachVolumeOptions>,
+    approachVolumeOptions: ApproachVolumeOptions,
  signal?: AbortSignal
 ) => {
       
       
       return reportsRequest<ApproachVolumeResult[]>(
-      {url: `/ApproachVolume/getReportData`, method: 'POST',
+      {url: `/api/v1/ApproachVolume/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: approachVolumeOptions, signal
     },
@@ -140,8 +113,8 @@ export const getApproachVolumeReportData = (
 
 
 export const getGetApproachVolumeReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachVolumeReportData>>, TError,{data: NonReadonly<ApproachVolumeOptions>}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof getApproachVolumeReportData>>, TError,{data: NonReadonly<ApproachVolumeOptions>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachVolumeReportData>>, TError,{data: ApproachVolumeOptions}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getApproachVolumeReportData>>, TError,{data: ApproachVolumeOptions}, TContext> => {
 
 const mutationKey = ['getApproachVolumeReportData'];
 const {mutation: mutationOptions} = options ?
@@ -153,7 +126,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApproachVolumeReportData>>, {data: NonReadonly<ApproachVolumeOptions>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApproachVolumeReportData>>, {data: ApproachVolumeOptions}> = (props) => {
           const {data} = props ?? {};
 
           return  getApproachVolumeReportData(data,)
@@ -165,18 +138,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetApproachVolumeReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof getApproachVolumeReportData>>>
-    export type GetApproachVolumeReportDataMutationBody = NonReadonly<ApproachVolumeOptions>
+    export type GetApproachVolumeReportDataMutationBody = ApproachVolumeOptions
     export type GetApproachVolumeReportDataMutationError = ProblemDetails
 
     /**
  * @summary Get report data
  */
 export const useGetApproachVolumeReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachVolumeReportData>>, TError,{data: NonReadonly<ApproachVolumeOptions>}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApproachVolumeReportData>>, TError,{data: ApproachVolumeOptions}, TContext>, }
  ): UseMutationResult<
         Awaited<ReturnType<typeof getApproachVolumeReportData>>,
         TError,
-        {data: NonReadonly<ApproachVolumeOptions>},
+        {data: ApproachVolumeOptions},
         TContext
       > => {
 

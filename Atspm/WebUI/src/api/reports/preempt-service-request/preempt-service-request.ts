@@ -40,14 +40,14 @@ export const getPreemptServiceRequestTestData = (
       
       
       return reportsRequest<PreemptServiceRequestResult>(
-      {url: `/PreemptServiceRequest/test`, method: 'GET', signal
+      {url: `/api/v1/PreemptServiceRequest/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetPreemptServiceRequestTestDataQueryKey = () => {
-    return [`/PreemptServiceRequest/test`] as const;
+    return [`/api/v1/PreemptServiceRequest/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getPreemptServiceRequestReportData = (
       
       
       return reportsRequest<PreemptServiceRequestResult>(
-      {url: `/PreemptServiceRequest/getReportData`, method: 'POST',
+      {url: `/api/v1/PreemptServiceRequest/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: preemptServiceRequestOptions, signal
     },

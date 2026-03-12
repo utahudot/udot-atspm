@@ -31,58 +31,58 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 /**
- * @summary Get example data for testing
+ * @summary Retrieves the available derived data types defined in the system.
  */
-export const getAggregationTestData = (
+export const getAggregationDataTypes = (
     
  signal?: AbortSignal
 ) => {
       
       
       return reportsRequest<AggregationResult[]>(
-      {url: `/Aggregation/test`, method: 'GET', signal
+      {url: `/api/v1/Aggregation/test`, method: 'GET', signal
     },
       );
     }
   
 
-export const getGetAggregationTestDataQueryKey = () => {
-    return [`/Aggregation/test`] as const;
+export const getGetAggregationDataTypesQueryKey = () => {
+    return [`/api/v1/Aggregation/test`] as const;
     }
 
     
-export const getGetAggregationTestDataQueryOptions = <TData = Awaited<ReturnType<typeof getAggregationTestData>>, TError = ProblemDetails>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAggregationTestData>>, TError, TData>, }
+export const getGetAggregationDataTypesQueryOptions = <TData = Awaited<ReturnType<typeof getAggregationDataTypes>>, TError = ProblemDetails>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAggregationDataTypes>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetAggregationTestDataQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAggregationDataTypesQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAggregationTestData>>> = ({ signal }) => getAggregationTestData(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAggregationDataTypes>>> = ({ signal }) => getAggregationDataTypes(signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAggregationTestData>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAggregationDataTypes>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetAggregationTestDataQueryResult = NonNullable<Awaited<ReturnType<typeof getAggregationTestData>>>
-export type GetAggregationTestDataQueryError = ProblemDetails
+export type GetAggregationDataTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getAggregationDataTypes>>>
+export type GetAggregationDataTypesQueryError = ProblemDetails
 
 
 /**
- * @summary Get example data for testing
+ * @summary Retrieves the available derived data types defined in the system.
  */
 
-export function useGetAggregationTestData<TData = Awaited<ReturnType<typeof getAggregationTestData>>, TError = ProblemDetails>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAggregationTestData>>, TError, TData>, }
+export function useGetAggregationDataTypes<TData = Awaited<ReturnType<typeof getAggregationDataTypes>>, TError = ProblemDetails>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAggregationDataTypes>>, TError, TData>, }
   
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetAggregationTestDataQueryOptions(options)
+  const queryOptions = getGetAggregationDataTypesQueryOptions(options)
 
   const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -103,7 +103,7 @@ export const getAggregationReportData = (
       
       
       return reportsRequest<AggregationResult[]>(
-      {url: `/Aggregation/getReportData`, method: 'POST',
+      {url: `/api/v1/Aggregation/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: aggregationOptions, signal
     },

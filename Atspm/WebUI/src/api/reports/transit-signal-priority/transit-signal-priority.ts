@@ -40,14 +40,14 @@ export const getTransitSignalPriorityTestData = (
       
       
       return reportsRequest<TransitSignalPriorityResult[]>(
-      {url: `/TransitSignalPriority/test`, method: 'GET', signal
+      {url: `/api/v1/TransitSignalPriority/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetTransitSignalPriorityTestDataQueryKey = () => {
-    return [`/TransitSignalPriority/test`] as const;
+    return [`/api/v1/TransitSignalPriority/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getTransitSignalPriorityReportData = (
       
       
       return reportsRequest<TransitSignalPriorityResult[]>(
-      {url: `/TransitSignalPriority/getReportData`, method: 'POST',
+      {url: `/api/v1/TransitSignalPriority/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: transitSignalPriorityOptions, signal
     },

@@ -11,23 +11,17 @@
     "license": {
       "name": "Apache",
       "url": "http://www.apache.org/licenses/LICENSE-2."
-      "name": "Apache",
-      "url": "http://www.apache.org/licenses/LICENSE-2."
     },
     "version": "1.0"
   },
-  "servers": [
-    {
-      "url": "/report"
-    }
-  ],
+
   "servers": [
     {
       "url": "/report"
     }
   ],
   "paths": {
-    "/Aggregation/test": {
+    "/api/v1/Aggregation/test": {
       "get": {
         "tags": ["Aggregation"],
         "summary": "Retrieves the available derived data types defined in the system.",
@@ -59,7 +53,7 @@
         }
       }
     },
-    "/Aggregation/getReportData": {
+    "/api/v1/Aggregation/getReportData": {
       "post": {
         "tags": ["Aggregation"],
         "summary": "Get report data",
@@ -121,7 +115,7 @@
         }
       }
     },
-    "/ApproachDelay/test": {
+    "/api/v1/ApproachDelay/test": {
       "get": {
         "tags": ["ApproachDelay"],
         "summary": "Get example data for testing",
@@ -153,7 +147,7 @@
         }
       }
     },
-    "/ApproachDelay/getReportData": {
+    "/api/v1/ApproachDelay/getReportData": {
       "post": {
         "tags": ["ApproachDelay"],
         "summary": "Get report data",
@@ -215,7 +209,7 @@
         }
       }
     },
-    "/ApproachSpeed/test": {
+    "/api/v1/ApproachSpeed/test": {
       "get": {
         "tags": ["ApproachSpeed"],
         "summary": "Get example data for testing",
@@ -247,7 +241,7 @@
         }
       }
     },
-    "/ApproachSpeed/getReportData": {
+    "/api/v1/ApproachSpeed/getReportData": {
       "post": {
         "tags": ["ApproachSpeed"],
         "summary": "Get report data",
@@ -309,7 +303,7 @@
         }
       }
     },
-    "/ApproachVolume/test": {
+    "/api/v1/ApproachVolume/test": {
       "get": {
         "tags": ["ApproachVolume"],
         "summary": "Get example data for testing",
@@ -341,7 +335,7 @@
         }
       }
     },
-    "/ApproachVolume/getReportData": {
+    "/api/v1/ApproachVolume/getReportData": {
       "post": {
         "tags": ["ApproachVolume"],
         "summary": "Get report data",
@@ -403,7 +397,7 @@
         }
       }
     },
-    "/ArrivalOnRed/test": {
+    "/api/v1/ArrivalOnRed/test": {
       "get": {
         "tags": ["ArrivalOnRed"],
         "summary": "Get example data for testing",
@@ -435,7 +429,7 @@
         }
       }
     },
-    "/ArrivalOnRed/getReportData": {
+    "/api/v1/ArrivalOnRed/getReportData": {
       "post": {
         "tags": ["ArrivalOnRed"],
         "summary": "Get report data",
@@ -497,7 +491,7 @@
         }
       }
     },
-    "/GreenTimeUtilization/test": {
+    "/api/v1/GreenTimeUtilization/test": {
       "get": {
         "tags": ["GreenTimeUtilization"],
         "summary": "Get example data for testing",
@@ -529,7 +523,7 @@
         }
       }
     },
-    "/GreenTimeUtilization/getReportData": {
+    "/api/v1/GreenTimeUtilization/getReportData": {
       "post": {
         "tags": ["GreenTimeUtilization"],
         "summary": "Get report data",
@@ -591,7 +585,7 @@
         }
       }
     },
-    "/LeftTurnGapAnalysis/test": {
+    "/api/v1/LeftTurnGapAnalysis/test": {
       "get": {
         "tags": ["LeftTurnGapAnalysis"],
         "summary": "Get example data for testing",
@@ -623,7 +617,7 @@
         }
       }
     },
-    "/LeftTurnGapAnalysis/getReportData": {
+    "/api/v1/LeftTurnGapAnalysis/getReportData": {
       "post": {
         "tags": ["LeftTurnGapAnalysis"],
         "summary": "Get report data",
@@ -685,7 +679,7 @@
         }
       }
     },
-    "/LeftTurnGapDuration/test": {
+    "/api/v1/LeftTurnGapDuration/test": {
       "get": {
         "tags": ["LeftTurnGapDuration"],
         "summary": "Get example data for testing",
@@ -714,7 +708,7 @@
         }
       }
     },
-    "/LeftTurnGapDuration/getReportData": {
+    "/api/v1/LeftTurnGapDuration/getReportData": {
       "post": {
         "tags": ["LeftTurnGapDuration"],
         "summary": "Get report data",
@@ -773,7 +767,7 @@
         }
       }
     },
-    "/LeftTurnGapReport/test": {
+    "/api/v1/LeftTurnGapReport/test": {
       "get": {
         "tags": ["LeftTurnGapReport"],
         "summary": "Get example data for testing",
@@ -805,7 +799,7 @@
         }
       }
     },
-    "/LeftTurnGapReport/getReportData": {
+    "/api/v1/LeftTurnGapReport/getReportData": {
       "post": {
         "tags": ["LeftTurnGapReport"],
         "summary": "Get report data",
@@ -867,7 +861,7 @@
         }
       }
     },
-    "/LeftTurnGapReportDataCheck/test": {
+    "/api/v1/LeftTurnGapReportDataCheck/test": {
       "get": {
         "tags": ["LeftTurnGapReportDataCheck"],
         "summary": "Get example data for testing",
@@ -896,7 +890,7 @@
         }
       }
     },
-    "/LeftTurnGapReportDataCheck/getReportData": {
+    "/api/v1/LeftTurnGapReportDataCheck/getReportData": {
       "post": {
         "tags": ["LeftTurnGapReportDataCheck"],
         "summary": "Get report data",
@@ -955,7 +949,7 @@
         }
       }
     },
-    "/LeftTurnPeakHours/test": {
+    "/api/v1/LeftTurnPeakHours/test": {
       "get": {
         "tags": ["LeftTurnPeakHours"],
         "summary": "Get example data for testing",
@@ -984,7 +978,7 @@
         }
       }
     },
-    "/LeftTurnPeakHours/getReportData": {
+    "/api/v1/LeftTurnPeakHours/getReportData": {
       "post": {
         "tags": ["LeftTurnPeakHours"],
         "summary": "Get report data",
@@ -1043,7 +1037,7 @@
         }
       }
     },
-    "/LeftTurnPedActuation/test": {
+    "/api/v1/LeftTurnPedActuation/test": {
       "get": {
         "tags": ["LeftTurnPedActuation"],
         "summary": "Get example data for testing",
@@ -1072,7 +1066,7 @@
         }
       }
     },
-    "/LeftTurnPedActuation/getReportData": {
+    "/api/v1/LeftTurnPedActuation/getReportData": {
       "post": {
         "tags": ["LeftTurnPedActuation"],
         "summary": "Get report data",
@@ -1131,7 +1125,7 @@
         }
       }
     },
-    "/LeftTurnSplitFail/test": {
+    "/api/v1/LeftTurnSplitFail/test": {
       "get": {
         "tags": ["LeftTurnSplitFail"],
         "summary": "Get example data for testing",
@@ -1160,7 +1154,7 @@
         }
       }
     },
-    "/LeftTurnSplitFail/getReportData": {
+    "/api/v1/LeftTurnSplitFail/getReportData": {
       "post": {
         "tags": ["LeftTurnSplitFail"],
         "summary": "Get report data",
@@ -1219,7 +1213,7 @@
         }
       }
     },
-    "/LeftTurnVolume/test": {
+    "/api/v1/LeftTurnVolume/test": {
       "get": {
         "tags": ["LeftTurnVolume"],
         "summary": "Get example data for testing",
@@ -1248,7 +1242,7 @@
         }
       }
     },
-    "/LeftTurnVolume/getReportData": {
+    "/api/v1/LeftTurnVolume/getReportData": {
       "post": {
         "tags": ["LeftTurnVolume"],
         "summary": "Get report data",
@@ -1307,7 +1301,7 @@
         }
       }
     },
-    "/LinkPivot/getPcdData": {
+    "/api/v1/LinkPivot/getPcdData": {
       "post": {
         "tags": ["LinkPivot"],
         "operationId": "GetLinkPivotPcdData",
@@ -1364,7 +1358,7 @@
         }
       }
     },
-    "/LinkPivot/test": {
+    "/api/v1/LinkPivot/test": {
       "get": {
         "tags": ["LinkPivot"],
         "summary": "Get example data for testing",
@@ -1393,7 +1387,7 @@
         }
       }
     },
-    "/LinkPivot/getReportData": {
+    "/api/v1/LinkPivot/getReportData": {
       "post": {
         "tags": ["LinkPivot"],
         "summary": "Get report data",
@@ -1452,7 +1446,7 @@
         }
       }
     },
-    "/PedDelay/test": {
+    "/api/v1/PedDelay/test": {
       "get": {
         "tags": ["PedDelay"],
         "summary": "Get example data for testing",
@@ -1484,7 +1478,7 @@
         }
       }
     },
-    "/PedDelay/getReportData": {
+    "/api/v1/PedDelay/getReportData": {
       "post": {
         "tags": ["PedDelay"],
         "summary": "Get report data",
@@ -1546,7 +1540,7 @@
         }
       }
     },
-    "/PreemptDetail/test": {
+    "/api/v1/PreemptDetail/test": {
       "get": {
         "tags": ["PreemptDetail"],
         "summary": "Get example data for testing",
@@ -1575,7 +1569,7 @@
         }
       }
     },
-    "/PreemptDetail/getReportData": {
+    "/api/v1/PreemptDetail/getReportData": {
       "post": {
         "tags": ["PreemptDetail"],
         "summary": "Get report data",
@@ -1634,7 +1628,7 @@
         }
       }
     },
-    "/PreemptService/test": {
+    "/api/v1/PreemptService/test": {
       "get": {
         "tags": ["PreemptService"],
         "summary": "Get example data for testing",
@@ -1663,7 +1657,7 @@
         }
       }
     },
-    "/PreemptService/getReportData": {
+    "/api/v1/PreemptService/getReportData": {
       "post": {
         "tags": ["PreemptService"],
         "summary": "Get report data",
@@ -1722,7 +1716,7 @@
         }
       }
     },
-    "/PreemptServiceRequest/test": {
+    "/api/v1/PreemptServiceRequest/test": {
       "get": {
         "tags": ["PreemptServiceRequest"],
         "summary": "Get example data for testing",
@@ -1751,7 +1745,7 @@
         }
       }
     },
-    "/PreemptServiceRequest/getReportData": {
+    "/api/v1/PreemptServiceRequest/getReportData": {
       "post": {
         "tags": ["PreemptServiceRequest"],
         "summary": "Get report data",
@@ -1810,7 +1804,7 @@
         }
       }
     },
-    "/PriorityDetails/test": {
+    "/api/v1/PriorityDetails/test": {
       "get": {
         "tags": ["PriorityDetails"],
         "summary": "Get example data for testing",
@@ -1842,7 +1836,7 @@
         }
       }
     },
-    "/PriorityDetails/getReportData": {
+    "/api/v1/PriorityDetails/getReportData": {
       "post": {
         "tags": ["PriorityDetails"],
         "summary": "Get report data",
@@ -1904,7 +1898,7 @@
         }
       }
     },
-    "/PrioritySummary/test": {
+    "/api/v1/PrioritySummary/test": {
       "get": {
         "tags": ["PrioritySummary"],
         "summary": "Get example data for testing",
@@ -1933,7 +1927,7 @@
         }
       }
     },
-    "/PrioritySummary/getReportData": {
+    "/api/v1/PrioritySummary/getReportData": {
       "post": {
         "tags": ["PrioritySummary"],
         "summary": "Get report data",
@@ -1992,7 +1986,7 @@
         }
       }
     },
-    "/PurdueCoordinationDiagram/test": {
+    "/api/v1/PurdueCoordinationDiagram/test": {
       "get": {
         "tags": ["PurdueCoordinationDiagram"],
         "summary": "Get example data for testing",
@@ -2024,7 +2018,7 @@
         }
       }
     },
-    "/PurdueCoordinationDiagram/getReportData": {
+    "/api/v1/PurdueCoordinationDiagram/getReportData": {
       "post": {
         "tags": ["PurdueCoordinationDiagram"],
         "summary": "Get report data",
@@ -2086,7 +2080,7 @@
         }
       }
     },
-    "/PurduePhaseTermination/test": {
+    "/api/v1/PurduePhaseTermination/test": {
       "get": {
         "tags": ["PurduePhaseTermination"],
         "summary": "Get example data for testing",
@@ -2115,7 +2109,7 @@
         }
       }
     },
-    "/PurduePhaseTermination/getReportData": {
+    "/api/v1/PurduePhaseTermination/getReportData": {
       "post": {
         "tags": ["PurduePhaseTermination"],
         "summary": "Get report data",
@@ -2174,7 +2168,7 @@
         }
       }
     },
-    "/RampMetering/test": {
+    "/api/v1/RampMetering/test": {
       "get": {
         "tags": ["EventLog"],
         "summary": "Retrieves the available derived data types defined in the system.",
@@ -2203,7 +2197,7 @@
         }
       }
     },
-    "/RampMetering/getReportData": {
+    "/api/v1/RampMetering/getReportData": {
       "post": {
         "tags": ["RampMetering"],
         "summary": "Get report data",
@@ -2262,7 +2256,7 @@
         }
       }
     },
-    "/SplitFail/test": {
+    "/api/v1/SplitFail/test": {
       "get": {
         "tags": ["SplitFail"],
         "summary": "Get example data for testing",
@@ -2294,7 +2288,7 @@
         }
       }
     },
-    "/SplitFail/getReportData": {
+    "/api/v1/SplitFail/getReportData": {
       "post": {
         "tags": ["SplitFail"],
         "summary": "Get report data",
@@ -2356,7 +2350,7 @@
         }
       }
     },
-    "/SplitMonitor/test": {
+    "/api/v1/SplitMonitor/test": {
       "get": {
         "tags": ["SplitMonitor"],
         "summary": "Get example data for testing",
@@ -2388,7 +2382,7 @@
         }
       }
     },
-    "/SplitMonitor/getReportData": {
+    "/api/v1/SplitMonitor/getReportData": {
       "post": {
         "tags": ["SplitMonitor"],
         "summary": "Get report data",
@@ -2450,7 +2444,7 @@
         }
       }
     },
-    "/TimeSpaceDiagram/test": {
+    "/api/v1/TimeSpaceDiagram/test": {
       "get": {
         "tags": ["TimeSpaceDiagram"],
         "summary": "Get example data for testing",
@@ -2482,7 +2476,7 @@
         }
       }
     },
-    "/TimeSpaceDiagram/getReportData": {
+    "/api/v1/TimeSpaceDiagram/getReportData": {
       "post": {
         "tags": ["TimeSpaceDiagram"],
         "summary": "Get report data",
@@ -2544,7 +2538,7 @@
         }
       }
     },
-    "/TimeSpaceDiagramAverage/test": {
+    "/api/v1/TimeSpaceDiagramAverage/test": {
       "get": {
         "tags": ["TimeSpaceDiagramAverage"],
         "summary": "Get example data for testing",
@@ -2576,7 +2570,7 @@
         }
       }
     },
-    "/TimeSpaceDiagramAverage/getReportData": {
+    "/api/v1/TimeSpaceDiagramAverage/getReportData": {
       "post": {
         "tags": ["TimeSpaceDiagramAverage"],
         "summary": "Get report data",
@@ -2638,7 +2632,7 @@
         }
       }
     },
-    "/TimingAndActuation/test": {
+    "/api/v1/TimingAndActuation/test": {
       "get": {
         "tags": ["TimingAndActuation"],
         "summary": "Get example data for testing",
@@ -2670,7 +2664,7 @@
         }
       }
     },
-    "/TimingAndActuation/getReportData": {
+    "/api/v1/TimingAndActuation/getReportData": {
       "post": {
         "tags": ["TimingAndActuation"],
         "summary": "Get report data",
@@ -2732,7 +2726,7 @@
         }
       }
     },
-    "/TransitSignalPriority/test": {
+    "/api/v1/TransitSignalPriority/test": {
       "get": {
         "tags": ["TransitSignalPriority"],
         "summary": "Get example data for testing",
@@ -2764,7 +2758,7 @@
         }
       }
     },
-    "/TransitSignalPriority/getReportData": {
+    "/api/v1/TransitSignalPriority/getReportData": {
       "post": {
         "tags": ["TransitSignalPriority"],
         "summary": "Get report data",
@@ -2826,7 +2820,7 @@
         }
       }
     },
-    "/TurningMovementCounts/test": {
+    "/api/v1/TurningMovementCounts/test": {
       "get": {
         "tags": ["TurningMovementCounts"],
         "summary": "Get example data for testing",
@@ -2855,7 +2849,7 @@
         }
       }
     },
-    "/TurningMovementCounts/getReportData": {
+    "/api/v1/TurningMovementCounts/getReportData": {
       "post": {
         "tags": ["TurningMovementCounts"],
         "summary": "Get report data",
@@ -2914,7 +2908,7 @@
         }
       }
     },
-    "/WaitTime/test": {
+    "/api/v1/WaitTime/test": {
       "get": {
         "tags": ["WaitTime"],
         "summary": "Get example data for testing",
@@ -2946,7 +2940,7 @@
         }
       }
     },
-    "/WaitTime/getReportData": {
+    "/api/v1/WaitTime/getReportData": {
       "post": {
         "tags": ["WaitTime"],
         "summary": "Get report data",
@@ -3008,7 +3002,7 @@
         }
       }
     },
-    "/Watchdog/GetIssueTypes": {
+    "/api/v1/Watchdog/GetIssueTypes": {
       "get": {
         "tags": ["Watchdog"],
         "operationId": "GetWatchdogIssueTypes",
@@ -3026,7 +3020,7 @@
         }
       }
     },
-    "/Watchdog/test": {
+    "/api/v1/Watchdog/test": {
       "get": {
         "tags": ["Watchdog"],
         "summary": "Get example data for testing",
@@ -3055,7 +3049,7 @@
         }
       }
     },
-    "/Watchdog/getReportData": {
+    "/api/v1/Watchdog/getReportData": {
       "post": {
         "tags": ["Watchdog"],
         "summary": "Get report data",
@@ -3114,7 +3108,7 @@
         }
       }
     },
-    "/WatchDogDashboard/getDashboardGroup": {
+    "/api/v1/WatchDogDashboard/getDashboardGroup": {
       "post": {
         "tags": ["WatchDogDashboard"],
         "operationId": "GetWatchDogDashboardDashboardGroup",
@@ -3171,7 +3165,7 @@
         }
       }
     },
-    "/YellowRedActivations/test": {
+    "/api/v1/YellowRedActivations/test": {
       "get": {
         "tags": ["YellowRedActivations"],
         "summary": "Get example data for testing",
@@ -3203,7 +3197,7 @@
         }
       }
     },
-    "/YellowRedActivations/getReportData": {
+    "/api/v1/YellowRedActivations/getReportData": {
       "post": {
         "tags": ["YellowRedActivations"],
         "summary": "Get report data",

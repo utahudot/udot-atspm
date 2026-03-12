@@ -6,10 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 import {
-  faker
-} from '@faker-js/faker';
-
-import {
   HttpResponse,
   delay,
   http
@@ -20,13 +16,13 @@ import type {
 } from '../report-api.schemas';
 
 
-export const getGetLeftTurnPeakHoursTestDataResponseMock = (overrideResponse: Partial< PeakHourResult > = {}): PeakHourResult => ({amStartHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), amEndHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), amStartMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), amEndMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmStartHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmEndHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmStartMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmEndMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
+export const getGetLeftTurnPeakHoursTestDataResponseMock = (): PeakHourResult => ({})
 
-export const getGetLeftTurnPeakHoursReportDataResponseMock = (overrideResponse: Partial< PeakHourResult > = {}): PeakHourResult => ({amStartHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), amEndHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), amStartMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), amEndMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmStartHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmEndHour: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmStartMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), pmEndMinute: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
+export const getGetLeftTurnPeakHoursReportDataResponseMock = (): PeakHourResult => ({})
 
 
 export const getGetLeftTurnPeakHoursTestDataMockHandler = (overrideResponse?: PeakHourResult | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PeakHourResult> | PeakHourResult)) => {
-  return http.get('*/LeftTurnPeakHours/test', async (info) => {await delay(1000);
+  return http.get('*/api/v1/LeftTurnPeakHours/test', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -38,7 +34,7 @@ export const getGetLeftTurnPeakHoursTestDataMockHandler = (overrideResponse?: Pe
 }
 
 export const getGetLeftTurnPeakHoursReportDataMockHandler = (overrideResponse?: PeakHourResult | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<PeakHourResult> | PeakHourResult)) => {
-  return http.post('*/LeftTurnPeakHours/getReportData', async (info) => {await delay(1000);
+  return http.post('*/api/v1/LeftTurnPeakHours/getReportData', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 

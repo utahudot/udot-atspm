@@ -40,14 +40,14 @@ export const getLeftTurnPedActuationTestData = (
       
       
       return reportsRequest<PedActuationResult>(
-      {url: `/LeftTurnPedActuation/test`, method: 'GET', signal
+      {url: `/api/v1/LeftTurnPedActuation/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetLeftTurnPedActuationTestDataQueryKey = () => {
-    return [`/LeftTurnPedActuation/test`] as const;
+    return [`/api/v1/LeftTurnPedActuation/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getLeftTurnPedActuationReportData = (
       
       
       return reportsRequest<PedActuationResult>(
-      {url: `/LeftTurnPedActuation/getReportData`, method: 'POST',
+      {url: `/api/v1/LeftTurnPedActuation/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: pedActuationOptions, signal
     },

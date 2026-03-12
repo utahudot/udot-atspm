@@ -40,14 +40,14 @@ export const getArrivalOnRedTestData = (
       
       
       return reportsRequest<ArrivalOnRedResult[]>(
-      {url: `/ArrivalOnRed/test`, method: 'GET', signal
+      {url: `/api/v1/ArrivalOnRed/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetArrivalOnRedTestDataQueryKey = () => {
-    return [`/ArrivalOnRed/test`] as const;
+    return [`/api/v1/ArrivalOnRed/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getArrivalOnRedReportData = (
       
       
       return reportsRequest<ArrivalOnRedResult[]>(
-      {url: `/ArrivalOnRed/getReportData`, method: 'POST',
+      {url: `/api/v1/ArrivalOnRed/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: arrivalOnRedOptions, signal
     },

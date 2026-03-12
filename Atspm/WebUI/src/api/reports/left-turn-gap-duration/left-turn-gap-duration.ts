@@ -40,14 +40,14 @@ export const getLeftTurnGapDurationTestData = (
       
       
       return reportsRequest<GapDurationResult>(
-      {url: `/LeftTurnGapDuration/test`, method: 'GET', signal
+      {url: `/api/v1/LeftTurnGapDuration/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetLeftTurnGapDurationTestDataQueryKey = () => {
-    return [`/LeftTurnGapDuration/test`] as const;
+    return [`/api/v1/LeftTurnGapDuration/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getLeftTurnGapDurationReportData = (
       
       
       return reportsRequest<GapDurationResult>(
-      {url: `/LeftTurnGapDuration/getReportData`, method: 'POST',
+      {url: `/api/v1/LeftTurnGapDuration/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: gapDurationOptions, signal
     },

@@ -6,10 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 import {
-  faker
-} from '@faker-js/faker';
-
-import {
   HttpResponse,
   delay,
   http
@@ -20,17 +16,13 @@ import type {
 } from '../report-api.schemas';
 
 
-export const getGetLeftTurnVolumeTestDataResponseMock = (overrideResponse: Partial< VolumeResult > = {}): VolumeResult => ({opposingLanes: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), crossProductReview: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), decisionBoundariesReview: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), leftTurnVolume: faker.helpers.arrayElement([faker.number.float(), undefined]), opposingThroughVolume: faker.helpers.arrayElement([faker.number.float(), undefined]), crossProductValue: faker.helpers.arrayElement([faker.number.float(), undefined]), calculatedVolumeBoundary: faker.helpers.arrayElement([faker.number.float(), undefined]), demandList: faker.helpers.arrayElement([{
-        [faker.string.alphanumeric(5)]: faker.number.float()
-      }, undefined]), direction: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), opposingDirection: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), ...overrideResponse})
+export const getGetLeftTurnVolumeTestDataResponseMock = (): VolumeResult => ({})
 
-export const getGetLeftTurnVolumeReportDataResponseMock = (overrideResponse: Partial< VolumeResult > = {}): VolumeResult => ({opposingLanes: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), crossProductReview: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), decisionBoundariesReview: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), leftTurnVolume: faker.helpers.arrayElement([faker.number.float(), undefined]), opposingThroughVolume: faker.helpers.arrayElement([faker.number.float(), undefined]), crossProductValue: faker.helpers.arrayElement([faker.number.float(), undefined]), calculatedVolumeBoundary: faker.helpers.arrayElement([faker.number.float(), undefined]), demandList: faker.helpers.arrayElement([{
-        [faker.string.alphanumeric(5)]: faker.number.float()
-      }, undefined]), direction: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), opposingDirection: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), ...overrideResponse})
+export const getGetLeftTurnVolumeReportDataResponseMock = (): VolumeResult => ({})
 
 
 export const getGetLeftTurnVolumeTestDataMockHandler = (overrideResponse?: VolumeResult | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<VolumeResult> | VolumeResult)) => {
-  return http.get('*/LeftTurnVolume/test', async (info) => {await delay(1000);
+  return http.get('*/api/v1/LeftTurnVolume/test', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -42,7 +34,7 @@ export const getGetLeftTurnVolumeTestDataMockHandler = (overrideResponse?: Volum
 }
 
 export const getGetLeftTurnVolumeReportDataMockHandler = (overrideResponse?: VolumeResult | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<VolumeResult> | VolumeResult)) => {
-  return http.post('*/LeftTurnVolume/getReportData', async (info) => {await delay(1000);
+  return http.post('*/api/v1/LeftTurnVolume/getReportData', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 

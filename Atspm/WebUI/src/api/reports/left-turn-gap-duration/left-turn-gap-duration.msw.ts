@@ -30,7 +30,7 @@ export const getGetLeftTurnGapDurationReportDataResponseMock = (overrideResponse
 
 
 export const getGetLeftTurnGapDurationTestDataMockHandler = (overrideResponse?: GapDurationResult | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<GapDurationResult> | GapDurationResult)) => {
-  return http.get('*/LeftTurnGapDuration/test', async (info) => {await delay(1000);
+  return http.get('*/api/v1/LeftTurnGapDuration/test', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -42,7 +42,7 @@ export const getGetLeftTurnGapDurationTestDataMockHandler = (overrideResponse?: 
 }
 
 export const getGetLeftTurnGapDurationReportDataMockHandler = (overrideResponse?: GapDurationResult | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<GapDurationResult> | GapDurationResult)) => {
-  return http.post('*/LeftTurnGapDuration/getReportData', async (info) => {await delay(1000);
+  return http.post('*/api/v1/LeftTurnGapDuration/getReportData', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 

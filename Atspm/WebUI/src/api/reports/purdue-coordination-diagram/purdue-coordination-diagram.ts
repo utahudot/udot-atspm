@@ -40,14 +40,14 @@ export const getPurdueCoordinationDiagramTestData = (
       
       
       return reportsRequest<PurdueCoordinationDiagramResult[]>(
-      {url: `/PurdueCoordinationDiagram/test`, method: 'GET', signal
+      {url: `/api/v1/PurdueCoordinationDiagram/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetPurdueCoordinationDiagramTestDataQueryKey = () => {
-    return [`/PurdueCoordinationDiagram/test`] as const;
+    return [`/api/v1/PurdueCoordinationDiagram/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getPurdueCoordinationDiagramReportData = (
       
       
       return reportsRequest<PurdueCoordinationDiagramResult[]>(
-      {url: `/PurdueCoordinationDiagram/getReportData`, method: 'POST',
+      {url: `/api/v1/PurdueCoordinationDiagram/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: purdueCoordinationDiagramOptions, signal
     },

@@ -40,14 +40,14 @@ export const getApproachDelayTestData = (
       
       
       return reportsRequest<ApproachDelayResult[]>(
-      {url: `/ApproachDelay/test`, method: 'GET', signal
+      {url: `/api/v1/ApproachDelay/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetApproachDelayTestDataQueryKey = () => {
-    return [`/ApproachDelay/test`] as const;
+    return [`/api/v1/ApproachDelay/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getApproachDelayReportData = (
       
       
       return reportsRequest<ApproachDelayResult[]>(
-      {url: `/ApproachDelay/getReportData`, method: 'POST',
+      {url: `/api/v1/ApproachDelay/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: approachDelayOptions, signal
     },

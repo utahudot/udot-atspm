@@ -32,7 +32,7 @@ export const getWatchDogDashboardDashboardGroup = (
       
       
       return reportsRequest<WatchDogIssueTypeGroup>(
-      {url: `/WatchDogDashboard/getDashboardGroup`, method: 'POST',
+      {url: `/api/v1/WatchDogDashboard/getDashboardGroup`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: watchDogDashboardOptions, signal
     },

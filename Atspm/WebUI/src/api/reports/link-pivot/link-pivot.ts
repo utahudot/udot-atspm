@@ -39,7 +39,7 @@ export const getLinkPivotPcdData = (
       
       
       return reportsRequest<LinkPivotPcdResult>(
-      {url: `/LinkPivot/getPcdData`, method: 'POST',
+      {url: `/api/v1/LinkPivot/getPcdData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: linkPivotPcdOptions, signal
     },
@@ -100,14 +100,14 @@ export const getLinkPivotTestData = (
       
       
       return reportsRequest<LinkPivotResult>(
-      {url: `/LinkPivot/test`, method: 'GET', signal
+      {url: `/api/v1/LinkPivot/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetLinkPivotTestDataQueryKey = () => {
-    return [`/LinkPivot/test`] as const;
+    return [`/api/v1/LinkPivot/test`] as const;
     }
 
     
@@ -163,7 +163,7 @@ export const getLinkPivotReportData = (
       
       
       return reportsRequest<LinkPivotResult>(
-      {url: `/LinkPivot/getReportData`, method: 'POST',
+      {url: `/api/v1/LinkPivot/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: linkPivotOptions, signal
     },

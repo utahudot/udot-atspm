@@ -40,14 +40,14 @@ export const getSplitFailTestData = (
       
       
       return reportsRequest<SplitFailsResult[]>(
-      {url: `/SplitFail/test`, method: 'GET', signal
+      {url: `/api/v1/SplitFail/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetSplitFailTestDataQueryKey = () => {
-    return [`/SplitFail/test`] as const;
+    return [`/api/v1/SplitFail/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getSplitFailReportData = (
       
       
       return reportsRequest<SplitFailsResult[]>(
-      {url: `/SplitFail/getReportData`, method: 'POST',
+      {url: `/api/v1/SplitFail/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: splitFailOptions, signal
     },

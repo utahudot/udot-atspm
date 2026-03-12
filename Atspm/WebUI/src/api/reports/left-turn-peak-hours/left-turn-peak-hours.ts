@@ -40,14 +40,14 @@ export const getLeftTurnPeakHoursTestData = (
       
       
       return reportsRequest<PeakHourResult>(
-      {url: `/LeftTurnPeakHours/test`, method: 'GET', signal
+      {url: `/api/v1/LeftTurnPeakHours/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetLeftTurnPeakHoursTestDataQueryKey = () => {
-    return [`/LeftTurnPeakHours/test`] as const;
+    return [`/api/v1/LeftTurnPeakHours/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getLeftTurnPeakHoursReportData = (
       
       
       return reportsRequest<PeakHourResult>(
-      {url: `/LeftTurnPeakHours/getReportData`, method: 'POST',
+      {url: `/api/v1/LeftTurnPeakHours/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: peakHourOptions, signal
     },

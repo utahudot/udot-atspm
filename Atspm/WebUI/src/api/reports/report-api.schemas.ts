@@ -75,32 +75,15 @@ export interface ApproachDelayOptions {
   start?: string;
   end?: string;
   binSize?: number;
-  getPermissivePhase?: boolean;
-  getVolume?: boolean;
 }
 
-export interface ApproachDelayPlan {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  averageDelay?: number;
-  totalDelay?: number;
-}
-
-export interface ApproachDelayResult {
+export interface ApproachPcdAggregation {
   start?: string;
   end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
   approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  arrivalsOnGreen?: number;
   /** @nullable */
   phaseDescription?: string | null;
   averageDelayPerVehicle?: number;
@@ -119,82 +102,22 @@ export interface ApproachSpeedOptions {
   start?: string;
   end?: string;
   binSize?: number;
-  readonly metricTypeId?: number;
-}
-
-export interface ApproachSpeedResult {
-  start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
+  arrivalsOnYellow?: number;
+  isProtectedPhase?: boolean;
   phaseNumber?: number;
-  /** @nullable */
-  phaseDescription?: string | null;
-  /** @nullable */
-  detectionType?: string | null;
-  distanceFromStopBar?: number;
-  postedSpeed?: number;
-  /** @nullable */
-  plans?: SpeedPlan[] | null;
-  /** @nullable */
-  averageSpeeds?: DataPointForInt[] | null;
-  /** @nullable */
-  eightyFifthSpeeds?: DataPointForInt[] | null;
-  /** @nullable */
-  fifteenthSpeeds?: DataPointForInt[] | null;
+  totalDelay?: number;
+  volume?: number;
 }
 
-export interface ApproachVolumeOptions {
+export interface ApproachSpeedAggregation {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
   end?: string;
   binSize?: number;
-  showDirectionalSplits?: boolean;
-  getVolume?: boolean;
-  showNbEbVolume?: boolean;
-  showSbWbVolume?: boolean;
-  showTMCDetection?: boolean;
-  showAdvanceDetection?: boolean;
-  readonly metricTypeId?: number;
-}
-
-export interface ApproachVolumeResult {
-  start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  /** @nullable */
-  primaryDirectionName?: string | null;
-  /** @nullable */
-  opposingDirectionName?: string | null;
-  distanceFromStopBar?: number;
-  /** @nullable */
-  detectorType?: string | null;
-  /** @nullable */
-  primaryDirectionVolumes?: DataPointForInt[] | null;
-  /** @nullable */
-  opposingDirectionVolumes?: DataPointForInt[] | null;
-  /** @nullable */
-  combinedDirectionVolumes?: DataPointForInt[] | null;
-  /** @nullable */
-  primaryDFactors?: DataPointForDouble[] | null;
-  /** @nullable */
-  opposingDFactors?: DataPointForDouble[] | null;
-  summaryData?: SummaryData;
-}
-
-export interface AreaDTO {
-  /** @nullable */
-  name?: string | null;
-  id?: number;
+  speed15th?: number;
+  speed85th?: number;
+  speedVolume?: number;
 }
 
 export interface ArrivalOnRedOptions {
@@ -203,49 +126,17 @@ export interface ArrivalOnRedOptions {
   start?: string;
   end?: string;
   binSize?: number;
-  getPermissivePhase?: boolean;
 }
 
-export interface ArrivalOnRedPlan {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  percentArrivalOnRed?: number;
-  percentRedTime?: number;
-}
-
-export interface ArrivalOnRedResult {
+export interface ApproachSplitFailAggregation {
   start?: string;
   end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
   approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  /** @nullable */
-  phaseDescription?: string | null;
-  totalDetectorHits?: number;
-  totalArrivalOnRed?: number;
-  percentArrivalOnRed?: number;
-  /** @nullable */
-  plans?: ArrivalOnRedPlan[] | null;
-  /** @nullable */
-  percentArrivalsOnRed?: DataPointForDouble[] | null;
-  /** @nullable */
-  totalVehicles?: DataPointForDouble[] | null;
-  /** @nullable */
-  arrivalsOnRed?: DataPointForDouble[] | null;
-}
-
-export interface BarStack {
-  x?: number;
-  y?: number;
+  cycles?: number;
+  greenOccupancySum?: number;
+  greenTimeSum?: number;
   value?: number;
 }
 
@@ -265,28 +156,8 @@ export const BinSize = {
 export interface CycleEventsDto {
   start?: string;
   value?: number;
-}
-
-export interface DataPointBase {
-  timestamp?: string;
-}
-
-export interface DataPointForDetectorEvent {
-  /** @nullable */
-  detectorOn?: string | null;
-  /** @nullable */
-  detectorOff?: string | null;
-  value?: number;
-}
-
-export interface DataPointForDouble {
-  timestamp?: string;
-  value?: number;
-}
-
-export interface DataPointForInt {
-  timestamp?: string;
-  value?: number;
+  redTimeSum?: number;
+  splitFailures?: number;
 }
 
 export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
@@ -384,10 +255,10 @@ export interface GapDurationOptions {
   start?: string;
   end?: string;
   approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  cycles?: number;
+  isProtectedPhase?: boolean;
+  phaseNumber?: number;
+  severeRedLightViolations?: number;
   /** @nullable */
   daysOfWeek?: number[] | null;
 }
@@ -415,39 +286,21 @@ export interface GreenTimeUtilizationOptions {
   start?: string;
   end?: string;
   metricTypeId?: number;
-  xAxisBinSize?: number;
-  yAxisBinSize?: number;
+  yellowActivations?: number;
 }
 
-export interface GreenTimeUtilizationResult {
-  start?: string;
-  end?: string;
+export interface Assembly {
   /** @nullable */
-  locationIdentifier?: string | null;
+  readonly definedTypes?: readonly TypeInfo[] | null;
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  /** @nullable */
-  bins?: BarStack[] | null;
-  /** @nullable */
-  averageSplits?: DataPointForDouble[] | null;
-  /** @nullable */
-  programmedSplits?: DataPointForDouble[] | null;
-  phaseNumber?: number;
-  yAxisBinSize?: number;
-  xAxisBinSize?: number;
-  /** @nullable */
-  readonly plans?: readonly PlanSplitMonitorData[] | null;
+  readonly exportedTypes?: readonly Type[] | null;
 }
 
 export interface IndianaEvent {
   /** @nullable */
   locationIdentifier?: string | null;
-  timestamp?: string;
-  eventCode?: number;
-  eventParam?: number;
+  /** @nullable */
+  sequence?: number[][] | null;
 }
 
 export interface KeyValuePair2 {
@@ -458,10 +311,11 @@ export interface KeyValuePair2 {
 export interface Lane {
   /** @nullable */
   laneNumber?: number | null;
-  /** @nullable */
-  movementType?: string | null;
-  /** @nullable */
-  volume?: DataPointForInt[] | null;
+  /**
+   * @deprecated
+   * @nullable
+   */
+  readonly codeBase?: string | null;
   laneType?: LaneTypes;
 }
 
@@ -483,143 +337,49 @@ export const LaneTypes = {
 export interface LeftTurnGapAnalysisOptions {
   /** @nullable */
   locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  /** @nullable */
+  readonly start?: string | null;
+  imageRuntimeVersion?: string;
   gap1Min?: number;
   gap1Max?: number;
   gap2Min?: number;
   gap2Max?: number;
   gap3Min?: number;
-  gap3Max?: number;
-  gap4Min?: number;
+  readonly isDynamic?: boolean;
   /** @nullable */
-  gap4Max?: number | null;
+  readonly location?: string | null;
+  readonly reflectionOnly?: boolean;
+  readonly isCollectible?: boolean;
+  readonly isFullyTrusted?: boolean;
   /** @nullable */
-  gap5Min?: number | null;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  /**
+   * @deprecated
+   * @nullable
+   */
+  readonly escapedCodeBase?: string | null;
+  manifestModule?: Module;
   /** @nullable */
-  gap5Max?: number | null;
-  /** @nullable */
-  gap6Min?: number | null;
-  /** @nullable */
-  gap6Max?: number | null;
-  /** @nullable */
-  gap7Min?: number | null;
-  /** @nullable */
-  gap7Max?: number | null;
-  /** @nullable */
-  gap8Min?: number | null;
-  /** @nullable */
-  gap8Max?: number | null;
-  /** @nullable */
-  gap9Min?: number | null;
-  /** @nullable */
-  gap9Max?: number | null;
-  /** @nullable */
-  gap10Min?: number | null;
-  /** @nullable */
-  gap10Max?: number | null;
-  /** @nullable */
-  sumDurationGap1?: number | null;
-  /** @nullable */
-  sumDurationGap2?: number | null;
-  /** @nullable */
-  sumDurationGap3?: number | null;
-  trendLineGapThreshold?: number;
-  binSize?: number;
+  readonly modules?: readonly Module[] | null;
+  /** @deprecated */
+  readonly globalAssemblyCache?: boolean;
+  readonly hostContext?: number;
+  securityRuleSet?: SecurityRuleSet;
 }
 
-export interface LeftTurnGapAnalysisResult {
-  start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  /** @nullable */
-  phaseDescription?: string | null;
-  /** @nullable */
-  detectionTypeDescription?: string | null;
-  gap1Min?: number;
-  gap1Max?: number;
-  /** @nullable */
-  gap1Count?: DataPointForInt[] | null;
-  gap2Min?: number;
-  gap2Max?: number;
-  /** @nullable */
-  gap2Count?: DataPointForInt[] | null;
-  gap3Min?: number;
-  gap3Max?: number;
-  /** @nullable */
-  gap3Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap4Min?: number | null;
-  /** @nullable */
-  gap4Max?: number | null;
-  /** @nullable */
-  gap4Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap5Min?: number | null;
-  /** @nullable */
-  gap5Max?: number | null;
-  /** @nullable */
-  gap5Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap6Min?: number | null;
-  /** @nullable */
-  gap6Max?: number | null;
-  /** @nullable */
-  gap6Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap7Min?: number | null;
-  /** @nullable */
-  gap7Max?: number | null;
-  /** @nullable */
-  gap7Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap8Min?: number | null;
-  /** @nullable */
-  gap8Max?: number | null;
-  /** @nullable */
-  gap8Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap9Min?: number | null;
-  /** @nullable */
-  gap9Max?: number | null;
-  /** @nullable */
-  gap9Count?: DataPointForInt[] | null;
-  /** @nullable */
-  gap10Min?: number | null;
-  /** @nullable */
-  gap10Max?: number | null;
-  /** @nullable */
-  gap10Count?: DataPointForInt[] | null;
-  /** @nullable */
-  readonly gap11Min?: number | null;
-  /** @nullable */
-  readonly gap11Max?: number | null;
-  /** @nullable */
-  readonly gap11Count?: readonly DataPointForInt[] | null;
-  /** @nullable */
-  sumDuration1?: number | null;
-  /** @nullable */
-  sumDuration2?: number | null;
-  /** @nullable */
-  sumDuration3?: number | null;
-  sumGreenTime?: number;
-  highestTotal?: number;
-  /** @nullable */
-  detectionTypeStr?: string | null;
-  trendLineGapThreshold?: number;
-  binSize?: number;
-  /** @nullable */
-  percentTurnableSeries?: DataPointForDouble[] | null;
-}
+export type CallingConventions = typeof CallingConventions[keyof typeof CallingConventions];
 
-export interface LeftTurnGapDataCheckOptions {
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CallingConventions = {
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_32: 32,
+  NUMBER_64: 64,
+} as const;
+
+export interface CompressedDataBase {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
@@ -629,304 +389,213 @@ export interface LeftTurnGapDataCheckOptions {
   gapOutThreshold?: number;
   pedestrianThreshold?: number;
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  data?: ILocationLayer[] | null;
 }
 
-export interface LeftTurnGapDataCheckResult {
+export interface CompressedEventLogBase {
   start?: string;
   end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
+  dataType?: Type;
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  leftTurnVolumeOk?: boolean;
-  gapOutOk?: boolean;
-  pedCycleOk?: boolean;
-  insufficientDetectorEventCount?: boolean;
-  insufficientCycleAggregation?: boolean;
-  insufficientPhaseTermination?: boolean;
-  insufficientPedAggregations?: boolean;
-  insufficientSplitFailAggregations?: boolean;
-  insufficientLeftTurnGapAggregations?: boolean;
+  data?: EventLogModelBase[] | null;
+  deviceId?: number;
 }
 
-export interface LeftTurnGapReportOptions {
+export interface ConstructorInfo {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  readonly name?: string | null;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
   /** @nullable */
-  approachIds?: number[] | null;
-  /** @nullable */
-  daysOfWeek?: number[] | null;
-  /** @nullable */
-  startHour?: number | null;
-  /** @nullable */
-  startMinute?: number | null;
-  /** @nullable */
-  endHour?: number | null;
-  /** @nullable */
-  endMinute?: number | null;
-  getAMPMPeakPeriod?: boolean;
-  getAMPMPeakHour?: boolean;
-  get24HourPeriod?: boolean;
-  getGapReport?: boolean;
-  acceptableGapPercentage?: number;
-  getSplitFail?: boolean;
-  acceptableSplitFailPercentage?: number;
-  getPedestrianCall?: boolean;
-  getConflictingVolume?: boolean;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  attributes?: MethodAttributes;
+  methodImplementationFlags?: MethodImplAttributes;
+  callingConvention?: CallingConventions;
+  readonly isAbstract?: boolean;
+  readonly isConstructor?: boolean;
+  readonly isFinal?: boolean;
+  readonly isHideBySig?: boolean;
+  readonly isSpecialName?: boolean;
+  readonly isStatic?: boolean;
+  readonly isVirtual?: boolean;
+  readonly isAssembly?: boolean;
+  readonly isFamily?: boolean;
+  readonly isFamilyAndAssembly?: boolean;
+  readonly isFamilyOrAssembly?: boolean;
+  readonly isPrivate?: boolean;
+  readonly isPublic?: boolean;
+  readonly isConstructedGenericMethod?: boolean;
+  readonly isGenericMethod?: boolean;
+  readonly isGenericMethodDefinition?: boolean;
+  readonly containsGenericParameters?: boolean;
+  methodHandle?: RuntimeMethodHandle;
+  readonly isSecurityCritical?: boolean;
+  readonly isSecuritySafeCritical?: boolean;
+  readonly isSecurityTransparent?: boolean;
+  memberType?: MemberTypes;
 }
 
-/**
- * @nullable
- */
-export type LeftTurnGapReportResultAcceptableGapList = {[key: string]: number} | null;
-
-/**
- * @nullable
- */
-export type LeftTurnGapReportResultPercentCyclesWithPedsList = {[key: string]: number} | null;
-
-/**
- * @nullable
- */
-export type LeftTurnGapReportResultDemandList = {[key: string]: number} | null;
-
-/**
- * @nullable
- */
-export type LeftTurnGapReportResultPercentCyclesWithSplitFailList = {[key: string]: number} | null;
-
-export interface LeftTurnGapReportResult {
-  startDate?: string;
-  endDate?: string;
-  /** @nullable */
-  approachDescription?: string | null;
-  /** @nullable */
-  signalId?: string | null;
-  /** @nullable */
-  location?: string | null;
-  get24HourPeriod?: boolean;
-  /** @nullable */
-  phaseType?: string | null;
-  /** @nullable */
-  signalType?: string | null;
-  /** @nullable */
-  speedLimit?: number | null;
-  /** @nullable */
-  peakPeriodDescription?: string | null;
-  startTime?: string;
-  endTime?: string;
-  cyclesWithSplitFailNum?: number;
-  cyclesWithSplitFailPercent?: number;
-  cyclesWithPedCallNum?: number;
-  cyclesWithPedCallPercent?: number;
-  crossProductValue?: number;
-  calculatedVolumeBoundary?: number;
-  /** @nullable */
-  gapDurationConsiderForStudy?: boolean | null;
-  /** @nullable */
-  splitFailsConsiderForStudy?: boolean | null;
-  /** @nullable */
-  pedActuationsConsiderForStudy?: boolean | null;
-  /** @nullable */
-  volumesConsiderForStudy?: boolean | null;
-  capacity?: number;
-  demand?: number;
-  vcRatio?: number;
-  gapOutPercent?: number;
-  opposingLanes?: number;
-  crossProductReview?: boolean;
-  decisionBoundariesReview?: boolean;
-  leftTurnVolume?: number;
-  opposingThroughVolume?: number;
-  /** @nullable */
-  crossProductConsiderForStudy?: boolean | null;
-  /** @nullable */
-  acceptableGapList?: LeftTurnGapReportResultAcceptableGapList;
-  /** @nullable */
-  percentCyclesWithPedsList?: LeftTurnGapReportResultPercentCyclesWithPedsList;
-  /** @nullable */
-  demandList?: LeftTurnGapReportResultDemandList;
-  /** @nullable */
-  percentCyclesWithSplitFailList?: LeftTurnGapReportResultPercentCyclesWithSplitFailList;
-  /** @nullable */
-  direction?: string | null;
-  /** @nullable */
-  opposingDirection?: string | null;
-}
-
-export interface LeftTurnSplitFailOptions {
+export interface CustomAttributeData {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
   end?: string;
   approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  readonly constructorArguments?: readonly CustomAttributeTypedArgument[] | null;
+  /** @nullable */
+  readonly namedArguments?: readonly CustomAttributeNamedArgument[] | null;
+}
+
+export interface CustomAttributeNamedArgument {
+  memberInfo?: MemberInfo;
+  typedValue?: CustomAttributeTypedArgument;
+  /** @nullable */
+  readonly memberName?: string | null;
+  readonly isField?: boolean;
 }
 
 /**
  * @nullable
  */
-export type LeftTurnSplitFailResultPercentCyclesWithSplitFailList = {[key: string]: number} | null;
+export type CustomAttributeTypedArgumentValue = unknown | null;
 
-export interface LeftTurnSplitFailResult {
-  splitFailPercent?: number;
-  cyclesWithSplitFails?: number;
+export interface CustomAttributeTypedArgument {
+  argumentType?: Type;
   /** @nullable */
-  readonly percentCyclesWithSplitFailList?: LeftTurnSplitFailResultPercentCyclesWithSplitFailList;
-  /** @nullable */
-  direction?: string | null;
+  value?: CustomAttributeTypedArgumentValue;
 }
 
-export interface LinkPivotAdjustment {
-  linkNumber?: number;
+/**
+ * Represents metadata describing a data type, including its own documentation
+and the metadata for each of its public properties.
+ */
+export interface DataTypeMeta {
+  /**
+   * The name of the property being described.
+   * @nullable
+   */
+  name?: string | null;
+  /**
+   * The XML documentation summary associated with the property, if available.
+   * @nullable
+   */
+  description?: string | null;
+  /**
+   * The collection of properties defined on the data type, each including
+its name and associated XML documentation summary.
+   * @nullable
+   */
+  properties?: PropertyMeta[] | null;
+}
+
+export interface DetectorEventCountAggregation {
+  start?: string;
+  end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  location?: string | null;
-  delta?: number;
-  adjustment?: number;
+  approachId?: number;
+  detectorPrimaryId?: number;
+  eventCount?: number;
 }
 
-export interface LinkPivotApproachLink {
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  location?: string | null;
-  /** @nullable */
-  upstreamApproachDirection?: string | null;
-  /** @nullable */
-  downstreamLocationIdentifier?: string | null;
-  /** @nullable */
-  downstreamLocation?: string | null;
-  /** @nullable */
-  downstreamApproachDirection?: string | null;
-  paogUpstreamBefore?: number;
-  paogUpstreamPredicted?: number;
-  paogDownstreamBefore?: number;
-  paogDownstreamPredicted?: number;
-  aogUpstreamBefore?: number;
-  aogUpstreamPredicted?: number;
-  aogDownstreamBefore?: number;
-  aogDownstreamPredicted?: number;
-  delta?: number;
-  /** @nullable */
-  resultChartLocation?: string | null;
-  /** @nullable */
-  readonly upstreamCombinedLocation?: string | null;
-  /** @nullable */
-  readonly downstreamCombinedLocation?: string | null;
-  aogTotalBefore?: number;
-  pAogTotalBefore?: number;
-  aogTotalPredicted?: number;
-  pAogTotalPredicted?: number;
-  totalChartExisting?: number;
-  totalChartPositiveChange?: number;
-  totalChartNegativeChange?: number;
-  totalChartRemaining?: number;
-  upstreamChartExisting?: number;
-  upstreamChartPositiveChange?: number;
-  upstreamChartNegativeChange?: number;
-  upstreamChartRemaining?: number;
-  downstreamChartExisting?: number;
-  downstreamChartPositiveChange?: number;
-  downstreamChartNegativeChange?: number;
-  downstreamChartRemaining?: number;
-  /** @nullable */
-  readonly totalChartName?: string | null;
-  /** @nullable */
-  readonly upstreamChartName?: string | null;
-  /** @nullable */
-  readonly downstreamChartName?: string | null;
-  linkNumber?: number;
-}
+export type EventAttributes = typeof EventAttributes[keyof typeof EventAttributes];
 
-export interface LinkPivotOptions {
-  routeId?: number;
-  cycleLength?: number;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EventAttributes = {
+  NUMBER_0: 0,
+  NUMBER_512: 512,
+  NUMBER_1024: 1024,
+} as const;
+
+export interface EventInfo {
   /** @nullable */
-  direction?: string | null;
-  bias?: number;
+  readonly name?: string | null;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
   /** @nullable */
-  biasDirection?: string | null;
-  /** @nullable */
-  daysOfWeek?: number[] | null;
-  startDate?: string;
-  endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  memberType?: MemberTypes;
+  attributes?: EventAttributes;
+  readonly isSpecialName?: boolean;
+  addMethod?: MethodInfo;
+  removeMethod?: MethodInfo;
+  raiseMethod?: MethodInfo;
+  readonly isMulticast?: boolean;
+  eventHandlerType?: Type;
 }
 
 export interface LinkPivotPcdOptions {
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  downstreamLocationIdentifier?: string | null;
-  delta?: number;
-  /** @nullable */
-  downstreamApproachDirection?: string | null;
-  /** @nullable */
-  upstreamApproachDirection?: string | null;
-  startDate?: string;
-  /** @nullable */
-  selectedEndDate?: string | null;
-  startTime?: string;
-  endTime?: string;
-  endDate?: string;
+  timestamp?: string;
 }
 
-export interface LinkPivotPcdResult {
-  existingTotalAOG?: number;
-  existingTotalPAOG?: number;
-  predictedTotalAOG?: number;
-  predictedTotalPAOG?: number;
-  predictedVolume?: number;
-  existingVolume?: number;
-  /** @nullable */
-  pcdExisting?: PurdueCoordinationDiagramResult[] | null;
-  /** @nullable */
-  pcdPredicted?: PurdueCoordinationDiagramResult[] | null;
-}
+export type FieldAttributes = typeof FieldAttributes[keyof typeof FieldAttributes];
 
-export interface LinkPivotResult {
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FieldAttributes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_6: 6,
+  NUMBER_7: 7,
+  NUMBER_16: 16,
+  NUMBER_32: 32,
+  NUMBER_64: 64,
+  NUMBER_128: 128,
+  NUMBER_256: 256,
+  NUMBER_512: 512,
+  NUMBER_1024: 1024,
+  NUMBER_4096: 4096,
+  NUMBER_8192: 8192,
+  NUMBER_32768: 32768,
+  NUMBER_38144: 38144,
+} as const;
+
+export interface FieldInfo {
   /** @nullable */
-  adjustments?: LinkPivotAdjustment[] | null;
+  readonly name?: string | null;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
   /** @nullable */
-  approachLinks?: LinkPivotApproachLink[] | null;
-  totalAogDownstreamBefore?: number;
-  totalPaogDownstreamBefore?: number;
-  totalAogDownstreamPredicted?: number;
-  totalPaogDownstreamPredicted?: number;
-  totalAogUpstreamBefore?: number;
-  totalPaogUpstreamBefore?: number;
-  totalAogUpstreamPredicted?: number;
-  totalPaogUpstreamPredicted?: number;
-  totalAogBefore?: number;
-  totalPaogBefore?: number;
-  totalAogPredicted?: number;
-  totalPaogPredicted?: number;
-  totalChartExisting?: number;
-  totalChartPositiveChange?: number;
-  totalChartNegativeChange?: number;
-  totalChartRemaining?: number;
-  totalUpstreamChartExisting?: number;
-  totalUpstreamChartPositiveChange?: number;
-  totalUpstreamChartNegativeChange?: number;
-  totalUpstreamChartRemaining?: number;
-  totalDownstreamChartExisting?: number;
-  totalDownstreamChartPositiveChange?: number;
-  totalDownstreamChartNegativeChange?: number;
-  totalDownstreamChartRemaining?: number;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  memberType?: MemberTypes;
+  attributes?: FieldAttributes;
+  fieldType?: Type;
+  readonly isInitOnly?: boolean;
+  readonly isLiteral?: boolean;
+  /** @deprecated */
+  readonly isNotSerialized?: boolean;
+  readonly isPinvokeImpl?: boolean;
+  readonly isSpecialName?: boolean;
+  readonly isStatic?: boolean;
+  readonly isAssembly?: boolean;
+  readonly isFamily?: boolean;
+  readonly isFamilyAndAssembly?: boolean;
+  readonly isFamilyOrAssembly?: boolean;
+  readonly isPrivate?: boolean;
+  readonly isPublic?: boolean;
+  readonly isSecurityCritical?: boolean;
+  readonly isSecuritySafeCritical?: boolean;
+  readonly isSecurityTransparent?: boolean;
+  fieldHandle?: RuntimeFieldHandle;
 }
 
 export interface LocationPhases {
@@ -938,18 +607,9 @@ export interface LocationPhases {
   designatedPhases?: number[] | null;
 }
 
-export interface LocationWithCoordPhases {
+export interface ILocationLayer {
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  coordinatedPhases?: number[] | null;
-}
-
-export interface LocationWithSequence {
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  sequence?: number[][] | null;
 }
 
 export interface PeakHourOptions {
@@ -958,49 +618,34 @@ export interface PeakHourOptions {
   start?: string;
   end?: string;
   approachId?: number;
-  /** @nullable */
-  daysOfWeek?: number[] | null;
+  eventParam?: number;
 }
 
-export interface PeakHourResult {
-  amStartHour?: number;
-  amEndHour?: number;
-  amStartMinute?: number;
-  amEndMinute?: number;
-  pmStartHour?: number;
-  pmEndHour?: number;
-  pmStartMinute?: number;
-  pmEndMinute?: number;
-}
+export interface IntPtr { [key: string]: unknown }
 
-export interface PedActuationOptions {
+export type LayoutKind = typeof LayoutKind[keyof typeof LayoutKind];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LayoutKind = {
+  NUMBER_0: 0,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+} as const;
+
+export interface MemberInfo {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
-  end?: string;
+  name?: string;
   approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
   /** @nullable */
-  daysOfWeek?: number[] | null;
-}
-
-/**
- * @nullable
- */
-export type PedActuationResultPercentCyclesWithPedsList = {[key: string]: number} | null;
-
-export interface PedActuationResult {
-  cyclesWithPedCallsNum?: number;
-  cyclesWithPedCallsPercent?: number;
-  /** @nullable */
-  percentCyclesWithPedsList?: PedActuationResultPercentCyclesWithPedsList;
-  /** @nullable */
-  direction?: string | null;
-  /** @nullable */
-  opposingDirection?: string | null;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
 }
 
 export interface PedDelayOptions {
@@ -1017,196 +662,116 @@ export interface PedDelayOptions {
 }
 
 export interface PedDelayPlan {
+  memberType?: MemberTypes;
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  readonly name?: string | null;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
   /** @nullable */
-  readonly planDescription?: string | null;
-  /** @nullable */
-  pedRecallMessage?: string | null;
-  cyclesWithPedRequests?: number;
-  uniquePedDetections?: number;
-  pedPresses?: number;
-  averageDelaySeconds?: number;
-  averageCycleLengthSeconds?: number;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  attributes?: MethodAttributes;
+  methodImplementationFlags?: MethodImplAttributes;
+  callingConvention?: CallingConventions;
+  readonly isAbstract?: boolean;
+  readonly isConstructor?: boolean;
+  readonly isFinal?: boolean;
+  readonly isHideBySig?: boolean;
+  readonly isSpecialName?: boolean;
+  readonly isStatic?: boolean;
+  readonly isVirtual?: boolean;
+  readonly isAssembly?: boolean;
+  readonly isFamily?: boolean;
+  readonly isFamilyAndAssembly?: boolean;
+  readonly isFamilyOrAssembly?: boolean;
+  readonly isPrivate?: boolean;
+  readonly isPublic?: boolean;
+  readonly isConstructedGenericMethod?: boolean;
+  readonly isGenericMethod?: boolean;
+  readonly isGenericMethodDefinition?: boolean;
+  readonly containsGenericParameters?: boolean;
+  methodHandle?: RuntimeMethodHandle;
+  readonly isSecurityCritical?: boolean;
+  readonly isSecuritySafeCritical?: boolean;
+  readonly isSecurityTransparent?: boolean;
 }
 
-export interface PedDelayResult {
-  start?: string;
-  end?: string;
+export type MethodImplAttributes = typeof MethodImplAttributes[keyof typeof MethodImplAttributes];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MethodImplAttributes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_8: 8,
+  NUMBER_16: 16,
+  NUMBER_32: 32,
+  NUMBER_64: 64,
+  NUMBER_128: 128,
+  NUMBER_256: 256,
+  NUMBER_512: 512,
+  NUMBER_4096: 4096,
+  NUMBER_65535: 65535,
+} as const;
+
+export interface MethodInfo {
   /** @nullable */
-  locationIdentifier?: string | null;
+  readonly name?: string | null;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  /** @nullable */
-  phaseDescription?: string | null;
-  pedPresses?: number;
-  cyclesWithPedRequests?: number;
-  timeBuffered?: number;
-  uniquePedestrianDetections?: number;
-  minDelay?: number;
-  maxDelay?: number;
-  averageDelay?: number;
-  /** @nullable */
-  plans?: PedDelayPlan[] | null;
-  /** @nullable */
-  cycleLengths?: DataPointForDouble[] | null;
-  /** @nullable */
-  pedestrianDelay?: DataPointForDouble[] | null;
-  /** @nullable */
-  startOfWalk?: DataPointForDouble[] | null;
-  /** @nullable */
-  percentDelayByCycleLength?: DataPointForDouble[] | null;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  attributes?: MethodAttributes;
+  methodImplementationFlags?: MethodImplAttributes;
+  callingConvention?: CallingConventions;
+  readonly isAbstract?: boolean;
+  readonly isConstructor?: boolean;
+  readonly isFinal?: boolean;
+  readonly isHideBySig?: boolean;
+  readonly isSpecialName?: boolean;
+  readonly isStatic?: boolean;
+  readonly isVirtual?: boolean;
+  readonly isAssembly?: boolean;
+  readonly isFamily?: boolean;
+  readonly isFamilyAndAssembly?: boolean;
+  readonly isFamilyOrAssembly?: boolean;
+  readonly isPrivate?: boolean;
+  readonly isPublic?: boolean;
+  readonly isConstructedGenericMethod?: boolean;
+  readonly isGenericMethod?: boolean;
+  readonly isGenericMethodDefinition?: boolean;
+  readonly containsGenericParameters?: boolean;
+  methodHandle?: RuntimeMethodHandle;
+  readonly isSecurityCritical?: boolean;
+  readonly isSecuritySafeCritical?: boolean;
+  readonly isSecurityTransparent?: boolean;
+  memberType?: MemberTypes;
+  returnParameter?: ParameterInfo;
+  returnType?: Type;
+  returnTypeCustomAttributes?: ICustomAttributeProvider;
 }
 
-export interface PerdueCoordinationPlanViewModel {
+export interface Module {
+  assembly?: Assembly;
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  readonly fullyQualifiedName?: string | null;
   /** @nullable */
-  readonly planDescription?: string | null;
-  percentGreenTime?: number;
-  percentArrivalOnGreen?: number;
-  platoonRatio?: number;
-}
-
-export interface Phase {
-  phaseNumber?: number;
+  readonly name?: string | null;
+  readonly mdStreamVersion?: number;
+  readonly moduleVersionId?: string;
   /** @nullable */
-  gapOuts?: string[] | null;
+  readonly scopeName?: string | null;
+  moduleHandle?: ModuleHandle;
   /** @nullable */
-  maxOuts?: string[] | null;
-  /** @nullable */
-  forceOffs?: string[] | null;
-  /** @nullable */
-  pedWalkBegins?: string[] | null;
-  /** @nullable */
-  unknownTerminations?: string[] | null;
-}
-
-export interface PhaseTerminationResult {
-  start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  consecutiveCount?: number;
-  /** @nullable */
-  plans?: Plan[] | null;
-  /** @nullable */
-  phases?: Phase[] | null;
-}
-
-export interface Plan {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-}
-
-export interface PlanSplitFail {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  readonly totalCycles?: number;
-  readonly failsInPlan?: number;
-  readonly percentFails?: number;
-}
-
-export interface PlanSplitMonitorDTO {
-  /** @nullable */
-  readonly planNumber?: string | null;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  percentSkips?: number;
-  percentGapOuts?: number;
-  percentMaxOuts?: number;
-  percentForceOffs?: number;
-  averageSplit?: number;
-  percentileSplit?: number;
-  minTime?: number;
-  programmedSplit?: number;
-  percentileSplit85th?: number;
-  percentileSplit50th?: number;
-}
-
-/**
- * @nullable
- */
-export type PlanSplitMonitorDataSplits = {[key: string]: number} | null;
-
-export interface PlanSplitMonitorData {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  /** @nullable */
-  splits?: PlanSplitMonitorDataSplits;
-  cycleLength?: number;
-  offsetLength?: number;
-  highCycleCount?: number;
-  percentSkips?: number;
-  percentGapOuts?: number;
-  percentMaxOuts?: number;
-  percentForceOffs?: number;
-  averageSplit?: number;
-  percentileSplit?: number;
-  minTime?: number;
-  programmedSplit?: number;
-  percentileSplit85th?: number;
-  percentileSplit50th?: number;
-}
-
-export interface PlanWaitTime {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  averageWaitTime?: number;
-  maxWaitTime?: number;
-}
-
-export interface PreemptCycleResult {
-  /** @nullable */
-  inputOff?: string | null;
-  inputOn?: string;
-  /** @nullable */
-  gateDown?: string | null;
-  callMaxOut?: number;
-  delay?: number;
-  timeToService?: number;
-  dwellTime?: number;
-  trackClear?: number;
-}
-
-export interface PreemptDetail {
-  start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  preemptionNumber?: number;
-  /** @nullable */
-  readonly cycles?: readonly PreemptCycleResult[] | null;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
 }
 
 export interface PreemptDetailOptions {
@@ -1216,29 +781,33 @@ export interface PreemptDetailOptions {
   end?: string;
 }
 
-export interface PreemptDetailResult {
-  /** @nullable */
-  details?: PreemptDetail[] | null;
-  summary?: PreemptRequestAndServices;
+export interface ModuleHandle {
+  readonly mdStreamVersion?: number;
 }
 
-export interface PreemptPlan {
-  /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  /** @nullable */
-  readonly planDescription?: string | null;
-  preemptCount?: number;
-}
+export type ParameterAttributes = typeof ParameterAttributes[keyof typeof ParameterAttributes];
 
-export interface PreemptRequestAndServices {
-  start?: string;
-  end?: string;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ParameterAttributes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_4: 4,
+  NUMBER_8: 8,
+  NUMBER_16: 16,
+  NUMBER_4096: 4096,
+  NUMBER_8192: 8192,
+  NUMBER_16384: 16384,
+  NUMBER_32768: 32768,
+  NUMBER_61440: 61440,
+} as const;
+
+export interface ParameterInfo {
+  attributes?: ParameterAttributes;
+  member?: MemberInfo;
   /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
+  readonly name?: string | null;
   /** @nullable */
   requestAndServices?: RequestAndServices[] | null;
 }
@@ -1257,22 +826,22 @@ export interface PreemptServiceRequestOptions {
   end?: string;
 }
 
+/**
+ * @nullable
+ */
+export type PreemptServiceRequestResultRawDefaultValue = unknown | null;
+
 export interface PreemptServiceRequestResult {
   start?: string;
-  end?: string;
   /** @nullable */
-  locationIdentifier?: string | null;
+  readonly rawDefaultValue?: PreemptServiceRequestResultRawDefaultValue;
+  readonly hasDefaultValue?: boolean;
   /** @nullable */
-  locationDescription?: string | null;
-  /** @nullable */
-  plans?: Plan[] | null;
-  /** @nullable */
-  preemptRequests?: DataPointForInt[] | null;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly metadataToken?: number;
 }
 
-export interface PreemptServiceResult {
-  start?: string;
-  end?: string;
+export interface PedestrianCounter {
   /** @nullable */
   locationIdentifier?: string | null;
   /** @nullable */
@@ -1391,47 +960,31 @@ export interface PurdueCoordinationDiagramOptions {
   start?: string;
   end?: string;
   binSize?: number;
-  getVolume?: boolean;
-  showPlanStatistics?: boolean;
+  out?: number;
 }
 
-export interface PurdueCoordinationDiagramResult {
+export interface PhaseCycleAggregation {
   start?: string;
   end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
   approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
+  greenTime?: number;
+  phaseBeginCount?: number;
   phaseNumber?: number;
-  /** @nullable */
-  phaseDescription?: string | null;
-  totalOnGreenEvents?: number;
-  totalDetectorHits?: number;
-  percentArrivalOnGreen?: number;
-  /** @nullable */
-  plans?: PerdueCoordinationPlanViewModel[] | null;
-  /** @nullable */
-  volumePerHour?: DataPointForDouble[] | null;
-  /** @nullable */
-  redSeries?: DataPointForDouble[] | null;
-  /** @nullable */
-  yellowSeries?: DataPointForDouble[] | null;
-  /** @nullable */
-  greenSeries?: DataPointForDouble[] | null;
-  /** @nullable */
-  detectorEvents?: DataPointForDouble[] | null;
+  redTime?: number;
+  totalGreenToGreenCycles?: number;
+  totalRedToRedCycles?: number;
+  yellowTime?: number;
 }
 
-export interface PurduePhaseTerminationOptions {
+export interface PhaseLeftTurnGapAggregation {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
   end?: string;
   selectedConsecutiveCount?: number;
-  selectedPhaseNumber?: number;
+  gapCount1?: number;
 }
 
 export interface RampMeteringOptions {
@@ -1501,14 +1054,11 @@ export interface SpeedPlan {
   readonly end?: string;
   /** @nullable */
   readonly planDescription?: string | null;
+  averageSpeed?: number;
+  gapCount3?: number;
+  gapCount4?: number;
   /** @nullable */
-  averageSpeed?: number | null;
-  /** @nullable */
-  standardDeviation?: number | null;
-  /** @nullable */
-  eightyFifthPercentile?: number | null;
-  /** @nullable */
-  fifteenthPercentile?: number | null;
+  gapCount5?: number | null;
 }
 
 export interface SplitFailOptions {
@@ -1517,45 +1067,17 @@ export interface SplitFailOptions {
   start?: string;
   end?: string;
   firstSecondsOfRed?: number;
-  metricTypeId?: number;
-  getPermissivePhase?: boolean;
-}
-
-export interface SplitFailsResult {
-  start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
+  gapCount7?: number;
+  gapCount8?: number;
+  gapCount9?: number;
   phaseNumber?: number;
-  /** @nullable */
-  phaseType?: string | null;
-  totalSplitFails?: number;
-  /** @nullable */
-  plans?: PlanSplitFail[] | null;
-  /** @nullable */
-  failLines?: DataPointBase[] | null;
-  /** @nullable */
-  gapOutGreenOccupancies?: DataPointForDouble[] | null;
-  /** @nullable */
-  gapOutRedOccupancies?: DataPointForDouble[] | null;
-  /** @nullable */
-  forceOffGreenOccupancies?: DataPointForDouble[] | null;
-  /** @nullable */
-  forceOffRedOccupancies?: DataPointForDouble[] | null;
-  /** @nullable */
-  averageGor?: DataPointForDouble[] | null;
-  /** @nullable */
-  averageRor?: DataPointForDouble[] | null;
-  /** @nullable */
-  percentFails?: DataPointForDouble[] | null;
+  sumGapDuration1?: number;
+  sumGapDuration2?: number;
+  sumGapDuration3?: number;
+  sumGreenTime?: number;
 }
 
-export interface SplitMonitorOptions {
+export interface PhasePedAggregation {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
@@ -1595,29 +1117,20 @@ export interface SummaryData {
   peakHour?: string | null;
   kFactor?: number;
   peakHourVolume?: number;
-  peakHourFactor?: number;
-  totalVolume?: number;
-  /** @nullable */
-  primaryPeakHour?: string | null;
-  primaryKFactor?: number;
-  primaryPeakHourVolume?: number;
-  primaryPeakHourFactor?: number;
-  primaryTotalVolume?: number;
-  primaryDFactor?: number;
-  /** @nullable */
-  opposingPeakHour?: string | null;
-  opposingKFactor?: number;
-  opposingPeakHourVolume?: number;
-  opposingPeakHourFactor?: number;
-  opposingTotalVolume?: number;
-  opposingDFactor?: number;
+  pedCycles?: number;
+  pedDelay?: number;
+  pedRequests?: number;
+  imputedPedCallsRegistered?: number;
+  maxPedDelay?: number;
+  minPedDelay?: number;
+  uniquePedDetections?: number;
 }
 
-export interface TimeOptions {
+export interface PhaseSplitMonitorAggregation {
   start?: string;
   end?: string;
   /** @nullable */
-  timeOfDayStartHour?: number | null;
+  locationIdentifier?: string | null;
   /** @nullable */
   timeOfDayStartMinute?: number | null;
   /** @nullable */
@@ -1641,139 +1154,86 @@ export const TimePeriodOptions = {
 
 export interface TimeSpaceDiagramAverageOptions {
   routeId?: number;
-  startDate?: string;
-  endDate?: string;
-  startTime?: string;
-  endTime?: string;
-  /** @nullable */
-  sequence?: LocationWithSequence[] | null;
-  /** @nullable */
-  coordinatedPhases?: LocationWithCoordPhases[] | null;
-  /** @nullable */
-  daysOfWeek?: number[] | null;
-  /** @nullable */
-  speedLimit?: number | null;
+  skippedCount?: number;
 }
 
-export interface TimeSpaceDiagramAverageResult {
+export interface PhaseTerminationAggregation {
   start?: string;
   end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  coordinatedPhases?: boolean;
+  forceOffs?: number;
+  gapOuts?: number;
+  maxOuts?: number;
   phaseNumber?: number;
-  speed?: number;
-  readonly offset?: number;
-  programmedSplit?: number;
-  /** @nullable */
-  phaseType?: string | null;
-  cycleLength?: number;
-  /** @nullable */
-  phaseNumberSort?: string | null;
-  distanceToNextLocation?: number;
-  /** @nullable */
-  cycleAllEvents?: CycleEventsDto[] | null;
-  /** @nullable */
-  greenTimeEvents?: TimeSpaceEventBase[] | null;
+  unknown?: number;
 }
 
-export interface TimeSpaceDiagramOptions {
+export interface PreemptionAggregation {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
   end?: string;
   routeId?: number;
-  /** @nullable */
-  speedLimit?: number | null;
-  extendStartStopSearch?: number;
-  showAllLanesInfo?: boolean;
+  preemptRequests?: number;
+  preemptServices?: number;
 }
 
-export interface TimeSpaceDiagramResultForPhase {
+export interface PriorityAggregation {
   start?: string;
   end?: string;
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  speed?: number;
-  /** @nullable */
-  phaseType?: string | null;
-  /** @nullable */
-  phaseNumberSort?: string | null;
-  distanceToNextLocation?: number;
-  /** @nullable */
-  cycleAllEvents?: CycleEventsDto[] | null;
-  /** @nullable */
-  greenTimeEvents?: TimeSpaceEventBase[] | null;
-  /** @nullable */
-  laneByLaneCountDetectors?: TimeSpaceEventBase[] | null;
-  /** @nullable */
-  advanceCountDetectors?: TimeSpaceEventBase[] | null;
-  /** @nullable */
-  stopBarPresenceDetectors?: TimeSpaceEventBase[] | null;
+  priorityNumber?: number;
+  priorityRequests?: number;
+  priorityServiceEarlyGreen?: number;
+  priorityServiceExtendedGreen?: number;
 }
 
-export interface TimeSpaceEventBase {
-  initialX?: string;
-  finalX?: string;
+export type PropertyAttributes = typeof PropertyAttributes[keyof typeof PropertyAttributes];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PropertyAttributes = {
+  NUMBER_0: 0,
+  NUMBER_512: 512,
+  NUMBER_1024: 1024,
+  NUMBER_4096: 4096,
+  NUMBER_8192: 8192,
+  NUMBER_16384: 16384,
+  NUMBER_32768: 32768,
+  NUMBER_62464: 62464,
+} as const;
+
+export interface PropertyInfo {
   /** @nullable */
-  isDetectorOn?: boolean | null;
+  readonly name?: string | null;
+  declaringType?: Type;
+  reflectedType?: Type;
+  module?: Module;
+  /** @nullable */
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  memberType?: MemberTypes;
+  propertyType?: Type;
+  attributes?: PropertyAttributes;
+  readonly isSpecialName?: boolean;
+  readonly canRead?: boolean;
+  readonly canWrite?: boolean;
+  getMethod?: MethodInfo;
+  setMethod?: MethodInfo;
 }
 
-/**
- * @nullable
- */
-export type TimingAndActuationsForPhaseResultPhaseCustomEvents = {[key: string]: DataPointForInt[] | null} | null;
-
-export interface TimingAndActuationsForPhaseResult {
-  start?: string;
-  end?: string;
+export interface PropertyMeta {
   /** @nullable */
   locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  isPhaseOverLap?: boolean;
-  /** @nullable */
-  phaseNumberSort?: string | null;
-  /** @nullable */
-  phaseType?: string | null;
-  /** @nullable */
-  pedestrianIntervals?: CycleEventsDto[] | null;
-  /** @nullable */
-  pedestrianEvents?: DetectorEventDto[] | null;
-  /** @nullable */
-  cycleAllEvents?: CycleEventsDto[] | null;
-  /** @nullable */
-  advanceCountDetectors?: DetectorEventDto[] | null;
-  /** @nullable */
-  advancePresenceDetectors?: DetectorEventDto[] | null;
-  /** @nullable */
-  stopBarDetectors?: DetectorEventDto[] | null;
-  /** @nullable */
-  laneByLanesDetectors?: DetectorEventDto[] | null;
-  /** @nullable */
-  phaseCustomEvents?: TimingAndActuationsForPhaseResultPhaseCustomEvents;
-}
-
-export interface TimingAndActuationsOptions {
-  /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  /**
+   * The name of the property being described.
+   * @nullable
+   */
+  start?: string | null;
+  description?: string;
   /** @nullable */
   globalEventCodesList?: number[] | null;
   /** @nullable */
@@ -1782,7 +1242,7 @@ export interface TimingAndActuationsOptions {
   phaseEventCodesList?: number[] | null;
 }
 
-export interface TransitSignalPhase {
+export interface RuntimeTypeHandle {
   phaseNumber?: number;
   minGreen?: number;
   yellow?: number;
@@ -1808,12 +1268,13 @@ export interface TransitSignalPhase {
   maxReduction?: number;
   maxExtension?: number;
   priorityMin?: number;
-  priorityMax?: number;
+  end?: string;
   /** @nullable */
-  notes?: string | null;
+  locationIdentifier?: string | null;
+  eventCount?: number;
 }
 
-export interface TransitSignalPriorityOptions {
+export interface SignalPlanAggregation {
   /** @nullable */
   locationsAndPhases?: LocationPhases[] | null;
   /** @nullable */
@@ -1827,52 +1288,44 @@ export interface TransitSignalPriorityPlan {
   numberOfCycles?: number;
 }
 
-export interface TransitSignalPriorityResult {
-  locationPhases?: LocationPhases;
-  /** @nullable */
-  transitSignalPlans?: TransitSignalPriorityPlan[] | null;
-}
-
-export interface TurningMovementCountData {
-  /** @nullable */
-  direction?: string | null;
-  /** @nullable */
-  movementType?: string | null;
-  /** @nullable */
-  laneType?: string | null;
-  /** @nullable */
-  volumes?: DataPointForInt[] | null;
-  peakHourVolume?: DataPointForInt;
-}
-
-export interface TurningMovementCountsLanesResult {
+export interface SpeedEvent {
   /** @nullable */
   locationIdentifier?: string | null;
+  timestamp?: string;
   /** @nullable */
-  locationDescription?: string | null;
-  start?: string;
-  end?: string;
+  detectorId?: string | null;
+  mph?: number;
+  kph?: number;
+}
+
+/**
+ * @nullable
+ */
+export type StructLayoutAttributeTypeId = unknown | null;
+
+export interface StructLayoutAttribute {
   /** @nullable */
-  direction?: string | null;
+  readonly typeId?: StructLayoutAttributeTypeId;
+  value?: LayoutKind;
+}
+
+export interface Type {
   /** @nullable */
-  laneType?: string | null;
+  readonly name?: string | null;
   /** @nullable */
-  movementType?: string | null;
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  readonly metadataToken?: number;
+  readonly isInterface?: boolean;
+  memberType?: MemberTypes;
   /** @nullable */
-  plans?: Plan[] | null;
+  readonly namespace?: string | null;
   /** @nullable */
-  lanes?: Lane[] | null;
+  readonly assemblyQualifiedName?: string | null;
   /** @nullable */
-  totalHourlyVolumes?: DataPointForInt[] | null;
-  /** @nullable */
-  totalVolumes?: DataPointForInt[] | null;
-  totalVolume?: number;
-  /** @nullable */
-  peakHour?: string | null;
-  /** @nullable */
-  peakHourVolume?: number | null;
-  /** @nullable */
-  peakHourFactor?: number | null;
+  readonly fullName?: string | null;
+  assembly?: Assembly;
+  module?: Module;
   /** @nullable */
   laneUtilizationFactor?: number | null;
 }
@@ -1881,16 +1334,15 @@ export interface TurningMovementCountsOptions {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
-  end?: string;
+  reflectedType?: Type;
   binSize?: number;
-  readonly metricTypeId?: number;
+  readonly isArray?: boolean;
 }
 
 export interface TurningMovementCountsResult {
   /** @nullable */
   charts?: TurningMovementCountsLanesResult[] | null;
-  /** @nullable */
-  table?: TurningMovementCountData[] | null;
+  readonly isGenericParameter?: boolean;
   peakHour?: KeyValuePair2;
   /** @nullable */
   peakHourFactor?: number | null;
@@ -1900,74 +1352,60 @@ export interface VolumeOptions {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
-  end?: string;
+  readonly isGenericTypeDefinition?: boolean;
   approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  readonly isByRefLike?: boolean;
+  readonly isFunctionPointer?: boolean;
+  readonly isUnmanagedFunctionPointer?: boolean;
+  readonly hasElementType?: boolean;
   /** @nullable */
-  daysOfWeek?: number[] | null;
-}
-
-/**
- * @nullable
- */
-export type VolumeResultDemandList = {[key: string]: number} | null;
-
-export interface VolumeResult {
-  opposingLanes?: number;
-  crossProductReview?: boolean;
-  decisionBoundariesReview?: boolean;
-  leftTurnVolume?: number;
-  opposingThroughVolume?: number;
-  crossProductValue?: number;
-  calculatedVolumeBoundary?: number;
-  /** @nullable */
-  demandList?: VolumeResultDemandList;
-  /** @nullable */
-  readonly direction?: string | null;
-  /** @nullable */
-  readonly opposingDirection?: string | null;
+  readonly genericTypeArguments?: readonly Type[] | null;
+  readonly genericParameterPosition?: number;
+  genericParameterAttributes?: GenericParameterAttributes;
+  attributes?: TypeAttributes;
+  readonly isAbstract?: boolean;
+  readonly isImport?: boolean;
+  readonly isSealed?: boolean;
+  readonly isSpecialName?: boolean;
+  readonly isClass?: boolean;
+  readonly isNestedAssembly?: boolean;
+  readonly isNestedFamANDAssem?: boolean;
+  readonly isNestedFamily?: boolean;
 }
 
 export interface WaitTimeOptions {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
-  end?: string;
+  readonly isNestedPublic?: boolean;
   binSize?: number;
 }
 
 export interface WaitTimeResult {
   start?: string;
-  end?: string;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
-  /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  /** @nullable */
-  detectionTypes?: string | null;
-  /** @nullable */
-  plans?: PlanWaitTime[] | null;
-  /** @nullable */
-  gapOuts?: DataPointForDouble[] | null;
-  /** @nullable */
-  maxOuts?: DataPointForDouble[] | null;
-  /** @nullable */
-  forceOffs?: DataPointForDouble[] | null;
-  /** @nullable */
-  unknowns?: DataPointForDouble[] | null;
-  /** @nullable */
-  average?: DataPointForDouble[] | null;
-  /** @nullable */
-  volumes?: DataPointForInt[] | null;
-  /** @nullable */
-  readonly planSplits?: readonly DataPointForDouble[] | null;
+  readonly isLayoutSequential?: boolean;
+  readonly isAnsiClass?: boolean;
+  readonly isAutoClass?: boolean;
+  readonly isUnicodeClass?: boolean;
+  readonly isCOMObject?: boolean;
+  readonly isContextful?: boolean;
+  readonly isEnum?: boolean;
+  readonly isMarshalByRef?: boolean;
+  readonly isPrimitive?: boolean;
+  readonly isValueType?: boolean;
+  readonly isSignatureType?: boolean;
+  readonly isSecurityCritical?: boolean;
+  readonly isSecuritySafeCritical?: boolean;
+  readonly isSecurityTransparent?: boolean;
+  structLayoutAttribute?: StructLayoutAttribute;
+  typeInitializer?: ConstructorInfo;
+  typeHandle?: RuntimeTypeHandle;
+  readonly guid?: string;
+  baseType?: Type;
+  /** @deprecated */
+  readonly isSerializable?: boolean;
+  readonly containsGenericParameters?: boolean;
+  readonly isVisible?: boolean;
 }
 
 export type WatchDogComponentTypes = typeof WatchDogComponentTypes[keyof typeof WatchDogComponentTypes];
@@ -1980,15 +1418,13 @@ export const WatchDogComponentTypes = {
   Detector: 'Detector',
 } as const;
 
-export interface WatchDogDashboardOptions {
-  start?: string;
-  end?: string;
-}
-
-export interface WatchDogFirmwareCount {
+export interface TypeInfo {
   /** @nullable */
-  name?: string | null;
-  counts?: number;
+  readonly name?: string | null;
+  /** @nullable */
+  readonly customAttributes?: readonly CustomAttributeData[] | null;
+  readonly isCollectible?: boolean;
+  metadataToken?: number;
 }
 
 export interface WatchDogIssueTypeGroup {
@@ -2017,25 +1453,18 @@ export const WatchDogIssueTypes = {
 
 export interface WatchDogLogEventDTO {
   id?: number;
-  locationId?: number;
-  /** @nullable */
-  locationIdentifier?: string | null;
-  timestamp?: string;
-  componentType?: WatchDogComponentTypes;
-  componentId?: number;
-  issueType?: WatchDogIssueTypes;
-  /** @nullable */
-  details?: string | null;
-  /** @nullable */
-  phase?: number | null;
-  /** @nullable */
-  regionId?: number | null;
-  /** @nullable */
-  regionDescription?: string | null;
-  /** @nullable */
-  jurisdictionId?: number | null;
-  /** @nullable */
-  jurisdictionName?: string | null;
+  readonly isTypeDefinition?: boolean;
+  readonly isArray?: boolean;
+  readonly isByRef?: boolean;
+  readonly isPointer?: boolean;
+  readonly isConstructedGenericType?: boolean;
+  readonly isGenericParameter?: boolean;
+  readonly isGenericTypeParameter?: boolean;
+  readonly isGenericMethodParameter?: boolean;
+  readonly isGenericType?: boolean;
+  readonly isGenericTypeDefinition?: boolean;
+  readonly isSZArray?: boolean;
+  readonly isVariableBoundArray?: boolean;
   /** @nullable */
   areas?: AreaDTO[] | null;
 }
@@ -2051,7 +1480,7 @@ export interface WatchDogOptions {
   /** @nullable */
   areaId?: number | null;
   /** @nullable */
-  regionId?: number | null;
+  readonly genericTypeArguments?: readonly Type[] | null;
   /** @nullable */
   jurisdictionId?: number | null;
   /** @nullable */
@@ -2072,7 +1501,7 @@ export interface WatchDogProductInfo {
 
 export interface WatchDogResult {
   start?: string;
-  end?: string;
+  readonly isNestedPrivate?: boolean;
   /** @nullable */
   logEvents?: WatchDogLogEventDTO[] | null;
 }
@@ -2094,57 +1523,45 @@ export interface YellowRedActivationsOptions {
   /** @nullable */
   locationIdentifier?: string | null;
   start?: string;
-  end?: string;
+  readonly isLayoutSequential?: boolean;
   severeLevelSeconds?: number;
-  metricTypeId?: number;
-}
-
-export interface YellowRedActivationsPlan {
+  readonly isUnicodeClass?: boolean;
+  readonly isCOMObject?: boolean;
+  readonly isContextful?: boolean;
+  readonly isEnum?: boolean;
+  readonly isMarshalByRef?: boolean;
+  readonly isPrimitive?: boolean;
+  readonly isValueType?: boolean;
+  readonly isSignatureType?: boolean;
+  readonly isSecurityCritical?: boolean;
+  readonly isSecuritySafeCritical?: boolean;
+  readonly isSecurityTransparent?: boolean;
+  structLayoutAttribute?: StructLayoutAttribute;
+  typeInitializer?: ConstructorInfo;
+  typeHandle?: RuntimeTypeHandle;
+  readonly guid?: string;
+  baseType?: Type;
+  /** @deprecated */
+  readonly isSerializable?: boolean;
+  readonly containsGenericParameters?: boolean;
+  readonly isVisible?: boolean;
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  readonly genericTypeParameters?: readonly Type[] | null;
   /** @nullable */
-  readonly planDescription?: string | null;
-  totalViolations?: number;
-  severeViolations?: number;
-  percentViolations?: number;
-  percentSevereViolations?: number;
-  averageTimeViolations?: number;
-}
-
-export interface YellowRedActivationsResult {
-  start?: string;
-  end?: string;
+  readonly declaredConstructors?: readonly ConstructorInfo[] | null;
   /** @nullable */
-  locationIdentifier?: string | null;
+  readonly declaredEvents?: readonly EventInfo[] | null;
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  readonly declaredFields?: readonly FieldInfo[] | null;
   /** @nullable */
-  approachDescription?: string | null;
+  readonly declaredMembers?: readonly MemberInfo[] | null;
   /** @nullable */
-  direction?: string | null;
+  readonly declaredMethods?: readonly MethodInfo[] | null;
   /** @nullable */
-  movementType?: string | null;
-  protectedPhaseNumber?: number;
+  readonly declaredNestedTypes?: readonly TypeInfo[] | null;
   /** @nullable */
-  permissivePhaseNumber?: number | null;
-  isPermissivePhase?: boolean;
+  readonly declaredProperties?: readonly PropertyInfo[] | null;
   /** @nullable */
-  phaseType?: string | null;
-  totalViolations?: number;
-  severeViolations?: number;
-  yellowLightOccurences?: number;
-  /** @nullable */
-  plans?: YellowRedActivationsPlan[] | null;
-  /** @nullable */
-  redEvents?: DataPointForDouble[] | null;
-  /** @nullable */
-  yellowEvents?: DataPointForDouble[] | null;
-  /** @nullable */
-  redClearanceEvents?: DataPointForDouble[] | null;
-  /** @nullable */
-  detectorEvents?: DataPointForDouble[] | null;
+  readonly implementedInterfaces?: readonly Type[] | null;
 }
 

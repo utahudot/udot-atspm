@@ -13,7 +13,7 @@ module.exports = {
       override: {
         mutator: {
           path: '../../lib/axios.ts',
-          name: 'dataRequest',
+          name: 'configRequest',
         },
       },
     },

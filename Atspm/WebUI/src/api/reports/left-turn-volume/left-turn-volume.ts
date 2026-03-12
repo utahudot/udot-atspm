@@ -27,6 +27,33 @@ import type {
 
 import { reportsRequest } from '../../../lib/axios';
 
+// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+T,
+>() => T extends Y ? 1 : 2
+? A
+: B;
+
+type WritableKeys<T> = {
+[P in keyof T]-?: IfEquals<
+  { [Q in P]: T[P] },
+  { -readonly [Q in P]: T[P] },
+  P
+>;
+}[keyof T];
+
+type UnionToIntersection<U> =
+  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
+
+type Writable<T> = Pick<T, WritableKeys<T>>;
+type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
+  [P in keyof Writable<T>]: T[P] extends object
+    ? NonReadonly<NonNullable<T[P]>>
+    : T[P];
+} : DistributeReadOnlyOverUnions<T>;
+
+
 
 
 
@@ -40,14 +67,14 @@ export const getLeftTurnVolumeTestData = (
       
       
       return reportsRequest<VolumeResult>(
-      {url: `/LeftTurnVolume/test`, method: 'GET', signal
+      {url: `/api/v1/LeftTurnVolume/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetLeftTurnVolumeTestDataQueryKey = () => {
-    return [`/LeftTurnVolume/test`] as const;
+    return [`/api/v1/LeftTurnVolume/test`] as const;
     }
 
     
@@ -97,13 +124,13 @@ export function useGetLeftTurnVolumeTestData<TData = Awaited<ReturnType<typeof g
  * @summary Get report data
  */
 export const getLeftTurnVolumeReportData = (
-    volumeOptions: VolumeOptions,
+    volumeOptions: NonReadonly<VolumeOptions>,
  signal?: AbortSignal
 ) => {
       
       
       return reportsRequest<VolumeResult>(
-      {url: `/LeftTurnVolume/getReportData`, method: 'POST',
+      {url: `/api/v1/LeftTurnVolume/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: volumeOptions, signal
     },
@@ -113,8 +140,8 @@ export const getLeftTurnVolumeReportData = (
 
 
 export const getGetLeftTurnVolumeReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, TError,{data: VolumeOptions}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, TError,{data: VolumeOptions}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, TError,{data: NonReadonly<VolumeOptions>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, TError,{data: NonReadonly<VolumeOptions>}, TContext> => {
 
 const mutationKey = ['getLeftTurnVolumeReportData'];
 const {mutation: mutationOptions} = options ?
@@ -126,7 +153,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, {data: VolumeOptions}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, {data: NonReadonly<VolumeOptions>}> = (props) => {
           const {data} = props ?? {};
 
           return  getLeftTurnVolumeReportData(data,)
@@ -138,18 +165,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetLeftTurnVolumeReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>>
-    export type GetLeftTurnVolumeReportDataMutationBody = VolumeOptions
+    export type GetLeftTurnVolumeReportDataMutationBody = NonReadonly<VolumeOptions>
     export type GetLeftTurnVolumeReportDataMutationError = ProblemDetails
 
     /**
  * @summary Get report data
  */
 export const useGetLeftTurnVolumeReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, TError,{data: VolumeOptions}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>, TError,{data: NonReadonly<VolumeOptions>}, TContext>, }
  ): UseMutationResult<
         Awaited<ReturnType<typeof getLeftTurnVolumeReportData>>,
         TError,
-        {data: VolumeOptions},
+        {data: NonReadonly<VolumeOptions>},
         TContext
       > => {
 

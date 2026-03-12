@@ -40,14 +40,14 @@ export const getSplitMonitorTestData = (
       
       
       return reportsRequest<SplitMonitorResult[]>(
-      {url: `/SplitMonitor/test`, method: 'GET', signal
+      {url: `/api/v1/SplitMonitor/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetSplitMonitorTestDataQueryKey = () => {
-    return [`/SplitMonitor/test`] as const;
+    return [`/api/v1/SplitMonitor/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getSplitMonitorReportData = (
       
       
       return reportsRequest<SplitMonitorResult[]>(
-      {url: `/SplitMonitor/getReportData`, method: 'POST',
+      {url: `/api/v1/SplitMonitor/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: splitMonitorOptions, signal
     },

@@ -40,14 +40,14 @@ export const getPurduePhaseTerminationTestData = (
       
       
       return reportsRequest<PhaseTerminationResult>(
-      {url: `/PurduePhaseTermination/test`, method: 'GET', signal
+      {url: `/api/v1/PurduePhaseTermination/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetPurduePhaseTerminationTestDataQueryKey = () => {
-    return [`/PurduePhaseTermination/test`] as const;
+    return [`/api/v1/PurduePhaseTermination/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getPurduePhaseTerminationReportData = (
       
       
       return reportsRequest<PhaseTerminationResult>(
-      {url: `/PurduePhaseTermination/getReportData`, method: 'POST',
+      {url: `/api/v1/PurduePhaseTermination/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: purduePhaseTerminationOptions, signal
     },

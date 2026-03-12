@@ -40,14 +40,14 @@ export const getPedDelayTestData = (
       
       
       return reportsRequest<PedDelayResult[]>(
-      {url: `/PedDelay/test`, method: 'GET', signal
+      {url: `/api/v1/PedDelay/test`, method: 'GET', signal
     },
       );
     }
   
 
 export const getGetPedDelayTestDataQueryKey = () => {
-    return [`/PedDelay/test`] as const;
+    return [`/api/v1/PedDelay/test`] as const;
     }
 
     
@@ -103,7 +103,7 @@ export const getPedDelayReportData = (
       
       
       return reportsRequest<PedDelayResult[]>(
-      {url: `/PedDelay/getReportData`, method: 'POST',
+      {url: `/api/v1/PedDelay/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: pedDelayOptions, signal
     },

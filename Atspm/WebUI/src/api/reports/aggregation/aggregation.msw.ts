@@ -20,17 +20,17 @@ import type {
 } from '../report-api.schemas';
 
 
-export const getGetAggregationTestDataResponseMock = (): AggregationResult[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), series: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), dataPoints: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), start: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.float(), undefined])})), undefined])})), undefined])})))
+export const getGetAggregationDataTypesResponseMock = (): AggregationResult[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), series: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), dataPoints: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), start: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.float(), undefined])})), undefined])})), undefined])})))
 
 export const getGetAggregationReportDataResponseMock = (): AggregationResult[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), series: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), dataPoints: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({identifier: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), start: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.float(), undefined])})), undefined])})), undefined])})))
 
 
-export const getGetAggregationTestDataMockHandler = (overrideResponse?: AggregationResult[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<AggregationResult[]> | AggregationResult[])) => {
-  return http.get('*/Aggregation/test', async (info) => {await delay(1000);
+export const getGetAggregationDataTypesMockHandler = (overrideResponse?: AggregationResult[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<AggregationResult[]> | AggregationResult[])) => {
+  return http.get('*/api/v1/Aggregation/test', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
-            : getGetAggregationTestDataResponseMock()),
+            : getGetAggregationDataTypesResponseMock()),
       { status: 200,
         headers: { 'Content-Type': 'application/json' }
       })
@@ -38,7 +38,7 @@ export const getGetAggregationTestDataMockHandler = (overrideResponse?: Aggregat
 }
 
 export const getGetAggregationReportDataMockHandler = (overrideResponse?: AggregationResult[] | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<AggregationResult[]> | AggregationResult[])) => {
-  return http.post('*/Aggregation/getReportData', async (info) => {await delay(1000);
+  return http.post('*/api/v1/Aggregation/getReportData', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
             ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
@@ -49,6 +49,6 @@ export const getGetAggregationReportDataMockHandler = (overrideResponse?: Aggreg
   })
 }
 export const getAggregationMock = () => [
-  getGetAggregationTestDataMockHandler(),
+  getGetAggregationDataTypesMockHandler(),
   getGetAggregationReportDataMockHandler()
 ]
