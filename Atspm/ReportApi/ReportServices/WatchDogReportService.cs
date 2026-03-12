@@ -56,7 +56,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             else
             {
                 query = watchDogLogEventRepository.GetList()
-                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp < parameter.End).ToList();
+                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp <= parameter.End).ToList();
             }
 
 
