@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public string LocationIdentifier { get; set; }
     }
 
-    public abstract class  AggregationApproachBase : AggregationModelBase, ILocationApproachLayer
+    public abstract class AggregationApproachBase : AggregationModelBase, ILocationApproachLayer
     {
         /// <summary>
         /// Id of approach assigned to the location

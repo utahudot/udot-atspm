@@ -20,7 +20,7 @@ using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 
 namespace Utah.Udot.ATSPM.ConfigApi.DTO
 {
-    public class DetectorDto: AtspmConfigModelBase<int>
+    public class DetectorDto : AtspmConfigModelBase<int>
     {
         public int? Id { get; set; }
         public string DectectorIdentifier { get; set; }
