@@ -158,62 +158,58 @@ namespace Utah.Udot.Atspm
         }
 
         /// <summary>
-        /// Calculates the specified percentile value from a numeric sequence.
+        /// Calculates the specified percentile value from a sequence of numeric values.
         /// </summary>
         /// <typeparam name="T">
-        /// A numeric type that implements <see cref="INumber{T}"/>.
+        /// The numeric type of the elements in the sequence. Must implement <see cref="INumber{T}"/>.
         /// </typeparam>
         /// <param name="sequence">
-        /// The input sequence of numeric values.  
-        /// The sequence is materialized internally to avoid multiple enumeration.
+        /// The sequence of numeric values from which to compute the percentile.
         /// </param>
         /// <param name="percentile">
-        /// The percentile to compute, expressed as a value between 0 and 100.
+        /// The desired percentile (0–100). Values outside this range will cause an exception.
         /// </param>
         /// <returns>
-        /// The computed percentile value.  
-        /// Returns <c>0</c> if the sequence contains no elements.
+        /// The computed percentile value, using linear interpolation when the percentile falls between two data points.
         /// </returns>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when <paramref name="sequence"/> is <c>null</c>.
+        /// Thrown when the sequence is null or contains no elements.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="percentile"/> is outside the range 0–100.
+        /// Thrown when <paramref name="percentile"/> is less than 0 or greater than 100.
         /// </exception>
         /// <remarks>
-        /// This method materializes the input sequence into a list to ensure stable,
-        /// single-pass evaluation. Percentile calculation uses linear interpolation
-        /// between the two nearest ranked values.
+        /// The method sorts the sequence, computes the rank based on the percentile,
+        /// and performs linear interpolation when necessary.
         /// </remarks>
-        public static double Percentile<T>(IEnumerable<T> sequence, double percentile)
-            where T : INumber<T>
+        public static double Percentile<T>(IEnumerable<T> sequence, double percentile) where T : INumber<T>
         {
-            if (sequence == null)
-                throw new InvalidOperationException("The sequence must not be null.");
-
-            var list = sequence.ToList();
-
-            if (list.Count == 0)
-                return 0;
+            if (sequence == null || !sequence.Any())
+            {
+                throw new InvalidOperationException("The sequence must not be empty.");
+            }
 
             if (percentile < 0 || percentile > 100)
-                throw new ArgumentOutOfRangeException(nameof(percentile),
-                    "Percentile must be between 0 and 100.");
+            {
+                throw new ArgumentOutOfRangeException("Percentile must be between 0 and 100.");
+            }
 
-            var sorted = list
-                .Select(x => Convert.ToDouble(x))
-                .OrderBy(x => x)
-                .ToList();
+            var sorted = sequence.Select(x => Convert.ToDouble(x)).OrderBy(x => x).ToList();
+            sorted.Sort();
 
             if (sorted.Count == 1)
+            {
                 return sorted[0];
+            }
 
             double rank = (percentile / 100.0) * (sorted.Count - 1);
             int lowerIndex = (int)Math.Floor(rank);
             int upperIndex = (int)Math.Ceiling(rank);
 
             if (lowerIndex == upperIndex)
+            {
                 return sorted[lowerIndex];
+            }
 
             double lowerValue = sorted[lowerIndex];
             double upperValue = sorted[upperIndex];
