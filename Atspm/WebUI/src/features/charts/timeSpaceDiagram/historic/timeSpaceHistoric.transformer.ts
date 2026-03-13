@@ -447,6 +447,16 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
         itemStyle: { color: '#f0807f' },
       },
       {
+        name: `Cycle Durations ${primaryDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
+      },
+      {
+        name: `Cycle Durations ${opposingDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
+      },
+      {
         name: `Green Bands ${primaryDirection}`,
         itemStyle: { color: 'green', opacity: 0.3 },
       },
@@ -533,6 +543,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     selected: {
       [`Cycles ${primaryDirection}`]: true,
       [`Cycles ${opposingDirection}`]: true,
+      [`Cycle Durations ${primaryDirection}`]: true,
+      [`Cycle Durations ${opposingDirection}`]: true,
       [`Green Bands ${primaryDirection}`]: true,
       [`Green Bands ${opposingDirection}`]: true,
       [`Lane by Lane Count ${primaryDirection}`]: false,

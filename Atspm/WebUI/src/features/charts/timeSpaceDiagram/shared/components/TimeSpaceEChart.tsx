@@ -4,11 +4,18 @@ import { TIME_SPACE_LOCATION_CARD_LAYOUT } from '@/features/charts/timeSpaceDiag
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { IconButton, Tooltip } from '@mui/material'
-import type { ECharts, EChartsOption, SeriesOption } from 'echarts'
+import type {
+  ECharts,
+  EChartsOption,
+  GridComponentOption,
+  LegendComponentOption,
+  SeriesOption,
+} from 'echarts'
 import { init } from 'echarts'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
 import { GpxUploadOptions } from '../types'
+import TimeSpaceSidebar from './TimeSpaceSidebar'
 
 export interface TimeSpaceChartProps extends ApacheEChartsProps {
   gpxEntries?: GpxUploadOptions[]
@@ -55,6 +62,65 @@ function getGridLeft(chart: ECharts, option?: EChartsOption) {
 
   const grid = Array.isArray(option?.grid) ? option.grid[0] : option?.grid
   return typeof grid?.left === 'number' ? grid.left : 0
+}
+
+function getPrimaryLegend(
+  option?: EChartsOption
+): LegendSelectionProvider | undefined {
+  if (!option?.legend) return undefined
+
+  return Array.isArray(option.legend)
+    ? (option.legend[0] as LegendSelectionProvider | undefined)
+    : (option.legend as LegendSelectionProvider)
+}
+
+function getLegendSelectedMap(option?: EChartsOption): Record<string, boolean> {
+  const selected = getPrimaryLegend(option)?.selected
+  return selected ? { ...selected } : {}
+}
+
+function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
+  const primaryLegend = getPrimaryLegend(option)
+  const hasLegendData =
+    primaryLegend &&
+    Array.isArray(primaryLegend.data) &&
+    primaryLegend.data.length > 0
+
+  if (!hasLegendData) {
+    return option
+  }
+
+  const hideLegend = (legend: LegendComponentOption) => ({
+    ...legend,
+    show: false,
+  })
+
+  const nextLegend = Array.isArray(option.legend)
+    ? option.legend.map((legend, index) =>
+        index === 0 ? hideLegend(legend as LegendComponentOption) : legend
+      )
+    : hideLegend(primaryLegend)
+
+  const shrinkGrid = (grid?: GridComponentOption) => {
+    if (!grid) return grid
+
+    return {
+      ...grid,
+      right: typeof grid.right === 'number' ? Math.min(grid.right, 36) : 36,
+    }
+  }
+
+  const nextGrid = Array.isArray(option.grid)
+    ? option.grid.map((grid, index) =>
+        index === 0 ? shrinkGrid(grid as GridComponentOption) : grid
+      )
+    : shrinkGrid(option.grid as GridComponentOption | undefined)
+
+  return {
+    ...option,
+    legend: nextLegend,
+    grid: nextGrid,
+  }
 }
 
 function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
@@ -121,10 +187,10 @@ function buildLocationToggleButtons(
 
   return locationAxisData
     .map(({ distance, location, time }) => {
-      const [, y] = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
-        time,
-        distance,
-      ]) as [number, number]
+      const pixel = getChartPixel(chart, time, distance)
+      if (!pixel) return null
+
+      const [, y] = pixel
 
       if (!Number.isFinite(y)) {
         return null
@@ -139,6 +205,36 @@ function buildLocationToggleButtons(
       }
     })
     .filter((item): item is LocationToggleButton => item !== null)
+}
+
+function getChartPixel(
+  chart: ECharts,
+  time: string | number,
+  distance: number
+): [number, number] | null {
+  try {
+    const pixel = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
+      time,
+      distance,
+    ])
+
+    if (
+      !Array.isArray(pixel) ||
+      pixel.length < 2 ||
+      !Number.isFinite(pixel[0]) ||
+      !Number.isFinite(pixel[1])
+    ) {
+      return null
+    }
+
+    return [pixel[0], pixel[1]]
+  } catch {
+    return null
+  }
+}
+
+type LegendSelectionProvider = LegendComponentOption & {
+  selected?: Record<string, boolean>
 }
 
 export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
@@ -158,6 +254,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [locationToggleButtons, setLocationToggleButtons] = useState<
     LocationToggleButton[]
   >([])
+  const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
+    () => getLegendSelectedMap(option)
+  )
+  const renderedOption = useMemo(
+    () => buildChartOptionWithSidebar(option),
+    [option]
+  )
 
   useTimeSpaceHandler(chart)
 
@@ -205,13 +308,41 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   }, [theme])
 
   useEffect(() => {
-    const inst = chartInstanceRef.current
-    if (!inst || !option) return
-    inst.setOption(option)
-  }, [chart, option])
+    setSelectedSeries(getLegendSelectedMap(option))
+  }, [option])
 
   useEffect(() => {
-    if (!chart || !option || !onToggleIgnoredLocation) {
+    const inst = chartInstanceRef.current
+    if (!inst || !renderedOption) return
+    inst.setOption(renderedOption)
+  }, [chart, renderedOption])
+
+  useEffect(() => {
+    if (!chart) return
+
+    const syncSelectedSeries = () => {
+      setSelectedSeries(getLegendSelectedMap(chart.getOption() as EChartsOption))
+    }
+
+    const handleLegendSelectionChange = (event: {
+      selected?: Record<string, boolean>
+    }) => {
+      if (!event.selected) return
+      setSelectedSeries({ ...event.selected })
+    }
+
+    syncSelectedSeries()
+    chart.on('finished', syncSelectedSeries)
+    chart.on('legendselectchanged', handleLegendSelectionChange)
+
+    return () => {
+      chart.off('finished', syncSelectedSeries)
+      chart.off('legendselectchanged', handleLegendSelectionChange)
+    }
+  }, [chart, renderedOption])
+
+  useEffect(() => {
+    if (!chart || !renderedOption || !onToggleIgnoredLocation) {
       setLocationToggleButtons([])
       return
     }
@@ -220,7 +351,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     const syncButtons = () => {
       rafId = window.requestAnimationFrame(() => {
-        setLocationToggleButtons(buildLocationToggleButtons(chart, option))
+        setLocationToggleButtons(
+          buildLocationToggleButtons(chart, renderedOption)
+        )
       })
     }
 
@@ -236,7 +369,24 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       chart.off('restore', syncButtons)
       window.removeEventListener('resize', syncButtons)
     }
-  }, [chart, option, onToggleIgnoredLocation])
+  }, [chart, renderedOption, onToggleIgnoredLocation])
+
+  const handleToggleSeries = (seriesName: string) => {
+    const inst = chartInstanceRef.current
+    if (!inst) return
+
+    const isSelected = selectedSeries[seriesName] !== false
+
+    inst.dispatchAction({
+      type: isSelected ? 'legendUnSelect' : 'legendSelect',
+      name: seriesName,
+    })
+
+    setSelectedSeries((current) => ({
+      ...current,
+      [seriesName]: !isSelected,
+    }))
+  }
 
   return (
     <div
@@ -244,61 +394,77 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
         width: '100%',
         height: '100%',
         position: 'relative',
+        display: 'flex',
         ...style,
       }}
     >
       <div
-        id={id}
-        ref={chartRef}
         style={{
-          width: '100%',
+          flex: 1,
+          minWidth: 0,
           height: '100%',
+          position: 'relative',
         }}
-      />
-
-      {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
+      >
         <div
+          id={id}
+          ref={chartRef}
           style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
+            width: '100%',
+            height: '100%',
           }}
-        >
-          {locationToggleButtons.map((button) => {
-            const isIgnored = ignoredLocations.includes(button.location)
-            const title = isIgnored
-              ? `Show location ${button.location}`
-              : `Ignore location ${button.location}`
+        />
 
-            return (
-              <Tooltip key={button.location} title={title} placement="top">
-                <IconButton
-                  size="small"
-                  onClick={() => onToggleIgnoredLocation(button.location)}
-                  sx={{
-                    pointerEvents: 'auto',
-                    position: 'absolute',
-                    left: `${button.left}px`,
-                    top: `${button.top}px`,
-                    p: 0,
-                    height: '10px',
-                    color: isIgnored ? '#6B7280' : '#1F2937',
-                    '&:hover': {
-                      backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                    },
-                  }}
-                >
-                  {isIgnored ? (
-                    <VisibilityOffIcon sx={{ fontSize: '18px' }} />
-                  ) : (
-                    <VisibilityIcon sx={{ fontSize: '18px' }} />
-                  )}
-                </IconButton>
-              </Tooltip>
-            )
-          })}
-        </div>
-      )}
+        {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+            }}
+          >
+            {locationToggleButtons.map((button) => {
+              const isIgnored = ignoredLocations.includes(button.location)
+              const title = isIgnored
+                ? `Show location ${button.location}`
+                : `Ignore location ${button.location}`
+
+              return (
+                <Tooltip key={button.location} title={title} placement="top">
+                  <IconButton
+                    size="small"
+                    onClick={() => onToggleIgnoredLocation(button.location)}
+                    sx={{
+                      pointerEvents: 'auto',
+                      position: 'absolute',
+                      left: `${button.left}px`,
+                      top: `${button.top}px`,
+                      p: 0,
+                      height: '10px',
+                      color: isIgnored ? '#6B7280' : '#1F2937',
+                      '&:hover': {
+                        backgroundColor: 'rgba(15, 23, 42, 0.08)',
+                      },
+                    }}
+                  >
+                    {isIgnored ? (
+                      <VisibilityOffIcon sx={{ fontSize: '18px' }} />
+                    ) : (
+                      <VisibilityIcon sx={{ fontSize: '18px' }} />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <TimeSpaceSidebar
+        option={option}
+        selectedSeries={selectedSeries}
+        onToggleSeries={handleToggleSeries}
+      />
     </div>
   )
 }

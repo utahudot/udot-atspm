@@ -117,6 +117,12 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   },
 ] as const
 
+const CYCLE_SEGMENT_HEIGHT = 12
+const CYCLE_DURATION_LABEL_FONT_SIZE = 10
+const CYCLE_DURATION_LABEL_FILL = 'white'
+const CYCLE_DURATION_LABEL_STROKE = 'black'
+const CYCLE_DURATION_LABEL_STROKE_WIDTH = 1.5
+
 function getCycleColor(value: number): string {
   const found = CYCLE_INDICATIONS.find((x) => x.codes.includes(value))
   return found?.color ?? '#999'
@@ -135,34 +141,71 @@ export function generateCycles(
   distanceData: number[],
   phaseType?: string
 ): SeriesOption[] {
-  return data.map((phase, index) => {
+  return data.flatMap((phase, index) => {
     const distance = distanceData[index]
-    // const nextDistance = distanceData[index + 1] ?? distance + 300 // or whatever spacing you use
     const hasData = hasCycleData(phase.cycleAllEvents)
 
     const cycleEvents = hasData
       ? getCycleEvents(phase.cycleAllEvents, distance)
       : [[0, distance, 0]]
 
-    return {
-      name: `Cycles ${phaseType ?? ''}`,
-      id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
-      type: 'custom',
-      clip: true,
-      z: 5,
-      data: cycleEvents,
-      renderItem: (param, api): CustomSeriesRenderItemReturn => {
-        if (!hasData) {
-          // console.log(
-          //   `${phase.locationIdentifier} has no cycles for ${phaseType}`
-          // )
-          return renderMissingCycle(api, param, distance)
-          // return renderMissingCycle(param, distance)
-        }
+    const cycleName = `Cycles ${phaseType ?? ''}`
+    const cycleDurationName = `Cycle Durations ${phaseType ?? ''}`
+    const series: SeriesOption[] = [
+      {
+        name: cycleName,
+        id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
+        type: 'custom',
+        clip: true,
+        z: 5,
+        data: cycleEvents,
+        renderItem: (param, api): CustomSeriesRenderItemReturn => {
+          if (!hasData) {
+            return renderMissingCycle(api, param, distance)
+          }
 
-        return renderCycleSegment(api, cycleEvents, param.dataIndex)
+          return renderCycleSegment(api, cycleEvents, param.dataIndex)
+        },
       },
+    ]
+
+    if (hasData) {
+      series.push({
+        name: cycleDurationName,
+        id: `Cycle Duration Labels ${phase.locationIdentifier} ${phaseType ?? ''}`,
+        type: 'custom',
+        clip: true,
+        silent: true,
+        z: 6,
+        data: getCycleDurationLabelData(cycleEvents),
+        renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+          const midX = api.value(0) as number
+          const y = api.value(1) as number
+          const label = String(api.value(2))
+
+          const center = api.coord([midX, y])
+
+          return {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: center[0],
+              y: center[1] + CYCLE_SEGMENT_HEIGHT / 2,
+              text: label,
+              fill: CYCLE_DURATION_LABEL_FILL,
+              stroke: CYCLE_DURATION_LABEL_STROKE,
+              lineWidth: CYCLE_DURATION_LABEL_STROKE_WIDTH,
+              fontSize: CYCLE_DURATION_LABEL_FONT_SIZE,
+              fontWeight: 600,
+              textAlign: 'center',
+              textVerticalAlign: 'middle',
+            },
+          }
+        },
+      })
     }
+
+    return series
   })
 }
 
@@ -175,30 +218,64 @@ function renderCycleSegment(
 
   const [x1, y1, v1] = [api.value(0), api.value(1), api.value(2)]
 
-  const [x2, y2, v2] = [
-    api.value(0, index + 1),
-    api.value(1, index + 1),
-    api.value(2, index + 1),
-  ]
+  const [x2, y2] = [api.value(0, index + 1), api.value(1, index + 1)]
 
   const p1 = api.coord([x1, y1])
   const p2 = api.coord([new Date(x2).getTime(), y2])
+  const width = p2[0] - p1[0]
 
   const fill = getCycleColor(v1 as number)
-
   return {
     type: 'rect',
     shape: {
       x: p1[0],
       y: p1[1],
-      width: p2[0] - p1[0],
-      height: 10,
+      width,
+      height: CYCLE_SEGMENT_HEIGHT,
     },
     style: {
       fill,
       opacity: 0.6,
     },
   }
+}
+
+function getCycleDurationLabel(startTime: unknown, endTime: unknown): string {
+  const startMs = Date.parse(String(startTime))
+  const endMs = Date.parse(String(endTime))
+
+  if (
+    !Number.isFinite(startMs) ||
+    !Number.isFinite(endMs) ||
+    endMs <= startMs
+  ) {
+    return ''
+  }
+
+  const durationSeconds = Math.round((endMs - startMs) / 1000)
+  return durationSeconds > 0 ? durationSeconds.toString() : ''
+}
+
+function getCycleDurationLabelData(
+  cycleEvents: any[]
+): Array<[number, number, string]> {
+  return cycleEvents.flatMap((event, index) => {
+    if (index >= cycleEvents.length - 1) return []
+
+    const [startTime, y] = event
+    const [endTime] = cycleEvents[index + 1]
+    const startMs = Date.parse(String(startTime))
+    const endMs = Date.parse(String(endTime))
+    const label = getCycleDurationLabel(startTime, endTime)
+
+    if (!label || !Number.isFinite(startMs) || !Number.isFinite(endMs)) {
+      return []
+    }
+
+    const midpointMs = startMs + (endMs - startMs) / 2
+
+    return [[midpointMs, y as number, label]]
+  })
 }
 
 function hasCycleData(cycleAllEvents: Cycle[] | null): boolean {
@@ -219,7 +296,7 @@ function renderMissingCycle(
       x: coordSys.x,
       y,
       width: coordSys.width,
-      height: 10,
+      height: CYCLE_SEGMENT_HEIGHT,
     },
     style: {
       fill: '#d0d0d0',
