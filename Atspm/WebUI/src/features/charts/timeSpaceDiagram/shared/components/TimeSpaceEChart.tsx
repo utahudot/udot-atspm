@@ -79,6 +79,65 @@ function getLegendSelectedMap(option?: EChartsOption): Record<string, boolean> {
   return selected ? { ...selected } : {}
 }
 
+const CYCLE_PREFIX = 'Cycles '
+const CYCLE_DURATION_PREFIX = 'Cycle Durations '
+
+function getLegendEntryName(entry: string | { name?: string }): string | null {
+  if (typeof entry === 'string') {
+    return entry.trim() || null
+  }
+
+  return typeof entry?.name === 'string' && entry.name.trim()
+    ? entry.name.trim()
+    : null
+}
+
+function getDirectionalSuffix(name: string, prefix: string): string | null {
+  if (!name.startsWith(prefix)) {
+    return null
+  }
+
+  const suffix = name.slice(prefix.length).trim()
+  return suffix.length ? suffix : null
+}
+
+function syncCycleDurationSelections(
+  chart: ECharts,
+  requestedSelections: Record<string, boolean>
+) {
+  const option = chart.getOption() as EChartsOption
+  const legend = getPrimaryLegend(option)
+
+  if (!Array.isArray(legend?.data)) {
+    return
+  }
+
+  const currentSelections = getLegendSelectedMap(option)
+
+  for (const entry of legend.data) {
+    const name = getLegendEntryName(entry)
+    if (!name) continue
+
+    const direction = getDirectionalSuffix(name, CYCLE_DURATION_PREFIX)
+    if (!direction) continue
+
+    const cycleName = `${CYCLE_PREFIX}${direction}`
+    const shouldBeVisible =
+      requestedSelections[name] !== false &&
+      requestedSelections[cycleName] !== false
+    const isVisible = currentSelections[name] !== false
+
+    if (shouldBeVisible === isVisible) {
+      continue
+    }
+
+    chart.dispatchAction({
+      type: shouldBeVisible ? 'legendSelect' : 'legendUnSelect',
+      name,
+    })
+  }
+}
+
 function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
   const primaryLegend = getPrimaryLegend(option)
   const hasLegendData =
@@ -320,26 +379,21 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   useEffect(() => {
     if (!chart) return
 
-    const syncSelectedSeries = () => {
-      setSelectedSeries(getLegendSelectedMap(chart.getOption() as EChartsOption))
+    const handleRestore = () => {
+      setSelectedSeries(getLegendSelectedMap(option))
     }
 
-    const handleLegendSelectionChange = (event: {
-      selected?: Record<string, boolean>
-    }) => {
-      if (!event.selected) return
-      setSelectedSeries({ ...event.selected })
-    }
-
-    syncSelectedSeries()
-    chart.on('finished', syncSelectedSeries)
-    chart.on('legendselectchanged', handleLegendSelectionChange)
+    chart.on('restore', handleRestore)
 
     return () => {
-      chart.off('finished', syncSelectedSeries)
-      chart.off('legendselectchanged', handleLegendSelectionChange)
+      chart.off('restore', handleRestore)
     }
-  }, [chart, renderedOption])
+  }, [chart, option])
+
+  useEffect(() => {
+    if (!chart) return
+    syncCycleDurationSelections(chart, selectedSeries)
+  }, [chart, renderedOption, selectedSeries])
 
   useEffect(() => {
     if (!chart || !renderedOption || !onToggleIgnoredLocation) {

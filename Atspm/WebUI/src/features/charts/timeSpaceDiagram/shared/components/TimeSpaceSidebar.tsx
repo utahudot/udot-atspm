@@ -1,11 +1,10 @@
 import { Color } from '@/features/charts/utils'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import {
   Box,
-  Chip,
+  Button,
+  Checkbox,
   Divider,
   IconButton,
   Paper,
@@ -288,8 +287,9 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
       sx={{
         width: 70,
         minWidth: 70,
-        border: '1px solid rgba(148, 163, 184, 0.35)',
+        alignSelf: 'stretch',
         background: '#eef1f5',
+        borderRight: '1px solid rgba(203, 213, 225, 0.95)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -572,7 +572,9 @@ function isItemVisible(
   item: SidebarItem,
   selectedSeries: Record<string, boolean>
 ): boolean {
-  return item.toggles.some((toggle) => selectedSeries[toggle.seriesName] !== false)
+  return item.toggles.some(
+    (toggle) => selectedSeries[toggle.seriesName] !== false
+  )
 }
 
 export default function TimeSpaceSidebar({
@@ -660,9 +662,11 @@ export default function TimeSpaceSidebar({
           if (!categoryItems.length) return null
 
           const isCollapsed = collapsedSections[category] === true
-          const hasVisibleItems = categoryItems.some((item) =>
+          const visibleItemCount = categoryItems.filter((item) =>
             isItemVisible(item, selectedSeries)
-          )
+          ).length
+          const hasVisibleItems = visibleItemCount > 0
+          const allItemsVisible = visibleItemCount === categoryItems.length
 
           return (
             <Box key={category}>
@@ -683,23 +687,25 @@ export default function TimeSpaceSidebar({
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 0.25,
+                    gap: 0.1,
                   }}
                 >
                   <Tooltip title={hasVisibleItems ? 'Hide all' : 'Show all'}>
-                    <IconButton
+                    <Checkbox
                       size="small"
-                      onClick={() =>
-                        setSectionVisibility(categoryItems, !hasVisibleItems)
+                      checked={allItemsVisible}
+                      indeterminate={hasVisibleItems && !allItemsVisible}
+                      onChange={() =>
+                        setSectionVisibility(categoryItems, !allItemsVisible)
                       }
-                      sx={{ p: 0.2, color: 'text.secondary' }}
-                    >
-                      {hasVisibleItems ? (
-                        <VisibilityIcon fontSize="small" />
-                      ) : (
-                        <VisibilityOffIcon fontSize="small" />
-                      )}
-                    </IconButton>
+                      sx={{
+                        p: 0.2,
+                        color: 'text.secondary',
+                        '& .MuiSvgIcon-root': {
+                          fontSize: 18,
+                        },
+                      }}
+                    />
                   </Tooltip>
                   <IconButton
                     size="small"
@@ -722,18 +728,33 @@ export default function TimeSpaceSidebar({
                   gap: 0.9,
                 }}
               >
-                {categoryItems.map((item) => (
-                  <Paper
-                    key={item.key}
-                    variant="outlined"
-                    sx={{
-                      p: 0.9,
-                      background: '#fff',
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                {categoryItems.map((item) => {
+                  const itemIsActive = isItemVisible(item, selectedSeries)
+
+                  return (
+                    <Paper
+                      key={item.key}
+                      variant="outlined"
+                      sx={{
+                        overflow: 'hidden',
+                        background: itemIsActive ? '#fff' : '#f3f4f6',
+                        borderColor: itemIsActive
+                          ? 'rgba(203, 213, 225, 0.9)'
+                          : 'rgba(203, 213, 225, 0.7)',
+                        opacity: itemIsActive ? 1 : 0.6,
+                        transition:
+                          'background-color 120ms ease, opacity 120ms ease, border-color 120ms ease',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', gap: 0, alignItems: 'stretch' }}>
                       <PreviewCard kind={item.preview} />
-                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Box
+                        sx={{
+                          minWidth: 0,
+                          flex: 1,
+                          p: 0.9,
+                        }}
+                      >
                         <Box
                           sx={{
                             display: 'flex',
@@ -751,27 +772,28 @@ export default function TimeSpaceSidebar({
                           {item.control === 'visibility' && (
                             <Tooltip
                               title={
-                                isItemVisible(item, selectedSeries)
+                                itemIsActive
                                   ? `Hide ${item.label}`
                                   : `Show ${item.label}`
                               }
                             >
-                              <IconButton
+                              <Checkbox
                                 size="small"
-                                onClick={() =>
+                                checked={itemIsActive}
+                                onChange={() =>
                                   setItemVisibility(
                                     item,
-                                    !isItemVisible(item, selectedSeries)
+                                    !itemIsActive
                                   )
                                 }
-                                sx={{ p: 0.2, color: 'text.secondary' }}
-                              >
-                                {isItemVisible(item, selectedSeries) ? (
-                                  <VisibilityIcon fontSize="small" />
-                                ) : (
-                                  <VisibilityOffIcon fontSize="small" />
-                                )}
-                              </IconButton>
+                                sx={{
+                                  p: 0.2,
+                                  color: 'text.secondary',
+                                  '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                }}
+                              />
                             </Tooltip>
                           )}
                         </Box>
@@ -802,35 +824,45 @@ export default function TimeSpaceSidebar({
                                 selectedSeries[toggle.seriesName] !== false
 
                               return (
-                                <Chip
+                                <Button
                                   key={toggle.seriesName}
-                                  label={toggle.label}
                                   size="small"
-                                  clickable
                                   onClick={() =>
                                     onToggleSeries(toggle.seriesName)
                                   }
-                                  variant={isSelected ? 'filled' : 'outlined'}
+                                  variant="contained"
+                                  disableElevation
                                   sx={{
+                                    minWidth: 0,
+                                    fontSize: '0.8rem',
+                                    lineHeight: 1.1,
+                                    textTransform: 'none',
+                                    boxShadow: 'none',
                                     bgcolor: isSelected
-                                      ? 'rgba(15, 23, 42, 0.9)'
-                                      : 'transparent',
-                                    color: isSelected ? '#fff' : 'text.primary',
+                                      ? 'rgba(15, 23, 42, 0.92)'
+                                      : 'rgba(226, 232, 240, 0.95)',
+                                    color: isSelected
+                                      ? '#fff'
+                                      : 'rgba(71, 85, 105, 0.95)',
                                     '&:hover': {
                                       bgcolor: isSelected
                                         ? 'rgba(15, 23, 42, 0.82)'
-                                        : 'rgba(15, 23, 42, 0.04)',
+                                        : 'rgba(203, 213, 225, 0.98)',
+                                      boxShadow: 'none',
                                     },
                                   }}
-                                />
+                                >
+                                  {toggle.label}
+                                </Button>
                               )
                             })}
                           </Box>
                         )}
                       </Box>
                     </Box>
-                  </Paper>
-                ))}
+                    </Paper>
+                  )
+                })}
               </Box>
             </Box>
           )

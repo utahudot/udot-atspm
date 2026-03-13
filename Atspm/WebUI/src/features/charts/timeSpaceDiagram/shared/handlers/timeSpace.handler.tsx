@@ -5,7 +5,14 @@ import { useEffect, useRef } from 'react'
 const HIT_TOLERANCE = 10
 const STEP_MS = 1000
 
-type SeriesKind = 'base' | 'band' | 'llc' | 'ac' | 'sbp' | 'offset'
+type SeriesKind =
+  | 'base'
+  | 'cycle-duration'
+  | 'band'
+  | 'llc'
+  | 'ac'
+  | 'sbp'
+  | 'offset'
 
 function shiftTimeStr(t: string, offsetMs: number): string {
   const time = new Date(t).getTime()
@@ -13,7 +20,12 @@ function shiftTimeStr(t: string, offsetMs: number): string {
 }
 
 function stripCategory(id: string) {
-  return id.replace(/^(Cycles|Green Bands|LLC|AC|SBP|Offset)\s+/, '').trim()
+  return id
+    .replace(
+      /^(Cycles|Cycle Duration Labels|Green Bands|LLC|AC|SBP|Offset)\s+/,
+      ''
+    )
+    .trim()
 }
 
 function getGroupKeyFromSeriesId(id: string) {
@@ -27,7 +39,15 @@ const getAllSeries = (chart: ECharts) => {
   const options = chart.getOption() as EChartsOption
 
   if (!options?.series) {
-    return { base: [], bands: [], llc: [], ac: [], sbp: [], offset: [] }
+    return {
+      base: [],
+      cycleDurations: [],
+      bands: [],
+      llc: [],
+      ac: [],
+      sbp: [],
+      offset: [],
+    }
   }
 
   const series = options.series as SeriesOption[]
@@ -35,6 +55,10 @@ const getAllSeries = (chart: ECharts) => {
   return {
     base: series.filter(
       (s) => typeof s.id === 'string' && s.id.includes('Cycles')
+    ),
+    cycleDurations: series.filter(
+      (s) =>
+        typeof s.id === 'string' && s.id.includes('Cycle Duration Labels')
     ),
     bands: series.filter(
       (s) => typeof s.id === 'string' && s.id.includes('Green Bands')
@@ -78,6 +102,8 @@ function buildShiftedData(kind: SeriesKind, original: any[], offsetMs: number) {
   switch (kind) {
     case 'base':
       return original.map((d) => [shiftTimeStr(d[0], offsetMs), d[1], d[2]])
+    case 'cycle-duration':
+      return original.map((d) => [Number(d[0]) + offsetMs, d[1], d[2]])
     case 'band':
     case 'sbp':
       return original.map((d) => [shiftTimeStr(d[0], offsetMs), d[1]])
@@ -117,7 +143,8 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
     }
 
     const captureOriginal = () => {
-      const { base, bands, llc, ac, sbp, offset } = getAllSeries(chart)
+      const { base, cycleDurations, bands, llc, ac, sbp, offset } =
+        getAllSeries(chart)
 
       const put = (arr: SeriesOption[], kind: SeriesKind) => {
         for (const s of arr) {
@@ -134,6 +161,7 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       }
 
       put(base, 'base')
+      put(cycleDurations, 'cycle-duration')
       put(bands, 'band')
       put(llc, 'llc')
       put(ac, 'ac')
