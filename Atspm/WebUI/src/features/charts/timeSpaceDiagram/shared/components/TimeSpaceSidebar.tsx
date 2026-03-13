@@ -33,11 +33,17 @@ type SidebarToggle = {
   seriesName: string
 }
 
+type SidebarDetail = {
+  color: string
+  label: string
+}
+
 type SidebarItem = {
   key: string
   label: string
   category: string
   description: string
+  details?: SidebarDetail[]
   preview: PreviewKind
   control?: 'directional' | 'visibility'
   toggles: SidebarToggle[]
@@ -52,6 +58,7 @@ type SidebarItemDefinition = {
   label: string
   category: string
   description: string
+  details?: SidebarDetail[]
   preview: PreviewKind
   control?: 'directional' | 'visibility'
   match: (name: string) => string | null
@@ -77,7 +84,14 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Cycles',
     category: 'Signal Timing',
     description:
-      'Horizontal phase-state band. Green, trailing green, yellow, and red show the signal state across each cycle.',
+      'Horizontal phase-state band showing how each cycle progresses through the signal indications.',
+    details: [
+      { color: Color.Green, label: 'Begin green' },
+      { color: '#8ef08d', label: 'Trailing green' },
+      { color: Color.Yellow, label: 'Yellow clearance' },
+      { color: '#FF0000', label: 'Red clearance' },
+      { color: '#f0807f', label: 'Red indication' },
+    ],
     preview: 'cycles',
     match: (name) => matchDirectionalPrefix(name, 'Cycles'),
   },
@@ -261,6 +275,7 @@ function buildSidebarItems(option?: EChartsOption): SidebarItem[] {
       label: definition.label,
       category: definition.category,
       description: definition.description,
+      details: definition.details,
       preview: definition.preview,
       control: definition.control,
       toggles: [
@@ -302,54 +317,25 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
       >
         {kind === 'cycles' && (
           <>
-            <rect
-              x="7"
-              y="16"
-              width="18"
-              height="12"
-              rx="2"
-              fill={Color.Green}
-            />
-            <rect x="25" y="16" width="12" height="12" rx="2" fill="#8ef08d" />
-            <rect
-              x="37"
-              y="16"
-              width="10"
-              height="12"
-              rx="2"
-              fill={Color.Yellow}
-            />
-            <rect x="47" y="16" width="24" height="12" rx="2" fill="#f0807f" />
+            <rect x="7" y="15" width="14" height="14" fill={Color.Green} />
+            <rect x="21" y="15" width="10" height="14" fill="#8ef08d" />
+            <rect x="31" y="15" width="8" height="14" fill={Color.Yellow} />
+            <rect x="39" y="15" width="10" height="14" fill="#FF0000" />
+            <rect x="49" y="15" width="22" height="14" fill="#f0807f" />
           </>
         )}
 
         {kind === 'cycle-durations' && (
           <>
-            <rect
-              x="7"
-              y="16"
-              width="18"
-              height="12"
-              rx="2"
-              fill={Color.Green}
-            />
-            <rect x="25" y="16" width="12" height="12" rx="2" fill="#8ef08d" />
-            <rect
-              x="37"
-              y="16"
-              width="10"
-              height="12"
-              rx="2"
-              fill={Color.Yellow}
-            />
-            <rect x="47" y="16" width="24" height="12" rx="2" fill="#f0807f" />
+            <rect x="9" y="15" width="34" height="14" fill="#8ef08d" />
+            <rect x="43" y="15" width="24" height="14" fill={Color.Yellow} />
             <text
-              x="16"
-              y="25"
+              x="26"
+              y="26"
               fill="white"
               stroke="black"
               strokeWidth="1.5"
-              fontSize="10"
+              fontSize="11"
               fontWeight="600"
               textAnchor="middle"
               paintOrder="stroke fill"
@@ -357,43 +343,17 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
               30
             </text>
             <text
-              x="31"
-              y="25"
+              x="55"
+              y="26"
               fill="white"
               stroke="black"
               strokeWidth="1.5"
-              fontSize="10"
+              fontSize="11"
               fontWeight="600"
               textAnchor="middle"
               paintOrder="stroke fill"
             >
               4
-            </text>
-            <text
-              x="42"
-              y="25"
-              fill="white"
-              stroke="black"
-              strokeWidth="1.5"
-              fontSize="10"
-              fontWeight="600"
-              textAnchor="middle"
-              paintOrder="stroke fill"
-            >
-              3
-            </text>
-            <text
-              x="58"
-              y="25"
-              fill="white"
-              stroke="black"
-              strokeWidth="1.5"
-              fontSize="10"
-              fontWeight="600"
-              textAnchor="middle"
-              paintOrder="stroke fill"
-            >
-              42
             </text>
           </>
         )}
@@ -586,6 +546,9 @@ export default function TimeSpaceSidebar({
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
   >({})
+  const [expandedDetails, setExpandedDetails] = useState<
+    Record<string, boolean>
+  >({})
 
   if (!items.length) {
     return null
@@ -595,6 +558,13 @@ export default function TimeSpaceSidebar({
     setCollapsedSections((current) => ({
       ...current,
       [category]: !current[category],
+    }))
+  }
+
+  const toggleItemDetails = (itemKey: string) => {
+    setExpandedDetails((current) => ({
+      ...current,
+      [itemKey]: !current[itemKey],
     }))
   }
 
@@ -746,120 +716,195 @@ export default function TimeSpaceSidebar({
                           'background-color 120ms ease, opacity 120ms ease, border-color 120ms ease',
                       }}
                     >
-                      <Box sx={{ display: 'flex', gap: 0, alignItems: 'stretch' }}>
-                      <PreviewCard kind={item.preview} />
                       <Box
-                        sx={{
-                          minWidth: 0,
-                          flex: 1,
-                          p: 0.9,
-                        }}
+                        sx={{ display: 'flex', gap: 0, alignItems: 'stretch' }}
                       >
+                        <PreviewCard kind={item.preview} />
                         <Box
                           sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: 0.5,
+                            minWidth: 0,
+                            flex: 1,
+                            p: 0.9,
                           }}
                         >
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ fontSize: '0.8rem' }}
-                          >
-                            {item.label}
-                          </Typography>
-                          {item.control === 'visibility' && (
-                            <Tooltip
-                              title={
-                                itemIsActive
-                                  ? `Hide ${item.label}`
-                                  : `Show ${item.label}`
-                              }
-                            >
-                              <Checkbox
-                                size="small"
-                                checked={itemIsActive}
-                                onChange={() =>
-                                  setItemVisibility(
-                                    item,
-                                    !itemIsActive
-                                  )
-                                }
-                                sx={{
-                                  p: 0.2,
-                                  color: 'text.secondary',
-                                  '& .MuiSvgIcon-root': {
-                                    fontSize: 18,
-                                  },
-                                }}
-                              />
-                            </Tooltip>
-                          )}
-                        </Box>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            mt: 0.35,
-                            display: 'block',
-                            lineHeight: 1.4,
-                            color: 'text.secondary',
-                            fontSize: '0.76rem',
-                          }}
-                        >
-                          {item.description}
-                        </Typography>
-
-                        {item.control !== 'visibility' && (
                           <Box
                             sx={{
                               display: 'flex',
-                              flexWrap: 'wrap',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
                               gap: 0.5,
-                              mt: 0.8,
                             }}
                           >
-                            {item.toggles.map((toggle) => {
-                              const isSelected =
-                                selectedSeries[toggle.seriesName] !== false
-
-                              return (
-                                <Button
-                                  key={toggle.seriesName}
-                                  size="small"
-                                  onClick={() =>
-                                    onToggleSeries(toggle.seriesName)
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontSize: '0.8rem' }}
+                            >
+                              {item.label}
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.1,
+                                ml: 'auto',
+                              }}
+                            >
+                              {item.details?.length ? (
+                                <Tooltip
+                                  title={
+                                    expandedDetails[item.key]
+                                      ? 'Hide details'
+                                      : 'Show details'
                                   }
-                                  variant="contained"
-                                  disableElevation
+                                >
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => toggleItemDetails(item.key)}
+                                    sx={{ p: 0.15, color: 'text.secondary' }}
+                                  >
+                                    {expandedDetails[item.key] ? (
+                                      <ExpandLessIcon fontSize="small" />
+                                    ) : (
+                                      <ExpandMoreIcon fontSize="small" />
+                                    )}
+                                  </IconButton>
+                                </Tooltip>
+                              ) : null}
+
+                              {item.control === 'visibility' && (
+                                <Tooltip
+                                  title={
+                                    itemIsActive
+                                      ? `Hide ${item.label}`
+                                      : `Show ${item.label}`
+                                  }
+                                >
+                                  <Checkbox
+                                    size="small"
+                                    checked={itemIsActive}
+                                    onChange={() =>
+                                      setItemVisibility(item, !itemIsActive)
+                                    }
+                                    sx={{
+                                      p: 0.2,
+                                      color: 'text.secondary',
+                                      '& .MuiSvgIcon-root': {
+                                        fontSize: 18,
+                                      },
+                                    }}
+                                  />
+                                </Tooltip>
+                              )}
+                            </Box>
+                          </Box>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              mt: 0.35,
+                              display: 'block',
+                              lineHeight: 1.4,
+                              color: 'text.secondary',
+                              fontSize: '0.76rem',
+                            }}
+                          >
+                            {item.description}
+                          </Typography>
+
+                          {item.details?.length && expandedDetails[item.key] ? (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 0.5,
+                                mt: 0.7,
+                                pt: 0.7,
+                                borderTop: '1px solid rgba(203, 213, 225, 0.9)',
+                              }}
+                            >
+                              {item.details.map((detail) => (
+                                <Box
+                                  key={`${item.key}-${detail.label}`}
                                   sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.55,
                                     minWidth: 0,
-                                    fontSize: '0.8rem',
-                                    lineHeight: 1.1,
-                                    textTransform: 'none',
-                                    boxShadow: 'none',
-                                    bgcolor: isSelected
-                                      ? 'rgba(15, 23, 42, 0.92)'
-                                      : 'rgba(226, 232, 240, 0.95)',
-                                    color: isSelected
-                                      ? '#fff'
-                                      : 'rgba(71, 85, 105, 0.95)',
-                                    '&:hover': {
-                                      bgcolor: isSelected
-                                        ? 'rgba(15, 23, 42, 0.82)'
-                                        : 'rgba(203, 213, 225, 0.98)',
-                                      boxShadow: 'none',
-                                    },
                                   }}
                                 >
-                                  {toggle.label}
-                                </Button>
-                              )
-                            })}
-                          </Box>
-                        )}
+                                  <Box
+                                    sx={{
+                                      width: 13,
+                                      height: 13,
+                                      flexShrink: 0,
+                                      borderRadius: '3px',
+                                      bgcolor: detail.color,
+                                    }}
+                                  />
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      fontSize: '0.69rem',
+                                      lineHeight: 1.2,
+                                      color: 'text.secondary',
+                                    }}
+                                  >
+                                    {detail.label}
+                                  </Typography>
+                                </Box>
+                              ))}
+                            </Box>
+                          ) : null}
+
+                          {item.control !== 'visibility' && (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 0.5,
+                                mt: item.details?.length ? 0.7 : 0.8,
+                              }}
+                            >
+                              {item.toggles.map((toggle) => {
+                                const isSelected =
+                                  selectedSeries[toggle.seriesName] !== false
+
+                                return (
+                                  <Button
+                                    key={toggle.seriesName}
+                                    size="small"
+                                    onClick={() =>
+                                      onToggleSeries(toggle.seriesName)
+                                    }
+                                    variant="contained"
+                                    disableElevation
+                                    sx={{
+                                      minWidth: 0,
+                                      fontSize: '0.8rem',
+                                      lineHeight: 1.1,
+                                      textTransform: 'none',
+                                      boxShadow: 'none',
+                                      bgcolor: isSelected
+                                        ? 'rgba(15, 23, 42, 0.92)'
+                                        : 'rgba(226, 232, 240, 0.95)',
+                                      color: isSelected
+                                        ? '#fff'
+                                        : 'rgba(71, 85, 105, 0.95)',
+                                      '&:hover': {
+                                        bgcolor: isSelected
+                                          ? 'rgba(15, 23, 42, 0.82)'
+                                          : 'rgba(203, 213, 225, 0.98)',
+                                        boxShadow: 'none',
+                                      },
+                                    }}
+                                  >
+                                    {toggle.label}
+                                  </Button>
+                                )
+                              })}
+                            </Box>
+                          )}
+                        </Box>
                       </Box>
-                    </Box>
                     </Paper>
                   )
                 })}
