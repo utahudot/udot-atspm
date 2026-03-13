@@ -34,7 +34,8 @@ type SidebarToggle = {
 }
 
 type SidebarDetail = {
-  color: string
+  color?: string
+  glyph?: 'solid-line' | 'dotted-line' | 'zigzag-line'
   label: string
 }
 
@@ -146,7 +147,12 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Pedestrian Interval',
     category: 'Pedestrian',
     description:
-      "Black pedestrian state line. Solid is walk, dotted is clearance, zigzag is don't walk, and short ticks mark each transition.",
+      'Black pedestrian state line showing the pedestrian interval and transition marks.',
+    details: [
+      { glyph: 'solid-line', label: 'Walk' },
+      { glyph: 'dotted-line', label: 'Clearance' },
+      { glyph: 'zigzag-line', label: "Don't walk" },
+    ],
     preview: 'pedestrian',
     match: (name) => matchDirectionalPrefix(name, 'Pedestrian Interval'),
   },
@@ -537,6 +543,71 @@ function isItemVisible(
   )
 }
 
+function DetailMarker({ detail }: { detail: SidebarDetail }) {
+  if (detail.color) {
+    return (
+      <Box
+        sx={{
+          width: 13,
+          height: 13,
+          flexShrink: 0,
+          borderRadius: '3px',
+          bgcolor: detail.color,
+        }}
+      />
+    )
+  }
+
+  return (
+    <Box
+      component="svg"
+      viewBox="0 0 22 12"
+      sx={{
+        width: 22,
+        height: 12,
+        flexShrink: 0,
+        overflow: 'visible',
+      }}
+    >
+      {detail.glyph === 'solid-line' && (
+        <line
+          x1="1"
+          y1="6"
+          x2="21"
+          y2="6"
+          stroke="#111827"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      )}
+
+      {detail.glyph === 'dotted-line' && (
+        <line
+          x1="1"
+          y1="6"
+          x2="21"
+          y2="6"
+          stroke="#111827"
+          strokeWidth="1.8"
+          strokeDasharray="1.4 2.4"
+          strokeLinecap="round"
+        />
+      )}
+
+      {detail.glyph === 'zigzag-line' && (
+        <path
+          d="M1 8 L4 4 L7 8 L10 4 L13 8 L16 4 L19 8 L21 6"
+          fill="none"
+          stroke="#111827"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+      )}
+    </Box>
+  )
+}
+
 export default function TimeSpaceSidebar({
   option,
   selectedSeries,
@@ -831,15 +902,7 @@ export default function TimeSpaceSidebar({
                                     minWidth: 0,
                                   }}
                                 >
-                                  <Box
-                                    sx={{
-                                      width: 13,
-                                      height: 13,
-                                      flexShrink: 0,
-                                      borderRadius: '3px',
-                                      bgcolor: detail.color,
-                                    }}
-                                  />
+                                  <DetailMarker detail={detail} />
                                   <Typography
                                     variant="caption"
                                     sx={{
