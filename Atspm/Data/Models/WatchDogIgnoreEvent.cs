@@ -65,5 +65,9 @@ namespace Utah.Udot.Atspm.Data.Models
         /// </summary>
         public int? Phase { get; set; }
 
+        /// <summary>
+        /// Key
+        /// </summary>
+        public string Key { get; set; }
     }
 }

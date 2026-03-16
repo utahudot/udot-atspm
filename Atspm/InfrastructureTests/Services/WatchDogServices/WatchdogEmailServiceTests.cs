@@ -49,15 +49,15 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             var eventsContainer = new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Record count issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.ForceOffThreshold, "Force off threshold issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc3", DateTime.UtcNow, WatchDogComponentTypes.Location, 102, WatchDogIssueTypes.MaxOutThreshold, "Max out threshold issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc4", DateTime.UtcNow, WatchDogComponentTypes.Location, 103, WatchDogIssueTypes.LowDetectorHits, "Low detector hits issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc5", DateTime.UtcNow, WatchDogComponentTypes.Location, 104, WatchDogIssueTypes.StuckPed, "Stuck ped issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc6", DateTime.UtcNow, WatchDogComponentTypes.Location, 105, WatchDogIssueTypes.UnconfiguredApproach, "Unconfigured approach issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc7", DateTime.UtcNow, WatchDogComponentTypes.Location, 106, WatchDogIssueTypes.UnconfiguredDetector, "Unconfigured detector issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc8", DateTime.UtcNow, WatchDogComponentTypes.Location, 107, WatchDogIssueTypes.LowRampDetectorHits, "Ramp Detectors Threshold issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc9", DateTime.UtcNow, WatchDogComponentTypes.Location, 108, WatchDogIssueTypes.RampMissedDetectorHits, "Ramp Missed Detectors issue", 1)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Record count issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.ForceOffThreshold, "Force off threshold issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc3", DateTime.UtcNow, WatchDogComponentTypes.Location, 102, WatchDogIssueTypes.MaxOutThreshold, "Max out threshold issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc4", DateTime.UtcNow, WatchDogComponentTypes.Location, 103, WatchDogIssueTypes.LowDetectorHits, "Low detector hits issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc5", DateTime.UtcNow, WatchDogComponentTypes.Location, 104, WatchDogIssueTypes.StuckPed, "Stuck ped issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc6", DateTime.UtcNow, WatchDogComponentTypes.Location, 105, WatchDogIssueTypes.UnconfiguredApproach, "Unconfigured approach issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc7", DateTime.UtcNow, WatchDogComponentTypes.Location, 106, WatchDogIssueTypes.UnconfiguredDetector, "Unconfigured detector issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc8", DateTime.UtcNow, WatchDogComponentTypes.Location, 107, WatchDogIssueTypes.LowRampDetectorHits, "Ramp Detectors Threshold issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc9", DateTime.UtcNow, WatchDogComponentTypes.Location, 108, WatchDogIssueTypes.RampMissedDetectorHits, "Ramp Missed Detectors issue","1", 1)
             };
 
             // Act
@@ -126,10 +126,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             var eventsContainer = new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Record count issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.RecordCount, "Another record count issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc3", DateTime.UtcNow, WatchDogComponentTypes.Location, 102, WatchDogIssueTypes.ForceOffThreshold, "Force off threshold issue", 1),
-                new WatchDogLogEventWithCountAndDate(1, "Loc4", DateTime.UtcNow, WatchDogComponentTypes.Location, 103, WatchDogIssueTypes.ForceOffThreshold, "Another force off threshold issue", 1)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Record count issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.RecordCount, "Another record count issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc3", DateTime.UtcNow, WatchDogComponentTypes.Location, 102, WatchDogIssueTypes.ForceOffThreshold, "Force off threshold issue","1", 1),
+                new WatchDogLogEventWithCountAndDate(1, "Loc4", DateTime.UtcNow, WatchDogComponentTypes.Location, 103, WatchDogIssueTypes.ForceOffThreshold, "Another force off threshold issue","1", 1)
             };
 
             // Act
@@ -187,7 +187,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var eventsContainer = new List<WatchDogLogEventWithCountAndDate>
     {
         null,
-        new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Record count issue", 1),
+        new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Record count issue","1", 1),
         null
     };
 
@@ -340,13 +340,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var sectionTimeDescription = "Errors detected in the last 24 hours.";
             var errorLogs = new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details 1", null)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details 1","1", null)
                 {
                     EventCount = 5,
                     ConsecutiveOccurenceCount = 3,
                     DateOfFirstInstance = DateTime.UtcNow.AddDays(-10)
                 },
-                new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.RecordCount, "Issue details 2", null)
+                new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.RecordCount, "Issue details 2","1", null)
                 {
                     EventCount = 10,
                     ConsecutiveOccurenceCount = 5,
@@ -455,7 +455,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var sectionTimeDescription = "Errors detected in the past hour.";
             var errorLogs = new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Detector, 100, WatchDogIssueTypes.LowDetectorHits, "Details", null)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Detector, 100, WatchDogIssueTypes.LowDetectorHits, "Details","1", null)
                 {
                     EventCount = 5,
                     ConsecutiveOccurenceCount = 3,
@@ -546,7 +546,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var errorSubHeader = "Some errors detected.";
             var errors = new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details", null)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details","1", null)
             };
             var options = new WatchdogEmailOptions
             {
@@ -577,8 +577,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var errorSubHeader = "Some errors detected.";
             var errors = new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details", null),
-                new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Detector, 101, WatchDogIssueTypes.LowDetectorHits, "Detector issue details", null)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details","1", null),
+                new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Detector, 101, WatchDogIssueTypes.LowDetectorHits, "Detector issue details","1", null)
             };
             var options = new WatchdogEmailOptions
             {
@@ -681,7 +681,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var options = new WatchdogEmailOptions { EmailAllErrors = false };
             var logsFromPreviousDay = new List<WatchDogLogEvent>
             {
-                new WatchDogLogEvent(1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"), WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Details", null)
+                new WatchDogLogEvent(1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"), WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Details","1", null)
             };
             var includeErrorCounts = true;
             var includeConsecutive = true;
@@ -726,13 +726,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         {
             return new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"), WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Details", null)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"), WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Details","1", null)
                 {
                     EventCount = 5,
                     ConsecutiveOccurenceCount = 3,
                     DateOfFirstInstance = new DateTime(2024, 1, 1)
                 },
-                new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.RecordCount, "Details", null)
+                new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Location, 101, WatchDogIssueTypes.RecordCount, "Details","1", null)
                 {
                     EventCount = 10,
                     ConsecutiveOccurenceCount = 5,
@@ -745,7 +745,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         {
             return new List<WatchDogLogEventWithCountAndDate>
             {
-                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Detector, 101, WatchDogIssueTypes.LowDetectorHits, "Details", 1)
+                new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Detector, 101, WatchDogIssueTypes.LowDetectorHits, "Details","1", 1)
                 {
                     EventCount = 5,
                     ConsecutiveOccurenceCount = 3,
@@ -922,7 +922,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 new List<WatchDogLogEventWithCountAndDate>
                 {
             new WatchDogLogEventWithCountAndDate(1, "Loc", DateTime.UtcNow,
-                WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RecordCount, "Details", null)
+                WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RecordCount, "Details","1", null)
                 },
                 options,
                 new List<Location> { new Location { Id = 1 } },
@@ -949,7 +949,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 new List<WatchDogLogEventWithCountAndDate>
                 {
             new WatchDogLogEventWithCountAndDate(1, "Loc", DateTime.UtcNow,
-                WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RampMissedDetectorHits, "Details", null)
+                WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RampMissedDetectorHits, "Details","1", null)
                 },
                 options,
                 new List<Location> { new Location { Id = 1 } },
@@ -970,7 +970,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 new List<WatchDogLogEventWithCountAndDate>
                 {
             new WatchDogLogEventWithCountAndDate(99, "LocX", DateTime.UtcNow,
-                WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RecordCount, "Details", null)
+                WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RecordCount, "Details","1", null)
                 },
                 true,
                 new(),
@@ -987,7 +987,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var issues = new List<WatchDogLogEventWithCountAndDate>
     {
         new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow,
-            WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RecordCount, "Details", 0)
+            WatchDogComponentTypes.Location, 1, WatchDogIssueTypes.RecordCount, "Details","1", 0)
     };
 
             var result = _watchdogEmailService.GetMessage(
@@ -1124,7 +1124,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var rampError = new WatchDogLogEventWithCountAndDate(
                 1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"),
                 WatchDogComponentTypes.Location, 100,
-                WatchDogIssueTypes.RampMissedDetectorHits, "Ramp error details", null)
+                WatchDogIssueTypes.RampMissedDetectorHits, "Ramp error details", "1", null)
             {
                 EventCount = 5,
                 ConsecutiveOccurenceCount = 3,
@@ -1169,7 +1169,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var pmError = new WatchDogLogEventWithCountAndDate(
                 1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"),
                 WatchDogComponentTypes.Location, 100,
-                WatchDogIssueTypes.RecordCount, "PM error details", null)
+                WatchDogIssueTypes.RecordCount, "PM error details", "1", null)
             {
                 EventCount = 5,
                 ConsecutiveOccurenceCount = 3,
@@ -1213,7 +1213,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var amError = new WatchDogLogEventWithCountAndDate(
                 1, "Loc1", DateTime.Parse("2026-01-20T21:07:41Z"),
                 WatchDogComponentTypes.Location, 100,
-                WatchDogIssueTypes.ForceOffThreshold, "AM error details", null)
+                WatchDogIssueTypes.ForceOffThreshold, "AM error details", "1", null)
             {
                 EventCount = 5,
                 ConsecutiveOccurenceCount = 3,

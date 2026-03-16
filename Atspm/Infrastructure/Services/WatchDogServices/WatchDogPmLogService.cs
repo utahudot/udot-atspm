@@ -155,6 +155,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         location.Id,
                         issueType,
                         $"{issueDescription} {currentVolume.Count().ToString().ToLowerInvariant()}{additionalInfo}",
+                        $"{additionalInfo}",
                         null);
 
                     if (!errors.Contains(error))
@@ -231,6 +232,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     Location.Id,
                     WatchDogIssueTypes.RecordCount,
                     "Missing Records - IP: " + string.Join(",", Location.Devices.Select(d => d.Ipaddress.ToString()).ToList()),
+                    string.Join(",", Location.Devices.Select(d => d.Ipaddress.ToString()).ToList()),
                     null
                 );
             }
@@ -265,7 +267,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                                 detector,
                                 WatchDogIssueTypes.LowDetectorHits,
                                 message,
-                                errors);
+                                errors,
+                                channel.ToString());
                         }
 
                     }
@@ -295,6 +298,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         WatchDogIssueTypes.UnconfiguredApproach,
                         "No corresponding approach configured",
                         errors,
+                        phaseNumber.ToString(),
                         phaseNumber);
                 }
             }
@@ -317,7 +321,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         detector: null,
                         WatchDogIssueTypes.UnconfiguredDetector,
                         $"Unconfigured detector channel-{channel}",
-                        errors);
+                        errors,
+                        channel.ToString());
                 }
             }
         }
@@ -361,8 +366,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         ///////////////////////////////////////////////////////////
         /////////////////////// HELPER ////////////////////////////
         ///////////////////////////////////////////////////////////
-        private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors)
+        private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key)
         {
+            //TODO change this to have the channel stuff
             var error = new WatchDogLogEvent(
                 location.Id,
                 location.LocationIdentifier,
@@ -371,13 +377,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 detector?.Id ?? -1,
                 issueType,
                 message,
-                null);
+                key,
+                phase: null);
 
             if (!errors.Contains(error))
                 errors.Add(error);
         }
 
-        private static void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, int? phaseNumber = null)
+        private static void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, int? phaseNumber = null)
         {
             var error = new WatchDogLogEvent(
                 location.Id,
@@ -387,6 +394,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 approachId,
                 issueType,
                 message,
+                key,
                 phaseNumber);
 
             if (!errors.Contains(error))
