@@ -169,41 +169,39 @@ export function generateCycles(
       },
     ]
 
-    if (hasData) {
-      series.push({
-        name: cycleDurationName,
-        id: `Cycle Duration Labels ${phase.locationIdentifier} ${phaseType ?? ''}`,
-        type: 'custom',
-        clip: true,
-        silent: true,
-        z: 6,
-        data: getCycleDurationLabelData(cycleEvents),
-        renderItem: (_param, api): CustomSeriesRenderItemReturn => {
-          const midX = api.value(0) as number
-          const y = api.value(1) as number
-          const label = String(api.value(2))
+    series.push({
+      name: cycleDurationName,
+      id: `Cycle Duration Labels ${phase.locationIdentifier} ${phaseType ?? ''}`,
+      type: 'custom',
+      clip: true,
+      silent: true,
+      z: 6,
+      data: hasData ? getCycleDurationLabelData(cycleEvents) : [],
+      renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+        const midX = api.value(0) as number
+        const y = api.value(1) as number
+        const label = String(api.value(2))
 
-          const center = api.coord([midX, y])
+        const center = api.coord([midX, y])
 
-          return {
-            type: 'text',
-            z2: 20,
-            style: {
-              x: center[0],
-              y: center[1] + CYCLE_SEGMENT_HEIGHT / 2,
-              text: label,
-              fill: CYCLE_DURATION_LABEL_FILL,
-              stroke: CYCLE_DURATION_LABEL_STROKE,
-              lineWidth: CYCLE_DURATION_LABEL_STROKE_WIDTH,
-              fontSize: CYCLE_DURATION_LABEL_FONT_SIZE,
-              fontWeight: 600,
-              textAlign: 'center',
-              textVerticalAlign: 'middle',
-            },
-          }
-        },
-      })
-    }
+        return {
+          type: 'text',
+          z2: 20,
+          style: {
+            x: center[0],
+            y: center[1] + CYCLE_SEGMENT_HEIGHT / 2,
+            text: label,
+            fill: CYCLE_DURATION_LABEL_FILL,
+            stroke: CYCLE_DURATION_LABEL_STROKE,
+            lineWidth: CYCLE_DURATION_LABEL_STROKE_WIDTH,
+            fontSize: CYCLE_DURATION_LABEL_FONT_SIZE,
+            fontWeight: 600,
+            textAlign: 'center',
+            textVerticalAlign: 'middle',
+          },
+        }
+      },
+    })
 
     return series
   })

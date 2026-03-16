@@ -1,9 +1,10 @@
 import { Color } from '@/features/charts/utils'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import {
   Box,
-  Button,
   Checkbox,
   Divider,
   IconButton,
@@ -68,6 +69,8 @@ type SidebarItemDefinition = {
 export interface TimeSpaceSidebarProps {
   option?: EChartsOption
   selectedSeries: Record<string, boolean>
+  isFullscreen: boolean
+  onToggleFullscreen: () => void
   onToggleSeries: (seriesName: string) => void
 }
 
@@ -611,6 +614,8 @@ function DetailMarker({ detail }: { detail: SidebarDetail }) {
 export default function TimeSpaceSidebar({
   option,
   selectedSeries,
+  isFullscreen,
+  onToggleFullscreen,
   onToggleSeries,
 }: TimeSpaceSidebarProps) {
   const items = buildSidebarItems(option)
@@ -681,17 +686,39 @@ export default function TimeSpaceSidebar({
         p: 1.25,
       }}
     >
-      <Typography
-        variant="overline"
+      <Box
         sx={{
-          letterSpacing: 0.9,
-          color: 'text.secondary',
-          fontWeight: 700,
-          fontSize: '0.7rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 0.5,
         }}
       >
-        Guide
-      </Typography>
+        <Typography
+          variant="overline"
+          sx={{
+            letterSpacing: 0.9,
+            color: 'text.secondary',
+            fontWeight: 700,
+            fontSize: '0.7rem',
+          }}
+        >
+          Guide
+        </Typography>
+        <Tooltip title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+          <IconButton
+            size="small"
+            onClick={onToggleFullscreen}
+            sx={{ p: 0.2, color: 'text.secondary' }}
+          >
+            {isFullscreen ? (
+              <FullscreenExitIcon fontSize="small" />
+            ) : (
+              <FullscreenIcon fontSize="small" />
+            )}
+          </IconButton>
+        </Tooltip>
+      </Box>
 
       <Divider sx={{ my: 1.25 }} />
 
@@ -771,6 +798,13 @@ export default function TimeSpaceSidebar({
               >
                 {categoryItems.map((item) => {
                   const itemIsActive = isItemVisible(item, selectedSeries)
+                  const visibleToggleCount = item.toggles.filter(
+                    (toggle) => selectedSeries[toggle.seriesName] !== false
+                  ).length
+                  const allItemSeriesVisible =
+                    visibleToggleCount === item.toggles.length
+                  const someItemSeriesVisible =
+                    visibleToggleCount > 0 && !allItemSeriesVisible
 
                   return (
                     <Paper
@@ -842,30 +876,32 @@ export default function TimeSpaceSidebar({
                                 </Tooltip>
                               ) : null}
 
-                              {item.control === 'visibility' && (
-                                <Tooltip
-                                  title={
-                                    itemIsActive
-                                      ? `Hide ${item.label}`
-                                      : `Show ${item.label}`
+                              <Tooltip
+                                title={
+                                  allItemSeriesVisible
+                                    ? `Hide ${item.label}`
+                                    : `Show ${item.label}`
+                                }
+                              >
+                                <Checkbox
+                                  size="small"
+                                  checked={allItemSeriesVisible}
+                                  indeterminate={someItemSeriesVisible}
+                                  onChange={() =>
+                                    setItemVisibility(
+                                      item,
+                                      !allItemSeriesVisible
+                                    )
                                   }
-                                >
-                                  <Checkbox
-                                    size="small"
-                                    checked={itemIsActive}
-                                    onChange={() =>
-                                      setItemVisibility(item, !itemIsActive)
-                                    }
-                                    sx={{
-                                      p: 0.2,
-                                      color: 'text.secondary',
-                                      '& .MuiSvgIcon-root': {
-                                        fontSize: 18,
-                                      },
-                                    }}
-                                  />
-                                </Tooltip>
-                              )}
+                                  sx={{
+                                    p: 0.2,
+                                    color: 'text.secondary',
+                                    '& .MuiSvgIcon-root': {
+                                      fontSize: 18,
+                                    },
+                                  }}
+                                />
+                              </Tooltip>
                             </Box>
                           </Box>
                           <Typography
@@ -918,54 +954,6 @@ export default function TimeSpaceSidebar({
                             </Box>
                           ) : null}
 
-                          {item.control !== 'visibility' && (
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: 0.5,
-                                mt: item.details?.length ? 0.7 : 0.8,
-                              }}
-                            >
-                              {item.toggles.map((toggle) => {
-                                const isSelected =
-                                  selectedSeries[toggle.seriesName] !== false
-
-                                return (
-                                  <Button
-                                    key={toggle.seriesName}
-                                    size="small"
-                                    onClick={() =>
-                                      onToggleSeries(toggle.seriesName)
-                                    }
-                                    variant="contained"
-                                    disableElevation
-                                    sx={{
-                                      minWidth: 0,
-                                      fontSize: '0.8rem',
-                                      lineHeight: 1.1,
-                                      textTransform: 'none',
-                                      boxShadow: 'none',
-                                      bgcolor: isSelected
-                                        ? 'rgba(15, 23, 42, 0.92)'
-                                        : 'rgba(226, 232, 240, 0.95)',
-                                      color: isSelected
-                                        ? '#fff'
-                                        : 'rgba(71, 85, 105, 0.95)',
-                                      '&:hover': {
-                                        bgcolor: isSelected
-                                          ? 'rgba(15, 23, 42, 0.82)'
-                                          : 'rgba(203, 213, 225, 0.98)',
-                                        boxShadow: 'none',
-                                      },
-                                    }}
-                                  >
-                                    {toggle.label}
-                                  </Button>
-                                )
-                              })}
-                            </Box>
-                          )}
                         </Box>
                       </Box>
                     </Paper>

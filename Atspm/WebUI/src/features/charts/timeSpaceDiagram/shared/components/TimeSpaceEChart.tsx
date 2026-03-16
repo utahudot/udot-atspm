@@ -308,11 +308,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
+  const fullscreenRef = useRef<HTMLDivElement>(null)
   const chartInstanceRef = useRef<ECharts | null>(null)
   const [chart, setChart] = useState<ECharts | null>(null)
   const [locationToggleButtons, setLocationToggleButtons] = useState<
     LocationToggleButton[]
   >([])
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
     () => getLegendSelectedMap(option)
   )
@@ -396,6 +398,22 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   }, [chart, renderedOption, selectedSeries])
 
   useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === fullscreenRef.current)
+      window.requestAnimationFrame(() => {
+        chartInstanceRef.current?.resize()
+        window.dispatchEvent(new Event('resize'))
+      })
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!chart || !renderedOption || !onToggleIgnoredLocation) {
       setLocationToggleButtons([])
       return
@@ -442,83 +460,109 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     }))
   }
 
+  const handleToggleFullscreen = async () => {
+    const container = fullscreenRef.current
+    if (!container) return
+
+    if (document.fullscreenElement === container) {
+      await document.exitFullscreen()
+      return
+    }
+
+    await container.requestFullscreen()
+  }
+
   return (
     <div
+      ref={fullscreenRef}
       style={{
         width: '100%',
         height: '100%',
         position: 'relative',
-        display: 'flex',
-        ...style,
+        overflow: isFullscreen ? 'auto' : 'visible',
+        background: isFullscreen ? '#fff' : undefined,
       }}
     >
       <div
         style={{
-          flex: 1,
-          minWidth: 0,
+          width: '100%',
           height: '100%',
+          minHeight: isFullscreen ? style?.height : undefined,
           position: 'relative',
+          display: 'flex',
+          ...style,
         }}
       >
         <div
-          id={id}
-          ref={chartRef}
           style={{
+            flex: 1,
+            minWidth: 0,
             width: '100%',
             height: '100%',
+            position: 'relative',
           }}
-        />
-
-        {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
+        >
           <div
+            id={id}
+            ref={chartRef}
             style={{
-              position: 'absolute',
-              inset: 0,
-              pointerEvents: 'none',
+              width: '100%',
+              height: '100%',
             }}
-          >
-            {locationToggleButtons.map((button) => {
-              const isIgnored = ignoredLocations.includes(button.location)
-              const title = isIgnored
-                ? `Show location ${button.location}`
-                : `Ignore location ${button.location}`
+          />
 
-              return (
-                <Tooltip key={button.location} title={title} placement="top">
-                  <IconButton
-                    size="small"
-                    onClick={() => onToggleIgnoredLocation(button.location)}
-                    sx={{
-                      pointerEvents: 'auto',
-                      position: 'absolute',
-                      left: `${button.left}px`,
-                      top: `${button.top}px`,
-                      p: 0,
-                      height: '10px',
-                      color: isIgnored ? '#6B7280' : '#1F2937',
-                      '&:hover': {
-                        backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                      },
-                    }}
-                  >
-                    {isIgnored ? (
-                      <VisibilityOffIcon sx={{ fontSize: '18px' }} />
-                    ) : (
-                      <VisibilityIcon sx={{ fontSize: '18px' }} />
-                    )}
-                  </IconButton>
-                </Tooltip>
-              )
-            })}
-          </div>
-        )}
+          {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+              }}
+            >
+              {locationToggleButtons.map((button) => {
+                const isIgnored = ignoredLocations.includes(button.location)
+                const title = isIgnored
+                  ? `Show location ${button.location}`
+                  : `Ignore location ${button.location}`
+
+                return (
+                  <Tooltip key={button.location} title={title} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={() => onToggleIgnoredLocation(button.location)}
+                      sx={{
+                        pointerEvents: 'auto',
+                        position: 'absolute',
+                        left: `${button.left}px`,
+                        top: `${button.top}px`,
+                        p: 0,
+                        height: '10px',
+                        color: isIgnored ? '#6B7280' : '#1F2937',
+                        '&:hover': {
+                          backgroundColor: 'rgba(15, 23, 42, 0.08)',
+                        },
+                      }}
+                    >
+                      {isIgnored ? (
+                        <VisibilityOffIcon sx={{ fontSize: '18px' }} />
+                      ) : (
+                        <VisibilityIcon sx={{ fontSize: '18px' }} />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                )
+              })}
+            </div>
+          )}
+        </div>
+        <TimeSpaceSidebar
+          option={option}
+          selectedSeries={selectedSeries}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={handleToggleFullscreen}
+          onToggleSeries={handleToggleSeries}
+        />
       </div>
-
-      <TimeSpaceSidebar
-        option={option}
-        selectedSeries={selectedSeries}
-        onToggleSeries={handleToggleSeries}
-      />
     </div>
   )
 }
