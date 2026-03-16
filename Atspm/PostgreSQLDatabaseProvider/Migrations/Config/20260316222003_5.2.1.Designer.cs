@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    partial class ConfigContextModelSnapshot : ModelSnapshot
+    [Migration("20260316222003_5.2.1")]
+    partial class _521
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,9 +142,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ProtectedPhaseNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TransitSignalPriorityNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -320,13 +320,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Abbreviation = "EQ",
                             Description = "Excessive Queue",
                             DisplayOrder = 11
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Abbreviation = "PP",
-                            Description = "Priority and Preemption",
-                            DisplayOrder = 12
                         });
                 });
 
@@ -1650,20 +1643,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             MeasureTypeId = 5,
                             Option = "yAxisDefault",
                             Value = "300"
-                        },
-                        new
-                        {
-                            Id = 121,
-                            MeasureTypeId = 39,
-                            Option = "binSize",
-                            Value = "15"
-                        },
-                        new
-                        {
-                            Id = 122,
-                            MeasureTypeId = 40,
-                            Option = "binSize",
-                            Value = "15"
                         });
                 });
 
@@ -2086,24 +2065,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Name = "Transit Signal Priority",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = false
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Abbreviation = "TSPS",
-                            DisplayOrder = 133,
-                            Name = "Transit Signal Priority Summary",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = true
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Abbreviation = "TSPD",
-                            DisplayOrder = 134,
-                            Name = "Transit Signal Priority Details",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = true
                         });
                 });
 
