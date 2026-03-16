@@ -4,7 +4,7 @@ export function addSpaces(s: string): string {
   const result: string[] = []
   let firstCapitalFound = false
 
-  for (const ch of s) {
+  for (const ch of s.toString()) {
     if (ch === ch.toUpperCase() && ch !== ch.toLowerCase()) {
       if (firstCapitalFound) {
         // Subsequent capital letters

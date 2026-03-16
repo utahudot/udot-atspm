@@ -8,10 +8,14 @@ import {
   Typography,
 } from '@mui/material'
 import { format } from 'date-fns'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { laneTypeOptions } from '@/features/locations/components/editDetector/LaneTypeCell'
 import { movementTypeOptions } from '@/features/locations/components/editDetector/MovementTypeCell'
+import {
+  getAvailableTurningMovementDirections,
+  normalizeTurningMovementDirection,
+} from '../directions'
 import TurningMovementCountsFilters, {
   type FilterOption,
 } from './TurningMovementCountsFilters'
@@ -33,13 +37,13 @@ interface TurningMovementCountsTableProps {
     data: {
       labels: Labels
       table: NewLaneSeries[]
-      peakHourFactor: number
-      peakHour?: { key: string; value: number } | null
+      peakHour?: {
+        peakHourFactor: number | null
+        peakHourData: TableRowT[]
+      } | null
     }
   }
 }
-
-const DIRECTION_ORDER = ['Northbound', 'Southbound', 'Eastbound', 'Westbound']
 
 function formatTime(ts: string) {
   return format(new Date(ts), 'HH:mm')
@@ -69,13 +73,29 @@ function normalizeMovementId(raw: string) {
   return raw
 }
 
-function normalizeDirectionId(raw: string) {
-  const x = raw.trim().toLowerCase()
-  if (['northbound', 'north', 'nb', 'n'].includes(x)) return 'Northbound'
-  if (['southbound', 'south', 'sb', 's'].includes(x)) return 'Southbound'
-  if (['eastbound', 'east', 'eb', 'e'].includes(x)) return 'Eastbound'
-  if (['westbound', 'west', 'wb', 'w'].includes(x)) return 'Westbound'
-  return raw
+const movementTypeOrder = movementTypeOptions.map((option) => option.id)
+
+function sortMovementTypes(movements: string[]) {
+  return [...movements].sort((a, b) => {
+    const indexA = movementTypeOrder.indexOf(normalizeMovementId(a))
+    const indexB = movementTypeOrder.indexOf(normalizeMovementId(b))
+
+    if (indexA !== indexB) {
+      if (indexA === -1) return 1
+      if (indexB === -1) return -1
+      return indexA - indexB
+    }
+
+    return a.localeCompare(b)
+  })
+}
+
+function syncSelectedValues(selected: string[], available: string[]) {
+  const availableSet = new Set(available)
+  const nextSelected = selected.filter((value) => availableSet.has(value))
+
+  if (nextSelected.length > 0) return nextSelected
+  return available
 }
 
 export default function TurningMovementCountsTable({
@@ -85,42 +105,86 @@ export default function TurningMovementCountsTable({
 
   const laneOptById = useMemo(() => {
     const map = new Map<string, (typeof laneTypeOptions)[number]>()
-    laneTypeOptions.forEach((o) => map.set(o.id, o))
+    laneTypeOptions.forEach((option) => map.set(option.id, option))
     return map
   }, [])
 
   const movOptById = useMemo(() => {
     const map = new Map<string, (typeof movementTypeOptions)[number]>()
-    movementTypeOptions.forEach((o) => map.set(o.id, o))
+    movementTypeOptions.forEach((option) => map.set(option.id, option))
     return map
   }, [])
 
+  const [activeLaneType, setActiveLaneType] = useState<string>('Vehicle')
+  const [selectedMovementTypes, setSelectedMovementTypes] = useState<string[]>(
+    []
+  )
+  const [selectedDirections, setSelectedDirections] = useState<string[]>([])
+  const [directionMode, setDirectionMode] = useState<'combine' | 'split'>(
+    'split'
+  )
+  const [movementMode, setMovementMode] = useState<'combine' | 'split'>('split')
+
   const availableLaneTypes = useMemo(() => {
     const set = new Set<string>()
-    table.forEach((s) => set.add(s.laneType))
+    table.forEach((row) => set.add(row.laneType))
     return Array.from(set).sort((a, b) => a.localeCompare(b))
   }, [table])
+
+  const resolvedActiveLaneType = useMemo(() => {
+    if (availableLaneTypes.includes(activeLaneType)) return activeLaneType
+    if (availableLaneTypes.includes('Vehicle')) return 'Vehicle'
+    return availableLaneTypes[0] ?? ''
+  }, [activeLaneType, availableLaneTypes])
+
+  const activeLaneRows = useMemo(
+    () => table.filter((row) => row.laneType === resolvedActiveLaneType),
+    [resolvedActiveLaneType, table]
+  )
 
   const availableMovementTypes = useMemo(() => {
     const set = new Set<string>()
-    table.forEach((s) => set.add(s.movementType))
-    return Array.from(set).sort((a, b) => a.localeCompare(b))
-  }, [table])
+    activeLaneRows.forEach((row) => set.add(row.movementType))
+    return sortMovementTypes(Array.from(set))
+  }, [activeLaneRows])
+
+  const availableDirections = useMemo(
+    () =>
+      getAvailableTurningMovementDirections(
+        activeLaneRows.map((row) => row.direction)
+      ),
+    [activeLaneRows]
+  )
+
+  const effectiveSelectedMovementTypes = useMemo(
+    () => syncSelectedValues(selectedMovementTypes, availableMovementTypes),
+    [availableMovementTypes, selectedMovementTypes]
+  )
+
+  const effectiveSelectedDirections = useMemo(
+    () => syncSelectedValues(selectedDirections, availableDirections),
+    [availableDirections, selectedDirections]
+  )
 
   const directionFilterOptions = useMemo<FilterOption[]>(
-    () => DIRECTION_ORDER.map((d) => ({ value: d, label: d })),
-    []
+    () =>
+      availableDirections.map((direction) => ({
+        value: direction,
+        label: direction,
+      })),
+    [availableDirections]
   )
 
   const laneTypeTabOptions = useMemo<FilterOption[]>(
     () =>
       [
-        ...availableLaneTypes.map((lt) => {
-          const laneId = normalizeLaneTypeId(lt)
-          const opt = laneOptById.get(laneId)
+        ...availableLaneTypes.map((laneType) => {
+          const laneId = normalizeLaneTypeId(laneType)
+          const laneOption = laneOptById.get(laneId)
+
           return {
-            value: lt,
-            label: opt?.description ?? lt,
+            value: laneType,
+            label: laneOption?.description ?? laneType,
           }
         }),
       ].sort((a, b) => b.label.localeCompare(a.label)),
@@ -128,20 +192,19 @@ export default function TurningMovementCountsTable({
   )
 
   const movementFilterOptions = useMemo<FilterOption[]>(
-    () => availableMovementTypes.map((m) => ({ value: m, label: m })),
-    [availableMovementTypes]
+    () =>
+      availableMovementTypes.map((movement) => {
+        const movementId = normalizeMovementId(movement)
+        const movementOption = movOptById.get(movementId)
+
+        return {
+          value: movement,
+          label: movementOption?.description ?? movement,
+        }
+      }),
+    [availableMovementTypes, movOptById]
   )
 
-  const [activeLaneType, setActiveLaneType] = useState<string>('Vehicle')
-  const [selectedMovementTypes, setSelectedMovementTypes] = useState<string[]>(
-    []
-  )
-  const [selectedDirections, setSelectedDirections] =
-    useState<string[]>(DIRECTION_ORDER)
-  const [directionMode, setDirectionMode] = useState<'combine' | 'split'>(
-    'split'
-  )
-  const [movementMode, setMovementMode] = useState<'combine' | 'split'>('split')
   const toggleSelection = (value: string, selected: string[]) =>
     selected.includes(value)
       ? selected.length === 1
@@ -150,53 +213,50 @@ export default function TurningMovementCountsTable({
       : [...selected, value]
 
   const handleToggleDirection = (value: string) => {
-    setSelectedDirections((prev) => toggleSelection(value, prev))
+    setSelectedDirections(toggleSelection(value, effectiveSelectedDirections))
   }
+
   const handleToggleMovement = (value: string) => {
-    setSelectedMovementTypes((prev) => toggleSelection(value, prev))
+    setSelectedMovementTypes(
+      toggleSelection(value, effectiveSelectedMovementTypes)
+    )
   }
-
-  useEffect(() => {
-    if (availableMovementTypes.length && selectedMovementTypes.length === 0) {
-      setSelectedMovementTypes(availableMovementTypes)
-    }
-  }, [availableMovementTypes, selectedMovementTypes.length])
-
-  const directions = useMemo(
-    () =>
-      labels.columnGroups
-        .filter((g) => g.title)
-        .map((g) => g.title!) as string[],
-    [labels.columnGroups]
-  )
 
   const movementsByDir = useMemo(() => {
     const map = new Map<string, string[]>()
-    labels.columnGroups.forEach((g) => {
-      if (!g.title) return
-      map.set(
-        g.title,
-        g.columns.filter((c) => c !== 'Total')
-      )
+
+    availableDirections.forEach((direction) => {
+      const movements = activeLaneRows
+        .filter(
+          (row) =>
+            normalizeTurningMovementDirection(row.direction) === direction
+        )
+        .map((row) => row.movementType)
+
+      map.set(direction, sortMovementTypes(Array.from(new Set(movements))))
     })
+
     return map
-  }, [labels.columnGroups])
+  }, [activeLaneRows, availableDirections])
 
   const { headerRow1, headerRow2, rows, dirTotalIdx, binTotalIdx } =
     useMemo(() => {
       const timestamps = Array.from(
-        new Set(table.flatMap((d) => d.volumes.map((v) => v.timestamp)))
+        new Set(
+          activeLaneRows.flatMap((row) => row.volumes.map((v) => v.timestamp))
+        )
       ).sort((a, b) => a.localeCompare(b))
 
       const valueMap = new Map<string, number>()
-      for (const s of table) {
-        for (const v of s.volumes) {
+      for (const row of activeLaneRows) {
+        for (const volume of row.volumes) {
           valueMap.set(
-            `${s.direction}|${s.movementType}|${s.laneType}|${v.timestamp}`,
-            v.value ?? 0
+            `${normalizeTurningMovementDirection(row.direction)}|${row.movementType}|${row.laneType}|${volume.timestamp}`,
+            volume.value ?? 0
           )
         }
       }
+
       const getValue = (dir: string, mov: string, lane: string, ts: string) =>
         valueMap.get(`${dir}|${mov}|${lane}|${ts}`) ?? 0
 
@@ -207,26 +267,27 @@ export default function TurningMovementCountsTable({
         | { kind: 'binTotal' }
 
       const cols: ColKind[] = [{ kind: 'hour' }]
-
-      // filters
-      const enabledLaneTypes = [activeLaneType]
-      const enabledMovementTypes = new Set(selectedMovementTypes)
-      const enabledDirections = new Set(selectedDirections)
-      const activeDirections = directions.filter((dir) =>
-        enabledDirections.has(normalizeDirectionId(dir))
+      const enabledLaneTypes = [resolvedActiveLaneType]
+      const enabledMovementTypes = new Set(effectiveSelectedMovementTypes)
+      const enabledDirections = new Set(effectiveSelectedDirections)
+      const activeDirections = availableDirections.filter((direction) =>
+        enabledDirections.has(direction)
       )
 
       const getMovementsForDirections = (dirsForGroup: string[]) => {
         const seen = new Set<string>()
         const ordered: string[] = []
+
         dirsForGroup.forEach((dir) => {
-          const movs = movementsByDir.get(dir) ?? []
-          movs.forEach((mov) => {
-            if (!enabledMovementTypes.has(mov) || seen.has(mov)) return
-            seen.add(mov)
-            ordered.push(mov)
+          const movements = movementsByDir.get(dir) ?? []
+          movements.forEach((movement) => {
+            if (!enabledMovementTypes.has(movement) || seen.has(movement))
+              return
+            seen.add(movement)
+            ordered.push(movement)
           })
         })
+
         return ordered
       }
 
@@ -235,7 +296,10 @@ export default function TurningMovementCountsTable({
           ? activeDirections.length
             ? [{ label: 'Combined Directions', dirs: activeDirections }]
             : []
-          : activeDirections.map((dir) => ({ label: dir, dirs: [dir] }))
+          : activeDirections.map((direction) => ({
+              label: direction,
+              dirs: [direction],
+            }))
 
       const sumValues = (
         dirsForGroup: string[],
@@ -272,10 +336,11 @@ export default function TurningMovementCountsTable({
         const movementList = getMovementsForDirections(directionGroup.dirs)
         const movementGroups =
           movementMode === 'combine'
-            ? movementList.length
-              ? [{ label: 'Combined Movements', movs: movementList }]
-              : []
-            : movementList.map((mov) => ({ label: mov, movs: [mov] }))
+            ? []
+            : movementList.map((movement) => ({
+                label: movement,
+                movs: [movement],
+              }))
 
         const dirColSpan = movementGroups.length + 1
         headerRow1.push({
@@ -286,8 +351,8 @@ export default function TurningMovementCountsTable({
 
         for (const movementGroup of movementGroups) {
           const showMovementIcon = movementMode !== 'combine'
-          const movId = normalizeMovementId(movementGroup.label)
-          const movOpt = movOptById.get(movId)
+          const movementId = normalizeMovementId(movementGroup.label)
+          const movementOption = movOptById.get(movementId)
 
           headerRow2.push({
             colSpan: 1,
@@ -301,7 +366,7 @@ export default function TurningMovementCountsTable({
                   justifyContent: 'center',
                 }}
               >
-                {showMovementIcon ? (movOpt?.icon ?? null) : null}
+                {showMovementIcon ? (movementOption?.icon ?? null) : null}
                 <span>{movementGroup.label}</span>
               </Box>
             ),
@@ -333,9 +398,9 @@ export default function TurningMovementCountsTable({
 
       const dirTotalIdx = new Set<number>()
       let binTotalIdx = -1
-      cols.forEach((c, i) => {
-        if (c.kind === 'dirTotal') dirTotalIdx.add(i)
-        if (c.kind === 'binTotal') binTotalIdx = i
+      cols.forEach((col, index) => {
+        if (col.kind === 'dirTotal') dirTotalIdx.add(index)
+        if (col.kind === 'binTotal') binTotalIdx = index
       })
 
       const bodyRows: TableRowT[] = timestamps.map((ts) => {
@@ -343,24 +408,18 @@ export default function TurningMovementCountsTable({
         row[0] = formatTime(ts)
 
         for (let i = 1; i < cols.length; i++) {
-          const c = cols[i]
+          const col = cols[i]
 
-          if (c.kind === 'cell') {
-            row[i] = sumValues(c.dirs, c.movs, enabledLaneTypes, ts)
-            continue
-          }
-
-          if (c.kind === 'dirTotal') {
-            row[i] = sumValues(c.dirs, c.movs, enabledLaneTypes, ts)
-            continue
+          if (col.kind === 'cell' || col.kind === 'dirTotal') {
+            row[i] = sumValues(col.dirs, col.movs, enabledLaneTypes, ts)
           }
         }
 
         if (binTotalIdx >= 0) {
           let bin = 0
-          dirTotalIdx.forEach((idx) => {
-            const v = row[idx]
-            if (typeof v === 'number') bin += v
+          dirTotalIdx.forEach((index) => {
+            const value = row[index]
+            if (typeof value === 'number') bin += value
           })
           row[binTotalIdx] = bin
         }
@@ -368,15 +427,15 @@ export default function TurningMovementCountsTable({
         return row as TableRowT
       })
 
-      const footer: TableRowT = new Array(cols.length).fill(0) as any
+      const footer = new Array(cols.length).fill(0) as TableRowT
       footer[0] = 'Total'
-      for (let c = 1; c < cols.length; c++) {
+      for (let col = 1; col < cols.length; col++) {
         let sum = 0
-        for (const r of bodyRows) {
-          const v = r[c]
-          if (typeof v === 'number') sum += v
+        for (const row of bodyRows) {
+          const value = row[col]
+          if (typeof value === 'number') sum += value
         }
-        footer[c] = sum
+        footer[col] = sum
       }
       bodyRows.push(footer)
 
@@ -388,15 +447,15 @@ export default function TurningMovementCountsTable({
         binTotalIdx,
       }
     }, [
-      table,
-      directions,
-      movementsByDir,
-      activeLaneType,
-      selectedMovementTypes,
-      selectedDirections,
+      activeLaneRows,
+      availableDirections,
+      effectiveSelectedDirections,
+      effectiveSelectedMovementTypes,
       directionMode,
       movementMode,
       movOptById,
+      movementsByDir,
+      resolvedActiveLaneType,
     ])
 
   function csvEscape(v: unknown) {
@@ -423,14 +482,18 @@ export default function TurningMovementCountsTable({
 
   const buildCsv = () => {
     const row1Expanded: string[] = []
-    headerRow1.forEach((h) => {
-      for (let i = 0; i < h.colSpan; i++) row1Expanded.push(h.label ?? '')
+    headerRow1.forEach((header) => {
+      for (let i = 0; i < header.colSpan; i++)
+        row1Expanded.push(header.label ?? '')
     })
 
     const row2Expanded: string[] = []
-    headerRow2.forEach((h) => {
-      const label = typeof h.label === 'string' ? h.label : (h.csvLabel ?? '')
-      for (let i = 0; i < h.colSpan; i++) row2Expanded.push(label)
+    headerRow2.forEach((header) => {
+      const label =
+        typeof header.label === 'string'
+          ? header.label
+          : (header.csvLabel ?? '')
+      for (let i = 0; i < header.colSpan; i++) row2Expanded.push(label)
     })
 
     const header = row2Expanded.map((h2, i) => {
@@ -445,8 +508,8 @@ export default function TurningMovementCountsTable({
     const lines: string[] = []
     lines.push(header.map(csvEscape).join(','))
 
-    rows.forEach((r) => {
-      lines.push(r.map(csvEscape).join(','))
+    rows.forEach((row) => {
+      lines.push(row.map(csvEscape).join(','))
     })
 
     return lines.join('\n')
@@ -455,7 +518,7 @@ export default function TurningMovementCountsTable({
   const handleDownloadCsv = () => {
     const csv = buildCsv()
     const filename =
-      `turning-movement-counts_${activeLaneType}_${directionMode}-${movementMode}.csv`
+      `turning-movement-counts_${resolvedActiveLaneType}_${directionMode}-${movementMode}.csv`
         .replace(/\s+/g, '_')
         .toLowerCase()
 
@@ -475,8 +538,8 @@ export default function TurningMovementCountsTable({
           <TurningMovementCountsFilters
             directionOptions={directionFilterOptions}
             movementOptions={movementFilterOptions}
-            selectedDirections={selectedDirections}
-            selectedMovementTypes={selectedMovementTypes}
+            selectedDirections={effectiveSelectedDirections}
+            selectedMovementTypes={effectiveSelectedMovementTypes}
             directionMode={directionMode}
             movementMode={movementMode}
             onToggleDirection={handleToggleDirection}
@@ -486,7 +549,7 @@ export default function TurningMovementCountsTable({
           />
 
           <TurningMovementCountsTableToolbar
-            activeLaneType={activeLaneType}
+            activeLaneType={resolvedActiveLaneType}
             laneTypeTabOptions={laneTypeTabOptions}
             onLaneTypeChange={setActiveLaneType}
             onDownloadCsv={handleDownloadCsv}
@@ -499,7 +562,7 @@ export default function TurningMovementCountsTable({
             dirTotalIdx={dirTotalIdx}
             binTotalIdx={binTotalIdx}
             peakHour={chartData.data.peakHour}
-            showPeakHour={activeLaneType === 'Vehicle'} // only show peak hour row for vehicle tab
+            showPeakHour={resolvedActiveLaneType === 'Vehicle'} // only show peak hour row for vehicle tab
             labels={labels}
           />
         </AccordionDetails>
