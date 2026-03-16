@@ -27,7 +27,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             DateTime start,
             DateTime end,
             int phaseNumber,
-            string phaseNumberSort,
+            string direction,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             int speed,
@@ -39,7 +39,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             List<DataPointWithDetectorCheckBase> greenTimeEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
-            PhaseNumberSort = phaseNumberSort;
+            Direction = direction;
             DistanceToNextLocation = distanceToNextLocation;
             Speed = speed;
             Offset = refPoint;
@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public int ProgrammedSplit { get; set; }
         public string PhaseType { get; set; }
         public int CycleLength { get; }
-        public string PhaseNumberSort { get; set; }
+        public string Direction { get; set; }
         public double DistanceToNextLocation { get; set; }
         public double DistanceToPreviousLocation { get; set; }
         public int Order { get; set; }

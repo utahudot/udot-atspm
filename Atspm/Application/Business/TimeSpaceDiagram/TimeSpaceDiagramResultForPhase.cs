@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             DateTime start,
             DateTime end,
             int phaseNumber,
-            string phaseNumberSort,
+            string direction,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             int speed,
@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             List<DetectorEventDto> priorityAndPreemptionEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
-            PhaseNumberSort = phaseNumberSort;
+            Direction = direction;
             DistanceToNextLocation = distanceToNextLocation;
             DistanceToPreviousLocation = distanceToPreviousLocation;
             Speed = speed;
@@ -71,7 +71,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
         public string PhaseType { get; set; }
-        public string PhaseNumberSort { get; set; }
+        public string Direction { get; set; }
         public double DistanceToNextLocation { get; set; }
         public double DistanceToPreviousLocation { get; set; }
         public double PercentArrivalOnGreen { get; set; }

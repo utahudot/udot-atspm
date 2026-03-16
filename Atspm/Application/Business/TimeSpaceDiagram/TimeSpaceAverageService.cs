@@ -103,7 +103,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                 options.StartDate.ToDateTime(options.StartTime),
                 options.EndDate.ToDateTime(options.EndTime),
                 phaseDetail.PhaseNumber,
-                phaseNumberSort,
+                phaseDetail.Approach.DirectionType.Abbreviation,
                 distanceToNextLocation,
                 distanceToPreviousLocation,
                 speedLimit,

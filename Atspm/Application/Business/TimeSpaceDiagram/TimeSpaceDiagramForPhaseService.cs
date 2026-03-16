@@ -122,7 +122,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                 options.Start,
                 options.End,
                 phaseDetail.PhaseNumber,
-                phaseNumberSort,
+                phaseDetail.Approach.DirectionType.Abbreviation,
                 distanceToNextLocation,
                 distanceToPreviousLocation,
                 speedLimit,

@@ -71,7 +71,7 @@ function recomputeTimeSpaceData<T extends TimeSpaceBaseData>(
           distanceToNextLocation: current.distanceToNextLocation,
           distanceToPreviousLocation: current.distanceToPreviousLocation,
           phaseNumber: current.phaseNumber,
-          phaseNumberSort: current.phaseNumberSort,
+          Description: current.description,
           speed: current.speed,
           approachId: current.approachId,
           approachDescription: current.approachDescription,

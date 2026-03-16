@@ -5,51 +5,51 @@
  * ATSPM Reporting with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-export type AggregationCalculationType = typeof AggregationCalculationType[keyof typeof AggregationCalculationType];
-
+export type AggregationCalculationType =
+  (typeof AggregationCalculationType)[keyof typeof AggregationCalculationType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AggregationCalculationType = {
   Sum: 'Sum',
   Average: 'Average',
-} as const;
+} as const
 
 export interface AggregationDataPoint {
   /** @nullable */
-  identifier?: string | null;
-  start?: string;
-  value?: number;
+  identifier?: string | null
+  start?: string
+  value?: number
 }
 
 export interface AggregationOptions {
   /** @nullable */
-  locationIdentifiers?: string[] | null;
-  start?: string;
-  end?: string;
-  aggregationType?: AggregationType;
-  detectionType?: DetectionTypes;
-  dataType?: number;
-  timeOptions?: TimeOptions;
-  selectedAggregationType?: AggregationCalculationType;
-  selectedXAxisType?: XAxisType;
-  selectedSeries?: SeriesType;
+  locationIdentifiers?: string[] | null
+  start?: string
+  end?: string
+  aggregationType?: AggregationType
+  detectionType?: DetectionTypes
+  dataType?: number
+  timeOptions?: TimeOptions
+  selectedAggregationType?: AggregationCalculationType
+  selectedXAxisType?: XAxisType
+  selectedSeries?: SeriesType
   /** @nullable */
-  locations?: FilterSignal[] | null;
+  locations?: FilterSignal[] | null
   /** @nullable */
-  filterDirections?: FilterDirection[] | null;
+  filterDirections?: FilterDirection[] | null
   /** @nullable */
-  filterMovements?: FilterMovement[] | null;
+  filterMovements?: FilterMovement[] | null
 }
 
 export interface AggregationResult {
   /** @nullable */
-  identifier?: string | null;
+  identifier?: string | null
   /** @nullable */
-  series?: Series[] | null;
+  series?: Series[] | null
 }
 
-export type AggregationType = typeof AggregationType[keyof typeof AggregationType];
-
+export type AggregationType =
+  (typeof AggregationType)[keyof typeof AggregationType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AggregationType = {
@@ -67,190 +67,189 @@ export const AggregationType = {
   Priority: 'Priority',
   SignalEventCount: 'SignalEventCount',
   signalPlan: 'signalPlan',
-} as const;
+} as const
 
 export interface ApproachDelayOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
-  getPermissivePhase?: boolean;
-  getVolume?: boolean;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
+  getPermissivePhase?: boolean
+  getVolume?: boolean
 }
 
 export interface ApproachDelayPlan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  averageDelay?: number;
-  totalDelay?: number;
+  readonly planDescription?: string | null
+  averageDelay?: number
+  totalDelay?: number
 }
 
 export interface ApproachDelayResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseDescription?: string | null;
-  averageDelayPerVehicle?: number;
-  totalDelay?: number;
+  phaseDescription?: string | null
+  averageDelayPerVehicle?: number
+  totalDelay?: number
   /** @nullable */
-  plans?: ApproachDelayPlan[] | null;
+  plans?: ApproachDelayPlan[] | null
   /** @nullable */
-  approachDelayDataPoints?: DataPointForDouble[] | null;
+  approachDelayDataPoints?: DataPointForDouble[] | null
   /** @nullable */
-  approachDelayPerVehicleDataPoints?: DataPointForDouble[] | null;
+  approachDelayPerVehicleDataPoints?: DataPointForDouble[] | null
 }
 
 export interface ApproachSpeedOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
-  readonly metricTypeId?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
+  readonly metricTypeId?: number
 }
 
 export interface ApproachSpeedResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseDescription?: string | null;
+  phaseDescription?: string | null
   /** @nullable */
-  detectionType?: string | null;
-  distanceFromStopBar?: number;
-  postedSpeed?: number;
+  detectionType?: string | null
+  distanceFromStopBar?: number
+  postedSpeed?: number
   /** @nullable */
-  plans?: SpeedPlan[] | null;
+  plans?: SpeedPlan[] | null
   /** @nullable */
-  averageSpeeds?: DataPointForInt[] | null;
+  averageSpeeds?: DataPointForInt[] | null
   /** @nullable */
-  eightyFifthSpeeds?: DataPointForInt[] | null;
+  eightyFifthSpeeds?: DataPointForInt[] | null
   /** @nullable */
-  fifteenthSpeeds?: DataPointForInt[] | null;
+  fifteenthSpeeds?: DataPointForInt[] | null
 }
 
 export interface ApproachVolumeOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
-  showDirectionalSplits?: boolean;
-  getVolume?: boolean;
-  showNbEbVolume?: boolean;
-  showSbWbVolume?: boolean;
-  showTMCDetection?: boolean;
-  showAdvanceDetection?: boolean;
-  readonly metricTypeId?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
+  showDirectionalSplits?: boolean
+  getVolume?: boolean
+  showNbEbVolume?: boolean
+  showSbWbVolume?: boolean
+  showTMCDetection?: boolean
+  showAdvanceDetection?: boolean
+  readonly metricTypeId?: number
 }
 
 export interface ApproachVolumeResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
+  locationDescription?: string | null
   /** @nullable */
-  primaryDirectionName?: string | null;
+  primaryDirectionName?: string | null
   /** @nullable */
-  opposingDirectionName?: string | null;
-  distanceFromStopBar?: number;
+  opposingDirectionName?: string | null
+  distanceFromStopBar?: number
   /** @nullable */
-  detectorType?: string | null;
+  detectorType?: string | null
   /** @nullable */
-  primaryDirectionVolumes?: DataPointForInt[] | null;
+  primaryDirectionVolumes?: DataPointForInt[] | null
   /** @nullable */
-  opposingDirectionVolumes?: DataPointForInt[] | null;
+  opposingDirectionVolumes?: DataPointForInt[] | null
   /** @nullable */
-  combinedDirectionVolumes?: DataPointForInt[] | null;
+  combinedDirectionVolumes?: DataPointForInt[] | null
   /** @nullable */
-  primaryDFactors?: DataPointForDouble[] | null;
+  primaryDFactors?: DataPointForDouble[] | null
   /** @nullable */
-  opposingDFactors?: DataPointForDouble[] | null;
-  summaryData?: SummaryData;
+  opposingDFactors?: DataPointForDouble[] | null
+  summaryData?: SummaryData
 }
 
 export interface AreaDTO {
   /** @nullable */
-  name?: string | null;
-  id?: number;
+  name?: string | null
+  id?: number
 }
 
 export interface ArrivalOnRedOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
-  getPermissivePhase?: boolean;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
+  getPermissivePhase?: boolean
 }
 
 export interface ArrivalOnRedPlan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  percentArrivalOnRed?: number;
-  percentRedTime?: number;
+  readonly planDescription?: string | null
+  percentArrivalOnRed?: number
+  percentRedTime?: number
 }
 
 export interface ArrivalOnRedResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseDescription?: string | null;
-  totalDetectorHits?: number;
-  totalArrivalOnRed?: number;
-  percentArrivalOnRed?: number;
+  phaseDescription?: string | null
+  totalDetectorHits?: number
+  totalArrivalOnRed?: number
+  percentArrivalOnRed?: number
   /** @nullable */
-  plans?: ArrivalOnRedPlan[] | null;
+  plans?: ArrivalOnRedPlan[] | null
   /** @nullable */
-  percentArrivalsOnRed?: DataPointForDouble[] | null;
+  percentArrivalsOnRed?: DataPointForDouble[] | null
   /** @nullable */
-  totalVehicles?: DataPointForDouble[] | null;
+  totalVehicles?: DataPointForDouble[] | null
   /** @nullable */
-  arrivalsOnRed?: DataPointForDouble[] | null;
+  arrivalsOnRed?: DataPointForDouble[] | null
 }
 
 export interface BarStack {
-  x?: number;
-  y?: number;
-  value?: number;
+  x?: number
+  y?: number
+  value?: number
 }
 
-export type BinSize = typeof BinSize[keyof typeof BinSize];
-
+export type BinSize = (typeof BinSize)[keyof typeof BinSize]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const BinSize = {
@@ -260,37 +259,36 @@ export const BinSize = {
   Day: 'Day',
   Month: 'Month',
   Year: 'Year',
-} as const;
+} as const
 
 export interface CycleEventsDto {
-  start?: string;
-  value?: number;
+  start?: string
+  value?: number
 }
 
 export interface DataPointBase {
-  timestamp?: string;
+  timestamp?: string
 }
 
 export interface DataPointForDetectorEvent {
   /** @nullable */
-  detectorOn?: string | null;
+  detectorOn?: string | null
   /** @nullable */
-  detectorOff?: string | null;
-  value?: number;
+  detectorOff?: string | null
+  value?: number
 }
 
 export interface DataPointForDouble {
-  timestamp?: string;
-  value?: number;
+  timestamp?: string
+  value?: number
 }
 
 export interface DataPointForInt {
-  timestamp?: string;
-  value?: number;
+  timestamp?: string
+  value?: number
 }
 
-export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
-
+export type DayOfWeek = (typeof DayOfWeek)[keyof typeof DayOfWeek]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DayOfWeek = {
@@ -301,17 +299,17 @@ export const DayOfWeek = {
   Thursday: 'Thursday',
   Friday: 'Friday',
   Saturday: 'Saturday',
-} as const;
+} as const
 
 export interface DescriptionWithDataPoints {
   /** @nullable */
-  description?: string | null;
+  description?: string | null
   /** @nullable */
-  value?: DataPointForDouble[] | null;
+  value?: DataPointForDouble[] | null
 }
 
-export type DetectionTypes = typeof DetectionTypes[keyof typeof DetectionTypes];
-
+export type DetectionTypes =
+  (typeof DetectionTypes)[keyof typeof DetectionTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DetectionTypes = {
@@ -328,145 +326,144 @@ export const DetectionTypes = {
   IQ: 'IQ',
   EQ: 'EQ',
   PP: 'PP',
-} as const;
+} as const
 
 export interface DetectorEventBase {
   /** @nullable */
-  detectorOn?: string | null;
+  detectorOn?: string | null
   /** @nullable */
-  detectorOff?: string | null;
+  detectorOff?: string | null
 }
 
 export interface DetectorEventDto {
   /** @nullable */
-  name?: string | null;
+  name?: string | null
   /** @nullable */
-  events?: DetectorEventBase[] | null;
+  events?: DetectorEventBase[] | null
 }
 
 export interface FilterApproach {
-  approachId?: number;
-  exclude?: boolean;
+  approachId?: number
+  exclude?: boolean
   /** @nullable */
-  detectors?: FilterDetector[] | null;
+  detectors?: FilterDetector[] | null
 }
 
 export interface FilterDetector {
-  id?: number;
-  exclude?: boolean;
+  id?: number
+  exclude?: boolean
 }
 
 export interface FilterDirection {
-  directionTypeId?: number;
+  directionTypeId?: number
   /** @nullable */
-  description?: string | null;
-  include?: boolean;
+  description?: string | null
+  include?: boolean
 }
 
 export interface FilterMovement {
-  movementTypeId?: number;
+  movementTypeId?: number
   /** @nullable */
-  description?: string | null;
-  include?: boolean;
+  description?: string | null
+  include?: boolean
 }
 
 export interface FilterSignal {
   /** @nullable */
-  locationIdentifier?: string | null;
-  exclude?: boolean;
+  locationIdentifier?: string | null
+  exclude?: boolean
   /** @nullable */
-  approaches?: FilterApproach[] | null;
+  approaches?: FilterApproach[] | null
 }
 
 export interface GapDurationOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  approachId?: number
+  startHour?: number
+  startMinute?: number
+  endHour?: number
+  endMinute?: number
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
 }
 
 /**
  * @nullable
  */
-export type GapDurationResultAcceptableGaps = {[key: string]: number} | null;
+export type GapDurationResultAcceptableGaps = { [key: string]: number } | null
 
 export interface GapDurationResult {
-  gapDurationPercent?: number;
-  capacity?: number;
-  demand?: number;
+  gapDurationPercent?: number
+  capacity?: number
+  demand?: number
   /** @nullable */
-  acceptableGaps?: GapDurationResultAcceptableGaps;
+  acceptableGaps?: GapDurationResultAcceptableGaps
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
   /** @nullable */
-  readonly opposingDirection?: string | null;
+  readonly opposingDirection?: string | null
 }
 
 export interface GreenTimeUtilizationOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  metricTypeId?: number;
-  xAxisBinSize?: number;
-  yAxisBinSize?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  metricTypeId?: number
+  xAxisBinSize?: number
+  yAxisBinSize?: number
 }
 
 export interface GreenTimeUtilizationResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
+  approachDescription?: string | null
   /** @nullable */
-  bins?: BarStack[] | null;
+  bins?: BarStack[] | null
   /** @nullable */
-  averageSplits?: DataPointForDouble[] | null;
+  averageSplits?: DataPointForDouble[] | null
   /** @nullable */
-  programmedSplits?: DataPointForDouble[] | null;
-  phaseNumber?: number;
-  yAxisBinSize?: number;
-  xAxisBinSize?: number;
+  programmedSplits?: DataPointForDouble[] | null
+  phaseNumber?: number
+  yAxisBinSize?: number
+  xAxisBinSize?: number
   /** @nullable */
-  readonly plans?: readonly PlanSplitMonitorData[] | null;
+  readonly plans?: readonly PlanSplitMonitorData[] | null
 }
 
 export interface IndianaEvent {
   /** @nullable */
-  locationIdentifier?: string | null;
-  timestamp?: string;
-  eventCode?: number;
-  eventParam?: number;
+  locationIdentifier?: string | null
+  timestamp?: string
+  eventCode?: number
+  eventParam?: number
 }
 
 export interface KeyValuePair2 {
-  key?: string;
-  value?: number;
+  key?: string
+  value?: number
 }
 
 export interface Lane {
   /** @nullable */
-  laneNumber?: number | null;
+  laneNumber?: number | null
   /** @nullable */
-  movementType?: string | null;
+  movementType?: string | null
   /** @nullable */
-  volume?: DataPointForInt[] | null;
-  laneType?: LaneTypes;
+  volume?: DataPointForInt[] | null
+  laneType?: LaneTypes
 }
 
-export type LaneTypes = typeof LaneTypes[keyof typeof LaneTypes];
-
+export type LaneTypes = (typeof LaneTypes)[keyof typeof LaneTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LaneTypes = {
@@ -478,1012 +475,1021 @@ export const LaneTypes = {
   LRT: 'LRT',
   Bus: 'Bus',
   HDV: 'HDV',
-} as const;
+} as const
 
 export interface LeftTurnGapAnalysisOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  gap1Min?: number;
-  gap1Max?: number;
-  gap2Min?: number;
-  gap2Max?: number;
-  gap3Min?: number;
-  gap3Max?: number;
-  gap4Min?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  gap1Min?: number
+  gap1Max?: number
+  gap2Min?: number
+  gap2Max?: number
+  gap3Min?: number
+  gap3Max?: number
+  gap4Min?: number
   /** @nullable */
-  gap4Max?: number | null;
+  gap4Max?: number | null
   /** @nullable */
-  gap5Min?: number | null;
+  gap5Min?: number | null
   /** @nullable */
-  gap5Max?: number | null;
+  gap5Max?: number | null
   /** @nullable */
-  gap6Min?: number | null;
+  gap6Min?: number | null
   /** @nullable */
-  gap6Max?: number | null;
+  gap6Max?: number | null
   /** @nullable */
-  gap7Min?: number | null;
+  gap7Min?: number | null
   /** @nullable */
-  gap7Max?: number | null;
+  gap7Max?: number | null
   /** @nullable */
-  gap8Min?: number | null;
+  gap8Min?: number | null
   /** @nullable */
-  gap8Max?: number | null;
+  gap8Max?: number | null
   /** @nullable */
-  gap9Min?: number | null;
+  gap9Min?: number | null
   /** @nullable */
-  gap9Max?: number | null;
+  gap9Max?: number | null
   /** @nullable */
-  gap10Min?: number | null;
+  gap10Min?: number | null
   /** @nullable */
-  gap10Max?: number | null;
+  gap10Max?: number | null
   /** @nullable */
-  sumDurationGap1?: number | null;
+  sumDurationGap1?: number | null
   /** @nullable */
-  sumDurationGap2?: number | null;
+  sumDurationGap2?: number | null
   /** @nullable */
-  sumDurationGap3?: number | null;
-  trendLineGapThreshold?: number;
-  binSize?: number;
+  sumDurationGap3?: number | null
+  trendLineGapThreshold?: number
+  binSize?: number
 }
 
 export interface LeftTurnGapAnalysisResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseDescription?: string | null;
+  phaseDescription?: string | null
   /** @nullable */
-  detectionTypeDescription?: string | null;
-  gap1Min?: number;
-  gap1Max?: number;
+  detectionTypeDescription?: string | null
+  gap1Min?: number
+  gap1Max?: number
   /** @nullable */
-  gap1Count?: DataPointForInt[] | null;
-  gap2Min?: number;
-  gap2Max?: number;
+  gap1Count?: DataPointForInt[] | null
+  gap2Min?: number
+  gap2Max?: number
   /** @nullable */
-  gap2Count?: DataPointForInt[] | null;
-  gap3Min?: number;
-  gap3Max?: number;
+  gap2Count?: DataPointForInt[] | null
+  gap3Min?: number
+  gap3Max?: number
   /** @nullable */
-  gap3Count?: DataPointForInt[] | null;
+  gap3Count?: DataPointForInt[] | null
   /** @nullable */
-  gap4Min?: number | null;
+  gap4Min?: number | null
   /** @nullable */
-  gap4Max?: number | null;
+  gap4Max?: number | null
   /** @nullable */
-  gap4Count?: DataPointForInt[] | null;
+  gap4Count?: DataPointForInt[] | null
   /** @nullable */
-  gap5Min?: number | null;
+  gap5Min?: number | null
   /** @nullable */
-  gap5Max?: number | null;
+  gap5Max?: number | null
   /** @nullable */
-  gap5Count?: DataPointForInt[] | null;
+  gap5Count?: DataPointForInt[] | null
   /** @nullable */
-  gap6Min?: number | null;
+  gap6Min?: number | null
   /** @nullable */
-  gap6Max?: number | null;
+  gap6Max?: number | null
   /** @nullable */
-  gap6Count?: DataPointForInt[] | null;
+  gap6Count?: DataPointForInt[] | null
   /** @nullable */
-  gap7Min?: number | null;
+  gap7Min?: number | null
   /** @nullable */
-  gap7Max?: number | null;
+  gap7Max?: number | null
   /** @nullable */
-  gap7Count?: DataPointForInt[] | null;
+  gap7Count?: DataPointForInt[] | null
   /** @nullable */
-  gap8Min?: number | null;
+  gap8Min?: number | null
   /** @nullable */
-  gap8Max?: number | null;
+  gap8Max?: number | null
   /** @nullable */
-  gap8Count?: DataPointForInt[] | null;
+  gap8Count?: DataPointForInt[] | null
   /** @nullable */
-  gap9Min?: number | null;
+  gap9Min?: number | null
   /** @nullable */
-  gap9Max?: number | null;
+  gap9Max?: number | null
   /** @nullable */
-  gap9Count?: DataPointForInt[] | null;
+  gap9Count?: DataPointForInt[] | null
   /** @nullable */
-  gap10Min?: number | null;
+  gap10Min?: number | null
   /** @nullable */
-  gap10Max?: number | null;
+  gap10Max?: number | null
   /** @nullable */
-  gap10Count?: DataPointForInt[] | null;
+  gap10Count?: DataPointForInt[] | null
   /** @nullable */
-  readonly gap11Min?: number | null;
+  readonly gap11Min?: number | null
   /** @nullable */
-  readonly gap11Max?: number | null;
+  readonly gap11Max?: number | null
   /** @nullable */
-  readonly gap11Count?: readonly DataPointForInt[] | null;
+  readonly gap11Count?: readonly DataPointForInt[] | null
   /** @nullable */
-  sumDuration1?: number | null;
+  sumDuration1?: number | null
   /** @nullable */
-  sumDuration2?: number | null;
+  sumDuration2?: number | null
   /** @nullable */
-  sumDuration3?: number | null;
-  sumGreenTime?: number;
-  highestTotal?: number;
+  sumDuration3?: number | null
+  sumGreenTime?: number
+  highestTotal?: number
   /** @nullable */
-  detectionTypeStr?: string | null;
-  trendLineGapThreshold?: number;
-  binSize?: number;
+  detectionTypeStr?: string | null
+  trendLineGapThreshold?: number
+  binSize?: number
   /** @nullable */
-  percentTurnableSeries?: DataPointForDouble[] | null;
+  percentTurnableSeries?: DataPointForDouble[] | null
 }
 
 export interface LeftTurnGapDataCheckOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  approachId?: number;
-  volumePerHourThreshold?: number;
-  gapOutThreshold?: number;
-  pedestrianThreshold?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  approachId?: number
+  volumePerHourThreshold?: number
+  gapOutThreshold?: number
+  pedestrianThreshold?: number
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
 }
 
 export interface LeftTurnGapDataCheckResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  leftTurnVolumeOk?: boolean;
-  gapOutOk?: boolean;
-  pedCycleOk?: boolean;
-  insufficientDetectorEventCount?: boolean;
-  insufficientCycleAggregation?: boolean;
-  insufficientPhaseTermination?: boolean;
-  insufficientPedAggregations?: boolean;
-  insufficientSplitFailAggregations?: boolean;
-  insufficientLeftTurnGapAggregations?: boolean;
+  approachDescription?: string | null
+  leftTurnVolumeOk?: boolean
+  gapOutOk?: boolean
+  pedCycleOk?: boolean
+  insufficientDetectorEventCount?: boolean
+  insufficientCycleAggregation?: boolean
+  insufficientPhaseTermination?: boolean
+  insufficientPedAggregations?: boolean
+  insufficientSplitFailAggregations?: boolean
+  insufficientLeftTurnGapAggregations?: boolean
 }
 
 export interface LeftTurnGapReportOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
   /** @nullable */
-  approachIds?: number[] | null;
+  approachIds?: number[] | null
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
   /** @nullable */
-  startHour?: number | null;
+  startHour?: number | null
   /** @nullable */
-  startMinute?: number | null;
+  startMinute?: number | null
   /** @nullable */
-  endHour?: number | null;
+  endHour?: number | null
   /** @nullable */
-  endMinute?: number | null;
-  getAMPMPeakPeriod?: boolean;
-  getAMPMPeakHour?: boolean;
-  get24HourPeriod?: boolean;
-  getGapReport?: boolean;
-  acceptableGapPercentage?: number;
-  getSplitFail?: boolean;
-  acceptableSplitFailPercentage?: number;
-  getPedestrianCall?: boolean;
-  getConflictingVolume?: boolean;
+  endMinute?: number | null
+  getAMPMPeakPeriod?: boolean
+  getAMPMPeakHour?: boolean
+  get24HourPeriod?: boolean
+  getGapReport?: boolean
+  acceptableGapPercentage?: number
+  getSplitFail?: boolean
+  acceptableSplitFailPercentage?: number
+  getPedestrianCall?: boolean
+  getConflictingVolume?: boolean
 }
 
 /**
  * @nullable
  */
-export type LeftTurnGapReportResultAcceptableGapList = {[key: string]: number} | null;
+export type LeftTurnGapReportResultAcceptableGapList = {
+  [key: string]: number
+} | null
 
 /**
  * @nullable
  */
-export type LeftTurnGapReportResultPercentCyclesWithPedsList = {[key: string]: number} | null;
+export type LeftTurnGapReportResultPercentCyclesWithPedsList = {
+  [key: string]: number
+} | null
 
 /**
  * @nullable
  */
-export type LeftTurnGapReportResultDemandList = {[key: string]: number} | null;
+export type LeftTurnGapReportResultDemandList = { [key: string]: number } | null
 
 /**
  * @nullable
  */
-export type LeftTurnGapReportResultPercentCyclesWithSplitFailList = {[key: string]: number} | null;
+export type LeftTurnGapReportResultPercentCyclesWithSplitFailList = {
+  [key: string]: number
+} | null
 
 export interface LeftTurnGapReportResult {
-  startDate?: string;
-  endDate?: string;
+  startDate?: string
+  endDate?: string
   /** @nullable */
-  approachDescription?: string | null;
+  approachDescription?: string | null
   /** @nullable */
-  signalId?: string | null;
+  signalId?: string | null
   /** @nullable */
-  location?: string | null;
-  get24HourPeriod?: boolean;
+  location?: string | null
+  get24HourPeriod?: boolean
   /** @nullable */
-  phaseType?: string | null;
+  phaseType?: string | null
   /** @nullable */
-  signalType?: string | null;
+  signalType?: string | null
   /** @nullable */
-  speedLimit?: number | null;
+  speedLimit?: number | null
   /** @nullable */
-  peakPeriodDescription?: string | null;
-  startTime?: string;
-  endTime?: string;
-  cyclesWithSplitFailNum?: number;
-  cyclesWithSplitFailPercent?: number;
-  cyclesWithPedCallNum?: number;
-  cyclesWithPedCallPercent?: number;
-  crossProductValue?: number;
-  calculatedVolumeBoundary?: number;
+  peakPeriodDescription?: string | null
+  startTime?: string
+  endTime?: string
+  cyclesWithSplitFailNum?: number
+  cyclesWithSplitFailPercent?: number
+  cyclesWithPedCallNum?: number
+  cyclesWithPedCallPercent?: number
+  crossProductValue?: number
+  calculatedVolumeBoundary?: number
   /** @nullable */
-  gapDurationConsiderForStudy?: boolean | null;
+  gapDurationConsiderForStudy?: boolean | null
   /** @nullable */
-  splitFailsConsiderForStudy?: boolean | null;
+  splitFailsConsiderForStudy?: boolean | null
   /** @nullable */
-  pedActuationsConsiderForStudy?: boolean | null;
+  pedActuationsConsiderForStudy?: boolean | null
   /** @nullable */
-  volumesConsiderForStudy?: boolean | null;
-  capacity?: number;
-  demand?: number;
-  vcRatio?: number;
-  gapOutPercent?: number;
-  opposingLanes?: number;
-  crossProductReview?: boolean;
-  decisionBoundariesReview?: boolean;
-  leftTurnVolume?: number;
-  opposingThroughVolume?: number;
+  volumesConsiderForStudy?: boolean | null
+  capacity?: number
+  demand?: number
+  vcRatio?: number
+  gapOutPercent?: number
+  opposingLanes?: number
+  crossProductReview?: boolean
+  decisionBoundariesReview?: boolean
+  leftTurnVolume?: number
+  opposingThroughVolume?: number
   /** @nullable */
-  crossProductConsiderForStudy?: boolean | null;
+  crossProductConsiderForStudy?: boolean | null
   /** @nullable */
-  acceptableGapList?: LeftTurnGapReportResultAcceptableGapList;
+  acceptableGapList?: LeftTurnGapReportResultAcceptableGapList
   /** @nullable */
-  percentCyclesWithPedsList?: LeftTurnGapReportResultPercentCyclesWithPedsList;
+  percentCyclesWithPedsList?: LeftTurnGapReportResultPercentCyclesWithPedsList
   /** @nullable */
-  demandList?: LeftTurnGapReportResultDemandList;
+  demandList?: LeftTurnGapReportResultDemandList
   /** @nullable */
-  percentCyclesWithSplitFailList?: LeftTurnGapReportResultPercentCyclesWithSplitFailList;
+  percentCyclesWithSplitFailList?: LeftTurnGapReportResultPercentCyclesWithSplitFailList
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
   /** @nullable */
-  opposingDirection?: string | null;
+  opposingDirection?: string | null
 }
 
 export interface LeftTurnSplitFailOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  approachId?: number
+  startHour?: number
+  startMinute?: number
+  endHour?: number
+  endMinute?: number
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
 }
 
 /**
  * @nullable
  */
-export type LeftTurnSplitFailResultPercentCyclesWithSplitFailList = {[key: string]: number} | null;
+export type LeftTurnSplitFailResultPercentCyclesWithSplitFailList = {
+  [key: string]: number
+} | null
 
 export interface LeftTurnSplitFailResult {
-  splitFailPercent?: number;
-  cyclesWithSplitFails?: number;
+  splitFailPercent?: number
+  cyclesWithSplitFails?: number
   /** @nullable */
-  readonly percentCyclesWithSplitFailList?: LeftTurnSplitFailResultPercentCyclesWithSplitFailList;
+  readonly percentCyclesWithSplitFailList?: LeftTurnSplitFailResultPercentCyclesWithSplitFailList
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
 }
 
 export interface LinkPivotAdjustment {
-  linkNumber?: number;
+  linkNumber?: number
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  location?: string | null;
-  delta?: number;
-  adjustment?: number;
+  location?: string | null
+  delta?: number
+  adjustment?: number
 }
 
 export interface LinkPivotApproachLink {
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  location?: string | null;
+  location?: string | null
   /** @nullable */
-  upstreamApproachDirection?: string | null;
+  upstreamApproachDirection?: string | null
   /** @nullable */
-  downstreamLocationIdentifier?: string | null;
+  downstreamLocationIdentifier?: string | null
   /** @nullable */
-  downstreamLocation?: string | null;
+  downstreamLocation?: string | null
   /** @nullable */
-  downstreamApproachDirection?: string | null;
-  paogUpstreamBefore?: number;
-  paogUpstreamPredicted?: number;
-  paogDownstreamBefore?: number;
-  paogDownstreamPredicted?: number;
-  aogUpstreamBefore?: number;
-  aogUpstreamPredicted?: number;
-  aogDownstreamBefore?: number;
-  aogDownstreamPredicted?: number;
-  delta?: number;
+  downstreamApproachDirection?: string | null
+  paogUpstreamBefore?: number
+  paogUpstreamPredicted?: number
+  paogDownstreamBefore?: number
+  paogDownstreamPredicted?: number
+  aogUpstreamBefore?: number
+  aogUpstreamPredicted?: number
+  aogDownstreamBefore?: number
+  aogDownstreamPredicted?: number
+  delta?: number
   /** @nullable */
-  resultChartLocation?: string | null;
+  resultChartLocation?: string | null
   /** @nullable */
-  readonly upstreamCombinedLocation?: string | null;
+  readonly upstreamCombinedLocation?: string | null
   /** @nullable */
-  readonly downstreamCombinedLocation?: string | null;
-  aogTotalBefore?: number;
-  pAogTotalBefore?: number;
-  aogTotalPredicted?: number;
-  pAogTotalPredicted?: number;
-  totalChartExisting?: number;
-  totalChartPositiveChange?: number;
-  totalChartNegativeChange?: number;
-  totalChartRemaining?: number;
-  upstreamChartExisting?: number;
-  upstreamChartPositiveChange?: number;
-  upstreamChartNegativeChange?: number;
-  upstreamChartRemaining?: number;
-  downstreamChartExisting?: number;
-  downstreamChartPositiveChange?: number;
-  downstreamChartNegativeChange?: number;
-  downstreamChartRemaining?: number;
+  readonly downstreamCombinedLocation?: string | null
+  aogTotalBefore?: number
+  pAogTotalBefore?: number
+  aogTotalPredicted?: number
+  pAogTotalPredicted?: number
+  totalChartExisting?: number
+  totalChartPositiveChange?: number
+  totalChartNegativeChange?: number
+  totalChartRemaining?: number
+  upstreamChartExisting?: number
+  upstreamChartPositiveChange?: number
+  upstreamChartNegativeChange?: number
+  upstreamChartRemaining?: number
+  downstreamChartExisting?: number
+  downstreamChartPositiveChange?: number
+  downstreamChartNegativeChange?: number
+  downstreamChartRemaining?: number
   /** @nullable */
-  readonly totalChartName?: string | null;
+  readonly totalChartName?: string | null
   /** @nullable */
-  readonly upstreamChartName?: string | null;
+  readonly upstreamChartName?: string | null
   /** @nullable */
-  readonly downstreamChartName?: string | null;
-  linkNumber?: number;
+  readonly downstreamChartName?: string | null
+  linkNumber?: number
 }
 
 export interface LinkPivotOptions {
-  routeId?: number;
-  cycleLength?: number;
+  routeId?: number
+  cycleLength?: number
   /** @nullable */
-  direction?: string | null;
-  bias?: number;
+  direction?: string | null
+  bias?: number
   /** @nullable */
-  biasDirection?: string | null;
+  biasDirection?: string | null
   /** @nullable */
-  daysOfWeek?: number[] | null;
-  startDate?: string;
-  endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  daysOfWeek?: number[] | null
+  startDate?: string
+  endDate?: string
+  startTime?: string
+  endTime?: string
 }
 
 export interface LinkPivotPcdOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  downstreamLocationIdentifier?: string | null;
-  delta?: number;
+  downstreamLocationIdentifier?: string | null
+  delta?: number
   /** @nullable */
-  downstreamApproachDirection?: string | null;
+  downstreamApproachDirection?: string | null
   /** @nullable */
-  upstreamApproachDirection?: string | null;
-  startDate?: string;
+  upstreamApproachDirection?: string | null
+  startDate?: string
   /** @nullable */
-  selectedEndDate?: string | null;
-  startTime?: string;
-  endTime?: string;
-  endDate?: string;
+  selectedEndDate?: string | null
+  startTime?: string
+  endTime?: string
+  endDate?: string
 }
 
 export interface LinkPivotPcdResult {
-  existingTotalAOG?: number;
-  existingTotalPAOG?: number;
-  predictedTotalAOG?: number;
-  predictedTotalPAOG?: number;
-  predictedVolume?: number;
-  existingVolume?: number;
+  existingTotalAOG?: number
+  existingTotalPAOG?: number
+  predictedTotalAOG?: number
+  predictedTotalPAOG?: number
+  predictedVolume?: number
+  existingVolume?: number
   /** @nullable */
-  pcdExisting?: PurdueCoordinationDiagramResult[] | null;
+  pcdExisting?: PurdueCoordinationDiagramResult[] | null
   /** @nullable */
-  pcdPredicted?: PurdueCoordinationDiagramResult[] | null;
+  pcdPredicted?: PurdueCoordinationDiagramResult[] | null
 }
 
 export interface LinkPivotResult {
   /** @nullable */
-  adjustments?: LinkPivotAdjustment[] | null;
+  adjustments?: LinkPivotAdjustment[] | null
   /** @nullable */
-  approachLinks?: LinkPivotApproachLink[] | null;
-  totalAogDownstreamBefore?: number;
-  totalPaogDownstreamBefore?: number;
-  totalAogDownstreamPredicted?: number;
-  totalPaogDownstreamPredicted?: number;
-  totalAogUpstreamBefore?: number;
-  totalPaogUpstreamBefore?: number;
-  totalAogUpstreamPredicted?: number;
-  totalPaogUpstreamPredicted?: number;
-  totalAogBefore?: number;
-  totalPaogBefore?: number;
-  totalAogPredicted?: number;
-  totalPaogPredicted?: number;
-  totalChartExisting?: number;
-  totalChartPositiveChange?: number;
-  totalChartNegativeChange?: number;
-  totalChartRemaining?: number;
-  totalUpstreamChartExisting?: number;
-  totalUpstreamChartPositiveChange?: number;
-  totalUpstreamChartNegativeChange?: number;
-  totalUpstreamChartRemaining?: number;
-  totalDownstreamChartExisting?: number;
-  totalDownstreamChartPositiveChange?: number;
-  totalDownstreamChartNegativeChange?: number;
-  totalDownstreamChartRemaining?: number;
+  approachLinks?: LinkPivotApproachLink[] | null
+  totalAogDownstreamBefore?: number
+  totalPaogDownstreamBefore?: number
+  totalAogDownstreamPredicted?: number
+  totalPaogDownstreamPredicted?: number
+  totalAogUpstreamBefore?: number
+  totalPaogUpstreamBefore?: number
+  totalAogUpstreamPredicted?: number
+  totalPaogUpstreamPredicted?: number
+  totalAogBefore?: number
+  totalPaogBefore?: number
+  totalAogPredicted?: number
+  totalPaogPredicted?: number
+  totalChartExisting?: number
+  totalChartPositiveChange?: number
+  totalChartNegativeChange?: number
+  totalChartRemaining?: number
+  totalUpstreamChartExisting?: number
+  totalUpstreamChartPositiveChange?: number
+  totalUpstreamChartNegativeChange?: number
+  totalUpstreamChartRemaining?: number
+  totalDownstreamChartExisting?: number
+  totalDownstreamChartPositiveChange?: number
+  totalDownstreamChartNegativeChange?: number
+  totalDownstreamChartRemaining?: number
 }
 
 export interface LocationPhases {
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  controllerManufacturer?: string | null;
+  controllerManufacturer?: string | null
   /** @nullable */
-  designatedPhases?: number[] | null;
+  designatedPhases?: number[] | null
 }
 
 export interface LocationWithCoordPhases {
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  coordinatedPhases?: number[] | null;
+  coordinatedPhases?: number[] | null
 }
 
 export interface LocationWithSequence {
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  sequence?: number[][] | null;
+  sequence?: number[][] | null
 }
 
 export interface PeakHourOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  approachId?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  approachId?: number
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
 }
 
 export interface PeakHourResult {
-  amStartHour?: number;
-  amEndHour?: number;
-  amStartMinute?: number;
-  amEndMinute?: number;
-  pmStartHour?: number;
-  pmEndHour?: number;
-  pmStartMinute?: number;
-  pmEndMinute?: number;
+  amStartHour?: number
+  amEndHour?: number
+  amStartMinute?: number
+  amEndMinute?: number
+  pmStartHour?: number
+  pmEndHour?: number
+  pmStartMinute?: number
+  pmEndMinute?: number
 }
 
 export interface PedActuationOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  approachId?: number
+  startHour?: number
+  startMinute?: number
+  endHour?: number
+  endMinute?: number
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
 }
 
 /**
  * @nullable
  */
-export type PedActuationResultPercentCyclesWithPedsList = {[key: string]: number} | null;
+export type PedActuationResultPercentCyclesWithPedsList = {
+  [key: string]: number
+} | null
 
 export interface PedActuationResult {
-  cyclesWithPedCallsNum?: number;
-  cyclesWithPedCallsPercent?: number;
+  cyclesWithPedCallsNum?: number
+  cyclesWithPedCallsPercent?: number
   /** @nullable */
-  percentCyclesWithPedsList?: PedActuationResultPercentCyclesWithPedsList;
+  percentCyclesWithPedsList?: PedActuationResultPercentCyclesWithPedsList
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
   /** @nullable */
-  opposingDirection?: string | null;
+  opposingDirection?: string | null
 }
 
 export interface PedDelayOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  timeBuffer?: number;
-  showPedBeginWalk?: boolean;
-  showCycleLength?: boolean;
-  showPercentDelay?: boolean;
-  showPedRecall?: boolean;
-  pedRecallThreshold?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  timeBuffer?: number
+  showPedBeginWalk?: boolean
+  showCycleLength?: boolean
+  showPercentDelay?: boolean
+  showPedRecall?: boolean
+  pedRecallThreshold?: number
 }
 
 export interface PedDelayPlan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
+  readonly planDescription?: string | null
   /** @nullable */
-  pedRecallMessage?: string | null;
-  cyclesWithPedRequests?: number;
-  uniquePedDetections?: number;
-  pedPresses?: number;
-  averageDelaySeconds?: number;
-  averageCycleLengthSeconds?: number;
+  pedRecallMessage?: string | null
+  cyclesWithPedRequests?: number
+  uniquePedDetections?: number
+  pedPresses?: number
+  averageDelaySeconds?: number
+  averageCycleLengthSeconds?: number
 }
 
 export interface PedDelayResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseDescription?: string | null;
-  pedPresses?: number;
-  cyclesWithPedRequests?: number;
-  timeBuffered?: number;
-  uniquePedestrianDetections?: number;
-  minDelay?: number;
-  maxDelay?: number;
-  averageDelay?: number;
+  phaseDescription?: string | null
+  pedPresses?: number
+  cyclesWithPedRequests?: number
+  timeBuffered?: number
+  uniquePedestrianDetections?: number
+  minDelay?: number
+  maxDelay?: number
+  averageDelay?: number
   /** @nullable */
-  plans?: PedDelayPlan[] | null;
+  plans?: PedDelayPlan[] | null
   /** @nullable */
-  cycleLengths?: DataPointForDouble[] | null;
+  cycleLengths?: DataPointForDouble[] | null
   /** @nullable */
-  pedestrianDelay?: DataPointForDouble[] | null;
+  pedestrianDelay?: DataPointForDouble[] | null
   /** @nullable */
-  startOfWalk?: DataPointForDouble[] | null;
+  startOfWalk?: DataPointForDouble[] | null
   /** @nullable */
-  percentDelayByCycleLength?: DataPointForDouble[] | null;
+  percentDelayByCycleLength?: DataPointForDouble[] | null
 }
 
 export interface PerdueCoordinationPlanViewModel {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  percentGreenTime?: number;
-  percentArrivalOnGreen?: number;
-  platoonRatio?: number;
+  readonly planDescription?: string | null
+  percentGreenTime?: number
+  percentArrivalOnGreen?: number
+  platoonRatio?: number
 }
 
 export interface Phase {
-  phaseNumber?: number;
+  phaseNumber?: number
   /** @nullable */
-  gapOuts?: string[] | null;
+  gapOuts?: string[] | null
   /** @nullable */
-  maxOuts?: string[] | null;
+  maxOuts?: string[] | null
   /** @nullable */
-  forceOffs?: string[] | null;
+  forceOffs?: string[] | null
   /** @nullable */
-  pedWalkBegins?: string[] | null;
+  pedWalkBegins?: string[] | null
   /** @nullable */
-  unknownTerminations?: string[] | null;
+  unknownTerminations?: string[] | null
 }
 
 export interface PhaseTerminationResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  consecutiveCount?: number;
+  locationDescription?: string | null
+  consecutiveCount?: number
   /** @nullable */
-  plans?: Plan[] | null;
+  plans?: Plan[] | null
   /** @nullable */
-  phases?: Phase[] | null;
+  phases?: Phase[] | null
 }
 
 export interface Plan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
+  readonly planDescription?: string | null
 }
 
 export interface PlanSplitFail {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  readonly totalCycles?: number;
-  readonly failsInPlan?: number;
-  readonly percentFails?: number;
+  readonly planDescription?: string | null
+  readonly totalCycles?: number
+  readonly failsInPlan?: number
+  readonly percentFails?: number
 }
 
 export interface PlanSplitMonitorDTO {
   /** @nullable */
-  readonly planNumber?: string | null;
+  readonly planNumber?: string | null
   /** @nullable */
-  readonly planDescription?: string | null;
-  readonly start?: string;
-  readonly end?: string;
-  percentSkips?: number;
-  percentGapOuts?: number;
-  percentMaxOuts?: number;
-  percentForceOffs?: number;
-  averageSplit?: number;
-  percentileSplit?: number;
-  minTime?: number;
-  programmedSplit?: number;
-  percentileSplit85th?: number;
-  percentileSplit50th?: number;
+  readonly planDescription?: string | null
+  readonly start?: string
+  readonly end?: string
+  percentSkips?: number
+  percentGapOuts?: number
+  percentMaxOuts?: number
+  percentForceOffs?: number
+  averageSplit?: number
+  percentileSplit?: number
+  minTime?: number
+  programmedSplit?: number
+  percentileSplit85th?: number
+  percentileSplit50th?: number
 }
 
 /**
  * @nullable
  */
-export type PlanSplitMonitorDataSplits = {[key: string]: number} | null;
+export type PlanSplitMonitorDataSplits = { [key: string]: number } | null
 
 export interface PlanSplitMonitorData {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
+  readonly planDescription?: string | null
   /** @nullable */
-  splits?: PlanSplitMonitorDataSplits;
-  cycleLength?: number;
-  offsetLength?: number;
-  highCycleCount?: number;
-  percentSkips?: number;
-  percentGapOuts?: number;
-  percentMaxOuts?: number;
-  percentForceOffs?: number;
-  averageSplit?: number;
-  percentileSplit?: number;
-  minTime?: number;
-  programmedSplit?: number;
-  percentileSplit85th?: number;
-  percentileSplit50th?: number;
+  splits?: PlanSplitMonitorDataSplits
+  cycleLength?: number
+  offsetLength?: number
+  highCycleCount?: number
+  percentSkips?: number
+  percentGapOuts?: number
+  percentMaxOuts?: number
+  percentForceOffs?: number
+  averageSplit?: number
+  percentileSplit?: number
+  minTime?: number
+  programmedSplit?: number
+  percentileSplit85th?: number
+  percentileSplit50th?: number
 }
 
 export interface PlanWaitTime {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  averageWaitTime?: number;
-  maxWaitTime?: number;
+  readonly planDescription?: string | null
+  averageWaitTime?: number
+  maxWaitTime?: number
 }
 
 export interface PreemptCycleResult {
   /** @nullable */
-  inputOff?: string | null;
-  inputOn?: string;
+  inputOff?: string | null
+  inputOn?: string
   /** @nullable */
-  gateDown?: string | null;
-  callMaxOut?: number;
-  delay?: number;
-  timeToService?: number;
-  dwellTime?: number;
-  trackClear?: number;
+  gateDown?: string | null
+  callMaxOut?: number
+  delay?: number
+  timeToService?: number
+  dwellTime?: number
+  trackClear?: number
 }
 
 export interface PreemptDetail {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  preemptionNumber?: number;
+  locationDescription?: string | null
+  preemptionNumber?: number
   /** @nullable */
-  readonly cycles?: readonly PreemptCycleResult[] | null;
+  readonly cycles?: readonly PreemptCycleResult[] | null
 }
 
 export interface PreemptDetailOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
 }
 
 export interface PreemptDetailResult {
   /** @nullable */
-  details?: PreemptDetail[] | null;
-  summary?: PreemptRequestAndServices;
+  details?: PreemptDetail[] | null
+  summary?: PreemptRequestAndServices
 }
 
 export interface PreemptPlan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  preemptCount?: number;
+  readonly planDescription?: string | null
+  preemptCount?: number
 }
 
 export interface PreemptRequestAndServices {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
+  locationDescription?: string | null
   /** @nullable */
-  requestAndServices?: RequestAndServices[] | null;
+  requestAndServices?: RequestAndServices[] | null
 }
 
 export interface PreemptServiceOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
 }
 
 export interface PreemptServiceRequestOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
 }
 
 export interface PreemptServiceRequestResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
+  locationDescription?: string | null
   /** @nullable */
-  plans?: Plan[] | null;
+  plans?: Plan[] | null
   /** @nullable */
-  preemptRequests?: DataPointForInt[] | null;
+  preemptRequests?: DataPointForInt[] | null
 }
 
 export interface PreemptServiceResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
+  locationDescription?: string | null
   /** @nullable */
-  plans?: PreemptPlan[] | null;
+  plans?: PreemptPlan[] | null
   /** @nullable */
-  preemptServiceEvents?: DataPointForInt[] | null;
+  preemptServiceEvents?: DataPointForInt[] | null
 }
 
 export interface PriorityDetailsOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
 }
 
 export interface PriorityDetailsResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  isPhaseOverLap?: boolean;
+  approachDescription?: string | null
+  phaseNumber?: number
+  isPhaseOverLap?: boolean
   /** @nullable */
-  phaseNumberSort?: string | null;
+  phaseNumberSort?: string | null
   /** @nullable */
-  phaseType?: string | null;
-  numberCheckins?: number;
-  numberCheckouts?: number;
-  numberEarlyGreens?: number;
-  numberExtendedGreens?: number;
+  phaseType?: string | null
+  numberCheckins?: number
+  numberCheckouts?: number
+  numberEarlyGreens?: number
+  numberExtendedGreens?: number
   /** @nullable */
-  tspEvents?: IndianaEvent[] | null;
+  tspEvents?: IndianaEvent[] | null
   /** @nullable */
-  cycleEvents?: CycleEventsDto[] | null;
+  cycleEvents?: CycleEventsDto[] | null
   /** @nullable */
-  priorityAndPreemptionEvents?: DetectorEventDto[] | null;
+  priorityAndPreemptionEvents?: DetectorEventDto[] | null
 }
 
 export interface PrioritySummaryCycleDto {
   /** @nullable */
-  locationIdentifier?: string | null;
-  tspNumber?: number;
-  checkIn?: string;
-  checkOut?: string;
+  locationIdentifier?: string | null
+  tspNumber?: number
+  checkIn?: string
+  checkOut?: string
   /** @nullable */
-  serviceStart?: string | null;
+  serviceStart?: string | null
   /** @nullable */
-  serviceEnd?: string | null;
+  serviceEnd?: string | null
   /** @nullable */
-  earlyGreen?: string[] | null;
+  earlyGreen?: string[] | null
   /** @nullable */
-  extendGreen?: string[] | null;
+  extendGreen?: string[] | null
   /** @nullable */
-  preemptForceOff?: string[] | null;
+  preemptForceOff?: string[] | null
   /** @nullable */
-  tspEarlyForceOff?: string[] | null;
+  tspEarlyForceOff?: string[] | null
   /** @nullable */
-  requestEndOffsetSec?: number | null;
+  requestEndOffsetSec?: number | null
   /** @nullable */
-  serviceStartOffsetSec?: number | null;
+  serviceStartOffsetSec?: number | null
   /** @nullable */
-  serviceEndOffsetSec?: number | null;
+  serviceEndOffsetSec?: number | null
 }
 
 export interface PrioritySummaryOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
 }
 
 export interface PrioritySummaryResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  averageDuration?: string;
-  numberCheckins?: number;
-  numberCheckouts?: number;
-  numberEarlyGreens?: number;
-  numberExtendedGreens?: number;
+  locationDescription?: string | null
+  averageDuration?: string
+  numberCheckins?: number
+  numberCheckouts?: number
+  numberEarlyGreens?: number
+  numberExtendedGreens?: number
   /** @nullable */
-  events?: IndianaEvent[] | null;
+  events?: IndianaEvent[] | null
   /** @nullable */
-  cycles?: PrioritySummaryCycleDto[] | null;
+  cycles?: PrioritySummaryCycleDto[] | null
 }
 
 export interface ProblemDetails {
   /** @nullable */
-  type?: string | null;
+  type?: string | null
   /** @nullable */
-  title?: string | null;
+  title?: string | null
   /** @nullable */
-  status?: number | null;
+  status?: number | null
   /** @nullable */
-  detail?: string | null;
+  detail?: string | null
   /** @nullable */
-  instance?: string | null;
-  [key: string]: unknown;
+  instance?: string | null
+  [key: string]: unknown
 }
 
 export interface PurdueCoordinationDiagramOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
-  getVolume?: boolean;
-  showPlanStatistics?: boolean;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
+  getVolume?: boolean
+  showPlanStatistics?: boolean
 }
 
 export interface PurdueCoordinationDiagramResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseDescription?: string | null;
-  totalOnGreenEvents?: number;
-  totalDetectorHits?: number;
-  percentArrivalOnGreen?: number;
+  phaseDescription?: string | null
+  totalOnGreenEvents?: number
+  totalDetectorHits?: number
+  percentArrivalOnGreen?: number
   /** @nullable */
-  plans?: PerdueCoordinationPlanViewModel[] | null;
+  plans?: PerdueCoordinationPlanViewModel[] | null
   /** @nullable */
-  volumePerHour?: DataPointForDouble[] | null;
+  volumePerHour?: DataPointForDouble[] | null
   /** @nullable */
-  redSeries?: DataPointForDouble[] | null;
+  redSeries?: DataPointForDouble[] | null
   /** @nullable */
-  yellowSeries?: DataPointForDouble[] | null;
+  yellowSeries?: DataPointForDouble[] | null
   /** @nullable */
-  greenSeries?: DataPointForDouble[] | null;
+  greenSeries?: DataPointForDouble[] | null
   /** @nullable */
-  detectorEvents?: DataPointForDouble[] | null;
+  detectorEvents?: DataPointForDouble[] | null
 }
 
 export interface PurduePhaseTerminationOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  selectedConsecutiveCount?: number;
-  selectedPhaseNumber?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  selectedConsecutiveCount?: number
+  selectedPhaseNumber?: number
 }
 
 export interface RampMeteringOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  combineLanes?: boolean;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  combineLanes?: boolean
 }
 
 export interface RampMeteringResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
+  locationDescription?: string | null
   /** @nullable */
-  mainlineAvgFlow?: DataPointForDouble[] | null;
+  mainlineAvgFlow?: DataPointForDouble[] | null
   /** @nullable */
-  mainlineAvgOcc?: DataPointForDouble[] | null;
+  mainlineAvgOcc?: DataPointForDouble[] | null
   /** @nullable */
-  mainlineAvgSpeed?: DataPointForDouble[] | null;
+  mainlineAvgSpeed?: DataPointForDouble[] | null
   /** @nullable */
-  startUpWarning?: TimeSpaceEventBase[] | null;
+  startUpWarning?: TimeSpaceEventBase[] | null
   /** @nullable */
-  shutdownWarning?: TimeSpaceEventBase[] | null;
+  shutdownWarning?: TimeSpaceEventBase[] | null
   /** @nullable */
-  lanesActiveRate?: DescriptionWithDataPoints[] | null;
+  lanesActiveRate?: DescriptionWithDataPoints[] | null
   /** @nullable */
-  lanesBaseRate?: DescriptionWithDataPoints[] | null;
+  lanesBaseRate?: DescriptionWithDataPoints[] | null
   /** @nullable */
-  lanesQueueOnAndOffEvents?: DataPointForDetectorEvent[] | null;
+  lanesQueueOnAndOffEvents?: DataPointForDetectorEvent[] | null
 }
 
 export interface RequestAndServices {
-  preemptionNumber?: number;
+  preemptionNumber?: number
   /** @nullable */
-  requests?: string[] | null;
+  requests?: string[] | null
   /** @nullable */
-  services?: string[] | null;
+  services?: string[] | null
 }
 
 export interface Series {
   /** @nullable */
-  identifier?: string | null;
+  identifier?: string | null
   /** @nullable */
-  dataPoints?: AggregationDataPoint[] | null;
+  dataPoints?: AggregationDataPoint[] | null
 }
 
-export type SeriesType = typeof SeriesType[keyof typeof SeriesType];
-
+export type SeriesType = (typeof SeriesType)[keyof typeof SeriesType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SeriesType = {
@@ -1492,515 +1498,517 @@ export const SeriesType = {
   Direction: 'Direction',
   Route: 'Route',
   Detector: 'Detector',
-} as const;
+} as const
 
 export interface SpeedPlan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
+  readonly planDescription?: string | null
   /** @nullable */
-  averageSpeed?: number | null;
+  averageSpeed?: number | null
   /** @nullable */
-  standardDeviation?: number | null;
+  standardDeviation?: number | null
   /** @nullable */
-  eightyFifthPercentile?: number | null;
+  eightyFifthPercentile?: number | null
   /** @nullable */
-  fifteenthPercentile?: number | null;
+  fifteenthPercentile?: number | null
 }
 
 export interface SplitFailOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  firstSecondsOfRed?: number;
-  metricTypeId?: number;
-  getPermissivePhase?: boolean;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  firstSecondsOfRed?: number
+  metricTypeId?: number
+  getPermissivePhase?: boolean
 }
 
 export interface SplitFailsResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  phaseType?: string | null;
-  totalSplitFails?: number;
+  phaseType?: string | null
+  totalSplitFails?: number
   /** @nullable */
-  plans?: PlanSplitFail[] | null;
+  plans?: PlanSplitFail[] | null
   /** @nullable */
-  failLines?: DataPointBase[] | null;
+  failLines?: DataPointBase[] | null
   /** @nullable */
-  gapOutGreenOccupancies?: DataPointForDouble[] | null;
+  gapOutGreenOccupancies?: DataPointForDouble[] | null
   /** @nullable */
-  gapOutRedOccupancies?: DataPointForDouble[] | null;
+  gapOutRedOccupancies?: DataPointForDouble[] | null
   /** @nullable */
-  forceOffGreenOccupancies?: DataPointForDouble[] | null;
+  forceOffGreenOccupancies?: DataPointForDouble[] | null
   /** @nullable */
-  forceOffRedOccupancies?: DataPointForDouble[] | null;
+  forceOffRedOccupancies?: DataPointForDouble[] | null
   /** @nullable */
-  averageGor?: DataPointForDouble[] | null;
+  averageGor?: DataPointForDouble[] | null
   /** @nullable */
-  averageRor?: DataPointForDouble[] | null;
+  averageRor?: DataPointForDouble[] | null
   /** @nullable */
-  percentFails?: DataPointForDouble[] | null;
+  percentFails?: DataPointForDouble[] | null
 }
 
 export interface SplitMonitorOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  percentileSplit?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  percentileSplit?: number
 }
 
 export interface SplitMonitorResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  phaseNumber?: number;
-  readonly percentileSplit?: number;
+  locationDescription?: string | null
+  phaseNumber?: number
+  readonly percentileSplit?: number
   /** @nullable */
-  phaseDescription?: string | null;
+  phaseDescription?: string | null
   /** @nullable */
-  readonly plans?: readonly PlanSplitMonitorDTO[] | null;
+  readonly plans?: readonly PlanSplitMonitorDTO[] | null
   /** @nullable */
-  readonly programmedSplits?: readonly DataPointForDouble[] | null;
+  readonly programmedSplits?: readonly DataPointForDouble[] | null
   /** @nullable */
-  readonly gapOuts?: readonly DataPointForDouble[] | null;
+  readonly gapOuts?: readonly DataPointForDouble[] | null
   /** @nullable */
-  readonly maxOuts?: readonly DataPointForDouble[] | null;
+  readonly maxOuts?: readonly DataPointForDouble[] | null
   /** @nullable */
-  readonly forceOffs?: readonly DataPointForDouble[] | null;
+  readonly forceOffs?: readonly DataPointForDouble[] | null
   /** @nullable */
-  readonly unknowns?: readonly DataPointForDouble[] | null;
+  readonly unknowns?: readonly DataPointForDouble[] | null
   /** @nullable */
-  readonly peds?: readonly DataPointForDouble[] | null;
+  readonly peds?: readonly DataPointForDouble[] | null
 }
 
 export interface SummaryData {
   /** @nullable */
-  peakHour?: string | null;
-  kFactor?: number;
-  peakHourVolume?: number;
-  peakHourFactor?: number;
-  totalVolume?: number;
+  peakHour?: string | null
+  kFactor?: number
+  peakHourVolume?: number
+  peakHourFactor?: number
+  totalVolume?: number
   /** @nullable */
-  primaryPeakHour?: string | null;
-  primaryKFactor?: number;
-  primaryPeakHourVolume?: number;
-  primaryPeakHourFactor?: number;
-  primaryTotalVolume?: number;
-  primaryDFactor?: number;
+  primaryPeakHour?: string | null
+  primaryKFactor?: number
+  primaryPeakHourVolume?: number
+  primaryPeakHourFactor?: number
+  primaryTotalVolume?: number
+  primaryDFactor?: number
   /** @nullable */
-  opposingPeakHour?: string | null;
-  opposingKFactor?: number;
-  opposingPeakHourVolume?: number;
-  opposingPeakHourFactor?: number;
-  opposingTotalVolume?: number;
-  opposingDFactor?: number;
+  opposingPeakHour?: string | null
+  opposingKFactor?: number
+  opposingPeakHourVolume?: number
+  opposingPeakHourFactor?: number
+  opposingTotalVolume?: number
+  opposingDFactor?: number
 }
 
 export interface TimeOptions {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  timeOfDayStartHour?: number | null;
+  timeOfDayStartHour?: number | null
   /** @nullable */
-  timeOfDayStartMinute?: number | null;
+  timeOfDayStartMinute?: number | null
   /** @nullable */
-  timeOfDayEndHour?: number | null;
+  timeOfDayEndHour?: number | null
   /** @nullable */
-  timeOfDayEndMinute?: number | null;
+  timeOfDayEndMinute?: number | null
   /** @nullable */
-  daysOfWeek?: DayOfWeek[] | null;
-  timeOption?: TimePeriodOptions;
-  selectedBinSize?: BinSize;
+  daysOfWeek?: DayOfWeek[] | null
+  timeOption?: TimePeriodOptions
+  selectedBinSize?: BinSize
 }
 
-export type TimePeriodOptions = typeof TimePeriodOptions[keyof typeof TimePeriodOptions];
-
+export type TimePeriodOptions =
+  (typeof TimePeriodOptions)[keyof typeof TimePeriodOptions]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const TimePeriodOptions = {
   StartToEnd: 'StartToEnd',
   TimePeriod: 'TimePeriod',
-} as const;
+} as const
 
 export interface TimeSpaceDiagramAverageOptions {
-  routeId?: number;
-  startDate?: string;
-  endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  routeId?: number
+  startDate?: string
+  endDate?: string
+  startTime?: string
+  endTime?: string
   /** @nullable */
-  sequence?: LocationWithSequence[] | null;
+  sequence?: LocationWithSequence[] | null
   /** @nullable */
-  coordinatedPhases?: LocationWithCoordPhases[] | null;
+  coordinatedPhases?: LocationWithCoordPhases[] | null
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
   /** @nullable */
-  speedLimit?: number | null;
+  speedLimit?: number | null
 }
 
 export interface TimeSpaceDiagramAverageResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  coordinatedPhases?: boolean;
-  phaseNumber?: number;
-  speed?: number;
-  readonly offset?: number;
-  programmedSplit?: number;
+  approachDescription?: string | null
+  coordinatedPhases?: boolean
+  phaseNumber?: number
+  speed?: number
+  readonly offset?: number
+  programmedSplit?: number
   /** @nullable */
-  phaseType?: string | null;
-  cycleLength?: number;
+  phaseType?: string | null
+  cycleLength?: number
   /** @nullable */
-  phaseNumberSort?: string | null;
-  distanceToNextLocation?: number;
+  phaseNumberSort?: string | null
+  distanceToNextLocation?: number
   /** @nullable */
-  cycleAllEvents?: CycleEventsDto[] | null;
+  cycleAllEvents?: CycleEventsDto[] | null
   /** @nullable */
-  greenTimeEvents?: TimeSpaceEventBase[] | null;
+  greenTimeEvents?: TimeSpaceEventBase[] | null
 }
 
 export interface TimeSpaceDiagramOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  routeId?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  routeId?: number
   /** @nullable */
-  speedLimit?: number | null;
-  extendStartStopSearch?: number;
-  showAllLanesInfo?: boolean;
+  speedLimit?: number | null
+  extendStartStopSearch?: number
+  showAllLanesInfo?: boolean
 }
 
 export interface TimeSpaceDiagramResultForPhase {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  speed?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
+  speed?: number
   /** @nullable */
-  phaseType?: string | null;
+  phaseType?: string | null
   /** @nullable */
-  phaseNumberSort?: string | null;
-  distanceToNextLocation?: number;
+  phaseNumberSort?: string | null
+  distanceToNextLocation?: number
   /** @nullable */
-  cycleAllEvents?: CycleEventsDto[] | null;
+  cycleAllEvents?: CycleEventsDto[] | null
   /** @nullable */
-  greenTimeEvents?: TimeSpaceEventBase[] | null;
+  greenTimeEvents?: TimeSpaceEventBase[] | null
   /** @nullable */
-  laneByLaneCountDetectors?: TimeSpaceEventBase[] | null;
+  laneByLaneCountDetectors?: TimeSpaceEventBase[] | null
   /** @nullable */
-  advanceCountDetectors?: TimeSpaceEventBase[] | null;
+  advanceCountDetectors?: TimeSpaceEventBase[] | null
   /** @nullable */
-  stopBarPresenceDetectors?: TimeSpaceEventBase[] | null;
+  stopBarPresenceDetectors?: TimeSpaceEventBase[] | null
 }
 
 export interface TimeSpaceEventBase {
-  initialX?: string;
-  finalX?: string;
+  initialX?: string
+  finalX?: string
   /** @nullable */
-  isDetectorOn?: boolean | null;
+  isDetectorOn?: boolean | null
 }
 
 /**
  * @nullable
  */
-export type TimingAndActuationsForPhaseResultPhaseCustomEvents = {[key: string]: DataPointForInt[] | null} | null;
+export type TimingAndActuationsForPhaseResultPhaseCustomEvents = {
+  [key: string]: DataPointForInt[] | null
+} | null
 
 export interface TimingAndActuationsForPhaseResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
-  isPhaseOverLap?: boolean;
+  approachDescription?: string | null
+  phaseNumber?: number
+  isPhaseOverLap?: boolean
   /** @nullable */
-  phaseNumberSort?: string | null;
+  direction?: string | null
   /** @nullable */
-  phaseType?: string | null;
+  phaseType?: string | null
   /** @nullable */
-  pedestrianIntervals?: CycleEventsDto[] | null;
+  pedestrianIntervals?: CycleEventsDto[] | null
   /** @nullable */
-  pedestrianEvents?: DetectorEventDto[] | null;
+  pedestrianEvents?: DetectorEventDto[] | null
   /** @nullable */
-  cycleAllEvents?: CycleEventsDto[] | null;
+  cycleAllEvents?: CycleEventsDto[] | null
   /** @nullable */
-  advanceCountDetectors?: DetectorEventDto[] | null;
+  advanceCountDetectors?: DetectorEventDto[] | null
   /** @nullable */
-  advancePresenceDetectors?: DetectorEventDto[] | null;
+  advancePresenceDetectors?: DetectorEventDto[] | null
   /** @nullable */
-  stopBarDetectors?: DetectorEventDto[] | null;
+  stopBarDetectors?: DetectorEventDto[] | null
   /** @nullable */
-  laneByLanesDetectors?: DetectorEventDto[] | null;
+  laneByLanesDetectors?: DetectorEventDto[] | null
   /** @nullable */
-  phaseCustomEvents?: TimingAndActuationsForPhaseResultPhaseCustomEvents;
+  phaseCustomEvents?: TimingAndActuationsForPhaseResultPhaseCustomEvents
 }
 
 export interface TimingAndActuationsOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
   /** @nullable */
-  globalEventCodesList?: number[] | null;
+  globalEventCodesList?: number[] | null
   /** @nullable */
-  globalEventParamsList?: number[] | null;
+  globalEventParamsList?: number[] | null
   /** @nullable */
-  phaseEventCodesList?: number[] | null;
+  phaseEventCodesList?: number[] | null
 }
 
 export interface TransitSignalPhase {
-  phaseNumber?: number;
-  minGreen?: number;
-  yellow?: number;
-  redClearance?: number;
-  minTime?: number;
-  programmedSplit?: number;
-  percentileSplit85th?: number;
-  percentileSplit50th?: number;
-  averageSplit?: number;
-  percentMaxOutsForceOffs?: number;
-  percentGapOuts?: number;
-  percentSkips?: number;
+  phaseNumber?: number
+  minGreen?: number
+  yellow?: number
+  redClearance?: number
+  minTime?: number
+  programmedSplit?: number
+  percentileSplit85th?: number
+  percentileSplit50th?: number
+  averageSplit?: number
+  percentMaxOutsForceOffs?: number
+  percentGapOuts?: number
+  percentSkips?: number
   /** @nullable */
-  recommendedTSPMax?: number | null;
-  skipsGreaterThan70TSPMax?: number;
-  forceOffsLessThan40TSPMax?: number;
-  forceOffsLessThan60TSPMax?: number;
-  forceOffsLessThan80TSPMax?: number;
-  isSkipsGreaterThan70TSPMax?: boolean;
-  isForceOffsLessThan40TSPMax?: boolean;
-  isForceOffsLessThan60TSPMax?: boolean;
-  isForceOffsLessThan80TSPMax?: boolean;
-  maxReduction?: number;
-  maxExtension?: number;
-  priorityMin?: number;
-  priorityMax?: number;
+  recommendedTSPMax?: number | null
+  skipsGreaterThan70TSPMax?: number
+  forceOffsLessThan40TSPMax?: number
+  forceOffsLessThan60TSPMax?: number
+  forceOffsLessThan80TSPMax?: number
+  isSkipsGreaterThan70TSPMax?: boolean
+  isForceOffsLessThan40TSPMax?: boolean
+  isForceOffsLessThan60TSPMax?: boolean
+  isForceOffsLessThan80TSPMax?: boolean
+  maxReduction?: number
+  maxExtension?: number
+  priorityMin?: number
+  priorityMax?: number
   /** @nullable */
-  notes?: string | null;
+  notes?: string | null
 }
 
 export interface TransitSignalPriorityOptions {
   /** @nullable */
-  locationsAndPhases?: LocationPhases[] | null;
+  locationsAndPhases?: LocationPhases[] | null
   /** @nullable */
-  dates?: string[] | null;
+  dates?: string[] | null
 }
 
 export interface TransitSignalPriorityPlan {
-  planNumber?: number;
+  planNumber?: number
   /** @nullable */
-  phases?: TransitSignalPhase[] | null;
-  numberOfCycles?: number;
+  phases?: TransitSignalPhase[] | null
+  numberOfCycles?: number
 }
 
 export interface TransitSignalPriorityResult {
-  locationPhases?: LocationPhases;
+  locationPhases?: LocationPhases
   /** @nullable */
-  transitSignalPlans?: TransitSignalPriorityPlan[] | null;
+  transitSignalPlans?: TransitSignalPriorityPlan[] | null
 }
 
 export interface TurningMovementCountData {
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
   /** @nullable */
-  movementType?: string | null;
+  movementType?: string | null
   /** @nullable */
-  laneType?: string | null;
+  laneType?: string | null
   /** @nullable */
-  volumes?: DataPointForInt[] | null;
-  peakHourVolume?: DataPointForInt;
+  volumes?: DataPointForInt[] | null
+  peakHourVolume?: DataPointForInt
 }
 
 export interface TurningMovementCountsLanesResult {
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  start?: string;
-  end?: string;
+  locationDescription?: string | null
+  start?: string
+  end?: string
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
   /** @nullable */
-  laneType?: string | null;
+  laneType?: string | null
   /** @nullable */
-  movementType?: string | null;
+  movementType?: string | null
   /** @nullable */
-  plans?: Plan[] | null;
+  plans?: Plan[] | null
   /** @nullable */
-  lanes?: Lane[] | null;
+  lanes?: Lane[] | null
   /** @nullable */
-  totalHourlyVolumes?: DataPointForInt[] | null;
+  totalHourlyVolumes?: DataPointForInt[] | null
   /** @nullable */
-  totalVolumes?: DataPointForInt[] | null;
-  totalVolume?: number;
+  totalVolumes?: DataPointForInt[] | null
+  totalVolume?: number
   /** @nullable */
-  peakHour?: string | null;
+  peakHour?: string | null
   /** @nullable */
-  peakHourVolume?: number | null;
+  peakHourVolume?: number | null
   /** @nullable */
-  peakHourFactor?: number | null;
+  peakHourFactor?: number | null
   /** @nullable */
-  laneUtilizationFactor?: number | null;
+  laneUtilizationFactor?: number | null
 }
 
 export interface TurningMovementCountsOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
-  readonly metricTypeId?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
+  readonly metricTypeId?: number
 }
 
 export interface TurningMovementCountsResult {
   /** @nullable */
-  charts?: TurningMovementCountsLanesResult[] | null;
+  charts?: TurningMovementCountsLanesResult[] | null
   /** @nullable */
-  table?: TurningMovementCountData[] | null;
-  peakHour?: KeyValuePair2;
+  table?: TurningMovementCountData[] | null
+  peakHour?: KeyValuePair2
   /** @nullable */
-  peakHourFactor?: number | null;
+  peakHourFactor?: number | null
 }
 
 export interface VolumeOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  approachId?: number;
-  startHour?: number;
-  startMinute?: number;
-  endHour?: number;
-  endMinute?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  approachId?: number
+  startHour?: number
+  startMinute?: number
+  endHour?: number
+  endMinute?: number
   /** @nullable */
-  daysOfWeek?: number[] | null;
+  daysOfWeek?: number[] | null
 }
 
 /**
  * @nullable
  */
-export type VolumeResultDemandList = {[key: string]: number} | null;
+export type VolumeResultDemandList = { [key: string]: number } | null
 
 export interface VolumeResult {
-  opposingLanes?: number;
-  crossProductReview?: boolean;
-  decisionBoundariesReview?: boolean;
-  leftTurnVolume?: number;
-  opposingThroughVolume?: number;
-  crossProductValue?: number;
-  calculatedVolumeBoundary?: number;
+  opposingLanes?: number
+  crossProductReview?: boolean
+  decisionBoundariesReview?: boolean
+  leftTurnVolume?: number
+  opposingThroughVolume?: number
+  crossProductValue?: number
+  calculatedVolumeBoundary?: number
   /** @nullable */
-  demandList?: VolumeResultDemandList;
+  demandList?: VolumeResultDemandList
   /** @nullable */
-  readonly direction?: string | null;
+  readonly direction?: string | null
   /** @nullable */
-  readonly opposingDirection?: string | null;
+  readonly opposingDirection?: string | null
 }
 
 export interface WaitTimeOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  binSize?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  binSize?: number
 }
 
 export interface WaitTimeResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
-  phaseNumber?: number;
+  approachDescription?: string | null
+  phaseNumber?: number
   /** @nullable */
-  detectionTypes?: string | null;
+  detectionTypes?: string | null
   /** @nullable */
-  plans?: PlanWaitTime[] | null;
+  plans?: PlanWaitTime[] | null
   /** @nullable */
-  gapOuts?: DataPointForDouble[] | null;
+  gapOuts?: DataPointForDouble[] | null
   /** @nullable */
-  maxOuts?: DataPointForDouble[] | null;
+  maxOuts?: DataPointForDouble[] | null
   /** @nullable */
-  forceOffs?: DataPointForDouble[] | null;
+  forceOffs?: DataPointForDouble[] | null
   /** @nullable */
-  unknowns?: DataPointForDouble[] | null;
+  unknowns?: DataPointForDouble[] | null
   /** @nullable */
-  average?: DataPointForDouble[] | null;
+  average?: DataPointForDouble[] | null
   /** @nullable */
-  volumes?: DataPointForInt[] | null;
+  volumes?: DataPointForInt[] | null
   /** @nullable */
-  readonly planSplits?: readonly DataPointForDouble[] | null;
+  readonly planSplits?: readonly DataPointForDouble[] | null
 }
 
-export type WatchDogComponentTypes = typeof WatchDogComponentTypes[keyof typeof WatchDogComponentTypes];
-
+export type WatchDogComponentTypes =
+  (typeof WatchDogComponentTypes)[keyof typeof WatchDogComponentTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const WatchDogComponentTypes = {
   Location: 'Location',
   Approach: 'Approach',
   Detector: 'Detector',
-} as const;
+} as const
 
 export interface WatchDogDashboardOptions {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
 }
 
 export interface WatchDogFirmwareCount {
   /** @nullable */
-  name?: string | null;
-  counts?: number;
+  name?: string | null
+  counts?: number
 }
 
 export interface WatchDogIssueTypeGroup {
-  issueType?: WatchDogIssueTypes;
+  issueType?: WatchDogIssueTypes
   /** @nullable */
-  products?: WatchDogProductInfo[] | null;
+  products?: WatchDogProductInfo[] | null
   /** @nullable */
-  name?: string | null;
+  name?: string | null
 }
 
-export type WatchDogIssueTypes = typeof WatchDogIssueTypes[keyof typeof WatchDogIssueTypes];
-
+export type WatchDogIssueTypes =
+  (typeof WatchDogIssueTypes)[keyof typeof WatchDogIssueTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const WatchDogIssueTypes = {
@@ -2013,72 +2021,71 @@ export const WatchDogIssueTypes = {
   UnconfiguredDetector: 'UnconfiguredDetector',
   MissingMainlineData: 'MissingMainlineData',
   StuckQueueDetection: 'StuckQueueDetection',
-} as const;
+} as const
 
 export interface WatchDogLogEventDTO {
-  id?: number;
-  locationId?: number;
+  id?: number
+  locationId?: number
   /** @nullable */
-  locationIdentifier?: string | null;
-  timestamp?: string;
-  componentType?: WatchDogComponentTypes;
-  componentId?: number;
-  issueType?: WatchDogIssueTypes;
+  locationIdentifier?: string | null
+  timestamp?: string
+  componentType?: WatchDogComponentTypes
+  componentId?: number
+  issueType?: WatchDogIssueTypes
   /** @nullable */
-  details?: string | null;
+  details?: string | null
   /** @nullable */
-  phase?: number | null;
+  phase?: number | null
   /** @nullable */
-  regionId?: number | null;
+  regionId?: number | null
   /** @nullable */
-  regionDescription?: string | null;
+  regionDescription?: string | null
   /** @nullable */
-  jurisdictionId?: number | null;
+  jurisdictionId?: number | null
   /** @nullable */
-  jurisdictionName?: string | null;
+  jurisdictionName?: string | null
   /** @nullable */
-  areas?: AreaDTO[] | null;
+  areas?: AreaDTO[] | null
 }
 
 export interface WatchDogModel1 {
   /** @nullable */
-  name?: string | null;
+  name?: string | null
   /** @nullable */
-  firmware?: WatchDogFirmwareCount[] | null;
+  firmware?: WatchDogFirmwareCount[] | null
 }
 
 export interface WatchDogOptions {
   /** @nullable */
-  areaId?: number | null;
+  areaId?: number | null
   /** @nullable */
-  regionId?: number | null;
+  regionId?: number | null
   /** @nullable */
-  jurisdictionId?: number | null;
+  jurisdictionId?: number | null
   /** @nullable */
-  issueType?: number | null;
-  start?: string;
-  end?: string;
+  issueType?: number | null
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
-  isFilteredEvents?: boolean;
+  locationIdentifier?: string | null
+  isFilteredEvents?: boolean
 }
 
 export interface WatchDogProductInfo {
   /** @nullable */
-  name?: string | null;
+  name?: string | null
   /** @nullable */
-  model?: WatchDogModel1[] | null;
+  model?: WatchDogModel1[] | null
 }
 
 export interface WatchDogResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  logEvents?: WatchDogLogEventDTO[] | null;
+  logEvents?: WatchDogLogEventDTO[] | null
 }
 
-export type XAxisType = typeof XAxisType[keyof typeof XAxisType];
-
+export type XAxisType = (typeof XAxisType)[keyof typeof XAxisType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const XAxisType = {
@@ -2088,63 +2095,62 @@ export const XAxisType = {
   Approach: 'Approach',
   Signal: 'Signal',
   Detector: 'Detector',
-} as const;
+} as const
 
 export interface YellowRedActivationsOptions {
   /** @nullable */
-  locationIdentifier?: string | null;
-  start?: string;
-  end?: string;
-  severeLevelSeconds?: number;
-  metricTypeId?: number;
+  locationIdentifier?: string | null
+  start?: string
+  end?: string
+  severeLevelSeconds?: number
+  metricTypeId?: number
 }
 
 export interface YellowRedActivationsPlan {
   /** @nullable */
-  planNumber?: string | null;
-  readonly start?: string;
-  readonly end?: string;
+  planNumber?: string | null
+  readonly start?: string
+  readonly end?: string
   /** @nullable */
-  readonly planDescription?: string | null;
-  totalViolations?: number;
-  severeViolations?: number;
-  percentViolations?: number;
-  percentSevereViolations?: number;
-  averageTimeViolations?: number;
+  readonly planDescription?: string | null
+  totalViolations?: number
+  severeViolations?: number
+  percentViolations?: number
+  percentSevereViolations?: number
+  averageTimeViolations?: number
 }
 
 export interface YellowRedActivationsResult {
-  start?: string;
-  end?: string;
+  start?: string
+  end?: string
   /** @nullable */
-  locationIdentifier?: string | null;
+  locationIdentifier?: string | null
   /** @nullable */
-  locationDescription?: string | null;
-  approachId?: number;
+  locationDescription?: string | null
+  approachId?: number
   /** @nullable */
-  approachDescription?: string | null;
+  approachDescription?: string | null
   /** @nullable */
-  direction?: string | null;
+  direction?: string | null
   /** @nullable */
-  movementType?: string | null;
-  protectedPhaseNumber?: number;
+  movementType?: string | null
+  protectedPhaseNumber?: number
   /** @nullable */
-  permissivePhaseNumber?: number | null;
-  isPermissivePhase?: boolean;
+  permissivePhaseNumber?: number | null
+  isPermissivePhase?: boolean
   /** @nullable */
-  phaseType?: string | null;
-  totalViolations?: number;
-  severeViolations?: number;
-  yellowLightOccurences?: number;
+  phaseType?: string | null
+  totalViolations?: number
+  severeViolations?: number
+  yellowLightOccurences?: number
   /** @nullable */
-  plans?: YellowRedActivationsPlan[] | null;
+  plans?: YellowRedActivationsPlan[] | null
   /** @nullable */
-  redEvents?: DataPointForDouble[] | null;
+  redEvents?: DataPointForDouble[] | null
   /** @nullable */
-  yellowEvents?: DataPointForDouble[] | null;
+  yellowEvents?: DataPointForDouble[] | null
   /** @nullable */
-  redClearanceEvents?: DataPointForDouble[] | null;
+  redClearanceEvents?: DataPointForDouble[] | null
   /** @nullable */
-  detectorEvents?: DataPointForDouble[] | null;
+  detectorEvents?: DataPointForDouble[] | null
 }
-

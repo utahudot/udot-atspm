@@ -146,9 +146,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   let initialDistance = 0
 
-  const primaryDirection = primaryPhaseData[0].approachDescription.split(' ')[0]
-  const opposingDirection =
-    opposingPhaseData[0].approachDescription.split(' ')[0]
+  const primaryDirection = primaryPhaseData[0].approachDescription
+  const opposingDirection = opposingPhaseData[0].approachDescription
 
   const distanceData: number[] = []
   primaryPhaseData.forEach((location) => {
@@ -165,8 +164,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   const title = createTitle({
     title: 'Time Space Diagram • Historic',
-    location: `Primary: ${primaryPhaseData[0].approachDescription} • Opposing: ${opposingPhaseData[0].approachDescription}`,
-    dateRange,
+    location: dateRange,
   })
 
   const grid: GridComponentOption = {
@@ -399,8 +397,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     'up'
   )
 
-  // series.push(primaryLabelSeries)
-  // series.push(opposingLabelSeries)
+  series.push(primaryLabelSeries)
+  series.push(opposingLabelSeries)
 
   // series.push(
   //   ...getDraggableOffsetabelOption(

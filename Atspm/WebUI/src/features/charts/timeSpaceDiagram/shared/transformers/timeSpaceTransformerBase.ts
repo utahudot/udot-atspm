@@ -21,6 +21,7 @@ import {
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { Color } from '@/features/charts/utils'
+import { staticDirectionTypes } from '@/features/locations/components/editApproach/DirectionTypeCell'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   CustomSeriesRenderItemAPI,
@@ -747,13 +748,28 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   dotOffset: 10,
   cardGapToDot: 12,
   cardWidth: 180,
-  cardRadius: 8,
+  cardRadius: 4,
   headerHeight: 26,
   bodyHeight: 48,
   bodyPaddingLeft: 12,
   bodyPaddingRight: 12,
   headerActionSize: 12,
   headerActionRight: 10,
+} as const
+
+export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
+  cardWidth: 90,
+  cardRadius: 2,
+  headerHeight: 18,
+  cardGapFromPlot: 18,
+  cycleGapY: 2,
+  verticalOffsetY: -4,
+  connectorOffsetYUp: -7,
+  connectorInsetNearCard: 8,
+  bodyPaddingX: 7,
+  bodyPaddingY: 4,
+  lineHeight: 13,
+  minBodyHeight: 16,
 } as const
 
 export function getLocationsLabelOption(
@@ -849,10 +865,6 @@ export function getLocationsLabelOption(
               fill: '#FFFFFF',
               stroke: '#D9DEE6',
               lineWidth: 1,
-              shadowBlur: 6,
-              shadowColor: 'rgba(0,0,0,0.08)',
-              shadowOffsetX: 0,
-              shadowOffsetY: 2,
             },
           },
 
@@ -1100,55 +1112,244 @@ export function getDraggableOffsetabelOption(
 
 type ExpandDir = 'up' | 'down'
 
+type StaticDirectionTypeKey = keyof typeof staticDirectionTypes
+
+const CARDINAL_DIRECTION_SVG_PATHS = ['m5 12 7-7 7 7', 'M12 19V5'] as const
+
+const DIAGONAL_DIRECTION_SVG_PATHS = ['M17 17 7 7', 'M17 7H7v10'] as const
+
+const DIRECTION_ICON_DATA_URLS = new Map<StaticDirectionTypeKey, string>()
+
+function getDirectionIconDataUrl(
+  directionKey: StaticDirectionTypeKey
+): string | null {
+  const cached = DIRECTION_ICON_DATA_URLS.get(directionKey)
+  if (cached) {
+    return cached
+  }
+
+  const svgConfig = staticDirectionTypes[directionKey].chartSvg
+  if (!svgConfig) {
+    return null
+  }
+
+  const paths =
+    svgConfig.family === 'diagonal'
+      ? DIAGONAL_DIRECTION_SVG_PATHS
+      : CARDINAL_DIRECTION_SVG_PATHS
+
+  const svg = [
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+    `<g transform="rotate(${svgConfig.rotationDeg} 12 12)">`,
+    ...paths.map((path) => `<path d="${path}"/>`),
+    '</g>',
+    '</svg>',
+  ].join('')
+
+  const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+  DIRECTION_ICON_DATA_URLS.set(directionKey, dataUrl)
+  return dataUrl
+}
+
+function getDirectionTypeKey(directionLabel: string): StaticDirectionTypeKey {
+  const token = directionLabel.trim().split(/\s+/)[0]?.toUpperCase() ?? ''
+
+  if ((token as StaticDirectionTypeKey) in staticDirectionTypes) {
+    return token as StaticDirectionTypeKey
+  }
+
+  const prefixMatch = (
+    Object.keys(staticDirectionTypes) as StaticDirectionTypeKey[]
+  ).find((key) => key !== 'NA' && token.startsWith(key))
+
+  return prefixMatch ?? 'NA'
+}
+
+export const CYCLE_LABEL_SERIES_ID_PREFIX = 'Cycle Labels '
+
 export function generateCycleLabels(
   distanceData: number[],
   direction: string,
-  gridLeft: number,
+  _gridLeft = 0,
   linesByIndex?: Array<string[] | undefined>,
   expand: ExpandDir = 'down'
 ): SeriesOption {
+  void _gridLeft
+
+  const {
+    cardWidth,
+    cardRadius,
+    headerHeight,
+    cardGapFromPlot,
+    cycleGapY,
+    verticalOffsetY,
+    connectorOffsetYUp,
+    connectorInsetNearCard,
+    bodyPaddingX,
+    bodyPaddingY,
+    lineHeight,
+    minBodyHeight,
+  } = TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT
+
   return {
+    id: `${CYCLE_LABEL_SERIES_ID_PREFIX}${direction}`,
     name: `Cycles ${direction}`,
     type: 'custom',
+    silent: true,
+    clip: false,
+    z: 7,
     renderItem: (params, api) => {
       const rowIndex = params.dataIndex
       const [, y] = api.coord([0, api.value(0)])
-      const width = params.coordSys.width
+      const coordSys = params.coordSys as { x: number; width: number }
+      const plotRight = coordSys.x + coordSys.width
+      const cardLeft = coordSys.x + coordSys.width + cardGapFromPlot
 
-      const fontSize = 10
-      const lineGap = 20
-
-      const extra = linesByIndex?.[rowIndex] ?? []
-      const lines = [direction, ...extra] // direction always first
-
-      // Anchor at the row baseline and choose whether the block grows up or down
-      const startY = expand === 'down' ? 0 : -(lines.length * lineGap) - 15 // move up so the last line ends at y=0
+      const headerText = direction
+      const headerDirectionKey = getDirectionTypeKey(direction)
+      const headerIconDataUrl = getDirectionIconDataUrl(headerDirectionKey)
+      const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
+      const detailText = detailLines.join('\n')
+      const bodyHeight = detailLines.length
+        ? Math.max(
+            minBodyHeight,
+            detailLines.length * lineHeight + bodyPaddingY * 2
+          )
+        : 0
+      const cardHeight = headerHeight + bodyHeight
+      const cardTop =
+        (expand === 'down'
+          ? y + CYCLE_SEGMENT_HEIGHT / 2 + cycleGapY
+          : y - cardHeight - cycleGapY) + verticalOffsetY
+      const bodyTop = cardTop + headerHeight
+      const cycleAnchorY =
+        y +
+        CYCLE_SEGMENT_HEIGHT / 2 +
+        (expand === 'up' ? connectorOffsetYUp : -7)
+      const cardCenterY = cardTop + cardHeight / 2
+      const connectorX = cardLeft - connectorInsetNearCard
+      const textX = cardLeft + bodyPaddingX
+      const iconSize = 10
+      const headerTextX = textX + (headerIconDataUrl ? iconSize + 3 : 0)
 
       return {
         type: 'group',
-        position: [width + 100, y],
-
-        children: lines.map((text, i) => ({
-          type: 'text',
-          style: {
-            backgroundColor: '#f2f2f2',
-            padding: [8, 12],
-            borderRadius: 6,
-            textStyle: {
-              fontWeight: 400,
-              fontSize: 12,
-              rich: {
-                values: { fontWeight: 600 },
-              },
+        children: [
+          {
+            type: 'polyline',
+            z2: 9,
+            shape: {
+              points: [
+                [plotRight, cycleAnchorY],
+                [connectorX, cycleAnchorY],
+                [connectorX, cardCenterY],
+                [cardLeft, cardCenterY],
+              ],
             },
-            x: gridLeft,
-            y: startY + i * lineGap,
-            text,
-            fontSize,
+            style: {
+              stroke: '#6B7280',
+              lineWidth: 1,
+              fill: undefined,
+              lineJoin: 'round',
+              lineCap: 'round',
+            },
           },
-        })),
+          {
+            type: 'rect',
+            z2: 10,
+            shape: {
+              x: cardLeft,
+              y: cardTop,
+              width: cardWidth,
+              height: cardHeight,
+              r: cardRadius,
+            },
+            style: {
+              fill: '#FFFFFF',
+              stroke: '#D9DEE6',
+              lineWidth: 1,
+            },
+          },
+          {
+            type: 'rect',
+            z2: 11,
+            shape: {
+              x: cardLeft,
+              y: cardTop,
+              width: cardWidth,
+              height: headerHeight,
+              r: bodyHeight > 0 ? [cardRadius, cardRadius, 0, 0] : cardRadius,
+            },
+            style: { fill: '#EEF1F5' },
+          },
+          ...(headerIconDataUrl
+            ? [
+                {
+                  type: 'image' as const,
+                  z2: 20,
+                  style: {
+                    x: textX,
+                    y: cardTop + (headerHeight - iconSize) / 2,
+                    image: headerIconDataUrl,
+                    width: iconSize,
+                    height: iconSize,
+                  },
+                },
+              ]
+            : [
+                {
+                  type: 'text' as const,
+                  z2: 20,
+                  style: {
+                    x: textX,
+                    y: cardTop + headerHeight / 2,
+                    text: '?',
+                    textAlign: 'left',
+                    textVerticalAlign: 'middle',
+                    fill: '#111',
+                    fontSize: 10,
+                    fontWeight: 700,
+                  },
+                },
+              ]),
+          {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: headerTextX,
+              y: cardTop + headerHeight / 2,
+              text: headerText,
+              textAlign: 'left',
+              textVerticalAlign: 'middle',
+              fill: '#111',
+              fontSize: 10,
+              fontWeight: 700,
+            },
+          },
+          ...(detailText
+            ? [
+                {
+                  type: 'text' as const,
+                  z2: 20,
+                  style: {
+                    x: textX,
+                    y: bodyTop + bodyPaddingY,
+                    text: detailText,
+                    width: cardWidth - bodyPaddingX * 2,
+                    overflow: 'break',
+                    lineHeight,
+                    textAlign: 'left',
+                    textVerticalAlign: 'top',
+                    fill: '#222',
+                    fontSize: 10,
+                    fontWeight: 500,
+                  },
+                },
+              ]
+            : []),
+        ],
       }
     },
     data: distanceData,
-  }
+  } satisfies SeriesOption
 }

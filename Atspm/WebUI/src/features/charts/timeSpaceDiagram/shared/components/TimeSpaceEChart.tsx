@@ -1,6 +1,10 @@
 import { ApacheEChartsProps } from '@/features/charts/components/apacheEChart'
 import { useTimeSpaceHandler } from '@/features/charts/timeSpaceDiagram/shared/handlers/timeSpace.handler'
-import { TIME_SPACE_LOCATION_CARD_LAYOUT } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
+import {
+  CYCLE_LABEL_SERIES_ID_PREFIX,
+  TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT,
+  TIME_SPACE_LOCATION_CARD_LAYOUT,
+} from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { IconButton, Tooltip } from '@mui/material'
@@ -81,6 +85,10 @@ function getLegendSelectedMap(option?: EChartsOption): Record<string, boolean> {
 
 const CYCLE_PREFIX = 'Cycles '
 const CYCLE_DURATION_PREFIX = 'Cycle Durations '
+const TIME_SPACE_LABEL_GUTTER_WIDTH =
+  TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardWidth +
+  TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapFromPlot +
+  12
 
 function getLegendEntryName(entry: string | { name?: string }): string | null {
   if (typeof entry === 'string') {
@@ -154,6 +162,15 @@ function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
     show: false,
   })
 
+  const series = Array.isArray(option.series)
+    ? (option.series as SeriesOption[])
+    : []
+  const hasCycleLabels = series.some(
+    (entry) =>
+      typeof entry.id === 'string' &&
+      entry.id.startsWith(CYCLE_LABEL_SERIES_ID_PREFIX)
+  )
+
   const nextLegend = Array.isArray(option.legend)
     ? option.legend.map((legend, index) =>
         index === 0 ? hideLegend(legend as LegendComponentOption) : legend
@@ -163,9 +180,14 @@ function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
   const shrinkGrid = (grid?: GridComponentOption) => {
     if (!grid) return grid
 
+    const rightGutter = hasCycleLabels ? TIME_SPACE_LABEL_GUTTER_WIDTH : 36
+
     return {
       ...grid,
-      right: typeof grid.right === 'number' ? Math.min(grid.right, 36) : 36,
+      right:
+        typeof grid.right === 'number'
+          ? Math.min(grid.right, rightGutter)
+          : rightGutter,
     }
   }
 
