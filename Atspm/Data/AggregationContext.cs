@@ -130,6 +130,9 @@ namespace Utah.Udot.Atspm.Data
                     .IsRequired()
                     .HasMaxLength(10);
 
+                builder.Property(e => e.ArchiveDate)
+                    .HasColumnType("Date");
+
                 builder.Property(p => p.DataType)
                 .HasMaxLength(32)
                 .HasConversion(new CompressionTypeConverter(typeof(AggregationModelBase).Namespace.ToString(), typeof(AggregationModelBase).Assembly.ToString()));

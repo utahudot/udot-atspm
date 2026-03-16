@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Deltas;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Enums;
@@ -41,14 +42,22 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class LocationController : LocationPolicyControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
+        private readonly IJurisdictionRepository _jurisdictionRepository;
+        private readonly IRegionsRepository _regionsRepository;
         private readonly ILocationManager _locationManager;
 
         //HACK: ILocationManager is temporary
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository, ILocationManager locationManager) : base(repository)
+        public LocationController(
+            ILocationRepository repository,
+            IJurisdictionRepository jurisdictionRepository,
+            IRegionsRepository regionsRepository,
+            ILocationManager locationManager) : base(repository)
         {
             _repository = repository;
+            _jurisdictionRepository = jurisdictionRepository;
+            _regionsRepository = regionsRepository;
             _locationManager = locationManager;
         }
 
@@ -102,6 +111,56 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         #endregion
 
         #region Actions
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditLocationConfigurations")]
+        public override async Task<IActionResult> Post(Location item)
+        {
+            var validationResult = await ValidateRelatedEntitiesAsync(item);
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
+            return await base.Post(item);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditLocationConfigurations")]
+        public override async Task<IActionResult> Put(int key, Location item)
+        {
+            var validationResult = await ValidateRelatedEntitiesAsync(item);
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
+            return await base.Put(key, item);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditLocationConfigurations")]
+        public override async Task<IActionResult> Patch(int key, Delta<Location> item)
+        {
+            var location = await _repository.LookupAsync(key);
+
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            item.Patch(location);
+
+            var validationResult = await ValidateRelatedEntitiesAsync(location);
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
+            await _repository.UpdateAsync(location);
+
+            return Updated(location);
+        }
 
         //HACK: move this to LocationManagementController
 
@@ -179,6 +238,31 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         #endregion
+
+        private async Task<IActionResult?> ValidateRelatedEntitiesAsync(Location item)
+        {
+            if (item.JurisdictionId.HasValue)
+            {
+                var jurisdiction = await _jurisdictionRepository.LookupAsync(item.JurisdictionId.Value);
+                if (jurisdiction == null)
+                {
+                    ModelState.AddModelError(nameof(Location.JurisdictionId), $"JurisdictionId {item.JurisdictionId.Value} does not exist.");
+                    return BadRequest(ModelState);
+                }
+            }
+
+            if (item.RegionId.HasValue)
+            {
+                var region = await _regionsRepository.LookupAsync(item.RegionId.Value);
+                if (region == null)
+                {
+                    ModelState.AddModelError(nameof(Location.RegionId), $"RegionId {item.RegionId.Value} does not exist.");
+                    return BadRequest(ModelState);
+                }
+            }
+
+            return null;
+        }
 
         #region Functions
 

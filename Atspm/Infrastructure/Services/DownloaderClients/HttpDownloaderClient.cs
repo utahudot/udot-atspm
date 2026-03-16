@@ -27,6 +27,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     public class HttpDownloaderClient : DownloaderClientBase
     {
         private HttpClient _client;
+        private TimeSpan _operationTimeout = TimeSpan.FromMilliseconds(2000);
 
         ///<inheritdoc/>
         public HttpDownloaderClient() { }
@@ -52,7 +53,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         protected override Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
             _client ??= new HttpClient();
-            _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
+            _operationTimeout = TimeSpan.FromMilliseconds(operationTimeout > 0 ? operationTimeout : 2000);
+            _client.Timeout = Timeout.InfiniteTimeSpan;
 
             var uriBuilder = new UriBuilder(Uri.UriSchemeHttp, connection.Address.ToString(), connection.Port)
             {
@@ -99,13 +101,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override async Task<FileInfo> DownloadResource(FileInfo file, Uri remote, CancellationToken token = default)
         {
-            var response = await _client.GetAsync(remote, token);
+            using var timeoutTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutTokenSource.CancelAfter(_operationTimeout);
+
+            var response = await _client.GetAsync(remote, HttpCompletionOption.ResponseHeadersRead, timeoutTokenSource.Token);
 
             if (response.IsSuccessStatusCode && response?.Content != null)
             {
-                var data = await response.Content.ReadAsStringAsync(token);
-
-                await File.WriteAllTextAsync(file.FullName, data, token).ConfigureAwait(false);
+                await using var source = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+                await using var destination = file.Open(FileMode.Create, FileAccess.Write, FileShare.None);
+                await source.CopyToAsync(destination, token).ConfigureAwait(false);
 
                 return file;
             }

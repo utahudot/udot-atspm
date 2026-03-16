@@ -40,7 +40,14 @@ namespace Utah.Udot.Atspm.Data.Configuration
 
             builder.Property(e => e.OtherPartners).HasMaxLength(50);
 
-            //builder.HasData(new Jurisdiction() { CountyParish = "Unknown", Name = "Unknown", OtherPartners = "Unknown"});
+            builder.HasData(new Jurisdiction
+            {
+                Id = 1,
+                Name = "Default",
+                CountyParish = "Default",
+                Mpo = "Default",
+                OtherPartners = "Default"
+            });
         }
     }
 }

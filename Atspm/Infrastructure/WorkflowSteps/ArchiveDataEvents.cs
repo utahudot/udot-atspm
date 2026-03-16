@@ -76,8 +76,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.WorkflowSteps
                 dynamic comp = Activator.CreateInstance(typeof(CompressedEventLogs<>).MakeGenericType(g.Key.Item7));
 
                 comp.LocationIdentifier = g.Key.LocationIdentifier;
-                //comp.ArchiveDate = DateOnly.FromDateTime(s.Key.Date);
-                comp.ArchiveDate = DateOnly.FromDateTime(new DateTime(g.Key.Year, g.Key.Month, g.Key.Day));
+                comp.ArchiveDate = new DateTime(g.Key.Year, g.Key.Month, g.Key.Day);
                 comp.Start = tl.Start;
                 comp.End = tl.End;
                 comp.DataType = g.Key.Item7;

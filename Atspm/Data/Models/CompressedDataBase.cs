@@ -30,6 +30,11 @@ namespace Utah.Udot.Atspm.Data.Models
     {
         private IEnumerable<ILocationLayer> data;
 
+        /// <summary>
+        /// Calendar date the compressed record belongs to.
+        /// </summary>
+        public DateTime ArchiveDate { get; set; }
+
         ///<inheritdoc/>
         public string LocationIdentifier { get; set; }
 

@@ -128,6 +128,18 @@ app.UseVersionedODataBatching();
 app.MapControllers();
 app.MapJsonHealthChecks();
 
+//errors
+
+app.UseExceptionHandler(err => err.Run(async context =>
+{
+    context.Response.StatusCode = 500;
+    context.Response.ContentType = "application/json";
+    var feature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+    await context.Response.WriteAsJsonAsync(new
+    {
+        error = feature?.Error.Message
+    });
+}));
 #endregion
 
 app.Run();

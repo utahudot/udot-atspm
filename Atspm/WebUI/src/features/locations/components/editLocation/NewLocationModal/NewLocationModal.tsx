@@ -9,6 +9,8 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { LoadingButton } from '@mui/lab'
 import {
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Dialog,
@@ -18,6 +20,8 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material'
+import { isAxiosError } from 'axios'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -76,6 +80,7 @@ const NewLocationModal = ({
   setLocation,
   onCreatedFromTemplate,
 }: NewLocationModalProps) => {
+  const [createError, setCreateError] = useState<string | null>(null)
   // const [selectedLocation, setSelectedLocation] = useState<Location | null>(
   //   null
   // )
@@ -116,6 +121,7 @@ const NewLocationModal = ({
   const locationIsLessThan10Characters = (locationIdentifier || '').length <= 10
 
   const onSubmit = async (data: LocationExpanded) => {
+    setCreateError(null)
     // const devices = locationHandler?.expandedLocation?.devices || []
     // const transformedDevices = devices.map((device, index) => {
     //   const { id, locationId, ...rest } = device
@@ -162,7 +168,7 @@ const NewLocationModal = ({
       pedsAre1to1: false,
       locationTypeId: 1,
       chartEnabled: false,
-      regionId: 10,
+      regionId: 1,
       jurisdictionId: 1,
       versionAction: 'Initial',
     }
@@ -170,8 +176,11 @@ const NewLocationModal = ({
     createLocation(defaultValues, {
       onSuccess: (createdData) => {
         setLocation(createdData as unknown as Location)
+        closeModal()
       },
-      onSettled: closeModal,
+      onError: (error) => {
+        setCreateError(getCreateLocationErrorMessage(error))
+      },
     })
   }
   // }
@@ -187,6 +196,40 @@ const NewLocationModal = ({
       return 'Location Identifier already exists.'
     }
     return ''
+  }
+
+  const getCreateLocationErrorMessage = (error: unknown) => {
+    if (!isAxiosError(error)) {
+      return 'Location creation failed. Please verify the required setup records exist and try again.'
+    }
+
+    const responseData = error.response?.data as
+      | {
+          error?: string
+          title?: string
+          errors?: Record<string, string[]>
+        }
+      | undefined
+
+    const modelErrors = responseData?.errors
+      ? Object.values(responseData.errors)
+          .flat()
+          .filter(Boolean)
+      : []
+
+    if (modelErrors.length > 0) {
+      return `${modelErrors.join(' ')} Create the missing Region or Jurisdiction first, or rerun DatabaseInstaller after applying the latest Config migration.`
+    }
+
+    if (responseData?.error) {
+      return responseData.error
+    }
+
+    if (responseData?.title) {
+      return responseData.title
+    }
+
+    return 'Location creation failed because the site is missing required configuration data, usually a valid Region or Jurisdiction.'
   }
 
   return (
@@ -206,6 +249,12 @@ const NewLocationModal = ({
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
+          {createError && (
+            <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
+              <AlertTitle>Location Could Not Be Created</AlertTitle>
+              {createError}
+            </Alert>
+          )}
           <Box sx={{ width: '60%', minWidth: '400px' }}>
             <Controller
               name="locationIdentifier"

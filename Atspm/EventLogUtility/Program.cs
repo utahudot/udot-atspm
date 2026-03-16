@@ -22,15 +22,28 @@ using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using System.Diagnostics;
+using System.Security;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 //gitactions: IIII
 
+var canUseWindowsEventLog = false;
+var eventLogSourceName = AppDomain.CurrentDomain.FriendlyName;
+
 if (OperatingSystem.IsWindows())
 {
-    if (!EventLog.SourceExists("Atspm"))
-        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
+    try
+    {
+        if (!EventLog.SourceExists(eventLogSourceName))
+            EventLog.CreateEventSource(eventLogSourceName, "Atspm");
+
+        canUseWindowsEventLog = true;
+    }
+    catch (SecurityException)
+    {
+        canUseWindowsEventLog = false;
+    }
 }
 
 var rootCmd = new EventLogCommands();
@@ -44,11 +57,11 @@ cmdBuilder.UseHost(a =>
     .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
-        if (OperatingSystem.IsWindows())
+        if (canUseWindowsEventLog)
         {
             l.AddEventLog(c =>
             {
-                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
+                c.SourceName = eventLogSourceName;
                 c.LogName = "Atspm";
             });
         }

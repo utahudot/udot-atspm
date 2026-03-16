@@ -34,8 +34,6 @@ namespace Utah.Udot.Atspm.Data.Configuration
 
             builder.HasIndex(e => e.RegionId);
 
-            builder.Property(e => e.JurisdictionId).HasDefaultValueSql("((0))");
-
             builder.Property(e => e.Latitude)
                 .IsRequired();
 
