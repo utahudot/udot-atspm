@@ -21,7 +21,7 @@ import {
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { Color } from '@/features/charts/utils'
-import { staticDirectionTypes } from '@/features/locations/components/editApproach/DirectionTypeCell'
+import { directionTypes as staticDirectionTypes } from '@/features/locations/components/editDetector/selectOptions'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   CustomSeriesRenderItemAPI,
@@ -747,10 +747,10 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   gridGap: 70,
   dotOffset: 10,
   cardGapToDot: 12,
-  cardWidth: 180,
+  cardWidth: 200,
   cardRadius: 4,
-  headerHeight: 26,
-  bodyHeight: 48,
+  headerHeight: 44,
+  bodyHeight: 30,
   bodyPaddingLeft: 12,
   bodyPaddingRight: 12,
   headerActionSize: 12,
@@ -789,6 +789,8 @@ export function getLocationsLabelOption(
     bodyHeight,
     bodyPaddingLeft,
     bodyPaddingRight,
+    headerActionSize,
+    headerActionRight,
   } = TIME_SPACE_LOCATION_CARD_LAYOUT
   const CARD_H = headerHeight + bodyHeight
 
@@ -810,6 +812,9 @@ export function getLocationsLabelOption(
       const cardLeft = cardRight - cardWidth
       const cardTop = y - CARD_H / 2
       const textX = cardLeft + bodyPaddingLeft
+      const iconLeft = cardRight - headerActionRight - headerActionSize
+      const dividerX = iconLeft - 8
+      const titleWidth = Math.max(0, dividerX - textX - 8)
 
       const children: any[] = []
 
@@ -828,6 +833,10 @@ export function getLocationsLabelOption(
         })
       }
 
+      const location = data.find(
+        (loc) => loc.locationIdentifier === api.value(2).toString()
+      )
+
       // Circle node
       children.push({
         type: 'circle',
@@ -845,6 +854,13 @@ export function getLocationsLabelOption(
         primary && secondary
           ? `${primary} & ${secondary}`
           : primary || secondary || ''
+      const titleText =
+        ident && name
+          ? `{ident|${ident}}{name| - ${name}}`
+          : ident
+            ? `{ident|${ident}}`
+            : `{name|${name}}`
+      const detailText = `Cycle Length: ${location?.cycleLength ?? 'N/A'}`
 
       children.push({
         type: 'group',
@@ -877,42 +893,66 @@ export function getLocationsLabelOption(
               y: cardTop,
               width: cardWidth,
               height: headerHeight,
-              r: [cardRadius, cardRadius, 0, 0],
+              r: bodyHeight > 0 ? [cardRadius, cardRadius, 0, 0] : cardRadius,
             },
             style: { fill: '#EEF1F5' },
           },
 
-          // Identifier (centered in header)
-          {
-            type: 'text',
-            z2: 20,
-            style: {
-              x: cardLeft + cardWidth / 2,
-              y: cardTop + headerHeight / 2,
-              text: ident,
-              textAlign: 'center',
-              textVerticalAlign: 'middle',
-              fill: '#111',
-              fontSize: 14,
-              fontWeight: 700,
-            },
-          },
-
-          // Primary/secondary combined (wrap inside card)
+          // Identifier and location name combined inside the header
           {
             type: 'text',
             z2: 20,
             style: {
               x: textX,
-              y: cardTop + headerHeight + 5,
-              text: name,
-              width: cardWidth - bodyPaddingLeft - bodyPaddingRight,
+              y: cardTop + 8,
+              text: titleText,
+              width: titleWidth,
               overflow: 'break',
-              lineHeight: 18,
+              lineHeight: 14,
               textAlign: 'left',
               textVerticalAlign: 'top',
-              fill: '#222',
-              fontSize: 13,
+              rich: {
+                ident: {
+                  fill: '#111',
+                  fontSize: 11,
+                  fontWeight: 700,
+                },
+                name: {
+                  fill: '#111',
+                  fontSize: 11,
+                  fontWeight: 400,
+                },
+              },
+            },
+          },
+          {
+            type: 'line',
+            z2: 20,
+            shape: {
+              x1: dividerX,
+              y1: cardTop + 7,
+              x2: dividerX,
+              y2: cardTop + headerHeight - 7,
+            },
+            style: {
+              stroke: '#CBD5E1',
+              lineWidth: 1,
+            },
+          },
+          {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: textX,
+              y: cardTop + headerHeight + 6,
+              text: detailText,
+              width: cardWidth - bodyPaddingLeft - bodyPaddingRight,
+              overflow: 'break',
+              lineHeight: 13,
+              textAlign: 'left',
+              textVerticalAlign: 'top',
+              fill: '#374151',
+              fontSize: 11,
               fontWeight: 500,
             },
           },

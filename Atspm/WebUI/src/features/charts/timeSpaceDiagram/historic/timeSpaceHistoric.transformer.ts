@@ -168,8 +168,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   })
 
   const grid: GridComponentOption = {
-    top: 120,
-    left: 270,
+    top: 80,
+    left: 280,
     right: 300,
     bottom: 100,
     show: true,
@@ -408,7 +408,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   //   )
   // )
 
-  const MIN_SEGMENT = 1600
+  const MIN_SEGMENT = 1800
 
   const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
 

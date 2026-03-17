@@ -93,16 +93,61 @@ export const laneTypes = [
 ]
 
 export const directionTypes = {
-  NA: { id: 'NA', icon: <QuestionMarkIcon />, description: 'Unknown' },
-  NB: { id: 'NB', icon: <NorthOutlinedIcon />, description: 'Northbound' },
-  SB: { id: 'SB', icon: <SouthOutlinedIcon />, description: 'Southbound' },
-  EB: { id: 'EB', icon: <EastOutlinedIcon />, description: 'Eastbound' },
-  WB: { id: 'WB', icon: <WestOutlinedIcon />, description: 'Westbound' },
-  NE: { id: 'NE', icon: <NorthEastOutlinedIcon />, description: 'Northeast' },
-  NW: { id: 'NW', icon: <NorthWestOutlinedIcon />, description: 'Northwest' },
-  SE: { id: 'SE', icon: <SouthEastOutlinedIcon />, description: 'Southeast' },
-  SW: { id: 'SW', icon: <SouthWestOutlinedIcon />, description: 'Southwest' },
-}
+  NA: {
+    id: 'NA',
+    icon: <QuestionMarkIcon />,
+    chartSvg: null,
+    description: 'Unknown',
+  },
+  NB: {
+    id: 'NB',
+    icon: <NorthOutlinedIcon />,
+    chartSvg: { family: 'cardinal', rotationDeg: 0 },
+    description: 'Northbound',
+  },
+  SB: {
+    id: 'SB',
+    icon: <SouthOutlinedIcon />,
+    chartSvg: { family: 'cardinal', rotationDeg: 180 },
+    description: 'Southbound',
+  },
+  EB: {
+    id: 'EB',
+    icon: <EastOutlinedIcon />,
+    chartSvg: { family: 'cardinal', rotationDeg: 90 },
+    description: 'Eastbound',
+  },
+  WB: {
+    id: 'WB',
+    icon: <WestOutlinedIcon />,
+    chartSvg: { family: 'cardinal', rotationDeg: -90 },
+    description: 'Westbound',
+  },
+  NE: {
+    id: 'NE',
+    icon: <NorthEastOutlinedIcon />,
+    chartSvg: { family: 'diagonal', rotationDeg: 90 },
+    description: 'Northeast',
+  },
+  NW: {
+    id: 'NW',
+    icon: <NorthWestOutlinedIcon />,
+    chartSvg: { family: 'diagonal', rotationDeg: 0 },
+    description: 'Northwest',
+  },
+  SE: {
+    id: 'SE',
+    icon: <SouthEastOutlinedIcon />,
+    chartSvg: { family: 'diagonal', rotationDeg: 180 },
+    description: 'Southeast',
+  },
+  SW: {
+    id: 'SW',
+    icon: <SouthWestOutlinedIcon />,
+    chartSvg: { family: 'diagonal', rotationDeg: -90 },
+    description: 'Southwest',
+  },
+} as const
 
 export const hardwareTypeOptions = hardwareTypes.map((ht) => ({
   value: ht.id,
