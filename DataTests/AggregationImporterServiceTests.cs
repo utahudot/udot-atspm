@@ -66,7 +66,7 @@ namespace DataApiTests
         /// </summary>
         private static string GetValidPedCsv()
         {
-            return @"PhaseNumber,PedBeginWalkCount,PedCallsRegisteredCount,PedCycles,PedDelay,PedRequests,ImputedPedCallsRegistered,MaxPedDelay,MinPedDelay,UniquePedDetections,Start,End
+            return @"phaseNumber,pedBeginWalkCount,pedCallsRegisteredCount,pedCycles,pedDelay,pedRequests,imputedPedCallsRegistered,maxPedDelay,minPedDelay,uniquePedDetections,start,end
 1,10,5,20,2.5,15,0,5.0,0.0,8,2023-01-01T00:00:00,2023-01-01T01:00:00
 2,12,6,22,3.0,18,1,6.0,1.0,9,2023-01-01T00:00:00,2023-01-01T01:00:00";
         }
@@ -76,7 +76,7 @@ namespace DataApiTests
         /// </summary>
         private static string GetValidCycleCsv()
         {
-            return @"GreenTime,PhaseBeginCount,PhaseNumber,RedTime,TotalGreenToGreenCycles,TotalRedToRedCycles,YellowTime,ApproachId,Start,End
+            return @"greenTime,phaseBeginCount,phaseNumber,redTime,totalGreenToGreenCycles,totalRedToRedCycles,yellowTime,approachId,start,end
 30,5,1,25,10,8,5,1,2023-01-01T00:00:00,2023-01-01T01:00:00
 35,6,2,20,12,9,4,2,2023-01-01T00:00:00,2023-01-01T01:00:00";
         }
@@ -86,7 +86,7 @@ namespace DataApiTests
         /// </summary>
         private static string GetInvalidPedCsv()
         {
-            return @"PhaseNumber,PedBeginWalkCount,PedCallsRegisteredCount,PedCycles,PedDelay,PedRequests,ImputedPedCallsRegistered,MaxPedDelay,MinPedDelay,UniquePedDetections,Start,End
+            return @"phaseNumber,pedBeginWalkCount,pedCallsRegisteredCount,pedCycles,pedDelay,pedRequests,imputedPedCallsRegistered,maxPedDelay,minPedDelay,uniquePedDetections,start,end
 invalid,5,20,2.5,15,0,5.0,0.0,8,2023-01-01T00:00:00,2023-01-01T01:00:00";
         }
 
@@ -95,7 +95,7 @@ invalid,5,20,2.5,15,0,5.0,0.0,8,2023-01-01T00:00:00,2023-01-01T01:00:00";
         /// </summary>
         private static string GetEmptyPedCsv()
         {
-            return @"PhaseNumber,PedBeginWalkCount,PedCallsRegisteredCount,PedCycles,PedDelay,PedRequests,ImputedPedCallsRegistered,MaxPedDelay,MinPedDelay,UniquePedDetections,Start,End";
+            return @"phaseNumber,pedBeginWalkCount,pedCallsRegisteredCount,pedCycles,pedDelay,pedRequests,imputedPedCallsRegistered,maxPedDelay,minPedDelay,uniquePedDetections,start,end";
         }
 
         #endregion
