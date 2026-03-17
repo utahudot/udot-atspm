@@ -22,10 +22,7 @@ import {
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { Color } from '@/features/charts/utils'
 import { directionTypes as staticDirectionTypes } from '@/features/locations/components/editDetector/selectOptions'
-import {
-  getDirectionAccentColor,
-  getDirectionAccentForegroundColor,
-} from '@/features/locations/utils/directionAccent'
+import { getDirectionAccentColor } from '@/features/locations/utils/directionAccent'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   CustomSeriesRenderItemAPI,
@@ -762,7 +759,7 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
 } as const
 
 export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
-  cardWidth: 80,
+  cardWidth: 90,
   cardRadius: 2,
   headerHeight: 18,
   cardGapFromPlot: 5,
@@ -1220,6 +1217,20 @@ function getDirectionTypeKey(directionLabel: string): StaticDirectionTypeKey {
   return prefixMatch ?? 'NA'
 }
 
+function extractPercentValue(text: string): number | null {
+  const match = text.match(/(\d+(?:\.\d+)?)%/)
+  if (!match) {
+    return null
+  }
+
+  const value = Number(match[1])
+  if (!Number.isFinite(value)) {
+    return null
+  }
+
+  return Math.max(0, Math.min(100, value))
+}
+
 export const CYCLE_LABEL_SERIES_ID_PREFIX = 'Cycle Labels '
 
 export function generateCycleLabels(
@@ -1266,15 +1277,13 @@ export function generateCycleLabels(
           : primaryCardLeft + cardWidth + cardGapBetween
 
       const headerText = headerTextByIndex?.[rowIndex]?.trim() || direction
-      const headerFill = getDirectionAccentColor(headerText)
-      const headerForeground = getDirectionAccentForegroundColor(headerText)
+      const headerAccentColor = getDirectionAccentColor(headerText)
       const headerDirectionKey = getDirectionTypeKey(headerText)
       const headerIconDataUrl = getDirectionIconDataUrl(
         headerDirectionKey,
-        headerForeground
+        isIgnored ? '#94A3B8' : '#111111'
       )
       const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
-      const detailText = detailLines.join('\n')
       const bodyHeight = detailLines.length
         ? Math.max(
             minBodyHeight,
@@ -1287,6 +1296,13 @@ export function generateCycleLabels(
       const textX = cardLeft + bodyPaddingX
       const iconSize = 10
       const headerTextX = textX + (headerIconDataUrl ? iconSize + 3 : 0)
+      const detailPieRadius = 4.5
+      const detailPieCenterX =
+        cardLeft + cardWidth - bodyPaddingX - detailPieRadius
+      const detailTextWidth = Math.max(
+        0,
+        detailPieCenterX - textX - detailPieRadius - 6
+      )
 
       return {
         type: 'group',
@@ -1313,13 +1329,31 @@ export function generateCycleLabels(
             shape: {
               x: cardLeft,
               y: cardTop,
-              width: cardWidth,
-              height: headerHeight,
-              r: bodyHeight > 0 ? [cardRadius, cardRadius, 0, 0] : cardRadius,
+              width: 3,
+              height: cardHeight,
+              r: bodyHeight > 0 ? [cardRadius, 0, 0, cardRadius] : cardRadius,
             },
             style: {
-              fill: headerFill,
+              fill: headerAccentColor,
               opacity: isIgnored ? 0.5 : 1,
+            },
+          },
+          {
+            type: 'rect',
+            z2: 12,
+            shape: {
+              x: cardLeft + 3,
+              y: cardTop,
+              width: cardWidth - 3,
+              height: headerHeight,
+              r:
+                bodyHeight > 0
+                  ? [0, cardRadius, 0, 0]
+                  : [0, cardRadius, cardRadius, 0],
+            },
+            style: {
+              fill: isIgnored ? '#F1F5F9' : '#EEF1F5',
+              opacity: isIgnored ? 0.88 : 1,
             },
           },
           ...(headerIconDataUrl
@@ -1347,7 +1381,7 @@ export function generateCycleLabels(
                     text: '?',
                     textAlign: 'left',
                     textVerticalAlign: 'middle',
-                    fill: isIgnored ? '#CBD5E1' : headerForeground,
+                    fill: isIgnored ? '#94A3B8' : '#111',
                     fontSize: 10,
                     fontWeight: 700,
                   },
@@ -1362,32 +1396,76 @@ export function generateCycleLabels(
               text: headerText,
               textAlign: 'left',
               textVerticalAlign: 'middle',
-              fill: isIgnored ? '#E2E8F0' : headerForeground,
+              fill: isIgnored ? '#94A3B8' : '#111',
               fontSize: 10,
-              fontWeight: 700,
             },
           },
-          ...(detailText
-            ? [
-                {
-                  type: 'text' as const,
-                  z2: 20,
-                  style: {
-                    x: textX,
-                    y: bodyTop + bodyPaddingY,
-                    text: detailText,
-                    width: cardWidth - bodyPaddingX * 2,
-                    overflow: 'break',
-                    lineHeight,
-                    textAlign: 'left',
-                    textVerticalAlign: 'top',
-                    fill: isIgnored ? '#94A3B8' : '#222',
-                    fontSize: 10,
-                    fontWeight: 500,
-                  },
+          ...detailLines.flatMap((line, index) => {
+            const percentValue = extractPercentValue(line)
+            const lineY = bodyTop + bodyPaddingY + index * lineHeight
+            const pieChildren =
+              percentValue === null
+                ? []
+                : [
+                    {
+                      type: 'circle' as const,
+                      z2: 20,
+                      shape: {
+                        cx: detailPieCenterX,
+                        cy: lineY + lineHeight / 2 - 1,
+                        r: detailPieRadius,
+                      },
+                      style: {
+                        fill: '#E2E8F0',
+                        opacity: isIgnored ? 0.45 : 1,
+                      },
+                    },
+                    ...(percentValue > 0
+                      ? [
+                          {
+                            type: 'sector' as const,
+                            z2: 21,
+                            shape: {
+                              cx: detailPieCenterX,
+                              cy: lineY + lineHeight / 2 - 1,
+                              r: detailPieRadius,
+                              r0: 0,
+                              startAngle: -Math.PI / 2,
+                              endAngle:
+                                -Math.PI / 2 +
+                                (percentValue / 100) * Math.PI * 2,
+                              clockwise: true,
+                            },
+                            style: {
+                              fill: Color.Black,
+                              opacity: isIgnored ? 0.55 : 1,
+                            },
+                          },
+                        ]
+                      : []),
+                  ]
+
+            return [
+              {
+                type: 'text' as const,
+                z2: 20,
+                style: {
+                  x: textX,
+                  y: lineY,
+                  text: line,
+                  width: detailTextWidth,
+                  overflow: 'truncate',
+                  lineHeight,
+                  textAlign: 'left',
+                  textVerticalAlign: 'top',
+                  fill: isIgnored ? '#94A3B8' : '#222',
+                  fontSize: 10,
+                  fontWeight: 500,
                 },
-              ]
-            : []),
+              },
+              ...pieChildren,
+            ]
+          }),
         ],
       }
     },
