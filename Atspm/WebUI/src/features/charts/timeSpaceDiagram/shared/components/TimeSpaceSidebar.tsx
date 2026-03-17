@@ -1,8 +1,6 @@
 import { Color } from '@/features/charts/utils'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
-import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import {
   Box,
   Checkbox,
@@ -69,10 +67,10 @@ type SidebarItemDefinition = {
 export interface TimeSpaceSidebarProps {
   option?: EChartsOption
   selectedSeries: Record<string, boolean>
-  isFullscreen: boolean
-  onToggleFullscreen: () => void
   onToggleSeries: (seriesName: string) => void
 }
+
+export const TIME_SPACE_GUIDE_WIDTH = 304
 
 const CATEGORY_ORDER = [
   'Signal Timing',
@@ -614,8 +612,6 @@ function DetailMarker({ detail }: { detail: SidebarDetail }) {
 export default function TimeSpaceSidebar({
   option,
   selectedSeries,
-  isFullscreen,
-  onToggleFullscreen,
   onToggleSeries,
 }: TimeSpaceSidebarProps) {
   const items = buildSidebarItems(option)
@@ -676,7 +672,7 @@ export default function TimeSpaceSidebar({
   return (
     <Box
       sx={{
-        width: 304,
+        width: TIME_SPACE_GUIDE_WIDTH,
         flexShrink: 0,
         height: '100%',
         overflowY: 'auto',
@@ -690,7 +686,6 @@ export default function TimeSpaceSidebar({
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
           gap: 0.5,
         }}
       >
@@ -703,21 +698,8 @@ export default function TimeSpaceSidebar({
             fontSize: '0.7rem',
           }}
         >
-          Guide
+          Legend
         </Typography>
-        <Tooltip title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
-          <IconButton
-            size="small"
-            onClick={onToggleFullscreen}
-            sx={{ p: 0.2, color: 'text.secondary' }}
-          >
-            {isFullscreen ? (
-              <FullscreenExitIcon fontSize="small" />
-            ) : (
-              <FullscreenIcon fontSize="small" />
-            )}
-          </IconButton>
-        </Tooltip>
       </Box>
 
       <Divider sx={{ my: 1.25 }} />
@@ -953,7 +935,6 @@ export default function TimeSpaceSidebar({
                               ))}
                             </Box>
                           ) : null}
-
                         </Box>
                       </Box>
                     </Paper>

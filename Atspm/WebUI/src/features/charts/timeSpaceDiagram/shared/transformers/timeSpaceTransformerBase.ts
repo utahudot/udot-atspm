@@ -758,14 +758,12 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
 } as const
 
 export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
-  cardWidth: 90,
+  cardWidth: 80,
   cardRadius: 2,
   headerHeight: 18,
-  cardGapFromPlot: 18,
-  cycleGapY: 2,
-  verticalOffsetY: -4,
-  connectorOffsetYUp: -7,
-  connectorInsetNearCard: 8,
+  cardGapFromPlot: 5,
+  cardGapBetween: 5,
+  verticalOffsetY: -12,
   bodyPaddingX: 7,
   bodyPaddingY: 4,
   lineHeight: 13,
@@ -1150,7 +1148,7 @@ export function getDraggableOffsetabelOption(
   return seriesOptions
 }
 
-type ExpandDir = 'up' | 'down'
+type LabelColumn = 'left' | 'right'
 
 type StaticDirectionTypeKey = keyof typeof staticDirectionTypes
 
@@ -1212,7 +1210,7 @@ export function generateCycleLabels(
   direction: string,
   _gridLeft = 0,
   linesByIndex?: Array<string[] | undefined>,
-  expand: ExpandDir = 'down'
+  column: LabelColumn = 'left'
 ): SeriesOption {
   void _gridLeft
 
@@ -1221,10 +1219,8 @@ export function generateCycleLabels(
     cardRadius,
     headerHeight,
     cardGapFromPlot,
-    cycleGapY,
+    cardGapBetween,
     verticalOffsetY,
-    connectorOffsetYUp,
-    connectorInsetNearCard,
     bodyPaddingX,
     bodyPaddingY,
     lineHeight,
@@ -1242,8 +1238,12 @@ export function generateCycleLabels(
       const rowIndex = params.dataIndex
       const [, y] = api.coord([0, api.value(0)])
       const coordSys = params.coordSys as { x: number; width: number }
-      const plotRight = coordSys.x + coordSys.width
-      const cardLeft = coordSys.x + coordSys.width + cardGapFromPlot
+      const anchorY = y + CYCLE_SEGMENT_HEIGHT / 2 + verticalOffsetY
+      const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
+      const cardLeft =
+        column === 'left'
+          ? primaryCardLeft
+          : primaryCardLeft + cardWidth + cardGapBetween
 
       const headerText = direction
       const headerDirectionKey = getDirectionTypeKey(direction)
@@ -1257,17 +1257,8 @@ export function generateCycleLabels(
           )
         : 0
       const cardHeight = headerHeight + bodyHeight
-      const cardTop =
-        (expand === 'down'
-          ? y + CYCLE_SEGMENT_HEIGHT / 2 + cycleGapY
-          : y - cardHeight - cycleGapY) + verticalOffsetY
+      const cardTop = anchorY - cardHeight / 2
       const bodyTop = cardTop + headerHeight
-      const cycleAnchorY =
-        y +
-        CYCLE_SEGMENT_HEIGHT / 2 +
-        (expand === 'up' ? connectorOffsetYUp : -7)
-      const cardCenterY = cardTop + cardHeight / 2
-      const connectorX = cardLeft - connectorInsetNearCard
       const textX = cardLeft + bodyPaddingX
       const iconSize = 10
       const headerTextX = textX + (headerIconDataUrl ? iconSize + 3 : 0)
@@ -1275,25 +1266,6 @@ export function generateCycleLabels(
       return {
         type: 'group',
         children: [
-          {
-            type: 'polyline',
-            z2: 9,
-            shape: {
-              points: [
-                [plotRight, cycleAnchorY],
-                [connectorX, cycleAnchorY],
-                [connectorX, cardCenterY],
-                [cardLeft, cardCenterY],
-              ],
-            },
-            style: {
-              stroke: '#6B7280',
-              lineWidth: 1,
-              fill: undefined,
-              lineJoin: 'round',
-              lineCap: 'round',
-            },
-          },
           {
             type: 'rect',
             z2: 10,

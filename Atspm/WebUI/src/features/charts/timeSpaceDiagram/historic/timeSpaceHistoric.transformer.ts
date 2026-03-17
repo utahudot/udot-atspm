@@ -386,7 +386,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     primaryDirection,
     grid.left as number,
     primaryLinesByIndex,
-    'down'
+    'left'
   )
 
   const opposingLabelSeries = generateCycleLabels(
@@ -394,7 +394,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     opposingDirection,
     grid.left as number,
     opposingLinesByIndex,
-    'up'
+    'right'
   )
 
   series.push(primaryLabelSeries)

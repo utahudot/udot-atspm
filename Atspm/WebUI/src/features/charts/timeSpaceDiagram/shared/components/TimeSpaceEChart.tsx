@@ -7,24 +7,36 @@ import {
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { IconButton, Tooltip } from '@mui/material'
+import {
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  SvgIcon,
+  Tooltip,
+} from '@mui/material'
 import type {
   ECharts,
   EChartsOption,
   GridComponentOption,
   LegendComponentOption,
   SeriesOption,
+  ToolboxComponentOption,
 } from 'echarts'
 import { init } from 'echarts'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
 import { GpxUploadOptions } from '../types'
-import TimeSpaceSidebar from './TimeSpaceSidebar'
+import TimeSpaceSidebar, { TIME_SPACE_GUIDE_WIDTH } from './TimeSpaceSidebar'
 
 export interface TimeSpaceChartProps extends ApacheEChartsProps {
   gpxEntries?: GpxUploadOptions[]
   ignoredLocations?: string[]
   onToggleIgnoredLocation?: (location: string) => void
+  leftSidebarOpen?: boolean
+  onToggleLeftSidebar?: () => void
 }
 
 type LocationToggleButton = {
@@ -37,6 +49,204 @@ type LocationAxisDatum = {
   distance: number
   location: string
   time: string | number
+}
+
+type ContextMenuPosition = {
+  mouseX: number
+  mouseY: number
+}
+
+function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
+  return (
+    <SvgIcon
+      fontSize="small"
+      viewBox="0 0 24 24"
+      sx={side === 'left' ? { transform: 'rotate(180deg)' } : undefined}
+    >
+      <rect
+        x="3"
+        y="3"
+        width="18"
+        height="18"
+        rx="2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M15 3v18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </SvgIcon>
+  )
+}
+
+function ToolbarActionIcon() {
+  return (
+    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+      <path
+        d="M12 15V3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m7 10 5 5 5-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </SvgIcon>
+  )
+}
+
+function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
+  return (
+    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+      {expanded ? (
+        <>
+          <path
+            d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9 19.8V15m0 0H4.2M9 15l-6 6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M15 4.2V9m0 0h4.8M15 9l6-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9 4.2V9m0 0H4.2M9 9 3 3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </>
+      ) : (
+        <>
+          <path
+            d="m15 15 6 6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="m15 9 6-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M21 16v5h-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M21 8V3h-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M3 16v5h5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="m3 21 6-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M3 8V3h5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9 9 3 3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </>
+      )}
+    </SvgIcon>
+  )
+}
+
+function ResetActionIcon() {
+  return (
+    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+      <path
+        d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 3v5h5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </SvgIcon>
+  )
 }
 
 type GridRectProvider = ECharts & {
@@ -83,11 +293,25 @@ function getLegendSelectedMap(option?: EChartsOption): Record<string, boolean> {
   return selected ? { ...selected } : {}
 }
 
+function getPrimaryToolbox(
+  option?: EChartsOption
+): ToolboxComponentOption | undefined {
+  if (!option?.toolbox) return undefined
+
+  return Array.isArray(option.toolbox)
+    ? (option.toolbox[0] as ToolboxComponentOption | undefined)
+    : (option.toolbox as ToolboxComponentOption)
+}
+
 const CYCLE_PREFIX = 'Cycles '
 const CYCLE_DURATION_PREFIX = 'Cycle Durations '
+const GUIDE_STICKY_TOP = 12
+const GUIDE_TRANSITION_MS = 200
+const GUIDE_EASING = 'cubic-bezier(0.2, 0, 0, 1)'
 const TIME_SPACE_LABEL_GUTTER_WIDTH =
-  TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardWidth +
+  TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardWidth * 2 +
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapFromPlot +
+  TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapBetween +
   12
 
 function getLegendEntryName(entry: string | { name?: string }): string | null {
@@ -197,11 +421,57 @@ function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
       )
     : shrinkGrid(option.grid as GridComponentOption | undefined)
 
+  const hideToolbox = (toolbox: ToolboxComponentOption) => ({
+    ...toolbox,
+    show: false,
+  })
+
+  const nextToolbox = Array.isArray(option.toolbox)
+    ? option.toolbox.map((toolbox) =>
+        hideToolbox(toolbox as ToolboxComponentOption)
+      )
+    : option.toolbox
+      ? hideToolbox(option.toolbox as ToolboxComponentOption)
+      : option.toolbox
+
   return {
     ...option,
     legend: nextLegend,
     grid: nextGrid,
+    toolbox: nextToolbox,
   }
+}
+
+function sanitizeFileName(name: string) {
+  return name
+    .trim()
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '-')
+    .replace(/\s+/g, ' ')
+}
+
+function getChartDownloadName(option?: EChartsOption) {
+  const toolbox = getPrimaryToolbox(option)
+  const saveAsImage = toolbox?.feature?.saveAsImage as
+    | { name?: unknown }
+    | undefined
+
+  if (typeof saveAsImage?.name === 'string' && saveAsImage.name.trim()) {
+    return sanitizeFileName(saveAsImage.name)
+  }
+
+  const title = option?.title
+  const rawTitle = Array.isArray(title)
+    ? title
+        .map((entry) =>
+          typeof entry?.text === 'string' ? entry.text.trim() : ''
+        )
+        .filter(Boolean)
+        .join(' - ')
+    : typeof title?.text === 'string'
+      ? title.text.trim()
+      : ''
+
+  return sanitizeFileName(rawTitle || 'time-space-diagram')
 }
 
 function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
@@ -327,6 +597,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     gpxEntries,
     ignoredLocations = [],
     onToggleIgnoredLocation,
+    leftSidebarOpen = false,
+    onToggleLeftSidebar,
   } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
@@ -337,6 +609,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     LocationToggleButton[]
   >([])
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isGuideCollapsed, setIsGuideCollapsed] = useState(false)
+  const [contextMenuPosition, setContextMenuPosition] =
+    useState<ContextMenuPosition | null>(null)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
     () => getLegendSelectedMap(option)
   )
@@ -494,9 +769,120 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     await container.requestFullscreen()
   }
 
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setContextMenuPosition({
+      mouseX: event.clientX,
+      mouseY: event.clientY,
+    })
+  }
+
+  const handleCloseContextMenu = () => {
+    setContextMenuPosition(null)
+  }
+
+  const handleCloseMenus = () => {
+    handleCloseContextMenu()
+  }
+
+  const handleToggleLeftSidebar = () => {
+    onToggleLeftSidebar?.()
+    handleCloseMenus()
+  }
+
+  const handleToggleGuide = () => {
+    setIsGuideCollapsed((current) => !current)
+    handleCloseMenus()
+  }
+
+  const handleToggleFullscreenFromMenu = async () => {
+    handleCloseMenus()
+    await handleToggleFullscreen()
+  }
+
+  const handleResetChart = () => {
+    handleCloseMenus()
+    chartInstanceRef.current?.dispatchAction({ type: 'restore' })
+  }
+
+  const handleDownloadChart = () => {
+    const chartInstance = chartInstanceRef.current
+    if (!chartInstance) return
+
+    const dataUrl = chartInstance.getDataURL({
+      type: 'png',
+      pixelRatio: 2,
+      backgroundColor: '#ffffff',
+    })
+
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.download = `${getChartDownloadName(option)}.png`
+    link.click()
+    handleCloseMenus()
+  }
+
+  const chartMenuItems = (
+    <>
+      {onToggleLeftSidebar && (
+        <MenuItem dense onClick={handleToggleLeftSidebar}>
+          <ListItemIcon sx={{ minWidth: 28 }}>
+            <PanelSidebarIcon side="left" />
+          </ListItemIcon>
+          <ListItemText
+            primaryTypographyProps={{ variant: 'body2' }}
+            primary={
+              leftSidebarOpen ? 'Hide left sidebar' : 'Show left sidebar'
+            }
+          />
+        </MenuItem>
+      )}
+      <MenuItem dense onClick={handleToggleGuide}>
+        <ListItemIcon sx={{ minWidth: 28 }}>
+          <PanelSidebarIcon side="right" />
+        </ListItemIcon>
+        <ListItemText
+          primaryTypographyProps={{ variant: 'body2' }}
+          primary={
+            isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
+          }
+        />
+      </MenuItem>
+      <MenuItem dense onClick={handleToggleFullscreenFromMenu}>
+        <ListItemIcon sx={{ minWidth: 28 }}>
+          <FullscreenActionIcon expanded={isFullscreen} />
+        </ListItemIcon>
+        <ListItemText
+          primaryTypographyProps={{ variant: 'body2' }}
+          primary={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+        />
+      </MenuItem>
+      <Divider />
+      <MenuItem dense onClick={handleDownloadChart}>
+        <ListItemIcon sx={{ minWidth: 28 }}>
+          <ToolbarActionIcon />
+        </ListItemIcon>
+        <ListItemText
+          primaryTypographyProps={{ variant: 'body2' }}
+          primary="Download chart"
+        />
+      </MenuItem>
+      <MenuItem dense onClick={handleResetChart}>
+        <ListItemIcon sx={{ minWidth: 28 }}>
+          <ResetActionIcon />
+        </ListItemIcon>
+        <ListItemText
+          primaryTypographyProps={{ variant: 'body2' }}
+          primary="Reset to default"
+        />
+      </MenuItem>
+    </>
+  )
+
   return (
     <div
       ref={fullscreenRef}
+      onContextMenu={handleContextMenu}
       style={{
         width: '100%',
         height: '100%',
@@ -532,6 +918,109 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
               height: '100%',
             }}
           />
+
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 10,
+              display: 'flex',
+              gap: 2,
+              zIndex: 4,
+              pointerEvents: 'auto',
+            }}
+          >
+            {onToggleLeftSidebar && (
+              <Tooltip
+                title={
+                  leftSidebarOpen ? 'Hide left sidebar' : 'Show left sidebar'
+                }
+                placement="bottom"
+              >
+                <IconButton
+                  size="small"
+                  onClick={handleToggleLeftSidebar}
+                  sx={{
+                    color: leftSidebarOpen ? '#334155' : '#64748B',
+                    p: 0.45,
+                    '&:hover': {
+                      backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                    },
+                  }}
+                >
+                  <PanelSidebarIcon side="left" />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip
+              title={
+                isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
+              }
+              placement="bottom"
+            >
+              <IconButton
+                size="small"
+                onClick={handleToggleGuide}
+                sx={{
+                  color: isGuideCollapsed ? '#64748B' : '#334155',
+                  p: 0.45,
+                  '&:hover': {
+                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                  },
+                }}
+              >
+                <PanelSidebarIcon side="right" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              placement="bottom"
+            >
+              <IconButton
+                size="small"
+                onClick={handleToggleFullscreenFromMenu}
+                sx={{
+                  color: isFullscreen ? '#334155' : '#64748B',
+                  p: 0.45,
+                  '&:hover': {
+                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                  },
+                }}
+              >
+                <FullscreenActionIcon expanded={isFullscreen} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Download chart" placement="bottom">
+              <IconButton
+                size="small"
+                onClick={handleDownloadChart}
+                sx={{
+                  color: '#475569',
+                  p: 0.45,
+                  '&:hover': {
+                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                  },
+                }}
+              >
+                <ToolbarActionIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Reset chart" placement="bottom">
+              <IconButton
+                size="small"
+                onClick={handleResetChart}
+                sx={{
+                  color: '#475569',
+                  p: 0.45,
+                  '&:hover': {
+                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                  },
+                }}
+              >
+                <ResetActionIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
 
           {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
             <div
@@ -577,13 +1066,49 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
             </div>
           )}
         </div>
-        <TimeSpaceSidebar
-          option={option}
-          selectedSeries={selectedSeries}
-          isFullscreen={isFullscreen}
-          onToggleFullscreen={handleToggleFullscreen}
-          onToggleSeries={handleToggleSeries}
-        />
+        <div
+          style={{
+            width: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
+            minWidth: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
+            flexShrink: 0,
+            position: 'sticky',
+            top: `${GUIDE_STICKY_TOP}px`,
+            alignSelf: 'flex-start',
+            height: '100%',
+            maxHeight: '100vh',
+            zIndex: 3,
+            willChange: 'width, min-width',
+            transition: `width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}, min-width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}`,
+            overflow: 'visible',
+          }}
+        >
+          {!isGuideCollapsed && (
+            <TimeSpaceSidebar
+              option={option}
+              selectedSeries={selectedSeries}
+              onToggleSeries={handleToggleSeries}
+            />
+          )}
+        </div>
+
+        <Menu
+          open={contextMenuPosition !== null}
+          onClose={handleCloseMenus}
+          anchorReference="anchorPosition"
+          MenuListProps={{ dense: true, sx: { py: 0.5 } }}
+          anchorPosition={
+            contextMenuPosition
+              ? {
+                  top: contextMenuPosition.mouseY,
+                  left: contextMenuPosition.mouseX,
+                }
+              : undefined
+          }
+          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+        >
+          {chartMenuItems}
+        </Menu>
       </div>
     </div>
   )

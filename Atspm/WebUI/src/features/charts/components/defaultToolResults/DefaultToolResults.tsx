@@ -2,16 +2,12 @@ import TimeSpaceEChart from '@/features/charts/timeSpaceDiagram/shared/component
 import LinkPivotAdjustmentTable from '@/features/tools/link-pivot/components/LinkPivotAdjustmentTable'
 import { LinkPivotApproachLinkComponent } from '@/features/tools/link-pivot/components/LinkPivotApproachLinkComponent'
 import { RawLinkPivotForTsdData } from '@/features/tools/link-pivot/types'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import {
   Alert,
   Box,
-  IconButton,
   Paper,
   Tab,
   Tabs,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -231,6 +227,13 @@ export default function TimeSpaceChart({
   ])
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
 
+  const toggleOptionsSidebar = () => {
+    setSidebarOpen((v) => !v)
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+  }
+
   const toggleIgnoredLocation = (location: string) => {
     setIgnoredLocation((prev) =>
       prev.includes(location)
@@ -367,45 +370,6 @@ export default function TimeSpaceChart({
                 </Box>
               </Box>
 
-              {/* TOGGLE BUTTON — sticks because it's inside the sticky shell */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  left: sidebarOpen ? SIDEBAR_WIDTH : 15,
-                  top: 300,
-                  transform: 'translateX(-50%)',
-                  zIndex: 4,
-                  transition: `left ${TRANSITION_MS}ms ${EASING}`,
-                  willChange: 'left',
-                }}
-              >
-                <IconButton
-                  size="small"
-                  onClick={() => {
-                    setSidebarOpen((v) => !v)
-                    requestAnimationFrame(() => {
-                      window.dispatchEvent(new Event('resize'))
-                    })
-                  }}
-                  sx={{
-                    bgcolor: 'background.paper',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    boxShadow: 1,
-                    '&:hover': { bgcolor: 'background.paper' },
-                  }}
-                >
-                  {sidebarOpen ? (
-                    <Tooltip title="Hide options" placement="right">
-                      <ChevronLeftIcon fontSize="small" />
-                    </Tooltip>
-                  ) : (
-                    <Tooltip title="Show options" placement="right">
-                      <ChevronRightIcon fontSize="small" />
-                    </Tooltip>
-                  )}
-                </IconButton>
-              </Box>
             </Box>
 
             {/* RIGHT — CHART */}
@@ -433,6 +397,8 @@ export default function TimeSpaceChart({
                 gpxEntries={gpxEntries}
                 ignoredLocations={ignoredLocations}
                 onToggleIgnoredLocation={toggleIgnoredLocation}
+                leftSidebarOpen={sidebarOpen}
+                onToggleLeftSidebar={toggleOptionsSidebar}
               />
             </Box>
           </Box>

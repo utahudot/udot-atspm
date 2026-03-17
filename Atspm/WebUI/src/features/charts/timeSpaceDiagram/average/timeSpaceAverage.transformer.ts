@@ -260,7 +260,9 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       endDateFormat
     )
   )
-  series.push(generateCycleLabels(distanceData, primaryDirection))
+  series.push(
+    generateCycleLabels(distanceData, primaryDirection, undefined, undefined, 'left')
+  )
 
   let reverseDistanceData = distanceData.reverse()
   reverseDistanceData = reverseDistanceData.map((distance) => (distance += 120))
@@ -277,7 +279,9 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     )
   )
 
-  series.push(generateCycleLabels(reverseDistanceData, opposingDirection))
+  series.push(
+    generateCycleLabels(distanceData, opposingDirection, undefined, undefined, 'right')
+  )
 
   const displayProps = createDisplayProps({
     description: '',
