@@ -1,6 +1,6 @@
 import ApacheEChart from '@/features/charts/components/apacheEChart'
 import { TransformedTimingAndActuationResponse } from '@/features/charts/types'
-import { Color } from '@/features/charts/utils'
+import { getDirectionAccentBorder } from '@/features/locations/utils/directionAccent'
 import { Box, Paper, useTheme } from '@mui/material'
 
 export interface TimingAndActuationResultsProps {
@@ -62,22 +62,9 @@ export default function TimingAndActuationChartsResults({
                 chartWrapper.chart.displayProps?.phaseType == 'Permissive'
                   ? theme.palette.background.highlight
                   : 'white',
-              borderLeft: (() => {
-                switch (
-                  chartWrapper.chart.displayProps.approachDescription.charAt(0)
-                ) {
-                  case 'N':
-                    return `7px solid ${Color.Blue}` // Blue border for 'N'
-                  case 'S':
-                    return `7px solid ${Color.BrightRed}` // Red border for 'S'
-                  case 'E':
-                    return `7px solid ${Color.Yellow}` // Yellow border for 'E'
-                  case 'W':
-                    return `7px solid ${Color.Orange}` // Green border for 'W'
-                  default:
-                    return 'none' // No border otherwise
-                }
-              })(),
+              borderLeft: getDirectionAccentBorder(
+                chartWrapper.chart.displayProps.approachDescription
+              ),
             }}
           >
             <ApacheEChart

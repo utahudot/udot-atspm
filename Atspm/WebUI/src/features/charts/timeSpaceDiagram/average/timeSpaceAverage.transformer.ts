@@ -265,6 +265,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       distanceData,
       primaryDirection,
       undefined,
+      primaryPhaseData.map((p) => p.approachDescription),
       undefined,
       'left',
       primaryPhaseData.map((p) => Boolean(p.isIgnoredLocation))
@@ -291,6 +292,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       distanceData,
       opposingDirection,
       undefined,
+      [...opposingPhaseData].reverse().map((p) => p.approachDescription),
       undefined,
       'right',
       [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))

@@ -377,6 +377,12 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
   ])
 
+  const primaryHeadersByIndex = primaryPhaseData.map((p) => p.approachDescription)
+
+  const opposingHeadersByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => p.approachDescription)
+
   const opposingLinesByIndex = [...opposingPhaseData].reverse().map((p) => [
     `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
   ])
@@ -393,6 +399,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     distanceData,
     primaryDirection,
     grid.left as number,
+    primaryHeadersByIndex,
     primaryLinesByIndex,
     'left',
     primaryIgnoredByIndex
@@ -402,6 +409,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     distanceData,
     opposingDirection,
     grid.left as number,
+    opposingHeadersByIndex,
     opposingLinesByIndex,
     'right',
     opposingIgnoredByIndex

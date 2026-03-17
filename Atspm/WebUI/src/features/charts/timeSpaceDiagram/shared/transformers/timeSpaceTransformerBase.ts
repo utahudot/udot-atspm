@@ -22,6 +22,10 @@ import {
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { Color } from '@/features/charts/utils'
 import { directionTypes as staticDirectionTypes } from '@/features/locations/components/editDetector/selectOptions'
+import {
+  getDirectionAccentColor,
+  getDirectionAccentForegroundColor,
+} from '@/features/locations/utils/directionAccent'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   CustomSeriesRenderItemAPI,
@@ -1167,12 +1171,14 @@ const CARDINAL_DIRECTION_SVG_PATHS = ['m5 12 7-7 7 7', 'M12 19V5'] as const
 
 const DIAGONAL_DIRECTION_SVG_PATHS = ['M17 17 7 7', 'M17 7H7v10'] as const
 
-const DIRECTION_ICON_DATA_URLS = new Map<StaticDirectionTypeKey, string>()
+const DIRECTION_ICON_DATA_URLS = new Map<string, string>()
 
 function getDirectionIconDataUrl(
-  directionKey: StaticDirectionTypeKey
+  directionKey: StaticDirectionTypeKey,
+  strokeColor = '#111111'
 ): string | null {
-  const cached = DIRECTION_ICON_DATA_URLS.get(directionKey)
+  const cacheKey = `${directionKey}:${strokeColor}`
+  const cached = DIRECTION_ICON_DATA_URLS.get(cacheKey)
   if (cached) {
     return cached
   }
@@ -1188,7 +1194,7 @@ function getDirectionIconDataUrl(
       : CARDINAL_DIRECTION_SVG_PATHS
 
   const svg = [
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`,
     `<g transform="rotate(${svgConfig.rotationDeg} 12 12)">`,
     ...paths.map((path) => `<path d="${path}"/>`),
     '</g>',
@@ -1196,7 +1202,7 @@ function getDirectionIconDataUrl(
   ].join('')
 
   const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-  DIRECTION_ICON_DATA_URLS.set(directionKey, dataUrl)
+  DIRECTION_ICON_DATA_URLS.set(cacheKey, dataUrl)
   return dataUrl
 }
 
@@ -1220,6 +1226,7 @@ export function generateCycleLabels(
   distanceData: number[],
   direction: string,
   _gridLeft = 0,
+  headerTextByIndex?: Array<string | undefined>,
   linesByIndex?: Array<string[] | undefined>,
   column: LabelColumn = 'left',
   ignoredByIndex?: boolean[]
@@ -1258,9 +1265,14 @@ export function generateCycleLabels(
           ? primaryCardLeft
           : primaryCardLeft + cardWidth + cardGapBetween
 
-      const headerText = direction
-      const headerDirectionKey = getDirectionTypeKey(direction)
-      const headerIconDataUrl = getDirectionIconDataUrl(headerDirectionKey)
+      const headerText = headerTextByIndex?.[rowIndex]?.trim() || direction
+      const headerFill = getDirectionAccentColor(headerText)
+      const headerForeground = getDirectionAccentForegroundColor(headerText)
+      const headerDirectionKey = getDirectionTypeKey(headerText)
+      const headerIconDataUrl = getDirectionIconDataUrl(
+        headerDirectionKey,
+        headerForeground
+      )
       const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
       const detailText = detailLines.join('\n')
       const bodyHeight = detailLines.length
@@ -1305,7 +1317,10 @@ export function generateCycleLabels(
               height: headerHeight,
               r: bodyHeight > 0 ? [cardRadius, cardRadius, 0, 0] : cardRadius,
             },
-            style: { fill: '#EEF1F5' },
+            style: {
+              fill: headerFill,
+              opacity: isIgnored ? 0.5 : 1,
+            },
           },
           ...(headerIconDataUrl
             ? [
@@ -1332,7 +1347,7 @@ export function generateCycleLabels(
                     text: '?',
                     textAlign: 'left',
                     textVerticalAlign: 'middle',
-                    fill: isIgnored ? '#94A3B8' : '#111',
+                    fill: isIgnored ? '#CBD5E1' : headerForeground,
                     fontSize: 10,
                     fontWeight: 700,
                   },
@@ -1347,7 +1362,7 @@ export function generateCycleLabels(
               text: headerText,
               textAlign: 'left',
               textVerticalAlign: 'middle',
-              fill: isIgnored ? '#94A3B8' : '#111',
+              fill: isIgnored ? '#E2E8F0' : headerForeground,
               fontSize: 10,
               fontWeight: 700,
             },
