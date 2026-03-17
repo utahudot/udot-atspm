@@ -80,7 +80,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
         [Theory]
         [AnalysisTestData<AggregatePhaseCycleTestData>]
-        [Trait(nameof(AggregateDetectorEventsStep), "From File")]
+        [Trait(nameof(AggregatePhaseCycleTestData), "From File")]
         public async Task AggregatePhaseCyclesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PhaseCycleAggregation> output)
         {
             var testData = Tuple.Create(config, input);
