@@ -99,18 +99,18 @@ namespace Utah.Udot.ATSPM.DataApi.Services
                     var agg = new PhasePedAggregation
                     {
                         LocationIdentifier = locationIdentifier,
-                        PhaseNumber = record.PhaseNumber,
-                        Start = record.Start,
-                        End = record.End,
-                        PedBeginWalkCount = record.PedBeginWalkCount,
-                        PedCallsRegisteredCount = record.PedCallsRegisteredCount,
-                        PedCycles = record.PedCycles,
-                        PedDelay = record.PedDelay,
-                        PedRequests = record.PedRequests,
-                        ImputedPedCallsRegistered = record.ImputedPedCallsRegistered,
-                        MaxPedDelay = record.MaxPedDelay,
-                        MinPedDelay = record.MinPedDelay,
-                        UniquePedDetections = record.UniquePedDetections
+                        PhaseNumber = record.phaseNumber,
+                        Start = record.start,
+                        End = record.end,
+                        PedBeginWalkCount = record.pedBeginWalkCount,
+                        PedCallsRegisteredCount = record.pedCallsRegisteredCount,
+                        PedCycles = record.pedCycles,
+                        PedDelay = record.pedDelay,
+                        PedRequests = record.pedRequests,
+                        ImputedPedCallsRegistered = record.imputedPedCallsRegistered,
+                        MaxPedDelay = record.maxPedDelay,
+                        MinPedDelay = record.minPedDelay,
+                        UniquePedDetections = record.uniquePedDetections
                     };
                     aggregations.Add(agg);
                 }
@@ -199,16 +199,16 @@ namespace Utah.Udot.ATSPM.DataApi.Services
                     var agg = new PhaseCycleAggregation
                     {
                         LocationIdentifier = locationIdentifier,
-                        ApproachId = record.ApproachId,
-                        PhaseNumber = record.PhaseNumber,
-                        Start = record.Start,
-                        End = record.End,
-                        GreenTime = record.GreenTime,
-                        PhaseBeginCount = record.PhaseBeginCount,
-                        RedTime = record.RedTime,
-                        TotalGreenToGreenCycles = record.TotalGreenToGreenCycles,
-                        TotalRedToRedCycles = record.TotalRedToRedCycles,
-                        YellowTime = record.YellowTime
+                        ApproachId = record.approachId,
+                        PhaseNumber = record.phaseNumber,
+                        Start = record.start,
+                        End = record.end,
+                        GreenTime = record.greenTime,
+                        PhaseBeginCount = record.phaseBeginCount,
+                        RedTime = record.redTime,
+                        TotalGreenToGreenCycles = record.totalGreenToGreenCycles,
+                        TotalRedToRedCycles = record.totalRedToRedCycles,
+                        YellowTime = record.yellowTime
                     };
                     aggregations.Add(agg);
                 }
@@ -244,18 +244,18 @@ namespace Utah.Udot.ATSPM.DataApi.Services
     /// </summary>
     public class PhasePedAggregationCsvRecord
     {
-        public int PhaseNumber { get; set; }
-        public int PedBeginWalkCount { get; set; }
-        public int PedCallsRegisteredCount { get; set; }
-        public int PedCycles { get; set; }
-        public double PedDelay { get; set; }
-        public int PedRequests { get; set; }
-        public int ImputedPedCallsRegistered { get; set; }
-        public double MaxPedDelay { get; set; }
-        public double MinPedDelay { get; set; }
-        public int UniquePedDetections { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public int phaseNumber { get; set; }
+        public int pedBeginWalkCount { get; set; }
+        public int pedCallsRegisteredCount { get; set; }
+        public int pedCycles { get; set; }
+        public double pedDelay { get; set; }
+        public int pedRequests { get; set; }
+        public int imputedPedCallsRegistered { get; set; }
+        public double maxPedDelay { get; set; }
+        public double minPedDelay { get; set; }
+        public int uniquePedDetections { get; set; }
+        public DateTime start { get; set; }
+        public DateTime end { get; set; }
     }
 
     /// <summary>
@@ -263,16 +263,16 @@ namespace Utah.Udot.ATSPM.DataApi.Services
     /// </summary>
     public class PhaseCycleAggregationCsvRecord
     {
-        public int GreenTime { get; set; }
-        public int PhaseBeginCount { get; set; }
-        public int PhaseNumber { get; set; }
-        public int RedTime { get; set; }
-        public int TotalGreenToGreenCycles { get; set; }
-        public int TotalRedToRedCycles { get; set; }
-        public int YellowTime { get; set; }
-        public int ApproachId { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public int greenTime { get; set; }
+        public int phaseBeginCount { get; set; }
+        public int phaseNumber { get; set; }
+        public int redTime { get; set; }
+        public int totalGreenToGreenCycles { get; set; }
+        public int totalRedToRedCycles { get; set; }
+        public int yellowTime { get; set; }
+        public int approachId { get; set; }
+        public DateTime start { get; set; }
+        public DateTime end { get; set; }
     }
 
     /// <summary>
