@@ -67,6 +67,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseInstaller", "Databa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeviceEmulator", "DeviceEmulator\DeviceEmulator.csproj", "{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataApiTests", "..\DataTests\DataApiTests.csproj", "{B214F14F-64A2-4C54-B07B-76371273C19C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -255,6 +257,14 @@ Global
 		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|x86.ActiveCfg = Release|Any CPU
 		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|x86.Build.0 = Release|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Debug|x86.Build.0 = Debug|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Release|x86.ActiveCfg = Release|Any CPU
+		{B214F14F-64A2-4C54-B07B-76371273C19C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -282,6 +292,7 @@ Global
 		{1DC2A63D-5DDF-4E51-BF29-1186A2ECDA53} = {35438977-FC79-4CF6-933F-7ADAF41841D1}
 		{BA44526F-97A0-4A68-9F77-5B3CD87AAF93} = {AEE33F3F-898A-4ABA-9D53-D174435F3536}
 		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32} = {AEE33F3F-898A-4ABA-9D53-D174435F3536}
+		{B214F14F-64A2-4C54-B07B-76371273C19C} = {E7665D70-9B21-4D3A-9F6B-82941D4680F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE1679F-AC1D-4DE8-93ED-A8CBCDC6F71F}
