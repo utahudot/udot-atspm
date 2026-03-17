@@ -834,12 +834,17 @@ export function getLocationsLabelOption(
       const location = data.find(
         (loc) => loc.locationIdentifier === api.value(2).toString()
       )
+      const isIgnored = Boolean(location?.isIgnoredLocation)
 
       // Circle node
       children.push({
         type: 'circle',
         shape: { cx: xDot, cy: y, r: 7 },
-        style: { fill: '#fff', stroke: lineColor, lineWidth: 3 },
+        style: {
+          fill: isIgnored ? '#F8FAFC' : '#fff',
+          stroke: isIgnored ? '#CBD5E1' : lineColor,
+          lineWidth: 3,
+        },
         z2: 3,
       })
 
@@ -876,9 +881,10 @@ export function getLocationsLabelOption(
               r: cardRadius,
             },
             style: {
-              fill: '#FFFFFF',
-              stroke: '#D9DEE6',
+              fill: isIgnored ? '#F8FAFC' : '#FFFFFF',
+              stroke: isIgnored ? '#D5DCE5' : '#D9DEE6',
               lineWidth: 1,
+              opacity: isIgnored ? 0.82 : 1,
             },
           },
 
@@ -893,7 +899,10 @@ export function getLocationsLabelOption(
               height: headerHeight,
               r: bodyHeight > 0 ? [cardRadius, cardRadius, 0, 0] : cardRadius,
             },
-            style: { fill: '#EEF1F5' },
+            style: {
+              fill: isIgnored ? '#F1F5F9' : '#EEF1F5',
+              opacity: isIgnored ? 0.88 : 1,
+            },
           },
 
           // Identifier and location name combined inside the header
@@ -911,14 +920,16 @@ export function getLocationsLabelOption(
               textVerticalAlign: 'top',
               rich: {
                 ident: {
-                  fill: '#111',
+                  fill: isIgnored ? '#334155' : '#111',
                   fontSize: 11,
                   fontWeight: 700,
+                  opacity: isIgnored ? 0.6 : 1,
                 },
                 name: {
-                  fill: '#111',
+                  fill: isIgnored ? '#64748B' : '#111',
                   fontSize: 11,
                   fontWeight: 400,
+                  opacity: isIgnored ? 0.72 : 1,
                 },
               },
             },
@@ -933,7 +944,7 @@ export function getLocationsLabelOption(
               y2: cardTop + headerHeight - 7,
             },
             style: {
-              stroke: '#CBD5E1',
+              stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
               lineWidth: 1,
             },
           },
@@ -949,7 +960,7 @@ export function getLocationsLabelOption(
               lineHeight: 13,
               textAlign: 'left',
               textVerticalAlign: 'top',
-              fill: '#374151',
+              fill: isIgnored ? '#94A3B8' : '#374151',
               fontSize: 11,
               fontWeight: 500,
             },
@@ -1210,7 +1221,8 @@ export function generateCycleLabels(
   direction: string,
   _gridLeft = 0,
   linesByIndex?: Array<string[] | undefined>,
-  column: LabelColumn = 'left'
+  column: LabelColumn = 'left',
+  ignoredByIndex?: boolean[]
 ): SeriesOption {
   void _gridLeft
 
@@ -1238,6 +1250,7 @@ export function generateCycleLabels(
       const rowIndex = params.dataIndex
       const [, y] = api.coord([0, api.value(0)])
       const coordSys = params.coordSys as { x: number; width: number }
+      const isIgnored = Boolean(ignoredByIndex?.[rowIndex])
       const anchorY = y + CYCLE_SEGMENT_HEIGHT / 2 + verticalOffsetY
       const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
       const cardLeft =
@@ -1305,6 +1318,7 @@ export function generateCycleLabels(
                     image: headerIconDataUrl,
                     width: iconSize,
                     height: iconSize,
+                    opacity: isIgnored ? 0.4 : 1,
                   },
                 },
               ]
@@ -1318,7 +1332,7 @@ export function generateCycleLabels(
                     text: '?',
                     textAlign: 'left',
                     textVerticalAlign: 'middle',
-                    fill: '#111',
+                    fill: isIgnored ? '#94A3B8' : '#111',
                     fontSize: 10,
                     fontWeight: 700,
                   },
@@ -1333,7 +1347,7 @@ export function generateCycleLabels(
               text: headerText,
               textAlign: 'left',
               textVerticalAlign: 'middle',
-              fill: '#111',
+              fill: isIgnored ? '#94A3B8' : '#111',
               fontSize: 10,
               fontWeight: 700,
             },
@@ -1352,7 +1366,7 @@ export function generateCycleLabels(
                     lineHeight,
                     textAlign: 'left',
                     textVerticalAlign: 'top',
-                    fill: '#222',
+                    fill: isIgnored ? '#94A3B8' : '#222',
                     fontSize: 10,
                     fontWeight: 500,
                   },

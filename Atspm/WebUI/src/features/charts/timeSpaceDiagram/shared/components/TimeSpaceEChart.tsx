@@ -308,6 +308,7 @@ const CYCLE_DURATION_PREFIX = 'Cycle Durations '
 const GUIDE_STICKY_TOP = 12
 const GUIDE_TRANSITION_MS = 200
 const GUIDE_EASING = 'cubic-bezier(0.2, 0, 0, 1)'
+const MIN_RIGHT_PLOT_GUTTER = 10
 const TIME_SPACE_LABEL_GUTTER_WIDTH =
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardWidth * 2 +
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapFromPlot +
@@ -370,7 +371,10 @@ function syncCycleDurationSelections(
   }
 }
 
-function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
+function buildChartOptionWithSidebar(
+  option: EChartsOption,
+  showPhaseInfo: boolean
+): EChartsOption {
   const primaryLegend = getPrimaryLegend(option)
   const hasLegendData =
     primaryLegend &&
@@ -386,14 +390,23 @@ function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
     show: false,
   })
 
-  const series = Array.isArray(option.series)
+  const allSeries = Array.isArray(option.series)
     ? (option.series as SeriesOption[])
     : []
-  const hasCycleLabels = series.some(
+  const hasCycleLabels = showPhaseInfo && allSeries.some(
     (entry) =>
       typeof entry.id === 'string' &&
       entry.id.startsWith(CYCLE_LABEL_SERIES_ID_PREFIX)
   )
+  const series = showPhaseInfo
+    ? allSeries
+    : allSeries.filter(
+        (entry) =>
+          !(
+            typeof entry.id === 'string' &&
+            entry.id.startsWith(CYCLE_LABEL_SERIES_ID_PREFIX)
+          )
+      )
 
   const nextLegend = Array.isArray(option.legend)
     ? option.legend.map((legend, index) =>
@@ -404,7 +417,9 @@ function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
   const shrinkGrid = (grid?: GridComponentOption) => {
     if (!grid) return grid
 
-    const rightGutter = hasCycleLabels ? TIME_SPACE_LABEL_GUTTER_WIDTH : 36
+    const rightGutter = hasCycleLabels
+      ? TIME_SPACE_LABEL_GUTTER_WIDTH
+      : MIN_RIGHT_PLOT_GUTTER
 
     return {
       ...grid,
@@ -438,6 +453,7 @@ function buildChartOptionWithSidebar(option: EChartsOption): EChartsOption {
     ...option,
     legend: nextLegend,
     grid: nextGrid,
+    series,
     toolbox: nextToolbox,
   }
 }
@@ -610,14 +626,15 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   >([])
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(false)
+  const [showPhaseInfo, setShowPhaseInfo] = useState(true)
   const [contextMenuPosition, setContextMenuPosition] =
     useState<ContextMenuPosition | null>(null)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
     () => getLegendSelectedMap(option)
   )
   const renderedOption = useMemo(
-    () => buildChartOptionWithSidebar(option),
-    [option]
+    () => buildChartOptionWithSidebar(option, showPhaseInfo),
+    [option, showPhaseInfo]
   )
 
   useTimeSpaceHandler(chart)
@@ -672,7 +689,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   useEffect(() => {
     const inst = chartInstanceRef.current
     if (!inst || !renderedOption) return
-    inst.setOption(renderedOption)
+    inst.setOption(renderedOption, {
+      replaceMerge: ['series', 'grid', 'legend', 'toolbox'],
+    })
   }, [chart, renderedOption])
 
   useEffect(() => {
@@ -795,6 +814,11 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     handleCloseMenus()
   }
 
+  const handleTogglePhaseInfo = () => {
+    setShowPhaseInfo((current) => !current)
+    handleCloseMenus()
+  }
+
   const handleToggleFullscreenFromMenu = async () => {
     handleCloseMenus()
     await handleToggleFullscreen()
@@ -846,6 +870,19 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           primary={
             isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
           }
+        />
+      </MenuItem>
+      <MenuItem dense onClick={handleTogglePhaseInfo}>
+        <ListItemIcon sx={{ minWidth: 28 }}>
+          {showPhaseInfo ? (
+            <VisibilityIcon fontSize="small" />
+          ) : (
+            <VisibilityOffIcon fontSize="small" />
+          )}
+        </ListItemIcon>
+        <ListItemText
+          primaryTypographyProps={{ variant: 'body2' }}
+          primary={showPhaseInfo ? 'Hide phase info' : 'Show phase info'}
         />
       </MenuItem>
       <MenuItem dense onClick={handleToggleFullscreenFromMenu}>
@@ -970,6 +1007,28 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 }}
               >
                 <PanelSidebarIcon side="right" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title={showPhaseInfo ? 'Hide phase info' : 'Show phase info'}
+              placement="bottom"
+            >
+              <IconButton
+                size="small"
+                onClick={handleTogglePhaseInfo}
+                sx={{
+                  color: showPhaseInfo ? '#334155' : '#64748B',
+                  p: 0.45,
+                  '&:hover': {
+                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                  },
+                }}
+              >
+                {showPhaseInfo ? (
+                  <VisibilityIcon fontSize="small" />
+                ) : (
+                  <VisibilityOffIcon fontSize="small" />
+                )}
               </IconButton>
             </Tooltip>
             <Tooltip
