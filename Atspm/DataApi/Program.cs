@@ -74,11 +74,7 @@ builder.Host
             l.RequestBodyLogLimit = 4096;
             l.ResponseBodyLogLimit = 4096;
         });
-        s.AddScoped<AsyncRetryPolicy>(sp =>
-            Policy.Handle<Exception>()
-                  .WaitAndRetryAsync(3, retry => TimeSpan.FromSeconds(2))
-        );
-        s.AddScoped<EventLogImporterService, EventLogImporterService>();
+        s.AddScoped<AggregationImporterService, AggregationImporterService>();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
