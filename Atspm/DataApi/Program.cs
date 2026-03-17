@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
+using Utah.Udot.ATSPM.DataApi.Services;
 using Utah.Udot.NetStandardToolkit.Configuration;
 
 //git 1
@@ -71,6 +72,7 @@ builder.Host
             l.RequestBodyLogLimit = 4096;
             l.ResponseBodyLogLimit = 4096;
         });
+        s.AddScoped<AggregationImporterService, AggregationImporterService>();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
