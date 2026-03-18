@@ -1,5 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for OracleDatabaseProvider - Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations/ConfigContextModelSnapshot.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
