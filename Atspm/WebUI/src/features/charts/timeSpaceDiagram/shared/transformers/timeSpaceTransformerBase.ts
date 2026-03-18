@@ -119,7 +119,7 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   },
 ] as const
 
-const CYCLE_SEGMENT_HEIGHT = 12
+const CYCLE_SEGMENT_HEIGHT = 15
 const CYCLE_DURATION_LABEL_FONT_SIZE = 10
 const CYCLE_DURATION_LABEL_FILL = 'white'
 const CYCLE_DURATION_LABEL_STROKE = 'black'

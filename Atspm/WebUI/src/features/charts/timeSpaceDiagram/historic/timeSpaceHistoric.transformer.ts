@@ -292,8 +292,22 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
   )
 
+  const MIN_SEGMENT = 1800
+
+  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
+
+  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
+  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
+
+  const scale =
+    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
+
+  const opposingBandOffset = 300 / scale
+
   let reverseDistanceData = [...distanceData].reverse()
-  reverseDistanceData = reverseDistanceData.map((distance) => (distance += 300))
+  reverseDistanceData = reverseDistanceData.map(
+    (distance) => distance + opposingBandOffset
+  )
   series.push(
     ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
   )
@@ -425,16 +439,6 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   //     primaryDirection
   //   )
   // )
-
-  const MIN_SEGMENT = 1800
-
-  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
-
-  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
-  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
-
-  const scale =
-    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
 
   const scaledCumulative = distanceData.map((d) =>
     Number.isFinite(d) ? d * scale : d

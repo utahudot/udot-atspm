@@ -116,6 +116,45 @@ function ToolbarActionIcon() {
   )
 }
 
+function PhaseInfoActionIcon() {
+  return (
+    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+      <path
+        d="m21 16-4 4-4-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17 20V4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m3 8 4-4 4 4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7 4v16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </SvgIcon>
+  )
+}
+
 function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
   return (
     <SvgIcon fontSize="small" viewBox="0 0 24 24">
@@ -874,11 +913,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       </MenuItem>
       <MenuItem dense onClick={handleTogglePhaseInfo}>
         <ListItemIcon sx={{ minWidth: 28 }}>
-          {showPhaseInfo ? (
-            <VisibilityIcon fontSize="small" />
-          ) : (
-            <VisibilityOffIcon fontSize="small" />
-          )}
+          <PhaseInfoActionIcon />
         </ListItemIcon>
         <ListItemText
           primaryTypographyProps={{ variant: 'body2' }}
@@ -1024,11 +1059,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                   },
                 }}
               >
-                {showPhaseInfo ? (
-                  <VisibilityIcon fontSize="small" />
-                ) : (
-                  <VisibilityOffIcon fontSize="small" />
-                )}
+                <PhaseInfoActionIcon />
               </IconButton>
             </Tooltip>
             <Tooltip
