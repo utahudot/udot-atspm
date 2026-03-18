@@ -432,11 +432,13 @@ function buildChartOptionWithSidebar(
   const allSeries = Array.isArray(option.series)
     ? (option.series as SeriesOption[])
     : []
-  const hasCycleLabels = showPhaseInfo && allSeries.some(
-    (entry) =>
-      typeof entry.id === 'string' &&
-      entry.id.startsWith(CYCLE_LABEL_SERIES_ID_PREFIX)
-  )
+  const hasCycleLabels =
+    showPhaseInfo &&
+    allSeries.some(
+      (entry) =>
+        typeof entry.id === 'string' &&
+        entry.id.startsWith(CYCLE_LABEL_SERIES_ID_PREFIX)
+    )
   const series = showPhaseInfo
     ? allSeries
     : allSeries.filter(

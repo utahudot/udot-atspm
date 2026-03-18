@@ -143,7 +143,7 @@ function recomputeWrappedTimeSpaceData(
       result: nextResult,
       isSuccess: true,
     }
-  })
+  }) as RawTimeSpaceDiagramResponse['data']
 }
 
 function addDefaultValues(

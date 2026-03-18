@@ -97,13 +97,16 @@ export const useGpxAnimationHandler = (
   const STEP = 10
 
   const play = () => {
-    if (!chart || !processedSeries.length) return
+    if (!chart) return
 
     playingRef.current = true
 
-    chart.setOption({
-      series: processedSeries,
-    })
+    chart.setOption(
+      {
+        series: processedSeries,
+      },
+      { replaceMerge: ['series'] }
+    )
   }
 
   return {
