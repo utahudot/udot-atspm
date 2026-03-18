@@ -334,38 +334,17 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 .OrderBy(h => h)
                 .ToList();
 
-            return allHours
-                .Select(hour =>
-                {
-                    var values = combinedHourly
-                        .Where(p => p.Timestamp.Hour == hour)
-                        .Select(p => p.CalculatedVolume);
-
-                    var volume = values.Any() ? values.Average() : 0;
-
-                    return new IndexedVolume
-                    {
-                        Index = hour, // 0-23
-                        Volume = volume
-                    };
-                })
-                .ToList();
-        }
-
-        private List<IndexedVolume> TotalVolumeByHour(List<CombinedHourlyAggregation> combinedHourly)
-        {
-            var allHours = combinedHourly
-                .Select(p => p.Timestamp.Hour)
-                .Distinct()
-                .OrderBy(h => h)
-                .ToList();
+            // count distinct days in the data
+            var totalDays = combinedHourly.Select(p => p.Timestamp.Date).Distinct().Count();
 
             return allHours
                 .Select(hour =>
                 {
-                    var volume = combinedHourly
+                    var hourTotal = combinedHourly
                         .Where(p => p.Timestamp.Hour == hour)
                         .Sum(p => p.CalculatedVolume);
+
+                    var volume = hourTotal / totalDays; // average across days
 
                     return new IndexedVolume
                     {
@@ -378,6 +357,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
         private List<IndexedVolume> AverageVolumeByDayOfWeek(List<CombinedHourlyAggregation> combinedHourly)
         {
+            // ISO-style: Monday = 1, ..., Sunday = 7
             int ToIsoDay(int dotNetDay) => dotNetDay == 0 ? 7 : dotNetDay;
 
             var allDays = combinedHourly
@@ -389,42 +369,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return allDays
                 .Select(day =>
                 {
-                    var values = combinedHourly
+                    var dayGroups = combinedHourly
                         .Where(p => ToIsoDay((int)p.Timestamp.DayOfWeek) == day)
-                        .Select(p => p.CalculatedVolume);
+                        .GroupBy(p => p.Timestamp.Date); // group by distinct date
 
-                    var volume = values.Any() ? values.Average() : 0;
-
-                    return new IndexedVolume
-                    {
-                        Index = day,
-                        Volume = volume
-                    };
-                })
-                .ToList();
-        }
-
-        private List<IndexedVolume> TotalVolumeByDayOfWeek(List<CombinedHourlyAggregation> combinedHourly)
-        {
-            int ToIsoDay(int dotNetDay) => dotNetDay == 0 ? 7 : dotNetDay;
-
-            var allDays = combinedHourly
-                .Select(p => ToIsoDay((int)p.Timestamp.DayOfWeek))
-                .Distinct()
-                .OrderBy(d => d)
-                .ToList();
-
-            return allDays
-                .Select(day =>
-                {
-                    var volume = combinedHourly
-                        .Where(p => ToIsoDay((int)p.Timestamp.DayOfWeek) == day)
-                        .Sum(p => p.CalculatedVolume);
+                    var totalVolume = dayGroups
+                        .Select(g => g.Sum(p => p.CalculatedVolume))
+                        .Average(); // average per ISO day-of-week
 
                     return new IndexedVolume
                     {
                         Index = day, // 1 = Monday ... 7 = Sunday
-                        Volume = volume
+                        Volume = totalVolume
                     };
                 })
                 .ToList();
@@ -433,7 +389,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private List<IndexedVolume> AverageVolumeByMonth(List<CombinedHourlyAggregation> combinedHourly)
         {
             var allMonths = combinedHourly
-                .Select(p => p.Timestamp.Month)
+                .Select(p => p.Timestamp.Month) // 1-12
                 .Distinct()
                 .OrderBy(m => m)
                 .ToList();
@@ -441,40 +397,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return allMonths
                 .Select(month =>
                 {
-                    var values = combinedHourly
+                    var monthGroups = combinedHourly
                         .Where(p => p.Timestamp.Month == month)
-                        .Select(p => p.CalculatedVolume);
+                        .GroupBy(p => new { p.Timestamp.Year, p.Timestamp.Month }); // group by month/year
 
-                    var volume = values.Any() ? values.Average() : 0;
+                    var totalVolume = monthGroups
+                        .Select(g => g.Sum(p => p.CalculatedVolume))
+                        .Average(); // average across years if multiple
 
                     return new IndexedVolume
                     {
                         Index = month,
-                        Volume = volume
-                    };
-                })
-                .ToList();
-        }
-
-        private List<IndexedVolume> TotalVolumeByMonth(List<CombinedHourlyAggregation> combinedHourly)
-        {
-            var allMonths = combinedHourly
-                .Select(p => p.Timestamp.Month)
-                .Distinct()
-                .OrderBy(m => m)
-                .ToList();
-
-            return allMonths
-                .Select(month =>
-                {
-                    var volume = combinedHourly
-                        .Where(p => p.Timestamp.Month == month)
-                        .Sum(p => p.CalculatedVolume);
-
-                    return new IndexedVolume
-                    {
-                        Index = month, // 1 = January ... 12 = December
-                        Volume = volume
+                        Volume = totalVolume
                     };
                 })
                 .ToList();
