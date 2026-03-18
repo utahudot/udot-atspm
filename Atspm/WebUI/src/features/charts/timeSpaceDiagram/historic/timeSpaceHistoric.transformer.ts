@@ -227,7 +227,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryPhaseData,
       distanceData,
       'darkblue',
-      primaryDirection
+      primaryDirection,
+      true
     )
   )
 
@@ -236,7 +237,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryPhaseData,
       distanceData,
       'darkblue',
-      primaryDirection
+      primaryDirection,
+      true
     )
   )
 
@@ -303,7 +305,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingPhaseData,
       reverseDistanceData,
       'orange',
-      opposingDirection
+      opposingDirection,
+      false
     )
   )
 
@@ -312,7 +315,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingPhaseData,
       reverseDistanceData,
       'orange',
-      opposingDirection
+      opposingDirection,
+      false
     )
   )
 
@@ -566,6 +570,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     maintainAspectRatio: false,
   }
 
+  // console.log('Chart Options:', chartOptions)
+
   return chartOptions
 }
 
@@ -573,7 +579,8 @@ function generateLaneByLaneCountEventLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
   color: string,
-  phaseType?: string
+  phaseType?: string,
+  isPrimary?: boolean
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
@@ -589,6 +596,9 @@ function generateLaneByLaneCountEventLines(
         opacity,
       },
       data: location.laneByLaneCountDetectors.flatMap((events) => {
+        const distanceToNext = isPrimary
+          ? location.calculatedDistanceToNext
+          : -location.calculatedDistanceToNext
         const initialX = events.detectorOn
         const finalX = getArrivalTime(
           location.calculatedDistanceToNext,
@@ -597,7 +607,7 @@ function generateLaneByLaneCountEventLines(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i + 1]],
+          [finalX, distanceData[i] + distanceToNext],
           null,
         ]
         return values
@@ -630,15 +640,24 @@ function generateAdvanceCountEventLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
   color: string,
-  phaseType?: string
+  phaseType?: string,
+  isPrimary?: boolean
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
+  const directionMultiplier = isPrimary ? 1 : -1
+
   data.forEach((location, i) => {
-    if (i === 0) return
-    if (!location.advanceCountDetectors) return
+    if (location.isIgnoredLocation) return
+    if (!location.advanceCountDetectors?.length) return
+
+    const currentDistance = distanceData[i]
+    const previousDistance =
+      currentDistance -
+      directionMultiplier * Math.abs(location.calculatedDistanceToPrevious)
+
     const series: SeriesOption = {
       name: `Advance Count ${phaseType?.length && phaseType}`,
-      id: `AC ${i !== 0 ? data[i - 1].locationIdentifier : location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `AC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
       type: 'line',
       symbol: 'none',
       lineStyle: {
@@ -654,13 +673,13 @@ function generateAdvanceCountEventLines(
         )
 
         const initialX = getArrivalTime(
-          -location.calculatedDistanceToPrevious,
+          -Math.abs(location.calculatedDistanceToPrevious),
           location.speed,
           finalX
         )
         const values = [
-          [initialX, distanceData[i - 1]],
-          [finalX, distanceData[i]],
+          [initialX, previousDistance],
+          [finalX, currentDistance],
           null,
         ]
         return values
@@ -852,7 +871,7 @@ function generateTMCEvent(
       )
       const values = [
         [initialX, distanceData[i]],
-        [finalX, distanceData[i + 1]],
+        [finalX, distanceData[i] + location.calculatedDistanceToNext],
         null,
       ]
       return values
@@ -869,7 +888,7 @@ function generateTMCEvent(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i + 1]],
+          [finalX, distanceData[i] + location.calculatedDistanceToNext],
           null,
         ]
         return values
