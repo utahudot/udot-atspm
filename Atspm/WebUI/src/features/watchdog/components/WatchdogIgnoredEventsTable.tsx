@@ -1,6 +1,6 @@
+import ATSPMDialog from '@/components/ATSPMDialog'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
-import WatchDogDatePopup from '@/features/locations/components/editLocation/WatchDogDatePopup'
 import {
   useDeleteWatchdogIgnoreEvents,
   useEditWatchdogIgnoreEvents,
@@ -8,9 +8,9 @@ import {
 } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
 import { toUTCDateStamp } from '@/utils/dateTime'
-import { Box } from '@mui/material'
-import { addDays } from 'date-fns'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Box, Button, TextField } from '@mui/material'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
 
 type ComponentType = 'Location' | 'Approach' | 'Detector' | null
 
@@ -19,7 +19,7 @@ type WatchdogIgnoreEvent = {
   locationId: number
   locationIdentifier: string
   start: string
-  end: string
+  end: string | null
   issueType: string
   componentType: ComponentType
   componentId: number | null
@@ -40,50 +40,109 @@ function componentLabel(e: WatchdogIgnoreEvent) {
 }
 
 type IgnoreEventEditorModalProps = {
-  isOpen: boolean
+  open: boolean
   onSave: (row: WatchdogIgnoreEvent) => void | Promise<void>
   onClose: () => void
   data?: WatchdogIgnoreEvent | null
 }
 
 function IgnoreEventEditorModal({
-  isOpen,
+  open,
   onSave,
   onClose,
   data,
 }: IgnoreEventEditorModalProps) {
-  const anchorRef = useRef<HTMLDivElement | null>(null)
-  const [startDate, setStartDate] = useState<Date | null>(new Date())
-  const [endDate, setEndDate] = useState<Date | null>(addDays(new Date(), 1))
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
 
   useEffect(() => {
-    if (!isOpen) return
-    if (!data) return
-    setStartDate(new Date(data.start))
-    setEndDate(new Date(data.end))
-  }, [isOpen, data])
+    if (!open) return
 
-  const handleIgnoreEvent = async () => {
-    if (!data || !startDate || !endDate) return
+    setStartDate(data?.start ? new Date(data.start) : null)
+    setEndDate(data?.end ? new Date(data.end) : null)
+  }, [open, data])
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!data || !startDate) return
+
     await onSave({
       ...data,
       start: toUTCDateStamp(startDate),
-      end: toUTCDateStamp(endDate),
+      end: endDate ? toUTCDateStamp(endDate) : null,
     })
+    onClose()
   }
 
   return (
-    <WatchDogDatePopup
-      open={isOpen}
-      anchorEl={anchorRef.current}
-      handlePopoverClose={onClose}
-      startDate={startDate}
-      setStartDate={setStartDate}
-      endDate={endDate}
-      setEndDate={setEndDate}
-      handleIgnoreEvent={handleIgnoreEvent}
-      handleRemoveIgnore={undefined}
-    />
+    <ATSPMDialog
+      isOpen={open}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      title="Edit Ignored Event"
+      auditInfo={data ?? undefined}
+      dialogProps={{ sx: { minWidth: 520, pt: 0 } }}
+    >
+      <TextField
+        autoFocus
+        margin="dense"
+        fullWidth
+        label="Location"
+        value={data?.locationIdentifier ?? ''}
+        disabled
+      />
+      <TextField
+        margin="dense"
+        fullWidth
+        label="Component"
+        value={data ? componentLabel(data) : ''}
+        disabled
+      />
+      <TextField
+        margin="dense"
+        fullWidth
+        label="Issue"
+        value={data?.issueType ?? ''}
+        disabled
+      />
+      <TextField
+        margin="dense"
+        fullWidth
+        label="Phase"
+        value={data?.phase ?? '—'}
+        disabled
+      />
+      <DatePicker
+        label="Start Date"
+        value={startDate}
+        onChange={(newValue) => setStartDate(newValue)}
+        slotProps={{
+          textField: {
+            autoFocus: true,
+            margin: 'dense',
+            fullWidth: true,
+            required: true,
+          },
+        }}
+      />
+      <DatePicker
+        label="End Date"
+        value={endDate}
+        onChange={(newValue) => setEndDate(newValue)}
+        slotProps={{
+          textField: {
+            margin: 'dense',
+            fullWidth: true,
+            helperText: 'Optional',
+          },
+        }}
+      />
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+        <Button type="button" onClick={() => setEndDate(null)}>
+          Clear End Date
+        </Button>
+      </Box>
+    </ATSPMDialog>
   )
 }
 
@@ -112,20 +171,20 @@ export default function WatchdogIgnoredEvents() {
   const tableData = rows.map((r) => ({
     ...r,
     component: componentLabel(r),
-    phase: r.phase ?? '—',
+    phaseDisplay: r.phase ?? '—',
+    endDisplay: r.end ?? '—',
   }))
 
   const cells = [
     { key: 'locationIdentifier', label: 'Location' },
     { key: 'component', label: 'Component' },
     { key: 'issueType', label: 'Issue' },
-    { key: 'phase', label: 'Phase' },
+    { key: 'phaseDisplay', label: 'Phase' },
     { key: 'start', label: 'Start' },
-    { key: 'end', label: 'End' },
+    { key: 'endDisplay', label: 'End' },
   ]
 
   const handleEditRow = async (updated: WatchdogIgnoreEvent) => {
-    console.log('handleEditRow', updated)
     try {
       await editIgnore({
         id: updated.id,
@@ -137,6 +196,7 @@ export default function WatchdogIgnoredEvents() {
           end: updated.end,
           componentType: updated.componentType,
           componentId: updated.componentId,
+          phase: updated.phase,
         },
       })
 
@@ -147,9 +207,9 @@ export default function WatchdogIgnoredEvents() {
     }
   }
 
-  const handleDeleteById = async (id: number) => {
+  const handleDeleteById = async (id: string | number) => {
     try {
-      await deleteIgnore(id)
+      await deleteIgnore(Number(id))
       addNotification({ title: 'Ignore Event Removed', type: 'success' })
       await refetch()
     } catch {
@@ -164,15 +224,16 @@ export default function WatchdogIgnoredEvents() {
       cells={cells}
       pageName="Ignored Event"
       data={tableData}
+      marginTop={0}
       hasEditPrivileges={true}
       hasDeletePrivileges={true}
-      // editModal={
-      //   <IgnoreEventEditorModal
-      //     isOpen={true}
-      //     onSave={handleEditRow}
-      //     onClose={() => {}}
-      //   />
-      // }
+      editModal={
+        <IgnoreEventEditorModal
+          open={true}
+          onSave={handleEditRow}
+          onClose={() => {}}
+        />
+      }
       deleteModal={
         <DeleteModal
           id={0}

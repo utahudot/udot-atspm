@@ -65,6 +65,7 @@ interface AdminChartProps<T extends BaseObj> {
   cells: Cell<T>[]
   data: T[]
   pageName: string
+  marginTop?: number | string
   hasEditPrivileges?: boolean
   hasDeletePrivileges?: boolean
   protectedFromDeleteItems?: string[]
@@ -81,6 +82,7 @@ const AdminTable = <T extends BaseObj>({
   cells,
   data,
   pageName,
+  marginTop,
   hasEditPrivileges,
   hasDeletePrivileges,
   protectedFromDeleteItems,
@@ -203,23 +205,25 @@ const AdminTable = <T extends BaseObj>({
     })
   }
 
+  const resolvedMarginTop = marginTop ?? (createModal ? -4 : 3)
+
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
         minWidth: '375px',
-        marginTop: -4,
+        marginTop: resolvedMarginTop,
         [theme.breakpoints.up('md')]: {
           maxWidth: isSidebarOpen ? 'calc(100vw - 340px)' : '100%',
         },
       }}
     >
-      <Toolbar disableGutters>
-        <Box
-          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1.5 }}
-        >
-          {createModal && (
+      {createModal && (
+        <Toolbar disableGutters>
+          <Box
+            sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1.5 }}
+          >
             <Button
               variant="contained"
               color="success"
@@ -228,9 +232,9 @@ const AdminTable = <T extends BaseObj>({
             >
               New {pageName}
             </Button>
-          )}
-        </Box>
-      </Toolbar>
+          </Box>
+        </Toolbar>
+      )}
 
       <Box>
         <TableContainer
