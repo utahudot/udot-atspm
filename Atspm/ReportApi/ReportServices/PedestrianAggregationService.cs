@@ -43,6 +43,11 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<PedatLocationData>> ExecuteAsync(PedatLocationDataQuery parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            return await ExecutePedAgg(parameter);
+        }
+
+        public async Task<IEnumerable<PedatLocationData>> ExecutePedAgg(PedatLocationDataQuery parameter)
+        {
             var locations = new List<Location>();
             var pedatLocations = new List<PedatLocationData>();
             if (parameter == null || parameter.EndDate == null || parameter.StartDate == null || parameter.LocationIdentifiers == null)
@@ -475,18 +480,29 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 .ToList();
         }
 
-        private double AverageVolumeOverall(List<CombinedHourlyAggregation> combinedHourly)
+        public double AverageVolumeOverall(List<CombinedHourlyAggregation> combinedHourly)
         {
-            // Group by date (ignore time)
-            var dailySums = combinedHourly
-                .GroupBy(i => i.Timestamp.Date)
-                .Select(g => g.Sum(x => x.CalculatedVolume));
+            if (combinedHourly == null || !combinedHourly.Any())
+                return 0;
 
-            // Compute the average across all days
-            return dailySums.Any() ? dailySums.Average() : 0;
+            var allDates = combinedHourly
+                .Select(p => p.Timestamp.Date)
+                .Distinct();
+
+            var dailyTotals = allDates
+                .Select(date =>
+                {
+                    var values = combinedHourly
+                        .Where(p => p.Timestamp.Date == date)
+                        .Select(p => p.CalculatedVolume);
+
+                    return values.Sum(); // ? key difference
+                });
+
+            return dailyTotals.Any() ? dailyTotals.Average() : 0;
         }
 
-        private class CombinedHourlyAggregation
+        public class CombinedHourlyAggregation
         {
             public DateTime Timestamp { get; set; }
             public int PhaseNumber { get; set; }
