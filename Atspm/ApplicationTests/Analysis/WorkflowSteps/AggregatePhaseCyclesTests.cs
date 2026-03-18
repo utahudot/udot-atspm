@@ -16,6 +16,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,10 +99,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"actual: {actual.Count()}");
 
-            foreach (var a in actual.Where(w => w.PhaseNumber == 2))
-            {
-                _output.WriteLine($"{a}");
-            }
+            //foreach (var a in actual.Where(w => w.PhaseNumber == 2))
+            //{
+            //    _output.WriteLine($"{a.RedTime}");
+            //}
 
             var expected = output;
 
