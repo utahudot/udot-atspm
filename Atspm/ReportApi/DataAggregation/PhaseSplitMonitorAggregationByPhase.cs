@@ -62,7 +62,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                     {
                         if (splitFails.Any(s => s.Start >= bin.Start && s.Start < bin.End))
                         {
-                            var terminationCount = 0;
+                            double terminationCount = 0;
                             switch (dataTypeEnum)
                             {
                                 case SplitMonitorDataTypes.EightyFifthPercentileSplit:
