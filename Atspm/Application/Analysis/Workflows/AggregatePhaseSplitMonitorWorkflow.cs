@@ -45,6 +45,11 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; private set; }
 
         /// <summary>
+        /// Gets the step that processes and filters phase interval change date data.
+        /// </summary>
+        public FilterPhaseIntervalChangeDateProcessStep FilterPhaseIntervalChangeDateProcessStep { get; private set; }
+
+        /// <summary>
         /// Gets the step that aggregates phase split monitor data into 
         /// <see cref="PhaseSplitMonitorAggregation"/> results.
         /// </summary>
@@ -54,6 +59,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         protected override void AddStepsToTracker()
         {
             Steps.Add(FilterIndianaEvents);
+            Steps.Add(FilterPhaseIntervalChangeDateProcessStep);
             Steps.Add(AggregatePhaseSplitMonitorStep);
         }
 
@@ -61,6 +67,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         protected override void InstantiateSteps()
         {
             FilterIndianaEvents = new(executionBlockOptions);
+            FilterPhaseIntervalChangeDateProcessStep = new(blockOptions);
             AggregatePhaseSplitMonitorStep = new(workflowOptions.Timeline, executionBlockOptions);
         }
 
@@ -69,7 +76,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
             Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions { PropagateCompletion = true });
 
-            FilterIndianaEvents.LinkTo(AggregatePhaseSplitMonitorStep, new DataflowLinkOptions { PropagateCompletion = true });
+            FilterIndianaEvents.LinkTo(FilterPhaseIntervalChangeDateProcessStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterPhaseIntervalChangeDateProcessStep.LinkTo(AggregatePhaseSplitMonitorStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregatePhaseSplitMonitorStep.LinkTo(Output, new DataflowLinkOptions { PropagateCompletion = true });
         }

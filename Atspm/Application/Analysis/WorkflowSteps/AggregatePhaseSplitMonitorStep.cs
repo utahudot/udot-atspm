@@ -108,32 +108,39 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                     End = w[1].Timestamp
                 }))
                 .GroupBy(x => x.PhaseNumber)
-                .ToList();
+                .ToDictionary(g => g.Key, g => g);
 
-            var bin = cycleStarts
+            var bin = location.Approaches
                 .AsParallel()
-                .SelectMany(phaseGroup =>
-                _timeline.Segments.Select(s =>
+                .SelectMany(approach =>
                 {
-                    var durations = phaseGroup
-                        .Where(w => s.InRange(w.Start))
-                        .Select(x => (x.End - x.Start).TotalSeconds)
-                        .ToList();
+                    var phase = approach.ProtectedPhaseNumber;
 
-                    var count = durations.Count;
+                    var phaseCycles = cycleStarts.TryGetValue((short)phase, out var cycles) ? cycles : Enumerable.Empty<dynamic>();
 
-                    var agg = new PhaseSplitMonitorAggregation
+                    return _timeline.Segments.Select(s =>
                     {
-                        LocationIdentifier = location.LocationIdentifier,
-                        PhaseNumber = phaseGroup.Key,
-                        Start = s.Start,
-                        End = s.End,
-                        EightyFifthPercentileSplit = count == 0 ? -1 : Math.Round(AtspmMath.Percentile(durations, 85), 1, MidpointRounding.AwayFromZero)
-                    };
+                        var durations = phaseCycles
+                            .Where(w => s.InRange(w.Start))
+                            .Select(x => (x.End - x.Start).TotalSeconds)
+                            .Cast<double>()
+                            .ToList();
 
-                    return (agg, count);
+                        var count = durations.Count;
+
+                        var agg = new PhaseSplitMonitorAggregation
+                        {
+                            LocationIdentifier = location.LocationIdentifier,
+                            PhaseNumber = phase,
+                            Start = s.Start,
+                            End = s.End,
+                            EightyFifthPercentileSplit = count == 0 ? -1 : Math.Round(AtspmMath.Percentile(durations, 85), 1, MidpointRounding.AwayFromZero)
+                        };
+
+                        return (agg, count);
+                    });
                 })
-            ).ToList();
+                .ToList();
 
             var maxCounts = bin.GroupBy(g => g.agg.Start).ToDictionary(d => d.Key, d => d.Max(x => x.count));
 
