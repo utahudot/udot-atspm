@@ -78,6 +78,7 @@ function recomputeTimeSpaceData<T extends TimeSpaceBaseData>(
           approachDescription: current.approachDescription,
           calculatedDistanceToNext: 0,
           calculatedDistanceToPrevious: 0,
+          isIgnoredLocation: true,
         } as T)
         continue
       }
@@ -98,6 +99,7 @@ function recomputeTimeSpaceData<T extends TimeSpaceBaseData>(
         ...current,
         calculatedDistanceToPrevious: distanceToPrevious,
         calculatedDistanceToNext: distanceToNext,
+        isIgnoredLocation: false,
       })
     }
 
@@ -146,7 +148,7 @@ function recomputeWrappedTimeSpaceData(
       result: nextResult,
       isSuccess: true,
     }
-  })
+  }) as RawTimeSpaceDiagramResponse['data']
 }
 
 function addDefaultValues(
@@ -169,6 +171,7 @@ function addDefaultValues(
         ...lane,
         calculatedDistanceToNext: lane.distanceToNextLocation,
         calculatedDistanceToPrevious: lane.distanceToPreviousLocation,
+        isIgnoredLocation: false,
       },
     }
   })

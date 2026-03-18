@@ -39,10 +39,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     chartInstanceRef.current = c
     setChart(c)
 
-    if (option) {
-      c.setOption(option)
-    }
-
     // ✅ ResizeObserver: resize CURRENT instance (don’t close over c)
     const ro = new ResizeObserver(() => {
       const inst = chartInstanceRef.current
@@ -66,15 +62,14 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       chartInstanceRef.current = null
       setChart(null)
     }
-    // ❗ remove option from deps
   }, [theme])
 
   // ✅ Apply option updates without re-init
   useEffect(() => {
     const inst = chartInstanceRef.current
     if (!inst || !option) return
-    inst.setOption(option)
-  }, [option])
+    inst.setOption(option, { notMerge: true })
+  })
 
   return (
     <div

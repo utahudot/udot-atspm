@@ -402,6 +402,7 @@ export function generateGreenEventLines(
   const seriesOptions: SeriesOption[] = []
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
+    if (location.isIgnoredLocation) continue
     // const distanceToNext = getEffectiveDistanceToNext(data, i, isPrimary)
     if (!location.greenTimeEvents) continue
     const dataPoints = getGreenEventsDataPoints(
@@ -427,9 +428,10 @@ export function generateGreenEventLines(
           : -location.calculatedDistanceToNext
 
         const nextIndex = i + 1
-        const [x1, y1] = [api.value(0), api.value(1)]
 
+        const [x1, y1] = [api.value(0), api.value(1)]
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
+
         const currPointFinalX = getArrivalTime(
           Math.abs(distanceToNext),
           location.speed,
