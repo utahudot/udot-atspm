@@ -480,7 +480,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             // Group by date (ignore time)
             var dailySums = combinedHourly
                 .GroupBy(i => i.Timestamp.Date)
-                .Select(g => g.Average(x => x.CalculatedVolume));
+                .Select(g => g.Sum(x => x.CalculatedVolume));
 
             // Compute the average across all days
             return dailySums.Any() ? dailySums.Average() : 0;
