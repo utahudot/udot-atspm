@@ -353,6 +353,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     };
                 })
                 .ToList();
+
+            return hourlyRatios;
         }
 
         private List<IndexedVolume> AverageVolumeByDayOfWeek(List<CombinedHourlyAggregation> combinedHourly)
@@ -362,9 +364,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             var allDays = combinedHourly
                 .Select(p => ToIsoDay((int)p.Timestamp.DayOfWeek))
-                .Distinct()
-                .OrderBy(d => d)
-                .ToList();
+                            .Distinct()
+                            .OrderBy(d => d)
+                            .ToList();
 
             return allDays
                 .Select(day =>
@@ -384,15 +386,17 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     };
                 })
                 .ToList();
+
+            return dailyRatios;
         }
 
         private List<IndexedVolume> AverageVolumeByMonth(List<CombinedHourlyAggregation> combinedHourly)
         {
             var allMonths = combinedHourly
                 .Select(p => p.Timestamp.Month) // 1-12
-                .Distinct()
-                .OrderBy(m => m)
-                .ToList();
+                            .Distinct()
+                            .OrderBy(m => m)
+                            .ToList();
 
             return allMonths
                 .Select(month =>
@@ -425,7 +429,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             var dailyTotals = allDates
                 .Select(date =>
-                {
+        {
                     var values = combinedHourly
                         .Where(p => p.Timestamp.Date == date)
                         .Select(p => p.CalculatedVolume);
