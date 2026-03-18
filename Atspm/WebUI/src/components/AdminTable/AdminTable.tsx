@@ -206,6 +206,14 @@ const AdminTable = <T extends BaseObj>({
   }
 
   const resolvedMarginTop = marginTop ?? (createModal ? -4 : 3)
+  const actionsColumnWidth = 100
+  const stickyActionsCellSx = {
+    position: 'sticky',
+    right: 0,
+    width: actionsColumnWidth,
+    minWidth: actionsColumnWidth,
+    boxShadow: 'inset 1px 0 0 rgba(0, 0, 0, 0.12)',
+  }
 
   return (
     <Box
@@ -239,9 +247,19 @@ const AdminTable = <T extends BaseObj>({
       <Box>
         <TableContainer
           component={Paper}
-          sx={{ maxHeight: 'calc(100vh - 190px)' }}
+          sx={{
+            maxHeight: 'calc(100vh - 190px)',
+            overflowX: 'auto',
+          }}
         >
-          <Table stickyHeader size="small">
+          <Table
+            stickyHeader
+            size="small"
+            sx={{
+              minWidth: '100%',
+              width: 'max-content',
+            }}
+          >
             <TableHead>
               <TableRow>
                 {cells.map((cell) => (
@@ -271,10 +289,10 @@ const AdminTable = <T extends BaseObj>({
                   <TableCell
                     align="right"
                     sx={{
-                      width: 100,
-                      position: 'sticky',
                       top: 0,
                       backgroundColor: '#dae5f0',
+                      zIndex: 3,
+                      ...stickyActionsCellSx,
                     }}
                   >
                     Actions
@@ -312,7 +330,14 @@ const AdminTable = <T extends BaseObj>({
                     </>
                   )}
                   {(hasEditPrivileges || hasDeletePrivileges) && (
-                    <TableCell align="right" sx={{ width: 100 }}>
+                    <TableCell
+                      align="right"
+                      sx={{
+                        backgroundColor: theme.palette.background.paper,
+                        zIndex: 1,
+                        ...stickyActionsCellSx,
+                      }}
+                    >
                       <IconButton
                         aria-label="more"
                         aria-controls="actions-menu"
