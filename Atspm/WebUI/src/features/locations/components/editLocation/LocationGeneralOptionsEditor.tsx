@@ -3,7 +3,7 @@ import {
   useGetJurisdiction,
   useGetLocationType,
   useGetRegion,
-  usePutLocationFromKey,
+  usePatchLocationFromKey,
 } from '@/api/config'
 import AuditInfo from '@/components/AuditInfo'
 import CustomSelect from '@/components/customSelect'
@@ -41,7 +41,7 @@ const LocationGeneralOptionsEditor = () => {
   const { data: jurisdictionData } = useGetJurisdiction()
   const { data: locationTypeData } = useGetLocationType()
 
-  const { mutateAsync: updateGeneralInfo } = usePutLocationFromKey()
+  const { mutateAsync: updateGeneralInfo } = usePatchLocationFromKey()
 
   const handleAreaDelete = (id: number | string) => {
     setLocation({

@@ -486,12 +486,9 @@ namespace Utah.Udot.Atspm.Data.Models
         /// Useful for understanding upper‑range green durations and identifying phases
         /// that frequently require more time than the median cycle provides.
         /// </summary>
-        public int EightyFifthPercentileSplit { get; set; }
+        public double EightyFifthPercentileSplit { get; set; }
 
-        /// <summary>
-        /// The phase number associated with this movement.  
-        /// Corresponds to the controller’s configured phase for the approach.
-        /// </summary>
+        /// <inheritdoc/>
         public int PhaseNumber { get; set; }
 
         /// <summary>
