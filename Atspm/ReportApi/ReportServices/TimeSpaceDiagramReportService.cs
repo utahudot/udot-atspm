@@ -437,6 +437,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     priorityDetails);
 
                 PopulateCommonPhaseFields(viewModel, currentPhase, phaseType, order, tmcEventsForPhase);
+                PopulateSrmTracks(
+                    viewModel,
+                    routeLocation,
+                    srmTracks,
+                    phaseType,
+                    isFirstElement,
+                    isLastElement);
 
                 if (locationPhase != null)
                 {
@@ -488,6 +495,101 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             int order)
         {
             return TimeSpaceDiagramPhaseResult.Failure(error ?? "Unknown error");
+        }
+
+        private static List<SrmEntityTrack> FilterSrmTracksForLocation(
+    List<SrmEntityTrack> tracks,
+    string locationIdentifier)
+        {
+            if (tracks == null || tracks.Count == 0 || string.IsNullOrWhiteSpace(locationIdentifier))
+            {
+                return new List<SrmEntityTrack>();
+            }
+
+            return tracks
+                .Where(t => string.Equals(
+                    t.StartingIntersection,
+                    locationIdentifier,
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        private static void PopulateSrmTracks(
+            TimeSpaceDiagramResultForPhase viewModel,
+            RouteLocation routeLocation,
+            List<SrmEntityTrack> srmTracks,
+            string phaseType,
+            bool isFirstElement,
+            bool isLastElement)
+        {
+            if (viewModel == null || routeLocation == null)
+            {
+                return;
+            }
+
+            if (
+                (string.Equals(phaseType, "Primary", StringComparison.OrdinalIgnoreCase) &&
+                 isLastElement) ||
+                (string.Equals(phaseType, "Opposing", StringComparison.OrdinalIgnoreCase) &&
+                 isFirstElement)
+            )
+            {
+                viewModel.SrmEntityTracks = new List<SrmEntityTrack>();
+                return;
+            }
+
+            var allForLocation = FilterSrmTracksForLocation(
+                srmTracks,
+                routeLocation.LocationIdentifier);
+
+            var targetDirection =
+                string.Equals(phaseType, "Opposing", StringComparison.OrdinalIgnoreCase)
+                    ? routeLocation.OpposingDirectionId
+                    : routeLocation.PrimaryDirectionId;
+
+            viewModel.SrmEntityTracks = allForLocation
+                .Where(t => IsDirectionMatch(t.HeadingDirection, targetDirection))
+                .ToList();
+        }
+
+        private static bool IsDirectionMatch(DirectionTypes heading, DirectionTypes target)
+        {
+            if (heading == DirectionTypes.NA || target == DirectionTypes.NA)
+            {
+                return false;
+            }
+
+            if (heading == target)
+            {
+                return true;
+            }
+
+            var headingDegrees = DirectionToDegrees(heading);
+            var targetDegrees = DirectionToDegrees(target);
+            if (!headingDegrees.HasValue || !targetDegrees.HasValue)
+            {
+                return false;
+            }
+
+            var diff = Math.Abs(headingDegrees.Value - targetDegrees.Value);
+            var circularDiff = Math.Min(diff, 360 - diff);
+            return circularDiff <= 45.0;
+        }
+
+        private static double? DirectionToDegrees(DirectionTypes direction)
+        {
+            return direction switch
+            {
+                DirectionTypes.NB => 0,
+                DirectionTypes.NE => 45,
+                DirectionTypes.EB => 90,
+                DirectionTypes.SE => 135,
+                DirectionTypes.SB => 180,
+                DirectionTypes.SW => 225,
+                DirectionTypes.WB => 270,
+                DirectionTypes.NW => 315,
+                _ => null
+            };
         }
 
         private TimeSpaceDiagramPhaseResult CreateErrorPhaseResult(
