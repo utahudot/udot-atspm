@@ -101,7 +101,7 @@ export default function transformTimeSpaceHistoricData(
   return result
 }
 const PEDESTRIAN_LINE_WIDTH = 0.8
-const PEDESTRIAN_LINE_Y_OFFSET = 10
+const PEDESTRIAN_LINE_Y_OFFSET = 8
 const PEDESTRIAN_ZIGZAG_AMPLITUDE = 2
 const PEDESTRIAN_ZIGZAG_STEP_PX = 3
 const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
@@ -395,23 +395,25 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
   ])
 
-  const primaryHeadersByIndex = primaryPhaseData.map((p) => p.approachDescription)
+  const primaryHeadersByIndex = primaryPhaseData.map(
+    (p) => p.approachDescription
+  )
 
   const opposingHeadersByIndex = [...opposingPhaseData]
     .reverse()
     .map((p) => p.approachDescription)
 
-  const opposingLinesByIndex = [...opposingPhaseData].reverse().map((p) => [
-    `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
-  ])
+  const opposingLinesByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => [`AOG: ${formatPct(p.percentArrivalOnGreen)}`])
 
   const primaryIgnoredByIndex = primaryPhaseData.map((p) =>
     Boolean(p.isIgnoredLocation)
   )
 
-  const opposingIgnoredByIndex = [...opposingPhaseData].reverse().map((p) =>
-    Boolean(p.isIgnoredLocation)
-  )
+  const opposingIgnoredByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => Boolean(p.isIgnoredLocation))
 
   const primaryLabelSeries = generateCycleLabels(
     distanceData,

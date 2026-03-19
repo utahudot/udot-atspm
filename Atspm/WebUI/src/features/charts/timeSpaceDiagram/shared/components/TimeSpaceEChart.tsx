@@ -348,11 +348,26 @@ const GUIDE_STICKY_TOP = 12
 const GUIDE_TRANSITION_MS = 200
 const GUIDE_EASING = 'cubic-bezier(0.2, 0, 0, 1)'
 const MIN_RIGHT_PLOT_GUTTER = 10
+const FULLSCREEN_PADDING_TOP = 20
+const FULLSCREEN_PADDING_X = 24
+const FULLSCREEN_PADDING_BOTTOM = 24
 const TIME_SPACE_LABEL_GUTTER_WIDTH =
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardWidth * 2 +
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapFromPlot +
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapBetween +
   12
+
+function getCssLength(value: string | number | undefined) {
+  if (typeof value === 'number') {
+    return `${value}px`
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    return value
+  }
+
+  return undefined
+}
 
 function getLegendEntryName(entry: string | { name?: string }): string | null {
   if (typeof entry === 'string') {
@@ -677,6 +692,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     () => buildChartOptionWithSidebar(option, showPhaseInfo),
     [option, showPhaseInfo]
   )
+  const baseHeight = getCssLength(style?.height)
+  const fullscreenViewportHeight = `calc(100vh - ${
+    FULLSCREEN_PADDING_TOP + FULLSCREEN_PADDING_BOTTOM
+  }px)`
+  const fullscreenContentHeight = baseHeight
+    ? `max(${baseHeight}, ${fullscreenViewportHeight})`
+    : fullscreenViewportHeight
 
   useTimeSpaceHandler(chart)
 
@@ -966,20 +988,26 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       onContextMenu={handleContextMenu}
       style={{
         width: '100%',
-        height: '100%',
+        height: isFullscreen ? '100vh' : '100%',
         position: 'relative',
         overflow: isFullscreen ? 'auto' : 'visible',
         background: isFullscreen ? '#fff' : undefined,
+        padding: isFullscreen
+          ? `${FULLSCREEN_PADDING_TOP}px ${FULLSCREEN_PADDING_X}px ${FULLSCREEN_PADDING_BOTTOM}px`
+          : undefined,
+        boxSizing: 'border-box',
       }}
     >
       <div
         style={{
+          ...style,
           width: '100%',
-          height: '100%',
-          minHeight: isFullscreen ? style?.height : undefined,
+          height: isFullscreen ? fullscreenContentHeight : baseHeight ?? '100%',
+          minHeight: isFullscreen
+            ? fullscreenContentHeight
+            : baseHeight ?? undefined,
           position: 'relative',
           display: 'flex',
-          ...style,
         }}
       >
         <div
