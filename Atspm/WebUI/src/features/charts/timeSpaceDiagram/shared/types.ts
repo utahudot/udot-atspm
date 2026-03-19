@@ -72,14 +72,18 @@ export interface TimeSpaceHistoricOptions {
   locationIdentifier: string
   extendStartStopSearch: number
   showAllLanesInfo: boolean
-  includeSrmSearch: boolean
-  srmCsvContentBase64?: string
-  srmCsvFile?: File | null
   routeId: string
   chartType: string
   speedLimit: number | null
   start: Date
   end: Date
+}
+
+export interface TimeSpaceSrmOptions {
+  routeId: string
+  start: Date
+  end: Date
+  srmCsvContentBase64: string
 }
 
 export interface RawTimeSpaceBaseData extends BaseChartData {
@@ -143,6 +147,13 @@ export interface SrmHistoricEntityTrack {
   points: SrmHistoricPoint[]
   startingIntersection?: string
   headingDirection?: number | string
+}
+
+export interface TimeSpaceSrmPhaseOverlay {
+  locationIdentifier: string
+  phaseType: 'Primary' | 'Opposing'
+  order: number
+  srmEntityTracks: SrmHistoricEntityTrack[]
 }
 
 export interface TmcForPhaseDto {

@@ -69,8 +69,6 @@ export const useHistoricOptionsHandler = ({
   // optional historic-only fields (if your UI supports them)
   const [extendStartStopSearch, setExtendStartStopSearch] = useState<number>(2)
   const [showAllLanesInfo, setShowAllLanesInfo] = useState<boolean>(true)
-  const [includeSrmSearch, setIncludeSrmSearch] = useState<boolean>(false)
-  const [srmCsvFile, setSrmCsvFile] = useState<File | null>(null)
   const [chartType, setChartType] = useState<string>('')
   const [locationIdentifier, setLocationIdentifier] = useState<string>('')
 
@@ -80,8 +78,6 @@ export const useHistoricOptionsHandler = ({
     setEndDateTime(defaultEnd)
     setExtendStartStopSearch(2)
     setShowAllLanesInfo(true)
-    setIncludeSrmSearch(false)
-    setSrmCsvFile(null)
     setChartType('')
     setLocationIdentifier('')
   }
@@ -95,9 +91,6 @@ export const useHistoricOptionsHandler = ({
       setExtendStartStopSearch(options.extendStartStopSearch)
     if (options.showAllLanesInfo != null)
       setShowAllLanesInfo(options.showAllLanesInfo)
-    if (options.includeSrmSearch != null)
-      setIncludeSrmSearch(options.includeSrmSearch)
-    if (options.srmCsvFile !== undefined) setSrmCsvFile(options.srmCsvFile ?? null)
 
     if (typeof options.chartType === 'string') setChartType(options.chartType)
     if (typeof options.locationIdentifier === 'string')
@@ -120,8 +113,6 @@ export const useHistoricOptionsHandler = ({
   const toOptions = (): TimeSpaceHistoricOptions => ({
     extendStartStopSearch,
     showAllLanesInfo,
-    includeSrmSearch,
-    srmCsvFile,
     start: startDateTime,
     end: endDateTime,
     routeId,
@@ -147,8 +138,6 @@ export const useHistoricOptionsHandler = ({
       p.set('extendStartStopSearch', String(o.extendStartStopSearch))
     if (o.showAllLanesInfo != null)
       p.set('showAllLanesInfo', String(o.showAllLanesInfo))
-    if (o.includeSrmSearch != null)
-      p.set('includeSrmSearch', String(o.includeSrmSearch))
     if (o.chartType) p.set('chartType', o.chartType)
     if (o.locationIdentifier) p.set('locationIdentifier', o.locationIdentifier)
 
@@ -168,7 +157,6 @@ export const useHistoricOptionsHandler = ({
 
     const nextExtend = parseNum(params.get('extendStartStopSearch'))
     const nextShowAll = parseBool(params.get('showAllLanesInfo'))
-    const nextIncludeSrmSearch = parseBool(params.get('includeSrmSearch'))
 
     const nextChartType = params.get('chartType')
     const nextLocationIdentifier = params.get('locationIdentifier')
@@ -180,7 +168,6 @@ export const useHistoricOptionsHandler = ({
       end: nextEnd ?? undefined,
       extendStartStopSearch: nextExtend ?? undefined,
       showAllLanesInfo: nextShowAll ?? undefined,
-      includeSrmSearch: nextIncludeSrmSearch ?? undefined,
       chartType: nextChartType ?? undefined,
       locationIdentifier: nextLocationIdentifier ?? undefined,
     } as Partial<TimeSpaceHistoricOptions>)

@@ -120,9 +120,15 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
 
         public double ExtendStartStopSearch { get; set; }
         public bool ShowAllLanesInfo { get; set; }
-        public bool IncludeSrmSearch { get; set; }
-        public string? SrmCsvContentBase64 { get; set; }
         // public string LocationIdentifier { get; set; }
+    }
+
+    public class TimeSpaceDiagramSrmOptions : AtspmOptionsBase
+    {
+        public int RouteId { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public string? SrmCsvContentBase64 { get; set; }
     }
 
     public class GreenTimeUtilizationOptions : MeasureOptionsBase

@@ -1,7 +1,11 @@
 import TimeSpaceEChart from '@/features/charts/timeSpaceDiagram/shared/components/TimeSpaceEChart'
+import { useTimeSpaceSrmData } from '@/features/charts/timeSpaceDiagram/api/getTimeSpaceSrmData'
+import { ToolType } from '@/features/charts/common/types'
+import { SrmUploadAccordion } from '@/features/charts/timeSpaceDiagram/shared/components/SrmUploader/SrmUploadAccordion'
 import LinkPivotAdjustmentTable from '@/features/tools/link-pivot/components/LinkPivotAdjustmentTable'
 import { LinkPivotApproachLinkComponent } from '@/features/tools/link-pivot/components/LinkPivotApproachLinkComponent'
 import { RawLinkPivotForTsdData } from '@/features/tools/link-pivot/types'
+import { gzipAndBase64 } from '@/features/charts/timeSpaceDiagram/shared/fileEncoding'
 import {
   Alert,
   Box,
@@ -13,19 +17,24 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { transformTimeSpaceData } from '../../api'
+import type { TransformedTimeSpaceResponse } from '../../types'
 import { GpxUploadAccordion } from '../../timeSpaceDiagram/shared/components/GpxUploader/GpxUploadAccordion'
 import type {
   GpxUploadOptions,
   RawTimeSpaceAverageData,
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
+  TimeSpaceHistoricOptions,
+  TimeSpaceOptions,
   TimeSpaceBaseData,
   TimeSpaceDiagramPhaseResult,
+  TimeSpaceSrmPhaseOverlay,
 } from '../../timeSpaceDiagram/shared/types'
 
 export interface TimeSpaceChartProps {
   timeSpaceData: RawTimeSpaceDiagramResponse
   linkPivotTsdData: RawLinkPivotForTsdData[]
+  timeSpaceOptions: TimeSpaceOptions
 }
 
 const STICKY_TOP = 12 // px
@@ -36,8 +45,8 @@ function createEmptyEntry(
 ): GpxUploadOptions {
   return {
     id: '',
-    startLocation: locations[0],
-    endLocation: locations[locations.length - 1],
+    startLocation: locations[0] ?? '',
+    endLocation: locations[locations.length - 1] ?? '',
     error: null,
     primary,
   }
@@ -146,6 +155,34 @@ function recomputeWrappedTimeSpaceData(
   }) as RawTimeSpaceDiagramResponse['data']
 }
 
+function mergeSrmOverlaysIntoWrappedData(
+  wrappedData: TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[],
+  overlays: TimeSpaceSrmPhaseOverlay[]
+): TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[] {
+  const overlayMap = new Map(
+    overlays.map((overlay) => [
+      `${overlay.locationIdentifier}|${overlay.phaseType}|${overlay.order}`,
+      overlay.srmEntityTracks ?? [],
+    ])
+  )
+
+  return wrappedData.map((item) => {
+    if (!item.isSuccess || !item.result) {
+      return item
+    }
+
+    const key = `${item.result.locationIdentifier}|${item.result.phaseType}|${item.result.order}`
+
+    return {
+      ...item,
+      result: {
+        ...item.result,
+        srmEntityTracks: overlayMap.get(key) ?? [],
+      },
+    }
+  })
+}
+
 function addDefaultValues(
   timeSpaceData: RawTimeSpaceDiagramResponse
 ): RawTimeSpaceDiagramResponse {
@@ -180,37 +217,24 @@ function addDefaultValues(
 export default function TimeSpaceChart({
   timeSpaceData,
   linkPivotTsdData,
+  timeSpaceOptions,
 }: TimeSpaceChartProps) {
   const theme = useTheme()
   const [activeTab, setActiveTab] = useState(0)
   const [transformErrors, setTransformErrors] = useState<string[]>([])
-
-  const [baseTimeSpaceData] = useState<RawTimeSpaceDiagramResponse>(
-    addDefaultValues(timeSpaceData)
-  )
-
-  const [transformedData, setTransformedData] = useState(() => {
-    try {
-      const result = transformTimeSpaceData(timeSpaceData)
-      // Check if transformation returned errors
-      if ('errors' in result && result.errors) {
-        setTransformErrors(result.errors)
-      }
-      return result
-    } catch (error) {
-      console.error('Error transforming time space data:', error)
-      setTransformErrors([
-        error instanceof Error ? error.message : 'Unknown transformation error',
-      ])
-      // Return empty chart on error
-      return {
-        type: timeSpaceData.type,
-        data: { chart: {} },
-      }
-    }
-  })
+  const [baseTimeSpaceData, setBaseTimeSpaceData] =
+    useState<RawTimeSpaceDiagramResponse>(() => addDefaultValues(timeSpaceData))
+  const [transformedData, setTransformedData] =
+    useState<TransformedTimeSpaceResponse>(() => ({
+    type: timeSpaceData.type,
+    data: { chart: {} },
+  }))
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [srmError, setSrmError] = useState<string | null>(null)
+  const [hasAppliedSrm, setHasAppliedSrm] = useState(false)
+  const { mutateAsync: fetchSrmData, isLoading: isApplyingSrm } =
+    useTimeSpaceSrmData()
 
   const SIDEBAR_WIDTH = 320
   const SIDEBAR_MIN_WIDTH = 260
@@ -219,7 +243,7 @@ export default function TimeSpaceChart({
   const TRANSITION_MS = 200
   const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
 
-  const locations = timeSpaceData.data
+  const locations = baseTimeSpaceData.data
     .filter(
       (p) => p.isSuccess && !!p.result && p.result.phaseType === 'Primary'
     )
@@ -244,6 +268,61 @@ export default function TimeSpaceChart({
         : [...prev, location]
     )
   }
+
+  const handleApplySrm = async (file: File) => {
+    if (baseTimeSpaceData.type !== ToolType.TimeSpaceHistoric) return
+
+    const historicOptions = timeSpaceOptions as TimeSpaceHistoricOptions
+
+    try {
+      setSrmError(null)
+      const srmCsvContentBase64 = await gzipAndBase64(file)
+      const overlays = await fetchSrmData({
+        routeId: historicOptions.routeId,
+        start: historicOptions.start,
+        end: historicOptions.end,
+        srmCsvContentBase64,
+      })
+
+      setBaseTimeSpaceData((prev) => ({
+        type: prev.type,
+        data: mergeSrmOverlaysIntoWrappedData(
+          prev.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[],
+          overlays
+        ) as RawTimeSpaceDiagramResponse['data'],
+      }))
+      setHasAppliedSrm(true)
+    } catch (error) {
+      setSrmError(error instanceof Error ? error.message : 'Unable to apply SRM')
+    }
+  }
+
+  const handleClearSrm = () => {
+    setSrmError(null)
+    setHasAppliedSrm(false)
+    setBaseTimeSpaceData((prev) => ({
+      type: prev.type,
+      data: mergeSrmOverlaysIntoWrappedData(
+        prev.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[],
+        []
+      ) as RawTimeSpaceDiagramResponse['data'],
+    }))
+  }
+
+  useEffect(() => {
+    const nextBaseData = addDefaultValues(timeSpaceData)
+    const nextLocations = nextBaseData.data
+      .filter(
+        (p) => p.isSuccess && !!p.result && p.result.phaseType === 'Primary'
+      )
+      .map((p) => p.result.locationIdentifier)
+
+    setBaseTimeSpaceData(nextBaseData)
+    setIgnoredLocation([])
+    setGpxEntries([createEmptyEntry(nextLocations)])
+    setSrmError(null)
+    setHasAppliedSrm(false)
+  }, [timeSpaceData])
 
   useEffect(() => {
     const recalculatedData =
@@ -365,6 +444,16 @@ export default function TimeSpaceChart({
                     pointerEvents: sidebarOpen ? 'auto' : 'none',
                   }}
                 >
+                  {baseTimeSpaceData.type === ToolType.TimeSpaceHistoric && (
+                    <SrmUploadAccordion
+                      loading={isApplyingSrm}
+                      error={srmError}
+                      hasAppliedSrm={hasAppliedSrm}
+                      onApply={handleApplySrm}
+                      onClear={handleClearSrm}
+                    />
+                  )}
+
                   <GpxUploadAccordion
                     locations={locations}
                     entries={gpxEntries}
