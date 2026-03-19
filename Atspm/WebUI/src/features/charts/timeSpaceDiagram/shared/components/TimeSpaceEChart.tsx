@@ -867,7 +867,14 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
   const handleResetChart = () => {
     handleCloseMenus()
-    chartInstanceRef.current?.dispatchAction({ type: 'restore' })
+    const chartInstance = chartInstanceRef.current
+    if (!chartInstance) return
+
+    chartInstance.setOption(renderedOption, {
+      notMerge: true,
+      lazyUpdate: false,
+    })
+    setSelectedSeries(getLegendSelectedMap(option))
   }
 
   const handleDownloadChart = () => {
