@@ -75,7 +75,9 @@ const watchdogLogsSchema = z.object({
 // Schema for ignoring events
 const ignoreEventSchema = z.object({
   start: z.date().nullable(),
-  end: z.date().nullable(),
+  end: z.date().nullable().refine((value) => value !== null, {
+    message: 'End date is required',
+  }),
 })
 
 const WatchDogLogs = () => {
@@ -108,6 +110,7 @@ const WatchDogLogs = () => {
     handleSubmit: handleIgnoreSubmit,
     setValue: setIgnoreValue,
     watch: watchIgnore,
+    formState: { errors: ignoreErrors },
   } = useForm<z.infer<typeof ignoreEventSchema>>({
     resolver: zodResolver(ignoreEventSchema),
     defaultValues: {
@@ -534,12 +537,27 @@ const WatchDogLogs = () => {
             <DatePicker
               label="Start Date"
               value={startIgnoreTime}
-              onChange={(newValue) => setIgnoreValue('start', newValue)}
+              onChange={(newValue) =>
+                setIgnoreValue('start', newValue, {
+                  shouldValidate: true,
+                })
+              }
             />
             <DatePicker
               label="End Date"
               value={endIgnoreTime}
-              onChange={(newValue) => setIgnoreValue('end', newValue)}
+              onChange={(newValue) =>
+                setIgnoreValue('end', newValue, {
+                  shouldValidate: true,
+                })
+              }
+              slotProps={{
+                textField: {
+                  required: true,
+                  error: !!ignoreErrors.end,
+                  helperText: ignoreErrors.end?.message,
+                },
+              }}
             />
           </Box>
         </DialogContent>
