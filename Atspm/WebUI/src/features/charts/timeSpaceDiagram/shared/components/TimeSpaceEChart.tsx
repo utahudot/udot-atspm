@@ -1221,6 +1221,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
         <Menu
           open={contextMenuPosition !== null}
           onClose={handleCloseMenus}
+          container={fullscreenRef.current}
+          disablePortal={isFullscreen}
           anchorReference="anchorPosition"
           MenuListProps={{ dense: true, sx: { py: 0.5 } }}
           anchorPosition={
