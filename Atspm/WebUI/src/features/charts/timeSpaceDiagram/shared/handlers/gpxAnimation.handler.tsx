@@ -97,7 +97,7 @@ export const useGpxAnimationHandler = (
   const STEP = 10
 
   const play = () => {
-    if (!chart) return
+    if (!chart || !processedSeries.length) return
 
     playingRef.current = true
 
