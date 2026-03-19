@@ -149,9 +149,18 @@ const WatchDogLogs = () => {
     const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
     if (logEvents) {
       const rows = logEvents.map((logEvent) => ({
-        ...logEvent,
+        id: logEvent.id,
+        locationId: logEvent.locationId,
+        locationIdentifier: logEvent.locationIdentifier,
+        timestamp: logEvent.timestamp,
+        regionDescription: logEvent.regionDescription,
+        jurisdictionName: logEvent.jurisdictionName,
         areas: logEvent.areas.map((area: Area) => area.name).join(', '),
         issueType: issueTypes?.[logEvent.issueType] ?? logEvent.issueType,
+        phase: logEvent.phase,
+        details: logEvent.details,
+        componentType: logEvent.componentType,
+        componentId: logEvent.componentId,
       }))
       setProcessedRows(rows)
     }
@@ -203,7 +212,6 @@ const WatchDogLogs = () => {
             componentType: eventToIgnore.componentType?.toString(),
             componentId: eventToIgnore.componentId,
             phase: eventToIgnore.phase,
-            key: eventToIgnore.key,
             start: toUTCDateStamp(data.start),
             end: toUTCDateStamp(data.end),
           })
@@ -269,7 +277,6 @@ const WatchDogLogs = () => {
         headerName: 'Location',
         flex: 1,
         headerAlign: 'center',
-        maxWidth: 100,
       },
       {
         field: 'timestamp',
@@ -282,7 +289,6 @@ const WatchDogLogs = () => {
         headerName: 'Region',
         flex: 1,
         headerAlign: 'center',
-        maxWidth: 120,
       },
       {
         field: 'jurisdictionName',
@@ -298,20 +304,7 @@ const WatchDogLogs = () => {
         headerAlign: 'center',
         valueGetter: (params) => addSpaces(params) ?? '',
       },
-      {
-        field: 'phase',
-        headerName: 'Phase',
-        flex: 1,
-        headerAlign: 'center',
-        maxWidth: 100,
-      },
-      {
-        field: 'key',
-        headerName: 'Key',
-        flex: 1,
-        headerAlign: 'center',
-        maxWidth: 100,
-      },
+      { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {
         field: 'details',
         headerName: 'Details',
