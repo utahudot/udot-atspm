@@ -26,6 +26,7 @@ import type {
   ToolboxComponentOption,
 } from 'echarts'
 import { init } from 'echarts'
+import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
 import { GpxUploadOptions } from '../types'
@@ -35,8 +36,7 @@ export interface TimeSpaceChartProps extends ApacheEChartsProps {
   gpxEntries?: GpxUploadOptions[]
   ignoredLocations?: string[]
   onToggleIgnoredLocation?: (location: string) => void
-  leftSidebarOpen?: boolean
-  onToggleLeftSidebar?: () => void
+  sidebarUploadContent?: ReactNode
 }
 
 type LocationToggleButton = {
@@ -348,6 +348,7 @@ const GUIDE_STICKY_TOP = 12
 const GUIDE_TRANSITION_MS = 200
 const GUIDE_EASING = 'cubic-bezier(0.2, 0, 0, 1)'
 const MIN_RIGHT_PLOT_GUTTER = 10
+const CHART_CONTENT_PADDING = 16
 const FULLSCREEN_PADDING_TOP = 20
 const FULLSCREEN_PADDING_X = 24
 const FULLSCREEN_PADDING_BOTTOM = 24
@@ -669,8 +670,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     gpxEntries,
     ignoredLocations = [],
     onToggleIgnoredLocation,
-    leftSidebarOpen = false,
-    onToggleLeftSidebar,
+    sidebarUploadContent,
   } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
@@ -699,6 +699,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const fullscreenContentHeight = baseHeight
     ? `max(${baseHeight}, ${fullscreenViewportHeight})`
     : fullscreenViewportHeight
+  const guideTopOffset = isFullscreen ? 0 : GUIDE_STICKY_TOP
+  const guideMaxHeight = isFullscreen
+    ? fullscreenViewportHeight
+    : `calc(100vh - ${GUIDE_STICKY_TOP}px)`
 
   useTimeSpaceHandler(chart)
 
@@ -867,11 +871,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     handleCloseContextMenu()
   }
 
-  const handleToggleLeftSidebar = () => {
-    onToggleLeftSidebar?.()
-    handleCloseMenus()
-  }
-
   const handleToggleGuide = () => {
     setIsGuideCollapsed((current) => !current)
     handleCloseMenus()
@@ -918,19 +917,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
   const chartMenuItems = (
     <>
-      {onToggleLeftSidebar && (
-        <MenuItem dense onClick={handleToggleLeftSidebar}>
-          <ListItemIcon sx={{ minWidth: 28 }}>
-            <PanelSidebarIcon side="left" />
-          </ListItemIcon>
-          <ListItemText
-            primaryTypographyProps={{ variant: 'body2' }}
-            primary={
-              leftSidebarOpen ? 'Hide left sidebar' : 'Show left sidebar'
-            }
-          />
-        </MenuItem>
-      )}
       <MenuItem dense onClick={handleToggleGuide}>
         <ListItemIcon sx={{ minWidth: 28 }}>
           <PanelSidebarIcon side="right" />
@@ -1014,8 +1000,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           style={{
             flex: 1,
             minWidth: 0,
-            width: '100%',
             height: '100%',
+            padding: `${CHART_CONTENT_PADDING}px`,
+            boxSizing: 'border-box',
             position: 'relative',
           }}
         >
@@ -1031,36 +1018,14 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           <div
             style={{
               position: 'absolute',
-              top: 0,
-              right: 10,
+              top: CHART_CONTENT_PADDING,
+              right: CHART_CONTENT_PADDING + 10,
               display: 'flex',
               gap: 2,
               zIndex: 4,
               pointerEvents: 'auto',
             }}
           >
-            {onToggleLeftSidebar && (
-              <Tooltip
-                title={
-                  leftSidebarOpen ? 'Hide left sidebar' : 'Show left sidebar'
-                }
-                placement="bottom"
-              >
-                <IconButton
-                  size="small"
-                  onClick={handleToggleLeftSidebar}
-                  sx={{
-                    color: leftSidebarOpen ? '#334155' : '#64748B',
-                    p: 0.45,
-                    '&:hover': {
-                      backgroundColor: 'rgba(15, 23, 42, 0.06)',
-                    },
-                  }}
-                >
-                  <PanelSidebarIcon side="left" />
-                </IconButton>
-              </Tooltip>
-            )}
             <Tooltip
               title={
                 isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
@@ -1153,7 +1118,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
             <div
               style={{
                 position: 'absolute',
-                inset: 0,
+                inset: `${CHART_CONTENT_PADDING}px`,
                 pointerEvents: 'none',
               }}
             >
@@ -1199,10 +1164,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
             minWidth: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
             flexShrink: 0,
             position: 'sticky',
-            top: `${GUIDE_STICKY_TOP}px`,
+            top: `${guideTopOffset}px`,
             alignSelf: 'flex-start',
-            height: '100%',
-            maxHeight: '100vh',
+            height: guideMaxHeight,
+            maxHeight: guideMaxHeight,
             zIndex: 3,
             willChange: 'width, min-width',
             transition: `width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}, min-width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}`,
@@ -1214,6 +1179,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
               option={option}
               selectedSeries={selectedSeries}
               onToggleSeries={handleToggleSeries}
+              uploadContent={sidebarUploadContent}
             />
           )}
         </div>
@@ -1223,6 +1189,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           onClose={handleCloseMenus}
           container={fullscreenRef.current}
           disablePortal={isFullscreen}
+          disableScrollLock
           anchorReference="anchorPosition"
           MenuListProps={{ dense: true, sx: { py: 0.5 } }}
           anchorPosition={

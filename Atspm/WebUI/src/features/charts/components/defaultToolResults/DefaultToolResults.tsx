@@ -15,6 +15,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
+import { nanoid } from 'nanoid'
 import { useEffect, useState } from 'react'
 import { transformTimeSpaceData } from '../../api'
 import type { TransformedTimeSpaceResponse } from '../../types'
@@ -37,14 +38,12 @@ export interface TimeSpaceChartProps {
   timeSpaceOptions: TimeSpaceOptions
 }
 
-const STICKY_TOP = 12 // px
-
 function createEmptyEntry(
   locations: string[],
   primary = false
 ): GpxUploadOptions {
   return {
-    id: '',
+    id: nanoid(),
     startLocation: locations[0] ?? '',
     endLocation: locations[locations.length - 1] ?? '',
     error: null,
@@ -230,18 +229,10 @@ export default function TimeSpaceChart({
     data: { chart: {} },
   }))
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [srmError, setSrmError] = useState<string | null>(null)
   const [hasAppliedSrm, setHasAppliedSrm] = useState(false)
   const { mutateAsync: fetchSrmData, isLoading: isApplyingSrm } =
     useTimeSpaceSrmData()
-
-  const SIDEBAR_WIDTH = 320
-  const SIDEBAR_MIN_WIDTH = 260
-
-  // one place to tune animation timing/easing for BOTH panes
-  const TRANSITION_MS = 200
-  const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
 
   const locations = baseTimeSpaceData.data
     .filter(
@@ -253,13 +244,6 @@ export default function TimeSpaceChart({
     createEmptyEntry(locations),
   ])
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
-
-  const toggleOptionsSidebar = () => {
-    setSidebarOpen((v) => !v)
-    requestAnimationFrame(() => {
-      window.dispatchEvent(new Event('resize'))
-    })
-  }
 
   const toggleIgnoredLocation = (location: string) => {
     setIgnoredLocation((prev) =>
@@ -360,6 +344,25 @@ export default function TimeSpaceChart({
   }, [ignoredLocations, baseTimeSpaceData])
 
   const chartHeight = transformedData.data.chart.displayProps?.height ?? 500
+  const sidebarUploadContent = (
+    <>
+      {baseTimeSpaceData.type === ToolType.TimeSpaceHistoric && (
+        <SrmUploadAccordion
+          loading={isApplyingSrm}
+          error={srmError}
+          hasAppliedSrm={hasAppliedSrm}
+          onApply={handleApplySrm}
+          onClear={handleClearSrm}
+        />
+      )}
+
+      <GpxUploadAccordion
+        locations={locations}
+        entries={gpxEntries}
+        setEntries={setGpxEntries}
+      />
+    </>
+  )
 
   return (
     <Box
@@ -400,99 +403,24 @@ export default function TimeSpaceChart({
         <Paper sx={{ p: 0, mt: 2, ml: '2px', bgcolor: 'white' }}>
           <Box
             sx={{
-              display: 'flex',
               width: '100%',
               position: 'relative',
             }}
           >
-            {/* LEFT — STICKY SHELL (sidebar + button stick together) */}
-            <Box
-              sx={{
-                position: 'sticky',
-                top: `${STICKY_TOP}px`,
-                alignSelf: 'flex-start',
-                maxHeight: `100vh`,
-                height: '100%',
-                zIndex: 3,
-                overflow: 'visible',
-                // the shell itself animates width so the chart doesn't jump
-                width: sidebarOpen ? SIDEBAR_WIDTH : 0,
-                minWidth: sidebarOpen ? SIDEBAR_MIN_WIDTH : 0,
-                willChange: 'width, min-width',
-                transition: `width ${TRANSITION_MS}ms ${EASING}, min-width ${TRANSITION_MS}ms ${EASING}`,
+            <TimeSpaceEChart
+              id="time-space-chart"
+              option={transformedData.data.chart}
+              theme={theme.palette.mode}
+              style={{
+                width: '100%',
+                height: `${chartHeight}px`,
+                position: 'relative',
               }}
-            >
-              {/* SIDEBAR PANEL */}
-              <Box
-                sx={{
-                  height: '100%',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* scroll the content, not the page */}
-                <Box
-                  sx={{
-                    height: '100%',
-                    overflowY: 'auto',
-                    p: 2,
-                    opacity: sidebarOpen ? 1 : 0,
-                    transform: sidebarOpen
-                      ? 'translateX(0)'
-                      : 'translateX(-8px)',
-                    transition: `opacity ${TRANSITION_MS}ms ${EASING}, transform ${TRANSITION_MS}ms ${EASING}`,
-                    willChange: 'opacity, transform',
-                    pointerEvents: sidebarOpen ? 'auto' : 'none',
-                  }}
-                >
-                  {baseTimeSpaceData.type === ToolType.TimeSpaceHistoric && (
-                    <SrmUploadAccordion
-                      loading={isApplyingSrm}
-                      error={srmError}
-                      hasAppliedSrm={hasAppliedSrm}
-                      onApply={handleApplySrm}
-                      onClear={handleClearSrm}
-                    />
-                  )}
-
-                  <GpxUploadAccordion
-                    locations={locations}
-                    entries={gpxEntries}
-                    setEntries={setGpxEntries}
-                  />
-                </Box>
-              </Box>
-
-            </Box>
-
-            {/* RIGHT — CHART */}
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 0,
-                p: 2,
-                willChange: 'transform',
-                transition: `transform ${TRANSITION_MS}ms ${EASING}`,
-                transform: sidebarOpen ? 'translateX(0)' : 'translateX(-4px)',
-                borderLeft: sidebarOpen ? '1px solid' : 'none',
-                borderColor: 'divider',
-              }}
-            >
-              <TimeSpaceEChart
-                id="time-space-chart"
-                option={transformedData.data.chart}
-                theme={theme.palette.mode}
-                style={{
-                  width: '100%',
-                  height: `${chartHeight}px`,
-                  position: 'relative',
-                }}
-                gpxEntries={gpxEntries}
-                ignoredLocations={ignoredLocations}
-                onToggleIgnoredLocation={toggleIgnoredLocation}
-                leftSidebarOpen={sidebarOpen}
-                onToggleLeftSidebar={toggleOptionsSidebar}
-              />
-            </Box>
+              gpxEntries={gpxEntries}
+              ignoredLocations={ignoredLocations}
+              onToggleIgnoredLocation={toggleIgnoredLocation}
+              sidebarUploadContent={sidebarUploadContent}
+            />
           </Box>
         </Paper>
       )}

@@ -7,11 +7,14 @@ import {
   Divider,
   IconButton,
   Paper,
+  Tab,
+  Tabs,
   Tooltip,
   Typography,
 } from '@mui/material'
 import type { EChartsOption } from 'echarts'
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 
 type PreviewKind =
   | 'cycles'
@@ -68,9 +71,12 @@ export interface TimeSpaceSidebarProps {
   option?: EChartsOption
   selectedSeries: Record<string, boolean>
   onToggleSeries: (seriesName: string) => void
+  uploadContent?: ReactNode
 }
 
-export const TIME_SPACE_GUIDE_WIDTH = 304
+export const TIME_SPACE_GUIDE_WIDTH = 360
+
+type SidebarTab = 'legend' | 'uploads'
 
 const CATEGORY_ORDER = [
   'Signal Timing',
@@ -613,6 +619,7 @@ export default function TimeSpaceSidebar({
   option,
   selectedSeries,
   onToggleSeries,
+  uploadContent,
 }: TimeSpaceSidebarProps) {
   const items = buildSidebarItems(option)
   const [collapsedSections, setCollapsedSections] = useState<
@@ -621,10 +628,26 @@ export default function TimeSpaceSidebar({
   const [expandedDetails, setExpandedDetails] = useState<
     Record<string, boolean>
   >({})
+  const [currentTab, setCurrentTab] = useState<SidebarTab>('legend')
+  const hasLegendContent = items.length > 0
+  const hasUploadContent = Boolean(uploadContent)
+  const availableTabs: SidebarTab[] = []
 
-  if (!items.length) {
+  if (hasLegendContent) {
+    availableTabs.push('legend')
+  }
+
+  if (hasUploadContent) {
+    availableTabs.push('uploads')
+  }
+
+  if (!availableTabs.length) {
     return null
   }
+
+  const activeTab = availableTabs.includes(currentTab)
+    ? currentTab
+    : availableTabs[0]
 
   const toggleSectionCollapse = (category: string) => {
     setCollapsedSections((current) => ({
@@ -675,275 +698,332 @@ export default function TimeSpaceSidebar({
         width: TIME_SPACE_GUIDE_WIDTH,
         flexShrink: 0,
         height: '100%',
-        overflowY: 'auto',
+        minHeight: 0,
+        overflow: 'hidden',
         borderLeft: '1px solid',
         borderColor: 'divider',
-        marginTop: '-16px',
-        p: 1.25,
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: '#fff',
       }}
     >
+      {availableTabs.length > 1 ? (
+        <>
+          <Tabs
+            value={activeTab}
+            onChange={(_, value: SidebarTab) => setCurrentTab(value)}
+            variant="fullWidth"
+            sx={{
+              minHeight: 'auto',
+              px: 0.75,
+              pt: 0.5,
+              pb: 0.35,
+              '& .MuiTabs-flexContainer': {
+                gap: 0.5,
+              },
+              '& .MuiTabs-indicator': {
+                display: 'none',
+              },
+              '& .MuiTab-root': {
+                minHeight: 30,
+                padding: '4px 10px',
+                borderRadius: '4px',
+                border: '1px solid rgba(203, 213, 225, 0.95)',
+                backgroundColor: '#fff',
+                color: '#475569',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                transition:
+                  'background-color 120ms ease, color 120ms ease, border-color 120ms ease',
+                '&.Mui-selected': {
+                  backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                  borderColor: 'rgba(37, 99, 235, 0.35)',
+                  color: '#1d4ed8',
+                },
+              },
+            }}
+          >
+            {hasLegendContent && <Tab label="Legend" value="legend" />}
+            {hasUploadContent && <Tab label="Uploads" value="uploads" />}
+          </Tabs>
+        </>
+      ) : (
+        <>
+          <Typography
+            variant="overline"
+            sx={{
+              px: 1.5,
+              pt: 1.1,
+              pb: 0.9,
+              letterSpacing: 0.9,
+              color: 'text.secondary',
+              fontWeight: 700,
+              fontSize: '0.7rem',
+            }}
+          >
+            {hasLegendContent ? 'Legend' : 'Uploads'}
+          </Typography>
+          <Divider />
+        </>
+      )}
+
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.5,
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          p: 1.25,
         }}
       >
-        <Typography
-          variant="overline"
-          sx={{
-            letterSpacing: 0.9,
-            color: 'text.secondary',
-            fontWeight: 700,
-            fontSize: '0.7rem',
-          }}
-        >
-          Legend
-        </Typography>
-      </Box>
+        {activeTab === 'uploads' ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {uploadContent}
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {CATEGORY_ORDER.map((category) => {
+              const categoryItems = items.filter(
+                (item) => item.category === category
+              )
+              if (!categoryItems.length) return null
 
-      <Divider sx={{ my: 1.25 }} />
+              const isCollapsed = collapsedSections[category] === true
+              const visibleItemCount = categoryItems.filter((item) =>
+                isItemVisible(item, selectedSeries)
+              ).length
+              const hasVisibleItems = visibleItemCount > 0
+              const allItemsVisible = visibleItemCount === categoryItems.length
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {CATEGORY_ORDER.map((category) => {
-          const categoryItems = items.filter(
-            (item) => item.category === category
-          )
-          if (!categoryItems.length) return null
-
-          const isCollapsed = collapsedSections[category] === true
-          const visibleItemCount = categoryItems.filter((item) =>
-            isItemVisible(item, selectedSeries)
-          ).length
-          const hasVisibleItems = visibleItemCount > 0
-          const allItemsVisible = visibleItemCount === categoryItems.length
-
-          return (
-            <Box key={category}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 1,
-                  mb: isCollapsed ? 0.25 : 0.6,
-                  pl: 0.75,
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ fontSize: '0.85rem' }}>
-                  {category}
-                </Typography>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.1,
-                  }}
-                >
-                  <Tooltip title={hasVisibleItems ? 'Hide all' : 'Show all'}>
-                    <Checkbox
-                      size="small"
-                      checked={allItemsVisible}
-                      indeterminate={hasVisibleItems && !allItemsVisible}
-                      onChange={() =>
-                        setSectionVisibility(categoryItems, !allItemsVisible)
-                      }
-                      sx={{
-                        p: 0.2,
-                        color: 'text.secondary',
-                        '& .MuiSvgIcon-root': {
-                          fontSize: 18,
-                        },
-                      }}
-                    />
-                  </Tooltip>
-                  <IconButton
-                    size="small"
-                    onClick={() => toggleSectionCollapse(category)}
-                    sx={{ p: 0.15, color: 'text.secondary' }}
+              return (
+                <Box key={category}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 1,
+                      mb: isCollapsed ? 0.25 : 0.6,
+                      pl: 0.75,
+                    }}
                   >
-                    {isCollapsed ? (
-                      <ExpandMoreIcon fontSize="small" />
-                    ) : (
-                      <ExpandLessIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                </Box>
-              </Box>
-
-              <Box
-                sx={{
-                  display: isCollapsed ? 'none' : 'flex',
-                  flexDirection: 'column',
-                  gap: 0.9,
-                }}
-              >
-                {categoryItems.map((item) => {
-                  const itemIsActive = isItemVisible(item, selectedSeries)
-                  const visibleToggleCount = item.toggles.filter(
-                    (toggle) => selectedSeries[toggle.seriesName] !== false
-                  ).length
-                  const allItemSeriesVisible =
-                    visibleToggleCount === item.toggles.length
-                  const someItemSeriesVisible =
-                    visibleToggleCount > 0 && !allItemSeriesVisible
-
-                  return (
-                    <Paper
-                      key={item.key}
-                      variant="outlined"
+                    <Typography variant="subtitle2" sx={{ fontSize: '0.85rem' }}>
+                      {category}
+                    </Typography>
+                    <Box
                       sx={{
-                        overflow: 'hidden',
-                        background: itemIsActive ? '#fff' : '#f3f4f6',
-                        borderColor: itemIsActive
-                          ? 'rgba(203, 213, 225, 0.9)'
-                          : 'rgba(203, 213, 225, 0.7)',
-                        opacity: itemIsActive ? 1 : 0.6,
-                        transition:
-                          'background-color 120ms ease, opacity 120ms ease, border-color 120ms ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.1,
                       }}
                     >
-                      <Box
-                        sx={{ display: 'flex', gap: 0, alignItems: 'stretch' }}
-                      >
-                        <PreviewCard kind={item.preview} />
-                        <Box
+                      <Tooltip title={hasVisibleItems ? 'Hide all' : 'Show all'}>
+                        <Checkbox
+                          size="small"
+                          checked={allItemsVisible}
+                          indeterminate={hasVisibleItems && !allItemsVisible}
+                          onChange={() =>
+                            setSectionVisibility(categoryItems, !allItemsVisible)
+                          }
                           sx={{
-                            minWidth: 0,
-                            flex: 1,
-                            p: 0.9,
+                            p: 0.2,
+                            color: 'text.secondary',
+                            '& .MuiSvgIcon-root': {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      </Tooltip>
+                      <IconButton
+                        size="small"
+                        onClick={() => toggleSectionCollapse(category)}
+                        sx={{ p: 0.15, color: 'text.secondary' }}
+                      >
+                        {isCollapsed ? (
+                          <ExpandMoreIcon fontSize="small" />
+                        ) : (
+                          <ExpandLessIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: isCollapsed ? 'none' : 'flex',
+                      flexDirection: 'column',
+                      gap: 0.9,
+                    }}
+                  >
+                    {categoryItems.map((item) => {
+                      const itemIsActive = isItemVisible(item, selectedSeries)
+                      const visibleToggleCount = item.toggles.filter(
+                        (toggle) => selectedSeries[toggle.seriesName] !== false
+                      ).length
+                      const allItemSeriesVisible =
+                        visibleToggleCount === item.toggles.length
+                      const someItemSeriesVisible =
+                        visibleToggleCount > 0 && !allItemSeriesVisible
+
+                      return (
+                        <Paper
+                          key={item.key}
+                          variant="outlined"
+                          sx={{
+                            overflow: 'hidden',
+                            background: itemIsActive ? '#fff' : '#f3f4f6',
+                            borderColor: itemIsActive
+                              ? 'rgba(203, 213, 225, 0.9)'
+                              : 'rgba(203, 213, 225, 0.7)',
+                            opacity: itemIsActive ? 1 : 0.6,
+                            transition:
+                              'background-color 120ms ease, opacity 120ms ease, border-color 120ms ease',
                           }}
                         >
                           <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              gap: 0.5,
-                            }}
+                            sx={{ display: 'flex', gap: 0, alignItems: 'stretch' }}
                           >
-                            <Typography
-                              variant="subtitle2"
-                              sx={{ fontSize: '0.8rem' }}
-                            >
-                              {item.label}
-                            </Typography>
+                            <PreviewCard kind={item.preview} />
                             <Box
                               sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.1,
-                                ml: 'auto',
+                                minWidth: 0,
+                                flex: 1,
+                                p: 0.9,
                               }}
                             >
-                              {item.details?.length ? (
-                                <Tooltip
-                                  title={
-                                    expandedDetails[item.key]
-                                      ? 'Hide details'
-                                      : 'Show details'
-                                  }
-                                >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => toggleItemDetails(item.key)}
-                                    sx={{ p: 0.15, color: 'text.secondary' }}
-                                  >
-                                    {expandedDetails[item.key] ? (
-                                      <ExpandLessIcon fontSize="small" />
-                                    ) : (
-                                      <ExpandMoreIcon fontSize="small" />
-                                    )}
-                                  </IconButton>
-                                </Tooltip>
-                              ) : null}
-
-                              <Tooltip
-                                title={
-                                  allItemSeriesVisible
-                                    ? `Hide ${item.label}`
-                                    : `Show ${item.label}`
-                                }
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  gap: 0.5,
+                                }}
                               >
-                                <Checkbox
-                                  size="small"
-                                  checked={allItemSeriesVisible}
-                                  indeterminate={someItemSeriesVisible}
-                                  onChange={() =>
-                                    setItemVisibility(
-                                      item,
-                                      !allItemSeriesVisible
-                                    )
-                                  }
-                                  sx={{
-                                    p: 0.2,
-                                    color: 'text.secondary',
-                                    '& .MuiSvgIcon-root': {
-                                      fontSize: 18,
-                                    },
-                                  }}
-                                />
-                              </Tooltip>
-                            </Box>
-                          </Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              mt: 0.35,
-                              display: 'block',
-                              lineHeight: 1.4,
-                              color: 'text.secondary',
-                              fontSize: '0.76rem',
-                            }}
-                          >
-                            {item.description}
-                          </Typography>
-
-                          {item.details?.length && expandedDetails[item.key] ? (
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 0.5,
-                                mt: 0.7,
-                                pt: 0.7,
-                                borderTop: '1px solid rgba(203, 213, 225, 0.9)',
-                              }}
-                            >
-                              {item.details.map((detail) => (
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{ fontSize: '0.8rem' }}
+                                >
+                                  {item.label}
+                                </Typography>
                                 <Box
-                                  key={`${item.key}-${detail.label}`}
                                   sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: 0.55,
-                                    minWidth: 0,
+                                    gap: 0.1,
+                                    ml: 'auto',
                                   }}
                                 >
-                                  <DetailMarker detail={detail} />
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      fontSize: '0.69rem',
-                                      lineHeight: 1.2,
-                                      color: 'text.secondary',
-                                    }}
+                                  {item.details?.length ? (
+                                    <Tooltip
+                                      title={
+                                        expandedDetails[item.key]
+                                          ? 'Hide details'
+                                          : 'Show details'
+                                      }
+                                    >
+                                      <IconButton
+                                        size="small"
+                                        onClick={() => toggleItemDetails(item.key)}
+                                        sx={{ p: 0.15, color: 'text.secondary' }}
+                                      >
+                                        {expandedDetails[item.key] ? (
+                                          <ExpandLessIcon fontSize="small" />
+                                        ) : (
+                                          <ExpandMoreIcon fontSize="small" />
+                                        )}
+                                      </IconButton>
+                                    </Tooltip>
+                                  ) : null}
+
+                                  <Tooltip
+                                    title={
+                                      allItemSeriesVisible
+                                        ? `Hide ${item.label}`
+                                        : `Show ${item.label}`
+                                    }
                                   >
-                                    {detail.label}
-                                  </Typography>
+                                    <Checkbox
+                                      size="small"
+                                      checked={allItemSeriesVisible}
+                                      indeterminate={someItemSeriesVisible}
+                                      onChange={() =>
+                                        setItemVisibility(
+                                          item,
+                                          !allItemSeriesVisible
+                                        )
+                                      }
+                                      sx={{
+                                        p: 0.2,
+                                        color: 'text.secondary',
+                                        '& .MuiSvgIcon-root': {
+                                          fontSize: 18,
+                                        },
+                                      }}
+                                    />
+                                  </Tooltip>
                                 </Box>
-                              ))}
+                              </Box>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  mt: 0.35,
+                                  display: 'block',
+                                  lineHeight: 1.4,
+                                  color: 'text.secondary',
+                                  fontSize: '0.76rem',
+                                }}
+                              >
+                                {item.description}
+                              </Typography>
+
+                              {item.details?.length && expandedDetails[item.key] ? (
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 0.5,
+                                    mt: 0.7,
+                                    pt: 0.7,
+                                    borderTop:
+                                      '1px solid rgba(203, 213, 225, 0.9)',
+                                  }}
+                                >
+                                  {item.details.map((detail) => (
+                                    <Box
+                                      key={`${item.key}-${detail.label}`}
+                                      sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 0.55,
+                                        minWidth: 0,
+                                      }}
+                                    >
+                                      <DetailMarker detail={detail} />
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          fontSize: '0.69rem',
+                                          lineHeight: 1.2,
+                                          color: 'text.secondary',
+                                        }}
+                                      >
+                                        {detail.label}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+                                </Box>
+                              ) : null}
                             </Box>
-                          ) : null}
-                        </Box>
-                      </Box>
-                    </Paper>
-                  )
-                })}
-              </Box>
-            </Box>
-          )
-        })}
+                          </Box>
+                        </Paper>
+                      )
+                    })}
+                  </Box>
+                </Box>
+              )
+            })}
+          </Box>
+        )}
       </Box>
     </Box>
   )
