@@ -66,9 +66,11 @@ type ContextMenuPosition = {
 function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
   return (
     <SvgIcon
-      fontSize="small"
       viewBox="0 0 24 24"
-      sx={side === 'left' ? { transform: 'rotate(180deg)' } : undefined}
+      sx={{
+        fontSize: HEADER_TOOLBAR_ICON_SIZE,
+        ...(side === 'left' ? { transform: 'rotate(180deg)' } : undefined),
+      }}
     >
       <rect
         x="3"
@@ -78,13 +80,13 @@ function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
         rx="2"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
       />
       <path
         d="M15 3v18"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -94,12 +96,12 @@ function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
 
 function ToolbarActionIcon() {
   return (
-    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+    <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
       <path
         d="M12 15V3"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -107,7 +109,7 @@ function ToolbarActionIcon() {
         d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -115,7 +117,7 @@ function ToolbarActionIcon() {
         d="m7 10 5 5 5-5"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -125,12 +127,12 @@ function ToolbarActionIcon() {
 
 function PhaseInfoActionIcon() {
   return (
-    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+    <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
       <path
         d="m21 16-4 4-4-4"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -138,7 +140,7 @@ function PhaseInfoActionIcon() {
         d="M17 20V4"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -146,7 +148,7 @@ function PhaseInfoActionIcon() {
         d="m3 8 4-4 4 4"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -154,7 +156,7 @@ function PhaseInfoActionIcon() {
         d="M7 4v16"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -164,14 +166,14 @@ function PhaseInfoActionIcon() {
 
 function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
   return (
-    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+    <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
       {expanded ? (
         <>
           <path
             d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -179,7 +181,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M9 19.8V15m0 0H4.2M9 15l-6 6"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -187,7 +189,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M15 4.2V9m0 0h4.8M15 9l6-6"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -195,7 +197,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M9 4.2V9m0 0H4.2M9 9 3 3"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -206,7 +208,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="m15 15 6 6"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -214,7 +216,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="m15 9 6-6"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -222,7 +224,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M21 16v5h-5"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -230,7 +232,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M21 8V3h-5"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -238,7 +240,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M3 16v5h5"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -246,7 +248,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="m3 21 6-6"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -254,7 +256,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M3 8V3h5"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -262,7 +264,7 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
             d="M9 9 3 3"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -274,12 +276,12 @@ function FullscreenActionIcon({ expanded }: { expanded: boolean }) {
 
 function ResetActionIcon() {
   return (
-    <SvgIcon fontSize="small" viewBox="0 0 24 24">
+    <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
       <path
         d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -287,7 +289,7 @@ function ResetActionIcon() {
         d="M3 3v5h5"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -304,6 +306,7 @@ type GridRectProvider = ECharts & {
       coordinateSystem?: {
         getRect?: () => {
           x?: number
+          width?: number
         }
       }
     }
@@ -322,6 +325,52 @@ function getGridLeft(chart: ECharts, option?: EChartsOption) {
 
   const grid = Array.isArray(option?.grid) ? option.grid[0] : option?.grid
   return typeof grid?.left === 'number' ? grid.left : 0
+}
+
+function getGridRect(chart: ECharts, option?: EChartsOption) {
+  let gridRect:
+    | {
+        x?: number
+        width?: number
+      }
+    | undefined
+
+  try {
+    gridRect = (chart as GridRectProvider)
+      ?.getModel?.()
+      ?.getComponent?.('grid', 0)
+      ?.coordinateSystem?.getRect?.()
+  } catch {
+    gridRect = undefined
+  }
+
+  if (typeof gridRect?.x === 'number' && typeof gridRect?.width === 'number') {
+    return {
+      x: gridRect.x,
+      width: gridRect.width,
+    }
+  }
+
+  const grid = Array.isArray(option?.grid) ? option.grid[0] : option?.grid
+  const left = typeof grid?.left === 'number' ? grid.left : 0
+  const right = typeof grid?.right === 'number' ? grid.right : 0
+  let chartWidth = 0
+
+  try {
+    const dom = chart.getDom?.()
+    if (dom instanceof HTMLElement && Number.isFinite(dom.clientWidth)) {
+      chartWidth = dom.clientWidth
+    } else {
+      chartWidth = chart.getWidth()
+    }
+  } catch {
+    chartWidth = 0
+  }
+
+  return {
+    x: left,
+    width: Math.max(0, chartWidth - left - right),
+  }
 }
 
 function getPrimaryLegend(
@@ -357,6 +406,10 @@ const MIN_RIGHT_PLOT_GUTTER = 10
 const CHART_CONTENT_PADDING = 16
 const FULLSCREEN_PADDING_X = 24
 const FULLSCREEN_PADDING_BOTTOM = 24
+const STICKY_TOP_AXIS_HEIGHT = 42
+const LOCATION_TOGGLE_ICON_SIZE = 18
+const HEADER_TOOLBAR_ICON_SIZE = 18
+const HEADER_TOOLBAR_ICON_STROKE_WIDTH = 1.7
 const TIME_SPACE_LABEL_GUTTER_WIDTH =
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardWidth * 2 +
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapFromPlot +
@@ -590,6 +643,116 @@ function extractHeaderContent(option?: EChartsOption) {
   }
 }
 
+type TopAxisConfig = {
+  formatter?: ((value: number) => string) | string
+  index: number
+  interval: number
+  label: string
+  max: number
+  min: number
+}
+
+type StickyTopAxis = {
+  axisEnd: number
+  axisStart: number
+  label: string
+  ticks: Array<{
+    label: string
+    left: number
+    value: number
+  }>
+}
+
+function extractTopAxisConfig(option?: EChartsOption): TopAxisConfig | null {
+  if (!option?.xAxis) return null
+
+  const xAxes = Array.isArray(option.xAxis) ? option.xAxis : [option.xAxis]
+  const topAxisIndex = xAxes.findIndex(
+    (axis) =>
+      axis &&
+      typeof axis === 'object' &&
+      (axis as { position?: unknown }).position === 'top'
+  )
+
+  if (topAxisIndex < 0) {
+    return null
+  }
+
+  const topAxis = xAxes[topAxisIndex] as {
+    axisLabel?: {
+      formatter?: ((value: number) => string) | string
+    }
+    interval?: unknown
+    max?: unknown
+    maxInterval?: unknown
+    min?: unknown
+    minInterval?: unknown
+    name?: unknown
+  }
+
+  const min = typeof topAxis.min === 'number' ? topAxis.min : 0
+  const max = typeof topAxis.max === 'number' ? topAxis.max : min
+  const interval =
+    typeof topAxis.interval === 'number'
+      ? topAxis.interval
+      : typeof topAxis.maxInterval === 'number'
+        ? topAxis.maxInterval
+        : typeof topAxis.minInterval === 'number'
+          ? topAxis.minInterval
+          : 60
+
+  return {
+    index: topAxisIndex,
+    label: typeof topAxis.name === 'string' ? topAxis.name.trim() : '',
+    min,
+    max,
+    interval: interval > 0 ? interval : 60,
+    formatter: topAxis.axisLabel?.formatter,
+  }
+}
+
+function stripTopAxisVisuals(option?: EChartsOption): EChartsOption['xAxis'] {
+  if (!option?.xAxis) return option?.xAxis
+
+  const stripAxisName = <T,>(axis: T): T => {
+    if (!axis || typeof axis !== 'object') return axis
+
+    const candidate = axis as T & { position?: unknown; name?: unknown }
+    if (candidate.position !== 'top') {
+      return axis
+    }
+
+    return {
+      ...candidate,
+      name: '',
+      axisLabel: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      minorTick: { show: false },
+      show: false,
+    } as T
+  }
+
+  return Array.isArray(option.xAxis)
+    ? option.xAxis.map((axis) => stripAxisName(axis))
+    : stripAxisName(option.xAxis)
+}
+
+function formatTopAxisTickLabel(
+  formatter: TopAxisConfig['formatter'],
+  value: number
+) {
+  if (typeof formatter === 'function') {
+    try {
+      return String(formatter(value))
+    } catch {
+      return String(value)
+    }
+  }
+
+  return String(value)
+}
+
 function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
   const series = Array.isArray(option?.series)
     ? (option.series as SeriesOption[])
@@ -644,6 +807,9 @@ function buildLocationToggleButtons(
     bodyHeight,
     headerActionSize,
     headerActionRight,
+    headerActionOverlayOffsetX,
+    headerActionOverlayOffsetY,
+    verticalOffsetY,
   } = TIME_SPACE_LOCATION_CARD_LAYOUT
 
   const cardHeight = headerHeight + bodyHeight
@@ -663,12 +829,15 @@ function buildLocationToggleButtons(
         return null
       }
 
-      const cardTop = y - cardHeight / 2
+      const cardTop = y - cardHeight / 2 + verticalOffsetY
 
       return {
         location,
-        left: iconLeft,
-        top: cardTop + (headerHeight - headerActionSize) / 2,
+        left: iconLeft + headerActionOverlayOffsetX,
+        top:
+          cardTop +
+          (headerHeight - headerActionSize) / 2 +
+          headerActionOverlayOffsetY,
       }
     })
     .filter((item): item is LocationToggleButton => item !== null)
@@ -695,6 +864,50 @@ function getChartPixel(
     }
 
     return [pixel[0], pixel[1]]
+  } catch {
+    return null
+  }
+}
+
+function getAxisPixel(
+  chart: ECharts,
+  xAxisIndex: number,
+  value: number
+): number | null {
+  try {
+    const pixel = chart.convertToPixel({ xAxisIndex }, value)
+
+    if (typeof pixel === 'number' && Number.isFinite(pixel)) {
+      return pixel
+    }
+
+    if (Array.isArray(pixel) && Number.isFinite(pixel[0])) {
+      return pixel[0]
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
+function getAxisValueFromPixel(
+  chart: ECharts,
+  xAxisIndex: number,
+  pixelX: number
+): number | null {
+  try {
+    const value = chart.convertFromPixel({ xAxisIndex }, pixelX)
+
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value
+    }
+
+    if (Array.isArray(value) && Number.isFinite(value[0])) {
+      return value[0]
+    }
+
+    return null
   } catch {
     return null
   }
@@ -729,6 +942,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('legend')
   const [showPhaseInfo, setShowPhaseInfo] = useState(true)
   const [headerHeight, setHeaderHeight] = useState(0)
+  const [stickyTopAxis, setStickyTopAxis] = useState<StickyTopAxis | null>(null)
   const [contextMenuPosition, setContextMenuPosition] =
     useState<ContextMenuPosition | null>(null)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
@@ -738,12 +952,14 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     () => extractHeaderContent(option),
     [option]
   )
+  const topAxisConfig = useMemo(() => extractTopAxisConfig(option), [option])
   const optionWithoutHeaderTitle = useMemo(() => {
     if (!option) return option
 
     return {
       ...option,
       title: remainingTitles,
+      xAxis: stripTopAxisVisuals(option),
     }
   }, [option, remainingTitles])
   const renderedOption = useMemo(
@@ -901,6 +1117,81 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       window.removeEventListener('resize', syncButtons)
     }
   }, [chart, renderedOption, onToggleIgnoredLocation])
+
+  useEffect(() => {
+    if (!chart || !renderedOption || !topAxisConfig) {
+      setStickyTopAxis(null)
+      return
+    }
+
+    let rafId = 0
+
+    const syncStickyAxis = () => {
+      rafId = window.requestAnimationFrame(() => {
+        const { x, width } = getGridRect(chart, renderedOption)
+
+        if (!Number.isFinite(x) || !Number.isFinite(width) || width <= 0) {
+          setStickyTopAxis(null)
+          return
+        }
+
+        const { min, max, interval, label, formatter } = topAxisConfig
+        const visibleStart =
+          getAxisValueFromPixel(chart, topAxisConfig.index, x) ?? min
+        const visibleEnd =
+          getAxisValueFromPixel(chart, topAxisConfig.index, x + width) ?? max
+        const visibleMin = Math.max(min, Math.min(visibleStart, visibleEnd))
+        const visibleMax = Math.min(max, Math.max(visibleStart, visibleEnd))
+        const range = visibleMax - visibleMin
+
+        if (!Number.isFinite(range) || range <= 0) {
+          setStickyTopAxis(null)
+          return
+        }
+
+        const firstTick =
+          Math.ceil((visibleMin - min) / interval) * interval + min
+        const ticks: StickyTopAxis['ticks'] = []
+
+        for (
+          let value = firstTick;
+          value <= visibleMax + interval * 0.001;
+          value += interval
+        ) {
+          const pixel = getAxisPixel(chart, topAxisConfig.index, value)
+          if (pixel == null) continue
+
+          ticks.push({
+            value,
+            left: pixel,
+            label: formatTopAxisTickLabel(formatter, value),
+          })
+        }
+
+        setStickyTopAxis({
+          label,
+          axisStart: x,
+          axisEnd: x + width,
+          ticks,
+        })
+      })
+    }
+
+    syncStickyAxis()
+
+    chart.on('finished', syncStickyAxis)
+    chart.on('restore', syncStickyAxis)
+    chart.on('datazoom', syncStickyAxis)
+    window.addEventListener('resize', syncStickyAxis)
+
+    return () => {
+      window.cancelAnimationFrame(rafId)
+      chart.off('finished', syncStickyAxis)
+      chart.off('restore', syncStickyAxis)
+      chart.off('datazoom', syncStickyAxis)
+      window.removeEventListener('resize', syncStickyAxis)
+    }
+  }, [chart, renderedOption, topAxisConfig])
 
   const handleToggleSeries = (seriesName: string) => {
     const inst = chartInstanceRef.current
@@ -1188,6 +1479,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           >
             <Box
               sx={{
+                flex: '1 1 auto',
                 minWidth: 0,
                 display: 'flex',
                 alignItems: 'baseline',
@@ -1277,67 +1569,181 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
               flex: 1,
               minWidth: 0,
               height: '100%',
-              padding: `${CHART_CONTENT_PADDING}px`,
               boxSizing: 'border-box',
               position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            <div
-              id={id}
-              ref={chartRef}
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-            />
-
-            {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: `${CHART_CONTENT_PADDING}px`,
+            {stickyTopAxis ? (
+              <Box
+                sx={{
+                  position: 'sticky',
+                  top: `${headerHeight}px`,
+                  zIndex: 4,
+                  height: `${STICKY_TOP_AXIS_HEIGHT}px`,
+                  marginBottom: `-${STICKY_TOP_AXIS_HEIGHT}px`,
                   pointerEvents: 'none',
+                  px: `${CHART_CONTENT_PADDING}px`,
+                  boxSizing: 'border-box',
+                  background:
+                    'linear-gradient(to bottom, rgba(255,255,255,1) 72%, rgba(255,255,255,0) 100%)',
                 }}
               >
-                {locationToggleButtons.map((button) => {
-                  const isIgnored = ignoredLocations.includes(button.location)
-                  const title = isIgnored
-                    ? `Show location ${button.location}`
-                    : `Ignore location ${button.location}`
-
-                  return (
-                    <Tooltip
-                      key={button.location}
-                      title={title}
-                      placement="top"
+                <Box
+                  sx={{ position: 'relative', width: '100%', height: '100%' }}
+                >
+                  {stickyTopAxis.label ? (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        position: 'absolute',
+                        top: 10,
+                        left: `${Math.max(0, stickyTopAxis.axisStart - 12)}px`,
+                        transform: 'translateX(-100%)',
+                        maxWidth: `${Math.max(
+                          0,
+                          stickyTopAxis.axisStart - 20
+                        )}px`,
+                        color: 'text.secondary',
+                        fontSize: '0.78rem',
+                        fontWeight: 500,
+                        lineHeight: 1,
+                        whiteSpace: 'nowrap',
+                        textAlign: 'right',
+                      }}
                     >
-                      <IconButton
-                        size="small"
-                        onClick={() => onToggleIgnoredLocation(button.location)}
+                      {stickyTopAxis.label}
+                    </Typography>
+                  ) : null}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      left: `${stickyTopAxis.axisStart}px`,
+                      width: `${Math.max(
+                        0,
+                        stickyTopAxis.axisEnd - stickyTopAxis.axisStart
+                      )}px`,
+                      top: 30,
+                      borderTop: '2px solid #6B7280',
+                    }}
+                  />
+                  {stickyTopAxis.ticks.map((tick) => (
+                    <Box
+                      key={tick.value}
+                      sx={{
+                        position: 'absolute',
+                        left: `${tick.left}px`,
+                        top: 8,
+                        transform: 'translateX(-50%)',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
                         sx={{
-                          pointerEvents: 'auto',
-                          position: 'absolute',
-                          left: `${button.left}px`,
-                          top: `${button.top}px`,
-                          p: 0,
-                          height: '10px',
-                          color: isIgnored ? '#6B7280' : '#1F2937',
-                          '&:hover': {
-                            backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                          },
+                          display: 'block',
+                          color: 'text.primary',
+                          fontSize: '0.72rem',
+                          lineHeight: 1,
+                          whiteSpace: 'nowrap',
                         }}
                       >
-                        {isIgnored ? (
-                          <VisibilityOffIcon sx={{ fontSize: '18px' }} />
-                        ) : (
-                          <VisibilityIcon sx={{ fontSize: '18px' }} />
-                        )}
-                      </IconButton>
-                    </Tooltip>
-                  )
-                })}
-              </div>
-            )}
+                        {tick.label}
+                      </Typography>
+                      <Box
+                        sx={{
+                          width: '1px',
+                          height: '8px',
+                          mt: '2px',
+                          mx: 'auto',
+                          bgcolor: '#6B7280',
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            ) : null}
+
+            <div
+              style={{
+                flex: 1,
+                minHeight: 0,
+                position: 'relative',
+                padding: `${CHART_CONTENT_PADDING}px`,
+                boxSizing: 'border-box',
+              }}
+            >
+              <div
+                id={id}
+                ref={chartRef}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
+
+              {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {locationToggleButtons.map((button) => {
+                    const isIgnored = ignoredLocations.includes(button.location)
+                    const title = isIgnored
+                      ? `Show location ${button.location}`
+                      : `Ignore location ${button.location}`
+
+                    return (
+                      <Tooltip
+                        key={button.location}
+                        title={title}
+                        placement="top"
+                      >
+                        <IconButton
+                          size="small"
+                          onClick={() =>
+                            onToggleIgnoredLocation(button.location)
+                          }
+                          sx={{
+                            pointerEvents: 'auto',
+                            position: 'absolute',
+                            left: `${button.left}px`,
+                            top: `${button.top}px`,
+                            p: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: isIgnored ? '#6B7280' : '#1F2937',
+                            '&:hover': {
+                              backgroundColor: 'rgba(15, 23, 42, 0.08)',
+                            },
+                          }}
+                        >
+                          {isIgnored ? (
+                            <VisibilityOffIcon
+                              sx={{
+                                fontSize: `${LOCATION_TOGGLE_ICON_SIZE}px`,
+                              }}
+                            />
+                          ) : (
+                            <VisibilityIcon
+                              sx={{
+                                fontSize: `${LOCATION_TOGGLE_ICON_SIZE}px`,
+                              }}
+                            />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           <div
             style={{

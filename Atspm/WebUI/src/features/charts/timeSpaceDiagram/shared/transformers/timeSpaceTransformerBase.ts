@@ -752,12 +752,15 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   cardGapToDot: 18,
   cardWidth: 200,
   cardRadius: 4,
+  verticalOffsetY: 15,
   headerHeight: 44,
   bodyHeight: 30,
   bodyPaddingLeft: 12,
   bodyPaddingRight: 12,
   headerActionSize: 12,
   headerActionRight: 10,
+  headerActionOverlayOffsetX: 15,
+  headerActionOverlayOffsetY: 15,
 } as const
 
 const TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH = 96
@@ -794,6 +797,7 @@ export function getLocationsLabelOption(
     bodyPaddingRight,
     headerActionSize,
     headerActionRight,
+    verticalOffsetY,
   } = TIME_SPACE_LOCATION_CARD_LAYOUT
   const CARD_H = headerHeight + bodyHeight
 
@@ -814,7 +818,7 @@ export function getLocationsLabelOption(
       const cardRight = xDot - cardGapToDot
       const cardLeft = cardRight - cardWidth
       const xLine = cardRight + (gridLeft - cardRight) / 2
-      const cardTop = y - CARD_H / 2
+      const cardTop = y - CARD_H / 2 + verticalOffsetY
       const textX = cardLeft + bodyPaddingLeft
       const iconLeft = cardRight - headerActionRight - headerActionSize
       const dividerX = iconLeft - 8
@@ -1054,7 +1058,8 @@ export function getDistancesLabelOption(
   distanceData: number[],
   gridLeft: number
 ): SeriesOption {
-  const { gridGap, dotOffset, cardGapToDot } = TIME_SPACE_LOCATION_CARD_LAYOUT
+  const { gridGap, dotOffset, cardGapToDot, verticalOffsetY } =
+    TIME_SPACE_LOCATION_CARD_LAYOUT
   const dataPoints = distanceData.map((distance, index) => [
     data[index].end,
     distance,
@@ -1080,10 +1085,11 @@ export function getDistancesLabelOption(
       const dividerX = valueCardLeft + valueCardWidth / 2
       const distanceText = `${(api.value(2) as number).toLocaleString()} ft`
       const speedText = `${api.value(3)} mph`
-      const [, y] = api.coord([
+      const [, rawY] = api.coord([
         0,
         (api.value(1) as number) + (api.value(2) as number) / 2,
       ])
+      const y = rawY + verticalOffsetY
 
       return {
         type: 'group',

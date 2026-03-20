@@ -158,7 +158,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     show: false,
     data: distanceData,
     axisTick: { show: true },
-    max: distanceData[distanceData.length - 1] + 350,
+    max: distanceData[distanceData.length - 1] + 250,
     min: -250,
   })
 
@@ -455,7 +455,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const displayProps = createDisplayProps({
     description: '',
     numberOfLocations: primaryPhaseData.length,
-    height: totalDistance / 14 + 220,
+    height: totalDistance / 18 + 220,
     locations: primaryPhaseData.map((p) => p.locationIdentifier),
   })
 
