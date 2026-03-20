@@ -168,7 +168,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   })
 
   const grid: GridComponentOption = {
-    top: 80,
+    top: 30,
     left: 280,
     right: 300,
     bottom: 100,

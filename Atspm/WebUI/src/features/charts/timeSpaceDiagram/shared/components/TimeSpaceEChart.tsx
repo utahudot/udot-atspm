@@ -8,6 +8,7 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import {
+  Box,
   Divider,
   IconButton,
   ListItemIcon,
@@ -16,6 +17,7 @@ import {
   MenuItem,
   SvgIcon,
   Tooltip,
+  Typography,
 } from '@mui/material'
 import type {
   ECharts,
@@ -23,6 +25,7 @@ import type {
   GridComponentOption,
   LegendComponentOption,
   SeriesOption,
+  TitleComponentOption,
   ToolboxComponentOption,
 } from 'echarts'
 import { init } from 'echarts'
@@ -30,7 +33,11 @@ import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
 import { GpxUploadOptions } from '../types'
-import TimeSpaceSidebar, { TIME_SPACE_GUIDE_WIDTH } from './TimeSpaceSidebar'
+import TimeSpaceSidebar, {
+  SidebarTab,
+  TIME_SPACE_GUIDE_WIDTH,
+  TimeSpaceSidebarTabs,
+} from './TimeSpaceSidebar'
 
 export interface TimeSpaceChartProps extends ApacheEChartsProps {
   gpxEntries?: GpxUploadOptions[]
@@ -344,12 +351,10 @@ function getPrimaryToolbox(
 
 const CYCLE_PREFIX = 'Cycles '
 const CYCLE_DURATION_PREFIX = 'Cycle Durations '
-const GUIDE_STICKY_TOP = 12
 const GUIDE_TRANSITION_MS = 200
 const GUIDE_EASING = 'cubic-bezier(0.2, 0, 0, 1)'
 const MIN_RIGHT_PLOT_GUTTER = 10
 const CHART_CONTENT_PADDING = 16
-const FULLSCREEN_PADDING_TOP = 20
 const FULLSCREEN_PADDING_X = 24
 const FULLSCREEN_PADDING_BOTTOM = 24
 const TIME_SPACE_LABEL_GUTTER_WIDTH =
@@ -547,6 +552,44 @@ function getChartDownloadName(option?: EChartsOption) {
   return sanitizeFileName(rawTitle || 'time-space-diagram')
 }
 
+function getTitleEntries(option?: EChartsOption): TitleComponentOption[] {
+  if (!option?.title) return []
+
+  return Array.isArray(option.title)
+    ? (option.title as TitleComponentOption[])
+    : ([option.title] as TitleComponentOption[])
+}
+
+function stripRichText(text: string) {
+  return text.replace(/\{[^|}]+\|([^}]+)\}/g, '$1')
+}
+
+function normalizeHeaderText(text: string) {
+  return stripRichText(text).replace(/\s+/g, ' ').trim()
+}
+
+function extractHeaderContent(option?: EChartsOption) {
+  const titleEntries = getTitleEntries(option)
+  const primaryTitle =
+    typeof titleEntries[0]?.text === 'string' ? titleEntries[0].text : ''
+  const secondaryTitle =
+    typeof titleEntries[1]?.text === 'string' ? titleEntries[1].text : ''
+
+  const titleText = normalizeHeaderText(
+    primaryTitle.split('\n')[0] ?? ''
+  ).replace(/[,\s]+$/, '')
+  const rangeText = normalizeHeaderText(secondaryTitle)
+
+  const remainingTitles =
+    titleEntries.length > 2 ? titleEntries.slice(2) : undefined
+
+  return {
+    titleText,
+    rangeText,
+    remainingTitles,
+  }
+}
+
 function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
   const series = Array.isArray(option?.series)
     ? (option.series as SeriesOption[])
@@ -675,6 +718,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
   const chartRef = useRef<HTMLDivElement>(null)
   const fullscreenRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
   const chartInstanceRef = useRef<ECharts | null>(null)
   const [chart, setChart] = useState<ECharts | null>(null)
   const [locationToggleButtons, setLocationToggleButtons] = useState<
@@ -682,27 +726,39 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   >([])
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(false)
+  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('legend')
   const [showPhaseInfo, setShowPhaseInfo] = useState(true)
+  const [headerHeight, setHeaderHeight] = useState(0)
   const [contextMenuPosition, setContextMenuPosition] =
     useState<ContextMenuPosition | null>(null)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
     () => getLegendSelectedMap(option)
   )
+  const { titleText, rangeText, remainingTitles } = useMemo(
+    () => extractHeaderContent(option),
+    [option]
+  )
+  const optionWithoutHeaderTitle = useMemo(() => {
+    if (!option) return option
+
+    return {
+      ...option,
+      title: remainingTitles,
+    }
+  }, [option, remainingTitles])
   const renderedOption = useMemo(
-    () => buildChartOptionWithSidebar(option, showPhaseInfo),
-    [option, showPhaseInfo]
+    () => buildChartOptionWithSidebar(optionWithoutHeaderTitle, showPhaseInfo),
+    [optionWithoutHeaderTitle, showPhaseInfo]
   )
   const baseHeight = getCssLength(style?.height)
-  const fullscreenViewportHeight = `calc(100vh - ${
-    FULLSCREEN_PADDING_TOP + FULLSCREEN_PADDING_BOTTOM
-  }px)`
+  const fullscreenViewportHeight = '100vh'
   const fullscreenContentHeight = baseHeight
     ? `max(${baseHeight}, ${fullscreenViewportHeight})`
     : fullscreenViewportHeight
-  const guideTopOffset = isFullscreen ? 0 : GUIDE_STICKY_TOP
+  const guideTopOffset = headerHeight
   const guideMaxHeight = isFullscreen
-    ? fullscreenViewportHeight
-    : `calc(100vh - ${GUIDE_STICKY_TOP}px)`
+    ? `calc(${fullscreenViewportHeight} - ${headerHeight}px - ${FULLSCREEN_PADDING_BOTTOM}px)`
+    : `calc(100vh - ${headerHeight}px)`
 
   useTimeSpaceHandler(chart)
 
@@ -795,6 +851,26 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
+
+  useEffect(() => {
+    const node = headerRef.current
+    if (!node) return
+
+    const syncHeaderHeight = () => {
+      setHeaderHeight(node.getBoundingClientRect().height)
+    }
+
+    syncHeaderHeight()
+
+    const observer = new ResizeObserver(syncHeaderHeight)
+    observer.observe(node)
+    window.addEventListener('resize', syncHeaderHeight)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', syncHeaderHeight)
+    }
+  }, [isGuideCollapsed, titleText, rangeText])
 
   useEffect(() => {
     if (!chart || !renderedOption || !onToggleIgnoredLocation) {
@@ -967,6 +1043,94 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       </MenuItem>
     </>
   )
+  const toolbarButtons = (
+    <>
+      <Tooltip
+        title={isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'}
+        placement="bottom"
+      >
+        <IconButton
+          size="small"
+          onClick={handleToggleGuide}
+          sx={{
+            color: isGuideCollapsed ? '#64748B' : '#334155',
+            p: 0.45,
+            '&:hover': {
+              backgroundColor: 'rgba(15, 23, 42, 0.06)',
+            },
+          }}
+        >
+          <PanelSidebarIcon side="right" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip
+        title={showPhaseInfo ? 'Hide phase info' : 'Show phase info'}
+        placement="bottom"
+      >
+        <IconButton
+          size="small"
+          onClick={handleTogglePhaseInfo}
+          sx={{
+            color: showPhaseInfo ? '#334155' : '#64748B',
+            p: 0.45,
+            '&:hover': {
+              backgroundColor: 'rgba(15, 23, 42, 0.06)',
+            },
+          }}
+        >
+          <PhaseInfoActionIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip
+        title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+        placement="bottom"
+      >
+        <IconButton
+          size="small"
+          onClick={handleToggleFullscreenFromMenu}
+          sx={{
+            color: isFullscreen ? '#334155' : '#64748B',
+            p: 0.45,
+            '&:hover': {
+              backgroundColor: 'rgba(15, 23, 42, 0.06)',
+            },
+          }}
+        >
+          <FullscreenActionIcon expanded={isFullscreen} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Download chart" placement="bottom">
+        <IconButton
+          size="small"
+          onClick={handleDownloadChart}
+          sx={{
+            color: '#475569',
+            p: 0.45,
+            '&:hover': {
+              backgroundColor: 'rgba(15, 23, 42, 0.06)',
+            },
+          }}
+        >
+          <ToolbarActionIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Reset chart" placement="bottom">
+        <IconButton
+          size="small"
+          onClick={handleResetChart}
+          sx={{
+            color: '#475569',
+            p: 0.45,
+            '&:hover': {
+              backgroundColor: 'rgba(15, 23, 42, 0.06)',
+            },
+          }}
+        >
+          <ResetActionIcon />
+        </IconButton>
+      </Tooltip>
+    </>
+  )
 
   return (
     <div
@@ -978,9 +1142,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
         position: 'relative',
         overflow: isFullscreen ? 'auto' : 'visible',
         background: isFullscreen ? '#fff' : undefined,
-        padding: isFullscreen
-          ? `${FULLSCREEN_PADDING_TOP}px ${FULLSCREEN_PADDING_X}px ${FULLSCREEN_PADDING_BOTTOM}px`
-          : undefined,
         boxSizing: 'border-box',
       }}
     >
@@ -988,200 +1149,224 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
         style={{
           ...style,
           width: '100%',
-          height: isFullscreen ? fullscreenContentHeight : baseHeight ?? '100%',
+          height: isFullscreen
+            ? fullscreenContentHeight
+            : (baseHeight ?? '100%'),
           minHeight: isFullscreen
             ? fullscreenContentHeight
-            : baseHeight ?? undefined,
+            : (baseHeight ?? undefined),
           position: 'relative',
           display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            height: '100%',
-            padding: `${CHART_CONTENT_PADDING}px`,
-            boxSizing: 'border-box',
-            position: 'relative',
+        <Box
+          ref={headerRef}
+          sx={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 5,
+            display: 'flex',
+            backgroundColor: '#fff',
           }}
         >
-          <div
-            id={id}
-            ref={chartRef}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          />
-
-          <div
-            style={{
-              position: 'absolute',
-              top: CHART_CONTENT_PADDING,
-              right: CHART_CONTENT_PADDING + 10,
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              px: isFullscreen
+                ? `${CHART_CONTENT_PADDING + FULLSCREEN_PADDING_X}px`
+                : `${CHART_CONTENT_PADDING}px`,
+              py: 1.25,
               display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               gap: 2,
-              zIndex: 4,
-              pointerEvents: 'auto',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
             }}
           >
-            <Tooltip
-              title={
-                isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
-              }
-              placement="bottom"
-            >
-              <IconButton
-                size="small"
-                onClick={handleToggleGuide}
-                sx={{
-                  color: isGuideCollapsed ? '#64748B' : '#334155',
-                  p: 0.45,
-                  '&:hover': {
-                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
-                  },
-                }}
-              >
-                <PanelSidebarIcon side="right" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip
-              title={showPhaseInfo ? 'Hide phase info' : 'Show phase info'}
-              placement="bottom"
-            >
-              <IconButton
-                size="small"
-                onClick={handleTogglePhaseInfo}
-                sx={{
-                  color: showPhaseInfo ? '#334155' : '#64748B',
-                  p: 0.45,
-                  '&:hover': {
-                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
-                  },
-                }}
-              >
-                <PhaseInfoActionIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip
-              title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-              placement="bottom"
-            >
-              <IconButton
-                size="small"
-                onClick={handleToggleFullscreenFromMenu}
-                sx={{
-                  color: isFullscreen ? '#334155' : '#64748B',
-                  p: 0.45,
-                  '&:hover': {
-                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
-                  },
-                }}
-              >
-                <FullscreenActionIcon expanded={isFullscreen} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Download chart" placement="bottom">
-              <IconButton
-                size="small"
-                onClick={handleDownloadChart}
-                sx={{
-                  color: '#475569',
-                  p: 0.45,
-                  '&:hover': {
-                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
-                  },
-                }}
-              >
-                <ToolbarActionIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Reset chart" placement="bottom">
-              <IconButton
-                size="small"
-                onClick={handleResetChart}
-                sx={{
-                  color: '#475569',
-                  p: 0.45,
-                  '&:hover': {
-                    backgroundColor: 'rgba(15, 23, 42, 0.06)',
-                  },
-                }}
-              >
-                <ResetActionIcon />
-              </IconButton>
-            </Tooltip>
-          </div>
-
-          {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: `${CHART_CONTENT_PADDING}px`,
-                pointerEvents: 'none',
+            <Box
+              sx={{
+                minWidth: 0,
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 1,
+                flexWrap: 'wrap',
               }}
             >
-              {locationToggleButtons.map((button) => {
-                const isIgnored = ignoredLocations.includes(button.location)
-                const title = isIgnored
-                  ? `Show location ${button.location}`
-                  : `Ignore location ${button.location}`
+              <Typography
+                variant="h5"
+                sx={{
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  lineHeight: 1.2,
+                  minWidth: 0,
+                }}
+              >
+                {titleText || 'Time Space Diagram'}
+              </Typography>
+              {rangeText ? (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 500,
+                    lineHeight: 1.2,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  • {rangeText}
+                </Typography>
+              ) : null}
+            </Box>
 
-                return (
-                  <Tooltip key={button.location} title={title} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={() => onToggleIgnoredLocation(button.location)}
-                      sx={{
-                        pointerEvents: 'auto',
-                        position: 'absolute',
-                        left: `${button.left}px`,
-                        top: `${button.top}px`,
-                        p: 0,
-                        height: '10px',
-                        color: isIgnored ? '#6B7280' : '#1F2937',
-                        '&:hover': {
-                          backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                        },
-                      }}
-                    >
-                      {isIgnored ? (
-                        <VisibilityOffIcon sx={{ fontSize: '18px' }} />
-                      ) : (
-                        <VisibilityIcon sx={{ fontSize: '18px' }} />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                )
-              })}
-            </div>
-          )}
-        </div>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.25,
+                flexShrink: 0,
+              }}
+            >
+              {toolbarButtons}
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              width: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
+              minWidth: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
+              flexShrink: 0,
+              mr: isFullscreen ? `${FULLSCREEN_PADDING_X}px` : 0,
+              display: 'flex',
+              alignItems: 'flex-end',
+              borderLeft: isGuideCollapsed ? 'none' : '1px solid',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              overflow: 'hidden',
+              transition: `width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}, min-width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}`,
+            }}
+          >
+            {!isGuideCollapsed && (
+              <TimeSpaceSidebarTabs
+                activeTab={sidebarTab}
+                onChange={setSidebarTab}
+                hasLegendContent
+                hasUploadContent={Boolean(sidebarUploadContent)}
+                mode="header"
+              />
+            )}
+          </Box>
+        </Box>
+
         <div
           style={{
-            width: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
-            minWidth: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
-            flexShrink: 0,
-            position: 'sticky',
-            top: `${guideTopOffset}px`,
-            alignSelf: 'flex-start',
-            height: guideMaxHeight,
-            maxHeight: guideMaxHeight,
-            zIndex: 3,
-            willChange: 'width, min-width',
-            transition: `width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}, min-width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}`,
-            overflow: 'visible',
+            display: 'flex',
+            flex: 1,
+            minHeight: 0,
+            position: 'relative',
+            padding: isFullscreen
+              ? `0 ${FULLSCREEN_PADDING_X}px ${FULLSCREEN_PADDING_BOTTOM}px`
+              : undefined,
+            boxSizing: 'border-box',
           }}
         >
-          {!isGuideCollapsed && (
-            <TimeSpaceSidebar
-              option={option}
-              selectedSeries={selectedSeries}
-              onToggleSeries={handleToggleSeries}
-              uploadContent={sidebarUploadContent}
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              height: '100%',
+              padding: `${CHART_CONTENT_PADDING}px`,
+              boxSizing: 'border-box',
+              position: 'relative',
+            }}
+          >
+            <div
+              id={id}
+              ref={chartRef}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
             />
-          )}
+
+            {locationToggleButtons.length > 0 && onToggleIgnoredLocation && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: `${CHART_CONTENT_PADDING}px`,
+                  pointerEvents: 'none',
+                }}
+              >
+                {locationToggleButtons.map((button) => {
+                  const isIgnored = ignoredLocations.includes(button.location)
+                  const title = isIgnored
+                    ? `Show location ${button.location}`
+                    : `Ignore location ${button.location}`
+
+                  return (
+                    <Tooltip
+                      key={button.location}
+                      title={title}
+                      placement="top"
+                    >
+                      <IconButton
+                        size="small"
+                        onClick={() => onToggleIgnoredLocation(button.location)}
+                        sx={{
+                          pointerEvents: 'auto',
+                          position: 'absolute',
+                          left: `${button.left}px`,
+                          top: `${button.top}px`,
+                          p: 0,
+                          height: '10px',
+                          color: isIgnored ? '#6B7280' : '#1F2937',
+                          '&:hover': {
+                            backgroundColor: 'rgba(15, 23, 42, 0.08)',
+                          },
+                        }}
+                      >
+                        {isIgnored ? (
+                          <VisibilityOffIcon sx={{ fontSize: '18px' }} />
+                        ) : (
+                          <VisibilityIcon sx={{ fontSize: '18px' }} />
+                        )}
+                      </IconButton>
+                    </Tooltip>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+          <div
+            style={{
+              width: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
+              minWidth: isGuideCollapsed ? 0 : TIME_SPACE_GUIDE_WIDTH,
+              flexShrink: 0,
+              position: 'sticky',
+              top: `${guideTopOffset}px`,
+              alignSelf: 'flex-start',
+              height: guideMaxHeight,
+              maxHeight: guideMaxHeight,
+              zIndex: 3,
+              willChange: 'width, min-width',
+              transition: `width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}, min-width ${GUIDE_TRANSITION_MS}ms ${GUIDE_EASING}`,
+              overflow: 'visible',
+            }}
+          >
+            {!isGuideCollapsed && (
+              <TimeSpaceSidebar
+                option={optionWithoutHeaderTitle}
+                selectedSeries={selectedSeries}
+                onToggleSeries={handleToggleSeries}
+                uploadContent={sidebarUploadContent}
+                activeTab={sidebarTab}
+                onTabChange={setSidebarTab}
+                showTabs={false}
+              />
+            )}
+          </div>
         </div>
 
         <Menu

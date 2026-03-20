@@ -13,8 +13,8 @@ import {
   Typography,
 } from '@mui/material'
 import type { EChartsOption } from 'echarts'
-import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { useState } from 'react'
 
 type PreviewKind =
   | 'cycles'
@@ -72,11 +72,22 @@ export interface TimeSpaceSidebarProps {
   selectedSeries: Record<string, boolean>
   onToggleSeries: (seriesName: string) => void
   uploadContent?: ReactNode
+  activeTab?: SidebarTab
+  onTabChange?: (tab: SidebarTab) => void
+  showTabs?: boolean
 }
 
 export const TIME_SPACE_GUIDE_WIDTH = 360
 
-type SidebarTab = 'legend' | 'uploads'
+export type SidebarTab = 'legend' | 'uploads'
+
+interface TimeSpaceSidebarTabsProps {
+  activeTab: SidebarTab
+  onChange: (tab: SidebarTab) => void
+  hasLegendContent: boolean
+  hasUploadContent: boolean
+  mode?: 'sidebar' | 'header'
+}
 
 const CATEGORY_ORDER = [
   'Signal Timing',
@@ -227,6 +238,44 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     match: (name) => (name.startsWith('TSP Service (118-119)') ? '' : null),
   },
 ]
+
+export function TimeSpaceSidebarTabs({
+  activeTab,
+  onChange,
+  hasLegendContent,
+  hasUploadContent,
+  mode = 'sidebar',
+}: TimeSpaceSidebarTabsProps) {
+  return (
+    <Tabs
+      value={activeTab}
+      onChange={(_, value: SidebarTab) => onChange(value)}
+      sx={{
+        width: 'fit-content',
+        maxWidth: '100%',
+        minHeight: 'auto',
+        px: mode === 'header' ? 1 : 1.5,
+        pt: mode === 'header' ? 1 : 1.5,
+        pb: mode === 'header' ? 0 : 0.6,
+        '& .MuiTabs-scroller': {
+          width: 'auto !important',
+        },
+        '& .MuiTabs-indicator': {
+          bottom: mode === 'header' ? '-1px' : 0,
+        },
+        '& .MuiTab-root': {
+          minWidth: 0,
+          minHeight: mode === 'header' ? 34 : 30,
+          padding: mode === 'header' ? '6px 12px' : '4px 10px',
+          textTransform: 'none',
+        },
+      }}
+    >
+      {hasLegendContent && <Tab label="Legend" value="legend" />}
+      {hasUploadContent && <Tab label="Uploads" value="uploads" />}
+    </Tabs>
+  )
+}
 
 function getPrimaryLegend(option?: EChartsOption): LegendLike | undefined {
   if (!option?.legend) return undefined
@@ -620,6 +669,9 @@ export default function TimeSpaceSidebar({
   selectedSeries,
   onToggleSeries,
   uploadContent,
+  activeTab: controlledActiveTab,
+  onTabChange,
+  showTabs = true,
 }: TimeSpaceSidebarProps) {
   const items = buildSidebarItems(option)
   const [collapsedSections, setCollapsedSections] = useState<
@@ -628,7 +680,7 @@ export default function TimeSpaceSidebar({
   const [expandedDetails, setExpandedDetails] = useState<
     Record<string, boolean>
   >({})
-  const [currentTab, setCurrentTab] = useState<SidebarTab>('legend')
+  const [internalTab, setInternalTab] = useState<SidebarTab>('legend')
   const hasLegendContent = items.length > 0
   const hasUploadContent = Boolean(uploadContent)
   const availableTabs: SidebarTab[] = []
@@ -645,9 +697,15 @@ export default function TimeSpaceSidebar({
     return null
   }
 
-  const activeTab = availableTabs.includes(currentTab)
-    ? currentTab
+  const activeTab = availableTabs.includes(controlledActiveTab ?? internalTab)
+    ? (controlledActiveTab ?? internalTab)
     : availableTabs[0]
+  const handleTabChange = (tab: SidebarTab) => {
+    onTabChange?.(tab)
+    if (controlledActiveTab == null) {
+      setInternalTab(tab)
+    }
+  }
 
   const toggleSectionCollapse = (category: string) => {
     setCollapsedSections((current) => ({
@@ -707,54 +765,22 @@ export default function TimeSpaceSidebar({
         bgcolor: '#fff',
       }}
     >
-      {availableTabs.length > 1 ? (
+      {showTabs && availableTabs.length > 1 ? (
         <>
-          <Tabs
-            value={activeTab}
-            onChange={(_, value: SidebarTab) => setCurrentTab(value)}
-            variant="fullWidth"
-            sx={{
-              minHeight: 'auto',
-              px: 0.75,
-              pt: 0.5,
-              pb: 0.35,
-              '& .MuiTabs-flexContainer': {
-                gap: 0.5,
-              },
-              '& .MuiTabs-indicator': {
-                display: 'none',
-              },
-              '& .MuiTab-root': {
-                minHeight: 30,
-                padding: '4px 10px',
-                borderRadius: '4px',
-                border: '1px solid rgba(203, 213, 225, 0.95)',
-                backgroundColor: '#fff',
-                color: '#475569',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                textTransform: 'none',
-                transition:
-                  'background-color 120ms ease, color 120ms ease, border-color 120ms ease',
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(37, 99, 235, 0.08)',
-                  borderColor: 'rgba(37, 99, 235, 0.35)',
-                  color: '#1d4ed8',
-                },
-              },
-            }}
-          >
-            {hasLegendContent && <Tab label="Legend" value="legend" />}
-            {hasUploadContent && <Tab label="Uploads" value="uploads" />}
-          </Tabs>
+          <TimeSpaceSidebarTabs
+            activeTab={activeTab}
+            onChange={handleTabChange}
+            hasLegendContent={hasLegendContent}
+            hasUploadContent={hasUploadContent}
+          />
         </>
-      ) : (
+      ) : showTabs ? (
         <>
           <Typography
             variant="overline"
             sx={{
               px: 1.5,
-              pt: 1.1,
+              pt: 1.5,
               pb: 0.9,
               letterSpacing: 0.9,
               color: 'text.secondary',
@@ -766,7 +792,7 @@ export default function TimeSpaceSidebar({
           </Typography>
           <Divider />
         </>
-      )}
+      ) : null}
 
       <Box
         sx={{
@@ -807,7 +833,10 @@ export default function TimeSpaceSidebar({
                       pl: 0.75,
                     }}
                   >
-                    <Typography variant="subtitle2" sx={{ fontSize: '0.85rem' }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ fontSize: '0.85rem' }}
+                    >
                       {category}
                     </Typography>
                     <Box
@@ -817,13 +846,18 @@ export default function TimeSpaceSidebar({
                         gap: 0.1,
                       }}
                     >
-                      <Tooltip title={hasVisibleItems ? 'Hide all' : 'Show all'}>
+                      <Tooltip
+                        title={hasVisibleItems ? 'Hide all' : 'Show all'}
+                      >
                         <Checkbox
                           size="small"
                           checked={allItemsVisible}
                           indeterminate={hasVisibleItems && !allItemsVisible}
                           onChange={() =>
-                            setSectionVisibility(categoryItems, !allItemsVisible)
+                            setSectionVisibility(
+                              categoryItems,
+                              !allItemsVisible
+                            )
                           }
                           sx={{
                             p: 0.2,
@@ -881,7 +915,11 @@ export default function TimeSpaceSidebar({
                           }}
                         >
                           <Box
-                            sx={{ display: 'flex', gap: 0, alignItems: 'stretch' }}
+                            sx={{
+                              display: 'flex',
+                              gap: 0,
+                              alignItems: 'stretch',
+                            }}
                           >
                             <PreviewCard kind={item.preview} />
                             <Box
@@ -923,8 +961,13 @@ export default function TimeSpaceSidebar({
                                     >
                                       <IconButton
                                         size="small"
-                                        onClick={() => toggleItemDetails(item.key)}
-                                        sx={{ p: 0.15, color: 'text.secondary' }}
+                                        onClick={() =>
+                                          toggleItemDetails(item.key)
+                                        }
+                                        sx={{
+                                          p: 0.15,
+                                          color: 'text.secondary',
+                                        }}
                                       >
                                         {expandedDetails[item.key] ? (
                                           <ExpandLessIcon fontSize="small" />
@@ -976,7 +1019,8 @@ export default function TimeSpaceSidebar({
                                 {item.description}
                               </Typography>
 
-                              {item.details?.length && expandedDetails[item.key] ? (
+                              {item.details?.length &&
+                              expandedDetails[item.key] ? (
                                 <Box
                                   sx={{
                                     display: 'flex',
