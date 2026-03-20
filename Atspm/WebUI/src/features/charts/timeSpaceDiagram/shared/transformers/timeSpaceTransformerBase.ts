@@ -747,9 +747,9 @@ function getLongestLabelLineWidth(
 }
 
 export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
-  gridGap: 70,
-  dotOffset: 10,
-  cardGapToDot: 12,
+  gridGap: 35,
+  dotOffset: 36,
+  cardGapToDot: 18,
   cardWidth: 200,
   cardRadius: 4,
   headerHeight: 44,
@@ -759,6 +759,8 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   headerActionSize: 12,
   headerActionRight: 10,
 } as const
+
+const TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH = 96
 
 export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
   cardWidth: 90,
@@ -811,6 +813,7 @@ export function getLocationsLabelOption(
 
       const cardRight = xDot - cardGapToDot
       const cardLeft = cardRight - cardWidth
+      const xLine = cardRight + (gridLeft - cardRight) / 2
       const cardTop = y - CARD_H / 2
       const textX = cardLeft + bodyPaddingLeft
       const iconLeft = cardRight - headerActionRight - headerActionSize
@@ -819,8 +822,6 @@ export function getLocationsLabelOption(
 
       const children: any[] = []
 
-      const lineColor = Color.LightBlue
-
       if (idx === 0 && len > 1) {
         const last = len - 1
         const [, yTop] = api.coord([api.value(0, 0), api.value(1, 0)])
@@ -828,7 +829,7 @@ export function getLocationsLabelOption(
 
         children.push({
           type: 'line',
-          shape: { x1: xDot, y1: yTop, x2: xDot, y2: yBottom },
+          shape: { x1: xLine, y1: yTop, x2: xLine, y2: yBottom },
           style: { stroke: Color.PlanB, lineWidth: 3 },
           z2: 1,
         })
@@ -839,16 +840,25 @@ export function getLocationsLabelOption(
       )
       const isIgnored = Boolean(location?.isIgnoredLocation)
 
-      // Circle node
+      children.push({
+        type: 'line',
+        shape: { x1: xLine, y1: y, x2: gridLeft, y2: y },
+        style: {
+          stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
+          lineWidth: 2,
+        },
+        z2: 2,
+      })
+
       children.push({
         type: 'circle',
-        shape: { cx: xDot, cy: y, r: 7 },
+        shape: { cx: xLine, cy: y, r: 4 },
         style: {
-          fill: isIgnored ? '#F8FAFC' : '#fff',
-          stroke: isIgnored ? '#CBD5E1' : lineColor,
-          lineWidth: 3,
+          fill: isIgnored ? '#CBD5E1' : Color.LightBlue,
+          stroke: '#FFFFFF',
+          lineWidth: 1.5,
         },
-        z2: 3,
+        z2: 4,
       })
 
       const ident = String(api.value(2) ?? '')
@@ -1044,6 +1054,7 @@ export function getDistancesLabelOption(
   distanceData: number[],
   gridLeft: number
 ): SeriesOption {
+  const { gridGap, dotOffset, cardGapToDot } = TIME_SPACE_LOCATION_CARD_LAYOUT
   const dataPoints = distanceData.map((distance, index) => [
     data[index].end,
     distance,
@@ -1053,29 +1064,94 @@ export function getDistancesLabelOption(
   return {
     name: `Labels distance`,
     type: 'custom',
+    z: 4,
     renderItem: (params, api) => {
+      if (params.dataIndex === dataPoints.length - 1) {
+        return
+      }
+
+      const xDot = gridLeft - gridGap + dotOffset
+      const cardRight = xDot - cardGapToDot
+      const xLine = cardRight + (gridLeft - cardRight) / 2
+      const valueCardWidth = TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH
+      const valueCardHeight = 26
+      const valueCardRight = cardRight
+      const valueCardLeft = valueCardRight - valueCardWidth
+      const dividerX = valueCardLeft + valueCardWidth / 2
+      const distanceText = `${(api.value(2) as number).toLocaleString()} ft`
+      const speedText = `${api.value(3)} mph`
       const [, y] = api.coord([
         0,
         (api.value(1) as number) + (api.value(2) as number) / 2,
       ])
+
       return {
         type: 'group',
         children: [
           {
+            type: 'line',
+            shape: {
+              x1: xLine,
+              y1: y,
+              x2: valueCardRight,
+              y2: y,
+            },
+            style: {
+              stroke: Color.PlanB,
+              lineWidth: 3,
+            },
+          },
+          {
+            type: 'rect',
+            shape: {
+              x: valueCardLeft,
+              y: y - valueCardHeight / 2,
+              width: valueCardWidth,
+              height: valueCardHeight,
+              r: 4,
+            },
+            style: {
+              fill: 'rgba(86, 180, 233, 0.14)',
+              stroke: 'rgba(86, 180, 233, 0.38)',
+              lineWidth: 1,
+            },
+          },
+          {
+            type: 'line',
+            shape: {
+              x1: dividerX,
+              y1: y - 8,
+              x2: dividerX,
+              y2: y + 8,
+            },
+            style: {
+              stroke: 'rgba(86, 180, 233, 0.34)',
+              lineWidth: 1,
+            },
+          },
+          {
             type: 'text',
             style: {
-              x: gridLeft - 45,
-              y: y - 10,
-              text:
-                params.dataIndex !== dataPoints.length - 1
-                  ? api.value(2).toLocaleString() +
-                    ' ft' +
-                    '\n' +
-                    api.value(3).toString() +
-                    ' mph'
-                  : '',
+              x: valueCardLeft + valueCardWidth / 4,
+              y,
+              text: distanceText,
               textFill: '#000',
               fontSize: 10,
+              fontWeight: 600,
+              textAlign: 'center',
+              textVerticalAlign: 'middle',
+            },
+          },
+          {
+            type: 'text',
+            style: {
+              x: valueCardLeft + (valueCardWidth * 3) / 4,
+              y,
+              text: speedText,
+              textFill: '#2B4C68',
+              fontSize: 10,
+              textAlign: 'center',
+              textVerticalAlign: 'middle',
             },
           },
         ],
