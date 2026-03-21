@@ -945,6 +945,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [stickyTopAxis, setStickyTopAxis] = useState<StickyTopAxis | null>(null)
   const [contextMenuPosition, setContextMenuPosition] =
     useState<ContextMenuPosition | null>(null)
+  const [timeSpaceHandlerSyncVersion, setTimeSpaceHandlerSyncVersion] =
+    useState(0)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
     () => getLegendSelectedMap(option)
   )
@@ -976,7 +978,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     ? `calc(${fullscreenViewportHeight} - ${headerHeight}px - ${FULLSCREEN_PADDING_BOTTOM}px)`
     : `calc(100vh - ${headerHeight}px)`
 
-  useTimeSpaceHandler(chart)
+  useTimeSpaceHandler(chart, timeSpaceHandlerSyncVersion)
 
   const animator = useGpxAnimationHandler(
     chart,
@@ -1031,6 +1033,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     inst.setOption(renderedOption, {
       replaceMerge: ['series', 'grid', 'legend', 'toolbox'],
     })
+    setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }, [chart, renderedOption])
 
   useEffect(() => {
@@ -1263,6 +1266,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       lazyUpdate: false,
     })
     setSelectedSeries(getLegendSelectedMap(option))
+    setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }
 
   const handleDownloadChart = () => {

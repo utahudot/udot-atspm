@@ -16,6 +16,12 @@ type SeriesKind =
   | 'offset'
   | 'location-axis'
 
+function isSeriesOption(
+  value: SeriesOption | null | undefined
+): value is SeriesOption {
+  return Boolean(value && typeof value === 'object')
+}
+
 function shiftTimeStr(t: string, offsetMs: number): string {
   const time = new Date(t).getTime()
   return dateToTimestamp(new Date(time + offsetMs))
@@ -53,7 +59,8 @@ const getAllSeries = (chart: ECharts) => {
     }
   }
 
-  const series = options.series as SeriesOption[]
+  const rawSeries = Array.isArray(options.series) ? options.series : [options.series]
+  const series = rawSeries.filter(isSeriesOption)
 
   return {
     base: series.filter(
@@ -147,7 +154,7 @@ function buildLocationAxisOffsetData(
   })
 }
 
-export const useTimeSpaceHandler = (chart: ECharts | null) => {
+export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
   const draggingRef = useRef(false)
   const draggingGroupKeyRef = useRef<string | null>(null)
   const lastXRef = useRef<number | null>(null)
@@ -208,6 +215,10 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       captureOriginal()
     }
 
+    originalDataByIdRef.current = {}
+    kindByIdRef.current = {}
+    resetRefs()
+
     // initial capture
     const { base } = captureOriginal()
     if (!base.length) return
@@ -247,12 +258,17 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       ])
       if (xData == null) return
 
-      const latestBase =
-        (chart.getOption()?.series as SeriesOption[] | undefined)?.filter(
-          (s) => typeof s.id === 'string' && s.id.includes('Cycles')
-        ) ?? base
+      const latestSeries = Array.isArray(chart.getOption()?.series)
+        ? (chart.getOption()?.series as Array<SeriesOption | null | undefined>).filter(
+            isSeriesOption
+          )
+        : []
+      const latestBase = latestSeries.filter(
+        (s) => typeof s.id === 'string' && s.id.includes('Cycles')
+      )
+      const activeBase = latestBase.length ? latestBase : base
 
-      const closest = findClosestGroup(chart, latestBase, e.offsetY)
+      const closest = findClosestGroup(chart, activeBase, e.offsetY)
       if (!closest) return
 
       draggingRef.current = true
@@ -326,5 +342,5 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       chart.off('restore', onRestore)
       chart.off('finished', onFinished)
     }
-  }, [chart])
+  }, [chart, syncVersion])
 }

@@ -119,6 +119,75 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   },
 ] as const
 
+type OffsetDeltaDirection = 'positive' | 'negative' | 'neutral'
+
+type OffsetDeltaVisuals = {
+  direction: OffsetDeltaDirection
+  highlightFill: string
+  highlightStroke: string
+  valueColor: string
+}
+
+function normalizeOffsetSeconds(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0
+  }
+
+  const normalized = Number.isInteger(value) ? value : Number(value.toFixed(1))
+  return Object.is(normalized, -0) ? 0 : normalized
+}
+
+export function formatSignedOffsetSeconds(value: number): string {
+  const normalized = normalizeOffsetSeconds(value)
+  const formatted = Number.isInteger(normalized)
+    ? normalized.toString()
+    : normalized.toFixed(1)
+
+  return normalized > 0 ? `+${formatted}s` : `${formatted}s`
+}
+
+export function getOffsetDeltaVisuals(
+  value: number,
+  isIgnored: boolean
+): OffsetDeltaVisuals {
+  const normalized = normalizeOffsetSeconds(value)
+
+  if (normalized > 0) {
+    return {
+      direction: 'positive',
+      highlightFill: isIgnored
+        ? 'rgba(0, 158, 115, 0.08)'
+        : 'rgba(0, 158, 115, 0.14)',
+      highlightStroke: isIgnored
+        ? 'rgba(0, 158, 115, 0.14)'
+        : 'rgba(0, 158, 115, 0.24)',
+      valueColor: isIgnored ? 'rgba(0, 158, 115, 0.72)' : Color.Green,
+    }
+  }
+
+  if (normalized < 0) {
+    return {
+      direction: 'negative',
+      highlightFill: isIgnored
+        ? 'rgba(215, 49, 49, 0.08)'
+        : 'rgba(215, 49, 49, 0.14)',
+      highlightStroke: isIgnored
+        ? 'rgba(215, 49, 49, 0.14)'
+        : 'rgba(215, 49, 49, 0.24)',
+      valueColor: isIgnored
+        ? 'rgba(215, 49, 49, 0.72)'
+        : Color.BrightRed,
+    }
+  }
+
+  return {
+    direction: 'neutral',
+    highlightFill: 'transparent',
+    highlightStroke: 'transparent',
+    valueColor: isIgnored ? '#64748B' : '#0F172A',
+  }
+}
+
 const CYCLE_SEGMENT_HEIGHT = 15
 const CYCLE_DURATION_LABEL_FONT_SIZE = 10
 const CYCLE_DURATION_LABEL_FILL = 'white'
@@ -885,12 +954,8 @@ export function getLocationsLabelOption(
             : `{name|${name}}`
       const cycleLengthValue = api.value(4)
       const offsetValue = Number(api.value(5) ?? 0)
-      const isOffsetModified = Number.isFinite(offsetValue) && offsetValue !== 0
-      const formattedOffset = Number.isFinite(offsetValue)
-        ? Number.isInteger(offsetValue)
-          ? offsetValue.toString()
-          : offsetValue.toFixed(1)
-        : '0'
+      const offsetVisuals = getOffsetDeltaVisuals(offsetValue, isIgnored)
+      const isOffsetModified = offsetVisuals.direction !== 'neutral'
       const bodyTop = cardTop + headerHeight
       const bodyContentWidth = cardWidth - bodyPaddingLeft - bodyPaddingRight
       const metricGap = 8
@@ -903,7 +968,7 @@ export function getLocationsLabelOption(
       const metricLabelWidth = metricWidth * 0.48
       const metricValueWidth = metricWidth * 0.42
       const cycleText = `${cycleLengthValue ?? 'N/A'}`
-      const offsetText = `${formattedOffset}s`
+      const offsetText = formatSignedOffsetSeconds(offsetValue)
       const offsetValueFont =
         '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
       const offsetValueTextWidth = measureTextWidth(offsetText, offsetValueFont)
@@ -924,6 +989,108 @@ export function getLocationsLabelOption(
         offsetValueHighlightCenterX - offsetValueHighlightWidth / 2
       const offsetValueHighlightY =
         metricRowY - offsetValueHighlightHeight / 2
+      const bodyChildren = isIgnored
+        ? []
+        : [
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: cycleMetricX + metricInnerPadding,
+                y: metricRowY,
+                text: 'Cycle',
+                width: metricLabelWidth,
+                overflow: 'truncate',
+                textAlign: 'left',
+                textVerticalAlign: 'middle',
+                fill: '#64748B',
+                fontSize: 10,
+                fontWeight: 500,
+              },
+            },
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: cycleMetricX + metricWidth - metricInnerPadding,
+                y: metricRowY,
+                text: cycleText,
+                width: metricValueWidth,
+                overflow: 'truncate',
+                textAlign: 'right',
+                textVerticalAlign: 'middle',
+                fill: '#111827',
+                fontSize: 11,
+                fontWeight: 700,
+              },
+            },
+            {
+              type: 'line' as const,
+              z2: 20,
+              shape: {
+                x1: bodyDividerX,
+                y1: bodyTop + 6,
+                x2: bodyDividerX,
+                y2: bodyTop + bodyHeight - 6,
+              },
+              style: {
+                stroke: '#E5EAF1',
+                lineWidth: 1,
+              },
+            },
+            ...(isOffsetModified
+              ? [
+                  {
+                    type: 'rect' as const,
+                    z2: 19,
+                    shape: {
+                      x: offsetValueHighlightX,
+                      y: offsetValueHighlightY,
+                      width: offsetValueHighlightWidth,
+                      height: offsetValueHighlightHeight,
+                      r: 4,
+                    },
+                    style: {
+                      fill: offsetVisuals.highlightFill,
+                      stroke: offsetVisuals.highlightStroke,
+                      lineWidth: 1,
+                    },
+                  },
+                ]
+              : []),
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: offsetMetricX + metricInnerPadding,
+                y: metricRowY,
+                text: 'Offset',
+                width: metricLabelWidth,
+                overflow: 'truncate',
+                textAlign: 'left',
+                textVerticalAlign: 'middle',
+                fill: '#64748B',
+                fontSize: 10,
+                fontWeight: 500,
+              },
+            },
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: offsetMetricX + metricWidth - metricInnerPadding,
+                y: metricRowY,
+                text: offsetText,
+                width: metricValueWidth,
+                overflow: 'truncate',
+                textAlign: 'right',
+                textVerticalAlign: 'middle',
+                fill: offsetVisuals.valueColor,
+                fontSize: 11,
+                fontWeight: 700,
+              },
+            },
+          ]
 
       children.push({
         type: 'group',
@@ -1008,114 +1175,7 @@ export function getLocationsLabelOption(
               lineWidth: 1,
             },
           },
-          {
-            type: 'text',
-            z2: 20,
-            style: {
-              x: cycleMetricX + metricInnerPadding,
-              y: metricRowY,
-              text: 'Cycle',
-              width: metricLabelWidth,
-              overflow: 'truncate',
-              textAlign: 'left',
-              textVerticalAlign: 'middle',
-              fill: isIgnored ? '#94A3B8' : '#64748B',
-              fontSize: 10,
-              fontWeight: 500,
-            },
-          },
-          {
-            type: 'text',
-            z2: 20,
-            style: {
-              x: cycleMetricX + metricWidth - metricInnerPadding,
-              y: metricRowY,
-              text: cycleText,
-              width: metricValueWidth,
-              overflow: 'truncate',
-              textAlign: 'right',
-              textVerticalAlign: 'middle',
-              fill: isIgnored ? '#64748B' : '#111827',
-              fontSize: 11,
-              fontWeight: 700,
-            },
-          },
-          {
-            type: 'line',
-            z2: 20,
-            shape: {
-              x1: bodyDividerX,
-              y1: bodyTop + 6,
-              x2: bodyDividerX,
-              y2: bodyTop + bodyHeight - 6,
-            },
-            style: {
-              stroke: isIgnored ? '#E2E8F0' : '#E5EAF1',
-              lineWidth: 1,
-            },
-          },
-          ...(isOffsetModified
-            ? [
-                {
-                  type: 'rect' as const,
-                  z2: 19,
-                  shape: {
-                    x: offsetValueHighlightX,
-                    y: offsetValueHighlightY,
-                    width: offsetValueHighlightWidth,
-                    height: offsetValueHighlightHeight,
-                    r: 4,
-                  },
-                  style: {
-                    fill: isIgnored
-                      ? 'rgba(86, 180, 233, 0.08)'
-                      : 'rgba(86, 180, 233, 0.14)',
-                    stroke: isIgnored
-                      ? 'rgba(86, 180, 233, 0.14)'
-                      : 'rgba(86, 180, 233, 0.24)',
-                    lineWidth: 1,
-                  },
-                },
-              ]
-            : []),
-          {
-            type: 'text',
-            z2: 20,
-            style: {
-              x: offsetMetricX + metricInnerPadding,
-              y: metricRowY,
-              text: 'Offset',
-              width: metricLabelWidth,
-              overflow: 'truncate',
-              textAlign: 'left',
-              textVerticalAlign: 'middle',
-              fill: isIgnored ? '#94A3B8' : '#64748B',
-              fontSize: 10,
-              fontWeight: 500,
-            },
-          },
-          {
-            type: 'text',
-            z2: 20,
-            style: {
-              x: offsetMetricX + metricWidth - metricInnerPadding,
-              y: metricRowY,
-              text: offsetText,
-              width: metricValueWidth,
-              overflow: 'truncate',
-              textAlign: 'right',
-              textVerticalAlign: 'middle',
-              fill: isOffsetModified
-                ? isIgnored
-                  ? '#5A88A8'
-                  : '#0F5B8D'
-                : isIgnored
-                  ? '#64748B'
-                  : '#0F172A',
-              fontSize: 11,
-              fontWeight: 700,
-            },
-          },
+          ...bodyChildren,
         ],
       })
 
@@ -1512,6 +1572,7 @@ export function generateCycleLabels(
         isIgnored ? '#94A3B8' : '#111111'
       )
       const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
+      const visibleDetailLines = isIgnored ? [] : detailLines
       const bodyHeight = detailLines.length
         ? Math.max(
             minBodyHeight,
@@ -1628,7 +1689,7 @@ export function generateCycleLabels(
               fontSize: 10,
             },
           },
-          ...detailLines.flatMap((line, index) => {
+          ...visibleDetailLines.flatMap((line, index) => {
             const percentValue = extractPercentValue(line)
             const lineY = bodyTop + bodyPaddingY + index * lineHeight
             const pieChildren =
