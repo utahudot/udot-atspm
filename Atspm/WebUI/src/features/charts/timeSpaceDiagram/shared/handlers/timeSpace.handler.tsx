@@ -1,4 +1,5 @@
 import { dateToTimestamp } from '@/utils/dateTime'
+import { TIME_SPACE_LOCATION_AXIS_SERIES_ID } from '../transformers/timeSpaceTransformerBase'
 import { ECharts, EChartsOption, SeriesOption } from 'echarts'
 import { useEffect, useRef } from 'react'
 
@@ -13,6 +14,7 @@ type SeriesKind =
   | 'ac'
   | 'sbp'
   | 'offset'
+  | 'location-axis'
 
 function shiftTimeStr(t: string, offsetMs: number): string {
   const time = new Date(t).getTime()
@@ -47,6 +49,7 @@ const getAllSeries = (chart: ECharts) => {
       ac: [],
       sbp: [],
       offset: [],
+      locationAxis: [],
     }
   }
 
@@ -69,6 +72,7 @@ const getAllSeries = (chart: ECharts) => {
     offset: series.filter(
       (s) => typeof s.id === 'string' && s.id.includes('Offset')
     ),
+    locationAxis: series.filter((s) => s.id === TIME_SPACE_LOCATION_AXIS_SERIES_ID),
   }
 }
 
@@ -114,9 +118,33 @@ function buildShiftedData(kind: SeriesKind, original: any[], offsetMs: number) {
       )
     case 'offset':
       return original.map((d) => [d[0], d[1], d[2], offsetMs / 1000])
+    case 'location-axis':
+      return original
     default:
       return original
   }
+}
+
+function buildLocationAxisOffsetData(
+  original: any[],
+  offsetsByGroup: Record<string, number>
+) {
+  return original.map((datum) => {
+    if (!Array.isArray(datum)) {
+      return datum
+    }
+
+    const nextDatum = [...datum]
+    const locationId = String(nextDatum[2] ?? '')
+    const baseOffsetSeconds =
+      typeof nextDatum[5] === 'number' && Number.isFinite(nextDatum[5])
+        ? nextDatum[5]
+        : 0
+    const dragOffsetSeconds = (offsetsByGroup[locationId] ?? 0) / 1000
+
+    nextDatum[5] = baseOffsetSeconds + dragOffsetSeconds
+    return nextDatum
+  })
 }
 
 export const useTimeSpaceHandler = (chart: ECharts | null) => {
@@ -143,7 +171,7 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
     }
 
     const captureOriginal = () => {
-      const { base, cycleDurations, bands, llc, ac, sbp, offset } =
+      const { base, cycleDurations, bands, llc, ac, sbp, offset, locationAxis } =
         getAllSeries(chart)
 
       const put = (arr: SeriesOption[], kind: SeriesKind) => {
@@ -167,6 +195,7 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       put(ac, 'ac')
       put(sbp, 'sbp')
       put(offset, 'offset')
+      put(locationAxis, 'location-axis')
 
       return { base }
     }
@@ -190,10 +219,18 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       for (const [id, original] of Object.entries(
         originalDataByIdRef.current
       )) {
-        if (getGroupKeyFromSeriesId(id) !== groupKey) continue
-
         const kind = kindByIdRef.current[id]
         if (!kind) continue
+
+        if (kind === 'location-axis') {
+          updates.push({
+            id,
+            data: buildLocationAxisOffsetData(original, offsetsByGroupRef.current),
+          })
+          continue
+        }
+
+        if (getGroupKeyFromSeriesId(id) !== groupKey) continue
 
         updates.push({ id, data: buildShiftedData(kind, original, rounded) })
       }

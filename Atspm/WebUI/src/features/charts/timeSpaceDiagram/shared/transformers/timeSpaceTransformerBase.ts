@@ -763,6 +763,8 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   headerActionOverlayOffsetY: 15,
 } as const
 
+export const TIME_SPACE_LOCATION_AXIS_SERIES_ID = 'Location axis'
+
 const TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH = 96
 
 export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
@@ -802,7 +804,8 @@ export function getLocationsLabelOption(
   const CARD_H = headerHeight + bodyHeight
 
   const series: SeriesOption = {
-    name: 'Location axis',
+    id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+    name: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
     type: 'custom',
     silent: true,
     clip: false,
@@ -880,7 +883,47 @@ export function getLocationsLabelOption(
           : ident
             ? `{ident|${ident}}`
             : `{name|${name}}`
-      const detailText = `Cycle Length: ${location?.cycleLength ?? 'N/A'}`
+      const cycleLengthValue = api.value(4)
+      const offsetValue = Number(api.value(5) ?? 0)
+      const isOffsetModified = Number.isFinite(offsetValue) && offsetValue !== 0
+      const formattedOffset = Number.isFinite(offsetValue)
+        ? Number.isInteger(offsetValue)
+          ? offsetValue.toString()
+          : offsetValue.toFixed(1)
+        : '0'
+      const bodyTop = cardTop + headerHeight
+      const bodyContentWidth = cardWidth - bodyPaddingLeft - bodyPaddingRight
+      const metricGap = 8
+      const metricWidth = (bodyContentWidth - metricGap) / 2
+      const cycleMetricX = textX
+      const offsetMetricX = cycleMetricX + metricWidth + metricGap
+      const bodyDividerX = cycleMetricX + metricWidth + metricGap / 2
+      const metricRowY = bodyTop + bodyHeight / 2
+      const metricInnerPadding = 7
+      const metricLabelWidth = metricWidth * 0.48
+      const metricValueWidth = metricWidth * 0.42
+      const cycleText = `${cycleLengthValue ?? 'N/A'}`
+      const offsetText = `${formattedOffset}s`
+      const offsetValueFont =
+        '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
+      const offsetValueTextWidth = measureTextWidth(offsetText, offsetValueFont)
+      const offsetValueTextRightX =
+        offsetMetricX + metricWidth - metricInnerPadding
+      const offsetValueHighlightPaddingX = 6
+      const offsetValueHighlightWidth = Math.min(
+        metricWidth - metricInnerPadding,
+        Math.max(
+          26,
+          Math.ceil(offsetValueTextWidth + offsetValueHighlightPaddingX * 2)
+        )
+      )
+      const offsetValueHighlightHeight = 18
+      const offsetValueHighlightCenterX =
+        offsetValueTextRightX - offsetValueTextWidth / 2
+      const offsetValueHighlightX =
+        offsetValueHighlightCenterX - offsetValueHighlightWidth / 2
+      const offsetValueHighlightY =
+        metricRowY - offsetValueHighlightHeight / 2
 
       children.push({
         type: 'group',
@@ -969,17 +1012,108 @@ export function getLocationsLabelOption(
             type: 'text',
             z2: 20,
             style: {
-              x: textX,
-              y: cardTop + headerHeight + 6,
-              text: detailText,
-              width: cardWidth - bodyPaddingLeft - bodyPaddingRight,
-              overflow: 'break',
-              lineHeight: 13,
+              x: cycleMetricX + metricInnerPadding,
+              y: metricRowY,
+              text: 'Cycle',
+              width: metricLabelWidth,
+              overflow: 'truncate',
               textAlign: 'left',
-              textVerticalAlign: 'top',
-              fill: isIgnored ? '#94A3B8' : '#374151',
-              fontSize: 11,
+              textVerticalAlign: 'middle',
+              fill: isIgnored ? '#94A3B8' : '#64748B',
+              fontSize: 10,
               fontWeight: 500,
+            },
+          },
+          {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: cycleMetricX + metricWidth - metricInnerPadding,
+              y: metricRowY,
+              text: cycleText,
+              width: metricValueWidth,
+              overflow: 'truncate',
+              textAlign: 'right',
+              textVerticalAlign: 'middle',
+              fill: isIgnored ? '#64748B' : '#111827',
+              fontSize: 11,
+              fontWeight: 700,
+            },
+          },
+          {
+            type: 'line',
+            z2: 20,
+            shape: {
+              x1: bodyDividerX,
+              y1: bodyTop + 6,
+              x2: bodyDividerX,
+              y2: bodyTop + bodyHeight - 6,
+            },
+            style: {
+              stroke: isIgnored ? '#E2E8F0' : '#E5EAF1',
+              lineWidth: 1,
+            },
+          },
+          ...(isOffsetModified
+            ? [
+                {
+                  type: 'rect' as const,
+                  z2: 19,
+                  shape: {
+                    x: offsetValueHighlightX,
+                    y: offsetValueHighlightY,
+                    width: offsetValueHighlightWidth,
+                    height: offsetValueHighlightHeight,
+                    r: 4,
+                  },
+                  style: {
+                    fill: isIgnored
+                      ? 'rgba(86, 180, 233, 0.08)'
+                      : 'rgba(86, 180, 233, 0.14)',
+                    stroke: isIgnored
+                      ? 'rgba(86, 180, 233, 0.14)'
+                      : 'rgba(86, 180, 233, 0.24)',
+                    lineWidth: 1,
+                  },
+                },
+              ]
+            : []),
+          {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: offsetMetricX + metricInnerPadding,
+              y: metricRowY,
+              text: 'Offset',
+              width: metricLabelWidth,
+              overflow: 'truncate',
+              textAlign: 'left',
+              textVerticalAlign: 'middle',
+              fill: isIgnored ? '#94A3B8' : '#64748B',
+              fontSize: 10,
+              fontWeight: 500,
+            },
+          },
+          {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: offsetMetricX + metricWidth - metricInnerPadding,
+              y: metricRowY,
+              text: offsetText,
+              width: metricValueWidth,
+              overflow: 'truncate',
+              textAlign: 'right',
+              textVerticalAlign: 'middle',
+              fill: isOffsetModified
+                ? isIgnored
+                  ? '#5A88A8'
+                  : '#0F5B8D'
+                : isIgnored
+                  ? '#64748B'
+                  : '#0F172A',
+              fontSize: 11,
+              fontWeight: 700,
             },
           },
         ],
@@ -988,12 +1122,22 @@ export function getLocationsLabelOption(
       return { type: 'group', children }
     },
 
-    data: distanceData.map((distance, index) => [
-      data[index].start,
-      distance,
-      data[index].locationIdentifier,
-      data[index].locationDescription,
-    ]),
+    data: distanceData.map((distance, index) => {
+      const location = data[index]
+      const offset =
+        'offset' in location && typeof location.offset === 'number'
+          ? location.offset
+          : 0
+
+      return [
+        location.start,
+        distance,
+        location.locationIdentifier,
+        location.locationDescription,
+        location.cycleLength,
+        offset,
+      ]
+    }),
   }
 
   return series
