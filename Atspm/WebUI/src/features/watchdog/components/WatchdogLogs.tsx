@@ -75,7 +75,9 @@ const watchdogLogsSchema = z.object({
 // Schema for ignoring events
 const ignoreEventSchema = z.object({
   start: z.date().nullable(),
-  end: z.date().nullable(),
+  end: z.date().nullable().refine((value) => value !== null, {
+    message: 'End date is required',
+  }),
 })
 
 const WatchDogLogs = () => {
@@ -87,6 +89,7 @@ const WatchDogLogs = () => {
     isLoading: isWatchdogLogsLoading,
     error: watchdogLogsError,
     mutateAsync: fetchWatchdogLogs,
+    isSuccess: isWatchdogLogsSuccess,
   } = useGetWatchdogLogs()
   const { mutateAsync: addWatchdogIgnoreEvents } =
     useCreateWatchdogIgnoreEvents()
@@ -107,6 +110,7 @@ const WatchDogLogs = () => {
     handleSubmit: handleIgnoreSubmit,
     setValue: setIgnoreValue,
     watch: watchIgnore,
+    formState: { errors: ignoreErrors },
   } = useForm<z.infer<typeof ignoreEventSchema>>({
     resolver: zodResolver(ignoreEventSchema),
     defaultValues: {
@@ -136,6 +140,14 @@ const WatchDogLogs = () => {
   const [isIconClicked, setIsIconClicked] = useState(false)
   const [processedRows, setProcessedRows] = useState<transformWatchDogLog[]>([])
 
+  const issueTypes = useMemo(() => {
+    if (!issueTypesData) return null
+    return issueTypesData.reduce(
+      (acc, issueType) => ({ ...acc, [issueType.id]: issueType.name }),
+      {}
+    )
+  }, [issueTypesData])
+
   useMemo(() => {
     const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
     if (logEvents) {
@@ -147,7 +159,7 @@ const WatchDogLogs = () => {
         regionDescription: logEvent.regionDescription,
         jurisdictionName: logEvent.jurisdictionName,
         areas: logEvent.areas.map((area: Area) => area.name).join(', '),
-        issueType: logEvent.issueType,
+        issueType: issueTypes?.[logEvent.issueType] ?? logEvent.issueType,
         phase: logEvent.phase,
         details: logEvent.details,
         componentType: logEvent.componentType,
@@ -155,15 +167,14 @@ const WatchDogLogs = () => {
       }))
       setProcessedRows(rows)
     }
-  }, [watchdogLogsData])
+  }, [watchdogLogsData, issueTypes])
 
-  const issueTypes = useMemo(() => {
-    if (!issueTypesData) return null
-    return issueTypesData.reduce(
-      (acc, issueType) => ({ ...acc, [issueType.id]: issueType.name }),
-      {}
-    )
-  }, [issueTypesData])
+  const returnedLogEvents =
+    (watchdogLogsData as unknown as LogEventsData)?.logEvents ?? []
+  const showNoLogsMessage =
+    isWatchdogLogsSuccess &&
+    !isWatchdogLogsLoading &&
+    returnedLogEvents.length === 0
 
   const handleIconClick = useCallback(() => {
     setIsIconClicked(!isIconClicked)
@@ -446,16 +457,32 @@ const WatchDogLogs = () => {
         </StyledPaper>
       </Box>
 
-      <LoadingButton
-        loading={isWatchdogLogsLoading}
-        startIcon={<PlayArrowIcon />}
-        loadingPosition="start"
-        variant="contained"
-        onClick={handleFetchData}
-        sx={{ marginY: 3, padding: '10px' }}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          flexWrap: 'wrap',
+          my: 3,
+        }}
       >
-        Generate Report
-      </LoadingButton>
+        <LoadingButton
+          loading={isWatchdogLogsLoading}
+          startIcon={<PlayArrowIcon />}
+          loadingPosition="start"
+          variant="contained"
+          onClick={handleFetchData}
+          sx={{ padding: '10px' }}
+        >
+          Generate Report
+        </LoadingButton>
+
+        {showNoLogsMessage && (
+          <Alert severity="error">
+            No watchdog logs were found for the selected filters.
+          </Alert>
+        )}
+      </Box>
 
       {watchdogLogsError && (
         <Alert severity="error">
@@ -510,12 +537,27 @@ const WatchDogLogs = () => {
             <DatePicker
               label="Start Date"
               value={startIgnoreTime}
-              onChange={(newValue) => setIgnoreValue('start', newValue)}
+              onChange={(newValue) =>
+                setIgnoreValue('start', newValue, {
+                  shouldValidate: true,
+                })
+              }
             />
             <DatePicker
               label="End Date"
               value={endIgnoreTime}
-              onChange={(newValue) => setIgnoreValue('end', newValue)}
+              onChange={(newValue) =>
+                setIgnoreValue('end', newValue, {
+                  shouldValidate: true,
+                })
+              }
+              slotProps={{
+                textField: {
+                  required: true,
+                  error: !!ignoreErrors.end,
+                  helperText: ignoreErrors.end?.message,
+                },
+              }}
             />
           </Box>
         </DialogContent>
