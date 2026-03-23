@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
@@ -21,8 +21,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
 	</ItemGroup>
@@ -36,12 +36,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Using Include="Utah.Udot.Atspm.Data.Models" />
-	  <Using Include="Utah.Udot.Atspm.Data.Models.EventLogModels" />
-	  <Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
-	  <Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
-	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
-	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+		<Using Include="Utah.Udot.Atspm.Data.Models" />
+		<Using Include="Utah.Udot.Atspm.Data.Models.EventLogModels" />
+		<Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
+		<Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
+		<Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
+		<Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
 	</ItemGroup>
 
 </Project>

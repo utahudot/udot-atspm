@@ -45,7 +45,7 @@ export interface RawTurningMovementCountsData extends BaseChartData {
   movementType: string
   plans: Plan[]
   lanes: Lane[]
-  TotalHourlyVolumes: DataPoint[]
+  totalHourlyVolumes?: DataPoint[]
   totalVolume: number
   peakHour: string
   peakHourVolume: number
@@ -63,9 +63,10 @@ export interface RawTurningMovementCountsResponse {
   }
 }
 
-interface RawTurningMovementCountTableRow {
+export interface RawTurningMovementCountTableRow {
   direction: string
   movementType: string
   laneType: string
   volume: { value: number; timestamp: string }[]
+  peakHourVolume?: { value: number } | null
 }
