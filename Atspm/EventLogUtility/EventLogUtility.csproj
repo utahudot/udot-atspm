@@ -14,7 +14,7 @@
 		<Nullable>enable</Nullable>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>..\ATSPM</DockerfileContext>
-		<Version>5.2.0</Version>
+		<Version>5.2.1-rc1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
