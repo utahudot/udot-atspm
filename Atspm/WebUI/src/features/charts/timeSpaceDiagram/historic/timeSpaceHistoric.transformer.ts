@@ -139,7 +139,12 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   } as const
 
   const xAxis = [
-    createXAxis(data[0].start, data[0].end),
+    {
+      ...createXAxis(data[0].start, data[0].end),
+      axisLine: {
+        onZero: false,
+      },
+    },
     { min: 0, max: 1, show: false },
     xAxisTopSeconds,
   ]
