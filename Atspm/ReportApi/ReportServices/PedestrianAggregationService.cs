@@ -43,6 +43,11 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<PedatLocationData>> ExecuteAsync(PedatLocationDataQuery parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            return await ExecutePedAgg(parameter);
+        }
+
+        public async Task<IEnumerable<PedatLocationData>> ExecutePedAgg(PedatLocationDataQuery parameter)
+        {
             var locations = new List<Location>();
             var pedatLocations = new List<PedatLocationData>();
             if (parameter == null || parameter.EndDate == null || parameter.StartDate == null || parameter.LocationIdentifiers == null)
@@ -323,101 +328,115 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
         private List<IndexedVolume> AverageVolumeByHour(List<CombinedHourlyAggregation> combinedHourly)
         {
-            var allHours = combinedHourly.Select(p => p.Timestamp)
-                .Select(h => h.Hour)           // get 0�23 hour of day
+            var allHours = combinedHourly
+                .Select(p => p.Timestamp.Hour)
                 .Distinct()
                 .OrderBy(h => h)
                 .ToList();
 
-            List<IndexedVolume> hourlyRatios = allHours
+            // count distinct days in the data
+            var totalDays = combinedHourly.Select(p => p.Timestamp.Date).Distinct().Count();
+
+            return allHours
                 .Select(hour =>
                 {
-                    var volume = combinedHourly
+                    var hourTotal = combinedHourly
                         .Where(p => p.Timestamp.Hour == hour)
                         .Sum(p => p.CalculatedVolume);
 
+                    var volume = hourTotal / totalDays; // average across days
+
                     return new IndexedVolume
                     {
-                        Index = hour,   // 0�23
+                        Index = hour, // 0-23
                         Volume = volume
                     };
                 })
                 .ToList();
-
-            return hourlyRatios;
         }
 
         private List<IndexedVolume> AverageVolumeByDayOfWeek(List<CombinedHourlyAggregation> combinedHourly)
         {
-            // Get all days of week present in the data
-            var allDays = combinedHourly.Select(p => (int)p.Timestamp.DayOfWeek)
-                            .Distinct()
-                            .OrderBy(d => d)
-                            .ToList();
-
-            // Convert .NET DayOfWeek (0=Sunday, 1=Monday, ...) to ISO 1=Monday,...7=Sunday
+            // ISO-style: Monday = 1, ..., Sunday = 7
             int ToIsoDay(int dotNetDay) => dotNetDay == 0 ? 7 : dotNetDay;
 
-            List<IndexedVolume> dailyRatios = allDays
+            var allDays = combinedHourly
+                .Select(p => ToIsoDay((int)p.Timestamp.DayOfWeek))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+
+            return allDays
                 .Select(day =>
                 {
-                    int isoDay = ToIsoDay(day);
+                    var dayGroups = combinedHourly
+                        .Where(p => ToIsoDay((int)p.Timestamp.DayOfWeek) == day)
+                        .GroupBy(p => p.Timestamp.Date); // group by distinct date
 
-                    // Sum across all hours/phases for this day
-                    var volume = combinedHourly
-                        .Where(p => ToIsoDay((int)p.Timestamp.DayOfWeek) == isoDay)
-                        .Sum(p => p.CalculatedVolume);
+                    var totalVolume = dayGroups
+                        .Select(g => g.Sum(p => p.CalculatedVolume))
+                        .Average(); // average per ISO day-of-week
 
                     return new IndexedVolume
                     {
-                        Index = isoDay,   // 1=Monday ... 7=Sunday
-                        Volume = volume
+                        Index = day, // 1 = Monday ... 7 = Sunday
+                        Volume = totalVolume
                     };
                 })
                 .ToList();
-
-            return dailyRatios;
         }
 
         private List<IndexedVolume> AverageVolumeByMonth(List<CombinedHourlyAggregation> combinedHourly)
         {
-            // Get all months present in the data
-            var allMonths = combinedHourly.Select(p => p.Timestamp.Month)
-                            .Distinct()
-                            .OrderBy(m => m)
-                            .ToList();
+            var allMonths = combinedHourly
+                .Select(p => p.Timestamp.Month) // 1-12
+                .Distinct()
+                .OrderBy(m => m)
+                .ToList();
 
-            List<IndexedVolume> monthlyRatios = allMonths
+            return allMonths
                 .Select(month =>
                 {
-                    // Sum across all days/hours/phases for this month
-                    var volume = combinedHourly
+                    var monthGroups = combinedHourly
                         .Where(p => p.Timestamp.Month == month)
-                        .Sum(p => p.CalculatedVolume);
+                        .GroupBy(p => new { p.Timestamp.Year, p.Timestamp.Month }); // group by month/year
+
+                    var totalVolume = monthGroups
+                        .Select(g => g.Sum(p => p.CalculatedVolume))
+                        .Average(); // average across years if multiple
 
                     return new IndexedVolume
                     {
-                        Index = month,   // 1 = January ... 12 = December
-                        Volume = volume
+                        Index = month,
+                        Volume = totalVolume
                     };
                 })
                 .ToList();
-
-            return monthlyRatios;
         }
 
-        private double AverageVolumeOverall(List<CombinedHourlyAggregation> combinedHourly)
+        public double AverageVolumeOverall(List<CombinedHourlyAggregation> combinedHourly)
         {
-            // Group by date (ignore time)
-            var dailySums = combinedHourly
-                .GroupBy(i => i.Timestamp.Date)
-                .Select(g => g.Sum(x => x.CalculatedVolume));
+            if (combinedHourly == null || !combinedHourly.Any())
+                return 0;
 
-            // Compute the average across all days
-            return dailySums.Any() ? dailySums.Average() : 0;
+            var allDates = combinedHourly
+                .Select(p => p.Timestamp.Date)
+                .Distinct();
+
+            var dailyTotals = allDates
+                .Select(date =>
+                {
+                    var values = combinedHourly
+                        .Where(p => p.Timestamp.Date == date)
+                        .Select(p => p.CalculatedVolume);
+
+                    return values.Sum(); // ? key difference
+                });
+
+            return dailyTotals.Any() ? dailyTotals.Average() : 0;
         }
 
-        private class CombinedHourlyAggregation
+        public class CombinedHourlyAggregation
         {
             public DateTime Timestamp { get; set; }
             public int PhaseNumber { get; set; }
