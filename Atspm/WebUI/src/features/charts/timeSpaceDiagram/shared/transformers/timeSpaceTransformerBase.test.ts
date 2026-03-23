@@ -1,14 +1,18 @@
-import type { GridComponentOption } from 'echarts'
 import { Color } from '@/features/charts/utils'
+import type { GridComponentOption } from 'echarts'
 import type { RawTimeSpaceAverageData } from '../types'
 import {
   formatSignedOffsetSeconds,
-  getOffsetDeltaVisuals,
   generateCycleLabels,
   getLocationsLabelOption,
+  getOffsetDeltaVisuals,
 } from './timeSpaceTransformerBase'
 
 let originalCanvasGetContext: typeof HTMLCanvasElement.prototype.getContext
+
+function stripRichText(text: string): string {
+  return text.replace(/\{[^|}]+\|([^}]+)\}/g, '$1')
+}
 
 function buildLocation(
   overrides: Partial<RawTimeSpaceAverageData> = {}
@@ -50,7 +54,9 @@ function collectRenderTexts(node: unknown): string[] {
   }
 
   const ownText =
-    typeof candidate.style?.text === 'string' ? [candidate.style.text] : []
+    typeof candidate.style?.text === 'string'
+      ? [stripRichText(candidate.style.text)]
+      : []
   const childTexts = Array.isArray(candidate.children)
     ? candidate.children.flatMap((child) => collectRenderTexts(child))
     : []
@@ -58,15 +64,64 @@ function collectRenderTexts(node: unknown): string[] {
   return [...ownText, ...childTexts]
 }
 
-function renderLocationCardTexts(location: RawTimeSpaceAverageData): string[] {
-  const series = getLocationsLabelOption(
-    [location],
-    [0],
-    { left: 100 } as GridComponentOption
-  ) as {
+function findTextStyle(
+  node: unknown,
+  text: string
+): {
+  fill?: unknown
+  fontSize?: unknown
+  fontWeight?: unknown
+  rich?: unknown
+} | null {
+  if (!node || typeof node !== 'object') {
+    return null
+  }
+
+  const candidate = node as {
+    children?: unknown[]
+    style?: {
+      text?: unknown
+      fill?: unknown
+      fontSize?: unknown
+      fontWeight?: unknown
+      rich?: unknown
+    }
+  }
+
+  if (candidate.style?.text === text) {
+    return {
+      fill: candidate.style.fill,
+      fontSize: candidate.style.fontSize,
+      fontWeight: candidate.style.fontWeight,
+      rich: candidate.style.rich,
+    }
+  }
+
+  if (!Array.isArray(candidate.children)) {
+    return null
+  }
+
+  for (const child of candidate.children) {
+    const match = findTextStyle(child, text)
+    if (match) {
+      return match
+    }
+  }
+
+  return null
+}
+
+function renderLocationCardNode(location: RawTimeSpaceAverageData): unknown {
+  const series = getLocationsLabelOption([location], [0], {
+    left: 100,
+  } as GridComponentOption) as {
     data?: unknown[]
     renderItem?: (
-      params: { dataIndex: number; dataIndexInside: number; dataInsideLength: number },
+      params: {
+        dataIndex: number
+        dataIndexInside: number
+        dataInsideLength: number
+      },
       api: {
         coord: (value: unknown[]) => [number, number]
         value: (index: number, dataIndex?: number) => unknown
@@ -74,7 +129,9 @@ function renderLocationCardTexts(location: RawTimeSpaceAverageData): string[] {
     ) => unknown
   }
 
-  const dataPoint = Array.isArray(series.data) ? (series.data[0] as unknown[]) : []
+  const dataPoint = Array.isArray(series.data)
+    ? (series.data[0] as unknown[])
+    : []
   const renderResult = series.renderItem?.(
     {
       dataIndex: 0,
@@ -87,18 +144,35 @@ function renderLocationCardTexts(location: RawTimeSpaceAverageData): string[] {
     }
   )
 
-  return collectRenderTexts(renderResult)
+  return renderResult
 }
 
-function renderCycleLabelTexts(isIgnored: boolean): string[] {
+function renderLocationCardTexts(location: RawTimeSpaceAverageData): string[] {
+  return collectRenderTexts(renderLocationCardNode(location))
+}
+
+function renderCycleLabelNode(
+  isIgnored: boolean,
+  {
+    column = 'right',
+    distanceData = [0],
+    rowIndex = 0,
+    headerTexts,
+  }: {
+    column?: 'left' | 'right'
+    distanceData?: number[]
+    rowIndex?: number
+    headerTexts?: string[]
+  } = {}
+): unknown {
   const series = generateCycleLabels(
-    [0],
+    distanceData,
     'NB',
     0,
-    ['NB'],
-    [['AOG: 55%']],
-    'right',
-    [isIgnored]
+    headerTexts ?? distanceData.map(() => 'NB'),
+    distanceData.map(() => ['AOG: 55%']),
+    column,
+    distanceData.map(() => isIgnored)
   ) as {
     data?: unknown[]
     renderItem?: (
@@ -113,10 +187,13 @@ function renderCycleLabelTexts(isIgnored: boolean): string[] {
     ) => unknown
   }
 
-  const dataPoint = Array.isArray(series.data) ? series.data[0] : 0
+  const dataPoint =
+    Array.isArray(series.data) && series.data.length > rowIndex
+      ? series.data[rowIndex]
+      : 0
   const renderResult = series.renderItem?.(
     {
-      dataIndex: 0,
+      dataIndex: rowIndex,
       coordSys: { x: 0, width: 100 },
     },
     {
@@ -125,7 +202,18 @@ function renderCycleLabelTexts(isIgnored: boolean): string[] {
     }
   )
 
-  return collectRenderTexts(renderResult)
+  return renderResult
+}
+
+function renderCycleLabelTexts(
+  isIgnored: boolean,
+  options?: {
+    column?: 'left' | 'right'
+    distanceData?: number[]
+    rowIndex?: number
+  }
+): string[] {
+  return collectRenderTexts(renderCycleLabelNode(isIgnored, options))
 }
 
 describe('timeSpaceTransformerBase offset formatting', () => {
@@ -188,8 +276,77 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     const hiddenTexts = renderCycleLabelTexts(true)
 
     expect(visibleTexts).toContain('NB')
-    expect(visibleTexts).toContain('AOG: 55%')
+    expect(visibleTexts).toContain('AOG')
+    expect(visibleTexts).toContain('55%')
     expect(hiddenTexts).toContain('NB')
-    expect(hiddenTexts).not.toContain('AOG: 55%')
+    expect(hiddenTexts).not.toContain('AOG')
+    expect(hiddenTexts).not.toContain('55%')
+  })
+
+  it('styles the AOG label like the location-card metric labels', () => {
+    const cycleMetricStyle = findTextStyle(
+      renderLocationCardNode(buildLocation()),
+      'Cycle'
+    )
+    const aogStyle = findTextStyle(renderCycleLabelNode(false), 'AOG')
+
+    expect(cycleMetricStyle).toMatchObject({
+      fill: '#64748B',
+      fontSize: 10,
+      fontWeight: 500,
+    })
+    expect(aogStyle).toEqual(cycleMetricStyle)
+  })
+
+  it('styles phase-card identifier/name headers like location-card titles', () => {
+    const headerStyle = findTextStyle(
+      renderCycleLabelNode(false, {
+        headerTexts: ['6192 - 200 S & State St'],
+      }),
+      '{ident|6192}{name| - 200 S & State St}'
+    )
+
+    expect(headerStyle).toMatchObject({
+      fontSize: 10,
+      rich: {
+        ident: {
+          fontWeight: 700,
+        },
+        name: {
+          fontWeight: 400,
+        },
+      },
+    })
+  })
+
+  it('renders a primary footer under the bottom left phase card', () => {
+    const texts = renderCycleLabelTexts(false, {
+      column: 'left',
+      distanceData: [0, 100],
+      rowIndex: 1,
+    })
+
+    expect(texts).toContain('primary')
+  })
+
+  it('renders an opposing footer under the bottom right phase card', () => {
+    const texts = renderCycleLabelTexts(false, {
+      column: 'right',
+      distanceData: [0, 100],
+      rowIndex: 1,
+    })
+
+    expect(texts).toContain('opposing')
+  })
+
+  it('does not render the footer under the upper phase card', () => {
+    const texts = renderCycleLabelTexts(false, {
+      column: 'left',
+      distanceData: [0, 100],
+      rowIndex: 0,
+    })
+
+    expect(texts).not.toContain('primary')
+    expect(texts).not.toContain('opposing')
   })
 })

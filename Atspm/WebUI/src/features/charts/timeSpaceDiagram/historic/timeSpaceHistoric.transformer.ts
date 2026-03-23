@@ -175,7 +175,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const grid: GridComponentOption = {
     top: 30,
     left: 220,
-    right: 300,
+    right: 195,
     bottom: 100,
     show: true,
     borderWidth: 1,
@@ -299,7 +299,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
   )
 
-  const MIN_SEGMENT = 1700
+  const MIN_SEGMENT = 2000
 
   const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
 

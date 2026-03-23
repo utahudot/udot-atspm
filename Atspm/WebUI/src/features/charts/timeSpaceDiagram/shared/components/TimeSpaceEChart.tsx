@@ -1397,6 +1397,15 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           <FullscreenActionIcon expanded={isFullscreen} />
         </IconButton>
       </Tooltip>
+      <Divider
+        orientation="vertical"
+        flexItem
+        sx={{
+          mx: 0.35,
+          my: 0.25,
+          borderColor: 'rgba(148, 163, 184, 0.55)',
+        }}
+      />
       <Tooltip title="Download chart" placement="bottom">
         <IconButton
           size="small"

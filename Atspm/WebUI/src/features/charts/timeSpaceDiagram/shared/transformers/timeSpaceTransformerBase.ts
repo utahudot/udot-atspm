@@ -760,6 +760,40 @@ function splitPrimarySecondary(desc: string | undefined) {
   }
 }
 
+function splitIdentifierAndDescription(text: string | undefined) {
+  const raw = (text ?? '').trim()
+  const match = raw.match(/^\s*(#?\d+)\s*-\s*(.+)$/)
+
+  return {
+    identifier: match?.[1]?.trim() ?? '',
+    description: match?.[2]?.trim() ?? raw,
+  }
+}
+
+function buildIdentifierAndNameTitle(
+  identifier: string | undefined,
+  description: string | undefined
+) {
+  const ident = (identifier ?? '').trim()
+  const { primary, secondary } = splitPrimarySecondary(description)
+  const name =
+    primary && secondary ? `${primary} & ${secondary}` : primary || secondary
+
+  if (ident && name) {
+    return `{ident|${ident}}{name| - ${name}}`
+  }
+
+  if (ident) {
+    return `{ident|${ident}}`
+  }
+
+  if (name) {
+    return `{name|${name}}`
+  }
+
+  return ''
+}
+
 type FontSpec = {
   ident: string
   line: string
@@ -940,16 +974,10 @@ export function getLocationsLabelOption(
         String(api.value(3) ?? '')
       )
 
-      const name =
-        primary && secondary
-          ? `${primary} & ${secondary}`
-          : primary || secondary || ''
-      const titleText =
-        ident && name
-          ? `{ident|${ident}}{name| - ${name}}`
-          : ident
-            ? `{ident|${ident}}`
-            : `{name|${name}}`
+      const titleText = buildIdentifierAndNameTitle(
+        ident,
+        String(api.value(3) ?? '')
+      )
       const cycleLengthValue = api.value(4)
       const offsetValue = Number(api.value(5) ?? 0)
       const offsetVisuals = getOffsetDeltaVisuals(offsetValue, isIgnored)
@@ -1001,7 +1029,7 @@ export function getLocationsLabelOption(
                 textAlign: 'left',
                 textVerticalAlign: 'middle',
                 fill: '#64748B',
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: 500,
               },
             },
@@ -1067,7 +1095,7 @@ export function getLocationsLabelOption(
                 textAlign: 'left',
                 textVerticalAlign: 'middle',
                 fill: '#64748B',
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: 500,
               },
             },
@@ -1553,6 +1581,50 @@ export function generateCycleLabels(
       const rowIndex = params.dataIndex
       const [, y] = api.coord([0, api.value(0)])
       const coordSys = params.coordSys as { x: number; width: number }
+      const footerLabelIndex = distanceData.reduce(
+        (currentLowestIndex, _, index) => {
+          const [, currentRowY] = api.coord([
+            0,
+            distanceData[currentLowestIndex],
+          ])
+          const [, candidateRowY] = api.coord([0, distanceData[index]])
+          const currentRowDetailLines = Boolean(
+            ignoredByIndex?.[currentLowestIndex]
+          )
+            ? []
+            : (linesByIndex?.[currentLowestIndex] ?? []).filter(Boolean)
+          const candidateRowDetailLines = Boolean(ignoredByIndex?.[index])
+            ? []
+            : (linesByIndex?.[index] ?? []).filter(Boolean)
+          const currentRowBodyHeight = currentRowDetailLines.length
+            ? Math.max(
+                minBodyHeight,
+                currentRowDetailLines.length * lineHeight + bodyPaddingY * 2
+              )
+            : 0
+          const candidateRowBodyHeight = candidateRowDetailLines.length
+            ? Math.max(
+                minBodyHeight,
+                candidateRowDetailLines.length * lineHeight + bodyPaddingY * 2
+              )
+            : 0
+          const currentRowBottom =
+            currentRowY +
+            CYCLE_SEGMENT_HEIGHT / 2 +
+            verticalOffsetY +
+            (headerHeight + currentRowBodyHeight) / 2
+          const candidateRowBottom =
+            candidateRowY +
+            CYCLE_SEGMENT_HEIGHT / 2 +
+            verticalOffsetY +
+            (headerHeight + candidateRowBodyHeight) / 2
+
+          return candidateRowBottom > currentRowBottom
+            ? index
+            : currentLowestIndex
+        },
+        0
+      )
       const isIgnored = Boolean(ignoredByIndex?.[rowIndex])
       const anchorY = y + CYCLE_SEGMENT_HEIGHT / 2 + verticalOffsetY
       const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
@@ -1562,6 +1634,12 @@ export function generateCycleLabels(
           : primaryCardLeft + cardWidth + cardGapBetween
 
       const headerText = headerTextByIndex?.[rowIndex]?.trim() || direction
+      const { identifier: headerIdentifier, description: headerDescription } =
+        splitIdentifierAndDescription(headerText)
+      const headerTitleText = buildIdentifierAndNameTitle(
+        headerIdentifier,
+        headerDescription
+      )
       const headerAccentColor = getDirectionAccentColor(headerText)
       const headerDirectionKey = getDirectionTypeKey(headerText)
       const headerIconDataUrl = getDirectionIconDataUrl(
@@ -1579,6 +1657,9 @@ export function generateCycleLabels(
       const cardHeight = headerHeight + bodyHeight
       const cardTop = anchorY - cardHeight / 2
       const bodyTop = cardTop + headerHeight
+      const footerLabelText = column === 'left' ? 'primary' : 'opposing'
+      const showFooterLabel = rowIndex === footerLabelIndex
+      const footerLabelY = cardTop + cardHeight + 10
       const textX = cardLeft + bodyPaddingX
       const iconSize = 10
       const headerTextX = textX + (headerIconDataUrl ? iconSize + 3 : 0)
@@ -1588,6 +1669,12 @@ export function generateCycleLabels(
       const detailTextWidth = Math.max(
         0,
         detailPieCenterX - textX - detailPieRadius - 6
+      )
+      const detailMetricGap = 4
+      const detailValueWidth = Math.min(26, Math.max(20, detailTextWidth * 0.4))
+      const detailLabelWidth = Math.max(
+        0,
+        detailTextWidth - detailValueWidth - detailMetricGap
       )
 
       return {
@@ -1679,16 +1766,31 @@ export function generateCycleLabels(
             style: {
               x: headerTextX,
               y: cardTop + headerHeight / 2,
-              text: headerText,
+              text: headerTitleText,
               textAlign: 'left',
               textVerticalAlign: 'middle',
-              fill: isIgnored ? '#94A3B8' : '#111',
               fontSize: 10,
+              rich: {
+                ident: {
+                  fill: isIgnored ? '#94A3B8' : '#111',
+                  fontSize: 10,
+                  fontWeight: 700,
+                },
+                name: {
+                  fill: isIgnored ? '#94A3B8' : '#111',
+                  fontSize: 10,
+                  fontWeight: 400,
+                },
+              },
             },
           },
           ...visibleDetailLines.flatMap((line, index) => {
             const percentValue = extractPercentValue(line)
             const lineY = bodyTop + bodyPaddingY + index * lineHeight
+            const isArrivalOnGreenLine = /^AOG:\s*/i.test(line)
+            const arrivalOnGreenValue = isArrivalOnGreenLine
+              ? line.replace(/^AOG:\s*/i, '')
+              : null
             const pieChildren =
               percentValue === null
                 ? []
@@ -1732,26 +1834,83 @@ export function generateCycleLabels(
                   ]
 
             return [
-              {
-                type: 'text' as const,
-                z2: 20,
-                style: {
-                  x: textX,
-                  y: lineY,
-                  text: line,
-                  width: detailTextWidth,
-                  overflow: 'truncate',
-                  lineHeight,
-                  textAlign: 'left',
-                  textVerticalAlign: 'top',
-                  fill: isIgnored ? '#94A3B8' : '#222',
-                  fontSize: 10,
-                  fontWeight: 500,
-                },
-              },
+              ...(isArrivalOnGreenLine
+                ? [
+                    {
+                      type: 'text' as const,
+                      z2: 20,
+                      style: {
+                        x: textX,
+                        y: lineY,
+                        text: 'AOG',
+                        width: detailLabelWidth,
+                        overflow: 'truncate',
+                        lineHeight,
+                        textAlign: 'left',
+                        textVerticalAlign: 'top',
+                        fill: isIgnored ? '#94A3B8' : '#64748B',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      },
+                    },
+                    {
+                      type: 'text' as const,
+                      z2: 20,
+                      style: {
+                        x: textX + detailTextWidth,
+                        y: lineY,
+                        text: arrivalOnGreenValue ?? '',
+                        width: detailValueWidth,
+                        overflow: 'truncate',
+                        lineHeight,
+                        textAlign: 'right',
+                        textVerticalAlign: 'top',
+                        fill: isIgnored ? '#94A3B8' : '#222',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      type: 'text' as const,
+                      z2: 20,
+                      style: {
+                        x: textX,
+                        y: lineY,
+                        text: line,
+                        width: detailTextWidth,
+                        overflow: 'truncate',
+                        lineHeight,
+                        textAlign: 'left',
+                        textVerticalAlign: 'top',
+                        fill: isIgnored ? '#94A3B8' : '#222',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      },
+                    },
+                  ]),
               ...pieChildren,
             ]
           }),
+          ...(showFooterLabel
+            ? [
+                {
+                  type: 'text' as const,
+                  z2: 20,
+                  style: {
+                    x: cardLeft + cardWidth / 2,
+                    y: footerLabelY,
+                    text: footerLabelText,
+                    textAlign: 'center',
+                    textVerticalAlign: 'top',
+                    fill: '#475569',
+                    fontSize: 10,
+                    fontWeight: 600,
+                  },
+                },
+              ]
+            : []),
         ],
       }
     },
