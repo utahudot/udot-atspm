@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import type { ReactNode } from 'react'
+import { useMemo } from 'react'
 
 type TableRowT = (string | number)[]
 
@@ -54,13 +55,47 @@ export default function TurningMovementCountsResultsTable({
   labels,
   showPeakHour,
 }: TurningMovementCountsResultsTableProps) {
-  const cellStyle = (ci: number) => {
-    if (ci === binTotalIdx) return { backgroundColor: '#ADDFFF50' }
-    if (dirTotalIdx.has(ci)) return { backgroundColor: '#90EE9050' }
+  const peakHourHighlightColumns = useMemo(() => {
+    const peakHourDirTotalIdx = new Set<number>()
+    let peakHourBinTotalIdx = -1
+    let columnIndex = 0
+
+    labels.columnGroups.forEach((group) => {
+      if (group.title && group.columns.length) {
+        peakHourDirTotalIdx.add(columnIndex + group.columns.length - 1)
+      }
+
+      if (!group.title) {
+        const binTotalOffset = group.columns.indexOf('Bin Total')
+        if (binTotalOffset >= 0) {
+          peakHourBinTotalIdx = columnIndex + binTotalOffset
+        }
+      }
+
+      columnIndex += group.columns.length
+    })
+
+    return {
+      dirTotalIdx: peakHourDirTotalIdx,
+      binTotalIdx: peakHourBinTotalIdx,
+    }
+  }, [labels.columnGroups])
+
+  const cellStyle = (
+    ci: number,
+    activeDirTotalIdx: Set<number> = dirTotalIdx,
+    activeBinTotalIdx: number = binTotalIdx
+  ) => {
+    if (ci === activeBinTotalIdx) return { backgroundColor: '#ADDFFF50' }
+    if (activeDirTotalIdx.has(ci)) return { backgroundColor: '#90EE9050' }
     return {}
   }
 
-  const renderBodyRows = (allRows: TableRowT[]) =>
+  const renderBodyRows = (
+    allRows: TableRowT[],
+    activeDirTotalIdx: Set<number> = dirTotalIdx,
+    activeBinTotalIdx: number = binTotalIdx
+  ) =>
     allRows.map((row, ri) => {
       const isFooter = row[0] === 'Total'
       return (
@@ -80,7 +115,7 @@ export default function TurningMovementCountsResultsTable({
           {row?.map((cell, ci) => (
             <TableCell
               key={ci}
-              sx={cellStyle(ci)}
+              sx={cellStyle(ci, activeDirTotalIdx, activeBinTotalIdx)}
               align={ci === 0 ? 'left' : 'right'}
             >
               {typeof cell === 'number' ? cell.toLocaleString() : cell}
@@ -204,7 +239,13 @@ export default function TurningMovementCountsResultsTable({
                 </TableRow>
               </TableHead>
 
-              <TableBody>{renderBodyRows(peakHour.peakHourData)}</TableBody>
+              <TableBody>
+                {renderBodyRows(
+                  peakHour.peakHourData,
+                  peakHourHighlightColumns.dirTotalIdx,
+                  peakHourHighlightColumns.binTotalIdx
+                )}
+              </TableBody>
             </Table>
           </TableContainer>
         ) : null

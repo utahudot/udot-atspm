@@ -34,6 +34,7 @@ import { ChartType } from '@/features/charts/common/types'
 import {
   ColumnGroup,
   Labels,
+  TableRow,
   TransformedChartResponse,
 } from '@/features/charts/types'
 import {
@@ -44,6 +45,11 @@ import {
 import { addHours, format } from 'date-fns'
 import { EChartsOption, SeriesOption } from 'echarts'
 import {
+  compareTurningMovementDirections,
+  getAvailableTurningMovementDirections,
+  normalizeTurningMovementDirection,
+} from './directions'
+import {
   RawTurningMovementCountsData,
   RawTurningMovementCountsResponse,
 } from './types'
@@ -51,32 +57,25 @@ import {
 export default function transformTurningMovementCountsData(
   response: RawTurningMovementCountsResponse
 ): TransformedChartResponse {
-  const charts = response.data.charts.map((data) => ({
-    chart: transformData(data),
-  }))
+  const charts = response.data.charts
+    .slice()
+    .sort((a, b) => {
+      const directionDiff = compareTurningMovementDirections(
+        a.direction,
+        b.direction
+      )
+      if (directionDiff !== 0) return directionDiff
 
-  charts.sort((a, b) => {
-    const directionOrder = ['North', 'South', 'East', 'West']
-    const movementOrder = ['Left', 'Thru', 'Right']
+      return compareMovementTypes(a.movementType, b.movementType)
+    })
+    .map((data) => ({
+      chart: transformData(data),
+    }))
 
-    const titleA = a.chart.displayProps.description
-    const titleB = b.chart.displayProps.description
-
-    const directionA = directionOrder.find((dir) => titleA.includes(dir)) || ''
-    const directionB = directionOrder.find((dir) => titleB.includes(dir)) || ''
-
-    const movementA = movementOrder.find((mov) => titleA.includes(mov)) || ''
-    const movementB = movementOrder.find((mov) => titleB.includes(mov)) || ''
-
-    const directionDiff =
-      directionOrder.indexOf(directionA) - directionOrder.indexOf(directionB)
-    if (directionDiff !== 0) return directionDiff
-
-    return movementOrder.indexOf(movementA) - movementOrder.indexOf(movementB)
-  })
-
-  const directions = ['Eastbound', 'Westbound', 'Northbound', 'Southbound']
-  const preferred = ['Left', 'Thru', 'Thru-Right', 'Right']
+  const directions = getAvailableTurningMovementDirections(
+    response.data.table.map((row) => row.direction)
+  )
+  const preferred = ['Left', 'Thru-Left', 'Thru', 'Thru-Right', 'Right']
 
   const movementTypes = buildMovementTypeMap(
     response.data.table,
@@ -98,12 +97,13 @@ export default function transformTurningMovementCountsData(
       labels,
       table: response.data.table,
       charts,
-      peakHour: response.data.peakHour
-        ? {
-            peakHourFactor: response.data.peakHourFactor,
-            peakHourData: [peakRow],
-          }
-        : null,
+      peakHour:
+        response.data.peakHour && peakRow
+          ? {
+              peakHourFactor: response.data.peakHourFactor,
+              peakHourData: [peakRow],
+            }
+          : null,
     },
   }
 }
@@ -112,12 +112,12 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   const {
     lanes,
     plans,
-    totalHourlyVolumes,
     peakHour,
     peakHourFactor,
     peakHourVolume,
     laneUtilizationFactor,
   } = data
+  const totalHourlyVolumes = data.totalHourlyVolumes ?? []
 
   const info = createInfoString(
     ['Total Volume: ', `${data.totalVolume.toLocaleString()}`],
@@ -235,8 +235,22 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   return chartOptions
 }
 
-function formatTime(timestamp: string) {
+function formatTime(timestamp: string | Date) {
   return format(new Date(timestamp), 'HH:mm')
+}
+
+function compareMovementTypes(a: string, b: string) {
+  const movementOrder = ['Left', 'Thru-Left', 'Thru', 'Thru-Right', 'Right']
+  const orderA = movementOrder.indexOf(a)
+  const orderB = movementOrder.indexOf(b)
+
+  if (orderA !== orderB) {
+    if (orderA === -1) return 1
+    if (orderB === -1) return -1
+    return orderA - orderB
+  }
+
+  return a.localeCompare(b)
 }
 
 function buildMovementTypeMap(
@@ -247,7 +261,9 @@ function buildMovementTypeMap(
   const map: Record<string, string[]> = {}
   directions.forEach((dir) => {
     const set = new Set(
-      table.filter((d) => d.direction === dir).map((d) => d.movementType)
+      table
+        .filter((d) => normalizeTurningMovementDirection(d.direction) === dir)
+        .map((d) => d.movementType)
     )
     const arr = Array.from(set).sort((a, b) => {
       const ia = preferredOrder.indexOf(a)
@@ -288,8 +304,11 @@ function buildPeakHourRow(
   if (!peakHour?.key) return null
 
   const valueAtPH = (dir: string, mt: string) =>
-    rawTable.find((r) => r.direction === dir && r.movementType === mt)
-      ?.peakHourVolume?.value ?? 0
+    rawTable.find(
+      (r) =>
+        normalizeTurningMovementDirection(r.direction) === dir &&
+        r.movementType === mt
+    )?.peakHourVolume?.value ?? 0
 
   const start = new Date(peakHour.key)
   const desc = `${formatTime(start)} – ${formatTime(addHours(start, 1))}`
