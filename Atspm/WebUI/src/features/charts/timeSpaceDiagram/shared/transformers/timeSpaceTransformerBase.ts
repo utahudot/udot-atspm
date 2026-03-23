@@ -174,9 +174,7 @@ export function getOffsetDeltaVisuals(
       highlightStroke: isIgnored
         ? 'rgba(215, 49, 49, 0.14)'
         : 'rgba(215, 49, 49, 0.24)',
-      valueColor: isIgnored
-        ? 'rgba(215, 49, 49, 0.72)'
-        : Color.BrightRed,
+      valueColor: isIgnored ? 'rgba(215, 49, 49, 0.72)' : Color.BrightRed,
     }
   }
 
@@ -842,7 +840,7 @@ export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
   headerHeight: 18,
   cardGapFromPlot: 5,
   cardGapBetween: 5,
-  verticalOffsetY: -12,
+  verticalOffsetY: -8,
   bodyPaddingX: 7,
   bodyPaddingY: 4,
   lineHeight: 13,
@@ -987,8 +985,7 @@ export function getLocationsLabelOption(
         offsetValueTextRightX - offsetValueTextWidth / 2
       const offsetValueHighlightX =
         offsetValueHighlightCenterX - offsetValueHighlightWidth / 2
-      const offsetValueHighlightY =
-        metricRowY - offsetValueHighlightHeight / 2
+      const offsetValueHighlightY = metricRowY - offsetValueHighlightHeight / 2
       const bodyChildren = isIgnored
         ? []
         : [

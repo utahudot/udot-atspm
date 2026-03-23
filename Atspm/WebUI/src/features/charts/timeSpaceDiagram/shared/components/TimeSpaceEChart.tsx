@@ -973,6 +973,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const fullscreenContentHeight = baseHeight
     ? `max(${baseHeight}, ${fullscreenViewportHeight})`
     : fullscreenViewportHeight
+  const fullscreenChartBodyHeight = baseHeight
+    ? `calc(${baseHeight} - ${headerHeight}px)`
+    : undefined
   const guideTopOffset = headerHeight
   const guideMaxHeight = isFullscreen
     ? `calc(${fullscreenViewportHeight} - ${headerHeight}px - ${FULLSCREEN_PADDING_BOTTOM}px)`
@@ -1561,6 +1564,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
             display: 'flex',
             flex: 1,
             minHeight: 0,
+            alignItems:
+              isFullscreen && fullscreenChartBodyHeight
+                ? 'flex-start'
+                : undefined,
             position: 'relative',
             padding: isFullscreen
               ? `0 ${FULLSCREEN_PADDING_X}px ${FULLSCREEN_PADDING_BOTTOM}px`
@@ -1572,7 +1579,14 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
             style={{
               flex: 1,
               minWidth: 0,
-              height: '100%',
+              height:
+                isFullscreen && fullscreenChartBodyHeight
+                  ? fullscreenChartBodyHeight
+                  : '100%',
+              alignSelf:
+                isFullscreen && fullscreenChartBodyHeight
+                  ? 'flex-start'
+                  : undefined,
               boxSizing: 'border-box',
               position: 'relative',
               display: 'flex',
