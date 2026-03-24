@@ -11,7 +11,6 @@ import {
 import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp, toUTCDateStamp } from '@/utils/dateTime'
-import { addSpaces } from '@/utils/string'
 import { zodResolver } from '@hookform/resolvers/zod'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -75,9 +74,12 @@ const watchdogLogsSchema = z.object({
 // Schema for ignoring events
 const ignoreEventSchema = z.object({
   start: z.date().nullable(),
-  end: z.date().nullable().refine((value) => value !== null, {
-    message: 'End date is required',
-  }),
+  end: z
+    .date()
+    .nullable()
+    .refine((value) => value !== null, {
+      message: 'End date is required',
+    }),
 })
 
 const WatchDogLogs = () => {
@@ -204,8 +206,10 @@ const WatchDogLogs = () => {
     const response = await Promise.all(
       selectedRows.map(async (rowId) => {
         const eventToIgnore = clickedRows?.[rowId]
-        if (!eventToIgnore || !data.start || !data.end)
+        if (!eventToIgnore || !data.start)
           return { rowId, success: false, error: 'Event not found' }
+
+        console.log('Ignoring event:', eventToIgnore)
 
         try {
           await addWatchdogIgnoreEvents({
@@ -216,7 +220,7 @@ const WatchDogLogs = () => {
             componentId: eventToIgnore.componentId,
             phase: eventToIgnore.phase,
             start: toUTCDateStamp(data.start),
-            end: toUTCDateStamp(data.end),
+            end: data?.end ? toUTCDateStamp(data.end) : null,
           })
           return { rowId, success: true }
         } catch (error) {
@@ -305,7 +309,7 @@ const WatchDogLogs = () => {
         headerName: 'Issue Type',
         flex: 1,
         headerAlign: 'center',
-        valueGetter: (params) => addSpaces(params) ?? '',
+        valueGetter: (params) => issueTypes?.[params as number] ?? '',
       },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {

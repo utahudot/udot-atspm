@@ -65,6 +65,7 @@ interface AdminChartProps<T extends BaseObj> {
   cells: Cell<T>[]
   data: T[]
   pageName: string
+  marginTop?: number | string
   hasEditPrivileges?: boolean
   hasDeletePrivileges?: boolean
   protectedFromDeleteItems?: string[]
@@ -81,6 +82,7 @@ const AdminTable = <T extends BaseObj>({
   cells,
   data,
   pageName,
+  marginTop,
   hasEditPrivileges,
   hasDeletePrivileges,
   protectedFromDeleteItems,
@@ -203,23 +205,33 @@ const AdminTable = <T extends BaseObj>({
     })
   }
 
+  const resolvedMarginTop = marginTop ?? (createModal ? -4 : 3)
+  const actionsColumnWidth = 100
+  const stickyActionsCellSx = {
+    position: 'sticky',
+    right: 0,
+    width: actionsColumnWidth,
+    minWidth: actionsColumnWidth,
+    boxShadow: 'inset 1px 0 0 rgba(0, 0, 0, 0.12)',
+  }
+
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
         minWidth: '375px',
-        marginTop: -4,
+        marginTop: resolvedMarginTop,
         [theme.breakpoints.up('md')]: {
           maxWidth: isSidebarOpen ? 'calc(100vw - 340px)' : '100%',
         },
       }}
     >
-      <Toolbar disableGutters>
-        <Box
-          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1.5 }}
-        >
-          {createModal && (
+      {createModal && (
+        <Toolbar disableGutters>
+          <Box
+            sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1.5 }}
+          >
             <Button
               variant="contained"
               color="success"
@@ -228,16 +240,26 @@ const AdminTable = <T extends BaseObj>({
             >
               New {pageName}
             </Button>
-          )}
-        </Box>
-      </Toolbar>
+          </Box>
+        </Toolbar>
+      )}
 
       <Box>
         <TableContainer
           component={Paper}
-          sx={{ maxHeight: 'calc(100vh - 190px)' }}
+          sx={{
+            maxHeight: 'calc(100vh - 190px)',
+            overflowX: 'auto',
+          }}
         >
-          <Table stickyHeader size="small">
+          <Table
+            stickyHeader
+            size="small"
+            sx={{
+              minWidth: '100%',
+              width: 'max-content',
+            }}
+          >
             <TableHead>
               <TableRow>
                 {cells.map((cell) => (
@@ -267,10 +289,10 @@ const AdminTable = <T extends BaseObj>({
                   <TableCell
                     align="right"
                     sx={{
-                      width: 100,
-                      position: 'sticky',
                       top: 0,
                       backgroundColor: '#dae5f0',
+                      zIndex: 3,
+                      ...stickyActionsCellSx,
                     }}
                   >
                     Actions
@@ -308,7 +330,14 @@ const AdminTable = <T extends BaseObj>({
                     </>
                   )}
                   {(hasEditPrivileges || hasDeletePrivileges) && (
-                    <TableCell align="right" sx={{ width: 100 }}>
+                    <TableCell
+                      align="right"
+                      sx={{
+                        backgroundColor: theme.palette.background.paper,
+                        zIndex: 1,
+                        ...stickyActionsCellSx,
+                      }}
+                    >
                       <IconButton
                         aria-label="more"
                         aria-controls="actions-menu"
