@@ -19,13 +19,17 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services;
+using Utah.Udot.ATSPM.ConfigApi.Mappings;
 using Utah.Udot.ATSPM.ConfigApi.Utility;
+using Utah.Udot.NetStandardToolkit.Configuration;
 using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.NetStandardToolkit.Services.GitHubReleaseService;
 
 //git 1
 
@@ -93,6 +97,31 @@ builder.Host
         s.AddPathBaseFilter(h);
 
         s.AddAtspmIdentity(h);
+
+
+
+
+
+
+        s.Configure<GitHubReleaseConfiguration>(options =>
+        {
+            options.UserAgengt = "AtspmAgent";
+            options.RepositoryOwner = "utahudot";
+            options.RepositoryName = "udot-atspm";
+        });
+
+
+
+
+
+
+
+        s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();
+
+        s.AddAutoMapper(c =>
+        {
+            c.AddProfile<VersionMappingProfile>();
+        });
 
         s.AddScoped<ILocationManager, LocationManager>();
         s.AddHealthChecks();
