@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getWatchdogDashboardData.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ export const getWatchdogDashboardData = async (
   end: string
 ): Promise<WatchdogDashboardData> => {
   const response = await reportsAxios.post(
-    `/WatchDogDashboard/getDashboardGroup`,
+    `/api/v1/WatchDogDashboard/getDashboardGroup`,
     {
       start,
       end,

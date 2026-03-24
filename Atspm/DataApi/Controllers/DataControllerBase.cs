@@ -23,6 +23,7 @@ using System.Reflection;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Dtos;
+using Utah.Udot.NetStandardToolkit.Common;
 
 namespace Utah.Udot.ATSPM.DataApi.Controllers
 {
@@ -78,20 +79,20 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
                 var types = typeof(T2).ToDictionary();
 
                 var result = types.Where(t => !t.Value.IsAbstract)
-                    .Select(t => 
-                    { 
-                        var type = t.Value; 
-                        var typeComment = xml.GetTypeComment(type); 
+                    .Select(t =>
+                    {
+                        var type = t.Value;
+                        var typeComment = xml.GetTypeComment(type);
                         var props = GetCachedProperties(type)
                         .Select(p => new PropertyMeta { Name = p.Name, Description = xml.GetPropertyComment(p) })
-                        .ToList(); 
-                        
-                        return new DataTypeMeta 
+                        .ToList();
+
+                        return new DataTypeMeta
                         {
-                            Name = t.Key, 
-                            Description = typeComment, 
-                            Properties = props 
-                        }; 
+                            Name = t.Key,
+                            Description = typeComment,
+                            Properties = props
+                        };
                     }).ToList();
 
                 return Ok(result);

@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - next.config.js
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,6 @@ module.exports = withBundleAnalyzer({
     config.experiments = { ...config.experiments, topLevelAwait: true }
     return config
   },
-  turbopack: {},
   async redirects() {
     return [
       {

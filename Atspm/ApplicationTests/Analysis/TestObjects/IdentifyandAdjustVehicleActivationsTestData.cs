@@ -38,7 +38,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
     public class AggregatePhaseCycleTestData : AnalysisTestDataBase { }
 
 
-
+    public class AggregatePhaseSplitMonitorData : AnalysisTestDataBase { }
 
 
 

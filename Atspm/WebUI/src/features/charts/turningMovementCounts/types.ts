@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - types.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,7 +45,7 @@ export interface RawTurningMovementCountsData extends BaseChartData {
   movementType: string
   plans: Plan[]
   lanes: Lane[]
-  TotalHourlyVolumes: DataPoint[]
+  totalHourlyVolumes?: DataPoint[]
   totalVolume: number
   peakHour: string
   peakHourVolume: number
@@ -63,9 +63,10 @@ export interface RawTurningMovementCountsResponse {
   }
 }
 
-interface RawTurningMovementCountTableRow {
+export interface RawTurningMovementCountTableRow {
   direction: string
   movementType: string
   laneType: string
   volume: { value: number; timestamp: string }[]
+  peakHourVolume?: { value: number } | null
 }
