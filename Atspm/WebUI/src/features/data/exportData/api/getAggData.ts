@@ -32,7 +32,7 @@ export function useGetAggData(
   start: Date,
   end: Date
 ) {
-  const route = `/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}?start=${start}&end=${end}`
+  const route = `/api/v1/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}?start=${start}&end=${end}`
 
   return useGetRequest<ApiResponse<string[]>>({
     route,

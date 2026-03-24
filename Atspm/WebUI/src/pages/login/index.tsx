@@ -2,6 +2,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
 import { setSecureCookie } from '@/features/identity/utils'
+import { buildApiUrl } from '@/lib/axios'
 import { getEnv } from '@/utils/getEnv'
 import { LoadingButton } from '@mui/lab'
 import {
@@ -89,7 +90,10 @@ function Login() {
 
   const redirectUser = async () => {
     const env = await getEnv()
-    const externalLoginUrl = `${env.IDENTITY_URL}Account/external-login`
+    const externalLoginUrl = buildApiUrl(
+      env?.IDENTITY_URL,
+      '/api/v1/Account/external-login'
+    )
     window.open(externalLoginUrl, '_self')
   }
 

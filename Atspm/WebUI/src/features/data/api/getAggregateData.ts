@@ -18,7 +18,7 @@ import { usePostRequest } from '@/hooks/usePostRequest'
 import { reportsAxios } from '@/lib/axios'
 import { AxiosHeaders } from 'axios'
 
-const route = '/Aggregation/getReportData'
+const route = '/api/v1/Aggregation/getReportData'
 const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
 })

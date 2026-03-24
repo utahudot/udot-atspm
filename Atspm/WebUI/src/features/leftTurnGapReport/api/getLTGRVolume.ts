@@ -23,7 +23,7 @@ import { reportsAxios } from '@/lib/axios'
 export const getLTGRVolume = async (approachIds: number[], body: any) => {
   const results = await Promise.all(
     approachIds.map(async (approachId) => {
-      return await reportsAxios.post(`LeftTurnVolume/getReportData`, {
+      return await reportsAxios.post(`/api/v1/LeftTurnVolume/getReportData`, {
         ...body,
         approachId: approachId,
       })

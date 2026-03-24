@@ -24,7 +24,7 @@ export const getLeftTurnGapReportDataCheck = async (approachIds, body) => {
   const result = await Promise.all(
     approachIds.map(async (approachId) => {
       return await reportsAxios.post(
-        `LeftTurnGapReportDataCheck/getReportData`,
+        `/api/v1/LeftTurnGapReportDataCheck/getReportData`,
         { ...body, approachId: approachId }
       )
     })

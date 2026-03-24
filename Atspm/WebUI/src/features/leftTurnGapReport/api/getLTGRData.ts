@@ -14,48 +14,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { ApiResponse } from '@/types';
-import { useQuery } from 'react-query';
-import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query';
-import { reportsAxios } from '@/lib/axios';
+import { reportsAxios } from '@/lib/axios'
+import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
+import { ApiResponse } from '@/types'
+import { useQuery } from 'react-query'
 
 export interface LeftTurnGapReportParams {
-  locationIdentifier: string;
-  start: string;
-  end: string;
-  approachIds: number[];
-  daysOfWeek: number[];
-  startHour: number;
-  startMinute: number;
-  endHour: number;
-  endMinute: number;
-  getAMPMPeakPeriod: boolean;
-  getAMPMPeakHour: boolean;
-  get24HourPeriod: boolean;
-  getGapReport: boolean;
-  acceptableGapPercentage: number;
-  getSplitFail: boolean;
-  acceptableSplitFailPercentage: number;
-  getPedestrianCall: boolean;
-  getConflictingVolume: boolean;
+  locationIdentifier: string
+  start: string
+  end: string
+  approachIds: number[]
+  daysOfWeek: number[]
+  startHour: number
+  startMinute: number
+  endHour: number
+  endMinute: number
+  getAMPMPeakPeriod: boolean
+  getAMPMPeakHour: boolean
+  get24HourPeriod: boolean
+  getGapReport: boolean
+  acceptableGapPercentage: number
+  getSplitFail: boolean
+  acceptableSplitFailPercentage: number
+  getPedestrianCall: boolean
+  getConflictingVolume: boolean
 }
 
 export const getLeftTurnGapReport = async (
   params: LeftTurnGapReportParams
 ): Promise<any> => {
   const result: ApiResponse<any> = await reportsAxios.post(
-    `LeftTurnGapReport/getReportData`,
+    `/api/v1/LeftTurnGapReport/getReportData`,
     params
-  );
-  return result;
-};
+  )
+  return result
+}
 
-type QueryFnType = typeof getLeftTurnGapReport;
+type QueryFnType = typeof getLeftTurnGapReport
 
 type UseLeftTurnGapReport = {
-  config?: QueryConfig<QueryFnType>;
-  params: LeftTurnGapReportParams;
-};
+  config?: QueryConfig<QueryFnType>
+  params: LeftTurnGapReportParams
+}
 
 export const useLeftTurnGapReport = ({
   config,
@@ -66,5 +66,5 @@ export const useLeftTurnGapReport = ({
     queryKey: ['LeftTurnGapReport', params],
     enabled: false,
     queryFn: () => getLeftTurnGapReport(params),
-  });
-};
+  })
+}

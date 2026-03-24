@@ -27,10 +27,13 @@ export const getLTGRPedActuation = async (
 ) => {
   const results = await Promise.all(
     approachIds.map(async (approachId) => {
-      return await reportsAxios.post(`LeftTurnPedActuation/getReportData`, {
-        ...body,
-        approachId: approachId,
-      })
+      return await reportsAxios.post(
+        `/api/v1/LeftTurnPedActuation/getReportData`,
+        {
+          ...body,
+          approachId: approachId,
+        }
+      )
     })
   )
   return results

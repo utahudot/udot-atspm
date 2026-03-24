@@ -24,7 +24,33 @@ export let identityAxios: ReturnType<typeof createAxiosInstance>
 export let dataAxios: ReturnType<typeof createAxiosInstance>
 export let speedAxios: ReturnType<typeof createAxiosInstance>
 
-const BASE_PATH = '/api/v1/'
+const API_VERSION_PATH = '/api/v1'
+
+function normalizeApiRoot(baseURL: string): string {
+  return baseURL.replace(/\/api\/v1\/?$/i, '').replace(/\/+$/, '')
+}
+
+export function buildApiBaseUrl(
+  baseURL: string,
+  includeVersionPath = false
+): string {
+  const normalizedBaseUrl = normalizeApiRoot(baseURL)
+  return includeVersionPath
+    ? `${normalizedBaseUrl}${API_VERSION_PATH}`
+    : normalizedBaseUrl
+}
+
+export function buildApiUrl(
+  baseURL: string | null | undefined,
+  path: string
+): string {
+  if (!baseURL) {
+    return path
+  }
+
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${normalizeApiRoot(baseURL)}${normalizedPath}`
+}
 
 export const initializeAxiosInstances = async () => {
   const env = await getEnv()
@@ -34,7 +60,7 @@ export const initializeAxiosInstances = async () => {
   }
 
   if (env.CONFIG_URL) {
-    configAxios = createAxiosInstance(env.CONFIG_URL + BASE_PATH)
+    configAxios = createAxiosInstance(buildApiBaseUrl(env.CONFIG_URL, true))
     configAxios.interceptors.response.use(
       (responseData) => {
         stripZFromDates(responseData)
@@ -44,16 +70,16 @@ export const initializeAxiosInstances = async () => {
     )
   }
   if (env.REPORTS_URL) {
-    reportsAxios = createAxiosInstance(env.REPORTS_URL)
+    reportsAxios = createAxiosInstance(buildApiBaseUrl(env.REPORTS_URL))
   }
   if (env.IDENTITY_URL) {
-    identityAxios = createAxiosInstance(env.IDENTITY_URL + BASE_PATH)
+    identityAxios = createAxiosInstance(buildApiBaseUrl(env.IDENTITY_URL, true))
   }
   if (env.DATA_URL) {
-    dataAxios = createAxiosInstance(env.DATA_URL)
+    dataAxios = createAxiosInstance(buildApiBaseUrl(env.DATA_URL))
   }
   if (env.SPEED_URL) {
-    speedAxios = createAxiosInstance(env.SPEED_URL + BASE_PATH)
+    speedAxios = createAxiosInstance(buildApiBaseUrl(env.SPEED_URL, true))
   }
 }
 
