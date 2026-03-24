@@ -187,24 +187,32 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                     .Skip(i)
                     .Take(batchSize)
                     .ToList();
+                try
+                {
+                    var batch = BaseQuery()
+                        .Where(l => batchIds.Contains(l.Id))
+                        .Include(l => l.Devices)
+                        .Include(l => l.Approaches)
+                            .ThenInclude(a => a.DirectionType)
+                        .Include(l => l.Approaches)
+                            .ThenInclude(a => a.Detectors)
+                                .ThenInclude(d => d.DetectorComments)
+                        .Include(l => l.Approaches)
+                            .ThenInclude(a => a.Detectors)
+                                .ThenInclude(d => d.DetectionTypes)
+                                    .ThenInclude(dt => dt.MeasureTypes)
+                        .AsNoTracking()
+                        .AsSplitQuery()
+                        .ToList();
 
-                var batch = BaseQuery()
-                    .Where(l => batchIds.Contains(l.Id))
-                    .Include(l => l.Devices)
-                    .Include(l => l.Approaches)
-                        .ThenInclude(a => a.DirectionType)
-                    .Include(l => l.Approaches)
-                        .ThenInclude(a => a.Detectors)
-                            .ThenInclude(d => d.DetectorComments)
-                    .Include(l => l.Approaches)
-                        .ThenInclude(a => a.Detectors)
-                            .ThenInclude(d => d.DetectionTypes)
-                                .ThenInclude(dt => dt.MeasureTypes)
-                    .AsNoTracking()
-                    .AsSplitQuery()
-                    .ToList();
-
-                results.AddRange(batch);
+                    results.AddRange(batch);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"💥 Failed with this exception: {ex}");
+                    Console.WriteLine($"💥 Failed batch starting at index {i}");
+                    Console.WriteLine(string.Join(",", batchIds));
+                }
             }
 
             return results;
