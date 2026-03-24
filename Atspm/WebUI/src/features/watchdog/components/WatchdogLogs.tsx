@@ -45,6 +45,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 interface transformWatchDogLog {
   id: number
+  key?: string | number | null
   locationId: number
   locationIdentifier: string | null
   timestamp: string
@@ -154,18 +155,10 @@ const WatchDogLogs = () => {
     const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
     if (logEvents) {
       const rows = logEvents.map((logEvent) => ({
-        id: logEvent.id,
-        locationId: logEvent.locationId,
-        locationIdentifier: logEvent.locationIdentifier,
-        timestamp: logEvent.timestamp,
-        regionDescription: logEvent.regionDescription,
-        jurisdictionName: logEvent.jurisdictionName,
+        ...logEvent,
+
         areas: logEvent.areas.map((area: Area) => area.name).join(', '),
         issueType: issueTypes?.[logEvent.issueType] ?? logEvent.issueType,
-        phase: logEvent.phase,
-        details: logEvent.details,
-        componentType: logEvent.componentType,
-        componentId: logEvent.componentId,
       }))
       setProcessedRows(rows)
     }
@@ -213,6 +206,7 @@ const WatchDogLogs = () => {
 
         try {
           await addWatchdogIgnoreEvents({
+            key: eventToIgnore.key,
             locationId: eventToIgnore.locationId,
             locationIdentifier: eventToIgnore.locationIdentifier,
             issueType: eventToIgnore.issueType?.toString(),
@@ -309,8 +303,9 @@ const WatchDogLogs = () => {
         headerName: 'Issue Type',
         flex: 1,
         headerAlign: 'center',
-        valueGetter: (params) => issueTypes?.[params as number] ?? '',
+        valueGetter: (params) => params ?? '',
       },
+      { field: 'key', headerName: 'Key', flex: 1, headerAlign: 'center' },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {
         field: 'details',
