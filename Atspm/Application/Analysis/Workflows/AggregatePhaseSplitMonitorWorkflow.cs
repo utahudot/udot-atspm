@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.Workflows/AggregatePhaseCyclesWorkflow.cs
+// for Application - Utah.Udot.Atspm.Analysis.Workflows/AggregatePhaseSplitMonitorWorkflow.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
     /// The workflow options used to configure execution, such as timeline, parallelism, and cancellation.
     /// Defaults to <c>null</c> if not provided.
     /// </param>
-    public class AggregatePhaseSplitMonitorWorkflow(AggregationWorkflowOptions options = default): AggregationWorkflowBase<PhaseSplitMonitorAggregation>(options)
+    public class AggregatePhaseSplitMonitorWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PhaseSplitMonitorAggregation>(options)
     {
         /// <summary>
         /// Gets the step that filters event logs to only include <see cref="IndianaEvent"/> instances.
