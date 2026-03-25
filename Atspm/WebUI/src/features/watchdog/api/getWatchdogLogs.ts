@@ -41,6 +41,7 @@ export interface LogEvent {
   jurisdictionName: string
   areas: Area[]
   id: number
+  key?: string | number | null
   locationId: number
   locationIdentifier: string | null
   timestamp: string

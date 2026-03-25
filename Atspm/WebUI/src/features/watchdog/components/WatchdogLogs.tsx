@@ -11,7 +11,6 @@ import {
 import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp, toUTCDateStamp } from '@/utils/dateTime'
-import { addSpaces } from '@/utils/string'
 import { zodResolver } from '@hookform/resolvers/zod'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -46,6 +45,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 interface transformWatchDogLog {
   id: number
+  key?: string | number | null
   locationId: number
   locationIdentifier: string | null
   timestamp: string
@@ -75,9 +75,12 @@ const watchdogLogsSchema = z.object({
 // Schema for ignoring events
 const ignoreEventSchema = z.object({
   start: z.date().nullable(),
-  end: z.date().nullable().refine((value) => value !== null, {
-    message: 'End date is required',
-  }),
+  end: z
+    .date()
+    .nullable()
+    .refine((value) => value !== null, {
+      message: 'End date is required',
+    }),
 })
 
 const WatchDogLogs = () => {
@@ -152,18 +155,10 @@ const WatchDogLogs = () => {
     const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
     if (logEvents) {
       const rows = logEvents.map((logEvent) => ({
-        id: logEvent.id,
-        locationId: logEvent.locationId,
-        locationIdentifier: logEvent.locationIdentifier,
-        timestamp: logEvent.timestamp,
-        regionDescription: logEvent.regionDescription,
-        jurisdictionName: logEvent.jurisdictionName,
+        ...logEvent,
+
         areas: logEvent.areas.map((area: Area) => area.name).join(', '),
         issueType: issueTypes?.[logEvent.issueType] ?? logEvent.issueType,
-        phase: logEvent.phase,
-        details: logEvent.details,
-        componentType: logEvent.componentType,
-        componentId: logEvent.componentId,
       }))
       setProcessedRows(rows)
     }
@@ -204,11 +199,14 @@ const WatchDogLogs = () => {
     const response = await Promise.all(
       selectedRows.map(async (rowId) => {
         const eventToIgnore = clickedRows?.[rowId]
-        if (!eventToIgnore || !data.start || !data.end)
+        if (!eventToIgnore || !data.start)
           return { rowId, success: false, error: 'Event not found' }
+
+        console.log('Ignoring event:', eventToIgnore)
 
         try {
           await addWatchdogIgnoreEvents({
+            key: eventToIgnore.key,
             locationId: eventToIgnore.locationId,
             locationIdentifier: eventToIgnore.locationIdentifier,
             issueType: eventToIgnore.issueType?.toString(),
@@ -216,7 +214,7 @@ const WatchDogLogs = () => {
             componentId: eventToIgnore.componentId,
             phase: eventToIgnore.phase,
             start: toUTCDateStamp(data.start),
-            end: toUTCDateStamp(data.end),
+            end: data?.end ? toUTCDateStamp(data.end) : null,
           })
           return { rowId, success: true }
         } catch (error) {
@@ -305,8 +303,9 @@ const WatchDogLogs = () => {
         headerName: 'Issue Type',
         flex: 1,
         headerAlign: 'center',
-        valueGetter: (params) => addSpaces(params) ?? '',
+        valueGetter: (params) => params ?? '',
       },
+      { field: 'key', headerName: 'Key', flex: 1, headerAlign: 'center' },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {
         field: 'details',
