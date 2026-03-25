@@ -1,5 +1,4 @@
 import {
-  Box,
   FormControl,
   MenuItem,
   Select,
@@ -78,8 +77,6 @@ export default function InsightsHeader({
           </ToggleButtonGroup>
         </Stack>
 
-      <Box sx={{ flex: 1 }} />
-
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={1}
@@ -119,7 +116,6 @@ export default function InsightsHeader({
             {isTime ? 'grouped by' : 'sorted by'}
           </Typography>
 
-        {/* Group / Sort */}
           {isTime ? (
             <FormControl
               size="small"

@@ -67,6 +67,11 @@ namespace Utah.Udot.Atspm.Data.Models
         public string Details { get; set; }
 
         /// <summary>
+        /// Key
+        /// </summary>
+        public string Key { get; set; }
+
+        /// <summary>
         /// Phase
         /// </summary>
         public int? Phase { get; set; }
@@ -81,8 +86,9 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <param name="componentId"></param>
         /// <param name="issueType"></param>
         /// <param name="details"></param>
+        /// <param name="key"></param>
         /// <param name="phase"></param>
-        public WatchDogLogEvent(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, int? phase)
+        public WatchDogLogEvent(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, string key, int? phase)
         {
             this.LocationId = locationId;
             this.LocationIdentifier = locationIdentifier;
@@ -91,13 +97,14 @@ namespace Utah.Udot.Atspm.Data.Models
             ComponentId = componentId;
             IssueType = issueType;
             Details = details;
+            Key = key;
             Phase = phase;
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"[{LocationId}-{Timestamp}] {ComponentType} (ID: {ComponentId}) - {IssueType}: {Details}";
+            return $"[{LocationId}-{Timestamp}] {ComponentType} (ID: {ComponentId}) - {IssueType}: {Details} - Key: {Key}";
         }
 
         /// <inheritdoc/>
@@ -111,6 +118,7 @@ namespace Utah.Udot.Atspm.Data.Models
                    ComponentType == other.ComponentType &&
                    ComponentId == other.ComponentId &&
                    IssueType == other.IssueType &&
+                   Key == other.Key &&
                        Phase == other.Phase;
         }
 
@@ -119,7 +127,7 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(LocationIdentifier, Timestamp, ComponentType, ComponentId, IssueType, (Phase.HasValue ? Phase.Value.GetHashCode() : -1));
+            return HashCode.Combine(LocationIdentifier, Timestamp, ComponentType, ComponentId, IssueType, (Phase.HasValue ? Phase.Value.GetHashCode() : -1), Key);
         }
     }
 }

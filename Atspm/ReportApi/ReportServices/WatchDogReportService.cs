@@ -131,6 +131,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         e.ComponentId,
                         e.IssueType,
                         e.Details,
+                        e.Key,
                         e.Phase,
                         location.RegionId,
                         regionDescription,

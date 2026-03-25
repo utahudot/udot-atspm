@@ -218,6 +218,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WatchDogIssueTypes.StuckPed,
                     message,
                     errors,
+                    phase.PhaseNumber.ToString(),
                     phase.PhaseNumber);
             }
         }
@@ -238,6 +239,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WatchDogIssueTypes.ForceOffThreshold,
                     message,
                     errors,
+                    phase.PhaseNumber.ToString(),
                     phase.PhaseNumber);
             }
 
@@ -259,6 +261,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WatchDogIssueTypes.MaxOutThreshold,
                     message,
                     errors,
+                    phase.PhaseNumber.ToString(),
                     phase.PhaseNumber);
             }
 
@@ -268,7 +271,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         /////////////////////// HELPER ////////////////////////////
         ///////////////////////////////////////////////////////////
 
-        private static void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, int? phaseNumber = null)
+        private static void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, int? phaseNumber = null)
         {
             var error = new WatchDogLogEvent(
                 location.Id,
@@ -278,6 +281,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 approachId,
                 issueType,
                 message,
+                key,
                 phaseNumber);
 
             if (!errors.Contains(error))

@@ -181,9 +181,9 @@ namespace Utah.Udot.Atspm.Extensions
                 .SelectMany(group =>
                 {
                     var windows = group
-                        .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
-                        .KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
-                        .KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
+                        //.KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginGreen)
+                        //.KeepFirstSequentialEvent(IndianaEnumerations.PhaseBeginYellowChange)
+                        //.KeepFirstSequentialEvent(IndianaEnumerations.PhaseEndYellowChange)
                         .SlidingWindow(cycleSequence.Count())
                         .Where(window => window.Select(e => e.EventCode).SequenceEqual(cycleSequence));
 

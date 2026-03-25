@@ -45,7 +45,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     logEvent.Timestamp <= ignoreEvent.End &&
                     (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) &&
                     (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
-                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)
+                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase) &&
+                    (ignoreEvent.Key == null || ignoreEvent.Key == logEvent.Key)
                     )
                 )
                 .ToList();
@@ -62,10 +63,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
             var result = watchDogLogEvents
                 .Where(logEvent => !ignoreEvents.Exists(ignoreEvent =>
-                    ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier && 
-                    (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) && 
-                    (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) && 
-                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)
+                    ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier &&
+                    (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) &&
+                    (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
+                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase) &&
+                    (ignoreEvent.Key == null || ignoreEvent.Key == logEvent.Key)
                     )
                 );
 

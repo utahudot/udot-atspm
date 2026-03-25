@@ -16,6 +16,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,8 +81,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
         [Theory]
         [AnalysisTestData<AggregatePhaseCycleTestData>]
-        [Trait(nameof(AggregateDetectorEventsStep), "From File")]
-        public async Task AggregatePhaseCyclesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PhaseCycleAggregation> output)
+        [Trait(nameof(AggregatePhaseCycleTestData), "From File")]
+        public async Task AggregatePhaseSplitMonitorFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PhaseCycleAggregation> output)
         {
             var testData = Tuple.Create(config, input);
 
@@ -98,10 +99,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"actual: {actual.Count()}");
 
-            foreach (var a in actual.Where(w => w.PhaseNumber == 2))
-            {
-                _output.WriteLine($"{a}");
-            }
+            //foreach (var a in actual.Where(w => w.PhaseNumber == 2))
+            //{
+            //    _output.WriteLine($"{a.RedTime}");
+            //}
 
             var expected = output;
 
