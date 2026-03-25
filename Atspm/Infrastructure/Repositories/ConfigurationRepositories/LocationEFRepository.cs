@@ -26,8 +26,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
     ///<inheritdoc cref="ILocationRepository"/>
     public class LocationEFRepository : ATSPMRepositoryEFBase<Location>, ILocationRepository
     {
+        private readonly ILogger<LocationEFRepository> _logger;
         /// <inheritdoc/>
-        public LocationEFRepository(ConfigContext db, ILogger<LocationEFRepository> log) : base(db, log) { }
+        public LocationEFRepository(ConfigContext db, ILogger<LocationEFRepository> log) : base(db, log) { _logger = log; }
 
         private IQueryable<Location> BaseQuery()
         {
@@ -209,9 +210,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"💥 Failed with this exception: {ex}");
-                    Console.WriteLine($"💥 Failed batch starting at index {i}");
-                    Console.WriteLine(string.Join(",", batchIds));
+                    _logger.LogError($"Failed with this exception: {ex}");
+                    _logger.LogError($"Failed batch starting at index {i}");
                 }
             }
 
