@@ -51,10 +51,6 @@ import {
   SeriesOption,
 } from 'echarts'
 import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
-import {
-  CycleColor,
-  EVENT_GROUPS,
-} from '../../timingAndActuation/timingAndActuation.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
 const opacity = 0.4
@@ -104,6 +100,12 @@ export default function transformTimeSpaceHistoricData(
 
   return result
 }
+const PEDESTRIAN_LINE_WIDTH = 0.8
+const PEDESTRIAN_LINE_Y_OFFSET = 8
+const PEDESTRIAN_ZIGZAG_AMPLITUDE = 2
+const PEDESTRIAN_ZIGZAG_STEP_PX = 3
+const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
+const PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT = PEDESTRIAN_ZIGZAG_AMPLITUDE
 
 function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryPhaseData = data.filter(
@@ -137,16 +139,20 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   } as const
 
   const xAxis = [
-    createXAxis(data[0].start, data[0].end),
+    {
+      ...createXAxis(data[0].start, data[0].end),
+      axisLine: {
+        onZero: false,
+      },
+    },
     { min: 0, max: 1, show: false },
     xAxisTopSeconds,
   ]
 
   let initialDistance = 0
 
-  const primaryDirection = primaryPhaseData[0].approachDescription.split(' ')[0]
-  const opposingDirection =
-    opposingPhaseData[0].approachDescription.split(' ')[0]
+  const primaryDirection = primaryPhaseData[0].approachDescription
+  const opposingDirection = opposingPhaseData[0].approachDescription
 
   const distanceData: number[] = []
   primaryPhaseData.forEach((location) => {
@@ -157,20 +163,19 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     show: false,
     data: distanceData,
     axisTick: { show: true },
-    max: distanceData[distanceData.length - 1] + 350,
+    max: distanceData[distanceData.length - 1] + 250,
     min: -250,
   })
 
   const title = createTitle({
     title: 'Time Space Diagram • Historic',
-    location: `Primary: ${primaryPhaseData[0].approachDescription} • Opposing: ${opposingPhaseData[0].approachDescription}`,
-    dateRange,
+    location: dateRange,
   })
 
   const grid: GridComponentOption = {
-    top: 120,
-    left: 270,
-    right: 300,
+    top: 30,
+    left: 220,
+    right: 195,
     bottom: 100,
     show: true,
     borderWidth: 1,
@@ -227,7 +232,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryPhaseData,
       distanceData,
       'darkblue',
-      primaryDirection
+      primaryDirection,
+      true
     )
   )
 
@@ -236,7 +242,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryPhaseData,
       distanceData,
       'darkblue',
-      primaryDirection
+      primaryDirection,
+      true
     )
   )
 
@@ -292,8 +299,22 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
   )
 
+  const MIN_SEGMENT = 2000
+
+  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
+
+  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
+  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
+
+  const scale =
+    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
+
+  const opposingBandOffset = 300 / scale
+
   let reverseDistanceData = [...distanceData].reverse()
-  reverseDistanceData = reverseDistanceData.map((distance) => (distance += 300))
+  reverseDistanceData = reverseDistanceData.map(
+    (distance) => distance + opposingBandOffset
+  )
   series.push(
     ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
   )
@@ -303,7 +324,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingPhaseData,
       reverseDistanceData,
       'orange',
-      opposingDirection
+      opposingDirection,
+      false
     )
   )
 
@@ -312,7 +334,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingPhaseData,
       reverseDistanceData,
       'orange',
-      opposingDirection
+      opposingDirection,
+      false
     )
   )
 
@@ -377,28 +400,48 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
   ])
 
-  const opposingLinesByIndex = opposingPhaseData.map((p) => [
-    `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
-  ])
+  const primaryHeadersByIndex = primaryPhaseData.map(
+    (p) => p.approachDescription
+  )
+
+  const opposingHeadersByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => p.approachDescription)
+
+  const opposingLinesByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => [`AOG: ${formatPct(p.percentArrivalOnGreen)}`])
+
+  const primaryIgnoredByIndex = primaryPhaseData.map((p) =>
+    Boolean(p.isIgnoredLocation)
+  )
+
+  const opposingIgnoredByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => Boolean(p.isIgnoredLocation))
 
   const primaryLabelSeries = generateCycleLabels(
     distanceData,
     primaryDirection,
     grid.left as number,
+    primaryHeadersByIndex,
     primaryLinesByIndex,
-    'down'
+    'left',
+    primaryIgnoredByIndex
   )
 
   const opposingLabelSeries = generateCycleLabels(
     distanceData,
     opposingDirection,
     grid.left as number,
+    opposingHeadersByIndex,
     opposingLinesByIndex,
-    'up'
+    'right',
+    opposingIgnoredByIndex
   )
 
-  // series.push(primaryLabelSeries)
-  // series.push(opposingLabelSeries)
+  series.push(primaryLabelSeries)
+  series.push(opposingLabelSeries)
 
   // series.push(
   //   ...getDraggableOffsetabelOption(
@@ -407,16 +450,6 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   //     primaryDirection
   //   )
   // )
-
-  const MIN_SEGMENT = 1600
-
-  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
-
-  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
-  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
-
-  const scale =
-    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
 
   const scaledCumulative = distanceData.map((d) =>
     Number.isFinite(d) ? d * scale : d
@@ -427,7 +460,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const displayProps = createDisplayProps({
     description: '',
     numberOfLocations: primaryPhaseData.length,
-    height: totalDistance / 19 + 220,
+    height: totalDistance / 18 + 220,
     locations: primaryPhaseData.map((p) => p.locationIdentifier),
   })
 
@@ -443,6 +476,16 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
         name: `Cycles ${opposingDirection}`,
         icon: SolidLineSeriesSymbol,
         itemStyle: { color: '#f0807f' },
+      },
+      {
+        name: `Cycle Durations ${primaryDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
+      },
+      {
+        name: `Cycle Durations ${opposingDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `Green Bands ${primaryDirection}`,
@@ -482,11 +525,13 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Pedestrian Interval ${primaryDirection}`,
-        itemStyle: { color: 'grey' },
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `Pedestrian Interval ${opposingDirection}`,
-        itemStyle: { color: 'grey' },
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `SRM Entity ${primaryDirection}`,
@@ -529,6 +574,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     selected: {
       [`Cycles ${primaryDirection}`]: true,
       [`Cycles ${opposingDirection}`]: true,
+      [`Cycle Durations ${primaryDirection}`]: true,
+      [`Cycle Durations ${opposingDirection}`]: true,
       [`Green Bands ${primaryDirection}`]: true,
       [`Green Bands ${opposingDirection}`]: true,
       [`Lane by Lane Count ${primaryDirection}`]: false,
@@ -566,6 +613,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     maintainAspectRatio: false,
   }
 
+  // console.log('Chart Options:', chartOptions)
+
   return chartOptions
 }
 
@@ -573,7 +622,8 @@ function generateLaneByLaneCountEventLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
   color: string,
-  phaseType?: string
+  phaseType?: string,
+  isPrimary?: boolean
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
@@ -589,6 +639,9 @@ function generateLaneByLaneCountEventLines(
         opacity,
       },
       data: location.laneByLaneCountDetectors.flatMap((events) => {
+        const distanceToNext = isPrimary
+          ? location.calculatedDistanceToNext
+          : -location.calculatedDistanceToNext
         const initialX = events.detectorOn
         const finalX = getArrivalTime(
           location.calculatedDistanceToNext,
@@ -597,7 +650,7 @@ function generateLaneByLaneCountEventLines(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i + 1]],
+          [finalX, distanceData[i] + distanceToNext],
           null,
         ]
         return values
@@ -630,15 +683,24 @@ function generateAdvanceCountEventLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
   color: string,
-  phaseType?: string
+  phaseType?: string,
+  isPrimary?: boolean
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
+  const directionMultiplier = isPrimary ? 1 : -1
+
   data.forEach((location, i) => {
-    if (i === 0) return
-    if (!location.advanceCountDetectors) return
+    if (location.isIgnoredLocation) return
+    if (!location.advanceCountDetectors?.length) return
+
+    const currentDistance = distanceData[i]
+    const previousDistance =
+      currentDistance -
+      directionMultiplier * Math.abs(location.calculatedDistanceToPrevious)
+
     const series: SeriesOption = {
       name: `Advance Count ${phaseType?.length && phaseType}`,
-      id: `AC ${i !== 0 ? data[i - 1].locationIdentifier : location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `AC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
       type: 'line',
       symbol: 'none',
       lineStyle: {
@@ -654,13 +716,13 @@ function generateAdvanceCountEventLines(
         )
 
         const initialX = getArrivalTime(
-          -location.calculatedDistanceToPrevious,
+          -Math.abs(location.calculatedDistanceToPrevious),
           location.speed,
           finalX
         )
         const values = [
-          [initialX, distanceData[i - 1]],
-          [finalX, distanceData[i]],
+          [initialX, previousDistance],
+          [finalX, currentDistance],
           null,
         ]
         return values
@@ -780,26 +842,21 @@ function generatePedestrianIntervalLines(
         y: [3],
       },
       z: 6,
-      renderItem: (param, api): CustomSeriesRenderItemReturn => {
+      renderItem: (_param, api): CustomSeriesRenderItemReturn => {
         const x1 = api.value(0)
         const x2 = api.value(1)
         const interval = api.value(2)
         const distance = api.value(3)
-        const { color } = getEventDetails(interval as number)
         const p1 = api.coord([x1, distance])
         const p2 = api.coord([x2, distance])
-        return {
-          type: 'rect',
-          shape: {
-            x: p1[0],
-            y: p1[1] + 2.5,
-            width: p2[0] - p1[0],
-            height: 5,
-          },
-          style: {
-            fill: color,
-          },
-        }
+        const y = p1[1] + PEDESTRIAN_LINE_Y_OFFSET
+
+        return createPedestrianIntervalShape(
+          interval as number,
+          p1[0],
+          p2[0],
+          y
+        )
       },
     }
 
@@ -822,13 +879,90 @@ function generatePedData(
   })
 }
 
-function getEventDetails(eventValue: number) {
-  for (const group of EVENT_GROUPS) {
-    if (group.codes.includes(eventValue)) {
-      return { name: group.name, color: group.color }
+function createPedestrianIntervalShape(
+  intervalValue: number,
+  startX: number,
+  endX: number,
+  y: number
+): CustomSeriesRenderItemReturn {
+  const baseStyle = {
+    stroke: Color.Black,
+    lineWidth: PEDESTRIAN_LINE_WIDTH,
+    fill: 'none',
+    lineCap: 'round',
+    lineJoin: 'round',
+  }
+  const boundaryTick = {
+    type: 'line',
+    shape: {
+      x1: startX,
+      y1: y - PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT,
+      x2: startX,
+      y2: y + PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT,
+    },
+    style: baseStyle,
+  }
+  let intervalShape
+
+  if (intervalValue === 22 || intervalValue === 68) {
+    intervalShape = {
+      type: 'line',
+      shape: { x1: startX, y1: y, x2: endX, y2: y },
+      style: { ...baseStyle, lineDash: PEDESTRIAN_CLEARANCE_DOT_PATTERN },
+    }
+  } else if (intervalValue === 23 || intervalValue === 69) {
+    intervalShape = {
+      type: 'polyline',
+      shape: {
+        points: buildPedestrianZigZagPoints(startX, endX, y),
+      },
+      style: baseStyle,
+    }
+  } else {
+    intervalShape = {
+      type: 'line',
+      shape: { x1: startX, y1: y, x2: endX, y2: y },
+      style: baseStyle,
     }
   }
-  return { name: 'Unknown Event', color: CycleColor.Default }
+
+  return {
+    type: 'group',
+    children: [intervalShape, boundaryTick],
+  }
+}
+
+function buildPedestrianZigZagPoints(
+  startX: number,
+  endX: number,
+  baseY: number
+): Array<[number, number]> {
+  const width = endX - startX
+  if (Math.abs(width) <= PEDESTRIAN_ZIGZAG_STEP_PX) {
+    return [
+      [startX, baseY],
+      [endX, baseY],
+    ]
+  }
+
+  const segmentCount = Math.max(
+    3,
+    Math.ceil(Math.abs(width) / PEDESTRIAN_ZIGZAG_STEP_PX)
+  )
+  const step = width / segmentCount
+  const points: Array<[number, number]> = [[startX, baseY]]
+
+  for (let i = 1; i < segmentCount; i++) {
+    const x = startX + step * i
+    const y =
+      baseY +
+      (i % 2 === 0 ? PEDESTRIAN_ZIGZAG_AMPLITUDE : -PEDESTRIAN_ZIGZAG_AMPLITUDE)
+    points.push([x, y])
+  }
+
+  points.push([endX, baseY])
+
+  return points
 }
 
 function generateTMCEvent(
@@ -852,7 +986,7 @@ function generateTMCEvent(
       )
       const values = [
         [initialX, distanceData[i]],
-        [finalX, distanceData[i + 1]],
+        [finalX, distanceData[i] + location.calculatedDistanceToNext],
         null,
       ]
       return values
@@ -869,7 +1003,7 @@ function generateTMCEvent(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i + 1]],
+          [finalX, distanceData[i] + location.calculatedDistanceToNext],
           null,
         ]
         return values

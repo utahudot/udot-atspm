@@ -49,7 +49,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IRouteLocationsRepository routeLocationsRepository;
         private readonly IRouteRepository routeRepository;
         private readonly PriorityDetailsReportService priorityDetailsReportService;
-        private readonly TimeSpaceDiagramSrmCsvService timeSpaceDiagramSrmCsvService;
 
         public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository locationRepository,
@@ -58,8 +57,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             IRouteLocationsRepository routeLocationsRepository,
             IRouteRepository routeRepository,
             LocationPhaseService locationPhaseService,
-            PriorityDetailsReportService priorityDetailsReportService,
-            TimeSpaceDiagramSrmCsvService timeSpaceDiagramSrmCsvService)
+            PriorityDetailsReportService priorityDetailsReportService)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             LocationRepository = locationRepository;
@@ -69,7 +67,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.routeRepository = routeRepository;
             this.LocationPhaseService = locationPhaseService;
             this.priorityDetailsReportService = priorityDetailsReportService;
-            this.timeSpaceDiagramSrmCsvService = timeSpaceDiagramSrmCsvService;
         }
 
         /// <inheritdoc/>
@@ -83,13 +80,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 throw new InvalidOperationException(
                     $"No route locations are configured for {routeLabel}. Add at least one route location before running this report.");
             }
-            var srmTracks = parameter.IncludeSrmSearch
-                ? timeSpaceDiagramSrmCsvService.GetTracks(
-                    parameter.Start,
-                    parameter.End,
-                    routeLocations,
-                    parameter.SrmCsvContentBase64)
-                : new List<SrmEntityTrack>();
+            var srmTracks = new List<SrmEntityTrack>();
 
             var eventCodes = new List<short>() { 82, 81 };
             var tasks = new List<Task<TimeSpaceDiagramPhaseResult>>();
@@ -437,6 +428,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     priorityDetails);
 
                 PopulateCommonPhaseFields(viewModel, currentPhase, phaseType, order, tmcEventsForPhase);
+                PopulateSrmTracks(
+                    viewModel,
+                    routeLocation,
+                    srmTracks,
+                    phaseType,
+                    isFirstElement,
+                    isLastElement);
 
                 if (locationPhase != null)
                 {
@@ -488,6 +486,27 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             int order)
         {
             return TimeSpaceDiagramPhaseResult.Failure(error ?? "Unknown error");
+        }
+
+        private static void PopulateSrmTracks(
+            TimeSpaceDiagramResultForPhase viewModel,
+            RouteLocation routeLocation,
+            List<SrmEntityTrack> srmTracks,
+            string phaseType,
+            bool isFirstElement,
+            bool isLastElement)
+        {
+            if (viewModel == null || routeLocation == null)
+            {
+                return;
+            }
+
+            viewModel.SrmEntityTracks = TimeSpaceDiagramSrmTrackMapper.GetTracksForPhase(
+                routeLocation,
+                srmTracks,
+                phaseType,
+                isFirstElement,
+                isLastElement);
         }
 
         private TimeSpaceDiagramPhaseResult CreateErrorPhaseResult(

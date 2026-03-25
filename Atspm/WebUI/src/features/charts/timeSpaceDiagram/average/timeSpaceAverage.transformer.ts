@@ -164,6 +164,16 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
         itemStyle: { color: '#f0807f' },
       },
       {
+        name: `Cycle Durations ${primaryDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: 'black' },
+      },
+      {
+        name: `Cycle Durations ${opposingDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: 'black' },
+      },
+      {
         name: `Green Bands ${primaryDirection}`,
         itemStyle: { color: 'green', opacity: 0.3 },
       },
@@ -222,21 +232,10 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     ToolType.TimeSpaceHistoric
   )
 
-  const colorMap: Map<number, string> = new Map([
-    [1, 'lightgreen'],
-    [8, 'yellow'],
-    [9, 'red'],
-  ])
-
   const series: SeriesOption[] = []
 
   series.push(
-    ...generateCycles(
-      primaryPhaseData,
-      distanceData,
-      colorMap,
-      primaryDirection
-    )
+    ...generateCycles(primaryPhaseData, distanceData, primaryDirection)
   )
   series.push(
     ...generateGreenEventLines(
@@ -247,8 +246,10 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     )
   )
 
-  series.push(getLocationsLabelOption(primaryPhaseData, distanceData))
-  series.push(getDistancesLabelOption(primaryPhaseData, distanceData))
+  series.push(getLocationsLabelOption(primaryPhaseData, distanceData, grid))
+  series.push(
+    getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
+  )
   series.push(
     getOffsetAndProgramSplitLabel(
       primaryPhaseData,
@@ -259,17 +260,22 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       endDateFormat
     )
   )
-  series.push(generateCycleLabels(distanceData, primaryDirection))
+  series.push(
+    generateCycleLabels(
+      distanceData,
+      primaryDirection,
+      undefined,
+      primaryPhaseData.map((p) => p.approachDescription),
+      undefined,
+      'left',
+      primaryPhaseData.map((p) => Boolean(p.isIgnoredLocation))
+    )
+  )
 
   let reverseDistanceData = distanceData.reverse()
   reverseDistanceData = reverseDistanceData.map((distance) => (distance += 120))
   series.push(
-    ...generateCycles(
-      opposingPhaseData,
-      reverseDistanceData,
-      colorMap,
-      opposingDirection
-    )
+    ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
   )
 
   series.push(
@@ -281,7 +287,17 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     )
   )
 
-  series.push(generateCycleLabels(reverseDistanceData, opposingDirection))
+  series.push(
+    generateCycleLabels(
+      distanceData,
+      opposingDirection,
+      undefined,
+      [...opposingPhaseData].reverse().map((p) => p.approachDescription),
+      undefined,
+      'right',
+      [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
+    )
+  )
 
   const displayProps = createDisplayProps({
     description: '',

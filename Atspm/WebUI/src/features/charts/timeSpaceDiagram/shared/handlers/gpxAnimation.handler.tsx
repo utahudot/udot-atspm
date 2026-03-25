@@ -101,9 +101,12 @@ export const useGpxAnimationHandler = (
 
     playingRef.current = true
 
-    chart.setOption({
-      series: processedSeries,
-    })
+    chart.setOption(
+      {
+        series: processedSeries,
+      },
+      { replaceMerge: ['series'] }
+    )
   }
 
   return {

@@ -21,6 +21,8 @@ import {
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { Color } from '@/features/charts/utils'
+import { directionTypes as staticDirectionTypes } from '@/features/locations/components/editDetector/selectOptions'
+import { getDirectionAccentColor } from '@/features/locations/utils/directionAccent'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   CustomSeriesRenderItemAPI,
@@ -117,6 +119,79 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   },
 ] as const
 
+type OffsetDeltaDirection = 'positive' | 'negative' | 'neutral'
+
+type OffsetDeltaVisuals = {
+  direction: OffsetDeltaDirection
+  highlightFill: string
+  highlightStroke: string
+  valueColor: string
+}
+
+function normalizeOffsetSeconds(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0
+  }
+
+  const normalized = Number.isInteger(value) ? value : Number(value.toFixed(1))
+  return Object.is(normalized, -0) ? 0 : normalized
+}
+
+export function formatSignedOffsetSeconds(value: number): string {
+  const normalized = normalizeOffsetSeconds(value)
+  const formatted = Number.isInteger(normalized)
+    ? normalized.toString()
+    : normalized.toFixed(1)
+
+  return normalized > 0 ? `+${formatted}s` : `${formatted}s`
+}
+
+export function getOffsetDeltaVisuals(
+  value: number,
+  isIgnored: boolean
+): OffsetDeltaVisuals {
+  const normalized = normalizeOffsetSeconds(value)
+
+  if (normalized > 0) {
+    return {
+      direction: 'positive',
+      highlightFill: isIgnored
+        ? 'rgba(0, 158, 115, 0.08)'
+        : 'rgba(0, 158, 115, 0.14)',
+      highlightStroke: isIgnored
+        ? 'rgba(0, 158, 115, 0.14)'
+        : 'rgba(0, 158, 115, 0.24)',
+      valueColor: isIgnored ? 'rgba(0, 158, 115, 0.72)' : Color.Green,
+    }
+  }
+
+  if (normalized < 0) {
+    return {
+      direction: 'negative',
+      highlightFill: isIgnored
+        ? 'rgba(215, 49, 49, 0.08)'
+        : 'rgba(215, 49, 49, 0.14)',
+      highlightStroke: isIgnored
+        ? 'rgba(215, 49, 49, 0.14)'
+        : 'rgba(215, 49, 49, 0.24)',
+      valueColor: isIgnored ? 'rgba(215, 49, 49, 0.72)' : Color.BrightRed,
+    }
+  }
+
+  return {
+    direction: 'neutral',
+    highlightFill: 'transparent',
+    highlightStroke: 'transparent',
+    valueColor: isIgnored ? '#64748B' : '#0F172A',
+  }
+}
+
+const CYCLE_SEGMENT_HEIGHT = 15
+const CYCLE_DURATION_LABEL_FONT_SIZE = 10
+const CYCLE_DURATION_LABEL_FILL = 'white'
+const CYCLE_DURATION_LABEL_STROKE = 'black'
+const CYCLE_DURATION_LABEL_STROKE_WIDTH = 1.5
+
 function getCycleColor(value: number): string {
   const found = CYCLE_INDICATIONS.find((x) => x.codes.includes(value))
   return found?.color ?? '#999'
@@ -135,34 +210,69 @@ export function generateCycles(
   distanceData: number[],
   phaseType?: string
 ): SeriesOption[] {
-  return data.map((phase, index) => {
+  return data.flatMap((phase, index) => {
     const distance = distanceData[index]
-    // const nextDistance = distanceData[index + 1] ?? distance + 300 // or whatever spacing you use
     const hasData = hasCycleData(phase.cycleAllEvents)
 
     const cycleEvents = hasData
       ? getCycleEvents(phase.cycleAllEvents, distance)
       : [[0, distance, 0]]
 
-    return {
-      name: `Cycles ${phaseType ?? ''}`,
-      id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
+    const cycleName = `Cycles ${phaseType ?? ''}`
+    const cycleDurationName = `Cycle Durations ${phaseType ?? ''}`
+    const series: SeriesOption[] = [
+      {
+        name: cycleName,
+        id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
+        type: 'custom',
+        clip: true,
+        z: 5,
+        data: cycleEvents,
+        renderItem: (param, api): CustomSeriesRenderItemReturn => {
+          if (!hasData) {
+            return renderMissingCycle(api, param, distance)
+          }
+
+          return renderCycleSegment(api, cycleEvents, param.dataIndex)
+        },
+      },
+    ]
+
+    series.push({
+      name: cycleDurationName,
+      id: `Cycle Duration Labels ${phase.locationIdentifier} ${phaseType ?? ''}`,
       type: 'custom',
       clip: true,
-      z: 5,
-      data: cycleEvents,
-      renderItem: (param, api): CustomSeriesRenderItemReturn => {
-        if (!hasData) {
-          // console.log(
-          //   `${phase.locationIdentifier} has no cycles for ${phaseType}`
-          // )
-          return renderMissingCycle(api, param, distance)
-          // return renderMissingCycle(param, distance)
-        }
+      silent: true,
+      z: 6,
+      data: hasData ? getCycleDurationLabelData(cycleEvents) : [],
+      renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+        const midX = api.value(0) as number
+        const y = api.value(1) as number
+        const label = String(api.value(2))
 
-        return renderCycleSegment(api, cycleEvents, param.dataIndex)
+        const center = api.coord([midX, y])
+
+        return {
+          type: 'text',
+          z2: 20,
+          style: {
+            x: center[0],
+            y: center[1] + CYCLE_SEGMENT_HEIGHT / 2,
+            text: label,
+            fill: CYCLE_DURATION_LABEL_FILL,
+            stroke: CYCLE_DURATION_LABEL_STROKE,
+            lineWidth: CYCLE_DURATION_LABEL_STROKE_WIDTH,
+            fontSize: CYCLE_DURATION_LABEL_FONT_SIZE,
+            fontWeight: 600,
+            textAlign: 'center',
+            textVerticalAlign: 'middle',
+          },
+        }
       },
-    }
+    })
+
+    return series
   })
 }
 
@@ -175,30 +285,64 @@ function renderCycleSegment(
 
   const [x1, y1, v1] = [api.value(0), api.value(1), api.value(2)]
 
-  const [x2, y2, v2] = [
-    api.value(0, index + 1),
-    api.value(1, index + 1),
-    api.value(2, index + 1),
-  ]
+  const [x2, y2] = [api.value(0, index + 1), api.value(1, index + 1)]
 
   const p1 = api.coord([x1, y1])
   const p2 = api.coord([new Date(x2).getTime(), y2])
+  const width = p2[0] - p1[0]
 
   const fill = getCycleColor(v1 as number)
-
   return {
     type: 'rect',
     shape: {
       x: p1[0],
       y: p1[1],
-      width: p2[0] - p1[0],
-      height: 10,
+      width,
+      height: CYCLE_SEGMENT_HEIGHT,
     },
     style: {
       fill,
       opacity: 0.6,
     },
   }
+}
+
+function getCycleDurationLabel(startTime: unknown, endTime: unknown): string {
+  const startMs = Date.parse(String(startTime))
+  const endMs = Date.parse(String(endTime))
+
+  if (
+    !Number.isFinite(startMs) ||
+    !Number.isFinite(endMs) ||
+    endMs <= startMs
+  ) {
+    return ''
+  }
+
+  const durationSeconds = Math.round((endMs - startMs) / 1000)
+  return durationSeconds > 0 ? durationSeconds.toString() : ''
+}
+
+function getCycleDurationLabelData(
+  cycleEvents: any[]
+): Array<[number, number, string]> {
+  return cycleEvents.flatMap((event, index) => {
+    if (index >= cycleEvents.length - 1) return []
+
+    const [startTime, y] = event
+    const [endTime] = cycleEvents[index + 1]
+    const startMs = Date.parse(String(startTime))
+    const endMs = Date.parse(String(endTime))
+    const label = getCycleDurationLabel(startTime, endTime)
+
+    if (!label || !Number.isFinite(startMs) || !Number.isFinite(endMs)) {
+      return []
+    }
+
+    const midpointMs = startMs + (endMs - startMs) / 2
+
+    return [[midpointMs, y as number, label]]
+  })
 }
 
 function hasCycleData(cycleAllEvents: Cycle[] | null): boolean {
@@ -219,7 +363,7 @@ function renderMissingCycle(
       x: coordSys.x,
       y,
       width: coordSys.width,
-      height: 10,
+      height: CYCLE_SEGMENT_HEIGHT,
     },
     style: {
       fill: '#d0d0d0',
@@ -402,6 +546,7 @@ export function generateGreenEventLines(
   const seriesOptions: SeriesOption[] = []
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
+    if (location.isIgnoredLocation) continue
     // const distanceToNext = getEffectiveDistanceToNext(data, i, isPrimary)
     if (!location.greenTimeEvents) continue
     const dataPoints = getGreenEventsDataPoints(
@@ -427,9 +572,10 @@ export function generateGreenEventLines(
           : -location.calculatedDistanceToNext
 
         const nextIndex = i + 1
-        const [x1, y1] = [api.value(0), api.value(1)]
 
+        const [x1, y1] = [api.value(0), api.value(1)]
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
+
         const currPointFinalX = getArrivalTime(
           Math.abs(distanceToNext),
           location.speed,
@@ -614,6 +760,40 @@ function splitPrimarySecondary(desc: string | undefined) {
   }
 }
 
+function splitIdentifierAndDescription(text: string | undefined) {
+  const raw = (text ?? '').trim()
+  const match = raw.match(/^\s*(#?\d+)\s*-\s*(.+)$/)
+
+  return {
+    identifier: match?.[1]?.trim() ?? '',
+    description: match?.[2]?.trim() ?? raw,
+  }
+}
+
+function buildIdentifierAndNameTitle(
+  identifier: string | undefined,
+  description: string | undefined
+) {
+  const ident = (identifier ?? '').trim()
+  const { primary, secondary } = splitPrimarySecondary(description)
+  const name =
+    primary && secondary ? `${primary} & ${secondary}` : primary || secondary
+
+  if (ident && name) {
+    return `{ident|${ident}}{name| - ${name}}`
+  }
+
+  if (ident) {
+    return `{ident|${ident}}`
+  }
+
+  if (name) {
+    return `{name|${name}}`
+  }
+
+  return ''
+}
+
 type FontSpec = {
   ident: string
   line: string
@@ -667,6 +847,40 @@ function getLongestLabelLineWidth(
   return Math.ceil(max)
 }
 
+export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
+  gridGap: 35,
+  dotOffset: 36,
+  cardGapToDot: 18,
+  cardWidth: 200,
+  cardRadius: 4,
+  verticalOffsetY: 15,
+  headerHeight: 44,
+  bodyHeight: 30,
+  bodyPaddingLeft: 12,
+  bodyPaddingRight: 12,
+  headerActionSize: 12,
+  headerActionRight: 10,
+  headerActionOverlayOffsetX: 15,
+  headerActionOverlayOffsetY: 15,
+} as const
+
+export const TIME_SPACE_LOCATION_AXIS_SERIES_ID = 'Location axis'
+
+const TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH = 96
+
+export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
+  cardWidth: 90,
+  cardRadius: 2,
+  headerHeight: 18,
+  cardGapFromPlot: 5,
+  cardGapBetween: 5,
+  verticalOffsetY: -8,
+  bodyPaddingX: 7,
+  bodyPaddingY: 4,
+  lineHeight: 13,
+  minBodyHeight: 16,
+} as const
+
 export function getLocationsLabelOption(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
@@ -674,21 +888,25 @@ export function getLocationsLabelOption(
 ): SeriesOption {
   const gridLeft = (grid.left as number) ?? 0
 
-  const GRID_GAP = 70 // distance from grid start (left) to the "label anchor" line
-  const DOT_OFFSET = 10 // dot sits DOT_OFFSET to the right of the label anchor
-  const CARD_GAP_TO_DOT = 12 // gap between card and dot
-
-  const CARD_WIDTH = 180
-  const CARD_RADIUS = 8
-
-  const HEADER_H = 26
-  const BODY_H = 48
-  const CARD_H = HEADER_H + BODY_H
-
-  const BODY_PAD_LEFT = 12
+  const {
+    gridGap,
+    dotOffset,
+    cardGapToDot,
+    cardWidth,
+    cardRadius,
+    headerHeight,
+    bodyHeight,
+    bodyPaddingLeft,
+    bodyPaddingRight,
+    headerActionSize,
+    headerActionRight,
+    verticalOffsetY,
+  } = TIME_SPACE_LOCATION_CARD_LAYOUT
+  const CARD_H = headerHeight + bodyHeight
 
   const series: SeriesOption = {
-    name: 'Location axis',
+    id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+    name: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
     type: 'custom',
     silent: true,
     clip: false,
@@ -698,17 +916,19 @@ export function getLocationsLabelOption(
 
       const [, y] = api.coord([api.value(0), api.value(1)])
 
-      const xTextRight = gridLeft - GRID_GAP
-      const xDot = xTextRight + DOT_OFFSET
+      const xTextRight = gridLeft - gridGap
+      const xDot = xTextRight + dotOffset
 
-      const cardRight = xDot - CARD_GAP_TO_DOT
-      const cardLeft = cardRight - CARD_WIDTH
-      const cardTop = y - CARD_H / 2
-      const textX = cardLeft + BODY_PAD_LEFT
+      const cardRight = xDot - cardGapToDot
+      const cardLeft = cardRight - cardWidth
+      const xLine = cardRight + (gridLeft - cardRight) / 2
+      const cardTop = y - CARD_H / 2 + verticalOffsetY
+      const textX = cardLeft + bodyPaddingLeft
+      const iconLeft = cardRight - headerActionRight - headerActionSize
+      const dividerX = iconLeft - 8
+      const titleWidth = Math.max(0, dividerX - textX - 8)
 
       const children: any[] = []
-
-      const lineColor = Color.LightBlue
 
       if (idx === 0 && len > 1) {
         const last = len - 1
@@ -717,18 +937,36 @@ export function getLocationsLabelOption(
 
         children.push({
           type: 'line',
-          shape: { x1: xDot, y1: yTop, x2: xDot, y2: yBottom },
+          shape: { x1: xLine, y1: yTop, x2: xLine, y2: yBottom },
           style: { stroke: Color.PlanB, lineWidth: 3 },
           z2: 1,
         })
       }
 
-      // Circle node
+      const location = data.find(
+        (loc) => loc.locationIdentifier === api.value(2).toString()
+      )
+      const isIgnored = Boolean(location?.isIgnoredLocation)
+
+      children.push({
+        type: 'line',
+        shape: { x1: xLine, y1: y, x2: gridLeft, y2: y },
+        style: {
+          stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
+          lineWidth: 2,
+        },
+        z2: 2,
+      })
+
       children.push({
         type: 'circle',
-        shape: { cx: xDot, cy: y, r: 7 },
-        style: { fill: '#fff', stroke: lineColor, lineWidth: 3 },
-        z2: 3,
+        shape: { cx: xLine, cy: y, r: 4 },
+        style: {
+          fill: isIgnored ? '#CBD5E1' : Color.LightBlue,
+          stroke: '#FFFFFF',
+          lineWidth: 1.5,
+        },
+        z2: 4,
       })
 
       const ident = String(api.value(2) ?? '')
@@ -736,10 +974,148 @@ export function getLocationsLabelOption(
         String(api.value(3) ?? '')
       )
 
-      const name =
-        primary && secondary
-          ? `${primary} & ${secondary}`
-          : primary || secondary || ''
+      const titleText = buildIdentifierAndNameTitle(
+        ident,
+        String(api.value(3) ?? '')
+      )
+      const cycleLengthValue = api.value(4)
+      const offsetValue = Number(api.value(5) ?? 0)
+      const offsetVisuals = getOffsetDeltaVisuals(offsetValue, isIgnored)
+      const isOffsetModified = offsetVisuals.direction !== 'neutral'
+      const bodyTop = cardTop + headerHeight
+      const bodyContentWidth = cardWidth - bodyPaddingLeft - bodyPaddingRight
+      const metricGap = 8
+      const metricWidth = (bodyContentWidth - metricGap) / 2
+      const cycleMetricX = textX
+      const offsetMetricX = cycleMetricX + metricWidth + metricGap
+      const bodyDividerX = cycleMetricX + metricWidth + metricGap / 2
+      const metricRowY = bodyTop + bodyHeight / 2
+      const metricInnerPadding = 7
+      const metricLabelWidth = metricWidth * 0.48
+      const metricValueWidth = metricWidth * 0.42
+      const cycleText = `${cycleLengthValue ?? 'N/A'}`
+      const offsetText = formatSignedOffsetSeconds(offsetValue)
+      const offsetValueFont =
+        '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
+      const offsetValueTextWidth = measureTextWidth(offsetText, offsetValueFont)
+      const offsetValueTextRightX =
+        offsetMetricX + metricWidth - metricInnerPadding
+      const offsetValueHighlightPaddingX = 6
+      const offsetValueHighlightWidth = Math.min(
+        metricWidth - metricInnerPadding,
+        Math.max(
+          26,
+          Math.ceil(offsetValueTextWidth + offsetValueHighlightPaddingX * 2)
+        )
+      )
+      const offsetValueHighlightHeight = 18
+      const offsetValueHighlightCenterX =
+        offsetValueTextRightX - offsetValueTextWidth / 2
+      const offsetValueHighlightX =
+        offsetValueHighlightCenterX - offsetValueHighlightWidth / 2
+      const offsetValueHighlightY = metricRowY - offsetValueHighlightHeight / 2
+      const bodyChildren = isIgnored
+        ? []
+        : [
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: cycleMetricX + metricInnerPadding,
+                y: metricRowY,
+                text: 'Cycle',
+                width: metricLabelWidth,
+                overflow: 'truncate',
+                textAlign: 'left',
+                textVerticalAlign: 'middle',
+                fill: '#64748B',
+                fontSize: 11,
+                fontWeight: 500,
+              },
+            },
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: cycleMetricX + metricWidth - metricInnerPadding,
+                y: metricRowY,
+                text: cycleText,
+                width: metricValueWidth,
+                overflow: 'truncate',
+                textAlign: 'right',
+                textVerticalAlign: 'middle',
+                fill: '#111827',
+                fontSize: 11,
+                fontWeight: 700,
+              },
+            },
+            {
+              type: 'line' as const,
+              z2: 20,
+              shape: {
+                x1: bodyDividerX,
+                y1: bodyTop + 6,
+                x2: bodyDividerX,
+                y2: bodyTop + bodyHeight - 6,
+              },
+              style: {
+                stroke: '#E5EAF1',
+                lineWidth: 1,
+              },
+            },
+            ...(isOffsetModified
+              ? [
+                  {
+                    type: 'rect' as const,
+                    z2: 19,
+                    shape: {
+                      x: offsetValueHighlightX,
+                      y: offsetValueHighlightY,
+                      width: offsetValueHighlightWidth,
+                      height: offsetValueHighlightHeight,
+                      r: 4,
+                    },
+                    style: {
+                      fill: offsetVisuals.highlightFill,
+                      stroke: offsetVisuals.highlightStroke,
+                      lineWidth: 1,
+                    },
+                  },
+                ]
+              : []),
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: offsetMetricX + metricInnerPadding,
+                y: metricRowY,
+                text: 'Offset',
+                width: metricLabelWidth,
+                overflow: 'truncate',
+                textAlign: 'left',
+                textVerticalAlign: 'middle',
+                fill: '#64748B',
+                fontSize: 11,
+                fontWeight: 500,
+              },
+            },
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: offsetMetricX + metricWidth - metricInnerPadding,
+                y: metricRowY,
+                text: offsetText,
+                width: metricValueWidth,
+                overflow: 'truncate',
+                textAlign: 'right',
+                textVerticalAlign: 'middle',
+                fill: offsetVisuals.valueColor,
+                fontSize: 11,
+                fontWeight: 700,
+              },
+            },
+          ]
 
       children.push({
         type: 'group',
@@ -752,18 +1128,15 @@ export function getLocationsLabelOption(
             shape: {
               x: cardLeft,
               y: cardTop,
-              width: CARD_WIDTH,
+              width: cardWidth,
               height: CARD_H,
-              r: CARD_RADIUS,
+              r: cardRadius,
             },
             style: {
-              fill: '#FFFFFF',
-              stroke: '#D9DEE6',
+              fill: isIgnored ? '#F8FAFC' : '#FFFFFF',
+              stroke: isIgnored ? '#D5DCE5' : '#D9DEE6',
               lineWidth: 1,
-              shadowBlur: 6,
-              shadowColor: 'rgba(0,0,0,0.08)',
-              shadowOffsetX: 0,
-              shadowOffsetY: 2,
+              opacity: isIgnored ? 0.82 : 1,
             },
           },
 
@@ -774,59 +1147,82 @@ export function getLocationsLabelOption(
             shape: {
               x: cardLeft,
               y: cardTop,
-              width: CARD_WIDTH,
-              height: HEADER_H,
-              r: [CARD_RADIUS, CARD_RADIUS, 0, 0],
+              width: cardWidth,
+              height: headerHeight,
+              r: bodyHeight > 0 ? [cardRadius, cardRadius, 0, 0] : cardRadius,
             },
-            style: { fill: '#EEF1F5' },
-          },
-
-          // Identifier (centered in header)
-          {
-            type: 'text',
-            z2: 20,
             style: {
-              x: cardLeft + CARD_WIDTH / 2,
-              y: cardTop + HEADER_H / 2,
-              text: ident,
-              textAlign: 'center',
-              textVerticalAlign: 'middle',
-              fill: '#111',
-              fontSize: 14,
-              fontWeight: 700,
+              fill: isIgnored ? '#F1F5F9' : '#EEF1F5',
+              opacity: isIgnored ? 0.88 : 1,
             },
           },
 
-          // Primary/secondary combined (wrap inside card)
+          // Identifier and location name combined inside the header
           {
             type: 'text',
             z2: 20,
             style: {
               x: textX,
-              y: cardTop + HEADER_H + 5,
-              text: name,
-              width: CARD_WIDTH - BODY_PAD_LEFT * 2,
+              y: cardTop + 8,
+              text: titleText,
+              width: titleWidth,
               overflow: 'break',
-              lineHeight: 18,
+              lineHeight: 14,
               textAlign: 'left',
               textVerticalAlign: 'top',
-              fill: '#222',
-              fontSize: 13,
-              fontWeight: 500,
+              rich: {
+                ident: {
+                  fill: isIgnored ? '#334155' : '#111',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  opacity: isIgnored ? 0.6 : 1,
+                },
+                name: {
+                  fill: isIgnored ? '#64748B' : '#111',
+                  fontSize: 11,
+                  fontWeight: 400,
+                  opacity: isIgnored ? 0.72 : 1,
+                },
+              },
             },
           },
+          {
+            type: 'line',
+            z2: 20,
+            shape: {
+              x1: dividerX,
+              y1: cardTop + 7,
+              x2: dividerX,
+              y2: cardTop + headerHeight - 7,
+            },
+            style: {
+              stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
+              lineWidth: 1,
+            },
+          },
+          ...bodyChildren,
         ],
       })
 
       return { type: 'group', children }
     },
 
-    data: distanceData.map((distance, index) => [
-      data[index].start,
-      distance,
-      data[index].locationIdentifier,
-      data[index].locationDescription,
-    ]),
+    data: distanceData.map((distance, index) => {
+      const location = data[index]
+      const offset =
+        'offset' in location && typeof location.offset === 'number'
+          ? location.offset
+          : 0
+
+      return [
+        location.start,
+        distance,
+        location.locationIdentifier,
+        location.locationDescription,
+        location.cycleLength,
+        offset,
+      ]
+    }),
   }
 
   return series
@@ -891,6 +1287,8 @@ export function getDistancesLabelOption(
   distanceData: number[],
   gridLeft: number
 ): SeriesOption {
+  const { gridGap, dotOffset, cardGapToDot, verticalOffsetY } =
+    TIME_SPACE_LOCATION_CARD_LAYOUT
   const dataPoints = distanceData.map((distance, index) => [
     data[index].end,
     distance,
@@ -900,29 +1298,95 @@ export function getDistancesLabelOption(
   return {
     name: `Labels distance`,
     type: 'custom',
+    z: 4,
     renderItem: (params, api) => {
-      const [, y] = api.coord([
+      if (params.dataIndex === dataPoints.length - 1) {
+        return
+      }
+
+      const xDot = gridLeft - gridGap + dotOffset
+      const cardRight = xDot - cardGapToDot
+      const xLine = cardRight + (gridLeft - cardRight) / 2
+      const valueCardWidth = TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH
+      const valueCardHeight = 26
+      const valueCardRight = cardRight
+      const valueCardLeft = valueCardRight - valueCardWidth
+      const dividerX = valueCardLeft + valueCardWidth / 2
+      const distanceText = `${(api.value(2) as number).toLocaleString()} ft`
+      const speedText = `${api.value(3)} mph`
+      const [, rawY] = api.coord([
         0,
         (api.value(1) as number) + (api.value(2) as number) / 2,
       ])
+      const y = rawY + verticalOffsetY
+
       return {
         type: 'group',
         children: [
           {
+            type: 'line',
+            shape: {
+              x1: xLine,
+              y1: y,
+              x2: valueCardRight,
+              y2: y,
+            },
+            style: {
+              stroke: Color.PlanB,
+              lineWidth: 3,
+            },
+          },
+          {
+            type: 'rect',
+            shape: {
+              x: valueCardLeft,
+              y: y - valueCardHeight / 2,
+              width: valueCardWidth,
+              height: valueCardHeight,
+              r: 4,
+            },
+            style: {
+              fill: 'rgba(86, 180, 233, 0.14)',
+              stroke: 'rgba(86, 180, 233, 0.38)',
+              lineWidth: 1,
+            },
+          },
+          {
+            type: 'line',
+            shape: {
+              x1: dividerX,
+              y1: y - 8,
+              x2: dividerX,
+              y2: y + 8,
+            },
+            style: {
+              stroke: 'rgba(86, 180, 233, 0.34)',
+              lineWidth: 1,
+            },
+          },
+          {
             type: 'text',
             style: {
-              x: gridLeft - 45,
-              y: y - 10,
-              text:
-                params.dataIndex !== dataPoints.length - 1
-                  ? api.value(2).toLocaleString() +
-                    ' ft' +
-                    '\n' +
-                    api.value(3).toString() +
-                    ' mph'
-                  : '',
+              x: valueCardLeft + valueCardWidth / 4,
+              y,
+              text: distanceText,
               textFill: '#000',
               fontSize: 10,
+              fontWeight: 600,
+              textAlign: 'center',
+              textVerticalAlign: 'middle',
+            },
+          },
+          {
+            type: 'text',
+            style: {
+              x: valueCardLeft + (valueCardWidth * 3) / 4,
+              y,
+              text: speedText,
+              textFill: '#2B4C68',
+              fontSize: 10,
+              textAlign: 'center',
+              textVerticalAlign: 'middle',
             },
           },
         ],
@@ -1009,57 +1473,447 @@ export function getDraggableOffsetabelOption(
   return seriesOptions
 }
 
-type ExpandDir = 'up' | 'down'
+type LabelColumn = 'left' | 'right'
+
+type StaticDirectionTypeKey = keyof typeof staticDirectionTypes
+
+const CARDINAL_DIRECTION_SVG_PATHS = ['m5 12 7-7 7 7', 'M12 19V5'] as const
+
+const DIAGONAL_DIRECTION_SVG_PATHS = ['M17 17 7 7', 'M17 7H7v10'] as const
+
+const DIRECTION_ICON_DATA_URLS = new Map<string, string>()
+
+function getDirectionIconDataUrl(
+  directionKey: StaticDirectionTypeKey,
+  strokeColor = '#111111'
+): string | null {
+  const cacheKey = `${directionKey}:${strokeColor}`
+  const cached = DIRECTION_ICON_DATA_URLS.get(cacheKey)
+  if (cached) {
+    return cached
+  }
+
+  const svgConfig = staticDirectionTypes[directionKey].chartSvg
+  if (!svgConfig) {
+    return null
+  }
+
+  const paths =
+    svgConfig.family === 'diagonal'
+      ? DIAGONAL_DIRECTION_SVG_PATHS
+      : CARDINAL_DIRECTION_SVG_PATHS
+
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`,
+    `<g transform="rotate(${svgConfig.rotationDeg} 12 12)">`,
+    ...paths.map((path) => `<path d="${path}"/>`),
+    '</g>',
+    '</svg>',
+  ].join('')
+
+  const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+  DIRECTION_ICON_DATA_URLS.set(cacheKey, dataUrl)
+  return dataUrl
+}
+
+function getDirectionTypeKey(directionLabel: string): StaticDirectionTypeKey {
+  const token = directionLabel.trim().split(/\s+/)[0]?.toUpperCase() ?? ''
+
+  if ((token as StaticDirectionTypeKey) in staticDirectionTypes) {
+    return token as StaticDirectionTypeKey
+  }
+
+  const prefixMatch = (
+    Object.keys(staticDirectionTypes) as StaticDirectionTypeKey[]
+  ).find((key) => key !== 'NA' && token.startsWith(key))
+
+  return prefixMatch ?? 'NA'
+}
+
+function extractPercentValue(text: string): number | null {
+  const match = text.match(/(\d+(?:\.\d+)?)%/)
+  if (!match) {
+    return null
+  }
+
+  const value = Number(match[1])
+  if (!Number.isFinite(value)) {
+    return null
+  }
+
+  return Math.max(0, Math.min(100, value))
+}
+
+export const CYCLE_LABEL_SERIES_ID_PREFIX = 'Cycle Labels '
 
 export function generateCycleLabels(
   distanceData: number[],
   direction: string,
-  gridLeft: number,
+  _gridLeft = 0,
+  headerTextByIndex?: Array<string | undefined>,
   linesByIndex?: Array<string[] | undefined>,
-  expand: ExpandDir = 'down'
+  column: LabelColumn = 'left',
+  ignoredByIndex?: boolean[]
 ): SeriesOption {
+  void _gridLeft
+
+  const {
+    cardWidth,
+    cardRadius,
+    headerHeight,
+    cardGapFromPlot,
+    cardGapBetween,
+    verticalOffsetY,
+    bodyPaddingX,
+    bodyPaddingY,
+    lineHeight,
+    minBodyHeight,
+  } = TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT
+
   return {
+    id: `${CYCLE_LABEL_SERIES_ID_PREFIX}${direction}`,
     name: `Cycles ${direction}`,
     type: 'custom',
+    silent: true,
+    clip: false,
+    z: 7,
     renderItem: (params, api) => {
       const rowIndex = params.dataIndex
       const [, y] = api.coord([0, api.value(0)])
-      const width = params.coordSys.width
+      const coordSys = params.coordSys as { x: number; width: number }
+      const footerLabelIndex = distanceData.reduce(
+        (currentLowestIndex, _, index) => {
+          const [, currentRowY] = api.coord([
+            0,
+            distanceData[currentLowestIndex],
+          ])
+          const [, candidateRowY] = api.coord([0, distanceData[index]])
+          const currentRowDetailLines = Boolean(
+            ignoredByIndex?.[currentLowestIndex]
+          )
+            ? []
+            : (linesByIndex?.[currentLowestIndex] ?? []).filter(Boolean)
+          const candidateRowDetailLines = Boolean(ignoredByIndex?.[index])
+            ? []
+            : (linesByIndex?.[index] ?? []).filter(Boolean)
+          const currentRowBodyHeight = currentRowDetailLines.length
+            ? Math.max(
+                minBodyHeight,
+                currentRowDetailLines.length * lineHeight + bodyPaddingY * 2
+              )
+            : 0
+          const candidateRowBodyHeight = candidateRowDetailLines.length
+            ? Math.max(
+                minBodyHeight,
+                candidateRowDetailLines.length * lineHeight + bodyPaddingY * 2
+              )
+            : 0
+          const currentRowBottom =
+            currentRowY +
+            CYCLE_SEGMENT_HEIGHT / 2 +
+            verticalOffsetY +
+            (headerHeight + currentRowBodyHeight) / 2
+          const candidateRowBottom =
+            candidateRowY +
+            CYCLE_SEGMENT_HEIGHT / 2 +
+            verticalOffsetY +
+            (headerHeight + candidateRowBodyHeight) / 2
 
-      const fontSize = 10
-      const lineGap = 20
+          return candidateRowBottom > currentRowBottom
+            ? index
+            : currentLowestIndex
+        },
+        0
+      )
+      const isIgnored = Boolean(ignoredByIndex?.[rowIndex])
+      const anchorY = y + CYCLE_SEGMENT_HEIGHT / 2 + verticalOffsetY
+      const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
+      const cardLeft =
+        column === 'left'
+          ? primaryCardLeft
+          : primaryCardLeft + cardWidth + cardGapBetween
 
-      const extra = linesByIndex?.[rowIndex] ?? []
-      const lines = [direction, ...extra] // direction always first
-
-      // Anchor at the row baseline and choose whether the block grows up or down
-      const startY = expand === 'down' ? 0 : -(lines.length * lineGap) - 15 // move up so the last line ends at y=0
+      const headerText = headerTextByIndex?.[rowIndex]?.trim() || direction
+      const { identifier: headerIdentifier, description: headerDescription } =
+        splitIdentifierAndDescription(headerText)
+      const headerTitleText = buildIdentifierAndNameTitle(
+        headerIdentifier,
+        headerDescription
+      )
+      const headerAccentColor = getDirectionAccentColor(headerText)
+      const headerDirectionKey = getDirectionTypeKey(headerText)
+      const headerIconDataUrl = getDirectionIconDataUrl(
+        headerDirectionKey,
+        isIgnored ? '#94A3B8' : '#111111'
+      )
+      const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
+      const visibleDetailLines = isIgnored ? [] : detailLines
+      const bodyHeight = detailLines.length
+        ? Math.max(
+            minBodyHeight,
+            detailLines.length * lineHeight + bodyPaddingY * 2
+          )
+        : 0
+      const cardHeight = headerHeight + bodyHeight
+      const cardTop = anchorY - cardHeight / 2
+      const bodyTop = cardTop + headerHeight
+      const footerLabelText = column === 'left' ? 'primary' : 'opposing'
+      const showFooterLabel = rowIndex === footerLabelIndex
+      const footerLabelY = cardTop + cardHeight + 10
+      const textX = cardLeft + bodyPaddingX
+      const iconSize = 10
+      const headerTextX = textX + (headerIconDataUrl ? iconSize + 3 : 0)
+      const detailPieRadius = 4.5
+      const detailPieCenterX =
+        cardLeft + cardWidth - bodyPaddingX - detailPieRadius
+      const detailTextWidth = Math.max(
+        0,
+        detailPieCenterX - textX - detailPieRadius - 6
+      )
+      const detailMetricGap = 4
+      const detailValueWidth = Math.min(26, Math.max(20, detailTextWidth * 0.4))
+      const detailLabelWidth = Math.max(
+        0,
+        detailTextWidth - detailValueWidth - detailMetricGap
+      )
 
       return {
         type: 'group',
-        position: [width + 100, y],
-
-        children: lines.map((text, i) => ({
-          type: 'text',
-          style: {
-            backgroundColor: '#f2f2f2',
-            padding: [8, 12],
-            borderRadius: 6,
-            textStyle: {
-              fontWeight: 400,
-              fontSize: 12,
+        children: [
+          {
+            type: 'rect',
+            z2: 10,
+            shape: {
+              x: cardLeft,
+              y: cardTop,
+              width: cardWidth,
+              height: cardHeight,
+              r: cardRadius,
+            },
+            style: {
+              fill: '#FFFFFF',
+              stroke: '#D9DEE6',
+              lineWidth: 1,
+            },
+          },
+          {
+            type: 'rect',
+            z2: 11,
+            shape: {
+              x: cardLeft,
+              y: cardTop,
+              width: 3,
+              height: cardHeight,
+              r: bodyHeight > 0 ? [cardRadius, 0, 0, cardRadius] : cardRadius,
+            },
+            style: {
+              fill: headerAccentColor,
+              opacity: isIgnored ? 0.5 : 1,
+            },
+          },
+          {
+            type: 'rect',
+            z2: 12,
+            shape: {
+              x: cardLeft + 3,
+              y: cardTop,
+              width: cardWidth - 3,
+              height: headerHeight,
+              r:
+                bodyHeight > 0
+                  ? [0, cardRadius, 0, 0]
+                  : [0, cardRadius, cardRadius, 0],
+            },
+            style: {
+              fill: isIgnored ? '#F1F5F9' : '#EEF1F5',
+              opacity: isIgnored ? 0.88 : 1,
+            },
+          },
+          ...(headerIconDataUrl
+            ? [
+                {
+                  type: 'image' as const,
+                  z2: 20,
+                  style: {
+                    x: textX,
+                    y: cardTop + (headerHeight - iconSize) / 2,
+                    image: headerIconDataUrl,
+                    width: iconSize,
+                    height: iconSize,
+                    opacity: isIgnored ? 0.4 : 1,
+                  },
+                },
+              ]
+            : [
+                {
+                  type: 'text' as const,
+                  z2: 20,
+                  style: {
+                    x: textX,
+                    y: cardTop + headerHeight / 2,
+                    text: '?',
+                    textAlign: 'left',
+                    textVerticalAlign: 'middle',
+                    fill: isIgnored ? '#94A3B8' : '#111',
+                    fontSize: 10,
+                    fontWeight: 700,
+                  },
+                },
+              ]),
+          {
+            type: 'text',
+            z2: 20,
+            style: {
+              x: headerTextX,
+              y: cardTop + headerHeight / 2,
+              text: headerTitleText,
+              textAlign: 'left',
+              textVerticalAlign: 'middle',
+              fontSize: 10,
               rich: {
-                values: { fontWeight: 600 },
+                ident: {
+                  fill: isIgnored ? '#94A3B8' : '#111',
+                  fontSize: 10,
+                  fontWeight: 700,
+                },
+                name: {
+                  fill: isIgnored ? '#94A3B8' : '#111',
+                  fontSize: 10,
+                  fontWeight: 400,
+                },
               },
             },
-            x: gridLeft,
-            y: startY + i * lineGap,
-            text,
-            fontSize,
           },
-        })),
+          ...visibleDetailLines.flatMap((line, index) => {
+            const percentValue = extractPercentValue(line)
+            const lineY = bodyTop + bodyPaddingY + index * lineHeight
+            const isArrivalOnGreenLine = /^AOG:\s*/i.test(line)
+            const arrivalOnGreenValue = isArrivalOnGreenLine
+              ? line.replace(/^AOG:\s*/i, '')
+              : null
+            const pieChildren =
+              percentValue === null
+                ? []
+                : [
+                    {
+                      type: 'circle' as const,
+                      z2: 20,
+                      shape: {
+                        cx: detailPieCenterX,
+                        cy: lineY + lineHeight / 2 - 1,
+                        r: detailPieRadius,
+                      },
+                      style: {
+                        fill: '#E2E8F0',
+                        opacity: isIgnored ? 0.45 : 1,
+                      },
+                    },
+                    ...(percentValue > 0
+                      ? [
+                          {
+                            type: 'sector' as const,
+                            z2: 21,
+                            shape: {
+                              cx: detailPieCenterX,
+                              cy: lineY + lineHeight / 2 - 1,
+                              r: detailPieRadius,
+                              r0: 0,
+                              startAngle: -Math.PI / 2,
+                              endAngle:
+                                -Math.PI / 2 +
+                                (percentValue / 100) * Math.PI * 2,
+                              clockwise: true,
+                            },
+                            style: {
+                              fill: Color.Black,
+                              opacity: isIgnored ? 0.55 : 1,
+                            },
+                          },
+                        ]
+                      : []),
+                  ]
+
+            return [
+              ...(isArrivalOnGreenLine
+                ? [
+                    {
+                      type: 'text' as const,
+                      z2: 20,
+                      style: {
+                        x: textX,
+                        y: lineY,
+                        text: 'AOG',
+                        width: detailLabelWidth,
+                        overflow: 'truncate',
+                        lineHeight,
+                        textAlign: 'left',
+                        textVerticalAlign: 'top',
+                        fill: isIgnored ? '#94A3B8' : '#64748B',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      },
+                    },
+                    {
+                      type: 'text' as const,
+                      z2: 20,
+                      style: {
+                        x: textX + detailTextWidth,
+                        y: lineY,
+                        text: arrivalOnGreenValue ?? '',
+                        width: detailValueWidth,
+                        overflow: 'truncate',
+                        lineHeight,
+                        textAlign: 'right',
+                        textVerticalAlign: 'top',
+                        fill: isIgnored ? '#94A3B8' : '#222',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      type: 'text' as const,
+                      z2: 20,
+                      style: {
+                        x: textX,
+                        y: lineY,
+                        text: line,
+                        width: detailTextWidth,
+                        overflow: 'truncate',
+                        lineHeight,
+                        textAlign: 'left',
+                        textVerticalAlign: 'top',
+                        fill: isIgnored ? '#94A3B8' : '#222',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      },
+                    },
+                  ]),
+              ...pieChildren,
+            ]
+          }),
+          ...(showFooterLabel
+            ? [
+                {
+                  type: 'text' as const,
+                  z2: 20,
+                  style: {
+                    x: cardLeft + cardWidth / 2,
+                    y: footerLabelY,
+                    text: footerLabelText,
+                    textAlign: 'center',
+                    textVerticalAlign: 'top',
+                    fill: '#475569',
+                    fontSize: 10,
+                    fontWeight: 600,
+                  },
+                },
+              ]
+            : []),
+        ],
       }
     },
     data: distanceData,
-  }
+  } satisfies SeriesOption
 }

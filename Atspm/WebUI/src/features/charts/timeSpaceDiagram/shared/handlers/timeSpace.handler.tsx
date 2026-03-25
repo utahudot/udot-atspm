@@ -1,11 +1,26 @@
 import { dateToTimestamp } from '@/utils/dateTime'
+import { TIME_SPACE_LOCATION_AXIS_SERIES_ID } from '../transformers/timeSpaceTransformerBase'
 import { ECharts, EChartsOption, SeriesOption } from 'echarts'
 import { useEffect, useRef } from 'react'
 
 const HIT_TOLERANCE = 10
 const STEP_MS = 1000
 
-type SeriesKind = 'base' | 'band' | 'llc' | 'ac' | 'sbp' | 'offset'
+type SeriesKind =
+  | 'base'
+  | 'cycle-duration'
+  | 'band'
+  | 'llc'
+  | 'ac'
+  | 'sbp'
+  | 'offset'
+  | 'location-axis'
+
+function isSeriesOption(
+  value: SeriesOption | null | undefined
+): value is SeriesOption {
+  return Boolean(value && typeof value === 'object')
+}
 
 function shiftTimeStr(t: string, offsetMs: number): string {
   const time = new Date(t).getTime()
@@ -13,7 +28,12 @@ function shiftTimeStr(t: string, offsetMs: number): string {
 }
 
 function stripCategory(id: string) {
-  return id.replace(/^(Cycles|Green Bands|LLC|AC|SBP|Offset)\s+/, '').trim()
+  return id
+    .replace(
+      /^(Cycles|Cycle Duration Labels|Green Bands|LLC|AC|SBP|Offset)\s+/,
+      ''
+    )
+    .trim()
 }
 
 function getGroupKeyFromSeriesId(id: string) {
@@ -27,14 +47,28 @@ const getAllSeries = (chart: ECharts) => {
   const options = chart.getOption() as EChartsOption
 
   if (!options?.series) {
-    return { base: [], bands: [], llc: [], ac: [], sbp: [], offset: [] }
+    return {
+      base: [],
+      cycleDurations: [],
+      bands: [],
+      llc: [],
+      ac: [],
+      sbp: [],
+      offset: [],
+      locationAxis: [],
+    }
   }
 
-  const series = options.series as SeriesOption[]
+  const rawSeries = Array.isArray(options.series) ? options.series : [options.series]
+  const series = rawSeries.filter(isSeriesOption)
 
   return {
     base: series.filter(
       (s) => typeof s.id === 'string' && s.id.includes('Cycles')
+    ),
+    cycleDurations: series.filter(
+      (s) =>
+        typeof s.id === 'string' && s.id.includes('Cycle Duration Labels')
     ),
     bands: series.filter(
       (s) => typeof s.id === 'string' && s.id.includes('Green Bands')
@@ -45,6 +79,7 @@ const getAllSeries = (chart: ECharts) => {
     offset: series.filter(
       (s) => typeof s.id === 'string' && s.id.includes('Offset')
     ),
+    locationAxis: series.filter((s) => s.id === TIME_SPACE_LOCATION_AXIS_SERIES_ID),
   }
 }
 
@@ -78,6 +113,8 @@ function buildShiftedData(kind: SeriesKind, original: any[], offsetMs: number) {
   switch (kind) {
     case 'base':
       return original.map((d) => [shiftTimeStr(d[0], offsetMs), d[1], d[2]])
+    case 'cycle-duration':
+      return original.map((d) => [Number(d[0]) + offsetMs, d[1], d[2]])
     case 'band':
     case 'sbp':
       return original.map((d) => [shiftTimeStr(d[0], offsetMs), d[1]])
@@ -88,12 +125,36 @@ function buildShiftedData(kind: SeriesKind, original: any[], offsetMs: number) {
       )
     case 'offset':
       return original.map((d) => [d[0], d[1], d[2], offsetMs / 1000])
+    case 'location-axis':
+      return original
     default:
       return original
   }
 }
 
-export const useTimeSpaceHandler = (chart: ECharts | null) => {
+function buildLocationAxisOffsetData(
+  original: any[],
+  offsetsByGroup: Record<string, number>
+) {
+  return original.map((datum) => {
+    if (!Array.isArray(datum)) {
+      return datum
+    }
+
+    const nextDatum = [...datum]
+    const locationId = String(nextDatum[2] ?? '')
+    const baseOffsetSeconds =
+      typeof nextDatum[5] === 'number' && Number.isFinite(nextDatum[5])
+        ? nextDatum[5]
+        : 0
+    const dragOffsetSeconds = (offsetsByGroup[locationId] ?? 0) / 1000
+
+    nextDatum[5] = baseOffsetSeconds + dragOffsetSeconds
+    return nextDatum
+  })
+}
+
+export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
   const draggingRef = useRef(false)
   const draggingGroupKeyRef = useRef<string | null>(null)
   const lastXRef = useRef<number | null>(null)
@@ -117,7 +178,8 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
     }
 
     const captureOriginal = () => {
-      const { base, bands, llc, ac, sbp, offset } = getAllSeries(chart)
+      const { base, cycleDurations, bands, llc, ac, sbp, offset, locationAxis } =
+        getAllSeries(chart)
 
       const put = (arr: SeriesOption[], kind: SeriesKind) => {
         for (const s of arr) {
@@ -134,11 +196,13 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       }
 
       put(base, 'base')
+      put(cycleDurations, 'cycle-duration')
       put(bands, 'band')
       put(llc, 'llc')
       put(ac, 'ac')
       put(sbp, 'sbp')
       put(offset, 'offset')
+      put(locationAxis, 'location-axis')
 
       return { base }
     }
@@ -151,6 +215,10 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       captureOriginal()
     }
 
+    originalDataByIdRef.current = {}
+    kindByIdRef.current = {}
+    resetRefs()
+
     // initial capture
     const { base } = captureOriginal()
     if (!base.length) return
@@ -162,10 +230,18 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       for (const [id, original] of Object.entries(
         originalDataByIdRef.current
       )) {
-        if (getGroupKeyFromSeriesId(id) !== groupKey) continue
-
         const kind = kindByIdRef.current[id]
         if (!kind) continue
+
+        if (kind === 'location-axis') {
+          updates.push({
+            id,
+            data: buildLocationAxisOffsetData(original, offsetsByGroupRef.current),
+          })
+          continue
+        }
+
+        if (getGroupKeyFromSeriesId(id) !== groupKey) continue
 
         updates.push({ id, data: buildShiftedData(kind, original, rounded) })
       }
@@ -182,12 +258,17 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       ])
       if (xData == null) return
 
-      const latestBase =
-        (chart.getOption()?.series as SeriesOption[] | undefined)?.filter(
-          (s) => typeof s.id === 'string' && s.id.includes('Cycles')
-        ) ?? base
+      const latestSeries = Array.isArray(chart.getOption()?.series)
+        ? (chart.getOption()?.series as Array<SeriesOption | null | undefined>).filter(
+            isSeriesOption
+          )
+        : []
+      const latestBase = latestSeries.filter(
+        (s) => typeof s.id === 'string' && s.id.includes('Cycles')
+      )
+      const activeBase = latestBase.length ? latestBase : base
 
-      const closest = findClosestGroup(chart, latestBase, e.offsetY)
+      const closest = findClosestGroup(chart, activeBase, e.offsetY)
       if (!closest) return
 
       draggingRef.current = true
@@ -261,5 +342,5 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
       chart.off('restore', onRestore)
       chart.off('finished', onFinished)
     }
-  }, [chart])
+  }, [chart, syncVersion])
 }
