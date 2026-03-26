@@ -34,5 +34,55 @@ namespace Utah.Udot.Atspm.Data
         {
 
         }
+
+        public DbSet<ApiKey> ApiKeys { get; set; }
+        public DbSet<ApiKeyClaim> ApiKeyClaims { get; set; }
+
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Configuration for ApiKey
+            builder.Entity<ApiKey>(entity =>
+            {
+                // Index the hash for high-performance lookups in the Auth Handler
+                entity.HasIndex(e => e.KeyHash).IsUnique();
+
+                // Relationship: One Key has many Claims
+                entity.HasMany(e => e.Claims)
+                      .WithOne()
+                      .HasForeignKey(c => c.ApiKeyId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ApiKeyClaim>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+            });
+        }
+    }
+
+    public class ApiKey
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string KeyHash { get; set; } = string.Empty;
+        public string OwnerId { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? ExpiresAt { get; set; }
+        public bool IsRevoked { get; set; }
+
+        // This links to the child table below
+        public List<ApiKeyClaim> Claims { get; set; } = new List<ApiKeyClaim>();
+    }
+
+    public class ApiKeyClaim
+    {
+        public int Id { get; set; }
+        public int ApiKeyId { get; set; } // Foreign Key
+        public string Type { get; set; } = string.Empty;  // e.g., "role"
+        public string Value { get; set; } = string.Empty; // e.g., "Admin"
     }
 }
