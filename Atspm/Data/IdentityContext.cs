@@ -42,6 +42,9 @@ namespace Utah.Udot.Atspm.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            Npgsql.NpgsqlConnectionStringBuilder
+
+
             base.OnModelCreating(builder);
 
             // Configuration for ApiKey

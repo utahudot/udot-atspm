@@ -7,7 +7,7 @@ using Utah.Udot.Atspm.Data.Models;
 
 namespace Utah.Udot.ATSPM.IdentityApi.Controllers
 {
-    [Authorize] // Only logged-in humans can manage keys
+    [Authorize]
     [Route("api/[controller]")]
     public class ApiKeyController : ControllerBase
     {
