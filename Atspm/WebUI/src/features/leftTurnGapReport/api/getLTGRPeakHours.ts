@@ -24,7 +24,7 @@ import { peakHours } from '../types'
 
 export const getLTGRPeakHours = async (body: peakHours): Promise<any> => {
   const result: ApiResponse<any> = await reportsAxios.post(
-    `LeftTurnPeakHours/getReportData`,
+    `/api/v1/LeftTurnPeakHours/getReportData`,
     body
   )
   return result

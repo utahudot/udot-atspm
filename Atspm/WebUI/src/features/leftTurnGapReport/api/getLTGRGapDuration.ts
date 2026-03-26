@@ -27,10 +27,13 @@ export const getLTGRGapDuration = async (
 ) => {
   const results = await Promise.all(
     approachIds.map(async (approachId) => {
-      return await reportsAxios.post(`LeftTurnGapDuration/getReportData`, {
-        ...body,
-        approachId: approachId,
-      })
+      return await reportsAxios.post(
+        `/api/v1/LeftTurnGapDuration/getReportData`,
+        {
+          ...body,
+          approachId: approachId,
+        }
+      )
     })
   )
   return results

@@ -27,10 +27,13 @@ export const getLTGRSplitFail = async (
 ) => {
   const results = await Promise.all(
     approachIds.map(async (approachId) => {
-      return await reportsAxios.post(`LeftTurnSplitFail/getReportData`, {
-        ...body,
-        approachId: approachId,
-      })
+      return await reportsAxios.post(
+        `/api/v1/LeftTurnSplitFail/getReportData`,
+        {
+          ...body,
+          approachId: approachId,
+        }
+      )
     })
   )
   return results

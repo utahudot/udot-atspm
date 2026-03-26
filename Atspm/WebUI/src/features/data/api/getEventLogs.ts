@@ -65,7 +65,7 @@ export const getEventLogs = async (
   }
 
   return await dataAxios.get(
-    `EventLog/GetArchivedEvents/${locationIdentifier}/${dataType}?start=${start}&end=${end}`,
+    `/api/v1/EventLog/GetArchivedEvents/${locationIdentifier}/${dataType}?start=${start}&end=${end}`,
     { headers }
   )
 }
