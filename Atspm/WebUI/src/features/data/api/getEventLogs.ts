@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getEventLogs.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,7 +65,7 @@ export const getEventLogs = async (
   }
 
   return await dataAxios.get(
-    `EventLog/GetArchivedEvents/${locationIdentifier}/${dataType}?start=${start}&end=${end}`,
+    `/api/v1/EventLog/GetArchivedEvents/${locationIdentifier}/${dataType}?start=${start}&end=${end}`,
     { headers }
   )
 }

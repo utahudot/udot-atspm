@@ -26,8 +26,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
     ///<inheritdoc cref="ILocationRepository"/>
     public class LocationEFRepository : ATSPMRepositoryEFBase<Location>, ILocationRepository
     {
+        private readonly ILogger<LocationEFRepository> _logger;
         /// <inheritdoc/>
-        public LocationEFRepository(ConfigContext db, ILogger<LocationEFRepository> log) : base(db, log) { }
+        public LocationEFRepository(ConfigContext db, ILogger<LocationEFRepository> log) : base(db, log) { _logger = log; }
 
         private IQueryable<Location> BaseQuery()
         {
@@ -187,24 +188,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                     .Skip(i)
                     .Take(batchSize)
                     .ToList();
+                try
+                {
+                    var batch = BaseQuery()
+                        .Where(l => batchIds.Contains(l.Id))
+                        .Include(l => l.Devices)
+                        .Include(l => l.Approaches)
+                            .ThenInclude(a => a.DirectionType)
+                        .Include(l => l.Approaches)
+                            .ThenInclude(a => a.Detectors)
+                                .ThenInclude(d => d.DetectorComments)
+                        .Include(l => l.Approaches)
+                            .ThenInclude(a => a.Detectors)
+                                .ThenInclude(d => d.DetectionTypes)
+                                    .ThenInclude(dt => dt.MeasureTypes)
+                        .AsNoTracking()
+                        .AsSplitQuery()
+                        .ToList();
 
-                var batch = BaseQuery()
-                    .Where(l => batchIds.Contains(l.Id))
-                    .Include(l => l.Devices)
-                    .Include(l => l.Approaches)
-                        .ThenInclude(a => a.DirectionType)
-                    .Include(l => l.Approaches)
-                        .ThenInclude(a => a.Detectors)
-                            .ThenInclude(d => d.DetectorComments)
-                    .Include(l => l.Approaches)
-                        .ThenInclude(a => a.Detectors)
-                            .ThenInclude(d => d.DetectionTypes)
-                                .ThenInclude(dt => dt.MeasureTypes)
-                    .AsNoTracking()
-                    .AsSplitQuery()
-                    .ToList();
-
-                results.AddRange(batch);
+                    results.AddRange(batch);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed with this exception: {ex}");
+                    _logger.LogError($"Failed batch starting at index {i}");
+                }
             }
 
             return results;

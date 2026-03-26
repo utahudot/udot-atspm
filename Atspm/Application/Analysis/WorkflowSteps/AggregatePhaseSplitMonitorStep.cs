@@ -96,7 +96,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 .GroupBy(g => g.EventParam)
                 .SelectMany(g =>
                 g.SlidingWindow(2)
-                .Where(window => window.Select(e => e.EventCode).SequenceEqual(new List<short>() 
+                .Where(window => window.Select(e => e.EventCode).SequenceEqual(new List<short>()
                 {
                     (short)IndianaEnumerations.PhaseBeginGreen,
                     (short)IndianaEnumerations.PhaseEndRedClearance

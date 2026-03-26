@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getLeftTurnGapReportDataCheck.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ export const getLeftTurnGapReportDataCheck = async (approachIds, body) => {
   const result = await Promise.all(
     approachIds.map(async (approachId) => {
       return await reportsAxios.post(
-        `LeftTurnGapReportDataCheck/getReportData`,
+        `/api/v1/LeftTurnGapReportDataCheck/getReportData`,
         { ...body, approachId: approachId }
       )
     })

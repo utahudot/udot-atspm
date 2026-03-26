@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
@@ -15,15 +15,14 @@
 		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IncludeOpenAPIAnalyzers>True</IncludeOpenAPIAnalyzers>
-		<Version>5.2.0</Version>
+		<Version>5.2.1-rc1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CsvHelper" Version="30.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Polly" Version="8.5.2" />
 		<PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
@@ -39,12 +38,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Using Include="Utah.Udot.Atspm.Data.Models" />
-	  <Using Include="Utah.Udot.Atspm.Data.Models.EventLogModels" />
-	  <Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
-	  <Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
-	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
-	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+		<Using Include="Utah.Udot.Atspm.Data.Models" />
+		<Using Include="Utah.Udot.Atspm.Data.Models.EventLogModels" />
+		<Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
+		<Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
+		<Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
+		<Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
 	</ItemGroup>
 
 </Project>

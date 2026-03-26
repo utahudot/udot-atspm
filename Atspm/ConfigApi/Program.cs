@@ -15,22 +15,21 @@
 // limitations under the License.
 #endregion
 
-using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services;
+using Utah.Udot.ATSPM.ConfigApi.Mappings;
 using Utah.Udot.ATSPM.ConfigApi.Utility;
 using Utah.Udot.NetStandardToolkit.Configuration;
 using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.NetStandardToolkit.Services.GitHubReleaseService;
 
 //git 1
 
@@ -67,14 +66,20 @@ builder.Host
         });
         s.AddProblemDetails();
         s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
-        s.AddConfiguredSwaggerForOData(builder.Configuration, o =>
+        s.AddConfiguredSwagger(builder.Configuration, o =>
         {
             o.IncludeXmlComments(typeof(Program).Assembly);
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.EnableAnnotations();
             o.AddJwtAuthorization();
             o.DocumentFilter<GenerateMeasureOptionSchemas>();
-        });
+        }, v =>
+        v.AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
+        .AddODataApiExplorer(o =>
+        {
+            o.GroupNameFormat = "'v'VVV";
+            o.SubstituteApiVersionInUrl = true;
+        }));
         s.AddConfiguredCors(builder.Configuration);
         s.AddHttpLogging(l =>
         {
@@ -92,6 +97,31 @@ builder.Host
         s.AddPathBaseFilter(h);
 
         s.AddAtspmIdentity(h);
+
+
+
+
+
+
+        s.Configure<GitHubReleaseConfiguration>(options =>
+        {
+            options.UserAgengt = "AtspmAgent";
+            options.RepositoryOwner = "utahudot";
+            options.RepositoryName = "udot-atspm";
+        });
+
+
+
+
+
+
+
+        s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();
+
+        s.AddAutoMapper(c =>
+        {
+            c.AddProfile<VersionMappingProfile>();
+        });
 
         s.AddScoped<ILocationManager, LocationManager>();
         s.AddHealthChecks();
@@ -134,38 +164,6 @@ app.MapJsonHealthChecks();
 #endregion
 
 app.Run();
-
-/// <summary>
-/// This is temporary and will be moved
-/// </summary>
-public static class Extensions
-{
-    public static IServiceCollection AddConfiguredSwaggerForOData(
-    this IServiceCollection services,
-    IConfiguration config,
-    Action<SwaggerGenOptions> setupAction = null)
-    {
-        services.Configure<SwaggerConfiguration>(config.GetSection("Swagger"));
-
-        services.AddApiVersioning(o =>
-        {
-            o.ReportApiVersions = true;
-            o.DefaultApiVersion = new ApiVersion(1, 0);
-            o.AssumeDefaultVersionWhenUnspecified = true;
-        })
-        .AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
-        .AddODataApiExplorer(o =>
-        {
-            o.GroupNameFormat = "'v'VVV";
-            o.SubstituteApiVersionInUrl = true;
-        });
-
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-        services.AddSwaggerGen(setupAction);
-
-        return services;
-    }
-}
 
 
 

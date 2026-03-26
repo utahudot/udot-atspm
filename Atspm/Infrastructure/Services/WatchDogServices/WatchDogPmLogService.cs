@@ -368,7 +368,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         ///////////////////////////////////////////////////////////
         private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key)
         {
-            //TODO change this to have the channel stuff
+            //This should usually have the channel as the key so that it can be used to ignore.
             var error = new WatchDogLogEvent(
                 location.Id,
                 location.LocationIdentifier,

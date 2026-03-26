@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getWatchdogLogs.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,7 @@ export interface LogEvent {
   jurisdictionName: string
   areas: Area[]
   id: number
+  key?: string | number | null
   locationId: number
   locationIdentifier: string | null
   timestamp: string

@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getAggData.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ export function useGetAggData(
   start: Date,
   end: Date
 ) {
-  const route = `/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}?start=${start}&end=${end}`
+  const route = `/api/v1/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}?start=${start}&end=${end}`
 
   return useGetRequest<ApiResponse<string[]>>({
     route,
