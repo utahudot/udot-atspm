@@ -443,7 +443,7 @@ const WatchDogLogs = () => {
         headerName: 'Issue Type',
         flex: 1,
         headerAlign: 'center',
-        valueGetter: (params) => addSpaces(params) ?? '',
+        valueGetter: (params) => params ?? '',
       },
       { field: 'key', headerName: 'Key', flex: 1, headerAlign: 'center' },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
