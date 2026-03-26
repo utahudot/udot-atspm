@@ -179,6 +179,7 @@ export default function WatchdogIgnoredEvents() {
     { key: 'locationIdentifier', label: 'Location' },
     { key: 'component', label: 'Component' },
     { key: 'issueType', label: 'Issue' },
+    { key: 'key', label: 'Key' },
     { key: 'phaseDisplay', label: 'Phase' },
     { key: 'start', label: 'Start' },
     { key: 'endDisplay', label: 'End' },

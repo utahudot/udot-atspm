@@ -8,10 +8,14 @@ import {
   useGetIssueTypes,
   useGetWatchdogLogs,
 } from '@/features/watchdog/api/getWatchdogLogs'
-import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
+import {
+  useCreateWatchdogIgnoreEvents,
+  useGetWatchdogIgnoreEvents,
+} from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp, toUTCDateStamp } from '@/utils/dateTime'
 import { zodResolver } from '@hookform/resolvers/zod'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
@@ -30,6 +34,7 @@ import {
 import {
   DataGrid,
   GridColDef,
+  GridRenderCellParams,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
@@ -39,7 +44,14 @@ import {
 } from '@mui/x-data-grid'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { AxiosError } from 'axios'
-import { startOfToday, startOfYesterday } from 'date-fns'
+import {
+  endOfDay,
+  isAfter,
+  isBefore,
+  startOfDay,
+  startOfToday,
+  startOfYesterday,
+} from 'date-fns'
 import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -59,7 +71,25 @@ interface transformWatchDogLog {
   componentId: number
   start: Date
   end: Date
+  ignored: boolean
 }
+
+interface WatchdogIgnoreEvent {
+  id?: number
+  locationId?: number
+  locationIdentifier?: string | null
+  start?: string
+  end?: string | null
+  componentType?: number | string | null
+  componentId?: number | null
+  issueType?: number | string
+  phase?: number | string | null
+}
+
+const normalizeWatchdogValue = (value: number | string | null | undefined) =>
+  String(value ?? '')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toLowerCase()
 
 // Schema for filtering events (table of events)
 const watchdogLogsSchema = z.object({
@@ -87,6 +117,10 @@ const WatchDogLogs = () => {
   const { addNotification } = useNotificationStore()
 
   const { data: issueTypesData } = useGetIssueTypes()
+  const {
+    data: watchdogIgnoreEventsData,
+    refetch: refetchWatchdogIgnoreEvents,
+  } = useGetWatchdogIgnoreEvents()
   const {
     data: watchdogLogsData,
     isLoading: isWatchdogLogsLoading,
@@ -142,6 +176,10 @@ const WatchDogLogs = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isIconClicked, setIsIconClicked] = useState(false)
   const [processedRows, setProcessedRows] = useState<transformWatchDogLog[]>([])
+  const [showIgnoreValidation, setShowIgnoreValidation] = useState(false)
+  const [ignoreStartHasInputError, setIgnoreStartHasInputError] =
+    useState(false)
+  const [ignoreEndHasInputError, setIgnoreEndHasInputError] = useState(false)
 
   const issueTypes = useMemo(() => {
     if (!issueTypesData) return null
@@ -151,18 +189,106 @@ const WatchDogLogs = () => {
     )
   }, [issueTypesData])
 
+  const ignoreEvents = useMemo(
+    () =>
+      ((watchdogIgnoreEventsData as { value?: WatchdogIgnoreEvent[] })?.value ??
+        []) as WatchdogIgnoreEvent[],
+    [watchdogIgnoreEventsData]
+  )
+
+  const isEventIgnored = useCallback(
+    (logEvent: {
+      locationId: number
+      locationIdentifier: string | null
+      componentType: number
+      componentId: number
+      issueType: number
+      phase: string | null
+    }) => {
+      const now = new Date()
+      const issueTypeName = issueTypes?.[logEvent.issueType]
+      const componentTypeName =
+        logEvent.componentType === 0
+          ? 'Location'
+          : logEvent.componentType === 1
+            ? 'Approach'
+            : logEvent.componentType === 2
+              ? 'Detector'
+              : String(logEvent.componentType)
+
+      return ignoreEvents.some((ignoreEvent) => {
+        if (!ignoreEvent.start) return false
+
+        const ignoreStart = startOfDay(new Date(ignoreEvent.start))
+        const ignoreEnd = ignoreEvent.end
+          ? endOfDay(new Date(ignoreEvent.end))
+          : null
+        const ignoreIssueType = normalizeWatchdogValue(ignoreEvent.issueType)
+        const ignoreComponentType = normalizeWatchdogValue(
+          ignoreEvent.componentType
+        )
+        const ignorePhase =
+          ignoreEvent.phase == null
+            ? null
+            : normalizeWatchdogValue(ignoreEvent.phase)
+        const ignoreComponentId = ignoreEvent.componentId ?? null
+        const logIssueType = normalizeWatchdogValue(
+          issueTypeName ?? logEvent.issueType
+        )
+        const logComponentType = normalizeWatchdogValue(componentTypeName)
+        const logPhase =
+          logEvent.phase == null ? null : normalizeWatchdogValue(logEvent.phase)
+
+        const matchesLocation =
+          (ignoreEvent.locationId != null &&
+            ignoreEvent.locationId === logEvent.locationId) ||
+          (ignoreEvent.locationIdentifier != null &&
+            ignoreEvent.locationIdentifier === logEvent.locationIdentifier)
+
+        const matchesIssueType =
+          ignoreIssueType === '' || ignoreIssueType === logIssueType
+
+        const matchesComponentType =
+          ignoreComponentType === '' ||
+          ignoreComponentType === logComponentType ||
+          ignoreComponentType === normalizeWatchdogValue(logEvent.componentType)
+
+        const matchesComponentId =
+          ignoreComponentId == null ||
+          ignoreComponentId === -1 ||
+          ignoreComponentId === logEvent.componentId
+
+        const matchesPhase = ignorePhase == null || ignorePhase === logPhase
+
+        const matchesEvent =
+          matchesLocation &&
+          matchesIssueType &&
+          matchesComponentType &&
+          matchesComponentId &&
+          matchesPhase
+
+        if (!matchesEvent) return false
+        if (isBefore(now, ignoreStart)) return false
+        if (ignoreEnd && isAfter(now, ignoreEnd)) return false
+
+        return true
+      })
+    },
+    [ignoreEvents, issueTypes]
+  )
+
   useMemo(() => {
     const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
     if (logEvents) {
       const rows = logEvents.map((logEvent) => ({
         ...logEvent,
-
         areas: logEvent.areas.map((area: Area) => area.name).join(', '),
         issueType: issueTypes?.[logEvent.issueType] ?? logEvent.issueType,
+        ignored: isEventIgnored(logEvent),
       }))
       setProcessedRows(rows)
     }
-  }, [watchdogLogsData, issueTypes])
+  }, [watchdogLogsData, issueTypes, isEventIgnored])
 
   const returnedLogEvents =
     (watchdogLogsData as unknown as LogEventsData)?.logEvents ?? []
@@ -240,16 +366,30 @@ const WatchDogLogs = () => {
       })
     }
 
+    await refetchWatchdogIgnoreEvents()
     setProcessedRows((prevRows) =>
-      prevRows.filter((row) => !succeededRows.includes(row.id))
+      prevRows.map((row) =>
+        succeededRows.includes(row.id) ? { ...row, ignored: true } : row
+      )
     )
     setSelectedRows([])
     setClickedRows({})
     setIsIconClicked(false)
+    setShowIgnoreValidation(false)
   })
 
   const handleDialogClose = useCallback(() => {
     setIsDialogOpen(false)
+    setShowIgnoreValidation(false)
+    setIgnoreStartHasInputError(false)
+    setIgnoreEndHasInputError(false)
+  }, [])
+
+  const handleOpenIgnoreDialog = useCallback(() => {
+    setShowIgnoreValidation(false)
+    setIgnoreStartHasInputError(false)
+    setIgnoreEndHasInputError(false)
+    setIsDialogOpen(true)
   }, [])
 
   const handleRowSelection = useCallback(
@@ -312,6 +452,19 @@ const WatchDogLogs = () => {
         headerName: 'Details',
         flex: 2,
         headerAlign: 'center',
+      },
+      {
+        field: 'ignored',
+        headerName: 'Ignored',
+        width: 90,
+        align: 'center',
+        headerAlign: 'center',
+        renderCell: (params: GridRenderCellParams<transformWatchDogLog>) =>
+          params.row.ignored ? (
+            <CheckCircleIcon fontSize="small" sx={{ color: 'error.main' }} />
+          ) : (
+            ''
+          ),
       },
     ]
 
@@ -376,7 +529,7 @@ const WatchDogLogs = () => {
               }}
             >
               <Button
-                onClick={() => setIsDialogOpen(true)}
+                onClick={handleOpenIgnoreDialog}
                 variant="contained"
                 color="primary"
                 sx={{ marginRight: 1, width: '200px' }}
@@ -396,7 +549,13 @@ const WatchDogLogs = () => {
         </Box>
       </GridToolbarContainer>
     ),
-    [isIconClicked, selectedRows, handleIconClick, handleCancelClick]
+    [
+      isIconClicked,
+      selectedRows,
+      handleIconClick,
+      handleCancelClick,
+      handleOpenIgnoreDialog,
+    ]
   )
 
   const slots = useMemo(
@@ -536,25 +695,42 @@ const WatchDogLogs = () => {
             <DatePicker
               label="Start Date"
               value={startIgnoreTime}
+              onError={(error) => setIgnoreStartHasInputError(error != null)}
               onChange={(newValue) =>
                 setIgnoreValue('start', newValue, {
-                  shouldValidate: true,
+                  shouldValidate: showIgnoreValidation,
                 })
               }
+              slotProps={{
+                textField: {
+                  error: showIgnoreValidation && ignoreStartHasInputError,
+                  helperText:
+                    showIgnoreValidation && ignoreStartHasInputError
+                      ? 'Invalid date'
+                      : undefined,
+                },
+              }}
             />
             <DatePicker
               label="End Date"
               value={endIgnoreTime}
+              onError={(error) => setIgnoreEndHasInputError(error != null)}
               onChange={(newValue) =>
                 setIgnoreValue('end', newValue, {
-                  shouldValidate: true,
+                  shouldValidate: showIgnoreValidation,
                 })
               }
               slotProps={{
                 textField: {
                   required: true,
-                  error: !!ignoreErrors.end,
-                  helperText: ignoreErrors.end?.message,
+                  error:
+                    showIgnoreValidation &&
+                    (ignoreEndHasInputError || !!ignoreErrors.end),
+                  helperText: showIgnoreValidation
+                    ? ignoreEndHasInputError
+                      ? 'Invalid date'
+                      : ignoreErrors.end?.message
+                    : undefined,
                 },
               }}
             />
@@ -565,7 +741,10 @@ const WatchDogLogs = () => {
             Cancel
           </Button>
           <Button
-            onClick={handleIgnoreEventsSubmit}
+            onClick={() => {
+              setShowIgnoreValidation(true)
+              void handleIgnoreEventsSubmit()
+            }}
             variant="contained"
             color="primary"
           >
