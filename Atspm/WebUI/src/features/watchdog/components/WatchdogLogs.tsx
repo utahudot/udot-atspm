@@ -328,8 +328,6 @@ const WatchDogLogs = () => {
         if (!eventToIgnore || !data.start)
           return { rowId, success: false, error: 'Event not found' }
 
-        console.log('Ignoring event:', eventToIgnore)
-
         try {
           await addWatchdogIgnoreEvents({
             key: eventToIgnore.key,
