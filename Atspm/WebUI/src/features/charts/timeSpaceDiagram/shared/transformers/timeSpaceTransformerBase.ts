@@ -95,27 +95,27 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   {
     name: 'Phase Begin Green (1)\nOverlap Begin Green (61)',
     codes: [1, 61],
-    color: Color.Green,
+    color: '#0CC078',
   },
   {
     name: 'Phase Min Complete (3)\nOverlap Begin Trailing Green (Extension) (62)',
     codes: [3, 62],
-    color: '#8ef08d',
+    color: '#79DE79',
   },
   {
     name: 'Phase Begin Yellow Clearance (8)\nBegin Overlap Yellow (63)',
     codes: [8, 63],
-    color: Color.Yellow,
+    color: '#FCFC99',
   },
   {
     name: 'Phase End Yellow Clearance (9)\nOverlap Begin Red Clearance (64)',
     codes: [9, 64],
-    color: '#FF0000',
+    color: '#FB6962',
   },
   {
     name: 'Phase End Red Clearance (11)\nOverlap Off (Inactive with Red Indication) (65)',
     codes: [11, 65],
-    color: '#f0807f',
+    color: '#B34747',
   },
 ] as const
 
@@ -302,7 +302,7 @@ function renderCycleSegment(
     },
     style: {
       fill,
-      opacity: 0.6,
+      opacity: 1,
     },
   }
 }
@@ -600,8 +600,13 @@ export function generateGreenEventLines(
           },
           style: {
             z: -1,
-            opacity: 0.3,
-            fill: CYCLE_INDICATIONS[0].color,
+            opacity: isPrimary ? 0.3 : 0.2,
+            fill: isPrimary ? '#56b4e9 ' : '#324448',
+          },
+          emphasis: {
+            style: {
+              opacity: 0.7,
+            },
           },
         }
       },
