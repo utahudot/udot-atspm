@@ -94,12 +94,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 _ => throw new NotSupportedException($"Database provider '{DBType}' is not supported.")
             };
 
-            foreach (var opt in Options)
+            string baseConnString = builder.ConnectionString;
+
+            if (Options.Any())
             {
-                builder[opt.Key] = opt.Value;
+                var extraOptions = string.Join(";", Options.Select(x => $"{x.Key}={x.Value}"));
+                return $"{baseConnString.TrimEnd(';')};{extraOptions}";
             }
 
-            return builder.ConnectionString;
+            return baseConnString;
         }
     }
 
@@ -178,15 +181,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
             services.AddScoped<AuditPropertiesInterceptor>();
 
-            // 1. Map Named Options for injection (e.g., IOptionsSnapshot<DatabaseConfiguration>)
-            // This lets you access specific DB settings by the Context Name elsewhere in your app
             string[] contexts = { nameof(ConfigContext), nameof(AggregationContext), nameof(EventLogContext), nameof(IdentityContext) };
             foreach (var contextName in contexts)
             {
                 services.Configure<DatabaseConfiguration>(contextName, host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"));
             }
 
-            // 2. Register Contexts
             services.AddDbContext<ConfigContext>((s, db) => {
                 db.DbDefaults<ConfigContext>(host);
                 db.AddInterceptors(s.GetRequiredService<AuditPropertiesInterceptor>());
@@ -196,7 +196,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddDbContext<EventLogContext>(db => db.DbDefaults<EventLogContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(host, QueryTrackingBehavior.NoTracking));
 
-            // 3. Health Checks
             services.AddHealthChecks()
                 .AddDbContextCheck<ConfigContext>()
                 .AddDbContextCheck<AggregationContext>()

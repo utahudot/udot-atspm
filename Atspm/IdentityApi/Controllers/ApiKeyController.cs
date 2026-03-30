@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 
@@ -20,11 +22,12 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateApiKeyDto dto)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return Unauthorized();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
 
             // 1. Generate the random key
             var (rawKey, hash) = ApiKeyGenerator.CreateKey();
@@ -34,7 +37,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             {
                 Name = dto.Name,
                 KeyHash = hash,
-                OwnerId = user.Id,
+                OwnerId = userId,
                 ExpiresAt = dto.ExpiresAt,
                 IsRevoked = false,
                 Claims = dto.Roles.Select(r => new ApiKeyClaim
@@ -51,6 +54,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             return Ok(new { Key = rawKey, Message = "Copy this now! It will not be shown again." });
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("my-keys")]
         public async Task<IActionResult> GetMyKeys()
         {
