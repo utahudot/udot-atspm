@@ -127,7 +127,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                             detector,
                             WatchDogIssueTypes.LowRampDetectorHits,
                             $"CH: {channel} - Count: {currentVolume.ToString().ToLowerInvariant()}",
-                            errors);
+                            errors,
+                            channel.ToString());
                     }
 
                 }
@@ -186,8 +187,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                     if (!timestamps.Any())
                     {
-                        AddDetectorError(location, options.RampMissedDetectorHitsStartScanDate, detector, WatchDogIssueTypes.RampMissedDetectorHits,
-                            $"CH: {channel} - No events received in entire ramp window", errors);
+                        AddDetectorError(
+                            location,
+                            options.RampMissedDetectorHitsStartScanDate,
+                            detector,
+                            WatchDogIssueTypes.RampMissedDetectorHits,
+                            $"CH: {channel} - No events received in entire ramp window",
+                            errors,
+                            channel.ToString());
                         continue;
                     }
 
@@ -217,8 +224,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                         if (!periodTimestamps.Any())
                         {
-                            AddDetectorError(location, options.RampMissedDetectorHitsStartScanDate, detector, WatchDogIssueTypes.RampMissedDetectorHits,
-                                $"CH: {channel} - No events in period {label}", errors);
+                            AddDetectorError(
+                                location,
+                                options.RampMissedDetectorHitsStartScanDate,
+                                detector,
+                                WatchDogIssueTypes.RampMissedDetectorHits,
+                                $"CH: {channel} - No events in period {label}",
+                                errors,
+                                channel.ToString());
                             continue;
                         }
 
@@ -242,8 +255,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         int missedBuckets = totalBuckets - bucketsWithHits.Count;
                         if (missedBuckets > options.RampMissedEventsThreshold)
                         {
-                            AddDetectorError(location, options.RampMissedDetectorHitsStartScanDate, detector, WatchDogIssueTypes.RampMissedDetectorHits,
-                                $"CH: {channel} - Period {label} missed {missedBuckets} intervals", errors);
+                            AddDetectorError(
+                                location,
+                                options.RampMissedDetectorHitsStartScanDate,
+                                detector,
+                                WatchDogIssueTypes.RampMissedDetectorHits,
+                                $"CH: {channel} - Period {label} missed {missedBuckets} intervals",
+                                errors,
+                                channel.ToString());
                         }
                     }
                 }
@@ -257,8 +276,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         ///////////////////////////////////////////////////////////
         /////////////////////// HELPER ////////////////////////////
         ///////////////////////////////////////////////////////////
-        private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors)
+        private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key)
         {
+            //This should usually have the channel as the key so that it can be used to ignore.
             var error = new WatchDogLogEvent(
                 location.Id,
                 location.LocationIdentifier,
@@ -267,7 +287,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 detector?.Id ?? -1,
                 issueType,
                 message,
-                null);
+                key,
+                phase: null);
 
             if (!errors.Contains(error))
                 errors.Add(error);

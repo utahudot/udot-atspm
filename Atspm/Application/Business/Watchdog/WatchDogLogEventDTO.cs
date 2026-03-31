@@ -30,12 +30,13 @@ namespace Utah.Udot.Atspm.Business.Watchdog
             int componentId,
             WatchDogIssueTypes issueType,
             string details,
+            string key,
             int? phase,
             int? regionId,
             string regionDescription,
             int? jurisdictionId,
             string jurisdictionName,
-            IEnumerable<AreaDTO> areas) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, phase)
+            IEnumerable<AreaDTO> areas) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, key, phase)
         {
             Id = id;
             RegionId = regionId;

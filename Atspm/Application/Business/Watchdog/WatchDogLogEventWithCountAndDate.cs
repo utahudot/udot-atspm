@@ -21,7 +21,7 @@ namespace Utah.Udot.Atspm.Business.Watchdog
 {
     public class WatchDogLogEventWithCountAndDate : WatchDogLogEvent
     {
-        public WatchDogLogEventWithCountAndDate(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, int? phase) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, phase)
+        public WatchDogLogEventWithCountAndDate(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, string key, int? phase) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, key, phase)
         {
         }
 
