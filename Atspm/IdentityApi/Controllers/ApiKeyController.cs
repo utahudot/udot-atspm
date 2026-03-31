@@ -29,10 +29,8 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            // 1. Generate the random key
             var (rawKey, hash) = ApiKeyGenerator.CreateKey();
 
-            // 2. Prepare the entity
             var apiKey = new ApiKey
             {
                 Name = dto.Name,
@@ -50,8 +48,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             _context.ApiKeys.Add(apiKey);
             await _context.SaveChangesAsync();
 
-            // 3. Return the RAW key only here.
-            return Ok(new { Key = rawKey, Message = "Copy this now! It will not be shown again." });
+            return Ok(new { Key = rawKey, Message = "Copy this now, it will not be shown again." });
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -65,6 +62,28 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 .ToListAsync();
 
             return Ok(keys);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("revoke/{id}")]
+        public async Task<IActionResult> Revoke(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var apiKey = await _context.ApiKeys
+                .FirstOrDefaultAsync(k => k.Id == id && k.OwnerId == userId);
+
+            if (apiKey == null)
+            {
+                return NotFound("API Key not found or you do not have permission to revoke it.");
+            }
+
+            apiKey.IsRevoked = true;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = $"API Key '{apiKey.Name}' has been revoked." });
         }
     }
 

@@ -25,93 +25,63 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;          // For ILoggerFactory
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using Utah.Udot.Atspm.Data;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
-    public static class ApiKeyGenerator
-    {
-        public static string HashKey(string rawKey)
-        {
-            var inputBytes = Encoding.UTF8.GetBytes(rawKey);
-            var hashBytes = SHA256.HashData(inputBytes);
-            return Convert.ToBase64String(hashBytes);
-        }
-
-        public static (string RawKey, string Hash) CreateKey()
-        {
-            var bytes = RandomNumberGenerator.GetBytes(32);
-            string rawKey = Convert.ToBase64String(bytes)
-                .Replace("/", "").Replace("+", "").Replace("=", "");
-
-            return (rawKey, HashKey(rawKey));
-        }
-    }
-
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly IdentityContext _context; // Use your specific context name
-        private const string ApiKeyHeaderName = "X-API-KEY";
+        private readonly IdentityContext _context;
 
-        public ApiKeyAuthenticationHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            IdentityContext context) : base(options, logger, encoder)
+        public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger,UrlEncoder encoder, IdentityContext context) : base(options, logger, encoder)
         {
             _context = context;
         }
 
-        protected override async System.Threading.Tasks.Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> HandleAuthenticateAsync()
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.TryGetValue("X-API-KEY", out var extractedKey))
             {
-                return Microsoft.AspNetCore.Authentication.AuthenticateResult.NoResult();
+                return AuthenticateResult.NoResult();
             }
 
             string providedKey = extractedKey.ToString();
             string hashedKey = ApiKeyGenerator.HashKey(providedKey);
 
-            // Using Set<> to avoid any property-level naming conflicts in your Context
             var apiKey = await _context.Set<ApiKey>()
                 .Include(k => k.Claims)
-                .FirstOrDefaultAsync(k => k.KeyHash == hashedKey && !k.IsRevoked);
+                .FirstOrDefaultAsync(k => k.KeyHash == hashedKey
+                                       && !k.IsRevoked
+                                       && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
 
-            if (apiKey == null || (apiKey.ExpiresAt.HasValue && apiKey.ExpiresAt < System.DateTime.UtcNow))
+            if (apiKey == null)
             {
-                return AuthenticateResult.Fail("Invalid or expired API Key.");
+                return AuthenticateResult.Fail("Invalid, revoked, or expired API Key.");
             }
-
             var claimsList = new List<Claim>();
-
-            // We get the Constructor Info for the Claim class manually
-            var claimType = typeof(Claim);
-            var ctor = claimType.GetConstructor(new[] { typeof(string), typeof(string) });
 
             if (apiKey.Claims != null)
             {
                 foreach (var c in apiKey.Claims)
                 {
-                    // We 'Invoke' the constructor instead of using 'new'
-                    var cObj = (System.Security.Claims.Claim)ctor.Invoke(new object[] { c.Type ?? "role", c.Value ?? "" });
-                    claimsList.Add(cObj);
+                    claimsList.Add(new Claim(c.Type ?? ClaimTypes.Role, c.Value ?? ""));
                 }
             }
 
-            // Add NameIdentifier and Method using the same 'Invoke' strategy to stay safe
-            string nameIdUri = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
-            claimsList.Add((Claim)ctor.Invoke(new object[] { nameIdUri, apiKey.OwnerId ?? "" }));
-            claimsList.Add((Claim)ctor.Invoke(new object[] { "AuthenticationMethod", "ApiKey" }));
+            if (!string.IsNullOrEmpty(apiKey.OwnerId))
+            {
+                claimsList.Add(new Claim(ClaimTypes.NameIdentifier, apiKey.OwnerId));
+            }
 
-            // Build the rest using full paths
+            claimsList.Add(new Claim("AuthenticationMethod", "ApiKey"));
+
             var identity = new ClaimsIdentity(claimsList, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
@@ -119,8 +89,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             return AuthenticateResult.Success(ticket);
         }
     }
-
-
 
     /// <summary>
     /// Helper extensions for <see cref="Microsoft.Extensions.Hosting"/> using <see cref="Microsoft.AspNetCore.Authentication"/> 
@@ -179,31 +147,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 };
             })
 
-
-
-
-
-
-
-
-
-
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             var oidc = host.Configuration.GetSection("Oidc");
             if (oidc.Exists() && !string.IsNullOrEmpty(oidc["Authority"]) &&
@@ -283,8 +227,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             services.AddAuthorization(options =>
             {
-                // helper string array to avoid typos
-                var schemes = new[] { Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
+                var schemes = new[] { JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
 
                 options.AddPolicy("CanViewUsers", policy => {
                     policy.AddAuthenticationSchemes(schemes);
