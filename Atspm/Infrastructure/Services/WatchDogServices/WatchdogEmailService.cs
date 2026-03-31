@@ -327,7 +327,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
             if (options.EmailAmErrors && !rampEmail)
             {
-                var emailScanDate = options.RampMissedDetectorHitsStartScanDate.Date.ToShortDateString();
+                var emailScanDate = options.AmScanDate.Date.ToShortDateString();
                 bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.AmStartHour}:00 and {options.AmEndHour}:00 on {emailScanDate}",
                     forceErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
                 bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {options.AmStartHour}:00 and {options.AmEndHour}:00 on {emailScanDate}",

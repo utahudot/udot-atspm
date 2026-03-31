@@ -54,7 +54,7 @@ export default function Topbar() {
       // Invalidate the query when the component unmounts or if there's a condition where you want to force refresh
       queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
     }
-  }, [])
+  }, [queryClient])
 
   return (
     <Box
@@ -83,7 +83,10 @@ export default function Topbar() {
           justifyContent: 'flex-start',
         }}
       >
-        <NextLink href="/" passHref>
+        <NextLink
+          href="/"
+          style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+        >
           <Box
             sx={{
               width: '160px',
