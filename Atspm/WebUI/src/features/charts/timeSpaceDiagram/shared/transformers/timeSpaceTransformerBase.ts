@@ -949,6 +949,14 @@ export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
   minBodyHeight: 16,
 } as const
 
+const TIME_SPACE_CARD_CONNECTOR_STROKE = '#CBD5E1'
+const TIME_SPACE_CARD_CONNECTOR_IGNORED_STROKE = '#D8E0E8'
+const TIME_SPACE_CARD_CONNECTOR_WIDTH = 2
+const TIME_SPACE_PHASE_CONNECTOR_INNER_OFFSET = 45
+const TIME_SPACE_PHASE_CONNECTOR_END_INSET = 4
+const TIME_SPACE_PHASE_CONNECTOR_ARROW_SIZE = 5
+const TIME_SPACE_PHASE_CONNECTOR_MIN_LENGTH = 12
+
 export function getLocationsLabelOption(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
@@ -990,7 +998,7 @@ export function getLocationsLabelOption(
       const cardRight = xDot - cardGapToDot
       const cardLeft = cardRight - cardWidth
       const xLine = cardRight + (gridLeft - cardRight) / 2
-      const cardTop = y - CARD_H / 2
+      const cardTop = y - CARD_H / 2 + verticalOffsetY
       const textX = cardLeft + bodyPaddingLeft
       const iconLeft = cardRight - headerActionRight - headerActionSize
       const dividerX = iconLeft - 8
@@ -1020,8 +1028,10 @@ export function getLocationsLabelOption(
         type: 'line',
         shape: { x1: xLine, y1: y, x2: gridLeft, y2: y },
         style: {
-          stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
-          lineWidth: 2,
+          stroke: isIgnored
+            ? TIME_SPACE_CARD_CONNECTOR_IGNORED_STROKE
+            : TIME_SPACE_CARD_CONNECTOR_STROKE,
+          lineWidth: TIME_SPACE_CARD_CONNECTOR_WIDTH,
         },
         z2: 2,
       })
@@ -1356,7 +1366,7 @@ export function getDistancesLabelOption(
   gridLeft: number,
   distanceScale = 1
 ): SeriesOption {
-  const { gridGap, dotOffset, cardGapToDot } =
+  const { gridGap, dotOffset, cardGapToDot, verticalOffsetY } =
     TIME_SPACE_LOCATION_CARD_LAYOUT
   const dataPoints = distanceData.map((distance, index) => {
     const distanceToNext =
@@ -1393,7 +1403,7 @@ export function getDistancesLabelOption(
         0,
         (api.value(1) as number) + (api.value(4) as number) / 2,
       ])
-      const y = rawY
+      const y = rawY + verticalOffsetY
 
       return {
         type: 'group',
@@ -1638,11 +1648,36 @@ export function generateCycleLabels(
     headerHeight,
     cardGapFromPlot,
     cardGapBetween,
+    verticalOffsetY,
     bodyPaddingX,
     bodyPaddingY,
     lineHeight,
     minBodyHeight,
   } = TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT
+
+  const getCardBodyHeight = (index: number) => {
+    const detailLines = (linesByIndex?.[index] ?? []).filter(Boolean)
+
+    return detailLines.length
+      ? Math.max(minBodyHeight, detailLines.length * lineHeight + bodyPaddingY * 2)
+      : 0
+  }
+
+  const getCardMetrics = (api: CustomSeriesRenderItemAPI, index: number) => {
+    const [, y] = api.coord([0, distanceData[index]])
+    const bodyHeight = getCardBodyHeight(index)
+    const cardHeight = headerHeight + bodyHeight
+    const anchorY = y + verticalOffsetY
+    const cardTop = anchorY - cardHeight / 2
+
+    return {
+      bodyHeight,
+      cardHeight,
+      cardTop,
+      cardBottom: cardTop + cardHeight,
+      isIgnored: Boolean(ignoredByIndex?.[index]),
+    }
+  }
 
   return {
     id: `${CYCLE_LABEL_SERIES_ID_PREFIX}${direction} ${column}`,
@@ -1653,41 +1688,13 @@ export function generateCycleLabels(
     z: 7,
     renderItem: (params, api) => {
       const rowIndex = params.dataIndex
-      const [, y] = api.coord([0, api.value(0)])
+      const { bodyHeight, cardHeight, cardTop, cardBottom, isIgnored } =
+        getCardMetrics(api, rowIndex)
       const coordSys = params.coordSys as { x: number; width: number }
       const footerLabelIndex = distanceData.reduce(
         (currentLowestIndex, _, index) => {
-          const [, currentRowY] = api.coord([
-            0,
-            distanceData[currentLowestIndex],
-          ])
-          const [, candidateRowY] = api.coord([0, distanceData[index]])
-          const currentRowDetailLines = Boolean(
-            ignoredByIndex?.[currentLowestIndex]
-          )
-            ? []
-            : (linesByIndex?.[currentLowestIndex] ?? []).filter(Boolean)
-          const candidateRowDetailLines = Boolean(ignoredByIndex?.[index])
-            ? []
-            : (linesByIndex?.[index] ?? []).filter(Boolean)
-          const currentRowBodyHeight = currentRowDetailLines.length
-            ? Math.max(
-                minBodyHeight,
-                currentRowDetailLines.length * lineHeight + bodyPaddingY * 2
-              )
-            : 0
-          const candidateRowBodyHeight = candidateRowDetailLines.length
-            ? Math.max(
-                minBodyHeight,
-                candidateRowDetailLines.length * lineHeight + bodyPaddingY * 2
-              )
-            : 0
-          const currentRowBottom =
-            currentRowY +
-            (headerHeight + currentRowBodyHeight) / 2
-          const candidateRowBottom =
-            candidateRowY +
-            (headerHeight + candidateRowBodyHeight) / 2
+          const currentRowBottom = getCardMetrics(api, currentLowestIndex).cardBottom
+          const candidateRowBottom = getCardMetrics(api, index).cardBottom
 
           return candidateRowBottom > currentRowBottom
             ? index
@@ -1695,8 +1702,6 @@ export function generateCycleLabels(
         },
         0
       )
-      const isIgnored = Boolean(ignoredByIndex?.[rowIndex])
-      const anchorY = y
       const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
       const cardLeft =
         column === 'left'
@@ -1718,14 +1723,6 @@ export function generateCycleLabels(
       )
       const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
       const visibleDetailLines = isIgnored ? [] : detailLines
-      const bodyHeight = detailLines.length
-        ? Math.max(
-            minBodyHeight,
-            detailLines.length * lineHeight + bodyPaddingY * 2
-          )
-        : 0
-      const cardHeight = headerHeight + bodyHeight
-      const cardTop = anchorY - cardHeight / 2
       const bodyTop = cardTop + headerHeight
       const footerLabelText = column === 'left' ? 'primary' : 'opposing'
       const showFooterLabel = rowIndex === footerLabelIndex
@@ -1746,10 +1743,96 @@ export function generateCycleLabels(
         0,
         detailTextWidth - detailValueWidth - detailMetricGap
       )
+      const connectorChildren: CustomSeriesRenderItemReturn[] = []
+      const nextRowIndex = rowIndex + 1
+
+      if (nextRowIndex < distanceData.length) {
+        const nextCardMetrics = getCardMetrics(api, nextRowIndex)
+        const upperCard =
+          nextCardMetrics.cardTop < cardTop
+            ? nextCardMetrics
+            : { cardTop, cardBottom, isIgnored }
+        const lowerCard =
+          nextCardMetrics.cardTop < cardTop
+            ? { cardTop, cardBottom, isIgnored }
+            : nextCardMetrics
+        const connectorTop =
+          upperCard.cardBottom + TIME_SPACE_PHASE_CONNECTOR_END_INSET
+        const connectorBottom =
+          lowerCard.cardTop - TIME_SPACE_PHASE_CONNECTOR_END_INSET
+        const connectorLength = connectorBottom - connectorTop
+
+        if (connectorLength >= TIME_SPACE_PHASE_CONNECTOR_MIN_LENGTH) {
+          const connectorX =
+            column === 'left'
+              ? cardLeft + cardWidth - TIME_SPACE_PHASE_CONNECTOR_INNER_OFFSET
+              : cardLeft + TIME_SPACE_PHASE_CONNECTOR_INNER_OFFSET
+          const connectorStroke =
+            upperCard.isIgnored || lowerCard.isIgnored
+              ? TIME_SPACE_CARD_CONNECTOR_IGNORED_STROKE
+              : TIME_SPACE_CARD_CONNECTOR_STROKE
+          const arrowTipY =
+            column === 'left' ? connectorTop : connectorBottom
+          const arrowBaseY =
+            arrowTipY +
+            (column === 'left'
+              ? TIME_SPACE_PHASE_CONNECTOR_ARROW_SIZE
+              : -TIME_SPACE_PHASE_CONNECTOR_ARROW_SIZE)
+
+          connectorChildren.push(
+            {
+              type: 'line',
+              z2: 8,
+              shape: {
+                x1: connectorX,
+                y1: connectorTop,
+                x2: connectorX,
+                y2: connectorBottom,
+              },
+              style: {
+                stroke: connectorStroke,
+                lineWidth: TIME_SPACE_CARD_CONNECTOR_WIDTH,
+                lineCap: 'round',
+              },
+            },
+            {
+              type: 'line',
+              z2: 8,
+              shape: {
+                x1: connectorX,
+                y1: arrowTipY,
+                x2: connectorX - TIME_SPACE_PHASE_CONNECTOR_ARROW_SIZE,
+                y2: arrowBaseY,
+              },
+              style: {
+                stroke: connectorStroke,
+                lineWidth: TIME_SPACE_CARD_CONNECTOR_WIDTH,
+                lineCap: 'round',
+              },
+            },
+            {
+              type: 'line',
+              z2: 8,
+              shape: {
+                x1: connectorX,
+                y1: arrowTipY,
+                x2: connectorX + TIME_SPACE_PHASE_CONNECTOR_ARROW_SIZE,
+                y2: arrowBaseY,
+              },
+              style: {
+                stroke: connectorStroke,
+                lineWidth: TIME_SPACE_CARD_CONNECTOR_WIDTH,
+                lineCap: 'round',
+              },
+            }
+          )
+        }
+      }
 
       return {
         type: 'group',
         children: [
+          ...connectorChildren,
           {
             type: 'rect',
             z2: 10,
