@@ -470,24 +470,24 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     (p) => p.approachDescription
   )
 
-  const opposingHeadersByIndex = opposingPhaseData.map(
-    (p) => p.approachDescription
-  )
+  const opposingHeadersByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => p.approachDescription)
 
-  const opposingLinesByIndex = opposingPhaseData.map((p) => [
-    `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
-  ])
+  const opposingLinesByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => [`AOG: ${formatPct(p.percentArrivalOnGreen)}`])
 
   const primaryIgnoredByIndex = primaryPhaseData.map((p) =>
     Boolean(p.isIgnoredLocation)
   )
 
-  const opposingIgnoredByIndex = opposingPhaseData.map((p) =>
-    Boolean(p.isIgnoredLocation)
-  )
+  const opposingIgnoredByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => Boolean(p.isIgnoredLocation))
 
   const primaryLabelSeries = generateCycleLabels(
-    primaryDistanceData,
+    locationCenterDistanceData,
     primaryDirection,
     grid.left as number,
     primaryHeadersByIndex,
@@ -497,7 +497,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   )
 
   const opposingLabelSeries = generateCycleLabels(
-    opposingDistanceData,
+    locationCenterDistanceData,
     opposingDirection,
     grid.left as number,
     opposingHeadersByIndex,

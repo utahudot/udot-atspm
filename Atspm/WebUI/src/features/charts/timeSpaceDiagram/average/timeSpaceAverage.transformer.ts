@@ -291,7 +291,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   )
   series.push(
     generateCycleLabels(
-      primaryDistanceData,
+      locationCenterDistanceData,
       primaryDirection,
       undefined,
       primaryPhaseData.map((p) => p.approachDescription),
@@ -323,13 +323,13 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
 
   series.push(
     generateCycleLabels(
-      opposingDistanceData,
+      locationCenterDistanceData,
       opposingDirection,
       undefined,
-      opposingPhaseData.map((p) => p.approachDescription),
+      [...opposingPhaseData].reverse().map((p) => p.approachDescription),
       undefined,
       'right',
-      opposingPhaseData.map((p) => Boolean(p.isIgnoredLocation))
+      [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
     )
   )
 
