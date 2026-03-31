@@ -29,6 +29,7 @@ import {
   generateGreenEventLines,
   getDistancesLabelOption,
   getLocationsLabelOption,
+  TIME_SPACE_MOVEMENT_SERIES_Z,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceDiagramResponse,
@@ -221,10 +222,57 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   // const { requestRects, serviceRects, intersectionLines } =
   //   buildRectsAndLinesForTSD(primaryPhaseData)
+  const MIN_SEGMENT = 2000
+
+  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
+
+  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
+  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
+
+  const scale =
+    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
+
+  const opposingBandOffset = 300 / scale
+
+  let reverseDistanceData = [...distanceData].reverse()
+  reverseDistanceData = reverseDistanceData.map(
+    (distance) => distance + opposingBandOffset
+  )
+
   const series: SeriesOption[] = []
 
   series.push(
     ...generateCycles(primaryPhaseData, distanceData, primaryDirection)
+  )
+
+  series.push(
+    ...generateLaneByLaneCountEventLines(
+      opposingPhaseData,
+      reverseDistanceData,
+      'orange',
+      opposingDirection,
+      false
+    )
+  )
+
+  series.push(
+    ...generateAdvanceCountEventLines(
+      opposingPhaseData,
+      reverseDistanceData,
+      'orange',
+      opposingDirection,
+      false
+    )
+  )
+
+  series.push(
+    ...generateStopBarPresenceEventLines(
+      opposingPhaseData,
+      reverseDistanceData,
+      'orange',
+      opposingDirection,
+      false
+    )
   )
 
   series.push(
@@ -251,7 +299,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     ...generateStopBarPresenceEventLines(
       primaryPhaseData,
       distanceData,
-      'lightblue',
+      'darkblue',
       primaryDirection,
       true
     )
@@ -298,55 +346,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   series.push(
     getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
   )
-
-  const MIN_SEGMENT = 2000
-
-  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
-
-  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
-  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
-
-  const scale =
-    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
-
-  const opposingBandOffset = 300 / scale
-
-  let reverseDistanceData = [...distanceData].reverse()
-  reverseDistanceData = reverseDistanceData.map(
-    (distance) => distance + opposingBandOffset
-  )
   series.push(
     ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
-  )
-
-  series.push(
-    ...generateLaneByLaneCountEventLines(
-      opposingPhaseData,
-      reverseDistanceData,
-      'orange',
-      opposingDirection,
-      false
-    )
-  )
-
-  series.push(
-    ...generateAdvanceCountEventLines(
-      opposingPhaseData,
-      reverseDistanceData,
-      'orange',
-      opposingDirection,
-      false
-    )
-  )
-
-  series.push(
-    ...generateStopBarPresenceEventLines(
-      opposingPhaseData,
-      reverseDistanceData,
-      'orange',
-      opposingDirection,
-      false
-    )
   )
 
   series.push(
@@ -633,6 +634,7 @@ function generateLaneByLaneCountEventLines(
       id: `LLC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
       type: 'line',
       symbol: 'none',
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
       lineStyle: {
         width: 2,
         color,
@@ -703,6 +705,7 @@ function generateAdvanceCountEventLines(
       id: `AC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
       type: 'line',
       symbol: 'none',
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
       lineStyle: {
         width: 2,
         color,
@@ -754,6 +757,7 @@ function generateStopBarPresenceEventLines(
       data: dataPoints,
       clip: true,
       selectedMode: false,
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
       renderItem: function (params, api) {
         const i = params.dataIndex
         if (!dataPoints || i >= dataPoints.length - 1 || i % 2 !== 0) {
@@ -785,6 +789,7 @@ function generateStopBarPresenceEventLines(
         return {
           type: 'polygon',
           transition: ['shape'],
+          emphasisDisabled: true,
           shape: {
             points: points,
           },
@@ -1018,7 +1023,7 @@ function generateTMCEvent(
       type: 'line',
       data: leftTurnEvents,
       symbol: 'none',
-      z: 10,
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
       color: 'black',
     },
     {
@@ -1026,7 +1031,7 @@ function generateTMCEvent(
       type: 'line',
       data: rightTurnEvents,
       symbol: 'none',
-      z: 10,
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
       color: 'black',
     }
   )
@@ -1062,13 +1067,13 @@ function generateSrmEntityLines(
         }`,
         type: 'line',
         symbol: 'none',
+        z: TIME_SPACE_MOVEMENT_SERIES_Z,
         lineStyle: {
           width: 2,
           color: Color.Black,
           opacity: 0.85,
         },
         data: points,
-        z: 9,
       })
     })
   })

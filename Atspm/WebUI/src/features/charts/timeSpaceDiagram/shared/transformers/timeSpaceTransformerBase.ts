@@ -186,11 +186,18 @@ export function getOffsetDeltaVisuals(
   }
 }
 
-const CYCLE_SEGMENT_HEIGHT = 15
+const CYCLE_SEGMENT_HEIGHT = 17
+const CYCLE_BORDER_HEIGHT = 0.5
 const CYCLE_DURATION_LABEL_FONT_SIZE = 10
 const CYCLE_DURATION_LABEL_FILL = 'white'
 const CYCLE_DURATION_LABEL_STROKE = 'black'
 const CYCLE_DURATION_LABEL_STROKE_WIDTH = 1.5
+
+export const TIME_SPACE_MOVEMENT_SERIES_Z = 1
+export const TIME_SPACE_CYCLE_SERIES_Z = 5
+export const TIME_SPACE_CYCLE_LABEL_SERIES_Z = 6
+const TIME_SPACE_MOVEMENT_ELEMENT_Z2 = 1
+const TIME_SPACE_CYCLE_ELEMENT_Z2 = 5
 
 function getCycleColor(value: number): string {
   const found = CYCLE_INDICATIONS.find((x) => x.codes.includes(value))
@@ -211,6 +218,10 @@ export function generateCycles(
   phaseType?: string
 ): SeriesOption[] {
   return data.flatMap((phase, index) => {
+    if (phase.isIgnoredLocation) {
+      return []
+    }
+
     const distance = distanceData[index]
     const hasData = hasCycleData(phase.cycleAllEvents)
 
@@ -226,7 +237,7 @@ export function generateCycles(
         id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
         type: 'custom',
         clip: true,
-        z: 5,
+        z: TIME_SPACE_CYCLE_SERIES_Z,
         data: cycleEvents,
         renderItem: (param, api): CustomSeriesRenderItemReturn => {
           if (!hasData) {
@@ -244,7 +255,7 @@ export function generateCycles(
       type: 'custom',
       clip: true,
       silent: true,
-      z: 6,
+      z: TIME_SPACE_CYCLE_LABEL_SERIES_Z,
       data: hasData ? getCycleDurationLabelData(cycleEvents) : [],
       renderItem: (_param, api): CustomSeriesRenderItemReturn => {
         const midX = api.value(0) as number
@@ -292,19 +303,7 @@ function renderCycleSegment(
   const width = p2[0] - p1[0]
 
   const fill = getCycleColor(v1 as number)
-  return {
-    type: 'rect',
-    shape: {
-      x: p1[0],
-      y: p1[1],
-      width,
-      height: CYCLE_SEGMENT_HEIGHT,
-    },
-    style: {
-      fill,
-      opacity: 1,
-    },
-  }
+  return buildCycleBandGroup(p1[0], p1[1], width, fill, 1)
 }
 
 function getCycleDurationLabel(startTime: unknown, endTime: unknown): string {
@@ -357,18 +356,63 @@ function renderMissingCycle(
   const coordSys = param.coordSys as any
   const y = api.coord([0, distance])[1]
 
+  return buildCycleBandGroup(coordSys.x, y, coordSys.width, '#d0d0d0', 0.75)
+}
+
+function buildCycleBandGroup(
+  x: number,
+  y: number,
+  width: number,
+  fill: string,
+  opacity: number
+): CustomSeriesRenderItemReturn {
   return {
-    type: 'rect',
-    shape: {
-      x: coordSys.x,
-      y,
-      width: coordSys.width,
-      height: CYCLE_SEGMENT_HEIGHT,
-    },
-    style: {
-      fill: '#d0d0d0',
-      opacity: 0.75,
-    },
+    type: 'group',
+    emphasisDisabled: true,
+    children: [
+      {
+        type: 'rect',
+        z2: TIME_SPACE_CYCLE_ELEMENT_Z2,
+        shape: {
+          x,
+          y,
+          width,
+          height: CYCLE_SEGMENT_HEIGHT,
+        },
+        style: {
+          fill,
+          opacity,
+        },
+      },
+      {
+        type: 'rect',
+        z2: TIME_SPACE_CYCLE_ELEMENT_Z2 + 1,
+        shape: {
+          x,
+          y,
+          width,
+          height: CYCLE_BORDER_HEIGHT,
+        },
+        style: {
+          fill: '#000',
+          opacity: 1,
+        },
+      },
+      {
+        type: 'rect',
+        z2: TIME_SPACE_CYCLE_ELEMENT_Z2 + 1,
+        shape: {
+          x,
+          y: y + CYCLE_SEGMENT_HEIGHT - CYCLE_BORDER_HEIGHT,
+          width,
+          height: CYCLE_BORDER_HEIGHT,
+        },
+        style: {
+          fill: '#000',
+          opacity: 1,
+        },
+      },
+    ],
   }
 }
 
@@ -562,6 +606,7 @@ export function generateGreenEventLines(
       data: dataPoints,
       clip: true,
       animation: false,
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
       renderItem: function (params, api) {
         const i = params.dataIndex
         if (!dataPoints || i >= dataPoints.length - 1 || i % 2 !== 0) {
@@ -594,19 +639,16 @@ export function generateGreenEventLines(
         ]
         return {
           type: 'polygon',
+          z2: TIME_SPACE_MOVEMENT_ELEMENT_Z2,
+          focus: 'none',
           transition: ['shape'],
+          emphasisDisabled: true,
           shape: {
             points: points,
           },
           style: {
-            z: -1,
             opacity: isPrimary ? 0.3 : 0.2,
             fill: isPrimary ? '#7799a0 ' : '#324448',
-          },
-          emphasis: {
-            style: {
-              opacity: 0.7,
-            },
           },
         }
       },

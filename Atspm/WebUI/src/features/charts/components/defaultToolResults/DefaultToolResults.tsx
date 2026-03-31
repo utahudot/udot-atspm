@@ -400,7 +400,7 @@ export default function TimeSpaceChart({
         <Tab label="Link Pivot" />
       </Tabs>
       {activeTab === 0 && (
-        <Paper sx={{ p: 0, mt: 2, ml: '2px', bgcolor: 'white' }}>
+        <Paper sx={{ p: 0, ml: '2px', bgcolor: 'white' }}>
           <Box
             sx={{
               width: '100%',
