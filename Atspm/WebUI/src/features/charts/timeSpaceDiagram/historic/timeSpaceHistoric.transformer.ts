@@ -53,7 +53,7 @@ import {
 import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
-const opacity = 0.4
+const opacity = 1
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
@@ -636,7 +636,7 @@ function generateLaneByLaneCountEventLines(
       lineStyle: {
         width: 2,
         color,
-        opacity,
+        opacity: 0.7,
       },
       data: location.laneByLaneCountDetectors.flatMap((events) => {
         const distanceToNext = isPrimary

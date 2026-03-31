@@ -601,7 +601,7 @@ export function generateGreenEventLines(
           style: {
             z: -1,
             opacity: isPrimary ? 0.3 : 0.2,
-            fill: isPrimary ? '#56b4e9 ' : '#324448',
+            fill: isPrimary ? '#7799a0 ' : '#324448',
           },
           emphasis: {
             style: {
