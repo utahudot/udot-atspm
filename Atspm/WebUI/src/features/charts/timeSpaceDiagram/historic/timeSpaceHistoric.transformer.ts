@@ -27,6 +27,7 @@ import {
   generateCycleLabels,
   generateCycles,
   generateGreenEventLines,
+  getTimeSpacePhaseRowDistances,
   getDistancesLabelOption,
   getLocationsLabelOption,
   TIME_SPACE_MOVEMENT_SERIES_Z,
@@ -55,6 +56,11 @@ import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
 const opacity = 1
+const MIN_SEGMENT = 2000
+const Y_AXIS_PADDING = 250
+const DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
+const MIN_ROW_HEIGHT_PX = 100
+const DISPLAY_HEIGHT_BASE = 220
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
@@ -108,6 +114,23 @@ const PEDESTRIAN_ZIGZAG_STEP_PX = 3
 const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
 const PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT = PEDESTRIAN_ZIGZAG_AMPLITUDE
 
+function getDisplayDistanceScale(distanceData: number[]): number {
+  const segments = distanceData.map((value, index) => {
+    if (index === 0) {
+      return 0
+    }
+
+    return value - distanceData[index - 1]
+  })
+
+  const positiveSegments = segments.filter((segment) => segment > 0)
+  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
+
+  return minSegment > 0 && minSegment < MIN_SEGMENT
+    ? MIN_SEGMENT / minSegment
+    : 1
+}
+
 function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryPhaseData = data.filter(
     (location) => location.phaseType === 'Primary'
@@ -155,17 +178,33 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryDirection = primaryPhaseData[0].approachDescription
   const opposingDirection = opposingPhaseData[0].approachDescription
 
-  const distanceData: number[] = []
+  const rawDistanceData: number[] = []
   primaryPhaseData.forEach((location) => {
-    distanceData.push(initialDistance)
+    rawDistanceData.push(initialDistance)
     initialDistance += location.distanceToNextLocation
   })
+  const distanceScale = getDisplayDistanceScale(rawDistanceData)
+  const locationCenterDistanceData = rawDistanceData.map(
+    (distance) => distance * distanceScale
+  )
+  const {
+    primaryDistanceData,
+    opposingDistanceData,
+  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
+  const minDisplayDistance = Math.min(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
+  const maxDisplayDistance = Math.max(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
   const yAxis = createYAxis(false, {
     show: false,
-    data: distanceData,
+    data: locationCenterDistanceData,
     axisTick: { show: true },
-    max: distanceData[distanceData.length - 1] + 250,
-    min: -250,
+    max: maxDisplayDistance + Y_AXIS_PADDING,
+    min: minDisplayDistance - Y_AXIS_PADDING,
   })
 
   const title = createTitle({
@@ -222,170 +261,196 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   // const { requestRects, serviceRects, intersectionLines } =
   //   buildRectsAndLinesForTSD(primaryPhaseData)
-  const MIN_SEGMENT = 2000
-
-  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
-
-  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
-  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
-
-  const scale =
-    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
-
-  const opposingBandOffset = 300 / scale
-
-  let reverseDistanceData = [...distanceData].reverse()
-  reverseDistanceData = reverseDistanceData.map(
-    (distance) => distance + opposingBandOffset
-  )
-
   const series: SeriesOption[] = []
 
   series.push(
-    ...generateCycles(primaryPhaseData, distanceData, primaryDirection)
+    ...generateCycles(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      'primary'
+    )
   )
 
   series.push(
     ...generateLaneByLaneCountEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       'orange',
       opposingDirection,
-      false
+      false,
+      distanceScale
     )
   )
 
   series.push(
     ...generateAdvanceCountEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       'orange',
       opposingDirection,
-      false
+      false,
+      distanceScale
     )
   )
 
   series.push(
     ...generateStopBarPresenceEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       'orange',
       opposingDirection,
-      false
+      false,
+      distanceScale
     )
   )
 
   series.push(
     ...generateLaneByLaneCountEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       'darkblue',
       primaryDirection,
-      true
+      true,
+      distanceScale
     )
   )
 
   series.push(
     ...generateAdvanceCountEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       'darkblue',
       primaryDirection,
-      true
+      true,
+      distanceScale
     )
   )
 
   series.push(
     ...generateStopBarPresenceEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       'darkblue',
       primaryDirection,
-      true
+      true,
+      distanceScale
     )
   )
 
   series.push(
     ...generateGreenEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       primaryDirection,
-      true
+      true,
+      distanceScale,
+      'primary'
     )
   )
 
   series.push(
     ...generatePedestrianIntervalLines(
       primaryPhaseData,
-      distanceData,
-      primaryDirection
+      primaryDistanceData,
+      primaryDirection,
+      'primary'
     )
   )
   series.push(
-    ...generateSrmEntityLines(primaryPhaseData, distanceData, primaryDirection)
+    ...generateSrmEntityLines(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      distanceScale,
+      'primary'
+    )
   )
 
   series.push(
-    ...generateTMCEvent(primaryPhaseData, distanceData, primaryDirection)
+    ...generateTMCEvent(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      distanceScale
+    )
   )
 
   series.push(
-    ...buildCycleEventMarkersOnCyclesSeries(primaryPhaseData, distanceData)
+    ...buildCycleEventMarkersOnCyclesSeries(
+      primaryPhaseData,
+      primaryDistanceData
+    )
   )
 
   series.push(
-    ...buildTspRequestAndServiceLineSeries(primaryPhaseData, distanceData)
+    ...buildTspRequestAndServiceLineSeries(primaryPhaseData, primaryDistanceData)
   )
 
   const locationLabels = getLocationsLabelOption(
     primaryPhaseData,
-    distanceData,
+    locationCenterDistanceData,
     grid
   )
   series.push(locationLabels)
   series.push(
-    getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
+    getDistancesLabelOption(
+      primaryPhaseData,
+      locationCenterDistanceData,
+      grid.left as number,
+      distanceScale
+    )
   )
   series.push(
-    ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
+    ...generateCycles(
+      opposingPhaseData,
+      opposingDistanceData,
+      opposingDirection,
+      'opposing'
+    )
   )
 
   series.push(
     ...generateGreenEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       opposingDirection,
-      false
+      false,
+      distanceScale,
+      'opposing'
     )
   )
 
   series.push(
     ...generatePedestrianIntervalLines(
       opposingPhaseData,
-      reverseDistanceData,
-      opposingDirection
+      opposingDistanceData,
+      opposingDirection,
+      'opposing'
     )
   )
 
   series.push(
     ...generateSrmEntityLines(
       opposingPhaseData,
-      reverseDistanceData,
-      opposingDirection
+      opposingDistanceData,
+      opposingDirection,
+      distanceScale,
+      'opposing'
     )
   )
 
   series.push(
     ...buildCycleEventMarkersOnCyclesSeries(
       opposingPhaseData,
-      reverseDistanceData
+      opposingDistanceData
     )
   )
 
   series.push(
     ...buildTspRequestAndServiceLineSeries(
       opposingPhaseData,
-      reverseDistanceData
+      opposingDistanceData
     )
   )
 
@@ -405,24 +470,24 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     (p) => p.approachDescription
   )
 
-  const opposingHeadersByIndex = [...opposingPhaseData]
-    .reverse()
-    .map((p) => p.approachDescription)
+  const opposingHeadersByIndex = opposingPhaseData.map(
+    (p) => p.approachDescription
+  )
 
-  const opposingLinesByIndex = [...opposingPhaseData]
-    .reverse()
-    .map((p) => [`AOG: ${formatPct(p.percentArrivalOnGreen)}`])
+  const opposingLinesByIndex = opposingPhaseData.map((p) => [
+    `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
+  ])
 
   const primaryIgnoredByIndex = primaryPhaseData.map((p) =>
     Boolean(p.isIgnoredLocation)
   )
 
-  const opposingIgnoredByIndex = [...opposingPhaseData]
-    .reverse()
-    .map((p) => Boolean(p.isIgnoredLocation))
+  const opposingIgnoredByIndex = opposingPhaseData.map((p) =>
+    Boolean(p.isIgnoredLocation)
+  )
 
   const primaryLabelSeries = generateCycleLabels(
-    distanceData,
+    primaryDistanceData,
     primaryDirection,
     grid.left as number,
     primaryHeadersByIndex,
@@ -432,7 +497,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   )
 
   const opposingLabelSeries = generateCycleLabels(
-    distanceData,
+    opposingDistanceData,
     opposingDirection,
     grid.left as number,
     opposingHeadersByIndex,
@@ -452,16 +517,18 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   //   )
   // )
 
-  const scaledCumulative = distanceData.map((d) =>
-    Number.isFinite(d) ? d * scale : d
-  )
-
-  const totalDistance = scaledCumulative[scaledCumulative.length - 1] ?? 0
+  const minHeightFromRows = primaryPhaseData.length * MIN_ROW_HEIGHT_PX
+  const heightFromDistance =
+    Math.ceil(
+      (maxDisplayDistance - minDisplayDistance + Y_AXIS_PADDING * 2) /
+        DISPLAY_DISTANCE_UNITS_PER_PIXEL
+    ) + DISPLAY_HEIGHT_BASE
+  const chartHeight = Math.max(heightFromDistance, minHeightFromRows + DISPLAY_HEIGHT_BASE)
 
   const displayProps = createDisplayProps({
     description: '',
     numberOfLocations: primaryPhaseData.length,
-    height: totalDistance / 18 + 220,
+    height: chartHeight,
     locations: primaryPhaseData.map((p) => p.locationIdentifier),
   })
 
@@ -624,14 +691,18 @@ function generateLaneByLaneCountEventLines(
   distanceData: number[],
   color: string,
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
     if (!location.laneByLaneCountDetectors) return
+    const sideScope = isPrimary ? 'primary' : 'opposing'
     const series: SeriesOption = {
       name: `Lane by Lane Count ${phaseType?.length && phaseType}`,
-      id: `LLC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `LLC ${location.locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${sideScope}`,
       type: 'line',
       symbol: 'none',
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
@@ -644,6 +715,7 @@ function generateLaneByLaneCountEventLines(
         const distanceToNext = isPrimary
           ? location.calculatedDistanceToNext
           : -location.calculatedDistanceToNext
+        const displayDistanceToNext = distanceToNext * distanceScale
         const initialX = events.detectorOn
         const finalX = getArrivalTime(
           location.calculatedDistanceToNext,
@@ -652,7 +724,7 @@ function generateLaneByLaneCountEventLines(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i] + distanceToNext],
+          [finalX, distanceData[i] + displayDistanceToNext],
           null,
         ]
         return values
@@ -686,7 +758,8 @@ function generateAdvanceCountEventLines(
   distanceData: number[],
   color: string,
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   const directionMultiplier = isPrimary ? 1 : -1
@@ -698,11 +771,15 @@ function generateAdvanceCountEventLines(
     const currentDistance = distanceData[i]
     const previousDistance =
       currentDistance -
-      directionMultiplier * Math.abs(location.calculatedDistanceToPrevious)
+      directionMultiplier *
+        Math.abs(location.calculatedDistanceToPrevious * distanceScale)
+    const sideScope = isPrimary ? 'primary' : 'opposing'
 
     const series: SeriesOption = {
       name: `Advance Count ${phaseType?.length && phaseType}`,
-      id: `AC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `AC ${location.locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${sideScope}`,
       type: 'line',
       symbol: 'none',
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
@@ -741,7 +818,8 @@ function generateStopBarPresenceEventLines(
   distanceData: number[],
   color: string,
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
 
@@ -749,10 +827,13 @@ function generateStopBarPresenceEventLines(
     const location = data[i]
     if (!location.stopBarPresenceDetectors) continue
     const dataPoints = getStopBarPresenceDataPoints(location, distanceData[i])
+    const sideScope = isPrimary ? 'primary' : 'opposing'
 
     const seriesOption: SeriesOption = {
       name: `Stop Bar Presence ${phaseType?.length && phaseType}`,
-      id: `SBP ${data[i].locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `SBP ${data[i].locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${sideScope}`,
       type: 'custom',
       data: dataPoints,
       clip: true,
@@ -767,6 +848,7 @@ function generateStopBarPresenceEventLines(
         const distanceToNext = isPrimary
           ? location.calculatedDistanceToNext
           : -location.calculatedDistanceToNext
+        const displayDistanceToNext = distanceToNext * distanceScale
         const [x1, y1] = [api.value(0), api.value(1)]
 
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
@@ -783,8 +865,8 @@ function generateStopBarPresenceEventLines(
         const points = [
           api.coord([x1, y1]),
           api.coord([x2, y2]),
-          api.coord([nextPointFinalX, (y2 as number) + distanceToNext]),
-          api.coord([currPointFinalX, (y1 as number) + distanceToNext]),
+          api.coord([nextPointFinalX, (y2 as number) + displayDistanceToNext]),
+          api.coord([currPointFinalX, (y1 as number) + displayDistanceToNext]),
         ]
         return {
           type: 'polygon',
@@ -824,7 +906,8 @@ function getStopBarPresenceDataPoints(
 function generatePedestrianIntervalLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  idScope = 'default'
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
 
@@ -838,7 +921,7 @@ function generatePedestrianIntervalLines(
 
     const series: SeriesOption = {
       name: `Pedestrian Interval ${phaseType?.length ? phaseType : ''}`,
-      id: `PI ${location.locationIdentifier} ${phaseType ?? ''}`,
+      id: `PI ${location.locationIdentifier} ${phaseType ?? ''} row-${i} ${idScope}`,
       type: 'custom',
       clip: true,
       data: pedData,
@@ -973,7 +1056,8 @@ function buildPedestrianZigZagPoints(
 function generateTMCEvent(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  distanceScale = 1
 ) {
   const seriesOptions: SeriesOption[] = []
 
@@ -991,7 +1075,7 @@ function generateTMCEvent(
       )
       const values = [
         [initialX, distanceData[i]],
-        [finalX, distanceData[i] + location.calculatedDistanceToNext],
+        [finalX, distanceData[i] + location.calculatedDistanceToNext * distanceScale],
         null,
       ]
       return values
@@ -1008,7 +1092,10 @@ function generateTMCEvent(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i] + location.calculatedDistanceToNext],
+          [
+            finalX,
+            distanceData[i] + location.calculatedDistanceToNext * distanceScale,
+          ],
           null,
         ]
         return values
@@ -1042,7 +1129,9 @@ function generateTMCEvent(
 function generateSrmEntityLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  distanceScale = 1,
+  idScope = 'default'
 ): SeriesOption[] {
   const isOpposing = (phaseType ?? '').toLowerCase().includes('opposing')
   const directionMultiplier = isOpposing ? -1 : 1
@@ -1057,14 +1146,14 @@ function generateSrmEntityLines(
       const baseDistance = distanceData[i] ?? 0
       const points = track.points.map((point) => [
         point.time,
-        baseDistance + directionMultiplier * point.distance,
+        baseDistance + directionMultiplier * point.distance * distanceScale,
       ])
 
       seriesOptions.push({
         name: `SRM Entity ${phaseType?.length ? phaseType : ''}`,
         id: `SRM ${location.locationIdentifier} ${track.entityId} ${trackIndex} ${
           phaseType ?? ''
-        }`,
+        } row-${i} ${idScope}`,
         type: 'line',
         symbol: 'none',
         z: TIME_SPACE_MOVEMENT_SERIES_Z,

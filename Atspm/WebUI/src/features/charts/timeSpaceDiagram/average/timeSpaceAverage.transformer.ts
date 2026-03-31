@@ -33,6 +33,8 @@ import {
   getDistancesLabelOption,
   getLocationsLabelOption,
   getOffsetAndProgramSplitLabel,
+  getTimeSpacePhaseRowDistances,
+  TIME_SPACE_CYCLE_CENTER_OFFSET,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceAverageData,
@@ -137,14 +139,28 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     opposingPhaseData[0].approachDescription.split(' ')[0]
 
   let initialDistance = 0
-  const distanceData: number[] = []
+  const locationCenterDistanceData: number[] = []
   primaryPhaseData.forEach((location) => {
-    distanceData.push(initialDistance)
+    locationCenterDistanceData.push(initialDistance)
     initialDistance += location.distanceToNextLocation
   })
+  const {
+    primaryDistanceData,
+    opposingDistanceData,
+  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
+  const minDisplayDistance = Math.min(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
+  const maxDisplayDistance = Math.max(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
   const yAxis = createYAxis(false, {
     show: false,
-    data: distanceData,
+    data: locationCenterDistanceData,
+    min: minDisplayDistance - TIME_SPACE_CYCLE_CENTER_OFFSET,
+    max: maxDisplayDistance + TIME_SPACE_CYCLE_CENTER_OFFSET,
     axisLabel: {
       show: false,
     },
@@ -235,26 +251,39 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   const series: SeriesOption[] = []
 
   series.push(
-    ...generateCycles(primaryPhaseData, distanceData, primaryDirection)
+    ...generateCycles(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      'primary'
+    )
   )
   series.push(
     ...generateGreenEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       primaryDirection,
-      true
+      true,
+      1,
+      'primary'
     )
   )
 
-  series.push(getLocationsLabelOption(primaryPhaseData, distanceData, grid))
   series.push(
-    getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
+    getLocationsLabelOption(primaryPhaseData, locationCenterDistanceData, grid)
+  )
+  series.push(
+    getDistancesLabelOption(
+      primaryPhaseData,
+      locationCenterDistanceData,
+      grid.left as number
+    )
   )
   series.push(
     getOffsetAndProgramSplitLabel(
       primaryPhaseData,
       opposingPhaseData,
-      distanceData,
+      locationCenterDistanceData,
       primaryDirection,
       opposingDirection,
       endDateFormat
@@ -262,7 +291,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   )
   series.push(
     generateCycleLabels(
-      distanceData,
+      primaryDistanceData,
       primaryDirection,
       undefined,
       primaryPhaseData.map((p) => p.approachDescription),
@@ -272,30 +301,35 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     )
   )
 
-  let reverseDistanceData = distanceData.reverse()
-  reverseDistanceData = reverseDistanceData.map((distance) => (distance += 120))
   series.push(
-    ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
+    ...generateCycles(
+      opposingPhaseData,
+      opposingDistanceData,
+      opposingDirection,
+      'opposing'
+    )
   )
 
   series.push(
     ...generateGreenEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       opposingDirection,
-      false
+      false,
+      1,
+      'opposing'
     )
   )
 
   series.push(
     generateCycleLabels(
-      distanceData,
+      opposingDistanceData,
       opposingDirection,
       undefined,
-      [...opposingPhaseData].reverse().map((p) => p.approachDescription),
+      opposingPhaseData.map((p) => p.approachDescription),
       undefined,
       'right',
-      [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
+      opposingPhaseData.map((p) => Boolean(p.isIgnoredLocation))
     )
   )
 

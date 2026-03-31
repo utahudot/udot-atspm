@@ -186,6 +186,8 @@ export function getOffsetDeltaVisuals(
   }
 }
 
+export const TIME_SPACE_CYCLE_CENTER_OFFSET = 150
+
 const CYCLE_SEGMENT_HEIGHT = 17
 const CYCLE_BORDER_HEIGHT = 0.5
 const CYCLE_DURATION_LABEL_FONT_SIZE = 10
@@ -198,6 +200,17 @@ export const TIME_SPACE_CYCLE_SERIES_Z = 5
 export const TIME_SPACE_CYCLE_LABEL_SERIES_Z = 6
 const TIME_SPACE_MOVEMENT_ELEMENT_Z2 = 1
 const TIME_SPACE_CYCLE_ELEMENT_Z2 = 5
+
+export function getTimeSpacePhaseRowDistances(locationCenterDistances: number[]) {
+  return {
+    primaryDistanceData: locationCenterDistances.map(
+      (distance) => distance - TIME_SPACE_CYCLE_CENTER_OFFSET
+    ),
+    opposingDistanceData: [...locationCenterDistances]
+      .reverse()
+      .map((distance) => distance + TIME_SPACE_CYCLE_CENTER_OFFSET),
+  }
+}
 
 function getCycleColor(value: number): string {
   const found = CYCLE_INDICATIONS.find((x) => x.codes.includes(value))
@@ -215,7 +228,8 @@ function getCycleEvents(
 export function generateCycles(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  idScope = 'default'
 ): SeriesOption[] {
   return data.flatMap((phase, index) => {
     if (phase.isIgnoredLocation) {
@@ -234,7 +248,7 @@ export function generateCycles(
     const series: SeriesOption[] = [
       {
         name: cycleName,
-        id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''}`,
+        id: `Cycles ${phase.locationIdentifier} ${phaseType ?? ''} row-${index} ${idScope}`,
         type: 'custom',
         clip: true,
         z: TIME_SPACE_CYCLE_SERIES_Z,
@@ -251,7 +265,7 @@ export function generateCycles(
 
     series.push({
       name: cycleDurationName,
-      id: `Cycle Duration Labels ${phase.locationIdentifier} ${phaseType ?? ''}`,
+      id: `Cycle Duration Labels ${phase.locationIdentifier} ${phaseType ?? ''} row-${index} ${idScope}`,
       type: 'custom',
       clip: true,
       silent: true,
@@ -269,7 +283,7 @@ export function generateCycles(
           z2: 20,
           style: {
             x: center[0],
-            y: center[1] + CYCLE_SEGMENT_HEIGHT / 2,
+            y: center[1],
             text: label,
             fill: CYCLE_DURATION_LABEL_FILL,
             stroke: CYCLE_DURATION_LABEL_STROKE,
@@ -361,11 +375,13 @@ function renderMissingCycle(
 
 function buildCycleBandGroup(
   x: number,
-  y: number,
+  centerY: number,
   width: number,
   fill: string,
   opacity: number
 ): CustomSeriesRenderItemReturn {
+  const y = centerY - CYCLE_SEGMENT_HEIGHT / 2
+
   return {
     type: 'group',
     emphasisDisabled: true,
@@ -585,7 +601,9 @@ export function generateGreenEventLines(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1,
+  idScope = 'default'
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   for (let i = 0; i < data.length; i++) {
@@ -601,7 +619,9 @@ export function generateGreenEventLines(
     )
     const seriesOption: SeriesOption = {
       name: `Green Bands ${phaseType?.length ? phaseType : ''}`,
-      id: `Green Bands ${data[i].locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `Green Bands ${data[i].locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${idScope}`,
       type: 'custom',
       data: dataPoints,
       clip: true,
@@ -612,9 +632,10 @@ export function generateGreenEventLines(
         if (!dataPoints || i >= dataPoints.length - 1 || i % 2 !== 0) {
           return
         }
-        const distanceToNext = isPrimary
+        const travelDistanceToNext = isPrimary
           ? location.calculatedDistanceToNext
           : -location.calculatedDistanceToNext
+        const displayDistanceToNext = travelDistanceToNext * distanceScale
 
         const nextIndex = i + 1
 
@@ -622,20 +643,20 @@ export function generateGreenEventLines(
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
 
         const currPointFinalX = getArrivalTime(
-          Math.abs(distanceToNext),
+          Math.abs(travelDistanceToNext),
           location.speed,
           x1 as string
         )
         const nextPointFinalX = getArrivalTime(
-          Math.abs(distanceToNext),
+          Math.abs(travelDistanceToNext),
           location.speed,
           x2 as string
         )
         const points = [
           api.coord([x1, y1]),
           api.coord([x2, y2]),
-          api.coord([nextPointFinalX, (y2 as number) + distanceToNext]),
-          api.coord([currPointFinalX, (y1 as number) + distanceToNext]),
+          api.coord([nextPointFinalX, (y2 as number) + displayDistanceToNext]),
+          api.coord([currPointFinalX, (y1 as number) + displayDistanceToNext]),
         ]
         return {
           type: 'polygon',
@@ -1332,16 +1353,23 @@ export function getOffsetAndProgramSplitLabel(
 export function getDistancesLabelOption(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
-  gridLeft: number
+  gridLeft: number,
+  distanceScale = 1
 ): SeriesOption {
   const { gridGap, dotOffset, cardGapToDot, verticalOffsetY } =
     TIME_SPACE_LOCATION_CARD_LAYOUT
-  const dataPoints = distanceData.map((distance, index) => [
-    data[index].end,
-    distance,
-    index !== distanceData.length - 1 ? data[index].distanceToNextLocation : '',
-    index !== distanceData.length - 1 ? data[index].speed : '',
-  ])
+  const dataPoints = distanceData.map((distance, index) => {
+    const distanceToNext =
+      index !== distanceData.length - 1 ? data[index].distanceToNextLocation : 0
+
+    return [
+      data[index].end,
+      distance,
+      distanceToNext,
+      index !== distanceData.length - 1 ? data[index].speed : '',
+      distanceToNext * distanceScale,
+    ]
+  })
   return {
     name: `Labels distance`,
     type: 'custom',
@@ -1363,7 +1391,7 @@ export function getDistancesLabelOption(
       const speedText = `${api.value(3)} mph`
       const [, rawY] = api.coord([
         0,
-        (api.value(1) as number) + (api.value(2) as number) / 2,
+        (api.value(1) as number) + (api.value(4) as number) / 2,
       ])
       const y = rawY + verticalOffsetY
 
@@ -1618,7 +1646,7 @@ export function generateCycleLabels(
   } = TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT
 
   return {
-    id: `${CYCLE_LABEL_SERIES_ID_PREFIX}${direction}`,
+    id: `${CYCLE_LABEL_SERIES_ID_PREFIX}${direction} ${column}`,
     name: `Cycles ${direction}`,
     type: 'custom',
     silent: true,
@@ -1657,12 +1685,10 @@ export function generateCycleLabels(
             : 0
           const currentRowBottom =
             currentRowY +
-            CYCLE_SEGMENT_HEIGHT / 2 +
             verticalOffsetY +
             (headerHeight + currentRowBodyHeight) / 2
           const candidateRowBottom =
             candidateRowY +
-            CYCLE_SEGMENT_HEIGHT / 2 +
             verticalOffsetY +
             (headerHeight + candidateRowBodyHeight) / 2
 
@@ -1673,7 +1699,7 @@ export function generateCycleLabels(
         0
       )
       const isIgnored = Boolean(ignoredByIndex?.[rowIndex])
-      const anchorY = y + CYCLE_SEGMENT_HEIGHT / 2 + verticalOffsetY
+      const anchorY = y + verticalOffsetY
       const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
       const cardLeft =
         column === 'left'
