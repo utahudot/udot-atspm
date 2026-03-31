@@ -33,18 +33,39 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Custom authentication handler that validates requests using an API key provided in the "X-API-KEY" header.
+    /// </summary>
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        /// <summary>
+        /// The database context used to access and validate API keys.
+        /// </summary>
         private readonly IdentityContext _context;
 
-        public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger,UrlEncoder encoder, IdentityContext context) : base(options, logger, encoder)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiKeyAuthenticationHandler"/> class.
+        /// </summary>
+        /// <param name="options">The monitor for the authentication scheme options.</param>
+        /// <param name="logger">The logger factory for capturing diagnostic information.</param>
+        /// <param name="encoder">The URL encoder for handling authentication-related strings.</param>
+        /// <param name="context">The <see cref="IdentityContext"/> used for database operations.</param>
+        public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, IdentityContext context) : base(options, logger, encoder)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Performs the core authentication logic by extracting the API key from the request header and verifying it against the database.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="AuthenticateResult"/> indicating success if the key is valid, active, and not expired; 
+        /// otherwise, an appropriate failure result.
+        /// </returns>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.TryGetValue("X-API-KEY", out var extractedKey))

@@ -17,40 +17,46 @@
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Data
 {
     /// <summary>
-    /// Identity database context
+    /// The database context for the application's identity system, 
+    /// extending <see cref="IdentityDbContext{TUser}"/> to include API key management.
     /// </summary>
     public class IdentityContext : IdentityDbContext<ApplicationUser>
     {
         /// <summary>
-        /// Identity database context
+        /// Initializes a new instance of the <see cref="IdentityContext"/> class.
         /// </summary>
-        /// <param name="options"></param>
-        public IdentityContext(DbContextOptions<IdentityContext> options)
-            : base(options)
+        /// <param name="options">The options to be used by this <see cref="DbContext"/>.</param>
+        public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
         {
-
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="DbSet{TEntity}"/> for managing API keys.
+        /// </summary>
         public DbSet<ApiKey> ApiKeys { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="DbSet{TEntity}"/> for managing API key claims.
+        /// </summary>
         public DbSet<ApiKeyClaim> ApiKeyClaims { get; set; }
 
-
-
+        /// <summary>
+        /// Configures the schema needed for the identity framework and the API key models.
+        /// </summary>
+        /// <param name="builder">The builder being used to construct the model for this context.</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Configuration for ApiKey
             builder.Entity<ApiKey>(entity =>
             {
-                // Index the hash for high-performance lookups in the Auth Handler
                 entity.HasIndex(e => e.KeyHash).IsUnique();
 
-                // Relationship: One Key has many Claims
                 entity.HasMany(e => e.Claims)
                       .WithOne()
                       .HasForeignKey(c => c.ApiKeyId)
@@ -62,27 +68,5 @@ namespace Utah.Udot.Atspm.Data
                 entity.HasKey(e => e.Id);
             });
         }
-    }
-
-    public class ApiKey
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string KeyHash { get; set; } = string.Empty;
-        public string OwnerId { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? ExpiresAt { get; set; }
-        public bool IsRevoked { get; set; }
-
-        // This links to the child table below
-        public List<ApiKeyClaim> Claims { get; set; } = new List<ApiKeyClaim>();
-    }
-
-    public class ApiKeyClaim
-    {
-        public int Id { get; set; }
-        public int ApiKeyId { get; set; } // Foreign Key
-        public string Type { get; set; } = string.Empty;  // e.g., "role"
-        public string Value { get; set; } = string.Empty; // e.g., "Admin"
     }
 }

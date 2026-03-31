@@ -17,7 +17,7 @@
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Utah.Udot.Atspm.Data.Models
+namespace Utah.Udot.Atspm.Data.Models.IdentityModels
 {
     /// <summary>
     /// Application user
