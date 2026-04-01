@@ -1,23 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     /// <inheritdoc />
-    public partial class _521 : Migration
+    public partial class _5_1_1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Key",
-                table: "WatchDogLogEvents");
-
-            migrationBuilder.DropColumn(
-                name: "Key",
-                table: "WatchDogIgnoreEvents");
-
             migrationBuilder.AddColumn<string>(
                 name: "Key",
                 table: "WatchDogLogEvents",
@@ -33,6 +26,14 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                 unicode: false,
                 nullable: false,
                 defaultValue: "");
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "Timestamp",
+                table: "UsageEntries",
+                type: "timestamp with time zone",
+                nullable: false,
+                oldClrType: typeof(DateTime),
+                oldType: "timestamp");
         }
 
         /// <inheritdoc />
@@ -45,6 +46,14 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
             migrationBuilder.DropColumn(
                 name: "Key",
                 table: "WatchDogIgnoreEvents");
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "Timestamp",
+                table: "UsageEntries",
+                type: "timestamp",
+                nullable: false,
+                oldClrType: typeof(DateTime),
+                oldType: "timestamp with time zone");
         }
     }
 }

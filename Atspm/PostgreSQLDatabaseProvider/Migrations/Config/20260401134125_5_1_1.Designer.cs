@@ -9,11 +9,11 @@ using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20260316222003_5.2.1")]
-    partial class _521
+    [Migration("20260401134125_5_1_1")]
+    partial class _5_1_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
