@@ -24,10 +24,13 @@ import {
 
 export interface TurningMovementCountsChartOptions extends BaseChartOptions {
   binSize: number
+  combineThruRight?: boolean
 }
 
 export interface TurningMovementCountsChartOptionsDefaults {
   binSize: { id: number; value: string; option: string }
+  yAxisDefault: { id: number; value: string; option: string }
+  combineThruRight?: { id: number; value: string; option: string }
 }
 
 export type Plan = BasePlan

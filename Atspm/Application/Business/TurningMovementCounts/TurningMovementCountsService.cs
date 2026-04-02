@@ -33,14 +33,16 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
     }
     public class TurningMovementCountsService
     {
+        private const string CombinedThruRightMovementType = "Thru + Thru-Right";
+
         public TurningMovementCountsService()
         {
         }
 
         public async Task<TurningMovementCountsLanesResult> GetChartData(
-            List<Detector> detectorsByDirection,
+            List<Detector> detectorsByMovementType,
             LaneTypes laneType,
-            MovementTypes movementType,
+            string movementTypeLabel,
             DirectionTypes directionType,
             TurningMovementCountsOptions options,
             List<IndianaEvent> detectorEvents,
@@ -48,9 +50,13 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             string locationIdentifier,
             string LocationDescription)
         {
-            //var plans = planService.GetBasicPlans(options.Start, options.End, LocationIdentifier, plans);
-            var tmcDetectors = new List<Detector>();
-            FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
+            var tmcDetectors = detectorsByMovementType
+                .Where(detector => detector.LaneType == laneType)
+                .ToList();
+            var resolvedMovementTypeLabel = GetMovementTypeLabel(
+                tmcDetectors,
+                movementTypeLabel,
+                options.CombineThruRight);
 
             if (tmcDetectors.Count == 0 || detectorEvents.Count == 0)
                 return null;
@@ -69,7 +75,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 lanes.Add(new Lane
                 {
                     LaneNumber = laneNumber,
-                    MovementType = firstDetector.Key?.MovementType.GetDisplayName(),
+                    MovementType = resolvedMovementTypeLabel,
                     LaneType = firstDetector.Key?.LaneType ?? 0,
                     Volume = laneVolume.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList()
                 });
@@ -105,7 +111,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 options.End,
                 directionType.GetAttributeOfType<DisplayAttribute>().Name,
                 laneType.GetAttributeOfType<DisplayAttribute>().Name,
-                movementType.GetAttributeOfType<DisplayAttribute>().Name,
+                resolvedMovementTypeLabel,
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
@@ -118,8 +124,36 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             );
         }
 
+        private static string GetMovementTypeLabel(
+            List<Detector> tmcDetectors,
+            string movementTypeLabel,
+            bool combineThruRight)
+        {
+            if (!combineThruRight || movementTypeLabel != CombinedThruRightMovementType)
+            {
+                return movementTypeLabel;
+            }
 
+            var hasThru = tmcDetectors.Any(detector => detector.MovementType == MovementTypes.T);
+            var hasThruRight = tmcDetectors.Any(detector => detector.MovementType == MovementTypes.TR);
 
+            if (hasThru && hasThruRight)
+            {
+                return CombinedThruRightMovementType;
+            }
+
+            if (hasThru)
+            {
+                return MovementTypes.T.GetAttributeOfType<DisplayAttribute>().Name;
+            }
+
+            if (hasThruRight)
+            {
+                return MovementTypes.TR.GetAttributeOfType<DisplayAttribute>().Name;
+            }
+
+            return movementTypeLabel;
+        }
 
         private Dictionary<Detector, VolumeCollection> GetVolumeDictionaryByDetector(
             List<Detector> tmcDetectors,
@@ -134,25 +168,6 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 laneVolumes.Add(detector, new VolumeCollection(start, end, detectorEvents.Where(e => e.EventCode == 82 && e.EventParam == detector.DetectorChannel).ToList(), binSize));
             }
             return laneVolumes;
-        }
-
-
-        private void FindLaneDetectors(List<Detector> tmcDetectors, MovementTypes movementType,
-            List<Detector> detectorsByDirection, LaneTypes laneType)
-        {
-            foreach (var detector in detectorsByDirection)
-                if (detector.LaneType == laneType)
-                    if ((int)movementType == 1)
-                    {
-                        if (detector.MovementType == MovementTypes.T ||
-                            detector.MovementType == MovementTypes.TR ||
-                            detector.MovementType == MovementTypes.TL)
-                            tmcDetectors.Add(detector);
-                    }
-                    else if (detector.MovementType == movementType)
-                    {
-                        tmcDetectors.Add(detector);
-                    }
         }
 
 
