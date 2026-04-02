@@ -57,8 +57,20 @@ export default function LocationCoordinatePicker({
     }
     async function getDefaultCenter() {
       const env = await getEnv()
-      setZoom(env?.MAP_DEFAULT_ZOOM)
-      setMapCenter([env?.MAP_DEFAULT_LATITUDE, env?.MAP_DEFAULT_LONGITUDE])
+      const defaultZoom = parseInt(env?.MAP_DEFAULT_ZOOM ?? '', 10)
+      const defaultLatitude = parseFloat(env?.MAP_DEFAULT_LATITUDE ?? '')
+      const defaultLongitude = parseFloat(env?.MAP_DEFAULT_LONGITUDE ?? '')
+
+      if (Number.isFinite(defaultZoom)) {
+        setZoom(defaultZoom)
+      }
+
+      if (
+        Number.isFinite(defaultLatitude) &&
+        Number.isFinite(defaultLongitude)
+      ) {
+        setMapCenter([defaultLatitude, defaultLongitude])
+      }
     }
 
     getDefaultCenter()
