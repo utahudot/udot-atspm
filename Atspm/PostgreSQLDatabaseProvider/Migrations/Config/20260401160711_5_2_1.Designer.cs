@@ -2,33 +2,36 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Oracle.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    partial class ConfigContextModelSnapshot : ModelSnapshot
+    [Migration("20260401160711_5_2_1")]
+    partial class _5_2_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.22")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AreaLocation", b =>
                 {
                     b.Property<int>("AreasId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("LocationsId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("AreasId", "LocationsId");
 
@@ -40,10 +43,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("DetectionTypeDetector", b =>
                 {
                     b.Property<int>("DetectionTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("DetectorsId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("DetectionTypesId", "DetectorsId");
 
@@ -55,10 +58,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("DetectionTypeMeasureType", b =>
                 {
                     b.Property<int>("DetectionTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("MeasureTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("DetectionTypesId", "MeasureTypesId");
 
@@ -70,10 +73,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("MeasureCommentMeasureType", b =>
                 {
                     b.Property<int>("MeasureCommentsId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("MeasureTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("MeasureCommentsId", "MeasureTypesId");
 
@@ -86,60 +89,60 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DirectionTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsPedestrianPhaseOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPermissivePhaseOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsProtectedPhaseOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("Mph")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("PedestrianDetectors")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("PedestrianPhaseNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("PermissivePhaseNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProtectedPhaseNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -157,31 +160,31 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -194,37 +197,37 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DetectionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(5)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(5)");
+                        .HasColumnType("character varying(5)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -324,70 +327,70 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApproachId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<int?>("DecisionPoint")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("DectectorIdentifier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("DetectionHardware")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("DetectorChannel")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("DistanceFromStopBar")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("LaneNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("LaneType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<double>("LatencyCorrection")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("double precision");
 
                     b.Property<int?>("MinSpeedFilter")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("MovementDelay")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("MovementType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -403,37 +406,37 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DetectorId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 
@@ -449,44 +452,44 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("DeviceConfigurationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("DeviceIdentifier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("DeviceProperties")
                         .HasMaxLength(1024)
-                        .HasColumnType("NVARCHAR2(1024)");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(14)
-                        .HasColumnType("NVARCHAR2(14)")
+                        .HasColumnType("character varying(14)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("DeviceType")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(16)
-                        .HasColumnType("NVARCHAR2(16)")
+                        .HasColumnType("character varying(16)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Ipaddress")
@@ -494,26 +497,26 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(15)")
+                        .HasColumnType("character varying(15)")
                         .HasDefaultValueSql("('0.0.0.0')");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("LoggingEnabled")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
 
@@ -531,95 +534,95 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConnectionProperties")
                         .HasMaxLength(1024)
-                        .HasColumnType("NVARCHAR2(1024)");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<int>("ConnectionTimeout")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((2000))");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Decoders")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
-                        .HasColumnType("NVARCHAR2(512)")
+                        .HasColumnType("character varying(512)")
                         .HasDefaultValueSql("('[]')");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(24)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(24)");
+                        .HasColumnType("character varying(24)");
 
                     b.Property<int>("LoggingOffset")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<int>("OperationTimeout")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((2000))");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Path")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<int>("Port")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((0))");
 
                     b.Property<int?>("ProductId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(7)
-                        .HasColumnType("NVARCHAR2(7)")
+                        .HasColumnType("character varying(7)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Query")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
-                        .HasColumnType("NVARCHAR2(512)")
+                        .HasColumnType("character varying(512)")
                         .HasDefaultValueSql("('[]')");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -634,36 +637,36 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DirectionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(5)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(5)");
+                        .HasColumnType("character varying(5)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasMaxLength(30)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -742,40 +745,40 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasMaxLength(8000)
                         .IsUnicode(false)
-                        .HasColumnType("CLOB");
+                        .HasColumnType("character varying(8000)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Header")
                         .IsRequired()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -938,46 +941,46 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CountyParish")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Mpo")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("OtherPartners")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -991,82 +994,82 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("ChartEnabled")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("JurisdictionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((0))");
 
                     b.Property<double>("Latitude")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("double precision");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<int>("LocationTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<double>("Longitude")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Note")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(256)")
+                        .HasColumnType("character varying(256)")
                         .HasDefaultValueSql("('Initial')");
 
                     b.Property<bool>("PedsAre1to1")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PrimaryName")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)")
+                        .HasColumnType("character varying(100)")
                         .HasDefaultValueSql("('')");
 
                     b.Property<int?>("RegionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("SecondaryName")
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((10))");
 
                     b.HasKey("Id");
@@ -1087,35 +1090,35 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Icon")
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -1151,39 +1154,39 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .HasMaxLength(255)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(255)");
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 
@@ -1199,38 +1202,38 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("MeasureTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Option")
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
 
@@ -1647,36 +1650,36 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("MeasureTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("Option")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1692,44 +1695,44 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(8)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(8)");
+                        .HasColumnType("character varying(8)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("ShowOnAggregationSite")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("ShowOnWebsite")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -2069,49 +2072,49 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<byte[]>("Document")
-                        .HasColumnType("RAW(2000)");
+                        .HasColumnType("bytea");
 
                     b.Property<string>("Icon")
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Link")
                         .HasMaxLength(4000)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("character varying(4000)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<int?>("ParentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -2127,46 +2130,46 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(48)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(48)");
+                        .HasColumnType("character varying(48)");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(48)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(48)");
+                        .HasColumnType("character varying(48)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("WebPage")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -2180,31 +2183,31 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -2218,30 +2221,30 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -2255,40 +2258,40 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<double>("Distance")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("double precision");
 
                     b.Property<string>("LocationIdentifierA")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("LocationIdentifierB")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -2305,61 +2308,61 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsOpposingOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPrimaryOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("NextLocationDistanceId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("OpposingDirectionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("OpposingPhase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Order")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("PreviousLocationDistanceId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PrimaryDirectionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PrimaryPhase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("RouteId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -2386,103 +2389,103 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Action")
                         .HasMaxLength(200)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("ApiName")
                         .HasMaxLength(32)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(32)");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("ConnectionId")
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Controller")
                         .HasMaxLength(200)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<long>("DurationMs")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ErrorMessage")
                         .HasMaxLength(2000)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(2000)");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Method")
                         .HasMaxLength(20)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("QueryString")
                         .HasMaxLength(2000)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(2000)");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("RemoteIp")
                         .HasMaxLength(45)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(45)");
+                        .HasColumnType("character varying(45)");
 
                     b.Property<int?>("ResultCount")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<long?>("ResultSizeBytes")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Route")
                         .HasMaxLength(2000)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(2000)");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<int>("StatusCode")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("Success")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("TraceId")
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("UserAgent")
                         .HasMaxLength(1024)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(1024)");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(200)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("Id");
 
@@ -2501,10 +2504,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(900)");
+                        .HasColumnType("text");
 
                     b.Property<int>("AreaId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId", "AreaId");
 
@@ -2520,10 +2523,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(900)");
+                        .HasColumnType("text");
 
                     b.Property<int>("JurisdictionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId", "JurisdictionId");
 
@@ -2536,10 +2539,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(900)");
+                        .HasColumnType("text");
 
                     b.Property<int>("RegionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId", "RegionId");
 
@@ -2552,56 +2555,56 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ComponentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("ComponentType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("End")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("IssueType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("Phase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 
@@ -2614,42 +2617,42 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ComponentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ComponentType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Details")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("IssueType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("Phase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 

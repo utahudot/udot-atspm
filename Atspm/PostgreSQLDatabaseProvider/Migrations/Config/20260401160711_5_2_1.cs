@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     /// <inheritdoc />
-    public partial class _5_1_1 : Migration
+    public partial class _5_2_1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

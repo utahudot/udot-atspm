@@ -67,13 +67,14 @@ function normalizeMovementId(raw: string) {
   if (x === 'left' || x === 'l') return 'L'
   if (x === 'thru-left' || x === 'tl') return 'TL'
   if (x === 'thru' || x === 't') return 'T'
+  if (x === 'thru + thru-right') return 'Thru + Thru-Right'
   if (x === 'thru-right' || x === 'tr') return 'TR'
   if (x === 'right' || x === 'r') return 'R'
   if (x === 'na' || x === 'unknown') return 'NA'
   return raw
 }
 
-const movementTypeOrder = movementTypeOptions.map((option) => option.id)
+const movementTypeOrder = ['L', 'TL', 'T', 'Thru + Thru-Right', 'TR', 'R']
 
 function sortMovementTypes(movements: string[]) {
   return [...movements].sort((a, b) => {
