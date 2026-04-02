@@ -216,7 +216,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     top: 30,
     left: 220,
     right: 195,
-    bottom: 100,
+    bottom: 80,
     show: true,
     borderWidth: 1,
   }

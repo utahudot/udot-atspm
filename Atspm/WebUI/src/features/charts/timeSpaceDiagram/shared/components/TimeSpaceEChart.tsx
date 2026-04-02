@@ -20,6 +20,7 @@ import {
   Typography,
 } from '@mui/material'
 import type {
+  DataZoomComponentOption,
   ECharts,
   EChartsOption,
   GridComponentOption,
@@ -407,6 +408,31 @@ const CHART_CONTENT_PADDING = 16
 const FULLSCREEN_PADDING_X = 24
 const FULLSCREEN_PADDING_BOTTOM = 24
 const STICKY_TOP_AXIS_HEIGHT = 42
+const STICKY_AXIS_BACKGROUND_SOLID_HEIGHT = Math.round(
+  STICKY_TOP_AXIS_HEIGHT * 0.72
+)
+const STICKY_AXIS_BACKGROUND_FADE_HEIGHT = STICKY_TOP_AXIS_HEIGHT
+const STICKY_AXIS_BACKGROUND_TRANSITION_HEIGHT =
+  STICKY_AXIS_BACKGROUND_FADE_HEIGHT - STICKY_AXIS_BACKGROUND_SOLID_HEIGHT
+const STICKY_BOTTOM_AXIS_HEIGHT = 76
+const STICKY_BOTTOM_AXIS_BOTTOM = 60
+const STICKY_BOTTOM_AXIS_TOP =
+  STICKY_BOTTOM_AXIS_HEIGHT - STICKY_BOTTOM_AXIS_BOTTOM
+const STICKY_BOTTOM_SLIDER_HEIGHT = 25
+const STICKY_BOTTOM_SLIDER_BOTTOM =
+  STICKY_BOTTOM_AXIS_BOTTOM -
+  STICKY_BOTTOM_SLIDER_HEIGHT -
+  STICKY_AXIS_BACKGROUND_TRANSITION_HEIGHT - 10
+const STICKY_BOTTOM_AXIS_LABEL_OVERFLOW = 28
+const STICKY_BOTTOM_SLIDER_SIDE_INSET = 2
+const STICKY_BOTTOM_PANEL_BOTTOM = 0
+const STICKY_BOTTOM_BACKGROUND_FADE_START = Math.max(
+  0,
+  STICKY_BOTTOM_AXIS_TOP - STICKY_AXIS_BACKGROUND_TRANSITION_HEIGHT
+)
+const STICKY_BOTTOM_BACKGROUND_FADE_END = STICKY_BOTTOM_AXIS_TOP
+const STICKY_BOTTOM_LABEL_TOP =
+  STICKY_BOTTOM_AXIS_TOP + 7
 const LOCATION_TOGGLE_ICON_SIZE = 18
 const HEADER_TOOLBAR_ICON_SIZE = 18
 const HEADER_TOOLBAR_ICON_STROKE_WIDTH = 1.7
@@ -415,6 +441,14 @@ const TIME_SPACE_LABEL_GUTTER_WIDTH =
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapFromPlot +
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT.cardGapBetween +
   12
+const STICKY_AXIS_LABEL_TEXT_STYLE = {
+  color: 'text.secondary',
+  fontSize: '0.78rem',
+  fontWeight: 500,
+  lineHeight: 1,
+  whiteSpace: 'nowrap',
+  pointerEvents: 'none',
+} as const
 
 function getCssLength(value: string | number | undefined) {
   if (typeof value === 'number') {
@@ -663,6 +697,22 @@ type StickyTopAxis = {
   }>
 }
 
+type StickyBottomAxis = Pick<StickyTopAxis, 'axisEnd' | 'axisStart' | 'label'>
+
+type BottomAxisConfig = {
+  axis: Record<string, unknown>
+  label: string
+  sliderDataZoom?: DataZoomComponentOption
+}
+
+function getStickyAxisBackground(direction: 'top' | 'bottom') {
+  if (direction === 'top') {
+    return `linear-gradient(to bottom, rgba(255,255,255,1) 0px, rgba(255,255,255,1) ${STICKY_AXIS_BACKGROUND_SOLID_HEIGHT}px, rgba(255,255,255,0) ${STICKY_AXIS_BACKGROUND_FADE_HEIGHT}px, rgba(255,255,255,0) 100%)`
+  }
+
+  return `linear-gradient(to bottom, rgba(255,255,255,0) 0px, rgba(255,255,255,0) ${STICKY_BOTTOM_BACKGROUND_FADE_START}px, rgba(255,255,255,1) ${STICKY_BOTTOM_BACKGROUND_FADE_END}px, rgba(255,255,255,1) 100%)`
+}
+
 function extractTopAxisConfig(option?: EChartsOption): TopAxisConfig | null {
   if (!option?.xAxis) return null
 
@@ -736,6 +786,217 @@ function stripTopAxisVisuals(option?: EChartsOption): EChartsOption['xAxis'] {
   return Array.isArray(option.xAxis)
     ? option.xAxis.map((axis) => stripAxisName(axis))
     : stripAxisName(option.xAxis)
+}
+
+function extractBottomAxisConfig(option?: EChartsOption): BottomAxisConfig | null {
+  if (!option?.xAxis) return null
+
+  const xAxes = Array.isArray(option.xAxis) ? option.xAxis : [option.xAxis]
+  const bottomAxis = xAxes.find((axis) => {
+    if (!axis || typeof axis !== 'object') return false
+
+    const candidate = axis as { position?: unknown; show?: unknown }
+    return candidate.position !== 'top' && candidate.show !== false
+  })
+
+  if (!bottomAxis || typeof bottomAxis !== 'object') {
+    return null
+  }
+
+  const dataZooms = option.dataZoom
+    ? Array.isArray(option.dataZoom)
+      ? option.dataZoom
+      : [option.dataZoom]
+    : []
+
+  const sliderDataZoom = dataZooms.find((zoom) => {
+    if (!zoom || typeof zoom !== 'object') return false
+
+    const candidate = zoom as DataZoomComponentOption
+    return candidate.type === 'slider' && (candidate.orient ?? 'horizontal') === 'horizontal'
+  }) as DataZoomComponentOption | undefined
+
+  return {
+    axis: bottomAxis as Record<string, unknown>,
+    label: typeof bottomAxis.name === 'string' ? bottomAxis.name.trim() : '',
+    sliderDataZoom,
+  }
+}
+
+function stripBottomAxisVisuals(option?: EChartsOption): EChartsOption['xAxis'] {
+  if (!option?.xAxis) return option?.xAxis
+
+  let hasStrippedBottomAxis = false
+
+  const stripAxis = <T,>(axis: T): T => {
+    if (!axis || typeof axis !== 'object') return axis
+
+    const candidate = axis as T & { position?: unknown; show?: unknown }
+    if (
+      hasStrippedBottomAxis ||
+      candidate.position === 'top' ||
+      candidate.show === false
+    ) {
+      return axis
+    }
+
+    hasStrippedBottomAxis = true
+
+    return {
+      ...candidate,
+      name: '',
+      axisLabel: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      minorTick: { show: false },
+      show: false,
+    } as T
+  }
+
+  return Array.isArray(option.xAxis)
+    ? option.xAxis.map((axis) => stripAxis(axis))
+    : stripAxis(option.xAxis)
+}
+
+function stripSliderDataZoomVisuals(
+  option?: EChartsOption
+): EChartsOption['dataZoom'] {
+  if (!option?.dataZoom) return option?.dataZoom
+
+  const hideSlider = <T,>(zoom: T): T => {
+    if (!zoom || typeof zoom !== 'object') return zoom
+
+    const candidate = zoom as T & {
+      type?: unknown
+      orient?: unknown
+      show?: unknown
+    }
+
+    if (
+      candidate.type !== 'slider' ||
+      (candidate.orient ?? 'horizontal') !== 'horizontal'
+    ) {
+      return zoom
+    }
+
+    return {
+      ...candidate,
+      show: false,
+    } as T
+  }
+
+  return Array.isArray(option.dataZoom)
+    ? option.dataZoom.map((zoom) => hideSlider(zoom))
+    : hideSlider(option.dataZoom)
+}
+
+function getHorizontalSliderZoomState(option?: EChartsOption) {
+  const dataZooms = option?.dataZoom
+    ? Array.isArray(option.dataZoom)
+      ? option.dataZoom
+      : [option.dataZoom]
+    : []
+
+  const slider = dataZooms.find((zoom) => {
+    if (!zoom || typeof zoom !== 'object') return false
+
+    const candidate = zoom as DataZoomComponentOption
+    return candidate.type === 'slider' && (candidate.orient ?? 'horizontal') === 'horizontal'
+  }) as DataZoomComponentOption | undefined
+
+  if (
+    !slider ||
+    typeof slider.start !== 'number' ||
+    typeof slider.end !== 'number'
+  ) {
+    return null
+  }
+
+  return {
+    start: slider.start,
+    end: slider.end,
+  }
+}
+
+function buildStickyBottomAxisOption(
+  bottomAxisConfig?: BottomAxisConfig | null
+): EChartsOption | null {
+  if (!bottomAxisConfig) return null
+
+  const { axis, sliderDataZoom } = bottomAxisConfig
+  const axisMin = axis.min
+  const axisMax = axis.max
+
+  return {
+    animation: false,
+    grid: {
+      left: STICKY_BOTTOM_AXIS_LABEL_OVERFLOW,
+      right: STICKY_BOTTOM_AXIS_LABEL_OVERFLOW,
+      top: 0,
+      bottom: STICKY_BOTTOM_AXIS_BOTTOM,
+      containLabel: false,
+    },
+    xAxis: {
+      ...axis,
+      name: '',
+      position: 'bottom',
+      show: true,
+      axisLine: {
+        show: true,
+        ...(typeof axis.axisLine === 'object' ? axis.axisLine : {}),
+      },
+      axisTick: {
+        show: true,
+        ...(typeof axis.axisTick === 'object' ? axis.axisTick : {}),
+      },
+      axisLabel: {
+        show: true,
+        ...(typeof axis.axisLabel === 'object' ? axis.axisLabel : {}),
+      },
+      splitLine: { show: false },
+      minorSplitLine: { show: false },
+    },
+    yAxis: {
+      type: 'value',
+      min: 0,
+      max: 1,
+      show: false,
+    },
+    dataZoom: sliderDataZoom
+      ? [
+          {
+            ...sliderDataZoom,
+            type: 'slider',
+            orient: 'horizontal',
+            show: true,
+            left:
+              STICKY_BOTTOM_AXIS_LABEL_OVERFLOW +
+              STICKY_BOTTOM_SLIDER_SIDE_INSET,
+            right:
+              STICKY_BOTTOM_AXIS_LABEL_OVERFLOW +
+              STICKY_BOTTOM_SLIDER_SIDE_INSET,
+            height: STICKY_BOTTOM_SLIDER_HEIGHT,
+            bottom: STICKY_BOTTOM_SLIDER_BOTTOM,
+            showDetail: false,
+          },
+        ]
+      : [],
+    series: [
+      {
+        type: 'line',
+        symbol: 'none',
+        silent: true,
+        lineStyle: { opacity: 0 },
+        data:
+          axisMin !== undefined && axisMax !== undefined
+            ? [
+                [axisMin, 0],
+                [axisMax, 0],
+              ]
+            : [],
+      },
+    ],
+  }
 }
 
 function formatTopAxisTickLabel(
@@ -930,9 +1191,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
+  const stickyBottomAxisRef = useRef<HTMLDivElement>(null)
   const fullscreenRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const chartInstanceRef = useRef<ECharts | null>(null)
+  const stickyBottomAxisChartRef = useRef<ECharts | null>(null)
+  const syncingMainToBottomZoomRef = useRef(false)
+  const syncingBottomToMainZoomRef = useRef(false)
   const [chart, setChart] = useState<ECharts | null>(null)
   const [locationToggleButtons, setLocationToggleButtons] = useState<
     LocationToggleButton[]
@@ -943,6 +1208,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [showPhaseInfo, setShowPhaseInfo] = useState(true)
   const [headerHeight, setHeaderHeight] = useState(0)
   const [stickyTopAxis, setStickyTopAxis] = useState<StickyTopAxis | null>(null)
+  const [stickyBottomAxis, setStickyBottomAxis] =
+    useState<StickyBottomAxis | null>(null)
   const [contextMenuPosition, setContextMenuPosition] =
     useState<ContextMenuPosition | null>(null)
   const [timeSpaceHandlerSyncVersion, setTimeSpaceHandlerSyncVersion] =
@@ -964,9 +1231,55 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       xAxis: stripTopAxisVisuals(option),
     }
   }, [option, remainingTitles])
-  const renderedOption = useMemo(
+  const sidebarAdjustedOption = useMemo(
     () => buildChartOptionWithSidebar(optionWithoutHeaderTitle, showPhaseInfo),
     [optionWithoutHeaderTitle, showPhaseInfo]
+  )
+  const bottomAxisConfig = useMemo(
+    () => extractBottomAxisConfig(sidebarAdjustedOption),
+    [sidebarAdjustedOption]
+  )
+  const stickyBottomAxisOption = useMemo(
+    () => buildStickyBottomAxisOption(bottomAxisConfig),
+    [bottomAxisConfig]
+  )
+  const showStickyPhaseFooterLabels = useMemo(() => {
+    if (!showPhaseInfo) {
+      return false
+    }
+
+    const series = Array.isArray(sidebarAdjustedOption.series)
+      ? (sidebarAdjustedOption.series as SeriesOption[])
+      : []
+
+    return series.some(
+      (entry) =>
+        typeof entry.id === 'string' &&
+        entry.id.startsWith(CYCLE_LABEL_SERIES_ID_PREFIX)
+    )
+  }, [showPhaseInfo, sidebarAdjustedOption])
+  const stickyPhaseFooterLabelPositions = useMemo(() => {
+    if (!stickyBottomAxis) {
+      return null
+    }
+
+    const { cardWidth, cardGapFromPlot, cardGapBetween } =
+      TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT
+    const primaryCardLeft = stickyBottomAxis.axisEnd + cardGapFromPlot
+
+    return {
+      primary: primaryCardLeft + cardWidth / 2,
+      opposing:
+        primaryCardLeft + cardWidth + cardGapBetween + cardWidth / 2,
+    }
+  }, [stickyBottomAxis])
+  const renderedOption = useMemo(
+    () => ({
+      ...sidebarAdjustedOption,
+      xAxis: stripBottomAxisVisuals(sidebarAdjustedOption),
+      dataZoom: stripSliderDataZoomVisuals(sidebarAdjustedOption),
+    }),
+    [sidebarAdjustedOption]
   )
   const baseHeight = getCssLength(style?.height)
   const fullscreenViewportHeight = '100vh'
@@ -1027,6 +1340,27 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   }, [theme])
 
   useEffect(() => {
+    const dom = stickyBottomAxisRef.current
+    if (!dom || !stickyBottomAxisOption) {
+      stickyBottomAxisChartRef.current?.dispose()
+      stickyBottomAxisChartRef.current = null
+      return
+    }
+
+    stickyBottomAxisChartRef.current?.dispose()
+
+    const stickyChart = init(dom, theme, { useDirtyRect: true })
+    stickyBottomAxisChartRef.current = stickyChart
+
+    return () => {
+      stickyChart.dispose()
+      if (stickyBottomAxisChartRef.current === stickyChart) {
+        stickyBottomAxisChartRef.current = null
+      }
+    }
+  }, [theme, stickyBottomAxisOption])
+
+  useEffect(() => {
     setSelectedSeries(getLegendSelectedMap(option))
   }, [option])
 
@@ -1038,6 +1372,19 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     })
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }, [chart, renderedOption])
+
+  useEffect(() => {
+    const stickyChart = stickyBottomAxisChartRef.current
+    if (!stickyChart) return
+
+    if (!stickyBottomAxisOption) {
+      stickyChart.clear()
+      return
+    }
+
+    stickyChart.setOption(stickyBottomAxisOption, true)
+    stickyChart.resize()
+  }, [stickyBottomAxisOption, isFullscreen, headerHeight])
 
   useEffect(() => {
     if (!chart) return
@@ -1198,6 +1545,142 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       window.removeEventListener('resize', syncStickyAxis)
     }
   }, [chart, renderedOption, topAxisConfig])
+
+  useEffect(() => {
+    if (!chart || !renderedOption || !bottomAxisConfig) {
+      setStickyBottomAxis(null)
+      return
+    }
+
+    let rafId = 0
+
+    const syncStickyBottomAxis = () => {
+      rafId = window.requestAnimationFrame(() => {
+        const { x, width } = getGridRect(chart, renderedOption)
+
+        if (!Number.isFinite(x) || !Number.isFinite(width) || width <= 0) {
+          setStickyBottomAxis(null)
+          return
+        }
+
+        setStickyBottomAxis({
+          label: bottomAxisConfig.label,
+          axisStart: x,
+          axisEnd: x + width,
+        })
+      })
+    }
+
+    syncStickyBottomAxis()
+
+    chart.on('finished', syncStickyBottomAxis)
+    chart.on('restore', syncStickyBottomAxis)
+    chart.on('datazoom', syncStickyBottomAxis)
+    window.addEventListener('resize', syncStickyBottomAxis)
+
+    return () => {
+      window.cancelAnimationFrame(rafId)
+      chart.off('finished', syncStickyBottomAxis)
+      chart.off('restore', syncStickyBottomAxis)
+      chart.off('datazoom', syncStickyBottomAxis)
+      window.removeEventListener('resize', syncStickyBottomAxis)
+    }
+  }, [bottomAxisConfig, chart, renderedOption])
+
+  useEffect(() => {
+    const mainChart = chartInstanceRef.current
+    const stickyChart = stickyBottomAxisChartRef.current
+
+    if (!mainChart || !stickyChart || !stickyBottomAxisOption) {
+      return
+    }
+
+    let rafId = 0
+
+    const syncStickyBottomAxis = () => {
+      rafId = window.requestAnimationFrame(() => {
+        stickyChart.resize()
+
+        const zoomState = getHorizontalSliderZoomState(
+          mainChart.getOption() as EChartsOption
+        )
+
+        if (!zoomState) {
+          return
+        }
+
+        syncingMainToBottomZoomRef.current = true
+        stickyChart.dispatchAction({
+          type: 'dataZoom',
+          start: zoomState.start,
+          end: zoomState.end,
+        })
+      })
+    }
+
+    syncStickyBottomAxis()
+
+    mainChart.on('finished', syncStickyBottomAxis)
+    mainChart.on('restore', syncStickyBottomAxis)
+    mainChart.on('datazoom', syncStickyBottomAxis)
+    window.addEventListener('resize', syncStickyBottomAxis)
+
+    return () => {
+      window.cancelAnimationFrame(rafId)
+      mainChart.off('finished', syncStickyBottomAxis)
+      mainChart.off('restore', syncStickyBottomAxis)
+      mainChart.off('datazoom', syncStickyBottomAxis)
+      window.removeEventListener('resize', syncStickyBottomAxis)
+    }
+  }, [chart, stickyBottomAxisOption])
+
+  useEffect(() => {
+    const mainChart = chartInstanceRef.current
+    const stickyChart = stickyBottomAxisChartRef.current
+
+    if (!mainChart || !stickyChart || !stickyBottomAxisOption) {
+      return
+    }
+
+    const handleStickyBottomDataZoom = () => {
+      if (syncingMainToBottomZoomRef.current) {
+        syncingMainToBottomZoomRef.current = false
+        return
+      }
+
+      const zoomState = getHorizontalSliderZoomState(
+        stickyChart.getOption() as EChartsOption
+      )
+
+      if (!zoomState) {
+        return
+      }
+
+      syncingBottomToMainZoomRef.current = true
+      mainChart.dispatchAction({
+        type: 'dataZoom',
+        start: zoomState.start,
+        end: zoomState.end,
+      })
+      window.requestAnimationFrame(() => {
+        syncingBottomToMainZoomRef.current = false
+      })
+    }
+
+    const handleMainChartZoomLoop = () => {
+      if (syncingBottomToMainZoomRef.current) {
+        syncingBottomToMainZoomRef.current = false
+      }
+    }
+
+    stickyChart.on('datazoom', handleStickyBottomDataZoom)
+    mainChart.on('datazoom', handleMainChartZoomLoop)
+
+    return () => {
+      stickyChart.off('datazoom', handleStickyBottomDataZoom)
+      mainChart.off('datazoom', handleMainChartZoomLoop)
+    }
+  }, [chart, stickyBottomAxisOption])
 
   const handleToggleSeries = (seriesName: string) => {
     const inst = chartInstanceRef.current
@@ -1613,12 +2096,16 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                   pointerEvents: 'none',
                   px: `${CHART_CONTENT_PADDING}px`,
                   boxSizing: 'border-box',
-                  background:
-                    'linear-gradient(to bottom, rgba(255,255,255,1) 72%, rgba(255,255,255,0) 100%)',
+                  background: getStickyAxisBackground('top'),
                 }}
               >
                 <Box
-                  sx={{ position: 'relative', width: '100%', height: '100%' }}
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'visible',
+                  }}
                 >
                   {stickyTopAxis.label ? (
                     <Typography
@@ -1771,6 +2258,107 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 </div>
               )}
             </div>
+            {stickyBottomAxisOption && stickyBottomAxis ? (
+              <Box
+                sx={{
+                  position: 'sticky',
+                  bottom: `${STICKY_BOTTOM_PANEL_BOTTOM}px`,
+                  zIndex: 4,
+                  height: `${STICKY_BOTTOM_AXIS_HEIGHT}px`,
+                  marginTop: `-${STICKY_BOTTOM_AXIS_HEIGHT}px`,
+                  pointerEvents: 'none',
+                  px: `${CHART_CONTENT_PADDING}px`,
+                  boxSizing: 'border-box',
+                }}
+              >
+                <Box
+                  sx={{ position: 'relative', width: '100%', height: '100%' }}
+                >
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      background: getStickyAxisBackground('bottom'),
+                    }}
+                  />
+                  {stickyBottomAxis?.label ? (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        position: 'absolute',
+                        top: STICKY_BOTTOM_LABEL_TOP,
+                        left: `${Math.max(0, stickyBottomAxis.axisStart - 24)}px`,
+                        transform: 'translateX(-100%)',
+                        maxWidth: `${Math.max(
+                          0,
+                          stickyBottomAxis.axisStart - 26
+                        )}px`,
+                        ...STICKY_AXIS_LABEL_TEXT_STYLE,
+                        textAlign: 'right',
+                      }}
+                    >
+                      {stickyBottomAxis.label}
+                    </Typography>
+                  ) : null}
+                  {showStickyPhaseFooterLabels &&
+                  stickyPhaseFooterLabelPositions ? (
+                    <>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          position: 'absolute',
+                          top: STICKY_BOTTOM_LABEL_TOP,
+                          left: `${stickyPhaseFooterLabelPositions.primary}px`,
+                          transform: 'translateX(-50%)',
+                          ...STICKY_AXIS_LABEL_TEXT_STYLE,
+                          textAlign: 'center',
+                        }}
+                      >
+                        primary
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          position: 'absolute',
+                          top: STICKY_BOTTOM_LABEL_TOP,
+                          left: `${stickyPhaseFooterLabelPositions.opposing}px`,
+                          transform: 'translateX(-50%)',
+                          ...STICKY_AXIS_LABEL_TEXT_STYLE,
+                          textAlign: 'center',
+                        }}
+                      >
+                        opposing
+                      </Typography>
+                    </>
+                  ) : null}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      bottom: 0,
+                      left: `${stickyBottomAxis.axisStart - STICKY_BOTTOM_AXIS_LABEL_OVERFLOW}px`,
+                      width: `${Math.max(
+                        0,
+                        stickyBottomAxis.axisEnd - stickyBottomAxis.axisStart
+                      ) + STICKY_BOTTOM_AXIS_LABEL_OVERFLOW * 2}px`,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <Box
+                      ref={stickyBottomAxisRef}
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        pointerEvents: 'auto',
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            ) : null}
           </div>
           <div
             style={{

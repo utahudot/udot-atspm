@@ -1710,17 +1710,6 @@ export function generateCycleLabels(
       const { bodyHeight, cardHeight, cardTop, cardBottom, isIgnored } =
         getCardMetrics(api, rowIndex)
       const coordSys = params.coordSys as { x: number; width: number }
-      const footerLabelIndex = distanceData.reduce(
-        (currentLowestIndex, _, index) => {
-          const currentRowBottom = getCardMetrics(api, currentLowestIndex).cardBottom
-          const candidateRowBottom = getCardMetrics(api, index).cardBottom
-
-          return candidateRowBottom > currentRowBottom
-            ? index
-            : currentLowestIndex
-        },
-        0
-      )
       const primaryCardLeft = coordSys.x + coordSys.width + cardGapFromPlot
       const cardLeft =
         column === 'left'
@@ -1743,9 +1732,6 @@ export function generateCycleLabels(
       const detailLines = (linesByIndex?.[rowIndex] ?? []).filter(Boolean)
       const visibleDetailLines = isIgnored ? [] : detailLines
       const bodyTop = cardTop + headerHeight
-      const footerLabelText = column === 'left' ? 'primary' : 'opposing'
-      const showFooterLabel = rowIndex === footerLabelIndex
-      const footerLabelY = cardTop + cardHeight + 10
       const textX = cardLeft + bodyPaddingX
       const iconSize = 10
       const headerTextX = textX + (headerIconDataUrl ? iconSize + 3 : 0)
@@ -2065,24 +2051,6 @@ export function generateCycleLabels(
               ...pieChildren,
             ]
           }),
-          ...(showFooterLabel
-            ? [
-                {
-                  type: 'text' as const,
-                  z2: 20,
-                  style: {
-                    x: cardLeft + cardWidth / 2,
-                    y: footerLabelY,
-                    text: footerLabelText,
-                    textAlign: 'center',
-                    textVerticalAlign: 'top',
-                    fill: '#475569',
-                    fontSize: 10,
-                    fontWeight: 600,
-                  },
-                },
-              ]
-            : []),
         ],
       }
     },

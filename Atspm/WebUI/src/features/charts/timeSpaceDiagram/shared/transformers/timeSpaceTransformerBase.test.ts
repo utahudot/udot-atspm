@@ -334,34 +334,23 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     })
   })
 
-  it('renders a primary footer under the bottom left phase card', () => {
+  it('does not render a primary footer inside the phase card series', () => {
     const texts = renderCycleLabelTexts(false, {
       column: 'left',
       distanceData: [0, 100],
       rowIndex: 1,
     })
 
-    expect(texts).toContain('primary')
+    expect(texts).not.toContain('primary')
   })
 
-  it('renders an opposing footer under the bottom right phase card', () => {
+  it('does not render an opposing footer inside the phase card series', () => {
     const texts = renderCycleLabelTexts(false, {
       column: 'right',
       distanceData: [0, 100],
       rowIndex: 1,
     })
 
-    expect(texts).toContain('opposing')
-  })
-
-  it('does not render the footer under the upper phase card', () => {
-    const texts = renderCycleLabelTexts(false, {
-      column: 'left',
-      distanceData: [0, 100],
-      rowIndex: 0,
-    })
-
-    expect(texts).not.toContain('primary')
     expect(texts).not.toContain('opposing')
   })
 })
