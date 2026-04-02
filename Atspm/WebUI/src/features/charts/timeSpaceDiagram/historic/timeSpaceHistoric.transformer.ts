@@ -372,19 +372,25 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryPhaseData,
       primaryDistanceData,
       primaryDirection,
-      distanceScale
+      distanceScale,
+      'primary'
     )
   )
 
   series.push(
     ...buildCycleEventMarkersOnCyclesSeries(
       primaryPhaseData,
-      primaryDistanceData
+      primaryDistanceData,
+      'primary'
     )
   )
 
   series.push(
-    ...buildTspRequestAndServiceLineSeries(primaryPhaseData, primaryDistanceData)
+    ...buildTspRequestAndServiceLineSeries(
+      primaryPhaseData,
+      primaryDistanceData,
+      'primary'
+    )
   )
 
   const locationLabels = getLocationsLabelOption(
@@ -443,14 +449,16 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   series.push(
     ...buildCycleEventMarkersOnCyclesSeries(
       opposingPhaseData,
-      opposingDistanceData
+      opposingDistanceData,
+      'opposing'
     )
   )
 
   series.push(
     ...buildTspRequestAndServiceLineSeries(
       opposingPhaseData,
-      opposingDistanceData
+      opposingDistanceData,
+      'opposing'
     )
   )
 
@@ -1057,32 +1065,42 @@ function generateTMCEvent(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
   phaseType?: string,
-  distanceScale = 1
+  distanceScale = 1,
+  idScope = 'default'
 ) {
   const seriesOptions: SeriesOption[] = []
 
-  const leftTurnEvents: ((string | number)[] | null)[] = []
-  const rightTurnEvents: ((string | number)[] | null)[] = []
-
   data.forEach((location, i) => {
     if (!location.tmcForPhase) return
-    const leftTurns = location.tmcForPhase.leftTurnEvents.flatMap((lEvent) => {
+
+    const leftTurnEvents = location.tmcForPhase.leftTurnEvents.flatMap((lEvent) => {
       const initialX = lEvent.start
       const finalX = getArrivalTime(
         location.calculatedDistanceToNext,
         location.speed,
         initialX
       )
-      const values = [
+
+      return [
         [initialX, distanceData[i]],
         [finalX, distanceData[i] + location.calculatedDistanceToNext * distanceScale],
         null,
       ]
-      return values
     })
-    leftTurnEvents.push(...leftTurns)
 
-    const rightTurns = location.tmcForPhase.rightTurnEvents.flatMap(
+    if (leftTurnEvents.length) {
+      seriesOptions.push({
+        name: `Left Turn ${phaseType}`,
+        id: `Left Turn ${location.locationIdentifier} ${phaseType ?? ''} row-${i} ${idScope}`,
+        type: 'line',
+        data: leftTurnEvents,
+        symbol: 'none',
+        z: TIME_SPACE_MOVEMENT_SERIES_Z,
+        color: 'black',
+      })
+    }
+
+    const rightTurnEvents = location.tmcForPhase.rightTurnEvents.flatMap(
       (rEvent) => {
         const initialX = rEvent.start
         const finalX = getArrivalTime(
@@ -1090,7 +1108,8 @@ function generateTMCEvent(
           location.speed,
           initialX
         )
-        const values = [
+
+        return [
           [initialX, distanceData[i]],
           [
             finalX,
@@ -1098,30 +1117,21 @@ function generateTMCEvent(
           ],
           null,
         ]
-        return values
       }
     )
-    rightTurnEvents.push(...rightTurns)
-  })
 
-  seriesOptions.push(
-    {
-      name: `Left Turn ${phaseType}`,
-      type: 'line',
-      data: leftTurnEvents,
-      symbol: 'none',
-      z: TIME_SPACE_MOVEMENT_SERIES_Z,
-      color: 'black',
-    },
-    {
-      name: `Right Turn ${phaseType}`,
-      type: 'line',
-      data: rightTurnEvents,
-      symbol: 'none',
-      z: TIME_SPACE_MOVEMENT_SERIES_Z,
-      color: 'black',
+    if (rightTurnEvents.length) {
+      seriesOptions.push({
+        name: `Right Turn ${phaseType}`,
+        id: `Right Turn ${location.locationIdentifier} ${phaseType ?? ''} row-${i} ${idScope}`,
+        type: 'line',
+        data: rightTurnEvents,
+        symbol: 'none',
+        z: TIME_SPACE_MOVEMENT_SERIES_Z,
+        color: 'black',
+      })
     }
-  )
+  })
 
   return seriesOptions
 }
@@ -1172,11 +1182,10 @@ function generateSrmEntityLines(
 
 function buildCycleEventMarkersOnCyclesSeries(
   rows: RawTimeSpaceHistoricData[] = [],
-  distanceData: number[] = []
+  distanceData: number[] = [],
+  idScope = 'default'
 ): SeriesOption[] {
-  const earlyGreens: Array<[string, number]> = []
-  const extendGreens: Array<[string, number]> = []
-  const seen = new Set<string>()
+  const result: SeriesOption[] = []
 
   rows.forEach((row, i) => {
     const yValue = distanceData[i]
@@ -1188,6 +1197,9 @@ function buildCycleEventMarkersOnCyclesSeries(
 
     const tspEvents = (row.tspEvents ?? []) as IndianaEvent[]
     if (!tspEvents.length) return
+    const earlyGreens: Array<[string, number]> = []
+    const extendGreens: Array<[string, number]> = []
+    const seen = new Set<string>()
 
     tspEvents.forEach((e) => {
       if (
@@ -1200,12 +1212,14 @@ function buildCycleEventMarkersOnCyclesSeries(
       const tMs = Date.parse(e.timestamp as string)
       if (!Number.isFinite(tMs)) return
       if (tMs < rowStart || tMs > rowEnd) return
+      const timestamp = dateToTimestamp(e.timestamp as string)
+      if (!timestamp) return
 
       const key = `${e.eventCode}|${i}|${e.timestamp}`
       if (seen.has(key)) return
       seen.add(key)
 
-      const point: [string, number] = [e.timestamp, yValue - 100]
+      const point: [string, number] = [timestamp, yValue - 100]
 
       if (e.eventCode === TSP_CODES.EarlyGreen) {
         earlyGreens.push(point)
@@ -1213,37 +1227,49 @@ function buildCycleEventMarkersOnCyclesSeries(
         extendGreens.push(point)
       }
     })
+
+    const createSeries = (
+      name: string,
+      id: string,
+      symbol: string | undefined,
+      data: Array<[string, number]>
+    ): SeriesOption => ({
+      type: 'scatter',
+      name,
+      id,
+      symbol: symbol ?? 'circle',
+      symbolSize: 9,
+      itemStyle: { color: Color.Black },
+      z: 6,
+      tooltip: {
+        show: true,
+        formatter: (p: any) => `${p.seriesName} ${p?.value?.[0] ?? ''}`,
+      },
+      data,
+    })
+
+    if (earlyGreens.length) {
+      result.push(
+        createSeries(
+          'Early Green (113)',
+          `Early Green ${row.locationIdentifier} row-${i} ${idScope}`,
+          'circle',
+          earlyGreens
+        )
+      )
+    }
+
+    if (extendGreens.length) {
+      result.push(
+        createSeries(
+          'Extend Green (114)',
+          `Extend Green ${row.locationIdentifier} row-${i} ${idScope}`,
+          triangleSvgSymbol,
+          extendGreens
+        )
+      )
+    }
   })
-
-  const createSeries = (
-    name: string,
-    symbol: string,
-    data: Array<[string, number]>
-  ): SeriesOption => ({
-    type: 'scatter',
-    name,
-    symbol,
-    symbolSize: 9,
-    itemStyle: { color: Color.Black },
-    z: 6,
-    tooltip: {
-      show: true,
-      formatter: (p: any) => `${p.seriesName} ${p?.value?.[0] ?? ''}`,
-    },
-    data,
-  })
-
-  const result: SeriesOption[] = []
-
-  if (earlyGreens.length) {
-    result.push(createSeries('Early Green (113)', 'circle', earlyGreens))
-  }
-
-  if (extendGreens.length) {
-    result.push(
-      createSeries('Extend Green (114)', triangleSvgSymbol, extendGreens)
-    )
-  }
 
   return result
 }
@@ -1259,10 +1285,10 @@ const TSP_OVERLAY_Z = 7
 
 function buildTspRequestAndServiceLineSeries(
   rows: RawTimeSpaceHistoricData[] = [],
-  distanceData: number[] = []
+  distanceData: number[] = [],
+  idScope = 'default'
 ): SeriesOption[] {
-  const tspRequestData: ((string | number)[] | null)[] = []
-  const tspServiceData: ((string | number)[] | null)[] = []
+  const series: SeriesOption[] = []
 
   rows.forEach((row, i) => {
     const yValue = distanceData[i]
@@ -1275,8 +1301,8 @@ function buildTspRequestAndServiceLineSeries(
     const tspEvents = (row.tspEvents ?? []) as IndianaEvent[]
     if (!tspEvents.length) return
 
-    const relevantEvents: TspHistoricEvent[] = tspEvents
-      .map((event) => {
+    const relevantEvents = tspEvents
+      .reduce<TspHistoricEvent[]>((events, event) => {
         const code = event.eventCode
         const timestampRaw = event.timestamp
         const timestampMs = Date.parse(timestampRaw as string)
@@ -1286,7 +1312,7 @@ function buildTspRequestAndServiceLineSeries(
           !timestampRaw ||
           !Number.isFinite(timestampMs)
         ) {
-          return null
+          return events
         }
 
         if (
@@ -1295,17 +1321,19 @@ function buildTspRequestAndServiceLineSeries(
           code !== TSP_CODES.ServiceStart &&
           code !== TSP_CODES.ServiceEnd
         ) {
-          return null
+          return events
         }
 
-        if (timestampMs < rowStartMs || timestampMs > rowEndMs) return null
+        if (timestampMs < rowStartMs || timestampMs > rowEndMs) {
+          return events
+        }
 
         const timestamp = dateToTimestamp(timestampRaw)
-        if (!timestamp) return null
+        if (!timestamp) return events
 
-        return { code, timestamp, timestampMs }
-      })
-      .filter((event): event is TspHistoricEvent => event !== null)
+        events.push({ code, timestamp, timestampMs })
+        return events
+      }, [])
       .sort((a, b) => {
         const dt = a.timestampMs - b.timestampMs
         if (dt !== 0) return dt
@@ -1325,6 +1353,8 @@ function buildTspRequestAndServiceLineSeries(
 
     let requestStart: TspHistoricEvent | null = null
     let serviceStart: TspHistoricEvent | null = null
+    const tspRequestData: ((string | number)[] | null)[] = []
+    const tspServiceData: ((string | number)[] | null)[] = []
 
     relevantEvents.forEach((event) => {
       if (event.code === TSP_CODES.CheckIn) {
@@ -1360,41 +1390,41 @@ function buildTspRequestAndServiceLineSeries(
         serviceStart = null
       }
     })
+
+    if (tspRequestData.length) {
+      series.push({
+        name: 'TSP Request (112-115)',
+        id: `TSP Request ${row.locationIdentifier} row-${i} ${idScope}`,
+        type: 'line',
+        data: tspRequestData,
+        symbol: 'none',
+        lineStyle: {
+          width: CYCLE_BAND_HEIGHT,
+          color: Color.Red,
+          opacity: 0.95,
+        },
+        z: TSP_OVERLAY_Z,
+        tooltip: { show: false },
+      })
+    }
+
+    if (tspServiceData.length) {
+      series.push({
+        name: 'TSP Service (118-119)',
+        id: `TSP Service ${row.locationIdentifier} row-${i} ${idScope}`,
+        type: 'line',
+        data: tspServiceData,
+        symbol: 'none',
+        lineStyle: {
+          width: CYCLE_BAND_HEIGHT,
+          color: Color.LightBlue,
+          opacity: 0.95,
+        },
+        z: TSP_OVERLAY_Z,
+        tooltip: { show: false },
+      })
+    }
   })
-
-  const series: SeriesOption[] = []
-
-  if (tspRequestData.length) {
-    series.push({
-      name: 'TSP Request (112-115)',
-      type: 'line',
-      data: tspRequestData,
-      symbol: 'none',
-      lineStyle: {
-        width: CYCLE_BAND_HEIGHT,
-        color: Color.Red,
-        opacity: 0.95,
-      },
-      z: TSP_OVERLAY_Z,
-      tooltip: { show: false },
-    })
-  }
-
-  if (tspServiceData.length) {
-    series.push({
-      name: 'TSP Service (118-119)',
-      type: 'line',
-      data: tspServiceData,
-      symbol: 'none',
-      lineStyle: {
-        width: CYCLE_BAND_HEIGHT,
-        color: Color.LightBlue,
-        opacity: 0.95,
-      },
-      z: TSP_OVERLAY_Z,
-      tooltip: { show: false },
-    })
-  }
 
   return series
 }

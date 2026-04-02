@@ -7,14 +7,53 @@ const HIT_TOLERANCE = 10
 const STEP_MS = 1000
 
 type SeriesKind =
-  | 'base'
-  | 'cycle-duration'
-  | 'band'
-  | 'llc'
-  | 'ac'
-  | 'sbp'
+  | 'point'
+  | 'point-with-gaps'
+  | 'range'
   | 'offset'
   | 'location-axis'
+
+const SERIES_ID_PREFIXES = [
+  'Cycle Duration Labels',
+  'Green Bands',
+  'Left Turn',
+  'Right Turn',
+  'TSP Request',
+  'TSP Service',
+  'Early Green',
+  'Extend Green',
+  'Cycles',
+  'LLC',
+  'AC',
+  'SBP',
+  'SRM',
+  'PI',
+  'Offset',
+]
+
+const POINT_SERIES_PREFIXES = [
+  'Cycle Duration Labels',
+  'Green Bands',
+  'SBP',
+  'SRM',
+  'Early Green',
+  'Extend Green',
+]
+
+const POINT_WITH_GAPS_SERIES_PREFIXES = [
+  'LLC',
+  'AC',
+  'Left Turn',
+  'Right Turn',
+  'TSP Request',
+  'TSP Service',
+]
+
+const RANGE_SERIES_PREFIXES = ['PI']
+
+function hasSeriesPrefix(id: string, prefix: string) {
+  return id === prefix || id.startsWith(`${prefix} `)
+}
 
 function isSeriesOption(
   value: SeriesOption | null | undefined
@@ -28,12 +67,15 @@ function shiftTimeStr(t: string, offsetMs: number): string {
 }
 
 function stripCategory(id: string) {
-  return id
-    .replace(
-      /^(Cycles|Cycle Duration Labels|Green Bands|LLC|AC|SBP|Offset)\s+/,
-      ''
-    )
-    .trim()
+  const prefix = SERIES_ID_PREFIXES.find((candidate) =>
+    hasSeriesPrefix(id, candidate)
+  )
+
+  if (!prefix) {
+    return id.trim()
+  }
+
+  return id.slice(prefix.length).trim()
 }
 
 function getGroupKeyFromSeriesId(id: string) {
@@ -49,11 +91,9 @@ const getAllSeries = (chart: ECharts) => {
   if (!options?.series) {
     return {
       base: [],
-      cycleDurations: [],
-      bands: [],
-      llc: [],
-      ac: [],
-      sbp: [],
+      points: [],
+      pointWithGaps: [],
+      ranges: [],
       offset: [],
       locationAxis: [],
     }
@@ -61,25 +101,29 @@ const getAllSeries = (chart: ECharts) => {
 
   const rawSeries = Array.isArray(options.series) ? options.series : [options.series]
   const series = rawSeries.filter(isSeriesOption)
+  const withId = series.filter((s) => typeof s.id === 'string')
 
   return {
-    base: series.filter(
-      (s) => typeof s.id === 'string' && s.id.includes('Cycles')
+    base: withId.filter((s) => hasSeriesPrefix(String(s.id), 'Cycles')),
+    points: withId.filter((s) =>
+      POINT_SERIES_PREFIXES.some((prefix) =>
+        hasSeriesPrefix(String(s.id), prefix)
+      )
     ),
-    cycleDurations: series.filter(
-      (s) =>
-        typeof s.id === 'string' && s.id.includes('Cycle Duration Labels')
+    pointWithGaps: withId.filter((s) =>
+      POINT_WITH_GAPS_SERIES_PREFIXES.some((prefix) =>
+        hasSeriesPrefix(String(s.id), prefix)
+      )
     ),
-    bands: series.filter(
-      (s) => typeof s.id === 'string' && s.id.includes('Green Bands')
+    ranges: withId.filter((s) =>
+      RANGE_SERIES_PREFIXES.some((prefix) =>
+        hasSeriesPrefix(String(s.id), prefix)
+      )
     ),
-    llc: series.filter((s) => typeof s.id === 'string' && s.id.includes('LLC')),
-    ac: series.filter((s) => typeof s.id === 'string' && s.id.includes('AC')),
-    sbp: series.filter((s) => typeof s.id === 'string' && s.id.includes('SBP')),
-    offset: series.filter(
-      (s) => typeof s.id === 'string' && s.id.includes('Offset')
+    offset: withId.filter((s) => hasSeriesPrefix(String(s.id), 'Offset')),
+    locationAxis: withId.filter(
+      (s) => s.id === TIME_SPACE_LOCATION_AXIS_SERIES_ID
     ),
-    locationAxis: series.filter((s) => s.id === TIME_SPACE_LOCATION_AXIS_SERIES_ID),
   }
 }
 
@@ -109,20 +153,34 @@ const findClosestGroup = (
   return closest
 }
 
+function shiftTimeLike(value: unknown, offsetMs: number) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value + offsetMs
+  }
+
+  if (typeof value === 'string') {
+    return shiftTimeStr(value, offsetMs)
+  }
+
+  return value
+}
+
+function shiftPointDatum(datum: any[], offsetMs: number) {
+  return [shiftTimeLike(datum[0], offsetMs), ...datum.slice(1)]
+}
+
 function buildShiftedData(kind: SeriesKind, original: any[], offsetMs: number) {
   switch (kind) {
-    case 'base':
-      return original.map((d) => [shiftTimeStr(d[0], offsetMs), d[1], d[2]])
-    case 'cycle-duration':
-      return original.map((d) => [Number(d[0]) + offsetMs, d[1], d[2]])
-    case 'band':
-    case 'sbp':
-      return original.map((d) => [shiftTimeStr(d[0], offsetMs), d[1]])
-    case 'llc':
-    case 'ac':
-      return original.map((d) =>
-        d === null ? null : [shiftTimeStr(d[0], offsetMs), d[1]]
-      )
+    case 'point':
+      return original.map((d) => shiftPointDatum(d, offsetMs))
+    case 'point-with-gaps':
+      return original.map((d) => (d === null ? null : shiftPointDatum(d, offsetMs)))
+    case 'range':
+      return original.map((d) => [
+        shiftTimeLike(d[0], offsetMs),
+        shiftTimeLike(d[1], offsetMs),
+        ...d.slice(2),
+      ])
     case 'offset':
       return original.map((d) => [d[0], d[1], d[2], offsetMs / 1000])
     case 'location-axis':
@@ -178,7 +236,7 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
     }
 
     const captureOriginal = () => {
-      const { base, cycleDurations, bands, llc, ac, sbp, offset, locationAxis } =
+      const { base, points, pointWithGaps, ranges, offset, locationAxis } =
         getAllSeries(chart)
 
       const put = (arr: SeriesOption[], kind: SeriesKind) => {
@@ -195,12 +253,10 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
         }
       }
 
-      put(base, 'base')
-      put(cycleDurations, 'cycle-duration')
-      put(bands, 'band')
-      put(llc, 'llc')
-      put(ac, 'ac')
-      put(sbp, 'sbp')
+      put(base, 'point')
+      put(points, 'point')
+      put(pointWithGaps, 'point-with-gaps')
+      put(ranges, 'range')
       put(offset, 'offset')
       put(locationAxis, 'location-axis')
 

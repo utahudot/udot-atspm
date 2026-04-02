@@ -669,7 +669,9 @@ export function generateGreenEventLines(
           },
           style: {
             opacity: isPrimary ? 0.3 : 0.2,
-            fill: isPrimary ? '#7799a0 ' : '#324448',
+            fill: isPrimary ? '#4f9bac ' : '#202d30',
+                        // fill: isPrimary ? '#4fa5b6 ' : '#324448',
+
           },
         }
       },
