@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react'
 import type { ECharts, EChartsOption } from 'echarts'
+import { dateToTimestamp } from '@/utils/dateTime'
 import { TIME_SPACE_LOCATION_AXIS_SERIES_ID } from '../transformers/timeSpaceTransformerBase'
 import { useTimeSpaceHandler } from './timeSpace.handler'
-import { dateToTimestamp } from '@/utils/dateTime'
 
 type MouseHandler = (event: { offsetX: number; offsetY: number }) => void
 type ChartHandler = () => void
@@ -29,7 +29,9 @@ class MockChart {
       return
     }
 
-    const currentSeries = Array.isArray(this.option.series) ? this.option.series : []
+    const currentSeries = Array.isArray(this.option.series)
+      ? this.option.series
+      : []
     const updates = Array.isArray(nextOption.series) ? nextOption.series : []
 
     this.option = {
@@ -109,8 +111,8 @@ function buildOption(): EChartsOption {
       {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
         data: [
-          ['2026-03-20T00:00:00Z', 10, '1', null, null, 0],
-          ['2026-03-20T00:00:00Z', 20, '2', null, null, 0],
+          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 0],
+          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0],
         ],
       },
     ],
@@ -205,9 +207,24 @@ function buildOptionWithAssociatedSeries(): EChartsOption {
       {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
         data: [
-          ['2026-03-20T00:00:00Z', 10, '1', null, null, 0],
-          ['2026-03-20T00:00:00Z', 20, '2', null, null, 0],
+          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 0],
+          ['2026-03-20T00:00:00Z', 20, '2', null, 300, 0],
         ],
+      },
+    ],
+  }
+}
+
+function buildOptionWithMissingCycleLength(): EChartsOption {
+  return {
+    series: [
+      {
+        id: 'Cycles 1 Eastbound',
+        data: [['2026-03-20T00:00:00Z', 10, 0]],
+      },
+      {
+        id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+        data: [['2026-03-20T00:00:00Z', 10, '1', null, null, 0]],
       },
     ],
   }
@@ -253,7 +270,8 @@ describe('useTimeSpaceHandler', () => {
     const initialOption = buildOption()
     const chart = new MockChart(initialOption)
     const { rerender } = renderHook(
-      ({ syncVersion }) => useTimeSpaceHandler(chart as unknown as ECharts, syncVersion),
+      ({ syncVersion }) =>
+        useTimeSpaceHandler(chart as unknown as ECharts, syncVersion),
       {
         initialProps: {
           syncVersion: 0,
@@ -274,7 +292,8 @@ describe('useTimeSpaceHandler', () => {
   it('ignores null series entries after the chart option is rebuilt', () => {
     const chart = new MockChart(buildOption())
     const { rerender } = renderHook(
-      ({ syncVersion }) => useTimeSpaceHandler(chart as unknown as ECharts, syncVersion),
+      ({ syncVersion }) =>
+        useTimeSpaceHandler(chart as unknown as ECharts, syncVersion),
       {
         initialProps: {
           syncVersion: 0,
@@ -309,11 +328,13 @@ describe('useTimeSpaceHandler', () => {
         10,
       ],
     ])
-    expect(getSeriesData(chart, 'Left Turn 1 Eastbound row-0 primary')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), 10],
-      [shiftTimestamp('2026-03-20T00:00:03Z', offsetMs), 12],
-      null,
-    ])
+    expect(getSeriesData(chart, 'Left Turn 1 Eastbound row-0 primary')).toEqual(
+      [
+        [shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), 10],
+        [shiftTimestamp('2026-03-20T00:00:03Z', offsetMs), 12],
+        null,
+      ]
+    )
     expect(
       getSeriesData(chart, 'Right Turn 1 Eastbound row-0 primary')
     ).toEqual([
@@ -349,5 +370,44 @@ describe('useTimeSpaceHandler', () => {
       null,
     ])
     expect(getLocationAxisOffsets(chart)).toEqual([2, 0])
+  })
+
+  it('limits rightward drag to one second less than the cycle length', () => {
+    const chart = new MockChart(buildOption())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 160000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([149, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 149000), 10, 0],
+    ])
+  })
+
+  it('limits leftward drag to one second less than the cycle length', () => {
+    const chart = new MockChart(buildOption())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, -160000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([-149, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', -149000), 10, 0],
+    ])
+  })
+
+  it('falls back to a 179 second drag limit when cycle length is not found', () => {
+    const chart = new MockChart(buildOptionWithMissingCycleLength())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 200000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([179])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 179000), 10, 0],
+    ])
   })
 })

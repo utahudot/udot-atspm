@@ -105,7 +105,7 @@ export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {
   offset: number
-  cycleLength: number
+  cycleLength: number | null
   programmedSplit: number
   coordinatedPhases: boolean
   greenTimeEvents: TimeSpaceDetectorEvent[] | []
@@ -123,7 +123,7 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   tmcForPhase: TmcForPhaseDto
 
   order: number
-  cycleLength: number
+  cycleLength: number | null
   isPhaseOverLap: boolean
 
   tspNumberCheckins: number

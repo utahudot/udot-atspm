@@ -35,7 +35,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             public List<IndianaEvent> ControllerEventLogs { get; set; } = [];
             public PhaseDetail? PrimaryPhaseDetail { get; set; }
             public PhaseDetail? OpposingPhaseDetail { get; set; }
-            public int ProgrammedCycleLength { get; set; }
+            public int? ProgrammedCycleLength { get; set; }
             public TmcForPhaseDto PrimaryTmcEvents { get; set; } = new();
             public TmcForPhaseDto OpposingTmcEvents { get; set; } = new();
             public string? ErrorMessage { get; set; }
@@ -285,7 +285,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                                 parameter.End.AddHours(12))
                             .ToList();
 
-                    int currentProgrammedCycleLength = 0;
+                    int? currentProgrammedCycleLength = null;
 
                     if (controllerEventLogs.Any())
                     {
@@ -296,7 +296,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
                         currentProgrammedCycleLength =
                             GetEventOverlappingTime(parameter.Start, programmedCycleEvents, "CycleLength")
-                                .FirstOrDefault()?.EventParam ?? 0;
+                                .FirstOrDefault()?.EventParam;
 
                         if (!programmedSplitsForTimePeriod.Any())
                         {
@@ -361,7 +361,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             TimeSpaceDiagramOptions parameter,
             List<IndianaEvent> currentControllerEventLogs,
             PhaseDetail currentPhase,
-            int programmedCycleLength,
+            int? programmedCycleLength,
             TmcForPhaseDto tmcEventsForPhase,
             RouteLocation routeLocation,
             List<SrmEntityTrack> srmTracks,

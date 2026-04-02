@@ -951,6 +951,22 @@ export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
   minBodyHeight: 16,
 } as const
 
+function formatCycleLengthValue(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    return `${value}`
+  }
+
+  return 'unknown'
+}
+
+function formatCycleLengthSummaryValue(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    return `${value}s`
+  }
+
+  return 'unknown'
+}
+
 const TIME_SPACE_CARD_CONNECTOR_STROKE = '#CBD5E1'
 const TIME_SPACE_CARD_CONNECTOR_IGNORED_STROKE = '#D8E0E8'
 const TIME_SPACE_CARD_CONNECTOR_WIDTH = 2
@@ -1070,10 +1086,11 @@ export function getLocationsLabelOption(
       const offsetMetricX = cycleMetricX + metricWidth + metricGap
       const bodyDividerX = cycleMetricX + metricWidth + metricGap / 2
       const metricRowY = bodyTop + bodyHeight / 2
-      const metricInnerPadding = 7
+      const metricInnerPadding = 0
+      const cycleValueOffsetX = 0
       const metricLabelWidth = metricWidth * 0.48
-      const metricValueWidth = metricWidth * 0.42
-      const cycleText = `${cycleLengthValue ?? 'N/A'}`
+      const metricValueWidth = metricWidth * 0.7
+      const cycleText = formatCycleLengthValue(cycleLengthValue)
       const offsetText = formatSignedOffsetSeconds(offsetValue)
       const offsetValueFont =
         '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
@@ -1117,7 +1134,7 @@ export function getLocationsLabelOption(
               type: 'text' as const,
               z2: 20,
               style: {
-                x: cycleMetricX + metricWidth - metricInnerPadding,
+                x: cycleMetricX + metricWidth - metricInnerPadding - cycleValueOffsetX,
                 y: metricRowY,
                 text: cycleText,
                 width: metricValueWidth,
@@ -1335,8 +1352,8 @@ export function getOffsetAndProgramSplitLabel(
               textAlign: 'center',
               text:
                 'Cycle Length: ' +
-                api.value(2).toString() +
-                's\n' +
+                formatCycleLengthSummaryValue(api.value(2)) +
+                '\n' +
                 `Offset (${primaryDirection}: ${api.value(
                   3
                 )}s | ${opposingDirection}: ${api.value(5)}s)\n` +

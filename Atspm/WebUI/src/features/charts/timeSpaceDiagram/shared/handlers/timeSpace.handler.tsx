@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 
 const HIT_TOLERANCE = 10
 const STEP_MS = 1000
+const DEFAULT_CYCLE_DRAG_LIMIT_MS = (180 - 1) * STEP_MS
 
 type SeriesKind =
   | 'point'
@@ -78,11 +79,15 @@ function stripCategory(id: string) {
   return id.slice(prefix.length).trim()
 }
 
-function getGroupKeyFromSeriesId(id: string) {
-  const rest = stripCategory(id)
-  const m = rest.match(/\b\d+\b/)
+function getGroupKey(value: string) {
+  const trimmed = value.trim()
+  const m = trimmed.match(/\b\d+\b/)
   if (m) return m[0]
-  return rest.trim()
+  return trimmed
+}
+
+function getGroupKeyFromSeriesId(id: string) {
+  return getGroupKey(stripCategory(id))
 }
 
 const getAllSeries = (chart: ECharts) => {
@@ -200,7 +205,7 @@ function buildLocationAxisOffsetData(
     }
 
     const nextDatum = [...datum]
-    const locationId = String(nextDatum[2] ?? '')
+    const locationId = getGroupKey(String(nextDatum[2] ?? ''))
     const baseOffsetSeconds =
       typeof nextDatum[5] === 'number' && Number.isFinite(nextDatum[5])
         ? nextDatum[5]
@@ -212,12 +217,37 @@ function buildLocationAxisOffsetData(
   })
 }
 
+function getCycleDragLimitMs(cycleLengthValue: unknown) {
+  const cycleLengthSeconds =
+    typeof cycleLengthValue === 'number'
+      ? cycleLengthValue
+      : Number(cycleLengthValue)
+
+  if (!Number.isFinite(cycleLengthSeconds) || cycleLengthSeconds <= 0) {
+    return DEFAULT_CYCLE_DRAG_LIMIT_MS
+  }
+
+  return Math.max(0, (Math.ceil(cycleLengthSeconds) - 1) * STEP_MS)
+}
+
+function clampOffsetToCycleLength(
+  offsetMs: number,
+  cycleDragLimitMs: number | undefined
+) {
+  if (!Number.isFinite(cycleDragLimitMs)) {
+    return clampOffsetToCycleLength(offsetMs, DEFAULT_CYCLE_DRAG_LIMIT_MS)
+  }
+
+  return Math.max(-cycleDragLimitMs, Math.min(cycleDragLimitMs, offsetMs))
+}
+
 export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
   const draggingRef = useRef(false)
   const draggingGroupKeyRef = useRef<string | null>(null)
   const lastXRef = useRef<number | null>(null)
 
   const offsetsByGroupRef = useRef<Record<string, number>>({})
+  const cycleDragLimitByGroupRef = useRef<Record<string, number>>({})
   const originalDataByIdRef = useRef<Record<string, any[]>>({})
   const kindByIdRef = useRef<Record<string, SeriesKind>>({})
 
@@ -238,6 +268,7 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
     const captureOriginal = () => {
       const { base, points, pointWithGaps, ranges, offset, locationAxis } =
         getAllSeries(chart)
+      cycleDragLimitByGroupRef.current = {}
 
       const put = (arr: SeriesOption[], kind: SeriesKind) => {
         for (const s of arr) {
@@ -259,6 +290,22 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
       put(ranges, 'range')
       put(offset, 'offset')
       put(locationAxis, 'location-axis')
+
+      for (const series of locationAxis) {
+        const data = Array.isArray(series.data) ? series.data : []
+
+        for (const datum of data) {
+          if (!Array.isArray(datum)) continue
+
+          const groupKey = getGroupKey(String(datum[2] ?? ''))
+          if (!groupKey) continue
+
+          const cycleDragLimitMs = getCycleDragLimitMs(datum[4])
+          if (cycleDragLimitMs == null) continue
+
+          cycleDragLimitByGroupRef.current[groupKey] = cycleDragLimitMs
+        }
+      }
 
       return { base }
     }
@@ -349,15 +396,24 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
       if (xData == null) return
 
       const dx = Number(xData) - lastXRef.current
-      lastXRef.current = Number(xData)
-
       const snappedDx = Math.round(dx / STEP_MS) * STEP_MS
 
       const key = draggingGroupKeyRef.current
-      offsetsByGroupRef.current[key] =
-        (offsetsByGroupRef.current[key] ?? 0) + snappedDx
-      offsetsByGroupRef.current[key] =
-        Math.round(offsetsByGroupRef.current[key] / STEP_MS) * STEP_MS
+      const previousOffsetMs = offsetsByGroupRef.current[key] ?? 0
+      const nextOffsetMs = Math.round(
+        clampOffsetToCycleLength(
+          previousOffsetMs + snappedDx,
+          cycleDragLimitByGroupRef.current[key]
+        ) / STEP_MS
+      ) * STEP_MS
+
+      if (nextOffsetMs !== previousOffsetMs + snappedDx) {
+        lastXRef.current = Number(xData) - (previousOffsetMs + snappedDx - nextOffsetMs)
+      } else {
+        lastXRef.current = Number(xData)
+      }
+
+      offsetsByGroupRef.current[key] = nextOffsetMs
 
       updateGroupFromOriginal(key, offsetsByGroupRef.current[key])
     }

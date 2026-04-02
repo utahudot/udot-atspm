@@ -271,6 +271,17 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     expect(hiddenTexts.join(' ')).not.toContain('NaN')
   })
 
+  it('renders unknown when the cycle length is missing', () => {
+    const texts = renderLocationCardTexts(
+      buildLocation({
+        cycleLength: null,
+      })
+    )
+
+    expect(texts).toContain('Cycle')
+    expect(texts).toContain('unknown')
+  })
+
   it('omits phase-card detail lines for ignored locations', () => {
     const visibleTexts = renderCycleLabelTexts(false)
     const hiddenTexts = renderCycleLabelTexts(true)
@@ -292,10 +303,14 @@ describe('timeSpaceTransformerBase offset formatting', () => {
 
     expect(cycleMetricStyle).toMatchObject({
       fill: '#64748B',
+      fontSize: 11,
+      fontWeight: 500,
+    })
+    expect(aogStyle).toMatchObject({
+      fill: '#64748B',
       fontSize: 10,
       fontWeight: 500,
     })
-    expect(aogStyle).toEqual(cycleMetricStyle)
   })
 
   it('styles phase-card identifier/name headers like location-card titles', () => {
