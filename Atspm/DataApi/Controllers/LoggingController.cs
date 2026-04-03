@@ -95,8 +95,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                         {
                             var eventLogRepository = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                            var eventsPreWorkflow = eventLogRepository
-                                .GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id)
+                            List<CompressedEventLogBase> eventsPreWorkflowInitial = await eventLogRepository
+                                .GetData(device.Location.LocationIdentifier, start, end, device.Id).ToListAsync();
+                            var eventsPreWorkflow = eventsPreWorkflowInitial
                                 .SelectMany(s => s.Data)
                                 .ToList();
 
@@ -108,8 +109,10 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                             workflow.Input.Complete();
                             await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
-                            var eventsPostWorkflow = eventLogRepository
-                                .GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id)
+                            List<CompressedEventLogBase> eventsPostWorkflowInitial = await eventLogRepository
+                                .GetData(device.Location.LocationIdentifier, start, end, device.Id).ToListAsync();
+
+                            var eventsPostWorkflow = eventsPostWorkflowInitial
                                 .SelectMany(s => s.Data)
                                 .ToList();
 
