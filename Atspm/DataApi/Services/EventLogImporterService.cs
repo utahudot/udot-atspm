@@ -43,16 +43,28 @@ namespace Utah.Udot.ATSPM.DataApi.Services
         public List<CompressedEventLogs<IndianaEvent>> CompressEvents(string locationIdentifier, List<IndianaEvent> events)
         {
             var location = _locationRepository.GetLatestVersionOfLocation(locationIdentifier);
+            if (location == null)
+            {
+                throw new Exception($"No location found for LocationIdentifier: {locationIdentifier}");
+            }
             var results = new List<CompressedEventLogs<IndianaEvent>>();
 
             if (!events.Any())
                 return results;
 
+            //This is a quick fix.... we will need a better solution later since we want to specify device upload
             var device = _deviceRepository.GetActiveDevicesByLocation(location.Id)
                 .FirstOrDefault(d => d.DeviceType == DeviceTypes.SignalController);
 
             if (device == null)
-                return results;
+            {
+                //This is a quick fix.... we will need a better solution later since we want to specify device upload
+                device = _deviceRepository.GetActiveDevicesByLocation(location.Id)
+                    .FirstOrDefault(d => d.DeviceType == DeviceTypes.RampController);
+
+                if (device == null)
+                    throw new Exception($"No device found for LocationIdentifier: {locationIdentifier}");
+            }
 
             // Sort the events by timestamp
             var orderedEvents = events.OrderBy(e => e.Timestamp).ToList();
