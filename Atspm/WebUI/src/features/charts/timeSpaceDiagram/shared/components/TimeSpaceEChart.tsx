@@ -28,8 +28,8 @@ import type {
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
+  init,
 } from 'echarts'
-import { init } from 'echarts'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
@@ -1361,10 +1361,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   )
 
   useEffect(() => {
-    if (gpxEntries) animator.play()
-  }, [animator, gpxEntries])
-
-  useEffect(() => {
     const dom = chartRef.current
     if (!dom) return
 
@@ -1432,6 +1428,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     })
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }, [chart, renderedOption])
+
+  useEffect(() => {
+    animator.play()
+  }, [animator.play, renderedOption])
 
   useEffect(() => {
     const stickyChart = stickyBottomAxisChartRef.current
