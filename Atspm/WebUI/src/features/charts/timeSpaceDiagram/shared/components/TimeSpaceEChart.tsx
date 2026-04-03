@@ -28,8 +28,8 @@ import type {
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
-  init,
 } from 'echarts'
+import { init } from 'echarts'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
