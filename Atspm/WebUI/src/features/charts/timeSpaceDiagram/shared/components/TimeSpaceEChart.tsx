@@ -35,6 +35,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
 import { GpxUploadOptions } from '../types'
 import TimeSpaceSidebar, {
+  getSidebarDirectionControls,
+  SidebarDirectionRole,
   SidebarTab,
   TIME_SPACE_GUIDE_WIDTH,
   TimeSpaceSidebarTabs,
@@ -422,7 +424,8 @@ const STICKY_BOTTOM_SLIDER_HEIGHT = 25
 const STICKY_BOTTOM_SLIDER_BOTTOM =
   STICKY_BOTTOM_AXIS_BOTTOM -
   STICKY_BOTTOM_SLIDER_HEIGHT -
-  STICKY_AXIS_BACKGROUND_TRANSITION_HEIGHT - 10
+  STICKY_AXIS_BACKGROUND_TRANSITION_HEIGHT -
+  10
 const STICKY_BOTTOM_AXIS_LABEL_OVERFLOW = 28
 const STICKY_BOTTOM_SLIDER_SIDE_INSET = 2
 const STICKY_BOTTOM_PANEL_BOTTOM = 0
@@ -431,8 +434,7 @@ const STICKY_BOTTOM_BACKGROUND_FADE_START = Math.max(
   STICKY_BOTTOM_AXIS_TOP - STICKY_AXIS_BACKGROUND_TRANSITION_HEIGHT
 )
 const STICKY_BOTTOM_BACKGROUND_FADE_END = STICKY_BOTTOM_AXIS_TOP
-const STICKY_BOTTOM_LABEL_TOP =
-  STICKY_BOTTOM_AXIS_TOP + 7
+const STICKY_BOTTOM_LABEL_TOP = STICKY_BOTTOM_AXIS_TOP + 7
 const LOCATION_TOGGLE_ICON_SIZE = 18
 const HEADER_TOOLBAR_ICON_SIZE = 18
 const HEADER_TOOLBAR_ICON_STROKE_WIDTH = 1.7
@@ -481,9 +483,40 @@ function getDirectionalSuffix(name: string, prefix: string): string | null {
   return suffix.length ? suffix : null
 }
 
-function syncCycleDurationSelections(
+export function getRequestedLegendVisibility(
+  seriesName: string,
+  requestedSelections: Record<string, boolean>,
+  suppressedDirections: Partial<Record<SidebarDirectionRole, boolean>>,
+  directionRoleBySeriesName: Map<string, SidebarDirectionRole>
+) {
+  const directionRole = directionRoleBySeriesName.get(seriesName)
+  const isSuppressed =
+    directionRole != null && suppressedDirections[directionRole] === true
+  let shouldBeVisible =
+    requestedSelections[seriesName] !== false && !isSuppressed
+
+  const direction = getDirectionalSuffix(seriesName, CYCLE_DURATION_PREFIX)
+  if (direction) {
+    const cycleName = `${CYCLE_PREFIX}${direction}`
+    const cycleDirectionRole = directionRoleBySeriesName.get(cycleName)
+    const isCycleSuppressed =
+      cycleDirectionRole != null &&
+      suppressedDirections[cycleDirectionRole] === true
+
+    shouldBeVisible =
+      shouldBeVisible &&
+      requestedSelections[cycleName] !== false &&
+      !isCycleSuppressed
+  }
+
+  return shouldBeVisible
+}
+
+function syncRequestedLegendSelections(
   chart: ECharts,
-  requestedSelections: Record<string, boolean>
+  requestedSelections: Record<string, boolean>,
+  suppressedDirections: Partial<Record<SidebarDirectionRole, boolean>>,
+  directionRoleBySeriesName: Map<string, SidebarDirectionRole>
 ) {
   const option = chart.getOption() as EChartsOption
   const legend = getPrimaryLegend(option)
@@ -497,14 +530,13 @@ function syncCycleDurationSelections(
   for (const entry of legend.data) {
     const name = getLegendEntryName(entry)
     if (!name) continue
+    const shouldBeVisible = getRequestedLegendVisibility(
+      name,
+      requestedSelections,
+      suppressedDirections,
+      directionRoleBySeriesName
+    )
 
-    const direction = getDirectionalSuffix(name, CYCLE_DURATION_PREFIX)
-    if (!direction) continue
-
-    const cycleName = `${CYCLE_PREFIX}${direction}`
-    const shouldBeVisible =
-      requestedSelections[name] !== false &&
-      requestedSelections[cycleName] !== false
     const isVisible = currentSelections[name] !== false
 
     if (shouldBeVisible === isVisible) {
@@ -788,7 +820,9 @@ function stripTopAxisVisuals(option?: EChartsOption): EChartsOption['xAxis'] {
     : stripAxisName(option.xAxis)
 }
 
-function extractBottomAxisConfig(option?: EChartsOption): BottomAxisConfig | null {
+function extractBottomAxisConfig(
+  option?: EChartsOption
+): BottomAxisConfig | null {
   if (!option?.xAxis) return null
 
   const xAxes = Array.isArray(option.xAxis) ? option.xAxis : [option.xAxis]
@@ -813,7 +847,10 @@ function extractBottomAxisConfig(option?: EChartsOption): BottomAxisConfig | nul
     if (!zoom || typeof zoom !== 'object') return false
 
     const candidate = zoom as DataZoomComponentOption
-    return candidate.type === 'slider' && (candidate.orient ?? 'horizontal') === 'horizontal'
+    return (
+      candidate.type === 'slider' &&
+      (candidate.orient ?? 'horizontal') === 'horizontal'
+    )
   }) as DataZoomComponentOption | undefined
 
   return {
@@ -823,7 +860,9 @@ function extractBottomAxisConfig(option?: EChartsOption): BottomAxisConfig | nul
   }
 }
 
-function stripBottomAxisVisuals(option?: EChartsOption): EChartsOption['xAxis'] {
+function stripBottomAxisVisuals(
+  option?: EChartsOption
+): EChartsOption['xAxis'] {
   if (!option?.xAxis) return option?.xAxis
 
   let hasStrippedBottomAxis = false
@@ -901,7 +940,10 @@ function getHorizontalSliderZoomState(option?: EChartsOption) {
     if (!zoom || typeof zoom !== 'object') return false
 
     const candidate = zoom as DataZoomComponentOption
-    return candidate.type === 'slider' && (candidate.orient ?? 'horizontal') === 'horizontal'
+    return (
+      candidate.type === 'slider' &&
+      (candidate.orient ?? 'horizontal') === 'horizontal'
+    )
   }) as DataZoomComponentOption | undefined
 
   if (
@@ -1217,6 +1259,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
     () => getLegendSelectedMap(option)
   )
+  const [suppressedDirections, setSuppressedDirections] = useState<
+    Partial<Record<SidebarDirectionRole, boolean>>
+  >({})
   const { titleText, rangeText, remainingTitles } = useMemo(
     () => extractHeaderContent(option),
     [option]
@@ -1239,6 +1284,21 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     () => extractBottomAxisConfig(sidebarAdjustedOption),
     [sidebarAdjustedOption]
   )
+  const directionControls = useMemo(
+    () => getSidebarDirectionControls(optionWithoutHeaderTitle),
+    [optionWithoutHeaderTitle]
+  )
+  const directionRoleBySeriesName = useMemo(() => {
+    const nextMap = new Map<string, SidebarDirectionRole>()
+
+    directionControls.forEach((control) => {
+      control.seriesNames.forEach((seriesName) => {
+        nextMap.set(seriesName, control.role)
+      })
+    })
+
+    return nextMap
+  }, [directionControls])
   const stickyBottomAxisOption = useMemo(
     () => buildStickyBottomAxisOption(bottomAxisConfig),
     [bottomAxisConfig]
@@ -1269,8 +1329,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     return {
       primary: primaryCardLeft + cardWidth / 2,
-      opposing:
-        primaryCardLeft + cardWidth + cardGapBetween + cardWidth / 2,
+      opposing: primaryCardLeft + cardWidth + cardGapBetween + cardWidth / 2,
     }
   }, [stickyBottomAxis])
   const renderedOption = useMemo(
@@ -1362,6 +1421,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
   useEffect(() => {
     setSelectedSeries(getLegendSelectedMap(option))
+    setSuppressedDirections({})
   }, [option])
 
   useEffect(() => {
@@ -1391,6 +1451,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     const handleRestore = () => {
       setSelectedSeries(getLegendSelectedMap(option))
+      setSuppressedDirections({})
     }
 
     chart.on('restore', handleRestore)
@@ -1402,8 +1463,19 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
   useEffect(() => {
     if (!chart) return
-    syncCycleDurationSelections(chart, selectedSeries)
-  }, [chart, renderedOption, selectedSeries])
+    syncRequestedLegendSelections(
+      chart,
+      selectedSeries,
+      suppressedDirections,
+      directionRoleBySeriesName
+    )
+  }, [
+    chart,
+    directionRoleBySeriesName,
+    renderedOption,
+    selectedSeries,
+    suppressedDirections,
+  ])
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -1682,20 +1754,26 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     }
   }, [chart, stickyBottomAxisOption])
 
-  const handleToggleSeries = (seriesName: string) => {
-    const inst = chartInstanceRef.current
-    if (!inst) return
+  const handleSetSeriesVisibility = (
+    seriesNames: string[],
+    visible: boolean
+  ) => {
+    const uniqueSeriesNames = Array.from(new Set(seriesNames))
+    setSelectedSeries((current) => {
+      const nextSelections = { ...current }
 
-    const isSelected = selectedSeries[seriesName] !== false
+      for (const seriesName of uniqueSeriesNames) {
+        nextSelections[seriesName] = visible
+      }
 
-    inst.dispatchAction({
-      type: isSelected ? 'legendUnSelect' : 'legendSelect',
-      name: seriesName,
+      return nextSelections
     })
+  }
 
-    setSelectedSeries((current) => ({
+  const handleToggleDirectionVisibility = (role: SidebarDirectionRole) => {
+    setSuppressedDirections((current) => ({
       ...current,
-      [seriesName]: !isSelected,
+      [role]: current[role] !== true ? true : false,
     }))
   }
 
@@ -1752,6 +1830,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       lazyUpdate: false,
     })
     setSelectedSeries(getLegendSelectedMap(option))
+    setSuppressedDirections({})
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }
 
@@ -2340,10 +2419,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                       top: 0,
                       bottom: 0,
                       left: `${stickyBottomAxis.axisStart - STICKY_BOTTOM_AXIS_LABEL_OVERFLOW}px`,
-                      width: `${Math.max(
-                        0,
-                        stickyBottomAxis.axisEnd - stickyBottomAxis.axisStart
-                      ) + STICKY_BOTTOM_AXIS_LABEL_OVERFLOW * 2}px`,
+                      width: `${
+                        Math.max(
+                          0,
+                          stickyBottomAxis.axisEnd - stickyBottomAxis.axisStart
+                        ) +
+                        STICKY_BOTTOM_AXIS_LABEL_OVERFLOW * 2
+                      }px`,
                       pointerEvents: 'none',
                     }}
                   >
@@ -2380,7 +2462,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
               <TimeSpaceSidebar
                 option={optionWithoutHeaderTitle}
                 selectedSeries={selectedSeries}
-                onToggleSeries={handleToggleSeries}
+                suppressedDirections={suppressedDirections}
+                onSetSeriesVisibility={handleSetSeriesVisibility}
+                onToggleDirectionVisibility={handleToggleDirectionVisibility}
                 uploadContent={sidebarUploadContent}
                 activeTab={sidebarTab}
                 onTabChange={setSidebarTab}
