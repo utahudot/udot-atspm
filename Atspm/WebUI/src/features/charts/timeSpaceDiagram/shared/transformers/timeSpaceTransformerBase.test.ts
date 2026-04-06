@@ -266,6 +266,7 @@ describe('timeSpaceTransformerBase offset formatting', () => {
 
     expect(visibleTexts).toContain('Cycle')
     expect(visibleTexts).toContain('Offset')
+    expect(visibleTexts).toContain('100s')
     expect(hiddenTexts).not.toContain('Cycle')
     expect(hiddenTexts).not.toContain('Offset')
     expect(hiddenTexts.join(' ')).not.toContain('NaN')

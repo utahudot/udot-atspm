@@ -1,8 +1,28 @@
 import { renderHook, act } from '@testing-library/react'
 import type { ECharts, EChartsOption } from 'echarts'
 import { dateToTimestamp } from '@/utils/dateTime'
-import { TIME_SPACE_LOCATION_AXIS_SERIES_ID } from '../transformers/timeSpaceTransformerBase'
+import {
+  formatSignedOffsetSeconds,
+  getTimeSpaceLocationOffsetBadgeLayout,
+  TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+} from '../transformers/timeSpaceTransformerBase'
 import { useTimeSpaceHandler } from './timeSpace.handler'
+
+const originalCanvasGetContext = HTMLCanvasElement.prototype.getContext
+
+beforeAll(() => {
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    configurable: true,
+    value: jest.fn(() => null),
+  })
+})
+
+afterAll(() => {
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    configurable: true,
+    value: originalCanvasGetContext,
+  })
+})
 
 type MouseHandler = (event: { offsetX: number; offsetY: number }) => void
 type ChartHandler = () => void
@@ -99,6 +119,9 @@ function cloneOption(option: EChartsOption): EChartsOption {
 
 function buildOption(): EChartsOption {
   return {
+    grid: {
+      left: 220,
+    },
     series: [
       {
         id: 'Cycles 1 Eastbound',
@@ -112,6 +135,31 @@ function buildOption(): EChartsOption {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
         data: [
           ['2026-03-20T00:00:00Z', 10, '1', null, 150, 0],
+          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0],
+        ],
+      },
+    ],
+  }
+}
+
+function buildOptionWithBaseOffset(): EChartsOption {
+  return {
+    grid: {
+      left: 220,
+    },
+    series: [
+      {
+        id: 'Cycles 1 Eastbound',
+        data: [['2026-03-20T00:00:00Z', 10, 0]],
+      },
+      {
+        id: 'Cycles 2 Eastbound',
+        data: [['2026-03-20T00:00:00Z', 20, 0]],
+      },
+      {
+        id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+        data: [
+          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 7],
           ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0],
         ],
       },
@@ -241,6 +289,40 @@ function dragGroup(chart: MockChart, groupY: number, offsetMs: number) {
 
   act(() => {
     chart.zrHandlers.mouseup?.[0]({ offsetX: offsetMs, offsetY: groupY })
+  })
+}
+
+function doubleClickOffsetBox(chart: MockChart, locationId: string) {
+  const series = Array.isArray(chart.option.series) ? chart.option.series : []
+  const locationAxis = series.find(
+    (entry) => entry?.id === TIME_SPACE_LOCATION_AXIS_SERIES_ID
+  )
+  const data = Array.isArray(locationAxis?.data) ? locationAxis.data : []
+  const datum = data.find(
+    (entry) => Array.isArray(entry) && String(entry[2] ?? '') === locationId
+  )
+
+  if (!Array.isArray(datum)) {
+    throw new Error(`Could not find location axis datum for ${locationId}`)
+  }
+
+  const grid = Array.isArray(chart.option.grid)
+    ? chart.option.grid[0]
+    : chart.option.grid
+  const gridLeft =
+    typeof grid?.left === 'number' ? grid.left : Number(grid?.left ?? 0)
+  const badgeLayout = getTimeSpaceLocationOffsetBadgeLayout(
+    gridLeft,
+    Number(datum[1]),
+    formatSignedOffsetSeconds(Number(datum[5] ?? 0)),
+    false
+  )
+
+  act(() => {
+    chart.zrHandlers.dblclick?.[0]({
+      offsetX: badgeLayout.highlightX + badgeLayout.highlightWidth / 2,
+      offsetY: badgeLayout.highlightY + badgeLayout.highlightHeight / 2,
+    })
   })
 }
 
@@ -408,6 +490,37 @@ describe('useTimeSpaceHandler', () => {
     expect(getLocationAxisOffsets(chart)).toEqual([179])
     expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
       [shiftTimestamp('2026-03-20T00:00:00Z', 179000), 10, 0],
+    ])
+  })
+
+  it('resets a dragged offset to zero when the offset badge is double clicked', () => {
+    const chart = new MockChart(buildOption())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 5000)
+    expect(getLocationAxisOffsets(chart)).toEqual([5, 0])
+
+    doubleClickOffsetBox(chart, '1')
+
+    expect(getLocationAxisOffsets(chart)).toEqual([0, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 0), 10, 0],
+    ])
+  })
+
+  it('resets a non-zero base offset back to zero on double click', () => {
+    const chart = new MockChart(buildOptionWithBaseOffset())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    expect(getLocationAxisOffsets(chart)).toEqual([7, 0])
+
+    doubleClickOffsetBox(chart, '1')
+
+    expect(getLocationAxisOffsets(chart)).toEqual([0, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', -7000), 10, 0],
     ])
   })
 })
