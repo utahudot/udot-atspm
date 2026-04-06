@@ -11,10 +11,6 @@ import {
   Box,
   Divider,
   IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
   SvgIcon,
   Tooltip,
   Typography,
@@ -60,11 +56,6 @@ type LocationAxisDatum = {
   location: string
   offset: number
   time: string | number
-}
-
-type ContextMenuPosition = {
-  mouseX: number
-  mouseY: number
 }
 
 function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
@@ -1255,8 +1246,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [stickyTopAxis, setStickyTopAxis] = useState<StickyTopAxis | null>(null)
   const [stickyBottomAxis, setStickyBottomAxis] =
     useState<StickyBottomAxis | null>(null)
-  const [contextMenuPosition, setContextMenuPosition] =
-    useState<ContextMenuPosition | null>(null)
   const [timeSpaceHandlerSyncVersion, setTimeSpaceHandlerSyncVersion] =
     useState(0)
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
@@ -1792,39 +1781,15 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     await container.requestFullscreen()
   }
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    setContextMenuPosition({
-      mouseX: event.clientX,
-      mouseY: event.clientY,
-    })
-  }
-
-  const handleCloseContextMenu = () => {
-    setContextMenuPosition(null)
-  }
-
-  const handleCloseMenus = () => {
-    handleCloseContextMenu()
-  }
-
   const handleToggleGuide = () => {
     setIsGuideCollapsed((current) => !current)
-    handleCloseMenus()
   }
 
   const handleTogglePhaseInfo = () => {
     setShowPhaseInfo((current) => !current)
-    handleCloseMenus()
-  }
-
-  const handleToggleFullscreenFromMenu = async () => {
-    handleCloseMenus()
-    await handleToggleFullscreen()
   }
 
   const handleResetChart = () => {
-    handleCloseMenus()
     const chartInstance = chartInstanceRef.current
     if (!chartInstance) return
 
@@ -1851,61 +1816,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     link.href = dataUrl
     link.download = `${getChartDownloadName(option)}.png`
     link.click()
-    handleCloseMenus()
   }
 
-  const chartMenuItems = (
-    <>
-      <MenuItem dense onClick={handleToggleGuide}>
-        <ListItemIcon sx={{ minWidth: 28 }}>
-          <PanelSidebarIcon side="right" />
-        </ListItemIcon>
-        <ListItemText
-          primaryTypographyProps={{ variant: 'body2' }}
-          primary={
-            isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
-          }
-        />
-      </MenuItem>
-      <MenuItem dense onClick={handleTogglePhaseInfo}>
-        <ListItemIcon sx={{ minWidth: 28 }}>
-          <PhaseInfoActionIcon />
-        </ListItemIcon>
-        <ListItemText
-          primaryTypographyProps={{ variant: 'body2' }}
-          primary={showPhaseInfo ? 'Hide phase info' : 'Show phase info'}
-        />
-      </MenuItem>
-      <MenuItem dense onClick={handleToggleFullscreenFromMenu}>
-        <ListItemIcon sx={{ minWidth: 28 }}>
-          <FullscreenActionIcon expanded={isFullscreen} />
-        </ListItemIcon>
-        <ListItemText
-          primaryTypographyProps={{ variant: 'body2' }}
-          primary={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-        />
-      </MenuItem>
-      <Divider />
-      <MenuItem dense onClick={handleDownloadChart}>
-        <ListItemIcon sx={{ minWidth: 28 }}>
-          <ToolbarActionIcon />
-        </ListItemIcon>
-        <ListItemText
-          primaryTypographyProps={{ variant: 'body2' }}
-          primary="Download chart"
-        />
-      </MenuItem>
-      <MenuItem dense onClick={handleResetChart}>
-        <ListItemIcon sx={{ minWidth: 28 }}>
-          <ResetActionIcon />
-        </ListItemIcon>
-        <ListItemText
-          primaryTypographyProps={{ variant: 'body2' }}
-          primary="Reset to default"
-        />
-      </MenuItem>
-    </>
-  )
   const toolbarButtons = (
     <>
       <Tooltip
@@ -1950,7 +1862,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       >
         <IconButton
           size="small"
-          onClick={handleToggleFullscreenFromMenu}
+          onClick={handleToggleFullscreen}
           sx={{
             color: isFullscreen ? '#334155' : '#64748B',
             p: 0.45,
@@ -2007,7 +1919,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   return (
     <div
       ref={fullscreenRef}
-      onContextMenu={handleContextMenu}
       style={{
         width: '100%',
         height: isFullscreen ? '100vh' : '100%',
@@ -2476,28 +2387,6 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
             )}
           </div>
         </div>
-
-        <Menu
-          open={contextMenuPosition !== null}
-          onClose={handleCloseMenus}
-          container={fullscreenRef.current}
-          disablePortal={isFullscreen}
-          disableScrollLock
-          anchorReference="anchorPosition"
-          MenuListProps={{ dense: true, sx: { py: 0.5 } }}
-          anchorPosition={
-            contextMenuPosition
-              ? {
-                  top: contextMenuPosition.mouseY,
-                  left: contextMenuPosition.mouseX,
-                }
-              : undefined
-          }
-          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-        >
-          {chartMenuItems}
-        </Menu>
       </div>
     </div>
   )
