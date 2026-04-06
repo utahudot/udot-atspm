@@ -1,11 +1,12 @@
-import TimeSpaceEChart from '@/features/charts/timeSpaceDiagram/shared/components/TimeSpaceEChart'
-import { useTimeSpaceSrmData } from '@/features/charts/timeSpaceDiagram/api/getTimeSpaceSrmData'
 import { ToolType } from '@/features/charts/common/types'
+import { useTimeSpaceSrmData } from '@/features/charts/timeSpaceDiagram/api/getTimeSpaceSrmData'
 import { SrmUploadAccordion } from '@/features/charts/timeSpaceDiagram/shared/components/SrmUploader/SrmUploadAccordion'
+import TimeSpaceEChart from '@/features/charts/timeSpaceDiagram/shared/components/TimeSpaceEChart'
+import { gzipAndBase64 } from '@/features/charts/timeSpaceDiagram/shared/fileEncoding'
 import LinkPivotAdjustmentTable from '@/features/tools/link-pivot/components/LinkPivotAdjustmentTable'
 import { LinkPivotApproachLinkComponent } from '@/features/tools/link-pivot/components/LinkPivotApproachLinkComponent'
+import { getLinkPivotPcdTimeWindowFromTimeSpaceOptions } from '@/features/tools/link-pivot/linkPivotPcdTimeWindow'
 import { RawLinkPivotForTsdData } from '@/features/tools/link-pivot/types'
-import { gzipAndBase64 } from '@/features/charts/timeSpaceDiagram/shared/fileEncoding'
 import {
   Alert,
   Box,
@@ -18,19 +19,19 @@ import {
 import { nanoid } from 'nanoid'
 import { useEffect, useState } from 'react'
 import { transformTimeSpaceData } from '../../api'
-import type { TransformedTimeSpaceResponse } from '../../types'
 import { GpxUploadAccordion } from '../../timeSpaceDiagram/shared/components/GpxUploader/GpxUploadAccordion'
 import type {
   GpxUploadOptions,
   RawTimeSpaceAverageData,
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
-  TimeSpaceHistoricOptions,
-  TimeSpaceOptions,
   TimeSpaceBaseData,
   TimeSpaceDiagramPhaseResult,
+  TimeSpaceHistoricOptions,
+  TimeSpaceOptions,
   TimeSpaceSrmPhaseOverlay,
 } from '../../timeSpaceDiagram/shared/types'
+import type { TransformedTimeSpaceResponse } from '../../types'
 
 export interface TimeSpaceChartProps {
   timeSpaceData: RawTimeSpaceDiagramResponse
@@ -225,9 +226,9 @@ export default function TimeSpaceChart({
     useState<RawTimeSpaceDiagramResponse>(() => addDefaultValues(timeSpaceData))
   const [transformedData, setTransformedData] =
     useState<TransformedTimeSpaceResponse>(() => ({
-    type: timeSpaceData.type,
-    data: { chart: {} },
-  }))
+      type: timeSpaceData.type,
+      data: { chart: {} },
+    }))
 
   const [srmError, setSrmError] = useState<string | null>(null)
   const [hasAppliedSrm, setHasAppliedSrm] = useState(false)
@@ -277,7 +278,9 @@ export default function TimeSpaceChart({
       }))
       setHasAppliedSrm(true)
     } catch (error) {
-      setSrmError(error instanceof Error ? error.message : 'Unable to apply SRM')
+      setSrmError(
+        error instanceof Error ? error.message : 'Unable to apply SRM'
+      )
     }
   }
 
@@ -344,6 +347,8 @@ export default function TimeSpaceChart({
   }, [ignoredLocations, baseTimeSpaceData])
 
   const chartHeight = transformedData.data.chart.displayProps?.height ?? 500
+  const pcdTimeWindow =
+    getLinkPivotPcdTimeWindowFromTimeSpaceOptions(timeSpaceOptions)
   const sidebarUploadContent = (
     <>
       {baseTimeSpaceData.type === ToolType.TimeSpaceHistoric && (
@@ -452,7 +457,7 @@ export default function TimeSpaceChart({
                 <LinkPivotApproachLinkComponent
                   data={pivot.data.approachLinks}
                   corridorSummary={pivot.data}
-                  lpHandler={null}
+                  pcdTimeWindow={pcdTimeWindow}
                 />
               </Paper>
             </Box>
