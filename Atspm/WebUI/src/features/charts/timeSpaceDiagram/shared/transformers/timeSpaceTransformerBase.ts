@@ -883,7 +883,14 @@ function measureTextWidth(text: string, font: string): number {
   const canvas =
     (measureTextWidth as any)._canvas ||
     ((measureTextWidth as any)._canvas = document.createElement('canvas'))
-  const ctx = canvas.getContext('2d')
+  let ctx: CanvasRenderingContext2D | null = null
+
+  try {
+    ctx = canvas.getContext('2d')
+  } catch {
+    return Math.min(500, text.length * 7)
+  }
+
   if (!ctx) return Math.min(500, text.length * 7)
 
   ctx.font = font
@@ -934,6 +941,150 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   headerActionOverlayOffsetY: 15,
 } as const
 
+const TIME_SPACE_LOCATION_METRIC_GAP = 8
+const TIME_SPACE_OFFSET_VALUE_FONT =
+  '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
+const TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_PADDING_X = 4
+const TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_HEIGHT = 16
+const TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_MIN_WIDTH = 24
+const TIME_SPACE_OFFSET_RESET_ICON_SIZE = 10
+const TIME_SPACE_OFFSET_RESET_ICON_CHIP_SIZE = 16
+const TIME_SPACE_OFFSET_RESET_ICON_GAP = 4
+
+type TimeSpaceLocationCardGeometry = {
+  bodyTop: number
+  cardHeight: number
+  cardLeft: number
+  cardRight: number
+  cardTop: number
+  metricRowY: number
+  metricWidth: number
+  offsetMetricX: number
+  textX: number
+  xDot: number
+  xLine: number
+}
+
+type TimeSpaceLocationOffsetBadgeLayout = {
+  highlightHeight: number
+  highlightWidth: number
+  highlightX: number
+  highlightY: number
+  iconCenterX: number
+  iconCenterY: number
+  iconContainerHeight: number
+  iconContainerWidth: number
+  iconContainerX: number
+  iconContainerY: number
+  iconLeftX: number
+  iconSize: number
+  iconTopY: number
+  textRightX: number
+}
+
+function getTimeSpaceLocationCardGeometry(
+  gridLeft: number,
+  y: number
+): TimeSpaceLocationCardGeometry {
+  const {
+    gridGap,
+    dotOffset,
+    cardGapToDot,
+    cardWidth,
+    headerHeight,
+    bodyHeight,
+    bodyPaddingLeft,
+    bodyPaddingRight,
+    verticalOffsetY,
+  } = TIME_SPACE_LOCATION_CARD_LAYOUT
+  const cardHeight = headerHeight + bodyHeight
+  const xTextRight = gridLeft - gridGap
+  const xDot = xTextRight + dotOffset
+  const cardRight = xDot - cardGapToDot
+  const cardLeft = cardRight - cardWidth
+  const xLine = cardRight + (gridLeft - cardRight) / 2
+  const cardTop = y - cardHeight / 2 + verticalOffsetY
+  const textX = cardLeft + bodyPaddingLeft
+  const bodyTop = cardTop + headerHeight
+  const bodyContentWidth = cardWidth - bodyPaddingLeft - bodyPaddingRight
+  const metricWidth =
+    (bodyContentWidth - TIME_SPACE_LOCATION_METRIC_GAP) / 2
+  const offsetMetricX = textX + metricWidth + TIME_SPACE_LOCATION_METRIC_GAP
+  const metricRowY = bodyTop + bodyHeight / 2
+
+  return {
+    bodyTop,
+    cardHeight,
+    cardLeft,
+    cardRight,
+    cardTop,
+    metricRowY,
+    metricWidth,
+    offsetMetricX,
+    textX,
+    xDot,
+    xLine,
+  }
+}
+
+export function getTimeSpaceLocationOffsetBadgeLayout(
+  gridLeft: number,
+  y: number,
+  offsetText: string,
+  showResetIcon: boolean
+): TimeSpaceLocationOffsetBadgeLayout {
+  const { metricRowY, metricWidth, offsetMetricX } =
+    getTimeSpaceLocationCardGeometry(gridLeft, y)
+  const iconContainerSize = showResetIcon ? TIME_SPACE_OFFSET_RESET_ICON_CHIP_SIZE : 0
+  const iconReservedWidth = showResetIcon
+    ? iconContainerSize +
+      TIME_SPACE_OFFSET_RESET_ICON_GAP +
+      TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_PADDING_X
+    : 0
+  const offsetValueTextWidth = measureTextWidth(
+    offsetText,
+    TIME_SPACE_OFFSET_VALUE_FONT
+  )
+  const textRightX = offsetMetricX + metricWidth - iconReservedWidth
+  const highlightWidth = Math.min(
+    metricWidth,
+    Math.max(
+      TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_MIN_WIDTH,
+      Math.ceil(
+        offsetValueTextWidth +
+          TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_PADDING_X * 2
+      )
+    )
+  )
+  const highlightRightX = textRightX + TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_PADDING_X
+  const highlightX = highlightRightX - highlightWidth
+  const highlightY = metricRowY - TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_HEIGHT / 2
+  const iconSize = showResetIcon ? TIME_SPACE_OFFSET_RESET_ICON_SIZE : 0
+  const iconContainerX = Math.round(
+    highlightRightX + TIME_SPACE_OFFSET_RESET_ICON_GAP
+  )
+  const iconContainerY = Math.round(metricRowY - iconContainerSize / 2)
+  const iconLeftX = iconContainerX + (iconContainerSize - iconSize) / 2
+  const iconTopY = iconContainerY + (iconContainerSize - iconSize) / 2
+
+  return {
+    highlightHeight: TIME_SPACE_OFFSET_VALUE_HIGHLIGHT_HEIGHT,
+    highlightWidth,
+    highlightX,
+    highlightY,
+    iconCenterX: iconContainerX + iconContainerSize / 2,
+    iconCenterY: iconContainerY + iconContainerSize / 2,
+    iconContainerHeight: iconContainerSize,
+    iconContainerWidth: iconContainerSize,
+    iconContainerX,
+    iconContainerY,
+    iconLeftX,
+    iconSize,
+    iconTopY,
+    textRightX,
+  }
+}
+
 export const TIME_SPACE_LOCATION_AXIS_SERIES_ID = 'Location axis'
 
 const TIME_SPACE_DISTANCE_VALUE_CARD_WIDTH = 96
@@ -953,7 +1104,7 @@ export const TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT = {
 
 function formatCycleLengthValue(value: unknown) {
   if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
-    return `${value}`
+    return `${value}s`
   }
 
   return 'unknown'
@@ -983,20 +1134,13 @@ export function getLocationsLabelOption(
   const gridLeft = (grid.left as number) ?? 0
 
   const {
-    gridGap,
-    dotOffset,
-    cardGapToDot,
     cardWidth,
     cardRadius,
     headerHeight,
     bodyHeight,
-    bodyPaddingLeft,
-    bodyPaddingRight,
     headerActionSize,
     headerActionRight,
-    verticalOffsetY,
   } = TIME_SPACE_LOCATION_CARD_LAYOUT
-  const CARD_H = headerHeight + bodyHeight
 
   const series: SeriesOption = {
     id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
@@ -1009,15 +1153,19 @@ export function getLocationsLabelOption(
       const len = params.dataInsideLength ?? distanceData.length
 
       const [, y] = api.coord([api.value(0), api.value(1)])
-
-      const xTextRight = gridLeft - gridGap
-      const xDot = xTextRight + dotOffset
-
-      const cardRight = xDot - cardGapToDot
-      const cardLeft = cardRight - cardWidth
-      const xLine = cardRight + (gridLeft - cardRight) / 2
-      const cardTop = y - CARD_H / 2 + verticalOffsetY
-      const textX = cardLeft + bodyPaddingLeft
+      const {
+        bodyTop,
+        cardHeight,
+        cardLeft,
+        cardRight,
+        cardTop,
+        metricRowY,
+        metricWidth,
+        offsetMetricX,
+        textX,
+        xDot,
+        xLine,
+      } = getTimeSpaceLocationCardGeometry(gridLeft, y)
       const iconLeft = cardRight - headerActionRight - headerActionSize
       const dividerX = iconLeft - 8
       const titleWidth = Math.max(0, dividerX - textX - 8)
@@ -1078,39 +1226,21 @@ export function getLocationsLabelOption(
       const offsetValue = Number(api.value(5) ?? 0)
       const offsetVisuals = getOffsetDeltaVisuals(offsetValue, isIgnored)
       const isOffsetModified = offsetVisuals.direction !== 'neutral'
-      const bodyTop = cardTop + headerHeight
-      const bodyContentWidth = cardWidth - bodyPaddingLeft - bodyPaddingRight
-      const metricGap = 8
-      const metricWidth = (bodyContentWidth - metricGap) / 2
       const cycleMetricX = textX
-      const offsetMetricX = cycleMetricX + metricWidth + metricGap
-      const bodyDividerX = cycleMetricX + metricWidth + metricGap / 2
-      const metricRowY = bodyTop + bodyHeight / 2
       const metricInnerPadding = 0
       const cycleValueOffsetX = 0
+      const bodyDividerX =
+        cycleMetricX + metricWidth + TIME_SPACE_LOCATION_METRIC_GAP / 2
       const metricLabelWidth = metricWidth * 0.48
       const metricValueWidth = metricWidth * 0.7
       const cycleText = formatCycleLengthValue(cycleLengthValue)
       const offsetText = formatSignedOffsetSeconds(offsetValue)
-      const offsetValueFont =
-        '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
-      const offsetValueTextWidth = measureTextWidth(offsetText, offsetValueFont)
-      const offsetValueTextRightX =
-        offsetMetricX + metricWidth - metricInnerPadding
-      const offsetValueHighlightPaddingX = 6
-      const offsetValueHighlightWidth = Math.min(
-        metricWidth - metricInnerPadding,
-        Math.max(
-          26,
-          Math.ceil(offsetValueTextWidth + offsetValueHighlightPaddingX * 2)
-        )
+      const offsetBadgeLayout = getTimeSpaceLocationOffsetBadgeLayout(
+        gridLeft,
+        y,
+        offsetText,
+        false
       )
-      const offsetValueHighlightHeight = 18
-      const offsetValueHighlightCenterX =
-        offsetValueTextRightX - offsetValueTextWidth / 2
-      const offsetValueHighlightX =
-        offsetValueHighlightCenterX - offsetValueHighlightWidth / 2
-      const offsetValueHighlightY = metricRowY - offsetValueHighlightHeight / 2
       const bodyChildren = isIgnored
         ? []
         : [
@@ -1166,10 +1296,10 @@ export function getLocationsLabelOption(
                     type: 'rect' as const,
                     z2: 19,
                     shape: {
-                      x: offsetValueHighlightX,
-                      y: offsetValueHighlightY,
-                      width: offsetValueHighlightWidth,
-                      height: offsetValueHighlightHeight,
+                      x: offsetBadgeLayout.highlightX,
+                      y: offsetBadgeLayout.highlightY,
+                      width: offsetBadgeLayout.highlightWidth,
+                      height: offsetBadgeLayout.highlightHeight,
                       r: 4,
                     },
                     style: {
@@ -1200,7 +1330,7 @@ export function getLocationsLabelOption(
               type: 'text' as const,
               z2: 20,
               style: {
-                x: offsetMetricX + metricWidth - metricInnerPadding,
+                x: offsetBadgeLayout.textRightX,
                 y: metricRowY,
                 text: offsetText,
                 width: metricValueWidth,
@@ -1226,7 +1356,7 @@ export function getLocationsLabelOption(
               x: cardLeft,
               y: cardTop,
               width: cardWidth,
-              height: CARD_H,
+              height: cardHeight,
               r: cardRadius,
             },
             style: {

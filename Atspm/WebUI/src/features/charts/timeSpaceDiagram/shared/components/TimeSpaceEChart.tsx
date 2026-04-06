@@ -58,6 +58,7 @@ type LocationToggleButton = {
 type LocationAxisDatum = {
   distance: number
   location: string
+  offset: number
   time: string | number
 }
 
@@ -1079,6 +1080,7 @@ function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
       const time = value[0]
       const distance = Number(value[1])
       const location = String(value[2] ?? '')
+      const offset = Number(value[5] ?? 0)
 
       if (!location || !Number.isFinite(distance)) return null
 
@@ -1086,6 +1088,7 @@ function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
         time: typeof time === 'string' || typeof time === 'number' ? time : '',
         distance,
         location,
+        offset: Number.isFinite(offset) ? offset : 0,
       }
     })
     .filter((item): item is LocationAxisDatum => item !== null)

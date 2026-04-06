@@ -1,5 +1,9 @@
 import { dateToTimestamp } from '@/utils/dateTime'
-import { TIME_SPACE_LOCATION_AXIS_SERIES_ID } from '../transformers/timeSpaceTransformerBase'
+import {
+  formatSignedOffsetSeconds,
+  getTimeSpaceLocationOffsetBadgeLayout,
+  TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+} from '../transformers/timeSpaceTransformerBase'
 import { ECharts, EChartsOption, SeriesOption } from 'echarts'
 import { useEffect, useRef } from 'react'
 
@@ -241,6 +245,39 @@ function clampOffsetToCycleLength(
   return Math.max(-cycleDragLimitMs, Math.min(cycleDragLimitMs, offsetMs))
 }
 
+function getPrimaryGridLeft(option: EChartsOption) {
+  const grid = Array.isArray(option.grid) ? option.grid[0] : option.grid
+
+  if (typeof grid?.left === 'number' && Number.isFinite(grid.left)) {
+    return grid.left
+  }
+
+  if (typeof grid?.left === 'string') {
+    const parsed = Number.parseFloat(grid.left)
+    if (Number.isFinite(parsed)) {
+      return parsed
+    }
+  }
+
+  return 0
+}
+
+function getSeriesDatumValue(datum: unknown) {
+  if (Array.isArray(datum)) {
+    return datum
+  }
+
+  if (
+    datum &&
+    typeof datum === 'object' &&
+    Array.isArray((datum as { value?: unknown[] }).value)
+  ) {
+    return (datum as { value: unknown[] }).value
+  }
+
+  return null
+}
+
 export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
   const draggingRef = useRef(false)
   const draggingGroupKeyRef = useRef<string | null>(null)
@@ -254,7 +291,8 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
   useEffect(() => {
     if (!chart) return
 
-    const zr = chart.getZr()
+    let zrRef: ReturnType<ECharts['getZr']> | null = null
+    let zrRetryRafId = 0
 
     const resetRefs = () => {
       draggingRef.current = false
@@ -326,8 +364,15 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
     const { base } = captureOriginal()
     if (!base.length) return
 
-    const updateGroupFromOriginal = (groupKey: string, offsetMs: number) => {
-      const rounded = Math.round(offsetMs / STEP_MS) * STEP_MS
+    const updateGroupFromOriginal = (
+      groupKey: string,
+      offsetMs: number,
+      options?: { snapToStep?: boolean }
+    ) => {
+      const appliedOffsetMs =
+        options?.snapToStep === false
+          ? offsetMs
+          : Math.round(offsetMs / STEP_MS) * STEP_MS
       const updates: Array<{ id: string; data: any[] }> = []
 
       for (const [id, original] of Object.entries(
@@ -346,12 +391,103 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
 
         if (getGroupKeyFromSeriesId(id) !== groupKey) continue
 
-        updates.push({ id, data: buildShiftedData(kind, original, rounded) })
+        updates.push({
+          id,
+          data: buildShiftedData(kind, original, appliedOffsetMs),
+        })
       }
 
       if (!updates.length) return
 
       chart.setOption({ series: updates }, false, false)
+    }
+
+    const getOriginalOffsetSeconds = (groupKey: string) => {
+      const locationAxisData =
+        originalDataByIdRef.current[TIME_SPACE_LOCATION_AXIS_SERIES_ID] ?? []
+      const matchingDatum = locationAxisData.find((datum) => {
+        if (!Array.isArray(datum)) {
+          return false
+        }
+
+        return getGroupKey(String(datum[2] ?? '')) === groupKey
+      })
+      const baseOffsetSeconds =
+        typeof matchingDatum?.[5] === 'number'
+          ? matchingDatum[5]
+          : Number(matchingDatum?.[5])
+
+      return Number.isFinite(baseOffsetSeconds) ? baseOffsetSeconds : 0
+    }
+
+    const resetGroupOffsetToZero = (groupKey: string) => {
+      const targetOffsetMs = -getOriginalOffsetSeconds(groupKey) * STEP_MS
+      const clampedOffsetMs = clampOffsetToCycleLength(
+        targetOffsetMs,
+        cycleDragLimitByGroupRef.current[groupKey]
+      )
+
+      offsetsByGroupRef.current[groupKey] = clampedOffsetMs
+      updateGroupFromOriginal(groupKey, clampedOffsetMs, { snapToStep: false })
+    }
+
+    const findOffsetResetTarget = (mouseX: number, mouseY: number) => {
+      const option = chart.getOption() as EChartsOption
+      const gridLeft = getPrimaryGridLeft(option)
+      const locationAxisSeries = getAllSeries(chart).locationAxis[0]
+      const locationAxisData = Array.isArray(locationAxisSeries?.data)
+        ? locationAxisSeries.data
+        : []
+
+      for (const datum of locationAxisData) {
+        const value = getSeriesDatumValue(datum)
+        if (!value) continue
+
+        const offsetValue =
+          typeof value[5] === 'number' ? value[5] : Number(value[5])
+        if (!Number.isFinite(offsetValue) || offsetValue === 0) {
+          continue
+        }
+
+        const distanceValue =
+          typeof value[1] === 'number' ? value[1] : Number(value[1])
+        if (!Number.isFinite(distanceValue)) {
+          continue
+        }
+
+        const pixel = chart.convertToPixel(
+          { xAxisIndex: 0, yAxisIndex: 0 },
+          [value[0], distanceValue]
+        )
+        if (
+          !Array.isArray(pixel) ||
+          pixel.length < 2 ||
+          !Number.isFinite(pixel[1])
+        ) {
+          continue
+        }
+
+        const badgeLayout = getTimeSpaceLocationOffsetBadgeLayout(
+          gridLeft,
+          pixel[1],
+          formatSignedOffsetSeconds(offsetValue),
+          false
+        )
+        const withinHighlightBounds =
+          mouseX >= badgeLayout.highlightX &&
+          mouseX <= badgeLayout.highlightX + badgeLayout.highlightWidth &&
+          mouseY >= badgeLayout.highlightY &&
+          mouseY <= badgeLayout.highlightY + badgeLayout.highlightHeight
+
+        if (withinHighlightBounds) {
+          const groupKey = getGroupKey(String(value[2] ?? ''))
+          if (groupKey) {
+            return groupKey
+          }
+        }
+      }
+
+      return null
     }
 
     const onMouseDown = (e: any) => {
@@ -424,6 +560,16 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
       lastXRef.current = null
     }
 
+    const onDoubleClick = (e: any) => {
+      const targetGroupKey = findOffsetResetTarget(e.offsetX, e.offsetY)
+      if (!targetGroupKey) {
+        return
+      }
+
+      onMouseUp()
+      resetGroupOffsetToZero(targetGroupKey)
+    }
+
     // 🔥 handle toolbox restore
     const onRestore = () => {
       // restore resets series/zoom/etc — we need to reset our refs too
@@ -439,17 +585,32 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
       // captureOriginal()
     }
 
-    zr.on('mousedown', onMouseDown)
-    zr.on('mousemove', onMouseMove)
-    zr.on('mouseup', onMouseUp)
+    const attachZrListeners = () => {
+      const zr = chart.getZr?.() ?? null
+
+      if (!zr) {
+        zrRetryRafId = window.requestAnimationFrame(attachZrListeners)
+        return
+      }
+
+      zrRef = zr
+      zr.on('mousedown', onMouseDown)
+      zr.on('mousemove', onMouseMove)
+      zr.on('mouseup', onMouseUp)
+      zr.on('dblclick', onDoubleClick)
+    }
+
+    attachZrListeners()
 
     chart.on('restore', onRestore)
     chart.on('finished', onFinished)
 
     return () => {
-      zr.off('mousedown', onMouseDown)
-      zr.off('mousemove', onMouseMove)
-      zr.off('mouseup', onMouseUp)
+      window.cancelAnimationFrame(zrRetryRafId)
+      zrRef?.off('mousedown', onMouseDown)
+      zrRef?.off('mousemove', onMouseMove)
+      zrRef?.off('mouseup', onMouseUp)
+      zrRef?.off('dblclick', onDoubleClick)
 
       chart.off('restore', onRestore)
       chart.off('finished', onFinished)
