@@ -174,6 +174,50 @@ describe('TimeSpaceSidebar directional controls', () => {
     expect(onSetSeriesVisibility).not.toHaveBeenCalled()
   })
 
+  it('toggles all legend sections from the global section control', () => {
+    render(
+      <TimeSpaceSidebar
+        option={buildOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'Cycles WB': false,
+          'Green Bands EB': true,
+          'Green Bands WB': true,
+          'TSP Request (112-115)': true,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        showTabs={false}
+      />
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Collapse all legend sections' })
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'Expand all legend sections' })
+    ).not.toBeNull()
+    expect(
+      screen.getByRole('button', { name: 'Expand Signal Timing' })
+    ).not.toBeNull()
+    expect(
+      screen.getByRole('button', { name: 'Expand Transit Priority' })
+    ).not.toBeNull()
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Expand all legend sections' })
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'Collapse Signal Timing' })
+    ).not.toBeNull()
+    expect(
+      screen.getByRole('button', { name: 'Collapse Transit Priority' })
+    ).not.toBeNull()
+  })
+
   it('toggles a single item direction independently with the inline P or O button', () => {
     const onSetSeriesVisibility = jest.fn()
 

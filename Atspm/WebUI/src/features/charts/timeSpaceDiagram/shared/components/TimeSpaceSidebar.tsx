@@ -1217,6 +1217,13 @@ export default function TimeSpaceSidebar({
   const hasLegendContent = items.length > 0
   const hasUploadContent = Boolean(uploadContent)
   const availableTabs: SidebarTab[] = []
+  const sectionCategories = CATEGORY_ORDER.filter((category) =>
+    items.some((item) => item.category === category)
+  )
+  const hasGlobalSectionToggle = sectionCategories.length > 1
+  const allSectionsCollapsed =
+    hasGlobalSectionToggle &&
+    sectionCategories.every((category) => collapsedSections[category] === true)
 
   if (hasLegendContent) {
     availableTabs.push('legend')
@@ -1245,6 +1252,21 @@ export default function TimeSpaceSidebar({
       ...current,
       [category]: !current[category],
     }))
+  }
+
+  const toggleAllSections = () => {
+    setCollapsedSections((current) => {
+      const areAllCollapsed = sectionCategories.every(
+        (category) => current[category] === true
+      )
+      const next = { ...current }
+
+      sectionCategories.forEach((category) => {
+        next[category] = !areAllCollapsed
+      })
+
+      return next
+    })
   }
 
   const toggleItemDetails = (itemKey: string) => {
@@ -1338,7 +1360,7 @@ export default function TimeSpaceSidebar({
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            {directionControls.length ? (
+            {directionControls.length || hasGlobalSectionToggle ? (
               <Box
                 sx={{
                   display: 'inline-flex',
@@ -1376,6 +1398,46 @@ export default function TimeSpaceSidebar({
                     />
                   )
                 })}
+                {directionControls.length && hasGlobalSectionToggle ? (
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{
+                      mx: 0.25,
+                      my: 0.25,
+                      borderColor: 'rgba(148, 163, 184, 0.55)',
+                    }}
+                  />
+                ) : null}
+                {hasGlobalSectionToggle ? (
+                  <Tooltip
+                    title={
+                      allSectionsCollapsed
+                        ? 'Expand all legend sections'
+                        : 'Collapse all legend sections'
+                    }
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={toggleAllSections}
+                      aria-label={
+                        allSectionsCollapsed
+                          ? 'Expand all legend sections'
+                          : 'Collapse all legend sections'
+                      }
+                      sx={{
+                        p: 0.15,
+                        color: 'text.secondary',
+                      }}
+                    >
+                      {allSectionsCollapsed ? (
+                        <ExpandMoreIcon fontSize="small" />
+                      ) : (
+                        <ExpandLessIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                ) : null}
               </Box>
             ) : null}
 
@@ -1442,14 +1504,14 @@ export default function TimeSpaceSidebar({
                         >
                           <Checkbox
                             size="small"
-                              checked={allItemsVisible}
-                              indeterminate={hasVisibleItems && !allItemsVisible}
-                              onChange={() =>
-                                setSectionVisibility(
-                                  availableCategoryItems,
-                                  !allItemsVisible
-                                )
-                              }
+                            checked={allItemsVisible}
+                            indeterminate={hasVisibleItems && !allItemsVisible}
+                            onChange={() =>
+                              setSectionVisibility(
+                                availableCategoryItems,
+                                !allItemsVisible
+                              )
+                            }
                             inputProps={{
                               'aria-label': `Toggle all ${category}`,
                             }}
@@ -1466,6 +1528,11 @@ export default function TimeSpaceSidebar({
                       <IconButton
                         size="small"
                         onClick={() => toggleSectionCollapse(category)}
+                        aria-label={
+                          isCollapsed
+                            ? `Expand ${category}`
+                            : `Collapse ${category}`
+                        }
                         sx={{ p: 0.15, color: 'text.secondary' }}
                       >
                         {isCollapsed ? (
