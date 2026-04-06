@@ -1,6 +1,6 @@
-#region license
+﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for OracleDatabaseProvider - Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations/ConfigContextModelSnapshot.cs
+// for OracleDatabaseProvider - Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations/20260401161501_5_2_1.Designer.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using Utah.Udot.Atspm.Data;
@@ -28,9 +29,11 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    partial class ConfigContextModelSnapshot : ModelSnapshot
+    [Migration("20260401161501_5_2_1")]
+    partial class _5_2_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

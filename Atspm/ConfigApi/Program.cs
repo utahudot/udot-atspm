@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Services;
@@ -31,7 +30,7 @@ using Utah.Udot.NetStandardToolkit.Configuration;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Utah.Udot.NetStandardToolkit.Services.GitHubReleaseService;
 
-//git 1
+//git 2
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

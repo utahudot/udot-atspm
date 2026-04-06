@@ -2594,6 +2594,11 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
                     b.Property<int>("IssueType")
                         .HasColumnType("int");
 
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
@@ -2643,6 +2648,11 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
 
                     b.Property<int>("IssueType")
                         .HasColumnType("int");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
