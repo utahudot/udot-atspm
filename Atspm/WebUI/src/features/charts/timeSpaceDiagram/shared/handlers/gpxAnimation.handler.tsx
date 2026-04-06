@@ -1,7 +1,10 @@
 import { ECharts, SeriesOption } from 'echarts'
 import { useCallback, useMemo, useRef } from 'react'
 import { GpxPoint } from '../gpxFileParser'
-import { GpxUploadOptions } from '../types'
+import {
+  GpxUploadOptions,
+  TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
+} from '../types'
 
 const GPX_OVERLAY_SERIES_ID_PREFIXES = ['gpx-', 'srm-'] as const
 
@@ -97,6 +100,7 @@ export const useGpxAnimationHandler = (
         if (upload.parsedData?.length) {
           series.push({
             id: `gpx-${upload.id}`,
+            name: TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
             type: 'line',
             data: buildShiftedGpxData(chart, upload, upload.parsedData),
             color: 'black',
@@ -136,7 +140,6 @@ export const useGpxAnimationHandler = (
     () => processedSeries.flatMap((s) => s.data).at(-1)?.[0] ?? '',
     [processedSeries]
   )
-  const STEP = 10
 
   const play = useCallback(() => {
     if (!chart) return

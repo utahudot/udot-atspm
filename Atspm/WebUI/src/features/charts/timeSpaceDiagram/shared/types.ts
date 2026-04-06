@@ -23,6 +23,8 @@ import {
 import { GpxPoint } from './gpxFileParser'
 import type { SrmEntityTrack } from './srmFileParser'
 
+export const TIME_SPACE_GPX_TRACKS_LEGEND_NAME = 'GPX Tracks'
+
 // export interface TimeSpaceDetectorEvent {
 //   initialX: string
 //   finalX: string

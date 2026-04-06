@@ -1,6 +1,8 @@
 import { Color } from '@/features/charts/utils'
+import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   Box,
   Checkbox,
@@ -12,9 +14,10 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import type { EChartsOption } from 'echarts'
+import type { EChartsOption, SeriesOption } from 'echarts'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
+import { TIME_SPACE_GPX_TRACKS_LEGEND_NAME } from '../types'
 
 type PreviewKind =
   | 'cycles'
@@ -24,6 +27,7 @@ type PreviewKind =
   | 'stop-bar'
   | 'pedestrian'
   | 'turn'
+  | 'gpx-track'
   | 'srm'
   | 'triangle'
   | 'circle'
@@ -49,6 +53,8 @@ type SidebarItem = {
   label: string
   category: string
   description: string
+  note?: string
+  unavailableReason?: string
   details?: SidebarDetail[]
   preview: PreviewKind
   control?: 'directional' | 'visibility'
@@ -114,6 +120,31 @@ const CATEGORY_ORDER = [
 ] as const
 
 const DIRECTION_TOGGLE_INACTIVE_COLOR = 'rgba(0, 0, 0, 0.6)'
+const STATUS_ICON_COLOR = '#94A3B8'
+const ITEM_NO_DATA_MESSAGES: Record<string, string> = {
+  cycles: 'No cycles found.',
+  'cycle-durations': 'No cycle durations found.',
+  'green-bands': 'No green bands found.',
+  'lane-by-lane-count': 'No lane-by-lane counts found.',
+  'advance-count': 'No advance counts found.',
+  'stop-bar-presence': 'No stop-bar presence data found.',
+  'pedestrian-interval': 'No pedestrian intervals found.',
+  'left-turn': 'No left turns found.',
+  'right-turn': 'No right turns found.',
+  'gpx-tracks': 'No GPX tracks found.',
+  'srm-entity': 'No SRM entity tracks found.',
+  'early-green': 'No early greens found.',
+  'extend-green': 'No extend greens found.',
+  'tsp-request': 'No transit-signal priority requests found.',
+  'tsp-service': 'No transit-signal priority service events found.',
+}
+const CATEGORY_NO_DATA_MESSAGES: Record<(typeof CATEGORY_ORDER)[number], string> = {
+  'Signal Timing': 'No signal timing data found.',
+  Pedestrian: 'No pedestrian data found.',
+  Detection: 'No detection data found.',
+  'Movements & Tracks': 'No movement or track data found.',
+  'Transit Priority': 'No transit-signal priority data found.',
+}
 const DIRECTION_TOGGLE_CIRCLE_PATH =
   'M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576z'
 const DIRECTION_TOGGLE_ARROW_PATH =
@@ -213,6 +244,16 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     match: (name) => matchDirectionalPrefix(name, 'Right Turn'),
   },
   {
+    key: 'gpx-tracks',
+    label: TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
+    category: 'Movements & Tracks',
+    description:
+      'Uploaded GPX traces mapped to the corridor and drawn as black lines through the corridor.',
+    preview: 'gpx-track',
+    control: 'visibility',
+    match: (name) => (name === TIME_SPACE_GPX_TRACKS_LEGEND_NAME ? '' : null),
+  },
+  {
     key: 'srm-entity',
     label: 'SRM Entity',
     category: 'Movements & Tracks',
@@ -304,6 +345,83 @@ function getPrimaryLegend(option?: EChartsOption): LegendLike | undefined {
   return Array.isArray(option.legend)
     ? (option.legend[0] as LegendLike | undefined)
     : (option.legend as LegendLike)
+}
+
+function isSeriesOption(
+  value: SeriesOption | null | undefined
+): value is SeriesOption {
+  return Boolean(value && typeof value === 'object')
+}
+
+function getAllSeries(option?: EChartsOption): SeriesOption[] {
+  if (!option?.series) {
+    return []
+  }
+
+  return (Array.isArray(option.series) ? option.series : [option.series]).filter(
+    isSeriesOption
+  )
+}
+
+function getSeriesName(series: SeriesOption): string | null {
+  return typeof series.name === 'string' && series.name.trim()
+    ? series.name.trim()
+    : null
+}
+
+function hasRenderableSeriesData(series: SeriesOption): boolean {
+  if (!Array.isArray(series.data)) {
+    return false
+  }
+
+  return series.data.some((entry) => entry != null)
+}
+
+function hasSeriesDataForDefinition(
+  option: EChartsOption | undefined,
+  definition: SidebarItemDefinition
+) {
+  return getAllSeries(option).some((series) => {
+    const name = getSeriesName(series)
+    if (!name || definition.match(name) === null) {
+      return false
+    }
+
+    return hasRenderableSeriesData(series)
+  })
+}
+
+function getSidebarItemNote(
+  definition: SidebarItemDefinition,
+  option?: EChartsOption
+) {
+  if (definition.key === 'gpx-tracks') {
+    return hasSeriesDataForDefinition(option, definition)
+      ? undefined
+      : 'Upload GPX data from the Uploads tab to show these tracks.'
+  }
+
+  if (definition.key === 'srm-entity') {
+    return hasSeriesDataForDefinition(option, definition)
+      ? undefined
+      : 'Upload SRM data from the Uploads tab to show these tracks.'
+  }
+
+  return undefined
+}
+
+function getSidebarItemUnavailableReason(
+  definition: SidebarItemDefinition,
+  option?: EChartsOption
+) {
+  if (hasSeriesDataForDefinition(option, definition)) {
+    return undefined
+  }
+
+  return (
+    ITEM_NO_DATA_MESSAGES[definition.key] ??
+    `No ${definition.label.toLowerCase()} found.`
+  )
 }
 
 function getLegendEntryName(entry: string | { name?: string }): string | null {
@@ -490,6 +608,8 @@ function buildSidebarModel(option?: EChartsOption): SidebarLegendModel {
       label: definition.label,
       category: definition.category,
       description: definition.description,
+      note: getSidebarItemNote(definition, option),
+      unavailableReason: getSidebarItemUnavailableReason(definition, option),
       details: definition.details,
       preview: definition.preview,
       control: definition.control,
@@ -724,6 +844,20 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
           </>
         )}
 
+        {kind === 'gpx-track' && (
+          <>
+            <path
+              d="M10 31 C20 31, 26 12, 38 15 S56 32, 68 17"
+              fill="none"
+              stroke="#111827"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle cx="16" cy="30" r="2.5" fill="#111827" />
+            <circle cx="62" cy="19" r="2.5" fill="#111827" />
+          </>
+        )}
+
         {kind === 'srm' && (
           <path
             d="M10 31 C18 27, 26 14, 34 16 S50 33, 68 17"
@@ -868,6 +1002,16 @@ function isItemEffectivelyVisible(
   )
 }
 
+function isItemUnavailable(item: SidebarItem) {
+  return typeof item.unavailableReason === 'string'
+}
+
+function getSidebarCategoryUnavailableReason(
+  category: (typeof CATEGORY_ORDER)[number]
+) {
+  return CATEGORY_NO_DATA_MESSAGES[category]
+}
+
 function DirectionToggleButton({
   role,
   isSelected,
@@ -918,6 +1062,70 @@ function DirectionToggleButton({
           },
         }}
       />
+    </Tooltip>
+  )
+}
+
+function UnavailableStatusIcon({
+  ariaLabel,
+  title,
+  iconSize = 16,
+  sx,
+}: {
+  ariaLabel: string
+  title: string
+  iconSize?: number
+  sx?: Record<string, string | number>
+}) {
+  return (
+    <Tooltip title={title}>
+      <Box
+        component="span"
+        role="img"
+        aria-label={ariaLabel}
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          lineHeight: 0,
+          color: STATUS_ICON_COLOR,
+          ...sx,
+        }}
+      >
+        <BlockOutlinedIcon sx={{ fontSize: iconSize }} />
+      </Box>
+    </Tooltip>
+  )
+}
+
+function InfoStatusIcon({
+  ariaLabel,
+  title,
+  iconSize = 16,
+  sx,
+}: {
+  ariaLabel: string
+  title: string
+  iconSize?: number
+  sx?: Record<string, string | number>
+}) {
+  return (
+    <Tooltip title={title}>
+      <Box
+        component="span"
+        role="img"
+        aria-label={ariaLabel}
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          lineHeight: 0,
+          color: STATUS_ICON_COLOR,
+          ...sx,
+        }}
+      >
+        <InfoOutlinedIcon sx={{ fontSize: iconSize }} />
+      </Box>
     </Tooltip>
   )
 }
@@ -1178,12 +1386,24 @@ export default function TimeSpaceSidebar({
               if (!categoryItems.length) return null
 
               const isCollapsed = collapsedSections[category] === true
-              const visibleItemCount = categoryItems.filter((item) =>
+              const availableCategoryItems = categoryItems.filter(
+                (item) => !isItemUnavailable(item)
+              )
+              const allItemsUnavailable = availableCategoryItems.length === 0
+              const categoryUnavailableReason = allItemsUnavailable
+                ? getSidebarCategoryUnavailableReason(category)
+                : undefined
+              const visibleItemCount = availableCategoryItems.filter((item) =>
                 isItemRequestedVisible(item, selectedSeries)
               ).length
               const hasVisibleItems = visibleItemCount > 0
-              const allItemsVisible = visibleItemCount === categoryItems.length
-              const showSectionVisibilityToggle = categoryItems.length > 1
+              const allItemsVisible =
+                availableCategoryItems.length > 0 &&
+                visibleItemCount === availableCategoryItems.length
+              const showSectionVisibilityToggle =
+                availableCategoryItems.length > 1
+              const showSectionUnavailableIcon =
+                categoryItems.length > 1 && allItemsUnavailable
 
               return (
                 <Box key={category}>
@@ -1210,20 +1430,26 @@ export default function TimeSpaceSidebar({
                         gap: 0.1,
                       }}
                     >
-                      {showSectionVisibilityToggle ? (
+                      {showSectionUnavailableIcon ? (
+                        <UnavailableStatusIcon
+                          ariaLabel={`${category} unavailable`}
+                          title={categoryUnavailableReason ?? ''}
+                          iconSize={17}
+                        />
+                      ) : showSectionVisibilityToggle ? (
                         <Tooltip
                           title={hasVisibleItems ? 'Hide all' : 'Show all'}
                         >
                           <Checkbox
                             size="small"
-                            checked={allItemsVisible}
-                            indeterminate={hasVisibleItems && !allItemsVisible}
-                            onChange={() =>
-                              setSectionVisibility(
-                                categoryItems,
-                                !allItemsVisible
-                              )
-                            }
+                              checked={allItemsVisible}
+                              indeterminate={hasVisibleItems && !allItemsVisible}
+                              onChange={() =>
+                                setSectionVisibility(
+                                  availableCategoryItems,
+                                  !allItemsVisible
+                                )
+                              }
                             inputProps={{
                               'aria-label': `Toggle all ${category}`,
                             }}
@@ -1259,22 +1485,27 @@ export default function TimeSpaceSidebar({
                     }}
                   >
                     {categoryItems.map((item) => {
-                      const itemIsRequestedVisible = isItemRequestedVisible(
-                        item,
-                        selectedSeries
-                      )
-                      const itemIsEffectivelyShown = isItemEffectivelyVisible(
-                        item,
-                        selectedSeries,
-                        suppressedDirections
-                      )
+                      const itemIsUnavailable = isItemUnavailable(item)
+                      const itemIsRequestedActive =
+                        !itemIsUnavailable &&
+                        isItemRequestedVisible(item, selectedSeries)
+                      const itemIsEffectivelyShown =
+                        !itemIsUnavailable &&
+                        isItemEffectivelyVisible(
+                          item,
+                          selectedSeries,
+                          suppressedDirections
+                        )
                       const itemIsMasked =
-                        itemIsRequestedVisible && !itemIsEffectivelyShown
+                        itemIsRequestedActive && !itemIsEffectivelyShown
                       const directionalToggles = getDirectionalToggles(item)
-                      const visibleToggleCount = item.toggles.filter((toggle) =>
-                        isToggleRequestedVisible(toggle, selectedSeries)
-                      ).length
+                      const visibleToggleCount = itemIsUnavailable
+                        ? 0
+                        : item.toggles.filter((toggle) =>
+                            isToggleRequestedVisible(toggle, selectedSeries)
+                          ).length
                       const allItemSeriesVisible =
+                        !itemIsUnavailable &&
                         visibleToggleCount === item.toggles.length
                       const someItemSeriesVisible =
                         visibleToggleCount > 0 && !allItemSeriesVisible
@@ -1285,17 +1516,17 @@ export default function TimeSpaceSidebar({
                           variant="outlined"
                           sx={{
                             overflow: 'hidden',
-                            background: itemIsRequestedVisible
+                            background: itemIsRequestedActive
                               ? itemIsMasked
                                 ? '#F8FAFC'
                                 : '#fff'
                               : '#f3f4f6',
-                            borderColor: itemIsRequestedVisible
+                            borderColor: itemIsRequestedActive
                               ? itemIsMasked
                                 ? 'rgba(148, 163, 184, 0.88)'
                                 : 'rgba(203, 213, 225, 0.9)'
                               : 'rgba(203, 213, 225, 0.7)',
-                            opacity: itemIsRequestedVisible
+                            opacity: itemIsRequestedActive
                               ? itemIsMasked
                                 ? 0.78
                                 : 1
@@ -1369,86 +1600,98 @@ export default function TimeSpaceSidebar({
                                     </Tooltip>
                                   ) : null}
 
-                                  <Box
-                                    sx={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: 0.15,
-                                      px: 0.35,
-                                      py: 0.2,
-                                      borderRadius: 1.5,
-                                      backgroundColor: '#EEF1F5',
-                                      border:
-                                        '1px solid rgba(203, 213, 225, 0.9)',
-                                    }}
-                                  >
-                                    {directionalToggles.map((toggle) => {
-                                      const role = toggle.directionRole
-                                      if (!role) {
-                                        return null
-                                      }
+                                  {item.note ? (
+                                    <InfoStatusIcon
+                                      ariaLabel={`${item.label} info`}
+                                      title={item.note}
+                                    />
+                                  ) : itemIsUnavailable ? (
+                                    <UnavailableStatusIcon
+                                      ariaLabel={`${item.label} unavailable`}
+                                      title={item.unavailableReason ?? ''}
+                                    />
+                                  ) : (
+                                    <Box
+                                      sx={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 0.15,
+                                        px: 0.35,
+                                        py: 0.2,
+                                        borderRadius: 1.5,
+                                        backgroundColor: '#EEF1F5',
+                                        border:
+                                          '1px solid rgba(203, 213, 225, 0.9)',
+                                      }}
+                                    >
+                                      {directionalToggles.map((toggle) => {
+                                        const role = toggle.directionRole
+                                        if (!role) {
+                                          return null
+                                        }
 
-                                      const isSelected =
-                                        isToggleRequestedVisible(
-                                          toggle,
-                                          selectedSeries
+                                        const isSelected =
+                                          isToggleRequestedVisible(
+                                            toggle,
+                                            selectedSeries
+                                          )
+                                        const isSuppressed =
+                                          suppressedDirections[role] === true
+                                        const roleLabel =
+                                          getDirectionRoleLabel(role)
+
+                                        return (
+                                          <DirectionToggleButton
+                                            key={toggle.seriesName}
+                                            role={role}
+                                            isSelected={isSelected}
+                                            isDimmed={isSuppressed}
+                                            onClick={() =>
+                                              setDirectionVisibility(
+                                                toggle.seriesName,
+                                                !isSelected
+                                              )
+                                            }
+                                            ariaLabel={`Toggle ${role} direction for ${item.label}`}
+                                            title={`${isSelected ? 'Hide' : 'Show'} ${roleLabel}`}
+                                          />
                                         )
-                                      const isSuppressed =
-                                        suppressedDirections[role] === true
-                                      const roleLabel =
-                                        getDirectionRoleLabel(role)
+                                      })}
 
-                                      return (
-                                        <DirectionToggleButton
-                                          key={toggle.seriesName}
-                                          role={role}
-                                          isSelected={isSelected}
-                                          isDimmed={isSuppressed}
-                                          onClick={() =>
-                                            setDirectionVisibility(
-                                              toggle.seriesName,
-                                              !isSelected
+                                      <Tooltip
+                                        title={
+                                          allItemSeriesVisible
+                                            ? `Hide ${item.label}`
+                                            : `Show ${item.label}`
+                                        }
+                                      >
+                                        <Checkbox
+                                          size="small"
+                                          checked={allItemSeriesVisible}
+                                          indeterminate={someItemSeriesVisible}
+                                          onChange={() =>
+                                            setItemVisibility(
+                                              item,
+                                              !allItemSeriesVisible
                                             )
                                           }
-                                          ariaLabel={`Toggle ${role} direction for ${item.label}`}
-                                          title={`${isSelected ? 'Hide' : 'Show'} ${roleLabel}`}
+                                          inputProps={{
+                                            'aria-label': `Toggle ${item.label}`,
+                                          }}
+                                          sx={{
+                                            p: 0.1,
+                                            m: 0,
+                                            minWidth: 0,
+                                            lineHeight: 0,
+                                            color: 'text.secondary',
+                                            '& .MuiSvgIcon-root': {
+                                              fontSize: 18,
+                                            },
+                                          }}
                                         />
-                                      )
-                                    })}
-
-                                    <Tooltip
-                                      title={
-                                        allItemSeriesVisible
-                                          ? `Hide ${item.label}`
-                                          : `Show ${item.label}`
-                                      }
-                                    >
-                                      <Checkbox
-                                        size="small"
-                                        checked={allItemSeriesVisible}
-                                        indeterminate={someItemSeriesVisible}
-                                        onChange={() =>
-                                          setItemVisibility(
-                                            item,
-                                            !allItemSeriesVisible
-                                          )
-                                        }
-                                        inputProps={{
-                                          'aria-label': `Toggle ${item.label}`,
-                                        }}
-                                        sx={{
-                                          p: 0.1,
-                                          m: 0,
-                                          minWidth: 0,
-                                          lineHeight: 0,
-                                          color: 'text.secondary',
-                                          '& .MuiSvgIcon-root': {
-                                            fontSize: 18,
-                                          },
-                                        }}
-                                      />
-                                    </Tooltip>
-                                  </Box>
+                                      </Tooltip>
+                                    </Box>
+                                  )}
                                 </Box>
                               </Box>
                               <Typography

@@ -101,6 +101,12 @@ function getSeriesIds(chart: MockChart) {
     .filter(Boolean)
 }
 
+function getSeriesById(chart: MockChart, id: string) {
+  return (Array.isArray(chart.option.series) ? chart.option.series : []).find(
+    (series) => series?.id === id
+  )
+}
+
 describe('gpxAnimation handler', () => {
   it('replaces only GPX overlay series and preserves the base diagram series', () => {
     const merged = mergeChartSeriesWithGpxOverlays(
@@ -141,6 +147,7 @@ describe('gpxAnimation handler', () => {
       'Location axis',
       'gpx-upload-1',
     ])
+    expect(getSeriesById(chart, 'gpx-upload-1')?.name).toBe('GPX Tracks')
 
     rerender({ uploads: [] })
 

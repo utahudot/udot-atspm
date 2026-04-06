@@ -29,7 +29,10 @@ import { init } from 'echarts'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGpxAnimationHandler } from '../handlers/gpxAnimation.handler'
-import { GpxUploadOptions } from '../types'
+import {
+  GpxUploadOptions,
+  TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
+} from '../types'
 import TimeSpaceSidebar, {
   getSidebarDirectionControls,
   SidebarDirectionRole,
@@ -464,6 +467,45 @@ function getLegendEntryName(entry: string | { name?: string }): string | null {
   return typeof entry?.name === 'string' && entry.name.trim()
     ? entry.name.trim()
     : null
+}
+
+function withSyntheticLegendEntry(
+  option: EChartsOption | undefined,
+  name: string,
+  selectedByDefault = true
+) {
+  if (!option?.legend) {
+    return option
+  }
+
+  const addLegendEntry = (legend: LegendSelectionProvider) => {
+    const legendData = Array.isArray(legend.data) ? legend.data : []
+    const hasEntry = legendData.some((entry) => getLegendEntryName(entry) === name)
+
+    if (hasEntry) {
+      return legend
+    }
+
+    return {
+      ...legend,
+      data: [...legendData, name],
+      selected: {
+        ...(legend.selected ?? {}),
+        [name]: selectedByDefault,
+      },
+    }
+  }
+
+  return {
+    ...option,
+    legend: Array.isArray(option.legend)
+      ? option.legend.map((legend, index) =>
+          index === 0
+            ? addLegendEntry(legend as LegendSelectionProvider)
+            : legend
+        )
+      : addLegendEntry(option.legend as LegendSelectionProvider),
+  }
 }
 
 function getDirectionalSuffix(name: string, prefix: string): string | null {
@@ -1248,8 +1290,26 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     useState<StickyBottomAxis | null>(null)
   const [timeSpaceHandlerSyncVersion, setTimeSpaceHandlerSyncVersion] =
     useState(0)
+  const hasGpxTracks = useMemo(
+    () =>
+      (gpxEntries ?? []).some(
+        (entry) =>
+          !entry?.error &&
+          Array.isArray(entry.parsedData) &&
+          entry.parsedData.length > 0
+      ),
+    [gpxEntries]
+  )
+  const baseSelectedSeries = useMemo(() => getLegendSelectedMap(option), [option])
+  const defaultSelectedSeries = useMemo(() => {
+    const next = { ...baseSelectedSeries }
+    if (hasGpxTracks) {
+      next[TIME_SPACE_GPX_TRACKS_LEGEND_NAME] = true
+    }
+    return next
+  }, [baseSelectedSeries, hasGpxTracks])
   const [selectedSeries, setSelectedSeries] = useState<Record<string, boolean>>(
-    () => getLegendSelectedMap(option)
+    () => defaultSelectedSeries
   )
   const [suppressedDirections, setSuppressedDirections] = useState<
     Partial<Record<SidebarDirectionRole, boolean>>
@@ -1268,17 +1328,25 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       xAxis: stripTopAxisVisuals(option),
     }
   }, [option, remainingTitles])
+  const optionWithOverlayLegend = useMemo(
+    () =>
+      withSyntheticLegendEntry(
+        optionWithoutHeaderTitle,
+        TIME_SPACE_GPX_TRACKS_LEGEND_NAME
+      ),
+    [optionWithoutHeaderTitle]
+  )
   const sidebarAdjustedOption = useMemo(
-    () => buildChartOptionWithSidebar(optionWithoutHeaderTitle, showPhaseInfo),
-    [optionWithoutHeaderTitle, showPhaseInfo]
+    () => buildChartOptionWithSidebar(optionWithOverlayLegend, showPhaseInfo),
+    [optionWithOverlayLegend, showPhaseInfo]
   )
   const bottomAxisConfig = useMemo(
     () => extractBottomAxisConfig(sidebarAdjustedOption),
     [sidebarAdjustedOption]
   )
   const directionControls = useMemo(
-    () => getSidebarDirectionControls(optionWithoutHeaderTitle),
-    [optionWithoutHeaderTitle]
+    () => getSidebarDirectionControls(optionWithOverlayLegend),
+    [optionWithOverlayLegend]
   )
   const directionRoleBySeriesName = useMemo(() => {
     const nextMap = new Map<string, SidebarDirectionRole>()
@@ -1347,7 +1415,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
   useTimeSpaceHandler(chart, timeSpaceHandlerSyncVersion)
 
-  const animator = useGpxAnimationHandler(
+  const { play: playGpxAnimations } = useGpxAnimationHandler(
     chart,
     gpxEntries as GpxUploadOptions[]
   )
@@ -1408,9 +1476,23 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   }, [theme, stickyBottomAxisOption])
 
   useEffect(() => {
-    setSelectedSeries(getLegendSelectedMap(option))
+    setSelectedSeries(baseSelectedSeries)
     setSuppressedDirections({})
-  }, [option])
+  }, [baseSelectedSeries])
+
+  useEffect(() => {
+    setSelectedSeries((current) => {
+      const next = { ...current }
+
+      if (hasGpxTracks) {
+        next[TIME_SPACE_GPX_TRACKS_LEGEND_NAME] ??= true
+      } else {
+        delete next[TIME_SPACE_GPX_TRACKS_LEGEND_NAME]
+      }
+
+      return next
+    })
+  }, [hasGpxTracks])
 
   useEffect(() => {
     const inst = chartInstanceRef.current
@@ -1422,8 +1504,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   }, [chart, renderedOption])
 
   useEffect(() => {
-    animator.play()
-  }, [animator.play, renderedOption])
+    playGpxAnimations()
+  }, [playGpxAnimations, renderedOption])
 
   useEffect(() => {
     const stickyChart = stickyBottomAxisChartRef.current
@@ -1442,7 +1524,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     if (!chart) return
 
     const handleRestore = () => {
-      setSelectedSeries(getLegendSelectedMap(option))
+      setSelectedSeries(defaultSelectedSeries)
       setSuppressedDirections({})
     }
 
@@ -1451,7 +1533,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     return () => {
       chart.off('restore', handleRestore)
     }
-  }, [chart, option])
+  }, [chart, defaultSelectedSeries])
 
   useEffect(() => {
     if (!chart) return
@@ -1797,7 +1879,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       notMerge: true,
       lazyUpdate: false,
     })
-    setSelectedSeries(getLegendSelectedMap(option))
+    setSelectedSeries(defaultSelectedSeries)
     setSuppressedDirections({})
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }
@@ -2374,7 +2456,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           >
             {!isGuideCollapsed && (
               <TimeSpaceSidebar
-                option={optionWithoutHeaderTitle}
+                option={optionWithOverlayLegend}
                 selectedSeries={selectedSeries}
                 suppressedDirections={suppressedDirections}
                 onSetSeriesVisibility={handleSetSeriesVisibility}
