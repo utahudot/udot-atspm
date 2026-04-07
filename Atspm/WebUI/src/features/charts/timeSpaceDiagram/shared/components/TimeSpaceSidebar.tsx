@@ -33,7 +33,8 @@ type PreviewKind =
   | 'detector-line'
   | 'stop-bar'
   | 'pedestrian'
-  | 'turn'
+  | 'left-turn'
+  | 'right-turn'
   | 'gpx-track'
   | 'srm'
   | 'triangle'
@@ -164,6 +165,8 @@ const DIRECTION_TOGGLE_ARROW_PATH =
 const STYLABLE_ITEM_KEYS = new Set([
   'cycles',
   'green-bands',
+  'left-turn',
+  'right-turn',
   'lane-by-lane-count',
   'advance-count',
   'stop-bar-presence',
@@ -230,7 +233,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Stop Bar Presence',
     category: 'Detection',
     description:
-      'Presence detector occupancy near the stop bar, shown as thicker occupancy bands.',
+      'Presence detector occupancy near the stop bar, shown as occupancy traces.',
     preview: 'stop-bar',
     match: (name) => matchDirectionalPrefix(name, 'Stop Bar Presence'),
   },
@@ -253,7 +256,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Left Turn',
     category: 'Movements & Tracks',
     description: 'Left-turn movement trace projected through the corridor.',
-    preview: 'turn',
+    preview: 'left-turn',
     match: (name) => matchDirectionalPrefix(name, 'Left Turn'),
   },
   {
@@ -261,7 +264,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Right Turn',
     category: 'Movements & Tracks',
     description: 'Right-turn movement trace projected through the corridor.',
-    preview: 'turn',
+    preview: 'right-turn',
     match: (name) => matchDirectionalPrefix(name, 'Right Turn'),
   },
   {
@@ -714,6 +717,8 @@ function PreviewCard({
     appearanceSettings.detection.stopBarPresence.primary
   const stopBarOpposing =
     appearanceSettings.detection.stopBarPresence.opposing
+  const leftTurnAppearance = appearanceSettings.turns.leftTurn
+  const rightTurnAppearance = appearanceSettings.turns.rightTurn
 
   return (
     <Box
@@ -871,8 +876,7 @@ function PreviewCard({
               x2="68"
               y2="18"
               stroke={stopBarPrimary.color}
-              strokeWidth="6"
-              strokeLinecap="round"
+              strokeWidth="2.5"
               opacity={stopBarPrimary.opacity}
             />
             <line
@@ -881,8 +885,7 @@ function PreviewCard({
               x2="68"
               y2="30"
               stroke={stopBarOpposing.color}
-              strokeWidth="6"
-              strokeLinecap="round"
+              strokeWidth="2.5"
               opacity={stopBarOpposing.opacity}
             />
           </>
@@ -942,18 +945,59 @@ function PreviewCard({
           </>
         )}
 
-        {kind === 'turn' && (
+        {kind === 'left-turn' && (
           <>
             <line
               x1="12"
               y1="34"
               x2="64"
               y2="14"
-              stroke="#111827"
+              stroke={leftTurnAppearance.color}
               strokeWidth="2"
+              opacity={leftTurnAppearance.opacity}
             />
-            <circle cx="20" cy="31" r="2.5" fill="#111827" />
-            <circle cx="56" cy="17" r="2.5" fill="#111827" />
+            <circle
+              cx="20"
+              cy="31"
+              r="2.5"
+              fill={leftTurnAppearance.color}
+              opacity={leftTurnAppearance.opacity}
+            />
+            <circle
+              cx="56"
+              cy="17"
+              r="2.5"
+              fill={leftTurnAppearance.color}
+              opacity={leftTurnAppearance.opacity}
+            />
+          </>
+        )}
+
+        {kind === 'right-turn' && (
+          <>
+            <line
+              x1="12"
+              y1="34"
+              x2="64"
+              y2="14"
+              stroke={rightTurnAppearance.color}
+              strokeWidth="2"
+              opacity={rightTurnAppearance.opacity}
+            />
+            <circle
+              cx="20"
+              cy="31"
+              r="2.5"
+              fill={rightTurnAppearance.color}
+              opacity={rightTurnAppearance.opacity}
+            />
+            <circle
+              cx="56"
+              cy="17"
+              r="2.5"
+              fill={rightTurnAppearance.color}
+              opacity={rightTurnAppearance.opacity}
+            />
           </>
         )}
 
@@ -2111,6 +2155,55 @@ export default function TimeSpaceSidebar({
                         />
                       ))}
                     </Box>
+                  </AppearanceSectionCard>
+                )
+              }
+
+              if (item.key === 'left-turn' || item.key === 'right-turn') {
+                const turnAppearance =
+                  item.key === 'left-turn'
+                    ? styleAppearance.turns.leftTurn
+                    : styleAppearance.turns.rightTurn
+
+                return (
+                  <AppearanceSectionCard
+                    key={item.key}
+                    title={item.label}
+                  >
+                    <DirectionAppearanceEditor
+                      label={item.label}
+                      appearance={turnAppearance}
+                      colorAriaLabel={`${item.label} color`}
+                      opacityAriaLabel={`${item.label} opacity`}
+                      onColorChange={(value) =>
+                        updateAppearance((current) => ({
+                          ...current,
+                          turns: {
+                            ...current.turns,
+                            [item.key === 'left-turn' ? 'leftTurn' : 'rightTurn']: {
+                              ...current.turns[
+                                item.key === 'left-turn' ? 'leftTurn' : 'rightTurn'
+                              ],
+                              color: value,
+                            },
+                          },
+                        }))
+                      }
+                      onOpacityChange={(value) =>
+                        updateAppearance((current) => ({
+                          ...current,
+                          turns: {
+                            ...current.turns,
+                            [item.key === 'left-turn' ? 'leftTurn' : 'rightTurn']: {
+                              ...current.turns[
+                                item.key === 'left-turn' ? 'leftTurn' : 'rightTurn'
+                              ],
+                              opacity: value,
+                            },
+                          },
+                        }))
+                      }
+                    />
                   </AppearanceSectionCard>
                 )
               }

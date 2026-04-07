@@ -21,6 +21,10 @@ export type TimeSpaceAppearanceSettings = {
     }
   }
   greenBands: Record<TimeSpaceAppearanceDirectionRole, TimeSpaceDirectionalAppearance>
+  turns: {
+    leftTurn: TimeSpaceDirectionalAppearance
+    rightTurn: TimeSpaceDirectionalAppearance
+  }
   detection: {
     laneByLaneCount: Record<
       TimeSpaceAppearanceDirectionRole,
@@ -54,6 +58,10 @@ export const TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS: TimeSpaceAppearanceSettings
     greenBands: {
       primary: { color: '#4F9BAC', opacity: 0.3 },
       opposing: { color: '#202D30', opacity: 0.2 },
+    },
+    turns: {
+      leftTurn: { color: Color.Black, opacity: 1 },
+      rightTurn: { color: Color.Black, opacity: 1 },
     },
     detection: {
       laneByLaneCount: {
@@ -92,6 +100,10 @@ export function createDefaultTimeSpaceAppearanceSettings(): TimeSpaceAppearanceS
       opposing: {
         ...TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS.greenBands.opposing,
       },
+    },
+    turns: {
+      leftTurn: { ...TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS.turns.leftTurn },
+      rightTurn: { ...TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS.turns.rightTurn },
     },
     detection: {
       laneByLaneCount: {
@@ -336,6 +348,14 @@ export function applyTimeSpaceAppearanceToOption(
       return role
         ? applyLineAppearance(series, appearance.detection.advanceCount[role])
         : series
+    }
+
+    if (name.startsWith('Left Turn ')) {
+      return applyLineAppearance(series, appearance.turns.leftTurn)
+    }
+
+    if (name.startsWith('Right Turn ')) {
+      return applyLineAppearance(series, appearance.turns.rightTurn)
     }
 
     if (name.startsWith('Stop Bar Presence ')) {

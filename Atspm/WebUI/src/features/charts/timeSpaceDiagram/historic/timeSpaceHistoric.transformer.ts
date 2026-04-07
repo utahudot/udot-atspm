@@ -903,7 +903,7 @@ function generateStopBarPresenceEventLines(
             opacity: 1,
             fill: color,
             fillOpacity: opacity,
-            lineWidth: 3,
+            lineWidth: 2,
           },
         }
       },

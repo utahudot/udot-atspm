@@ -97,6 +97,24 @@ function buildTransitNoDataOption(): EChartsOption {
   }
 }
 
+function buildTurnOption(): EChartsOption {
+  return {
+    legend: {
+      data: ['Cycles EB', 'Left Turn EB', 'Right Turn EB'],
+      selected: {
+        'Cycles EB': true,
+        'Left Turn EB': false,
+        'Right Turn EB': false,
+      },
+    },
+    series: [
+      createSeries('Cycles EB'),
+      createSeries('Left Turn EB'),
+      createSeries('Right Turn EB'),
+    ],
+  }
+}
+
 function buildPedestrianNoDataOption(): EChartsOption {
   return {
     legend: {
@@ -607,5 +625,47 @@ describe('TimeSpaceSidebar directional controls', () => {
     expect(screen.getByText('Transit Priority')).not.toBeNull()
     expect(screen.getByText('TSP Request')).not.toBeNull()
     expect(screen.getByText('TSP Service')).not.toBeNull()
+  })
+
+  it('updates turn appearance settings from the styles tab controls', () => {
+    jest.useFakeTimers()
+    const onAppearanceChange = jest.fn()
+
+    try {
+      render(
+        <TimeSpaceSidebar
+          option={buildTurnOption()}
+          selectedSeries={{
+            'Cycles EB': true,
+            'Left Turn EB': false,
+            'Right Turn EB': false,
+          }}
+          suppressedDirections={{}}
+          onSetSeriesVisibility={jest.fn()}
+          onToggleDirectionVisibility={jest.fn()}
+          appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
+          onAppearanceChange={onAppearanceChange}
+          activeTab="styles"
+          showTabs={false}
+        />
+      )
+
+      fireEvent.change(screen.getByLabelText('Left Turn color'), {
+        target: { value: '#222222' },
+      })
+
+      act(() => {
+        jest.advanceTimersByTime(150)
+      })
+
+      const updater = onAppearanceChange.mock.calls[0][0] as (
+        current: ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
+      ) => ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
+      const nextAppearance = updater(createDefaultTimeSpaceAppearanceSettings())
+
+      expect(nextAppearance.turns.leftTurn.color).toBe('#222222')
+    } finally {
+      jest.useRealTimers()
+    }
   })
 })
