@@ -1533,6 +1533,9 @@ export function getDistancesLabelOption(
     name: `Labels distance`,
     type: 'custom',
     z: 4,
+    silent: true,
+    selectedMode: false,
+    tooltip: { show: false },
     renderItem: (params, api) => {
       if (params.dataIndex === dataPoints.length - 1) {
         return
@@ -1556,6 +1559,8 @@ export function getDistancesLabelOption(
 
       return {
         type: 'group',
+        silent: true,
+        emphasisDisabled: true,
         children: [
           {
             type: 'line',

@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { IndianaEvent } from '@/api/data'
 import {
   createDisplayProps,
   createLegend,
@@ -57,10 +56,16 @@ import { PedestrianInterval } from '../../timingAndActuation/types'
 
 const opacity = 1
 const MIN_SEGMENT = 2000
-const Y_AXIS_PADDING = 250
 const DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
+const Y_AXIS_EDGE_BUFFER_PX = 25
+const Y_AXIS_PADDING =
+  Y_AXIS_EDGE_BUFFER_PX * DISPLAY_DISTANCE_UNITS_PER_PIXEL
 const MIN_ROW_HEIGHT_PX = 100
 const DISPLAY_HEIGHT_BASE = 220
+const PASSIVE_DETECTION_SERIES_PROPS = {
+  silent: true,
+  tooltip: { show: false },
+} as const
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
@@ -108,7 +113,7 @@ export default function transformTimeSpaceHistoricData(
   return result
 }
 const PEDESTRIAN_LINE_WIDTH = 0.8
-const PEDESTRIAN_LINE_Y_OFFSET = 0
+const PEDESTRIAN_LINE_OFFSET_PX = 13
 const PEDESTRIAN_ZIGZAG_AMPLITUDE = 2
 const PEDESTRIAN_ZIGZAG_STEP_PX = 3
 const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
@@ -630,21 +635,29 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       {
         name: `Early Green (113)`,
         icon: triangleSvgSymbol,
-        itemStyle: { color: Color.Black },
+        itemStyle: {
+          color: Color.White,
+          borderColor: Color.Black,
+          borderWidth: 1.5,
+        },
       },
       {
         name: `Extend Green (114)`,
-        itemStyle: { color: 'black' },
+        itemStyle: {
+          color: Color.White,
+          borderColor: Color.Black,
+          borderWidth: 1.5,
+        },
       },
       {
         name: `TSP Request (112-115)`,
         icon: SolidLineSeriesSymbol,
-        itemStyle: { color: Color.Red },
+        itemStyle: { color: Color.Black },
       },
       {
         name: `TSP Service (118-119)`,
         icon: SolidLineSeriesSymbol,
-        itemStyle: { color: Color.LightBlue },
+        itemStyle: { color: Color.Black },
       },
     ],
     selected: {
@@ -714,6 +727,7 @@ function generateLaneByLaneCountEventLines(
       type: 'line',
       symbol: 'none',
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       lineStyle: {
         width: 2,
         color,
@@ -791,6 +805,7 @@ function generateAdvanceCountEventLines(
       type: 'line',
       symbol: 'none',
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       lineStyle: {
         width: 2,
         color,
@@ -847,6 +862,7 @@ function generateStopBarPresenceEventLines(
       clip: true,
       selectedMode: false,
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       renderItem: function (params, api) {
         const i = params.dataIndex
         if (!dataPoints || i >= dataPoints.length - 1 || i % 2 !== 0) {
@@ -887,7 +903,7 @@ function generateStopBarPresenceEventLines(
             opacity: 1,
             fill: color,
             fillOpacity: opacity,
-            lineWidth: 3,
+            lineWidth: 2,
           },
         }
       },
@@ -918,6 +934,7 @@ function generatePedestrianIntervalLines(
   idScope = 'default'
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   data.forEach((location, i) => {
     if (!location.pedestrianIntervals?.length) return
@@ -945,7 +962,7 @@ function generatePedestrianIntervalLines(
         const distance = api.value(3)
         const p1 = api.coord([x1, distance])
         const p2 = api.coord([x2, distance])
-        const y = p1[1] + PEDESTRIAN_LINE_Y_OFFSET
+        const y = p1[1] + directionMultiplier * PEDESTRIAN_LINE_OFFSET_PX
 
         return createPedestrianIntervalShape(
           interval as number,
@@ -1186,6 +1203,7 @@ function buildCycleEventMarkersOnCyclesSeries(
   idScope = 'default'
 ): SeriesOption[] {
   const result: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   rows.forEach((row, i) => {
     const yValue = distanceData[i]
@@ -1195,7 +1213,7 @@ function buildCycleEventMarkersOnCyclesSeries(
     const rowEnd = Date.parse(row.end)
     if (!Number.isFinite(rowStart) || !Number.isFinite(rowEnd)) return
 
-    const tspEvents = (row.tspEvents ?? []) as IndianaEvent[]
+    const tspEvents = row.tspEvents ?? []
     if (!tspEvents.length) return
     const earlyGreens: Array<[string, number]> = []
     const extendGreens: Array<[string, number]> = []
@@ -1219,7 +1237,7 @@ function buildCycleEventMarkersOnCyclesSeries(
       if (seen.has(key)) return
       seen.add(key)
 
-      const point: [string, number] = [timestamp, yValue - 100]
+      const point: [string, number] = [timestamp, yValue]
 
       if (e.eventCode === TSP_CODES.EarlyGreen) {
         earlyGreens.push(point)
@@ -1238,9 +1256,14 @@ function buildCycleEventMarkersOnCyclesSeries(
       name,
       id,
       symbol: symbol ?? 'circle',
-      symbolSize: 9,
-      itemStyle: { color: Color.Black },
-      z: 6,
+      symbolSize: 7,
+      symbolOffset: [0, directionMultiplier * TSP_MARKER_OFFSET_PX],
+      itemStyle: {
+        color: Color.White,
+        borderColor: Color.Black,
+        borderWidth: 1.5,
+      },
+      z: TSP_MARKER_Z,
       tooltip: {
         show: true,
         formatter: (p: any) => `${p.seriesName} ${p?.value?.[0] ?? ''}`,
@@ -1280,8 +1303,14 @@ type TspHistoricEvent = {
   timestampMs: number
 }
 
-const CYCLE_BAND_HEIGHT = 10
 const TSP_OVERLAY_Z = 7
+const TSP_REQUEST_BAND_HEIGHT_PX = 2
+const TSP_SERVICE_BAND_HEIGHT_PX = 5
+const TSP_SERVICE_OVERLAY_Z = TSP_OVERLAY_Z + 1
+const TSP_SERVICE_OFFSET_PX = 20
+const TSP_REQUEST_OFFSET_PX = 20
+const TSP_MARKER_OFFSET_PX = 20
+const TSP_MARKER_Z = TSP_SERVICE_OVERLAY_Z + 1
 
 function buildTspRequestAndServiceLineSeries(
   rows: RawTimeSpaceHistoricData[] = [],
@@ -1289,6 +1318,7 @@ function buildTspRequestAndServiceLineSeries(
   idScope = 'default'
 ): SeriesOption[] {
   const series: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   rows.forEach((row, i) => {
     const yValue = distanceData[i]
@@ -1298,7 +1328,7 @@ function buildTspRequestAndServiceLineSeries(
     const rowEndMs = Date.parse(row.end)
     if (!Number.isFinite(rowStartMs) || !Number.isFinite(rowEndMs)) return
 
-    const tspEvents = (row.tspEvents ?? []) as IndianaEvent[]
+    const tspEvents = row.tspEvents ?? []
     if (!tspEvents.length) return
 
     const relevantEvents = tspEvents
@@ -1353,8 +1383,8 @@ function buildTspRequestAndServiceLineSeries(
 
     let requestStart: TspHistoricEvent | null = null
     let serviceStart: TspHistoricEvent | null = null
-    const tspRequestData: ((string | number)[] | null)[] = []
-    const tspServiceData: ((string | number)[] | null)[] = []
+    const tspRequestData: [string, string, number][] = []
+    const tspServiceData: [string, string, number][] = []
 
     relevantEvents.forEach((event) => {
       if (event.code === TSP_CODES.CheckIn) {
@@ -1364,11 +1394,7 @@ function buildTspRequestAndServiceLineSeries(
 
       if (event.code === TSP_CODES.CheckOut) {
         if (requestStart && event.timestampMs > requestStart.timestampMs) {
-          tspRequestData.push(
-            [requestStart.timestamp, yValue - 60],
-            [event.timestamp, yValue - 60],
-            null
-          )
+          tspRequestData.push([requestStart.timestamp, event.timestamp, yValue])
         }
         requestStart = null
         return
@@ -1381,11 +1407,7 @@ function buildTspRequestAndServiceLineSeries(
 
       if (event.code === TSP_CODES.ServiceEnd) {
         if (serviceStart && event.timestampMs > serviceStart.timestampMs) {
-          tspServiceData.push(
-            [serviceStart.timestamp, yValue],
-            [event.timestamp, yValue],
-            null
-          )
+          tspServiceData.push([serviceStart.timestamp, event.timestamp, yValue])
         }
         serviceStart = null
       }
@@ -1395,15 +1417,49 @@ function buildTspRequestAndServiceLineSeries(
       series.push({
         name: 'TSP Request (112-115)',
         id: `TSP Request ${row.locationIdentifier} row-${i} ${idScope}`,
-        type: 'line',
+        type: 'custom',
+        clip: true,
+        encode: { x: [0, 1], y: 2 },
         data: tspRequestData,
-        symbol: 'none',
-        lineStyle: {
-          width: CYCLE_BAND_HEIGHT,
-          color: Color.Red,
-          opacity: 0.95,
-        },
         z: TSP_OVERLAY_Z,
+        renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+          const startValue = api.value(0)
+          const endValue = api.value(1)
+          const rowY = Number(api.value(2))
+          const startMs =
+            typeof startValue === 'number'
+              ? startValue
+              : Date.parse(String(startValue))
+          const endMs =
+            typeof endValue === 'number' ? endValue : Date.parse(String(endValue))
+          if (
+            !Number.isFinite(startMs) ||
+            !Number.isFinite(endMs) ||
+            !Number.isFinite(rowY)
+          ) {
+            return
+          }
+
+          const startPoint = api.coord([startMs, rowY])
+          const endPoint = api.coord([endMs, rowY])
+          const centerY = startPoint[1] + directionMultiplier * TSP_REQUEST_OFFSET_PX
+
+          return {
+            type: 'rect',
+            z2: TSP_OVERLAY_Z,
+            shape: {
+              x: Math.min(startPoint[0], endPoint[0]),
+              y: centerY - TSP_REQUEST_BAND_HEIGHT_PX / 2,
+              width: Math.max(1, Math.abs(endPoint[0] - startPoint[0])),
+              height: TSP_REQUEST_BAND_HEIGHT_PX,
+            },
+            style: {
+              fill: Color.Black,
+              opacity: 0.95,
+            },
+            emphasisDisabled: true,
+          }
+        },
         tooltip: { show: false },
       })
     }
@@ -1412,15 +1468,52 @@ function buildTspRequestAndServiceLineSeries(
       series.push({
         name: 'TSP Service (118-119)',
         id: `TSP Service ${row.locationIdentifier} row-${i} ${idScope}`,
-        type: 'line',
+        type: 'custom',
+        clip: true,
+        encode: { x: [0, 1], y: 2 },
         data: tspServiceData,
-        symbol: 'none',
-        lineStyle: {
-          width: CYCLE_BAND_HEIGHT,
-          color: Color.LightBlue,
-          opacity: 0.95,
+        z: TSP_SERVICE_OVERLAY_Z,
+        renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+          const startValue = api.value(0)
+          const endValue = api.value(1)
+          const rowY = Number(api.value(2))
+          const startMs =
+            typeof startValue === 'number'
+              ? startValue
+              : Date.parse(String(startValue))
+          const endMs =
+            typeof endValue === 'number' ? endValue : Date.parse(String(endValue))
+          if (
+            !Number.isFinite(startMs) ||
+            !Number.isFinite(endMs) ||
+            !Number.isFinite(rowY)
+          ) {
+            return
+          }
+
+          const startPoint = api.coord([startMs, rowY])
+          const endPoint = api.coord([endMs, rowY])
+          const centerY = startPoint[1] + directionMultiplier * TSP_SERVICE_OFFSET_PX
+          const x = Math.min(startPoint[0], endPoint[0])
+          const width = Math.max(1, Math.abs(endPoint[0] - startPoint[0]))
+          const y = centerY - TSP_SERVICE_BAND_HEIGHT_PX / 2
+
+          return {
+            type: 'rect',
+            z2: TSP_SERVICE_OVERLAY_Z,
+            shape: {
+              x,
+              y,
+              width,
+              height: TSP_SERVICE_BAND_HEIGHT_PX,
+            },
+            style: {
+              fill: Color.Black,
+              opacity: 0.95,
+            },
+            emphasisDisabled: true,
+          }
         },
-        z: TSP_OVERLAY_Z,
         tooltip: { show: false },
       })
     }
@@ -1428,3 +1521,4 @@ function buildTspRequestAndServiceLineSeries(
 
   return series
 }
+

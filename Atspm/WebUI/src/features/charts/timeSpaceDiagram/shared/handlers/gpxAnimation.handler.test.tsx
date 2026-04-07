@@ -148,6 +148,13 @@ describe('gpxAnimation handler', () => {
       'gpx-upload-1',
     ])
     expect(getSeriesById(chart, 'gpx-upload-1')?.name).toBe('GPX Tracks')
+    expect(
+      (
+        getSeriesById(chart, 'gpx-upload-1') as SeriesOption & {
+          lineStyle?: { type?: string }
+        }
+      )?.lineStyle?.type
+    ).toBe('dotted')
 
     rerender({ uploads: [] })
 

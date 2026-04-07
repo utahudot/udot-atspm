@@ -35,11 +35,17 @@ import {
 } from '../types'
 import TimeSpaceSidebar, {
   getSidebarDirectionControls,
+  hasTimeSpaceStyleContent,
   SidebarDirectionRole,
   SidebarTab,
   TIME_SPACE_GUIDE_WIDTH,
   TimeSpaceSidebarTabs,
 } from './TimeSpaceSidebar'
+import {
+  applyTimeSpaceAppearanceToOption,
+  createDefaultTimeSpaceAppearanceSettings,
+  TimeSpaceAppearanceSettings,
+} from '../timeSpaceAppearance'
 
 export interface TimeSpaceChartProps extends ApacheEChartsProps {
   gpxEntries?: GpxUploadOptions[]
@@ -1283,6 +1289,12 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(false)
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('legend')
+  const defaultAppearanceSettings = useMemo(
+    () => createDefaultTimeSpaceAppearanceSettings(),
+    []
+  )
+  const [appearanceSettings, setAppearanceSettings] =
+    useState<TimeSpaceAppearanceSettings>(() => defaultAppearanceSettings)
   const [showPhaseInfo, setShowPhaseInfo] = useState(true)
   const [headerHeight, setHeaderHeight] = useState(0)
   const [stickyTopAxis, setStickyTopAxis] = useState<StickyTopAxis | null>(null)
@@ -1297,6 +1309,16 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           !entry?.error &&
           Array.isArray(entry.parsedData) &&
           entry.parsedData.length > 0
+      ),
+    [gpxEntries]
+  )
+  const hasSrmTracks = useMemo(
+    () =>
+      (gpxEntries ?? []).some(
+        (entry) =>
+          !entry?.error &&
+          Array.isArray(entry.parsedEntityData) &&
+          entry.parsedEntityData.length > 0
       ),
     [gpxEntries]
   )
@@ -1348,6 +1370,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     () => getSidebarDirectionControls(optionWithOverlayLegend),
     [optionWithOverlayLegend]
   )
+  const hasStyleContent = useMemo(
+    () => hasTimeSpaceStyleContent(optionWithOverlayLegend),
+    [optionWithOverlayLegend]
+  )
   const directionRoleBySeriesName = useMemo(() => {
     const nextMap = new Map<string, SidebarDirectionRole>()
 
@@ -1392,13 +1418,39 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       opposing: primaryCardLeft + cardWidth + cardGapBetween + cardWidth / 2,
     }
   }, [stickyBottomAxis])
+  const styledSidebarOption = useMemo(
+    () =>
+      applyTimeSpaceAppearanceToOption(
+        sidebarAdjustedOption,
+        appearanceSettings,
+        directionRoleBySeriesName
+      ),
+    [appearanceSettings, directionRoleBySeriesName, sidebarAdjustedOption]
+  )
+  const defaultStyledSidebarOption = useMemo(
+    () =>
+      applyTimeSpaceAppearanceToOption(
+        sidebarAdjustedOption,
+        defaultAppearanceSettings,
+        directionRoleBySeriesName
+      ),
+    [defaultAppearanceSettings, directionRoleBySeriesName, sidebarAdjustedOption]
+  )
   const renderedOption = useMemo(
     () => ({
-      ...sidebarAdjustedOption,
-      xAxis: stripBottomAxisVisuals(sidebarAdjustedOption),
-      dataZoom: stripSliderDataZoomVisuals(sidebarAdjustedOption),
+      ...styledSidebarOption,
+      xAxis: stripBottomAxisVisuals(styledSidebarOption),
+      dataZoom: stripSliderDataZoomVisuals(styledSidebarOption),
     }),
-    [sidebarAdjustedOption]
+    [styledSidebarOption]
+  )
+  const defaultRenderedOption = useMemo(
+    () => ({
+      ...defaultStyledSidebarOption,
+      xAxis: stripBottomAxisVisuals(defaultStyledSidebarOption),
+      dataZoom: stripSliderDataZoomVisuals(defaultStyledSidebarOption),
+    }),
+    [defaultStyledSidebarOption]
   )
   const baseHeight = getCssLength(style?.height)
   const fullscreenViewportHeight = '100vh'
@@ -1526,6 +1578,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     const handleRestore = () => {
       setSelectedSeries(defaultSelectedSeries)
       setSuppressedDirections({})
+      setAppearanceSettings(defaultAppearanceSettings)
     }
 
     chart.on('restore', handleRestore)
@@ -1533,7 +1586,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     return () => {
       chart.off('restore', handleRestore)
     }
-  }, [chart, defaultSelectedSeries])
+  }, [chart, defaultAppearanceSettings, defaultSelectedSeries])
 
   useEffect(() => {
     if (!chart) return
@@ -1875,10 +1928,11 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     const chartInstance = chartInstanceRef.current
     if (!chartInstance) return
 
-    chartInstance.setOption(renderedOption, {
+    chartInstance.setOption(defaultRenderedOption, {
       notMerge: true,
       lazyUpdate: false,
     })
+    setAppearanceSettings(defaultAppearanceSettings)
     setSelectedSeries(defaultSelectedSeries)
     setSuppressedDirections({})
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
@@ -2119,6 +2173,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 activeTab={sidebarTab}
                 onChange={setSidebarTab}
                 hasLegendContent
+                hasStyleContent={hasStyleContent}
                 hasUploadContent={Boolean(sidebarUploadContent)}
                 mode="header"
               />
@@ -2461,6 +2516,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 suppressedDirections={suppressedDirections}
                 onSetSeriesVisibility={handleSetSeriesVisibility}
                 onToggleDirectionVisibility={handleToggleDirectionVisibility}
+                gpxTracksAvailable={hasGpxTracks}
+                srmTracksAvailable={hasSrmTracks}
+                appearanceSettings={appearanceSettings}
+                onAppearanceChange={setAppearanceSettings}
+                onResetAppearance={() =>
+                  setAppearanceSettings(defaultAppearanceSettings)
+                }
                 uploadContent={sidebarUploadContent}
                 activeTab={sidebarTab}
                 onTabChange={setSidebarTab}
