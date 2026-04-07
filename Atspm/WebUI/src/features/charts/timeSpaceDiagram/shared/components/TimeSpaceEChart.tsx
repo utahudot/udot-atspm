@@ -52,6 +52,7 @@ export interface TimeSpaceChartProps extends ApacheEChartsProps {
   ignoredLocations?: string[]
   onToggleIgnoredLocation?: (location: string) => void
   sidebarUploadContent?: ReactNode
+  isVisible?: boolean
 }
 
 type LocationToggleButton = {
@@ -1272,6 +1273,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     ignoredLocations = [],
     onToggleIgnoredLocation,
     sidebarUploadContent,
+    isVisible = true,
   } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
@@ -1525,7 +1527,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
         stickyBottomAxisChartRef.current = null
       }
     }
-  }, [theme, stickyBottomAxisOption])
+  }, [theme, stickyBottomAxis, stickyBottomAxisOption])
 
   useEffect(() => {
     setSelectedSeries(baseSelectedSeries)
@@ -1570,7 +1572,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     stickyChart.setOption(stickyBottomAxisOption, true)
     stickyChart.resize()
-  }, [stickyBottomAxisOption, isFullscreen, headerHeight])
+  }, [stickyBottomAxis, stickyBottomAxisOption, isFullscreen, headerHeight])
 
   useEffect(() => {
     if (!chart) return
@@ -1619,6 +1621,43 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isVisible) {
+      return
+    }
+
+    let firstRafId = 0
+    let secondRafId = 0
+
+    const syncVisibleChartLayout = () => {
+      const mainChart = chartInstanceRef.current
+      const stickyChart = stickyBottomAxisChartRef.current
+      const chartElement = chartRef.current
+
+      if (!mainChart || !chartElement) {
+        return
+      }
+
+      const { width, height } = chartElement.getBoundingClientRect()
+      if (width <= 0 || height <= 0) {
+        return
+      }
+
+      mainChart.resize()
+      stickyChart?.resize()
+      window.dispatchEvent(new Event('resize'))
+    }
+
+    firstRafId = window.requestAnimationFrame(() => {
+      secondRafId = window.requestAnimationFrame(syncVisibleChartLayout)
+    })
+
+    return () => {
+      window.cancelAnimationFrame(firstRafId)
+      window.cancelAnimationFrame(secondRafId)
+    }
+  }, [isVisible, chart, stickyBottomAxisOption])
 
   useEffect(() => {
     const node = headerRef.current
@@ -1762,11 +1801,20 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           return
         }
 
-        setStickyBottomAxis({
+        const nextAxis = {
           label: bottomAxisConfig.label,
           axisStart: x,
           axisEnd: x + width,
-        })
+        }
+
+        setStickyBottomAxis((current) =>
+          current &&
+          current.label === nextAxis.label &&
+          current.axisStart === nextAxis.axisStart &&
+          current.axisEnd === nextAxis.axisEnd
+            ? current
+            : nextAxis
+        )
       })
     }
 
@@ -1831,7 +1879,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       mainChart.off('datazoom', syncStickyBottomAxis)
       window.removeEventListener('resize', syncStickyBottomAxis)
     }
-  }, [chart, stickyBottomAxisOption])
+  }, [chart, stickyBottomAxis, stickyBottomAxisOption])
 
   useEffect(() => {
     const mainChart = chartInstanceRef.current
@@ -1879,7 +1927,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       stickyChart.off('datazoom', handleStickyBottomDataZoom)
       mainChart.off('datazoom', handleMainChartZoomLoop)
     }
-  }, [chart, stickyBottomAxisOption])
+  }, [chart, stickyBottomAxis, stickyBottomAxisOption])
 
   const handleSetSeriesVisibility = (
     seriesNames: string[],

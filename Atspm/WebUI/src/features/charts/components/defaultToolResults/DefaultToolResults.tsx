@@ -420,6 +420,7 @@ export default function TimeSpaceChart({
               id="time-space-chart"
               option={transformedData.data.chart}
               theme={theme.palette.mode}
+              isVisible={activeTab === 0}
               style={{
                 width: '100%',
                 height: `${chartHeight}px`,
