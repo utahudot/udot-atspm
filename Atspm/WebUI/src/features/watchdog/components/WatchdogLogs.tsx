@@ -84,6 +84,7 @@ interface WatchdogIgnoreEvent {
   componentId?: number | null
   issueType?: number | string
   phase?: number | string | null
+  key?: string | number | null
 }
 
 const normalizeWatchdogValue = (value: number | string | null | undefined) =>
@@ -260,12 +261,16 @@ const WatchDogLogs = () => {
 
         const matchesPhase = ignorePhase == null || ignorePhase === logPhase
 
+        const matchesKey = ignoreEvent?.key === logEvent?.key
+
         const matchesEvent =
           matchesLocation &&
           matchesIssueType &&
           matchesComponentType &&
           matchesComponentId &&
-          matchesPhase
+          matchesPhase &&
+          matchesKey
+
 
         if (!matchesEvent) return false
         if (isBefore(now, ignoreStart)) return false

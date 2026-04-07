@@ -23,6 +23,8 @@ import {
 import { GpxPoint } from './gpxFileParser'
 import type { SrmEntityTrack } from './srmFileParser'
 
+export const TIME_SPACE_GPX_TRACKS_LEGEND_NAME = 'GPX Tracks'
+
 // export interface TimeSpaceDetectorEvent {
 //   initialX: string
 //   finalX: string
@@ -105,7 +107,7 @@ export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {
   offset: number
-  cycleLength: number
+  cycleLength: number | null
   programmedSplit: number
   coordinatedPhases: boolean
   greenTimeEvents: TimeSpaceDetectorEvent[] | []
@@ -123,7 +125,7 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   tmcForPhase: TmcForPhaseDto
 
   order: number
-  cycleLength: number
+  cycleLength: number | null
   isPhaseOverLap: boolean
 
   tspNumberCheckins: number

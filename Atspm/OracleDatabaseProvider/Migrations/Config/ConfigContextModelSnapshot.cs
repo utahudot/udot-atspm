@@ -2594,6 +2594,11 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("IssueType")
                         .HasColumnType("NUMBER(10)");
 
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
                     b.Property<int>("LocationId")
                         .HasColumnType("NUMBER(10)");
 
@@ -2643,6 +2648,11 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     b.Property<int>("IssueType")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("NUMBER(10)");

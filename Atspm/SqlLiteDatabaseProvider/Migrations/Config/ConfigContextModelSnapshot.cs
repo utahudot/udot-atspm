@@ -2545,6 +2545,11 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("IssueType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("LocationId")
                         .HasColumnType("INTEGER");
 
@@ -2592,6 +2597,11 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
 
                     b.Property<int>("IssueType")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("INTEGER");
