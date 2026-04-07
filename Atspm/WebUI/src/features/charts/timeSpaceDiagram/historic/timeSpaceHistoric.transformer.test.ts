@@ -143,6 +143,47 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(distanceLabels?.tooltip).toMatchObject({ show: false })
   })
 
+  it('marks turn series as non-interactable', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            tmcForPhase: {
+              leftTurnEvents: [{ start: '2026-04-07T08:25:00Z' }] as never[],
+              rightTurnEvents: [{ start: '2026-04-07T08:26:00Z' }] as never[],
+            },
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    const leftTurn = series.find((entry) =>
+      String(entry.name).startsWith('Left Turn ')
+    )
+    const rightTurn = series.find((entry) =>
+      String(entry.name).startsWith('Right Turn ')
+    )
+
+    expect(leftTurn?.silent).toBe(true)
+    expect(leftTurn?.tooltip).toMatchObject({ show: false })
+    expect(rightTurn?.silent).toBe(true)
+    expect(rightTurn?.tooltip).toMatchObject({ show: false })
+  })
+
   it('does not synthesize TSP series when no TSP events are present', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,
