@@ -293,6 +293,7 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
     public class TurningMovementCountsOptions : MeasureOptionsBase, IBinSize
     {
         public int BinSize { get; set; }
+        public bool CombineThruRight { get; set; }
         public int MetricTypeId { get; internal set; } = 5;
         //public string LocationIdentifier { get; set; }
     }

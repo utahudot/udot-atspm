@@ -30,7 +30,7 @@ using Utah.Udot.NetStandardToolkit.Configuration;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Utah.Udot.NetStandardToolkit.Services.GitHubReleaseService;
 
-//git 1
+//git 2
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

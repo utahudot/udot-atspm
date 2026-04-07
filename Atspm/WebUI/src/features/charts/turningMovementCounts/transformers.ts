@@ -75,7 +75,14 @@ export default function transformTurningMovementCountsData(
   const directions = getAvailableTurningMovementDirections(
     response.data.table.map((row) => row.direction)
   )
-  const preferred = ['Left', 'Thru-Left', 'Thru', 'Thru-Right', 'Right']
+  const preferred = [
+    'Left',
+    'Thru-Left',
+    'Thru',
+    'Thru + Thru-Right',
+    'Thru-Right',
+    'Right',
+  ]
 
   const movementTypes = buildMovementTypeMap(
     response.data.table,
@@ -182,7 +189,7 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   const tooltip = createTooltip()
 
   const colorValues = Object.values(Color)
-
+  
   const series: SeriesOption[] = []
 
   if (lanes.length > 1) {
@@ -240,7 +247,14 @@ function formatTime(timestamp: string | Date) {
 }
 
 function compareMovementTypes(a: string, b: string) {
-  const movementOrder = ['Left', 'Thru-Left', 'Thru', 'Thru-Right', 'Right']
+  const movementOrder = [
+    'Left',
+    'Thru-Left',
+    'Thru',
+    'Thru + Thru-Right',
+    'Thru-Right',
+    'Right',
+  ]
   const orderA = movementOrder.indexOf(a)
   const orderB = movementOrder.indexOf(b)
 
@@ -311,7 +325,7 @@ function buildPeakHourRow(
     )?.peakHourVolume?.value ?? 0
 
   const start = new Date(peakHour.key)
-  const desc = `${formatTime(start)} – ${formatTime(addHours(start, 1))}`
+  const desc = `${formatTime(start)} - ${formatTime(addHours(start, 1))}`
 
   const row: TableRow = [desc]
   let binTotal = 0
