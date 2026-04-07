@@ -101,6 +101,8 @@ export interface TimeSpaceSidebarProps {
   suppressedDirections?: Partial<Record<SidebarDirectionRole, boolean>>
   onSetSeriesVisibility: (seriesNames: string[], visible: boolean) => void
   onToggleDirectionVisibility?: (role: SidebarDirectionRole) => void
+  gpxTracksAvailable?: boolean
+  srmTracksAvailable?: boolean
   appearanceSettings?: TimeSpaceAppearanceSettings
   onAppearanceChange?: Dispatch<SetStateAction<TimeSpaceAppearanceSettings>>
   onResetAppearance?: () => void
@@ -417,18 +419,39 @@ function hasSeriesDataForDefinition(
   })
 }
 
+type SidebarAvailabilityOverrides = Partial<
+  Record<'gpx-tracks' | 'srm-entity', boolean>
+>
+
+function hasSidebarItemData(
+  definition: SidebarItemDefinition,
+  option: EChartsOption | undefined,
+  availabilityOverrides?: SidebarAvailabilityOverrides
+) {
+  const availabilityOverride = availabilityOverrides?.[definition.key as
+    | 'gpx-tracks'
+    | 'srm-entity']
+
+  if (typeof availabilityOverride === 'boolean') {
+    return availabilityOverride
+  }
+
+  return hasSeriesDataForDefinition(option, definition)
+}
+
 function getSidebarItemNote(
   definition: SidebarItemDefinition,
-  option?: EChartsOption
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
 ) {
   if (definition.key === 'gpx-tracks') {
-    return hasSeriesDataForDefinition(option, definition)
+    return hasSidebarItemData(definition, option, availabilityOverrides)
       ? undefined
       : 'Upload GPX data from the Uploads tab to show these tracks.'
   }
 
   if (definition.key === 'srm-entity') {
-    return hasSeriesDataForDefinition(option, definition)
+    return hasSidebarItemData(definition, option, availabilityOverrides)
       ? undefined
       : 'Upload SRM data from the Uploads tab to show these tracks.'
   }
@@ -438,9 +461,10 @@ function getSidebarItemNote(
 
 function getSidebarItemUnavailableReason(
   definition: SidebarItemDefinition,
-  option?: EChartsOption
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
 ) {
-  if (hasSeriesDataForDefinition(option, definition)) {
+  if (hasSidebarItemData(definition, option, availabilityOverrides)) {
     return undefined
   }
 
@@ -590,7 +614,10 @@ export function getSidebarDirectionControls(
   })
 }
 
-function buildSidebarModel(option?: EChartsOption): SidebarLegendModel {
+function buildSidebarModel(
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
+): SidebarLegendModel {
   const legend = getPrimaryLegend(option)
   if (!Array.isArray(legend?.data)) {
     return {
@@ -634,8 +661,12 @@ function buildSidebarModel(option?: EChartsOption): SidebarLegendModel {
       label: definition.label,
       category: definition.category,
       description: definition.description,
-      note: getSidebarItemNote(definition, option),
-      unavailableReason: getSidebarItemUnavailableReason(definition, option),
+      note: getSidebarItemNote(definition, option, availabilityOverrides),
+      unavailableReason: getSidebarItemUnavailableReason(
+        definition,
+        option,
+        availabilityOverrides
+      ),
       details: definition.details,
       preview: definition.preview,
       control: definition.control,
@@ -686,8 +717,11 @@ function getStylableItems(items: SidebarItem[]) {
   return items.filter((item) => STYLABLE_ITEM_KEYS.has(item.key))
 }
 
-export function hasTimeSpaceStyleContent(option?: EChartsOption) {
-  const { items } = buildSidebarModel(option)
+export function hasTimeSpaceStyleContent(
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
+) {
+  const { items } = buildSidebarModel(option, availabilityOverrides)
   return getStylableItems(items).length > 0
 }
 
@@ -1717,6 +1751,8 @@ export default function TimeSpaceSidebar({
   suppressedDirections = {},
   onSetSeriesVisibility,
   onToggleDirectionVisibility,
+  gpxTracksAvailable,
+  srmTracksAvailable,
   appearanceSettings,
   onAppearanceChange,
   onResetAppearance,
@@ -1725,7 +1761,14 @@ export default function TimeSpaceSidebar({
   onTabChange,
   showTabs = true,
 }: TimeSpaceSidebarProps) {
-  const { directionControls, items } = buildSidebarModel(option)
+  const availabilityOverrides = {
+    'gpx-tracks': gpxTracksAvailable,
+    'srm-entity': srmTracksAvailable,
+  } satisfies SidebarAvailabilityOverrides
+  const { directionControls, items } = buildSidebarModel(
+    option,
+    availabilityOverrides
+  )
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
   >({})

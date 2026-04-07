@@ -468,6 +468,30 @@ describe('TimeSpaceSidebar directional controls', () => {
     ).not.toBeNull()
   })
 
+  it('shows a GPX Tracks toggle when uploaded GPX data is available', () => {
+    render(
+      <TimeSpaceSidebar
+        option={buildGpxNoDataOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'GPX Tracks': true,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        gpxTracksAvailable={true}
+        showTabs={false}
+      />
+    )
+
+    expect(screen.getByText('GPX Tracks')).not.toBeNull()
+    expect(
+      screen.getByRole('checkbox', { name: 'Toggle GPX Tracks' })
+    ).not.toBeNull()
+    expect(screen.queryByLabelText('GPX Tracks info')).toBeNull()
+    expect(screen.queryByLabelText('GPX Tracks unavailable')).toBeNull()
+  })
+
   it('shows generic no-data language for other legend items when data is missing', async () => {
     render(
       <TimeSpaceSidebar

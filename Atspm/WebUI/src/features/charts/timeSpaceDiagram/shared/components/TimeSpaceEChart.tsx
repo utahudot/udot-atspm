@@ -1312,6 +1312,16 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       ),
     [gpxEntries]
   )
+  const hasSrmTracks = useMemo(
+    () =>
+      (gpxEntries ?? []).some(
+        (entry) =>
+          !entry?.error &&
+          Array.isArray(entry.parsedEntityData) &&
+          entry.parsedEntityData.length > 0
+      ),
+    [gpxEntries]
+  )
   const baseSelectedSeries = useMemo(() => getLegendSelectedMap(option), [option])
   const defaultSelectedSeries = useMemo(() => {
     const next = { ...baseSelectedSeries }
@@ -2506,6 +2516,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 suppressedDirections={suppressedDirections}
                 onSetSeriesVisibility={handleSetSeriesVisibility}
                 onToggleDirectionVisibility={handleToggleDirectionVisibility}
+                gpxTracksAvailable={hasGpxTracks}
+                srmTracksAvailable={hasSrmTracks}
                 appearanceSettings={appearanceSettings}
                 onAppearanceChange={setAppearanceSettings}
                 onResetAppearance={() =>
