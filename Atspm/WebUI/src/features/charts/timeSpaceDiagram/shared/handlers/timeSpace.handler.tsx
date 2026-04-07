@@ -50,11 +50,9 @@ const POINT_WITH_GAPS_SERIES_PREFIXES = [
   'AC',
   'Left Turn',
   'Right Turn',
-  'TSP Request',
-  'TSP Service',
 ]
 
-const RANGE_SERIES_PREFIXES = ['PI']
+const RANGE_SERIES_PREFIXES = ['PI', 'TSP Request', 'TSP Service']
 
 function hasSeriesPrefix(id: string, prefix: string) {
   return id === prefix || id.startsWith(`${prefix} `)

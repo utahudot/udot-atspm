@@ -218,27 +218,19 @@ function buildOptionWithAssociatedSeries(): EChartsOption {
       },
       {
         id: 'Early Green 1 row-0 primary',
-        data: [['2026-03-20T00:00:01Z', -90]],
+        data: [['2026-03-20T00:00:01Z', 10]],
       },
       {
         id: 'Extend Green 1 row-0 primary',
-        data: [['2026-03-20T00:00:02Z', -90]],
+        data: [['2026-03-20T00:00:02Z', 10]],
       },
       {
         id: 'TSP Request 1 row-0 primary',
-        data: [
-          ['2026-03-20T00:00:03Z', -50],
-          ['2026-03-20T00:00:05Z', -50],
-          null,
-        ],
+        data: [['2026-03-20T00:00:03Z', '2026-03-20T00:00:05Z', 10]],
       },
       {
         id: 'TSP Service 1 row-0 primary',
-        data: [
-          ['2026-03-20T00:00:04Z', 10],
-          ['2026-03-20T00:00:06Z', 10],
-          null,
-        ],
+        data: [['2026-03-20T00:00:04Z', '2026-03-20T00:00:06Z', 10]],
       },
       {
         id: 'PI 2 Eastbound row-1 primary',
@@ -246,11 +238,7 @@ function buildOptionWithAssociatedSeries(): EChartsOption {
       },
       {
         id: 'TSP Request 2 row-1 primary',
-        data: [
-          ['2026-03-20T00:00:13Z', -40],
-          ['2026-03-20T00:00:15Z', -40],
-          null,
-        ],
+        data: [['2026-03-20T00:00:13Z', '2026-03-20T00:00:15Z', 20]],
       },
       {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
@@ -428,28 +416,30 @@ describe('useTimeSpaceHandler', () => {
       getSeriesData(chart, 'SRM 1 bus-42 0 Eastbound row-0 primary')
     ).toEqual([[shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), 10]])
     expect(getSeriesData(chart, 'Early Green 1 row-0 primary')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), -90],
+      [shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), 10],
     ])
     expect(getSeriesData(chart, 'Extend Green 1 row-0 primary')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:02Z', offsetMs), -90],
+      [shiftTimestamp('2026-03-20T00:00:02Z', offsetMs), 10],
     ])
     expect(getSeriesData(chart, 'TSP Request 1 row-0 primary')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:03Z', offsetMs), -50],
-      [shiftTimestamp('2026-03-20T00:00:05Z', offsetMs), -50],
-      null,
+      [
+        shiftTimestamp('2026-03-20T00:00:03Z', offsetMs),
+        shiftTimestamp('2026-03-20T00:00:05Z', offsetMs),
+        10,
+      ],
     ])
     expect(getSeriesData(chart, 'TSP Service 1 row-0 primary')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:04Z', offsetMs), 10],
-      [shiftTimestamp('2026-03-20T00:00:06Z', offsetMs), 10],
-      null,
+      [
+        shiftTimestamp('2026-03-20T00:00:04Z', offsetMs),
+        shiftTimestamp('2026-03-20T00:00:06Z', offsetMs),
+        10,
+      ],
     ])
     expect(getSeriesData(chart, 'PI 2 Eastbound row-1 primary')).toEqual([
       ['2026-03-20T00:00:10Z', '2026-03-20T00:00:14Z', 21, 20],
     ])
     expect(getSeriesData(chart, 'TSP Request 2 row-1 primary')).toEqual([
-      ['2026-03-20T00:00:13Z', -40],
-      ['2026-03-20T00:00:15Z', -40],
-      null,
+      ['2026-03-20T00:00:13Z', '2026-03-20T00:00:15Z', 20],
     ])
     expect(getLocationAxisOffsets(chart)).toEqual([2, 0])
   })

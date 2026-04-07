@@ -405,7 +405,7 @@ describe('TimeSpaceSidebar directional controls', () => {
     expect(screen.getByText('GPX Tracks')).not.toBeNull()
     expect(
       screen.getByText(
-        'Uploaded GPX traces mapped to the corridor and drawn as black lines through the corridor.'
+        'Uploaded GPX traces mapped to the corridor and drawn through the corridor.'
       )
     ).not.toBeNull()
     expect(

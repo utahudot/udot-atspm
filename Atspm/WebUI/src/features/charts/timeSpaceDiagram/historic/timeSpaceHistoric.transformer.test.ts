@@ -111,4 +111,35 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(stopBarPresence?.silent).toBe(true)
     expect(stopBarPresence?.tooltip).toMatchObject({ show: false })
   })
+
+  it('does not synthesize TSP series when no TSP events are present', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary'),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    expect(
+      series.some((entry) => String(entry.name) === 'TSP Request (112-115)')
+    ).toBe(false)
+    expect(
+      series.some((entry) => String(entry.name) === 'TSP Service (118-119)')
+    ).toBe(false)
+  })
 })

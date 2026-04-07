@@ -211,7 +211,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Lane-by-Lane Count',
     category: 'Detection',
     description:
-      'Lane-level count detector traces. Primary uses dark blue; opposing uses orange.',
+      'Lane-level count detector traces for each corridor direction.',
     preview: 'detector-line',
     match: (name) => matchDirectionalPrefix(name, 'Lane by Lane Count'),
   },
@@ -220,7 +220,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Advance Count',
     category: 'Detection',
     description:
-      'Advance detector count traces upstream of the stop bar. Primary uses dark blue; opposing uses orange.',
+      'Advance detector count traces upstream of the stop bar for each corridor direction.',
     preview: 'detector-line',
     match: (name) => matchDirectionalPrefix(name, 'Advance Count'),
   },
@@ -238,7 +238,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Pedestrian Interval',
     category: 'Pedestrian',
     description:
-      'Black pedestrian state line showing the pedestrian interval and transition marks.',
+      'Pedestrian state line showing the pedestrian interval and transition marks.',
     details: [
       { glyph: 'solid-line', label: 'Walk' },
       { glyph: 'dotted-line', label: 'Clearance' },
@@ -268,7 +268,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
     category: 'Movements & Tracks',
     description:
-      'Uploaded GPX traces mapped to the corridor and drawn as black lines through the corridor.',
+      'Uploaded GPX traces mapped to the corridor and drawn through the corridor.',
     preview: 'gpx-track',
     control: 'visibility',
     match: (name) => (name === TIME_SPACE_GPX_TRACKS_LEGEND_NAME ? '' : null),
@@ -278,7 +278,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'SRM Entity',
     category: 'Movements & Tracks',
     description:
-      'SRM or connected-vehicle entity tracks drawn as black path lines through the corridor.',
+      'SRM or connected-vehicle entity tracks drawn through the corridor.',
     preview: 'srm',
     match: (name) => matchDirectionalPrefix(name, 'SRM Entity'),
   },
@@ -305,7 +305,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'TSP Request',
     category: 'Transit Priority',
     description:
-      'Red overlay band showing when a transit signal priority request was active.',
+      'Transit signal priority request interval.',
     preview: 'tsp-request',
     control: 'visibility',
     match: (name) => (name.startsWith('TSP Request') ? '' : null),
@@ -315,7 +315,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'TSP Service',
     category: 'Transit Priority',
     description:
-      'Blue overlay band showing when transit signal priority service was granted.',
+      'Thicker transit signal priority service interval overlaid on the request interval.',
     preview: 'tsp-service',
     control: 'visibility',
     match: (name) => (name.startsWith('TSP Service') ? '' : null),
@@ -981,35 +981,55 @@ function PreviewCard({
         )}
 
         {kind === 'triangle' && (
-          <polygon points="39,11 52,34 26,34" fill="#111827" />
+          <polygon
+            points="39,11 52,34 26,34"
+            fill={Color.White}
+            stroke={Color.Black}
+            strokeWidth="2"
+          />
         )}
 
-        {kind === 'circle' && <circle cx="39" cy="24" r="10" fill="#111827" />}
+        {kind === 'circle' && (
+          <circle
+            cx="39"
+            cy="24"
+            r="10"
+            fill={Color.White}
+            stroke={Color.Black}
+            strokeWidth="2"
+          />
+        )}
 
         {kind === 'tsp-request' && (
-          <line
-            x1="10"
-            y1="24"
-            x2="68"
-            y2="24"
-            stroke={appearanceSettings.tspRequest.color}
-            strokeWidth="8"
-            strokeLinecap="round"
+          <rect
+            x="10"
+            y="17"
+            width="54"
+            height="4"
+            fill={appearanceSettings.tspRequest.color}
             opacity={appearanceSettings.tspRequest.opacity}
           />
         )}
 
         {kind === 'tsp-service' && (
-          <line
-            x1="10"
-            y1="24"
-            x2="68"
-            y2="24"
-            stroke={appearanceSettings.tspService.color}
-            strokeWidth="8"
-            strokeLinecap="round"
-            opacity={appearanceSettings.tspService.opacity}
-          />
+          <>
+            <rect
+              x="10"
+              y="27"
+              width="54"
+              height="4"
+              fill={appearanceSettings.tspRequest.color}
+              opacity={appearanceSettings.tspRequest.opacity}
+            />
+            <rect
+              x="12"
+              y="25"
+              width="54"
+              height="8"
+              fill={appearanceSettings.tspService.color}
+              opacity={appearanceSettings.tspService.opacity}
+            />
+          </>
         )}
       </Box>
     </Box>

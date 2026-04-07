@@ -22,6 +22,8 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     appearance.detection.stopBarPresence.primary.opacity = 0.7
     appearance.tspRequest.color = '#56789a'
     appearance.tspRequest.opacity = 0.5
+    appearance.tspService.color = '#6789ab'
+    appearance.tspService.opacity = 0.45
 
     const option: EChartsOption = {
       series: [
@@ -36,11 +38,26 @@ describe('applyTimeSpaceAppearanceToOption', () => {
         },
         {
           name: 'TSP Request (112-115)',
-          type: 'line',
-          lineStyle: {
-            color: '#D55E00',
-            opacity: 0.95,
-          },
+          type: 'custom',
+          renderItem: jest.fn(() => ({
+            type: 'rect',
+            style: {
+              fill: '#D55E00',
+              opacity: 0.95,
+            },
+          })),
+          data: [[0, 0]],
+        },
+        {
+          name: 'TSP Service (118-119)',
+          type: 'custom',
+          renderItem: jest.fn(() => ({
+            type: 'rect',
+            style: {
+              fill: '#000000',
+              opacity: 0.95,
+            },
+          })),
           data: [[0, 0]],
         },
         {
@@ -115,28 +132,33 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     expect(
       (series[0].lineStyle as { color?: string; opacity?: number }).opacity
     ).toBe(0.65)
-    expect((series[1].lineStyle as { color?: string; opacity?: number }).color).toBe(
-      '#56789a'
-    )
-    expect(
-      (series[1].lineStyle as { color?: string; opacity?: number }).opacity
-    ).toBe(0.5)
+    const tspRequestGraphic = (
+      series[1] as SeriesOption & { renderItem: () => GraphicNode }
+    ).renderItem()
+    expect(tspRequestGraphic.style.fill).toBe('#56789a')
+    expect(tspRequestGraphic.style.opacity).toBe(0.5)
 
     const greenBandGraphic = (
-      series[2] as SeriesOption & { renderItem: () => GraphicNode }
+      series[3] as SeriesOption & { renderItem: () => GraphicNode }
     ).renderItem()
     expect(greenBandGraphic.style.fill).toBe('#234567')
     expect(greenBandGraphic.style.opacity).toBe(0.4)
 
+    const tspServiceGraphic = (
+      series[2] as SeriesOption & { renderItem: () => GraphicNode }
+    ).renderItem()
+    expect(tspServiceGraphic.style.fill).toBe('#6789ab')
+    expect(tspServiceGraphic.style.opacity).toBe(0.45)
+
     const stopBarGraphic = (
-      series[3] as SeriesOption & { renderItem: () => GraphicNode }
+      series[4] as SeriesOption & { renderItem: () => GraphicNode }
     ).renderItem()
     expect(stopBarGraphic.style.fill).toBe('#456789')
     expect(stopBarGraphic.style.fillOpacity).toBe(0.7)
     expect(stopBarGraphic.style.opacity).toBe(1)
 
     const cycleGraphic = (
-      series[4] as SeriesOption & { renderItem: () => GraphicNode }
+      series[5] as SeriesOption & { renderItem: () => GraphicNode }
     ).renderItem()
     expect(cycleGraphic.children[0].style.fill).toBe('#123456')
     expect(cycleGraphic.children[0].style.opacity).toBe(0.55)

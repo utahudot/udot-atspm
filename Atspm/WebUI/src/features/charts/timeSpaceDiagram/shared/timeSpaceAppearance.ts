@@ -74,7 +74,7 @@ export const TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS: TimeSpaceAppearanceSettings
       opacity: 0.95,
     },
     tspService: {
-      color: Color.LightBlue,
+      color: Color.Black,
       opacity: 0.95,
     },
   }
@@ -349,11 +349,15 @@ export function applyTimeSpaceAppearanceToOption(
     }
 
     if (name === 'TSP Request (112-115)') {
-      return applyLineAppearance(series, appearance.tspRequest)
+      return series.type === 'custom'
+        ? applyGraphicFillAppearance(series, appearance.tspRequest)
+        : applyLineAppearance(series, appearance.tspRequest)
     }
 
     if (name === 'TSP Service (118-119)') {
-      return applyLineAppearance(series, appearance.tspService)
+      return series.type === 'custom'
+        ? applyGraphicFillAppearance(series, appearance.tspService)
+        : applyLineAppearance(series, appearance.tspService)
     }
 
     return series
