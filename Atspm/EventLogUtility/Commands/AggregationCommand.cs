@@ -35,7 +35,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
             AggregationTypeArgument.FromAmong(values);
 
-            DateOption.SetDefaultValue(new List<DateTime>() { DateTime.Now.Date.AddDays(-1) });
+            DateOption.SetDefaultValue(new List<DateTime>() { new(DateTime.Today.AddDays(-1).Ticks, DateTimeKind.Unspecified) });
 
             AddArgument(AggregationTypeArgument);
             AddOption(DateOption);
