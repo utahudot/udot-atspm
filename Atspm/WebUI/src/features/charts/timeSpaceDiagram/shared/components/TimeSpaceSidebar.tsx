@@ -956,20 +956,6 @@ function PreviewCard({
               strokeWidth="2"
               opacity={leftTurnAppearance.opacity}
             />
-            <circle
-              cx="20"
-              cy="31"
-              r="2.5"
-              fill={leftTurnAppearance.color}
-              opacity={leftTurnAppearance.opacity}
-            />
-            <circle
-              cx="56"
-              cy="17"
-              r="2.5"
-              fill={leftTurnAppearance.color}
-              opacity={leftTurnAppearance.opacity}
-            />
           </>
         )}
 
@@ -984,20 +970,6 @@ function PreviewCard({
               strokeWidth="2"
               opacity={rightTurnAppearance.opacity}
             />
-            <circle
-              cx="20"
-              cy="31"
-              r="2.5"
-              fill={rightTurnAppearance.color}
-              opacity={rightTurnAppearance.opacity}
-            />
-            <circle
-              cx="56"
-              cy="17"
-              r="2.5"
-              fill={rightTurnAppearance.color}
-              opacity={rightTurnAppearance.opacity}
-            />
           </>
         )}
 
@@ -1009,9 +981,8 @@ function PreviewCard({
               stroke="#111827"
               strokeWidth="3"
               strokeLinecap="round"
+              strokeDasharray="1.4 3.2"
             />
-            <circle cx="16" cy="30" r="2.5" fill="#111827" />
-            <circle cx="62" cy="19" r="2.5" fill="#111827" />
           </>
         )}
 
@@ -1859,6 +1830,12 @@ export default function TimeSpaceSidebar({
 
   const styleAppearance =
     appearanceSettings ?? TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS
+  const hasLeftTurnStyle = stylableItems.some(
+    (stylableItem) => stylableItem.key === 'left-turn'
+  )
+  const hasRightTurnStyle = stylableItems.some(
+    (stylableItem) => stylableItem.key === 'right-turn'
+  )
 
   const updateAppearance = (
     updater: (current: TimeSpaceAppearanceSettings) => TimeSpaceAppearanceSettings
@@ -2159,53 +2136,95 @@ export default function TimeSpaceSidebar({
                 )
               }
 
-              if (item.key === 'left-turn' || item.key === 'right-turn') {
-                const turnAppearance =
-                  item.key === 'left-turn'
-                    ? styleAppearance.turns.leftTurn
-                    : styleAppearance.turns.rightTurn
+              if (
+                item.key === 'left-turn' ||
+                (item.key === 'right-turn' && !hasLeftTurnStyle)
+              ) {
+                const turnEditors = [
+                  hasLeftTurnStyle || item.key === 'left-turn'
+                    ? {
+                        key: 'left-turn',
+                        label: 'Left Turn',
+                        appearance: styleAppearance.turns.leftTurn,
+                      }
+                    : null,
+                  hasRightTurnStyle || item.key === 'right-turn'
+                    ? {
+                        key: 'right-turn',
+                        label: 'Right Turn',
+                        appearance: styleAppearance.turns.rightTurn,
+                      }
+                    : null,
+                ].filter(Boolean) as Array<{
+                  key: 'left-turn' | 'right-turn'
+                  label: string
+                  appearance: { color: string; opacity: number }
+                }>
 
                 return (
                   <AppearanceSectionCard
                     key={item.key}
-                    title={item.label}
+                    title="Turns"
                   >
-                    <DirectionAppearanceEditor
-                      label={item.label}
-                      appearance={turnAppearance}
-                      colorAriaLabel={`${item.label} color`}
-                      opacityAriaLabel={`${item.label} opacity`}
-                      onColorChange={(value) =>
-                        updateAppearance((current) => ({
-                          ...current,
-                          turns: {
-                            ...current.turns,
-                            [item.key === 'left-turn' ? 'leftTurn' : 'rightTurn']: {
-                              ...current.turns[
-                                item.key === 'left-turn' ? 'leftTurn' : 'rightTurn'
-                              ],
-                              color: value,
-                            },
-                          },
-                        }))
-                      }
-                      onOpacityChange={(value) =>
-                        updateAppearance((current) => ({
-                          ...current,
-                          turns: {
-                            ...current.turns,
-                            [item.key === 'left-turn' ? 'leftTurn' : 'rightTurn']: {
-                              ...current.turns[
-                                item.key === 'left-turn' ? 'leftTurn' : 'rightTurn'
-                              ],
-                              opacity: value,
-                            },
-                          },
-                        }))
-                      }
-                    />
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
+                        gap: 0.75,
+                      }}
+                    >
+                      {turnEditors.map((turnEditor) => (
+                        <DirectionAppearanceEditor
+                          key={turnEditor.key}
+                          label={turnEditor.label}
+                          appearance={turnEditor.appearance}
+                          colorAriaLabel={`${turnEditor.label} color`}
+                          opacityAriaLabel={`${turnEditor.label} opacity`}
+                          onColorChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              turns: {
+                                ...current.turns,
+                                [turnEditor.key === 'left-turn'
+                                  ? 'leftTurn'
+                                  : 'rightTurn']: {
+                                  ...current.turns[
+                                    turnEditor.key === 'left-turn'
+                                      ? 'leftTurn'
+                                      : 'rightTurn'
+                                  ],
+                                  color: value,
+                                },
+                              },
+                            }))
+                          }
+                          onOpacityChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              turns: {
+                                ...current.turns,
+                                [turnEditor.key === 'left-turn'
+                                  ? 'leftTurn'
+                                  : 'rightTurn']: {
+                                  ...current.turns[
+                                    turnEditor.key === 'left-turn'
+                                      ? 'leftTurn'
+                                      : 'rightTurn'
+                                  ],
+                                  opacity: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      ))}
+                    </Box>
                   </AppearanceSectionCard>
                 )
+              }
+
+              if (item.key === 'right-turn') {
+                return null
               }
 
               if (

@@ -650,6 +650,8 @@ describe('TimeSpaceSidebar directional controls', () => {
         />
       )
 
+      expect(screen.getByText('Turns')).not.toBeNull()
+
       fireEvent.change(screen.getByLabelText('Left Turn color'), {
         target: { value: '#222222' },
       })
