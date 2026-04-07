@@ -121,3 +121,5 @@ Thumbs.db
 **/.sonarqube/
 
 **/nuget.config
+*.rsp
+*.rsp
