@@ -61,6 +61,10 @@ const Y_AXIS_PADDING = 250
 const DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
 const MIN_ROW_HEIGHT_PX = 100
 const DISPLAY_HEIGHT_BASE = 220
+const PASSIVE_DETECTION_SERIES_PROPS = {
+  silent: true,
+  tooltip: { show: false },
+} as const
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
@@ -714,6 +718,7 @@ function generateLaneByLaneCountEventLines(
       type: 'line',
       symbol: 'none',
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       lineStyle: {
         width: 2,
         color,
@@ -791,6 +796,7 @@ function generateAdvanceCountEventLines(
       type: 'line',
       symbol: 'none',
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       lineStyle: {
         width: 2,
         color,
@@ -847,6 +853,7 @@ function generateStopBarPresenceEventLines(
       clip: true,
       selectedMode: false,
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       renderItem: function (params, api) {
         const i = params.dataIndex
         if (!dataPoints || i >= dataPoints.length - 1 || i % 2 !== 0) {

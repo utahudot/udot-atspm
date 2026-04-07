@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { EChartsOption } from 'echarts'
+import { createDefaultTimeSpaceAppearanceSettings } from '../timeSpaceAppearance'
 import TimeSpaceSidebar from './TimeSpaceSidebar'
 
 function createSeries(name: string) {
@@ -34,6 +35,31 @@ function buildOption(): EChartsOption {
       createSeries('Green Bands EB'),
       createSeries('Green Bands WB'),
       createSeries('TSP Request (112-115)'),
+    ],
+  }
+}
+
+function buildLocationPhaseLabelOption(): EChartsOption {
+  return {
+    legend: {
+      data: [
+        'Cycles NBT ph2',
+        'Cycles SBT ph6',
+        'Green Bands NBT ph2',
+        'Green Bands SBT ph6',
+      ],
+      selected: {
+        'Cycles NBT ph2': true,
+        'Cycles SBT ph6': true,
+        'Green Bands NBT ph2': true,
+        'Green Bands SBT ph6': true,
+      },
+    },
+    series: [
+      createSeries('Cycles NBT ph2'),
+      createSeries('Cycles SBT ph6'),
+      createSeries('Green Bands NBT ph2'),
+      createSeries('Green Bands SBT ph6'),
     ],
   }
 }
@@ -328,10 +354,10 @@ describe('TimeSpaceSidebar directional controls', () => {
     )
 
     expect(
-      screen.getByLabelText('TSP Request (112-115) unavailable')
+      screen.getByLabelText('TSP Request unavailable')
     ).not.toBeNull()
     expect(
-      screen.getByLabelText('TSP Service (118-119) unavailable')
+      screen.getByLabelText('TSP Service unavailable')
     ).not.toBeNull()
     expect(
       screen.getByLabelText('Transit Priority unavailable')
@@ -343,7 +369,7 @@ describe('TimeSpaceSidebar directional controls', () => {
     ).toBe('rgb(148, 163, 184)')
     expect(
       screen.queryByRole('checkbox', {
-        name: 'Toggle TSP Request (112-115)',
+        name: 'Toggle TSP Request',
       })
     ).toBeNull()
     expect(
@@ -356,7 +382,7 @@ describe('TimeSpaceSidebar directional controls', () => {
       await screen.findByText('No transit-signal priority data found.')
     ).not.toBeNull()
 
-    fireEvent.mouseOver(screen.getByLabelText('Early Green (113) unavailable'))
+    fireEvent.mouseOver(screen.getByLabelText('Early Green unavailable'))
 
     expect(await screen.findByText('No early greens found.')).not.toBeNull()
   })
@@ -451,5 +477,124 @@ describe('TimeSpaceSidebar directional controls', () => {
     expect(
       await screen.findByText('No pedestrian intervals found.')
     ).not.toBeNull()
+  })
+
+  it('shows the styles tab to the right of uploads when appearance controls are available', () => {
+    render(
+      <TimeSpaceSidebar
+        option={buildOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'Cycles WB': false,
+          'Green Bands EB': true,
+          'Green Bands WB': true,
+          'TSP Request (112-115)': true,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
+        onAppearanceChange={jest.fn()}
+        uploadContent={<div>Uploads go here</div>}
+      />
+    )
+
+    expect(screen.getByRole('tab', { name: 'Legend' })).not.toBeNull()
+    expect(screen.getByRole('tab', { name: 'Styles' })).not.toBeNull()
+    expect(screen.getByRole('tab', { name: 'Uploads' })).not.toBeNull()
+    expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+      'Legend',
+      'Uploads',
+      'Styles',
+    ])
+  })
+
+  it('updates appearance settings from the styles tab controls', () => {
+    const onAppearanceChange = jest.fn()
+
+    render(
+      <TimeSpaceSidebar
+        option={buildOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'Cycles WB': false,
+          'Green Bands EB': true,
+          'Green Bands WB': true,
+          'TSP Request (112-115)': true,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
+        onAppearanceChange={onAppearanceChange}
+        activeTab="styles"
+        showTabs={false}
+      />
+    )
+
+    fireEvent.change(screen.getByLabelText('Cycles begin green color'), {
+      target: { value: '#123456' },
+    })
+
+    expect(onAppearanceChange).toHaveBeenCalledWith(expect.any(Function))
+
+    const updater = onAppearanceChange.mock.calls[0][0] as (
+      current: ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
+    ) => ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
+    const nextAppearance = updater(createDefaultTimeSpaceAppearanceSettings())
+
+    expect(nextAppearance.cycles.indicationColors.beginGreen).toBe('#123456')
+  })
+
+  it('uses primary and opposing labels in the styles tab instead of raw phase names', () => {
+    render(
+      <TimeSpaceSidebar
+        option={buildLocationPhaseLabelOption()}
+        selectedSeries={{
+          'Cycles NBT ph2': true,
+          'Cycles SBT ph6': true,
+          'Green Bands NBT ph2': true,
+          'Green Bands SBT ph6': true,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
+        onAppearanceChange={jest.fn()}
+        activeTab="styles"
+        showTabs={false}
+      />
+    )
+
+    expect(screen.getByText('primary')).not.toBeNull()
+    expect(screen.getByText('opposing')).not.toBeNull()
+    expect(screen.queryByText('NBT ph2')).toBeNull()
+    expect(screen.queryByText('SBT ph6')).toBeNull()
+  })
+
+  it('shows transit priority style controls even when transit data is unavailable', () => {
+    render(
+      <TimeSpaceSidebar
+        option={buildTransitNoDataOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'Early Green (113)': false,
+          'Extend Green (114)': false,
+          'TSP Request (112-115)': false,
+          'TSP Service (118-119)': false,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
+        onAppearanceChange={jest.fn()}
+        activeTab="styles"
+        showTabs={false}
+      />
+    )
+
+    expect(screen.getByText('Transit Priority')).not.toBeNull()
+    expect(screen.getByText('TSP Request')).not.toBeNull()
+    expect(screen.getByText('TSP Service')).not.toBeNull()
   })
 })
