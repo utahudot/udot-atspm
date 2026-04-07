@@ -827,12 +827,12 @@ function PreviewCard({
         {kind === 'green-bands' && (
           <>
             <polygon
-              points="12,38 28,8 40,8 24,38"
+              points="18,38 38,8 50,8 30,38"
               fill={greenBandPrimary.color}
               opacity={greenBandPrimary.opacity}
             />
             <polygon
-              points="36,38 52,8 64,8 48,38"
+              points="26,8 38,8 58,38 46,38"
               fill={greenBandOpposing.color}
               opacity={greenBandOpposing.opacity}
             />
