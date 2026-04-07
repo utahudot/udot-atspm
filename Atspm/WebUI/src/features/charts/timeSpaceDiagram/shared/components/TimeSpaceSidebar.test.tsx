@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { EChartsOption } from 'echarts'
 import { createDefaultTimeSpaceAppearanceSettings } from '../timeSpaceAppearance'
 import TimeSpaceSidebar from './TimeSpaceSidebar'
@@ -510,40 +510,51 @@ describe('TimeSpaceSidebar directional controls', () => {
   })
 
   it('updates appearance settings from the styles tab controls', () => {
+    jest.useFakeTimers()
     const onAppearanceChange = jest.fn()
 
-    render(
-      <TimeSpaceSidebar
-        option={buildOption()}
-        selectedSeries={{
-          'Cycles EB': true,
-          'Cycles WB': false,
-          'Green Bands EB': true,
-          'Green Bands WB': true,
-          'TSP Request (112-115)': true,
-        }}
-        suppressedDirections={{}}
-        onSetSeriesVisibility={jest.fn()}
-        onToggleDirectionVisibility={jest.fn()}
-        appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
-        onAppearanceChange={onAppearanceChange}
-        activeTab="styles"
-        showTabs={false}
-      />
-    )
+    try {
+      render(
+        <TimeSpaceSidebar
+          option={buildOption()}
+          selectedSeries={{
+            'Cycles EB': true,
+            'Cycles WB': false,
+            'Green Bands EB': true,
+            'Green Bands WB': true,
+            'TSP Request (112-115)': true,
+          }}
+          suppressedDirections={{}}
+          onSetSeriesVisibility={jest.fn()}
+          onToggleDirectionVisibility={jest.fn()}
+          appearanceSettings={createDefaultTimeSpaceAppearanceSettings()}
+          onAppearanceChange={onAppearanceChange}
+          activeTab="styles"
+          showTabs={false}
+        />
+      )
 
-    fireEvent.change(screen.getByLabelText('Cycles begin green color'), {
-      target: { value: '#123456' },
-    })
+      fireEvent.change(screen.getByLabelText('Cycles begin green color'), {
+        target: { value: '#123456' },
+      })
 
-    expect(onAppearanceChange).toHaveBeenCalledWith(expect.any(Function))
+      expect(onAppearanceChange).not.toHaveBeenCalled()
 
-    const updater = onAppearanceChange.mock.calls[0][0] as (
-      current: ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
-    ) => ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
-    const nextAppearance = updater(createDefaultTimeSpaceAppearanceSettings())
+      act(() => {
+        jest.advanceTimersByTime(150)
+      })
 
-    expect(nextAppearance.cycles.indicationColors.beginGreen).toBe('#123456')
+      expect(onAppearanceChange).toHaveBeenCalledWith(expect.any(Function))
+
+      const updater = onAppearanceChange.mock.calls[0][0] as (
+        current: ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
+      ) => ReturnType<typeof createDefaultTimeSpaceAppearanceSettings>
+      const nextAppearance = updater(createDefaultTimeSpaceAppearanceSettings())
+
+      expect(nextAppearance.cycles.indicationColors.beginGreen).toBe('#123456')
+    } finally {
+      jest.useRealTimers()
+    }
   })
 
   it('uses primary and opposing labels in the styles tab instead of raw phase names', () => {

@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import type { EChartsOption, SeriesOption } from 'echarts'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS,
   TimeSpaceAppearanceDirectionRole,
@@ -132,6 +132,7 @@ const CATEGORY_ORDER = [
 
 const DIRECTION_TOGGLE_INACTIVE_COLOR = 'rgba(0, 0, 0, 0.6)'
 const STATUS_ICON_COLOR = '#94A3B8'
+const COLOR_INPUT_COMMIT_DELAY_MS = 150
 const ITEM_NO_DATA_MESSAGES: Record<string, string> = {
   cycles: 'No cycles found.',
   'cycle-durations': 'No cycle durations found.',
@@ -1388,6 +1389,47 @@ function ColorInputControl({
   ariaLabel: string
   onChange: (value: string) => void
 }) {
+  const [draftValue, setDraftValue] = useState(value)
+  const commitTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    setDraftValue(value)
+  }, [value])
+
+  useEffect(() => {
+    if (commitTimeoutRef.current !== null) {
+      window.clearTimeout(commitTimeoutRef.current)
+      commitTimeoutRef.current = null
+    }
+
+    if (draftValue === value) {
+      return
+    }
+
+    commitTimeoutRef.current = window.setTimeout(() => {
+      commitTimeoutRef.current = null
+      onChange(draftValue)
+    }, COLOR_INPUT_COMMIT_DELAY_MS)
+
+    return () => {
+      if (commitTimeoutRef.current !== null) {
+        window.clearTimeout(commitTimeoutRef.current)
+        commitTimeoutRef.current = null
+      }
+    }
+  }, [draftValue, onChange, value])
+
+  const commitDraftValue = () => {
+    if (commitTimeoutRef.current !== null) {
+      window.clearTimeout(commitTimeoutRef.current)
+      commitTimeoutRef.current = null
+    }
+
+    if (draftValue !== value) {
+      onChange(draftValue)
+    }
+  }
+
   return (
     <Box
       component="label"
@@ -1413,8 +1455,9 @@ function ColorInputControl({
         component="input"
         type="color"
         aria-label={ariaLabel}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+        value={draftValue}
+        onChange={(event) => setDraftValue(event.target.value)}
+        onBlur={commitDraftValue}
         sx={{
           width: 28,
           height: 28,
