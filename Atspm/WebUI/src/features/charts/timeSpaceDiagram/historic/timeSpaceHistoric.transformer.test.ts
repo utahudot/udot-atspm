@@ -112,6 +112,37 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(stopBarPresence?.tooltip).toMatchObject({ show: false })
   })
 
+  it('marks distance label cards as non-interactable', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary'),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    const distanceLabels = series.find(
+      (entry) => String(entry.name) === 'Labels distance'
+    )
+
+    expect(distanceLabels?.silent).toBe(true)
+    expect(distanceLabels?.tooltip).toMatchObject({ show: false })
+  })
+
   it('does not synthesize TSP series when no TSP events are present', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,
