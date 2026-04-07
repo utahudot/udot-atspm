@@ -43,6 +43,16 @@ export type TimeSpaceAppearanceSettings = {
   tspService: TimeSpaceDirectionalAppearance
 }
 
+const TIME_SPACE_DEFAULT_DETECTION_PRIMARY: TimeSpaceDirectionalAppearance = {
+  color: '#00008B',
+  opacity: 0.6,
+}
+
+const TIME_SPACE_DEFAULT_DETECTION_OPPOSING: TimeSpaceDirectionalAppearance = {
+  color: '#FFA500',
+  opacity: 0.75,
+}
+
 export const TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS: TimeSpaceAppearanceSettings =
   {
     cycles: {
@@ -65,20 +75,20 @@ export const TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS: TimeSpaceAppearanceSettings
     },
     detection: {
       laneByLaneCount: {
-        primary: { color: '#00008B', opacity: 0.7 },
-        opposing: { color: '#FFA500', opacity: 0.7 },
+        primary: { ...TIME_SPACE_DEFAULT_DETECTION_PRIMARY },
+        opposing: { ...TIME_SPACE_DEFAULT_DETECTION_OPPOSING },
       },
       advanceCount: {
-        primary: { color: '#00008B', opacity: 1 },
-        opposing: { color: '#FFA500', opacity: 1 },
+        primary: { ...TIME_SPACE_DEFAULT_DETECTION_PRIMARY },
+        opposing: { ...TIME_SPACE_DEFAULT_DETECTION_OPPOSING },
       },
       stopBarPresence: {
-        primary: { color: Color.LightBlue, opacity: 1 },
-        opposing: { color: '#FFA500', opacity: 1 },
+        primary: { ...TIME_SPACE_DEFAULT_DETECTION_PRIMARY },
+        opposing: { ...TIME_SPACE_DEFAULT_DETECTION_OPPOSING },
       },
     },
     tspRequest: {
-      color: Color.Red,
+      color: Color.Black,
       opacity: 0.95,
     },
     tspService: {

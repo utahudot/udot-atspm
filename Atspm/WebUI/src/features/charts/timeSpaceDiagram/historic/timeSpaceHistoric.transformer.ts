@@ -652,7 +652,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       {
         name: `TSP Request (112-115)`,
         icon: SolidLineSeriesSymbol,
-        itemStyle: { color: Color.Red },
+        itemStyle: { color: Color.Black },
       },
       {
         name: `TSP Service (118-119)`,
@@ -1454,7 +1454,7 @@ function buildTspRequestAndServiceLineSeries(
               height: TSP_REQUEST_BAND_HEIGHT_PX,
             },
             style: {
-              fill: Color.Red,
+              fill: Color.Black,
               opacity: 0.95,
             },
             emphasisDisabled: true,
