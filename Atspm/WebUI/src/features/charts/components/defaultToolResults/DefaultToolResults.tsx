@@ -404,7 +404,11 @@ export default function TimeSpaceChart({
         <Tab label="Time Space Chart" />
         <Tab label="Link Pivot" />
       </Tabs>
-      {activeTab === 0 && (
+      <Box
+        sx={{
+          display: activeTab === 0 ? 'block' : 'none',
+        }}
+      >
         <Paper sx={{ p: 0, ml: '2px', bgcolor: 'white' }}>
           <Box
             sx={{
@@ -416,6 +420,7 @@ export default function TimeSpaceChart({
               id="time-space-chart"
               option={transformedData.data.chart}
               theme={theme.palette.mode}
+              isVisible={activeTab === 0}
               style={{
                 width: '100%',
                 height: `${chartHeight}px`,
@@ -428,9 +433,13 @@ export default function TimeSpaceChart({
             />
           </Box>
         </Paper>
-      )}
-      {activeTab === 1 && (
-        <Box>
+      </Box>
+      <Box
+        sx={{
+          display: activeTab === 1 ? 'block' : 'none',
+          m: 2,
+        }}
+      >
           {linkPivotTsdData.map((pivot) => (
             <Box key={pivot.direction} sx={{ mb: 6 }}>
               <Typography variant="h4" fontWeight="bold" sx={{ my: 3 }}>
@@ -462,8 +471,7 @@ export default function TimeSpaceChart({
               </Paper>
             </Box>
           ))}
-        </Box>
-      )}
+      </Box>
     </Box>
   )
 }

@@ -5,18 +5,25 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   Box,
+  Button,
   Checkbox,
   Divider,
   IconButton,
   Paper,
+  Slider,
   Tab,
   Tabs,
   Tooltip,
   Typography,
 } from '@mui/material'
 import type { EChartsOption, SeriesOption } from 'echarts'
-import type { ReactNode } from 'react'
-import { useState } from 'react'
+import type { Dispatch, ReactNode, SetStateAction } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS,
+  TimeSpaceAppearanceDirectionRole,
+  TimeSpaceAppearanceSettings,
+} from '../timeSpaceAppearance'
 import { TIME_SPACE_GPX_TRACKS_LEGEND_NAME } from '../types'
 
 type PreviewKind =
@@ -26,7 +33,8 @@ type PreviewKind =
   | 'detector-line'
   | 'stop-bar'
   | 'pedestrian'
-  | 'turn'
+  | 'left-turn'
+  | 'right-turn'
   | 'gpx-track'
   | 'srm'
   | 'triangle'
@@ -34,7 +42,7 @@ type PreviewKind =
   | 'tsp-request'
   | 'tsp-service'
 
-export type SidebarDirectionRole = 'primary' | 'opposing'
+export type SidebarDirectionRole = TimeSpaceAppearanceDirectionRole
 
 type SidebarToggle = {
   label: string
@@ -93,6 +101,11 @@ export interface TimeSpaceSidebarProps {
   suppressedDirections?: Partial<Record<SidebarDirectionRole, boolean>>
   onSetSeriesVisibility: (seriesNames: string[], visible: boolean) => void
   onToggleDirectionVisibility?: (role: SidebarDirectionRole) => void
+  gpxTracksAvailable?: boolean
+  srmTracksAvailable?: boolean
+  appearanceSettings?: TimeSpaceAppearanceSettings
+  onAppearanceChange?: Dispatch<SetStateAction<TimeSpaceAppearanceSettings>>
+  onResetAppearance?: () => void
   uploadContent?: ReactNode
   activeTab?: SidebarTab
   onTabChange?: (tab: SidebarTab) => void
@@ -101,12 +114,13 @@ export interface TimeSpaceSidebarProps {
 
 export const TIME_SPACE_GUIDE_WIDTH = 360
 
-export type SidebarTab = 'legend' | 'uploads'
+export type SidebarTab = 'legend' | 'styles' | 'uploads'
 
 interface TimeSpaceSidebarTabsProps {
   activeTab: SidebarTab
   onChange: (tab: SidebarTab) => void
   hasLegendContent: boolean
+  hasStyleContent: boolean
   hasUploadContent: boolean
   mode?: 'sidebar' | 'header'
 }
@@ -121,6 +135,7 @@ const CATEGORY_ORDER = [
 
 const DIRECTION_TOGGLE_INACTIVE_COLOR = 'rgba(0, 0, 0, 0.6)'
 const STATUS_ICON_COLOR = '#94A3B8'
+const COLOR_INPUT_COMMIT_DELAY_MS = 150
 const ITEM_NO_DATA_MESSAGES: Record<string, string> = {
   cycles: 'No cycles found.',
   'cycle-durations': 'No cycle durations found.',
@@ -149,6 +164,17 @@ const DIRECTION_TOGGLE_CIRCLE_PATH =
   'M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576z'
 const DIRECTION_TOGGLE_ARROW_PATH =
   'M337 199L417 279C426.4 288.4 426.4 303.6 417 312.9C407.6 322.2 392.4 322.3 383.1 312.9L344.1 273.9L344.1 424C344.1 437.3 333.4 448 320.1 448C306.8 448 296.1 437.3 296.1 424L296.1 273.9L257.1 312.9C247.7 322.3 232.5 322.3 223.2 312.9C213.9 303.5 213.8 288.3 223.2 279L303.2 199C312.6 189.6 327.8 189.6 337.1 199z'
+const STYLABLE_ITEM_KEYS = new Set([
+  'cycles',
+  'green-bands',
+  'left-turn',
+  'right-turn',
+  'lane-by-lane-count',
+  'advance-count',
+  'stop-bar-presence',
+  'tsp-request',
+  'tsp-service',
+])
 
 const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
   {
@@ -191,7 +217,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Lane-by-Lane Count',
     category: 'Detection',
     description:
-      'Lane-level count detector traces. Primary uses dark blue; opposing uses orange.',
+      'Lane-level count detector traces for each corridor direction.',
     preview: 'detector-line',
     match: (name) => matchDirectionalPrefix(name, 'Lane by Lane Count'),
   },
@@ -200,7 +226,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Advance Count',
     category: 'Detection',
     description:
-      'Advance detector count traces upstream of the stop bar. Primary uses dark blue; opposing uses orange.',
+      'Advance detector count traces upstream of the stop bar for each corridor direction.',
     preview: 'detector-line',
     match: (name) => matchDirectionalPrefix(name, 'Advance Count'),
   },
@@ -209,7 +235,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Stop Bar Presence',
     category: 'Detection',
     description:
-      'Presence detector occupancy near the stop bar, shown as thicker occupancy bands.',
+      'Presence detector occupancy near the stop bar, shown as occupancy traces.',
     preview: 'stop-bar',
     match: (name) => matchDirectionalPrefix(name, 'Stop Bar Presence'),
   },
@@ -218,7 +244,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Pedestrian Interval',
     category: 'Pedestrian',
     description:
-      'Black pedestrian state line showing the pedestrian interval and transition marks.',
+      'Pedestrian state line showing the pedestrian interval and transition marks.',
     details: [
       { glyph: 'solid-line', label: 'Walk' },
       { glyph: 'dotted-line', label: 'Clearance' },
@@ -232,7 +258,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Left Turn',
     category: 'Movements & Tracks',
     description: 'Left-turn movement trace projected through the corridor.',
-    preview: 'turn',
+    preview: 'left-turn',
     match: (name) => matchDirectionalPrefix(name, 'Left Turn'),
   },
   {
@@ -240,7 +266,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'Right Turn',
     category: 'Movements & Tracks',
     description: 'Right-turn movement trace projected through the corridor.',
-    preview: 'turn',
+    preview: 'right-turn',
     match: (name) => matchDirectionalPrefix(name, 'Right Turn'),
   },
   {
@@ -248,7 +274,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
     category: 'Movements & Tracks',
     description:
-      'Uploaded GPX traces mapped to the corridor and drawn as black lines through the corridor.',
+      'Uploaded GPX traces mapped to the corridor and drawn through the corridor.',
     preview: 'gpx-track',
     control: 'visibility',
     match: (name) => (name === TIME_SPACE_GPX_TRACKS_LEGEND_NAME ? '' : null),
@@ -258,47 +284,47 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     label: 'SRM Entity',
     category: 'Movements & Tracks',
     description:
-      'SRM or connected-vehicle entity tracks drawn as black path lines through the corridor.',
+      'SRM or connected-vehicle entity tracks drawn through the corridor.',
     preview: 'srm',
     match: (name) => matchDirectionalPrefix(name, 'SRM Entity'),
   },
   {
     key: 'early-green',
-    label: 'Early Green (113)',
+    label: 'Early Green',
     category: 'Transit Priority',
     description: 'Triangle marker for an early-green priority event.',
     preview: 'triangle',
     control: 'visibility',
-    match: (name) => (name.startsWith('Early Green (113)') ? '' : null),
+    match: (name) => (name.startsWith('Early Green') ? '' : null),
   },
   {
     key: 'extend-green',
-    label: 'Extend Green (114)',
+    label: 'Extend Green',
     category: 'Transit Priority',
     description: 'Circle marker for a green-extension priority event.',
     preview: 'circle',
     control: 'visibility',
-    match: (name) => (name.startsWith('Extend Green (114)') ? '' : null),
+    match: (name) => (name.startsWith('Extend Green') ? '' : null),
   },
   {
     key: 'tsp-request',
-    label: 'TSP Request (112-115)',
+    label: 'TSP Request',
     category: 'Transit Priority',
     description:
-      'Red overlay band showing when a transit signal priority request was active.',
+      'Transit signal priority request interval.',
     preview: 'tsp-request',
     control: 'visibility',
-    match: (name) => (name.startsWith('TSP Request (112-115)') ? '' : null),
+    match: (name) => (name.startsWith('TSP Request') ? '' : null),
   },
   {
     key: 'tsp-service',
-    label: 'TSP Service (118-119)',
+    label: 'TSP Service',
     category: 'Transit Priority',
     description:
-      'Blue overlay band showing when transit signal priority service was granted.',
+      'Thicker transit signal priority service interval overlaid on the request interval.',
     preview: 'tsp-service',
     control: 'visibility',
-    match: (name) => (name.startsWith('TSP Service (118-119)') ? '' : null),
+    match: (name) => (name.startsWith('TSP Service') ? '' : null),
   },
 ]
 
@@ -306,6 +332,7 @@ export function TimeSpaceSidebarTabs({
   activeTab,
   onChange,
   hasLegendContent,
+  hasStyleContent,
   hasUploadContent,
   mode = 'sidebar',
 }: TimeSpaceSidebarTabsProps) {
@@ -336,6 +363,7 @@ export function TimeSpaceSidebarTabs({
     >
       {hasLegendContent && <Tab label="Legend" value="legend" />}
       {hasUploadContent && <Tab label="Uploads" value="uploads" />}
+      {hasStyleContent && <Tab label="Styles" value="styles" />}
     </Tabs>
   )
 }
@@ -391,18 +419,39 @@ function hasSeriesDataForDefinition(
   })
 }
 
+type SidebarAvailabilityOverrides = Partial<
+  Record<'gpx-tracks' | 'srm-entity', boolean>
+>
+
+function hasSidebarItemData(
+  definition: SidebarItemDefinition,
+  option: EChartsOption | undefined,
+  availabilityOverrides?: SidebarAvailabilityOverrides
+) {
+  const availabilityOverride = availabilityOverrides?.[definition.key as
+    | 'gpx-tracks'
+    | 'srm-entity']
+
+  if (typeof availabilityOverride === 'boolean') {
+    return availabilityOverride
+  }
+
+  return hasSeriesDataForDefinition(option, definition)
+}
+
 function getSidebarItemNote(
   definition: SidebarItemDefinition,
-  option?: EChartsOption
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
 ) {
   if (definition.key === 'gpx-tracks') {
-    return hasSeriesDataForDefinition(option, definition)
+    return hasSidebarItemData(definition, option, availabilityOverrides)
       ? undefined
       : 'Upload GPX data from the Uploads tab to show these tracks.'
   }
 
   if (definition.key === 'srm-entity') {
-    return hasSeriesDataForDefinition(option, definition)
+    return hasSidebarItemData(definition, option, availabilityOverrides)
       ? undefined
       : 'Upload SRM data from the Uploads tab to show these tracks.'
   }
@@ -412,9 +461,10 @@ function getSidebarItemNote(
 
 function getSidebarItemUnavailableReason(
   definition: SidebarItemDefinition,
-  option?: EChartsOption
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
 ) {
-  if (hasSeriesDataForDefinition(option, definition)) {
+  if (hasSidebarItemData(definition, option, availabilityOverrides)) {
     return undefined
   }
 
@@ -564,7 +614,10 @@ export function getSidebarDirectionControls(
   })
 }
 
-function buildSidebarModel(option?: EChartsOption): SidebarLegendModel {
+function buildSidebarModel(
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
+): SidebarLegendModel {
   const legend = getPrimaryLegend(option)
   if (!Array.isArray(legend?.data)) {
     return {
@@ -608,8 +661,12 @@ function buildSidebarModel(option?: EChartsOption): SidebarLegendModel {
       label: definition.label,
       category: definition.category,
       description: definition.description,
-      note: getSidebarItemNote(definition, option),
-      unavailableReason: getSidebarItemUnavailableReason(definition, option),
+      note: getSidebarItemNote(definition, option, availabilityOverrides),
+      unavailableReason: getSidebarItemUnavailableReason(
+        definition,
+        option,
+        availabilityOverrides
+      ),
       details: definition.details,
       preview: definition.preview,
       control: definition.control,
@@ -656,7 +713,47 @@ function buildSidebarModel(option?: EChartsOption): SidebarLegendModel {
   }
 }
 
-function PreviewCard({ kind }: { kind: PreviewKind }) {
+function getStylableItems(items: SidebarItem[]) {
+  return items.filter((item) => STYLABLE_ITEM_KEYS.has(item.key))
+}
+
+export function hasTimeSpaceStyleContent(
+  option?: EChartsOption,
+  availabilityOverrides?: SidebarAvailabilityOverrides
+) {
+  const { items } = buildSidebarModel(option, availabilityOverrides)
+  return getStylableItems(items).length > 0
+}
+
+function getSidebarTabLabel(tab: SidebarTab) {
+  if (tab === 'styles') {
+    return 'Styles'
+  }
+
+  return tab === 'legend' ? 'Legend' : 'Uploads'
+}
+
+function PreviewCard({
+  kind,
+  appearanceSettings = TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS,
+}: {
+  kind: PreviewKind
+  appearanceSettings?: TimeSpaceAppearanceSettings
+}) {
+  const cycleColors = appearanceSettings.cycles.indicationColors
+  const cycleOpacity = appearanceSettings.cycles.opacity
+  const greenBandPrimary = appearanceSettings.greenBands.primary
+  const greenBandOpposing = appearanceSettings.greenBands.opposing
+  const detectorPrimary = appearanceSettings.detection.laneByLaneCount.primary
+  const detectorOpposing =
+    appearanceSettings.detection.laneByLaneCount.opposing
+  const stopBarPrimary =
+    appearanceSettings.detection.stopBarPresence.primary
+  const stopBarOpposing =
+    appearanceSettings.detection.stopBarPresence.opposing
+  const leftTurnAppearance = appearanceSettings.turns.leftTurn
+  const rightTurnAppearance = appearanceSettings.turns.rightTurn
+
   return (
     <Box
       sx={{
@@ -677,18 +774,67 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
       >
         {kind === 'cycles' && (
           <>
-            <rect x="7" y="15" width="14" height="14" fill={Color.Green} />
-            <rect x="21" y="15" width="10" height="14" fill="#8ef08d" />
-            <rect x="31" y="15" width="8" height="14" fill={Color.Yellow} />
-            <rect x="39" y="15" width="10" height="14" fill="#FF0000" />
-            <rect x="49" y="15" width="22" height="14" fill="#f0807f" />
+            <rect
+              x="7"
+              y="15"
+              width="14"
+              height="14"
+              fill={cycleColors.beginGreen}
+              opacity={cycleOpacity}
+            />
+            <rect
+              x="21"
+              y="15"
+              width="10"
+              height="14"
+              fill={cycleColors.trailingGreen}
+              opacity={cycleOpacity}
+            />
+            <rect
+              x="31"
+              y="15"
+              width="8"
+              height="14"
+              fill={cycleColors.yellowClearance}
+              opacity={cycleOpacity}
+            />
+            <rect
+              x="39"
+              y="15"
+              width="10"
+              height="14"
+              fill={cycleColors.redClearance}
+              opacity={cycleOpacity}
+            />
+            <rect
+              x="49"
+              y="15"
+              width="22"
+              height="14"
+              fill={cycleColors.redIndication}
+              opacity={cycleOpacity}
+            />
           </>
         )}
 
         {kind === 'cycle-durations' && (
           <>
-            <rect x="9" y="15" width="34" height="14" fill="#8ef08d" />
-            <rect x="43" y="15" width="24" height="14" fill={Color.Yellow} />
+            <rect
+              x="9"
+              y="15"
+              width="34"
+              height="14"
+              fill={cycleColors.trailingGreen}
+              opacity={cycleOpacity}
+            />
+            <rect
+              x="43"
+              y="15"
+              width="24"
+              height="14"
+              fill={cycleColors.yellowClearance}
+              opacity={cycleOpacity}
+            />
             <text
               x="26"
               y="26"
@@ -721,12 +867,14 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
         {kind === 'green-bands' && (
           <>
             <polygon
-              points="12,38 28,8 40,8 24,38"
-              fill="rgba(16, 185, 129, 0.35)"
+              points="18,38 38,8 50,8 30,38"
+              fill={greenBandPrimary.color}
+              opacity={greenBandPrimary.opacity}
             />
             <polygon
-              points="36,38 52,8 64,8 48,38"
-              fill="rgba(13, 148, 136, 0.25)"
+              points="26,8 38,8 58,38 46,38"
+              fill={greenBandOpposing.color}
+              opacity={greenBandOpposing.opacity}
             />
           </>
         )}
@@ -738,16 +886,18 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
               y1="18"
               x2="68"
               y2="18"
-              stroke="#0f3d91"
+              stroke={detectorPrimary.color}
               strokeWidth="2.5"
+              opacity={detectorPrimary.opacity}
             />
             <line
               x1="10"
               y1="30"
               x2="68"
               y2="30"
-              stroke="#f59e0b"
+              stroke={detectorOpposing.color}
               strokeWidth="2.5"
+              opacity={detectorOpposing.opacity}
             />
           </>
         )}
@@ -759,18 +909,18 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
               y1="18"
               x2="68"
               y2="18"
-              stroke="#7dd3fc"
-              strokeWidth="6"
-              strokeLinecap="round"
+              stroke={stopBarPrimary.color}
+              strokeWidth="2.5"
+              opacity={stopBarPrimary.opacity}
             />
             <line
               x1="10"
               y1="30"
               x2="68"
               y2="30"
-              stroke="#f59e0b"
-              strokeWidth="6"
-              strokeLinecap="round"
+              stroke={stopBarOpposing.color}
+              strokeWidth="2.5"
+              opacity={stopBarOpposing.opacity}
             />
           </>
         )}
@@ -829,18 +979,31 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
           </>
         )}
 
-        {kind === 'turn' && (
+        {kind === 'left-turn' && (
           <>
             <line
               x1="12"
               y1="34"
               x2="64"
               y2="14"
-              stroke="#111827"
+              stroke={leftTurnAppearance.color}
               strokeWidth="2"
+              opacity={leftTurnAppearance.opacity}
             />
-            <circle cx="20" cy="31" r="2.5" fill="#111827" />
-            <circle cx="56" cy="17" r="2.5" fill="#111827" />
+          </>
+        )}
+
+        {kind === 'right-turn' && (
+          <>
+            <line
+              x1="12"
+              y1="34"
+              x2="64"
+              y2="14"
+              stroke={rightTurnAppearance.color}
+              strokeWidth="2"
+              opacity={rightTurnAppearance.opacity}
+            />
           </>
         )}
 
@@ -852,9 +1015,8 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
               stroke="#111827"
               strokeWidth="3"
               strokeLinecap="round"
+              strokeDasharray="1.4 3.2"
             />
-            <circle cx="16" cy="30" r="2.5" fill="#111827" />
-            <circle cx="62" cy="19" r="2.5" fill="#111827" />
           </>
         )}
 
@@ -869,32 +1031,44 @@ function PreviewCard({ kind }: { kind: PreviewKind }) {
         )}
 
         {kind === 'triangle' && (
-          <polygon points="39,11 52,34 26,34" fill="#111827" />
+          <polygon
+            points="39,11 52,34 26,34"
+            fill={Color.White}
+            stroke={Color.Black}
+            strokeWidth="2"
+          />
         )}
 
-        {kind === 'circle' && <circle cx="39" cy="24" r="10" fill="#111827" />}
+        {kind === 'circle' && (
+          <circle
+            cx="39"
+            cy="24"
+            r="10"
+            fill={Color.White}
+            stroke={Color.Black}
+            strokeWidth="2"
+          />
+        )}
 
         {kind === 'tsp-request' && (
-          <line
-            x1="10"
-            y1="24"
-            x2="68"
-            y2="24"
-            stroke={Color.Red}
-            strokeWidth="8"
-            strokeLinecap="round"
+          <rect
+            x="10"
+            y="17"
+            width="54"
+            height="4"
+            fill={appearanceSettings.tspRequest.color}
+            opacity={appearanceSettings.tspRequest.opacity}
           />
         )}
 
         {kind === 'tsp-service' && (
-          <line
-            x1="10"
-            y1="24"
-            x2="68"
-            y2="24"
-            stroke={Color.LightBlue}
-            strokeWidth="8"
-            strokeLinecap="round"
+          <rect
+            x="12"
+            y="25"
+            width="54"
+            height="8"
+            fill={appearanceSettings.tspService.color}
+            opacity={appearanceSettings.tspService.opacity}
           />
         )}
       </Box>
@@ -908,6 +1082,10 @@ function getDirectionalToggles(item: SidebarItem) {
 
 function getDirectionRoleLabel(role: SidebarDirectionRole) {
   return role === 'primary' ? 'Primary phase' : 'Opposing phase'
+}
+
+function getDirectionRoleDisplayLabel(role: SidebarDirectionRole) {
+  return role === 'primary' ? 'primary' : 'opposing'
 }
 
 function DirectionToggleIcon({
@@ -1195,18 +1373,392 @@ function DetailMarker({ detail }: { detail: SidebarDetail }) {
   )
 }
 
+function getRenderedItemDetails(
+  item: SidebarItem,
+  appearanceSettings?: TimeSpaceAppearanceSettings
+) {
+  if (!appearanceSettings || item.key !== 'cycles') {
+    return item.details
+  }
+
+  return [
+    {
+      color: appearanceSettings.cycles.indicationColors.beginGreen,
+      label: 'Begin green',
+    },
+    {
+      color: appearanceSettings.cycles.indicationColors.trailingGreen,
+      label: 'Trailing green',
+    },
+    {
+      color: appearanceSettings.cycles.indicationColors.yellowClearance,
+      label: 'Yellow clearance',
+    },
+    {
+      color: appearanceSettings.cycles.indicationColors.redClearance,
+      label: 'Red clearance',
+    },
+    {
+      color: appearanceSettings.cycles.indicationColors.redIndication,
+      label: 'Red indication',
+    },
+  ]
+}
+
+function clampOpacity(value: number) {
+  if (!Number.isFinite(value)) {
+    return 0
+  }
+
+  return Math.max(0, Math.min(1, value))
+}
+
+function formatOpacityPercent(opacity: number) {
+  return `${Math.round(clampOpacity(opacity) * 100)}%`
+}
+
+function ColorInputControl({
+  label,
+  value,
+  ariaLabel,
+  onChange,
+}: {
+  label: string
+  value: string
+  ariaLabel: string
+  onChange: (value: string) => void
+}) {
+  const [draftValue, setDraftValue] = useState(value)
+  const commitTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    setDraftValue(value)
+  }, [value])
+
+  useEffect(() => {
+    if (commitTimeoutRef.current !== null) {
+      window.clearTimeout(commitTimeoutRef.current)
+      commitTimeoutRef.current = null
+    }
+
+    if (draftValue === value) {
+      return
+    }
+
+    commitTimeoutRef.current = window.setTimeout(() => {
+      commitTimeoutRef.current = null
+      onChange(draftValue)
+    }, COLOR_INPUT_COMMIT_DELAY_MS)
+
+    return () => {
+      if (commitTimeoutRef.current !== null) {
+        window.clearTimeout(commitTimeoutRef.current)
+        commitTimeoutRef.current = null
+      }
+    }
+  }, [draftValue, onChange, value])
+
+  const commitDraftValue = () => {
+    if (commitTimeoutRef.current !== null) {
+      window.clearTimeout(commitTimeoutRef.current)
+      commitTimeoutRef.current = null
+    }
+
+    if (draftValue !== value) {
+      onChange(draftValue)
+    }
+  }
+
+  return (
+    <Box
+      component="label"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 1,
+        minWidth: 0,
+      }}
+    >
+      <Typography
+        variant="caption"
+        sx={{
+          fontSize: '0.72rem',
+          color: 'text.secondary',
+          lineHeight: 1.2,
+        }}
+      >
+        {label}
+      </Typography>
+      <Box
+        component="input"
+        type="color"
+        aria-label={ariaLabel}
+        value={draftValue}
+        onChange={(event) => setDraftValue(event.target.value)}
+        onBlur={commitDraftValue}
+        sx={{
+          width: 28,
+          height: 28,
+          p: 0,
+          border: 'none',
+          borderRadius: '50%',
+          backgroundColor: 'transparent',
+          cursor: 'pointer',
+          overflow: 'hidden',
+          '&::-webkit-color-swatch-wrapper': {
+            p: 0,
+          },
+          '&::-webkit-color-swatch': {
+            border: '1px solid rgba(203, 213, 225, 0.95)',
+            borderRadius: '50%',
+          },
+          '&::-moz-color-swatch': {
+            border: '1px solid rgba(203, 213, 225, 0.95)',
+            borderRadius: '50%',
+          },
+        }}
+      />
+    </Box>
+  )
+}
+
+function OpacityRangeControl({
+  label,
+  value,
+  ariaLabel,
+  onChange,
+}: {
+  label: string
+  value: number
+  ariaLabel: string
+  onChange: (value: number) => void
+}) {
+  const percentValue = Math.round(clampOpacity(value) * 100)
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.45,
+        pr: 0.5,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{ fontSize: '0.72rem', color: 'text.secondary', lineHeight: 1.2 }}
+        >
+          {label}
+        </Typography>
+      <Typography
+        variant="caption"
+        sx={{ fontSize: '0.72rem', color: 'text.primary', lineHeight: 1.2 }}
+      >
+        {formatOpacityPercent(value)}
+      </Typography>
+      </Box>
+      <Slider
+        size="small"
+        value={percentValue}
+        min={0}
+        max={100}
+        step={5}
+        aria-label={ariaLabel}
+        onChange={(_event, newValue) =>
+          onChange(
+            (Array.isArray(newValue) ? newValue[0] : newValue ?? percentValue) /
+              100
+          )
+        }
+      />
+    </Box>
+  )
+}
+
+function DirectionAppearanceEditor({
+  label,
+  appearance,
+  colorAriaLabel,
+  opacityAriaLabel,
+  onColorChange,
+  onOpacityChange,
+}: {
+  label: string
+  appearance: { color: string; opacity: number }
+  colorAriaLabel: string
+  opacityAriaLabel: string
+  onColorChange: (value: string) => void
+  onOpacityChange: (value: number) => void
+}) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.7,
+        p: 0.85,
+        borderRadius: 1.5,
+        backgroundColor: '#F8FAFC',
+        border: '1px solid rgba(226, 232, 240, 0.95)',
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ fontSize: '0.78rem' }}>
+          {label}
+        </Typography>
+      </Box>
+      <ColorInputControl
+        label="Color"
+        value={appearance.color}
+        ariaLabel={colorAriaLabel}
+        onChange={onColorChange}
+      />
+      <OpacityRangeControl
+        label="Opacity"
+        value={appearance.opacity}
+        ariaLabel={opacityAriaLabel}
+        onChange={onOpacityChange}
+      />
+      <Box
+        sx={{
+          mx: 0.5,
+          width: 'calc(100% - 8px)',
+          height: 12,
+          borderRadius: '999px',
+          bgcolor: appearance.color,
+          opacity: appearance.opacity,
+          border: '1px solid rgba(15, 23, 42, 0.08)',
+        }}
+      />
+    </Box>
+  )
+}
+
+function CycleAppearancePreview({
+  opacity,
+  colors,
+}: {
+  opacity: number
+  colors: TimeSpaceAppearanceSettings['cycles']['indicationColors']
+}) {
+  const segments = [
+    { color: colors.beginGreen, flex: 14 },
+    { color: colors.trailingGreen, flex: 10 },
+    { color: colors.yellowClearance, flex: 8 },
+    { color: colors.redClearance, flex: 10 },
+    { color: colors.redIndication, flex: 22 },
+  ]
+
+  return (
+    <Box
+      sx={{
+        mx: 0.5,
+        width: 'calc(100% - 8px)',
+        height: 12,
+        display: 'flex',
+        overflow: 'hidden',
+        borderRadius: '999px',
+        border: '1px solid rgba(15, 23, 42, 0.08)',
+        backgroundColor: '#fff',
+      }}
+    >
+      {segments.map((segment, index) => (
+        <Box
+          key={`${segment.color}-${index}`}
+          sx={{
+            flex: segment.flex,
+            bgcolor: segment.color,
+            opacity,
+          }}
+        />
+      ))}
+    </Box>
+  )
+}
+
+function AppearanceSectionCard({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string
+  subtitle?: string
+  children: ReactNode
+}) {
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.9,
+        borderColor: 'rgba(203, 213, 225, 0.9)',
+        backgroundColor: '#fff',
+      }}
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+        <Typography variant="subtitle2" sx={{ fontSize: '0.84rem' }}>
+          {title}
+        </Typography>
+        {subtitle ? (
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: '0.72rem',
+              color: 'text.secondary',
+              lineHeight: 1.35,
+            }}
+          >
+            {subtitle}
+          </Typography>
+        ) : null}
+      </Box>
+      {children}
+    </Paper>
+  )
+}
+
 export default function TimeSpaceSidebar({
   option,
   selectedSeries,
   suppressedDirections = {},
   onSetSeriesVisibility,
   onToggleDirectionVisibility,
+  gpxTracksAvailable,
+  srmTracksAvailable,
+  appearanceSettings,
+  onAppearanceChange,
+  onResetAppearance,
   uploadContent,
   activeTab: controlledActiveTab,
   onTabChange,
   showTabs = true,
 }: TimeSpaceSidebarProps) {
-  const { directionControls, items } = buildSidebarModel(option)
+  const availabilityOverrides = {
+    'gpx-tracks': gpxTracksAvailable,
+    'srm-entity': srmTracksAvailable,
+  } satisfies SidebarAvailabilityOverrides
+  const { directionControls, items } = buildSidebarModel(
+    option,
+    availabilityOverrides
+  )
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
   >({})
@@ -1215,6 +1767,9 @@ export default function TimeSpaceSidebar({
   >({})
   const [internalTab, setInternalTab] = useState<SidebarTab>('legend')
   const hasLegendContent = items.length > 0
+  const stylableItems = getStylableItems(items)
+  const hasStyleContent =
+    Boolean(appearanceSettings && onAppearanceChange) && stylableItems.length > 0
   const hasUploadContent = Boolean(uploadContent)
   const availableTabs: SidebarTab[] = []
   const sectionCategories = CATEGORY_ORDER.filter((category) =>
@@ -1227,6 +1782,10 @@ export default function TimeSpaceSidebar({
 
   if (hasLegendContent) {
     availableTabs.push('legend')
+  }
+
+  if (hasStyleContent) {
+    availableTabs.push('styles')
   }
 
   if (hasUploadContent) {
@@ -1302,6 +1861,40 @@ export default function TimeSpaceSidebar({
     onSetSeriesVisibility([seriesName], visible)
   }
 
+  const styleAppearance =
+    appearanceSettings ?? TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS
+  const hasLeftTurnStyle = stylableItems.some(
+    (stylableItem) => stylableItem.key === 'left-turn'
+  )
+  const hasRightTurnStyle = stylableItems.some(
+    (stylableItem) => stylableItem.key === 'right-turn'
+  )
+
+  const updateAppearance = (
+    updater: (current: TimeSpaceAppearanceSettings) => TimeSpaceAppearanceSettings
+  ) => {
+    onAppearanceChange?.((current) => updater(current))
+  }
+
+  const getDirectionalStyleLabels = (item: SidebarItem) => {
+    const seenRoles = new Set<SidebarDirectionRole>()
+
+    return item.toggles.flatMap((toggle) => {
+      const role = toggle.directionRole
+      if (!role || seenRoles.has(role)) {
+        return []
+      }
+
+      seenRoles.add(role)
+      return [
+        {
+          role,
+          label: getDirectionRoleDisplayLabel(role),
+        },
+      ]
+    })
+  }
+
   return (
     <Box
       sx={{
@@ -1323,6 +1916,7 @@ export default function TimeSpaceSidebar({
             activeTab={activeTab}
             onChange={handleTabChange}
             hasLegendContent={hasLegendContent}
+            hasStyleContent={hasStyleContent}
             hasUploadContent={hasUploadContent}
           />
         </>
@@ -1340,7 +1934,7 @@ export default function TimeSpaceSidebar({
               fontSize: '0.7rem',
             }}
           >
-            {hasLegendContent ? 'Legend' : 'Uploads'}
+            {getSidebarTabLabel(activeTab)}
           </Typography>
           <Divider />
         </>
@@ -1357,6 +1951,490 @@ export default function TimeSpaceSidebar({
         {activeTab === 'uploads' ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             {uploadContent}
+          </Box>
+        ) : activeTab === 'styles' ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 1,
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '0.74rem',
+                  color: 'text.secondary',
+                  lineHeight: 1.35,
+                }}
+              >
+                Update chart colors and opacity.
+              </Typography>
+              {onResetAppearance ? (
+                <Button
+                  size="small"
+                  variant="text"
+                  onClick={onResetAppearance}
+                  sx={{ minWidth: 0, px: 0.75, textTransform: 'none' }}
+                >
+                  Reset
+                </Button>
+              ) : null}
+            </Box>
+
+            {stylableItems.map((item) => {
+              if (item.key === 'cycles') {
+                const cycleColors = styleAppearance.cycles.indicationColors
+
+                return (
+                  <AppearanceSectionCard
+                    key={item.key}
+                    title={item.label}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.7,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                          gridTemplateRows: 'repeat(3, auto)',
+                          gridAutoFlow: 'column',
+                          gap: 0.7,
+                        }}
+                      >
+                        <ColorInputControl
+                          label="Begin green"
+                          value={cycleColors.beginGreen}
+                          ariaLabel="Cycles begin green color"
+                          onChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              cycles: {
+                                ...current.cycles,
+                                indicationColors: {
+                                  ...current.cycles.indicationColors,
+                                  beginGreen: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                        <ColorInputControl
+                          label="Trailing green"
+                          value={cycleColors.trailingGreen}
+                          ariaLabel="Cycles trailing green color"
+                          onChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              cycles: {
+                                ...current.cycles,
+                                indicationColors: {
+                                  ...current.cycles.indicationColors,
+                                  trailingGreen: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                        <ColorInputControl
+                          label="Yellow clearance"
+                          value={cycleColors.yellowClearance}
+                          ariaLabel="Cycles yellow clearance color"
+                          onChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              cycles: {
+                                ...current.cycles,
+                                indicationColors: {
+                                  ...current.cycles.indicationColors,
+                                  yellowClearance: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                        <ColorInputControl
+                          label="Red clearance"
+                          value={cycleColors.redClearance}
+                          ariaLabel="Cycles red clearance color"
+                          onChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              cycles: {
+                                ...current.cycles,
+                                indicationColors: {
+                                  ...current.cycles.indicationColors,
+                                  redClearance: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                        <ColorInputControl
+                          label="Red indication"
+                          value={cycleColors.redIndication}
+                          ariaLabel="Cycles red indication color"
+                          onChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              cycles: {
+                                ...current.cycles,
+                                indicationColors: {
+                                  ...current.cycles.indicationColors,
+                                  redIndication: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      </Box>
+                      <OpacityRangeControl
+                        label="Cycle opacity"
+                        value={styleAppearance.cycles.opacity}
+                        ariaLabel="Cycles opacity"
+                        onChange={(value) =>
+                          updateAppearance((current) => ({
+                            ...current,
+                            cycles: {
+                              ...current.cycles,
+                              opacity: value,
+                            },
+                          }))
+                        }
+                      />
+                      <CycleAppearancePreview
+                        opacity={styleAppearance.cycles.opacity}
+                        colors={cycleColors}
+                      />
+                    </Box>
+                  </AppearanceSectionCard>
+                )
+              }
+
+              if (item.key === 'green-bands') {
+                return (
+                  <AppearanceSectionCard
+                    key={item.key}
+                    title={item.label}
+                  >
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
+                        gap: 0.75,
+                      }}
+                    >
+                      {getDirectionalStyleLabels(item).map(({ role, label }) => (
+                        <DirectionAppearanceEditor
+                          key={`${item.key}-${role}`}
+                          label={label}
+                          appearance={styleAppearance.greenBands[role]}
+                          colorAriaLabel={`Green Bands ${label} color`}
+                          opacityAriaLabel={`Green Bands ${label} opacity`}
+                          onColorChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              greenBands: {
+                                ...current.greenBands,
+                                [role]: {
+                                  ...current.greenBands[role],
+                                  color: value,
+                                },
+                              },
+                            }))
+                          }
+                          onOpacityChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              greenBands: {
+                                ...current.greenBands,
+                                [role]: {
+                                  ...current.greenBands[role],
+                                  opacity: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      ))}
+                    </Box>
+                  </AppearanceSectionCard>
+                )
+              }
+
+              if (
+                item.key === 'left-turn' ||
+                (item.key === 'right-turn' && !hasLeftTurnStyle)
+              ) {
+                const turnEditors = [
+                  hasLeftTurnStyle || item.key === 'left-turn'
+                    ? {
+                        key: 'left-turn',
+                        label: 'Left Turn',
+                        appearance: styleAppearance.turns.leftTurn,
+                      }
+                    : null,
+                  hasRightTurnStyle || item.key === 'right-turn'
+                    ? {
+                        key: 'right-turn',
+                        label: 'Right Turn',
+                        appearance: styleAppearance.turns.rightTurn,
+                      }
+                    : null,
+                ].filter(Boolean) as Array<{
+                  key: 'left-turn' | 'right-turn'
+                  label: string
+                  appearance: { color: string; opacity: number }
+                }>
+
+                return (
+                  <AppearanceSectionCard
+                    key={item.key}
+                    title="Turns"
+                  >
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
+                        gap: 0.75,
+                      }}
+                    >
+                      {turnEditors.map((turnEditor) => (
+                        <DirectionAppearanceEditor
+                          key={turnEditor.key}
+                          label={turnEditor.label}
+                          appearance={turnEditor.appearance}
+                          colorAriaLabel={`${turnEditor.label} color`}
+                          opacityAriaLabel={`${turnEditor.label} opacity`}
+                          onColorChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              turns: {
+                                ...current.turns,
+                                [turnEditor.key === 'left-turn'
+                                  ? 'leftTurn'
+                                  : 'rightTurn']: {
+                                  ...current.turns[
+                                    turnEditor.key === 'left-turn'
+                                      ? 'leftTurn'
+                                      : 'rightTurn'
+                                  ],
+                                  color: value,
+                                },
+                              },
+                            }))
+                          }
+                          onOpacityChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              turns: {
+                                ...current.turns,
+                                [turnEditor.key === 'left-turn'
+                                  ? 'leftTurn'
+                                  : 'rightTurn']: {
+                                  ...current.turns[
+                                    turnEditor.key === 'left-turn'
+                                      ? 'leftTurn'
+                                      : 'rightTurn'
+                                  ],
+                                  opacity: value,
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      ))}
+                    </Box>
+                  </AppearanceSectionCard>
+                )
+              }
+
+              if (item.key === 'right-turn') {
+                return null
+              }
+
+              if (
+                item.key === 'lane-by-lane-count' ||
+                item.key === 'advance-count' ||
+                item.key === 'stop-bar-presence'
+              ) {
+                const detectionAppearance =
+                  item.key === 'lane-by-lane-count'
+                    ? styleAppearance.detection.laneByLaneCount
+                    : item.key === 'advance-count'
+                      ? styleAppearance.detection.advanceCount
+                      : styleAppearance.detection.stopBarPresence
+
+                return (
+                  <AppearanceSectionCard
+                    key={item.key}
+                    title={item.label}
+                  >
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
+                        gap: 0.75,
+                      }}
+                    >
+                      {getDirectionalStyleLabels(item).map(({ role, label }) => (
+                        <DirectionAppearanceEditor
+                          key={`${item.key}-${role}`}
+                          label={label}
+                          appearance={detectionAppearance[role]}
+                          colorAriaLabel={`${item.label} ${label} color`}
+                          opacityAriaLabel={`${item.label} ${label} opacity`}
+                          onColorChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              detection: {
+                                ...current.detection,
+                                [item.key === 'lane-by-lane-count'
+                                  ? 'laneByLaneCount'
+                                  : item.key === 'advance-count'
+                                    ? 'advanceCount'
+                                    : 'stopBarPresence']: {
+                                  ...current.detection[
+                                    item.key === 'lane-by-lane-count'
+                                      ? 'laneByLaneCount'
+                                      : item.key === 'advance-count'
+                                        ? 'advanceCount'
+                                        : 'stopBarPresence'
+                                  ],
+                                  [role]: {
+                                    ...current.detection[
+                                      item.key === 'lane-by-lane-count'
+                                        ? 'laneByLaneCount'
+                                        : item.key === 'advance-count'
+                                          ? 'advanceCount'
+                                          : 'stopBarPresence'
+                                    ][role],
+                                    color: value,
+                                  },
+                                },
+                              },
+                            }))
+                          }
+                          onOpacityChange={(value) =>
+                            updateAppearance((current) => ({
+                              ...current,
+                              detection: {
+                                ...current.detection,
+                                [item.key === 'lane-by-lane-count'
+                                  ? 'laneByLaneCount'
+                                  : item.key === 'advance-count'
+                                    ? 'advanceCount'
+                                    : 'stopBarPresence']: {
+                                  ...current.detection[
+                                    item.key === 'lane-by-lane-count'
+                                      ? 'laneByLaneCount'
+                                      : item.key === 'advance-count'
+                                        ? 'advanceCount'
+                                        : 'stopBarPresence'
+                                  ],
+                                  [role]: {
+                                    ...current.detection[
+                                      item.key === 'lane-by-lane-count'
+                                        ? 'laneByLaneCount'
+                                        : item.key === 'advance-count'
+                                          ? 'advanceCount'
+                                          : 'stopBarPresence'
+                                    ][role],
+                                    opacity: value,
+                                  },
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      ))}
+                    </Box>
+                  </AppearanceSectionCard>
+                )
+              }
+
+              if (item.key === 'tsp-request') {
+                const tspRequestAppearance = styleAppearance.tspRequest
+                const tspServiceAppearance = styleAppearance.tspService
+
+                return (
+                  <AppearanceSectionCard
+                    key={item.key}
+                    title="Transit Priority"
+                  >
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
+                        gap: 0.75,
+                      }}
+                    >
+                      <DirectionAppearanceEditor
+                        label="TSP Request"
+                        appearance={tspRequestAppearance}
+                        colorAriaLabel="TSP Request color"
+                        opacityAriaLabel="TSP Request opacity"
+                        onColorChange={(value) =>
+                          updateAppearance((current) => ({
+                            ...current,
+                            tspRequest: {
+                              ...current.tspRequest,
+                              color: value,
+                            },
+                          }))
+                        }
+                        onOpacityChange={(value) =>
+                          updateAppearance((current) => ({
+                            ...current,
+                            tspRequest: {
+                              ...current.tspRequest,
+                              opacity: value,
+                            },
+                          }))
+                        }
+                      />
+                      <DirectionAppearanceEditor
+                        label="TSP Service"
+                        appearance={tspServiceAppearance}
+                        colorAriaLabel="TSP Service color"
+                        opacityAriaLabel="TSP Service opacity"
+                        onColorChange={(value) =>
+                          updateAppearance((current) => ({
+                            ...current,
+                            tspService: {
+                              ...current.tspService,
+                              color: value,
+                            },
+                          }))
+                        }
+                        onOpacityChange={(value) =>
+                          updateAppearance((current) => ({
+                            ...current,
+                            tspService: {
+                              ...current.tspService,
+                              opacity: value,
+                            },
+                          }))
+                        }
+                      />
+                    </Box>
+                  </AppearanceSectionCard>
+                )
+              }
+
+              if (item.key === 'tsp-service') {
+                return null
+              }
+
+              return null
+            })}
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -1609,7 +2687,10 @@ export default function TimeSpaceSidebar({
                               alignItems: 'stretch',
                             }}
                           >
-                            <PreviewCard kind={item.preview} />
+                            <PreviewCard
+                              kind={item.preview}
+                              appearanceSettings={appearanceSettings}
+                            />
                             <Box
                               sx={{
                                 minWidth: 0,
@@ -1639,7 +2720,10 @@ export default function TimeSpaceSidebar({
                                     ml: 'auto',
                                   }}
                                 >
-                                  {item.details?.length ? (
+                                  {getRenderedItemDetails(
+                                    item,
+                                    appearanceSettings
+                                  )?.length ? (
                                     <Tooltip
                                       title={
                                         expandedDetails[item.key]
@@ -1774,7 +2858,10 @@ export default function TimeSpaceSidebar({
                                 {item.description}
                               </Typography>
 
-                              {item.details?.length &&
+                              {getRenderedItemDetails(
+                                item,
+                                appearanceSettings
+                              )?.length &&
                               expandedDetails[item.key] ? (
                                 <Box
                                   sx={{
@@ -1787,7 +2874,10 @@ export default function TimeSpaceSidebar({
                                       '1px solid rgba(203, 213, 225, 0.9)',
                                   }}
                                 >
-                                  {item.details.map((detail) => (
+                                  {getRenderedItemDetails(
+                                    item,
+                                    appearanceSettings
+                                  )?.map((detail) => (
                                     <Box
                                       key={`${item.key}-${detail.label}`}
                                       sx={{

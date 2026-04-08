@@ -35,17 +35,24 @@ import {
 } from '../types'
 import TimeSpaceSidebar, {
   getSidebarDirectionControls,
+  hasTimeSpaceStyleContent,
   SidebarDirectionRole,
   SidebarTab,
   TIME_SPACE_GUIDE_WIDTH,
   TimeSpaceSidebarTabs,
 } from './TimeSpaceSidebar'
+import {
+  applyTimeSpaceAppearanceToOption,
+  createDefaultTimeSpaceAppearanceSettings,
+  TimeSpaceAppearanceSettings,
+} from '../timeSpaceAppearance'
 
 export interface TimeSpaceChartProps extends ApacheEChartsProps {
   gpxEntries?: GpxUploadOptions[]
   ignoredLocations?: string[]
   onToggleIgnoredLocation?: (location: string) => void
   sidebarUploadContent?: ReactNode
+  isVisible?: boolean
 }
 
 type LocationToggleButton = {
@@ -1266,6 +1273,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     ignoredLocations = [],
     onToggleIgnoredLocation,
     sidebarUploadContent,
+    isVisible = true,
   } = prop
 
   const chartRef = useRef<HTMLDivElement>(null)
@@ -1283,6 +1291,12 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(false)
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('legend')
+  const defaultAppearanceSettings = useMemo(
+    () => createDefaultTimeSpaceAppearanceSettings(),
+    []
+  )
+  const [appearanceSettings, setAppearanceSettings] =
+    useState<TimeSpaceAppearanceSettings>(() => defaultAppearanceSettings)
   const [showPhaseInfo, setShowPhaseInfo] = useState(true)
   const [headerHeight, setHeaderHeight] = useState(0)
   const [stickyTopAxis, setStickyTopAxis] = useState<StickyTopAxis | null>(null)
@@ -1297,6 +1311,16 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           !entry?.error &&
           Array.isArray(entry.parsedData) &&
           entry.parsedData.length > 0
+      ),
+    [gpxEntries]
+  )
+  const hasSrmTracks = useMemo(
+    () =>
+      (gpxEntries ?? []).some(
+        (entry) =>
+          !entry?.error &&
+          Array.isArray(entry.parsedEntityData) &&
+          entry.parsedEntityData.length > 0
       ),
     [gpxEntries]
   )
@@ -1348,6 +1372,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     () => getSidebarDirectionControls(optionWithOverlayLegend),
     [optionWithOverlayLegend]
   )
+  const hasStyleContent = useMemo(
+    () => hasTimeSpaceStyleContent(optionWithOverlayLegend),
+    [optionWithOverlayLegend]
+  )
   const directionRoleBySeriesName = useMemo(() => {
     const nextMap = new Map<string, SidebarDirectionRole>()
 
@@ -1392,13 +1420,39 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       opposing: primaryCardLeft + cardWidth + cardGapBetween + cardWidth / 2,
     }
   }, [stickyBottomAxis])
+  const styledSidebarOption = useMemo(
+    () =>
+      applyTimeSpaceAppearanceToOption(
+        sidebarAdjustedOption,
+        appearanceSettings,
+        directionRoleBySeriesName
+      ),
+    [appearanceSettings, directionRoleBySeriesName, sidebarAdjustedOption]
+  )
+  const defaultStyledSidebarOption = useMemo(
+    () =>
+      applyTimeSpaceAppearanceToOption(
+        sidebarAdjustedOption,
+        defaultAppearanceSettings,
+        directionRoleBySeriesName
+      ),
+    [defaultAppearanceSettings, directionRoleBySeriesName, sidebarAdjustedOption]
+  )
   const renderedOption = useMemo(
     () => ({
-      ...sidebarAdjustedOption,
-      xAxis: stripBottomAxisVisuals(sidebarAdjustedOption),
-      dataZoom: stripSliderDataZoomVisuals(sidebarAdjustedOption),
+      ...styledSidebarOption,
+      xAxis: stripBottomAxisVisuals(styledSidebarOption),
+      dataZoom: stripSliderDataZoomVisuals(styledSidebarOption),
     }),
-    [sidebarAdjustedOption]
+    [styledSidebarOption]
+  )
+  const defaultRenderedOption = useMemo(
+    () => ({
+      ...defaultStyledSidebarOption,
+      xAxis: stripBottomAxisVisuals(defaultStyledSidebarOption),
+      dataZoom: stripSliderDataZoomVisuals(defaultStyledSidebarOption),
+    }),
+    [defaultStyledSidebarOption]
   )
   const baseHeight = getCssLength(style?.height)
   const fullscreenViewportHeight = '100vh'
@@ -1473,7 +1527,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
         stickyBottomAxisChartRef.current = null
       }
     }
-  }, [theme, stickyBottomAxisOption])
+  }, [theme, stickyBottomAxis, stickyBottomAxisOption])
 
   useEffect(() => {
     setSelectedSeries(baseSelectedSeries)
@@ -1518,7 +1572,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     stickyChart.setOption(stickyBottomAxisOption, true)
     stickyChart.resize()
-  }, [stickyBottomAxisOption, isFullscreen, headerHeight])
+  }, [stickyBottomAxis, stickyBottomAxisOption, isFullscreen, headerHeight])
 
   useEffect(() => {
     if (!chart) return
@@ -1526,6 +1580,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     const handleRestore = () => {
       setSelectedSeries(defaultSelectedSeries)
       setSuppressedDirections({})
+      setAppearanceSettings(defaultAppearanceSettings)
     }
 
     chart.on('restore', handleRestore)
@@ -1533,7 +1588,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     return () => {
       chart.off('restore', handleRestore)
     }
-  }, [chart, defaultSelectedSeries])
+  }, [chart, defaultAppearanceSettings, defaultSelectedSeries])
 
   useEffect(() => {
     if (!chart) return
@@ -1566,6 +1621,43 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isVisible) {
+      return
+    }
+
+    let firstRafId = 0
+    let secondRafId = 0
+
+    const syncVisibleChartLayout = () => {
+      const mainChart = chartInstanceRef.current
+      const stickyChart = stickyBottomAxisChartRef.current
+      const chartElement = chartRef.current
+
+      if (!mainChart || !chartElement) {
+        return
+      }
+
+      const { width, height } = chartElement.getBoundingClientRect()
+      if (width <= 0 || height <= 0) {
+        return
+      }
+
+      mainChart.resize()
+      stickyChart?.resize()
+      window.dispatchEvent(new Event('resize'))
+    }
+
+    firstRafId = window.requestAnimationFrame(() => {
+      secondRafId = window.requestAnimationFrame(syncVisibleChartLayout)
+    })
+
+    return () => {
+      window.cancelAnimationFrame(firstRafId)
+      window.cancelAnimationFrame(secondRafId)
+    }
+  }, [isVisible, chart, stickyBottomAxisOption])
 
   useEffect(() => {
     const node = headerRef.current
@@ -1709,11 +1801,20 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           return
         }
 
-        setStickyBottomAxis({
+        const nextAxis = {
           label: bottomAxisConfig.label,
           axisStart: x,
           axisEnd: x + width,
-        })
+        }
+
+        setStickyBottomAxis((current) =>
+          current &&
+          current.label === nextAxis.label &&
+          current.axisStart === nextAxis.axisStart &&
+          current.axisEnd === nextAxis.axisEnd
+            ? current
+            : nextAxis
+        )
       })
     }
 
@@ -1778,7 +1879,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       mainChart.off('datazoom', syncStickyBottomAxis)
       window.removeEventListener('resize', syncStickyBottomAxis)
     }
-  }, [chart, stickyBottomAxisOption])
+  }, [chart, stickyBottomAxis, stickyBottomAxisOption])
 
   useEffect(() => {
     const mainChart = chartInstanceRef.current
@@ -1826,7 +1927,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       stickyChart.off('datazoom', handleStickyBottomDataZoom)
       mainChart.off('datazoom', handleMainChartZoomLoop)
     }
-  }, [chart, stickyBottomAxisOption])
+  }, [chart, stickyBottomAxis, stickyBottomAxisOption])
 
   const handleSetSeriesVisibility = (
     seriesNames: string[],
@@ -1875,10 +1976,11 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     const chartInstance = chartInstanceRef.current
     if (!chartInstance) return
 
-    chartInstance.setOption(renderedOption, {
+    chartInstance.setOption(defaultRenderedOption, {
       notMerge: true,
       lazyUpdate: false,
     })
+    setAppearanceSettings(defaultAppearanceSettings)
     setSelectedSeries(defaultSelectedSeries)
     setSuppressedDirections({})
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
@@ -2119,6 +2221,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 activeTab={sidebarTab}
                 onChange={setSidebarTab}
                 hasLegendContent
+                hasStyleContent={hasStyleContent}
                 hasUploadContent={Boolean(sidebarUploadContent)}
                 mode="header"
               />
@@ -2461,6 +2564,13 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                 suppressedDirections={suppressedDirections}
                 onSetSeriesVisibility={handleSetSeriesVisibility}
                 onToggleDirectionVisibility={handleToggleDirectionVisibility}
+                gpxTracksAvailable={hasGpxTracks}
+                srmTracksAvailable={hasSrmTracks}
+                appearanceSettings={appearanceSettings}
+                onAppearanceChange={setAppearanceSettings}
+                onResetAppearance={() =>
+                  setAppearanceSettings(defaultAppearanceSettings)
+                }
                 uploadContent={sidebarUploadContent}
                 activeTab={sidebarTab}
                 onTabChange={setSidebarTab}

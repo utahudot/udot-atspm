@@ -109,6 +109,7 @@ export const useGpxAnimationHandler = (
             lineStyle: {
               width: 3,
               color: 'black',
+              type: 'dotted',
             },
             clip: true,
           })
