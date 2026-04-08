@@ -18,6 +18,8 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
@@ -55,13 +57,20 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
                 foreach (var aggregationData in request.Aggregations)
                 {
-                    // Note: You'll need to implement the actual save logic based on your repository
-                    // This is a placeholder - adjust according to your data layer
-                    _log.LogInformation($"Processing upload for {aggregationData.Type} with {aggregationData.RecordCount} records");
+                    string flattenedJson = FlattenDataFields(aggregationData.JsonData);
 
-                    // TODO: Deserialize and save the data
-                    //var data = JsonSerializer.Deserialize<List<AggregationModelBase>>(aggregationData.JsonData);
-                    // await _repository.SaveAggregationsAsync(data);
+                    // 1. Get the concrete C# type
+                    Type concreteType = GetTypeFromDataType(aggregationData.Type);
+
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var listType = typeof(List<>).MakeGenericType(concreteType);
+                    var obj = JsonSerializer.Deserialize(flattenedJson, listType, options);
+
+                    // TODO: Save the data
+                    //await _repository.SaveAggregationsAsync(data);
 
                     results.ProcessedTypes.Add(aggregationData.Type);
                     results.TotalRecordsProcessed += aggregationData.RecordCount;
@@ -80,6 +89,81 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                     Status = StatusCodes.Status400BadRequest
                 });
             }
+        }
+
+        public static string FlattenDataFields(string jsonArray)
+        {
+            var array = JsonNode.Parse(jsonArray).AsArray();
+
+            foreach (var itemNode in array)
+            {
+                if (itemNode is JsonObject obj)
+                {
+                    // Remove top-level start/end if not needed
+                    obj.Remove("start");
+                    obj.Remove("end");
+
+                    // First, flatten "data.*" fields
+                    var keysToMove = new List<string>();
+                    foreach (var kv in obj)
+                        if (kv.Key.StartsWith("data."))
+                            keysToMove.Add(kv.Key);
+
+                    foreach (var key in keysToMove)
+                    {
+                        var value = obj[key]?.DeepClone();
+                        string newKey = key.Substring(5); // remove "data."
+                        obj.Add(newKey, value);
+                        obj.Remove(key);
+                    }
+
+                    // Now capitalize **all keys** in the object
+                    var keys = new List<string>(obj.Select(i => i.Key));
+                    foreach (var key in keys)
+                    {
+                        string capitalizedKey = char.ToUpperInvariant(key[0]) + key.Substring(1);
+                        if (capitalizedKey != key)
+                        {
+                            var value = obj[key]?.DeepClone();
+                            if (key.Contains("ocationIdentifier"))
+                            {
+                                value = value.ToString();
+                            }
+                            obj.Remove(key);
+                            obj.Add(capitalizedKey, value);
+                        }
+                    }
+                }
+            }
+
+            return array.ToJsonString();
+        }
+
+        private static readonly Dictionary<string, Type> TypeMap = new()
+        {
+            { "DetectorEventCountAggregation", typeof(Utah.Udot.Atspm.Data.Models.DetectorEventCountAggregation) },
+            { "ApproachPcdAggregation", typeof(Utah.Udot.Atspm.Data.Models.ApproachPcdAggregation) },
+            { "ApproachSpeedAggregation", typeof(Utah.Udot.Atspm.Data.Models.ApproachSpeedAggregation) },
+            { "ApproachSplitFailAggregation", typeof(Utah.Udot.Atspm.Data.Models.ApproachSplitFailAggregation) },
+            { "PhaseCycleAggregation", typeof(Utah.Udot.Atspm.Data.Models.PhaseCycleAggregation) },
+            { "PhaseLeftTurnGapAggregation", typeof(Utah.Udot.Atspm.Data.Models.PhaseLeftTurnGapAggregation) },
+            { "PhasePedAggregation", typeof(Utah.Udot.Atspm.Data.Models.PhasePedAggregation) },
+            { "PhaseSplitMonitorAggregation", typeof(Utah.Udot.Atspm.Data.Models.PhaseSplitMonitorAggregation) },
+            { "PhaseTerminationAggregation", typeof(Utah.Udot.Atspm.Data.Models.PhaseTerminationAggregation) },
+            { "PreemptionAggregation", typeof(Utah.Udot.Atspm.Data.Models.PreemptionAggregation) },
+            { "PriorityAggregation", typeof(Utah.Udot.Atspm.Data.Models.PriorityAggregation) },
+            { "SignalEventCountAggregation", typeof(Utah.Udot.Atspm.Data.Models.SignalEventCountAggregation) },
+            { "SignalPlanAggregation", typeof(Utah.Udot.Atspm.Data.Models.SignalPlanAggregation) },
+            { "ApproachYellowRedActivationAggregation", typeof(Utah.Udot.Atspm.Data.Models.ApproachYellowRedActivationAggregation) },
+        };
+
+        private static Type GetTypeFromDataType(string dataType)
+        {
+            if (string.IsNullOrEmpty(dataType)) return null;
+
+            string className;
+            TypeMap.TryGetValue(dataType, out var type);
+            return type;
         }
     }
 
@@ -130,4 +214,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// </summary>
         public int TotalRecordsProcessed { get; set; }
     }
+
+
 }
