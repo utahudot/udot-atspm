@@ -20,8 +20,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
+using Utah.Udot.NetStandardToolkit.Common;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -69,8 +71,20 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                     var listType = typeof(List<>).MakeGenericType(concreteType);
                     var obj = JsonSerializer.Deserialize(flattenedJson, listType, options);
 
-                    // TODO: Save the data
-                    //await _repository.SaveAggregationsAsync(data);
+                    List<AggregationModelBase> typedList = ((System.Collections.IEnumerable)obj)
+                        .Cast<AggregationModelBase>()
+                        .ToList();
+
+                    List<CompressedAggregationBase> compressedAggregations = await Compress(typedList).ToListAsync();
+
+                    foreach (var compressed in compressedAggregations)
+                    {
+                        var method = typeof(IAggregationRepositoryExtensions)
+                            .GetMethod(nameof(IAggregationRepositoryExtensions.Upsert))
+                            .MakeGenericMethod(compressed.GetType());
+
+                        await (Task)method.Invoke(null, new object[] { _repository, compressed });
+                    }
 
                     results.ProcessedTypes.Add(aggregationData.Type);
                     results.TotalRecordsProcessed += aggregationData.RecordCount;
@@ -165,6 +179,50 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             TypeMap.TryGetValue(dataType, out var type);
             return type;
         }
+
+        public async IAsyncEnumerable<CompressedAggregationBase> Compress(
+       IEnumerable<AggregationModelBase> input)
+        {
+            var grouped = input.GroupBy(g => new GroupKey(
+                g.LocationIdentifier,
+                g.Start.Year,
+                g.Start.Month,
+                g.Start.Day,
+                g.GetType()
+            ));
+
+            foreach (var group in grouped)
+            {
+                // Build timeline
+                var tl = new Timeline<StartEndRange>(
+                    group.Min(m => m.Start),
+                    group.Max(m => m.Start),
+                    TimeSpan.FromDays(1)
+                );
+
+                // Create compressed object
+                var compressed = CreateCompressedAggregation(group.Key.DataType);
+
+                compressed.LocationIdentifier = group.Key.LocationIdentifier;
+                compressed.Start = tl.Start;
+                compressed.End = tl.End;
+                compressed.DataType = group.Key.DataType;
+                compressed.Data = input;
+
+                yield return compressed;
+            }
+
+            await Task.CompletedTask; // keeps async signature happy
+        }
+
+        private static CompressedAggregationBase CreateCompressedAggregation(Type type)
+        {
+            var compType = typeof(CompressedAggregations<>).MakeGenericType(type);
+            return (CompressedAggregationBase)Activator.CreateInstance(compType)!;
+        }
+
+        private record GroupKey(string LocationIdentifier, int Year, int Month, int Day, Type DataType);
+
     }
 
     /// <summary>
