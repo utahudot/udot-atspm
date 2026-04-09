@@ -64,24 +64,39 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                     // 1. Get the concrete C# type
                     Type concreteType = GetTypeFromDataType(aggregationData.Type);
 
+                    // 🚨 Safety check
+                    if (concreteType == null || concreteType == typeof(AggregationModelBase))
+                        throw new Exception($"Invalid concrete type for {aggregationData.Type}");
+
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     };
+
+                    // 2. Deserialize into List<ConcreteType>
                     var listType = typeof(List<>).MakeGenericType(concreteType);
                     var obj = JsonSerializer.Deserialize(flattenedJson, listType, options);
 
-                    List<AggregationModelBase> typedList = ((System.Collections.IEnumerable)obj)
+                    // 3. Cast to base type
+                    var typedList = ((System.Collections.IEnumerable)obj)
                         .Cast<AggregationModelBase>()
                         .ToList();
 
-                    List<CompressedAggregationBase> compressedAggregations = await Compress(typedList).ToListAsync();
+                    // 🚨 Extra safety: ensure all items are actually the expected type
+                    if (typedList.Any(x => x.GetType() != concreteType))
+                        throw new Exception("Type mismatch detected in deserialized data.");
 
+                    // 4. Compress (this assumes you fixed Compress to use group.First().GetType())
+                    var compressedAggregations = await Compress(typedList).ToListAsync();
+
+                    // 5. Upsert each one using correct generic type
                     foreach (var compressed in compressedAggregations)
                     {
+                        var actualType = compressed.GetType();
+
                         var method = typeof(IAggregationRepositoryExtensions)
                             .GetMethod(nameof(IAggregationRepositoryExtensions.Upsert))
-                            .MakeGenericMethod(compressed.GetType());
+                            .MakeGenericMethod(actualType);
 
                         await (Task)method.Invoke(null, new object[] { _repository, compressed });
                     }
@@ -105,7 +120,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             }
         }
 
-        public static string FlattenDataFields(string jsonArray)
+        private static string FlattenDataFields(string jsonArray)
         {
             var array = JsonNode.Parse(jsonArray).AsArray();
 
@@ -180,7 +195,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             return type;
         }
 
-        public async IAsyncEnumerable<CompressedAggregationBase> Compress(
+        private async IAsyncEnumerable<CompressedAggregationBase> Compress(
        IEnumerable<AggregationModelBase> input)
         {
             var grouped = input.GroupBy(g => new GroupKey(
