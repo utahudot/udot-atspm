@@ -116,6 +116,7 @@ const AdminTable = <T extends BaseObj>({
   }
 
   const handleEditClick = () => {
+    setAnchorEl(null)
     if (customEditFunction) {
       customEditFunction(selectedRow)
     } else {
@@ -124,6 +125,7 @@ const AdminTable = <T extends BaseObj>({
   }
 
   const handleDeleteClick = () => {
+    setAnchorEl(null)
     setIsDeleteModalOpen(true)
   }
 
