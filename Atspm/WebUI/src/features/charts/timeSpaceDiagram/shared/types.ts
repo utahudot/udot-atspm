@@ -121,7 +121,7 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   stopBarPresenceDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
   cycleAllEvents: Cycle[] | null
   pedestrianIntervals: PedestrianInterval[] | []
-  percentArrivalOnGreen: number
+  percentArrivalOnGreen: number | null
   tmcForPhase: TmcForPhaseDto
 
   order: number
