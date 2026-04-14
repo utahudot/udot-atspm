@@ -121,6 +121,7 @@ builder.Host
 var app = builder.Build();
 
 await app.ApplyMigrations<EventLogContext>();
+await app.ApplyMigrations<AggregationContext>();
 
 #region Middleware Pipeline
 
