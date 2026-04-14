@@ -15,17 +15,15 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.Infrastructure.Common;
 
@@ -121,6 +119,8 @@ builder.Host
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<EventLogContext>();
 
 #region Middleware Pipeline
 

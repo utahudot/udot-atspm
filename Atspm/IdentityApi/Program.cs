@@ -103,6 +103,8 @@ builder.Host
 
 var app = builder.Build();
 
+await app.ApplyMigrations<IdentityContext>(s => s.SeedAdminUser());
+
 #region Middleware Pipeline
 
 //Error handling

@@ -1,51 +1,80 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
+    /// </summary>
     public static class MigrationExtensions
     {
-        public static async Task ApplyMigrations<TContext>(this IHost host, bool seedAdmin = false) where TContext : DbContext
+        /// <summary>
+        /// Applies pending migrations for the specified <typeparamref name="TContext"/>.
+        /// Ensures the physical database is created before migrations are applied.
+        /// </summary>
+        /// <typeparam name="TContext">The type of <see cref="DbContext"/> to migrate.</typeparam>
+        /// <param name="host">The application host providing access to services.</param>
+        /// <param name="seedAction">An optional asynchronous action to perform database seeding.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task ApplyMigrations<TContext>(this IHost host, Func<IServiceProvider, Task>? seedAction = null) where TContext : DbContext
         {
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
-            var configuration = services.GetRequiredService<IConfiguration>();
-            var logger = services.GetRequiredService<ILogger<TContext>>();
 
-            bool autoMigrate = configuration.GetValue<bool>("DatabaseOptions:AutoMigrate");
+            var options = services.GetRequiredService<IOptionsSnapshot<DatabaseConfiguration>>();
+            var settings = options.Get(typeof(TContext).Name);
 
-            if (!autoMigrate)
+            if (!settings.RunMigrations)
             {
-                logger.LogInformation("Auto-migration is disabled for {ContextName}.", typeof(TContext).Name);
                 return;
             }
 
+            var logger = services.GetRequiredService<ILogger<TContext>>();
+            var context = services.GetRequiredService<TContext>();
+
             try
             {
-                var context = services.GetRequiredService<TContext>();
+                logger.LogInformation("Ensuring database for {ContextName} exists on {Host}...", typeof(TContext).Name, settings.Host);
+
+                var databaseCreator = context.GetService<IRelationalDatabaseCreator>();
+
+                if (!await databaseCreator.ExistsAsync())
+                {
+                    logger.LogInformation("Database for {ContextName} does not exist. Creating...", typeof(TContext).Name);
+                    await databaseCreator.CreateAsync();
+                }
 
                 logger.LogInformation("Applying migrations for {ContextName}...", typeof(TContext).Name);
                 await context.Database.MigrateAsync();
 
-                if (seedAdmin)
+                if (seedAction != null)
                 {
-                    await SeedAdminUser(services, logger);
+                    await seedAction(services);
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred during migration or seeding.");
+                logger.LogError(ex, "An error occurred while migrating {ContextName}.", typeof(TContext).Name);
                 throw;
             }
         }
 
-        private static async Task SeedAdminUser(IServiceProvider services, ILogger logger)
+        /// <summary>
+        /// Seeds a default administrative user and role based on environment variables.
+        /// </summary>
+        /// <param name="services">The service provider used to resolve Identity services.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task SeedAdminUser(this IServiceProvider services)
         {
+            var logger = services.GetRequiredService<ILogger<IdentityContext>>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -59,7 +88,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 return;
             }
 
-            if (await userManager.FindByEmailAsync(email) == null)
+            var existingUser = await userManager.FindByEmailAsync(email);
+            if (existingUser == null)
             {
                 var user = new ApplicationUser { UserName = email, Email = email };
                 var result = await userManager.CreateAsync(user, password);
@@ -67,10 +97,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 if (result.Succeeded)
                 {
                     if (!await roleManager.RoleExistsAsync(role))
-                        await roleManager.CreateAsync(new IdentityRole(role));
+                    {
+                        var roleResult = await roleManager.CreateAsync(new IdentityRole(role));
+                        if (!roleResult.Succeeded)
+                        {
+                            logger.LogError("Failed to create role {Role}: {Errors}",
+                                role, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                            return;
+                        }
+                    }
 
-                    await userManager.AddToRoleAsync(user, role);
-                    logger.LogInformation("Admin user created successfully.");
+                    var addToRoleResult = await userManager.AddToRoleAsync(user, role);
+                    if (addToRoleResult.Succeeded)
+                    {
+                        logger.LogInformation("Admin user {Email} created and assigned to {Role} successfully.", email, role);
+                    }
+                    else
+                    {
+                        logger.LogError("User created but failed to assign to role: {Errors}",
+                            string.Join(", ", addToRoleResult.Errors.Select(e => e.Description)));
+                    }
+                }
+                else
+                {
+                    logger.LogError("Failed to create admin user: {Errors}",
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
             }
         }
