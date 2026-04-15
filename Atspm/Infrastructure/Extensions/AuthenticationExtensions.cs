@@ -29,9 +29,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
@@ -209,26 +211,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                         return Task.CompletedTask;
                     },
-                    //OnTokenResponseReceived = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
-                    //OnUserInformationReceived = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
-                    //OnAuthorizationCodeReceived = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
-                    //OnTokenValidated = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
                 };
             });
             }
@@ -240,111 +222,59 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
 
         /// <summary>
-        /// Add atspm authorization
+        /// Configures the ATSPM authorization system by dynamically generating policies based on defined permissions.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// This method performs the following actions:
+        /// <list type="bullet">
+        /// <item>Uses reflection to iterate through all constant fields in <see cref="AtspmClaims.Permissions"/>.</item>
+        /// <item>Generates policy names using the pattern "Can{Action}{Category}" (e.g., "Users:View" becomes "CanViewUsers").</item>
+        /// <item>Includes a global bypass for the <see cref="AtspmClaims.Roles.Admin"/> role in every functional policy.</item>
+        /// <item>Registers an "AdminOnly" policy for high-security system tasks.</item>
+        /// <item>Supports both JWT Bearer and ApiKey authentication schemes.</item>
+        /// </list>
+        /// </remarks>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+        /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services)
         {
             services.AddAuthorization(options =>
             {
                 var schemes = new[] { JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
 
-                options.AddPolicy("CanViewUsers", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "User:View" || c.Value == "Admin")));
-                });
+                var permissions = typeof(AtspmClaims.Permissions)
+                    .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                    .Where(f => f.IsLiteral && !f.IsInitOnly)
+                    .Select(f => f.GetRawConstantValue()?.ToString())
+                    .Where(v => v != null)
+                    .ToList();
 
-                options.AddPolicy("CanEditUsers", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "User:Edit" || c.Value == "Admin")));
-                });
+                foreach (var permission in permissions!)
+                {
+                    if (permission == AtspmClaims.Permissions.Admin) continue;
 
-                options.AddPolicy("CanDeleteUsers", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "User:Delete" || c.Value == "Admin")));
-                });
+                    var parts = permission.Split(':');
+                    var category = parts[0];
+                    var action = parts.Length > 1 ? parts[1] : string.Empty;
 
-                options.AddPolicy("CanViewRoles", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Role:View" || c.Value == "Admin")));
-                });
+                    var policyName = $"Can{action}{category}";
 
-                options.AddPolicy("CanEditRoles", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Role:Edit" || c.Value == "Admin")));
-                });
+                    options.AddPolicy(policyName, policy =>
+                    {
+                        policy.AddAuthenticationSchemes(schemes);
+                        policy.RequireAssertion(context =>
+                            context.User.HasClaim(c =>
+                                c.Type == AtspmClaims.RoleClaimType &&
+                                (c.Value == permission || c.Value == AtspmClaims.Roles.Admin)
+                            )
+                        );
+                    });
+                }
 
-                options.AddPolicy("CanDeleteRoles", policy => {
+                options.AddPolicy("AdminOnly", policy =>
+                {
                     policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Role:Delete" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanViewLocationConfigurations", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "LocationConfiguration:View" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanEditLocationConfigurations", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "LocationConfiguration:Edit" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanDeleteLocationConfigurations", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "LocationConfiguration:Delete" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanViewGeneralConfigurations", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "GeneralConfiguration:View" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanEditGeneralConfigurations", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "GeneralConfiguration:Edit" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanDeleteGeneralConfigurations", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "GeneralConfiguration:Delete" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanViewData", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Data:View" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanEditData", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Data:Edit" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanCreateApiKeys", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role &&
-                        (c.Value == "ApiKey:Create" || c.Value == "Admin")));
-                });
-
-                options.AddPolicy("CanViewWatchDog", policy => {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Watchdog:View" || c.Value == "Admin")));
+                    policy.RequireClaim(AtspmClaims.RoleClaimType, AtspmClaims.Roles.Admin);
                 });
             });
 

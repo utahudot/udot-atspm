@@ -149,13 +149,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             var roleClaimsMap = new Dictionary<string, List<string>>
             {
                 { AtspmClaims.Roles.Admin, new List<string> { AtspmClaims.Permissions.Admin } },
-                { AtspmClaims.Roles.ApiKeyAdmin, new List<string> { AtspmClaims.Permissions.ApiKeyCreate, AtspmClaims.Permissions.ApiKeyView, AtspmClaims.Permissions.ApiKeyRevoke } },
+                { AtspmClaims.Roles.ApiKeyAdmin, new List<string> { AtspmClaims.Permissions.ApiKeysCreate, AtspmClaims.Permissions.ApiKeysView, AtspmClaims.Permissions.ApiKeysRevoke } },
                 { AtspmClaims.Roles.DataAdmin, new List<string> { AtspmClaims.Permissions.DataView, AtspmClaims.Permissions.DataEdit } },
-                { AtspmClaims.Roles.GeneralConfigurationAdmin, new List<string> { AtspmClaims.Permissions.GeneralConfigurationView, AtspmClaims.Permissions.GeneralConfigurationEdit, AtspmClaims.Permissions.GeneralConfigurationDelete } },
-                { AtspmClaims.Roles.LocationConfigurationAdmin, new List<string> { AtspmClaims.Permissions.LocationConfigurationView, AtspmClaims.Permissions.LocationConfigurationEdit, AtspmClaims.Permissions.LocationConfigurationDelete } },
+                { AtspmClaims.Roles.GeneralConfigurationAdmin, new List<string> { AtspmClaims.Permissions.GeneralConfigurationsView, AtspmClaims.Permissions.GeneralConfigurationsEdit, AtspmClaims.Permissions.GeneralConfigurationsDelete } },
+                { AtspmClaims.Roles.LocationConfigurationAdmin, new List<string> { AtspmClaims.Permissions.LocationConfigurationsView, AtspmClaims.Permissions.LocationConfigurationsEdit, AtspmClaims.Permissions.LocationConfigurationsDelete } },
                 { AtspmClaims.Roles.ReportAdmin, new List<string> { AtspmClaims.Permissions.ReportView } },
-                { AtspmClaims.Roles.RoleAdmin, new List<string> { AtspmClaims.Permissions.RoleView, AtspmClaims.Permissions.RoleEdit, AtspmClaims.Permissions.RoleDelete } },
-                { AtspmClaims.Roles.UserAdmin, new List<string> { AtspmClaims.Permissions.UserView, AtspmClaims.Permissions.UserEdit, AtspmClaims.Permissions.UserDelete } },
+                { AtspmClaims.Roles.RoleAdmin, new List<string> { AtspmClaims.Permissions.RolesView, AtspmClaims.Permissions.RolesEdit, AtspmClaims.Permissions.RolesDelete } },
+                { AtspmClaims.Roles.UserAdmin, new List<string> { AtspmClaims.Permissions.UsersView, AtspmClaims.Permissions.UsersEdit, AtspmClaims.Permissions.UsersDelete } },
                 { AtspmClaims.Roles.WatchdogSubscriber, new List<string> { AtspmClaims.Permissions.WatchdogView, AtspmClaims.Permissions.ReportView } }
             };
 

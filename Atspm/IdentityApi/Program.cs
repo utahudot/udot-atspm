@@ -79,7 +79,7 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
         s.AddAtspmDbContext(h);
-        s.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
+        s.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<IdentityContext>()
         .AddDefaultTokenProviders();
         s.AddEmailServices(h);
@@ -95,8 +95,7 @@ builder.Host
         s.AddAtspmAuthorization();
         s.AddHealthChecks();
 
-        s.AddDataProtection()
-        .SetApplicationName("TestResetFlow");
+        s.AddDataProtection().SetApplicationName("TestResetFlow");
 
         s.Configure<IdentityConfiguration>(h.Configuration.GetSection(nameof(IdentityConfiguration)));
     });
