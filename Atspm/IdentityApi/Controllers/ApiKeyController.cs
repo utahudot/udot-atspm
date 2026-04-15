@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Dto;
 
 namespace Utah.Udot.ATSPM.IdentityApi.Controllers
@@ -39,7 +41,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// <returns>An IActionResult containing the raw API key.</returns>
         /// <response code="200">Returns the generated raw key. Note: This is only shown once.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "CanCreateApiKeys")]
+        [AuthorizePermission(AtspmClaims.Permissions.ApiKeysCreate, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -94,7 +96,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// </summary>
         /// <returns>A list of API key metadata.</returns>
         /// <response code="200">Returns the list of keys associated with the user.</response>
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AuthorizePermission(AtspmClaims.Permissions.ApiKeysView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("my-keys")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyKeys()
@@ -116,7 +118,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// <response code="200">The key was successfully revoked.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
         /// <response code="404">The key was not found or the user does not own it.</response>
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AuthorizePermission(AtspmClaims.Permissions.ApiKeysRevoke, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("revoke/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
