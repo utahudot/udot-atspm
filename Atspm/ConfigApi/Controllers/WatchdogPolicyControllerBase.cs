@@ -15,11 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
@@ -33,49 +34,49 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class WatchdogPolicyControllerBase<T, TKey>(IAsyncRepository<T> repository) : ConfigControllerBase<T, TKey>(repository) where T : AtspmConfigModelBase<TKey>
     {
         /// <inheritdoc/>
-        [Authorize(Policy = "CanViewWatchDog")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.WatchdogView)]
         public override ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
             return base.Get(options);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanViewWatchDog")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.WatchdogView)]
         public override ActionResult<T> Get(TKey key, ODataQueryOptions<T> options)
         {
             return base.Get(key, options);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanViewWatchDog")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.WatchdogView)]
         protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
         {
             return base.GetNavigationProperty<TType>(key);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanDeleteGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Delete(TKey key)
         {
             return base.Delete(key);

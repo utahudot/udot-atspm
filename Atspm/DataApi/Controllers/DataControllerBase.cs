@@ -20,7 +20,9 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Dtos;
 using Utah.Udot.NetStandardToolkit.Common;
@@ -36,6 +38,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
     /// and date ranges across multiple endpoints.
     /// </remarks>
     [ApiController]
+    [AuthorizePermission(AtspmAuthorization.Permissions.DataView)]
     [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class DataControllerBase<T1, T2>(ICompressedDataRepository<T1> repository, ILocationRepository locations, ILogger log) : ControllerBase where T1 : CompressedDataBase where T2 : class
     {

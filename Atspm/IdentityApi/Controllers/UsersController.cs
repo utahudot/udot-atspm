@@ -17,10 +17,13 @@
 
 using Asp.Versioning;
 using Identity.Business.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
@@ -39,7 +42,7 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "CanViewUsers")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersView)]
         public async Task<IActionResult> GetUsersAsync([FromServices] IServiceScopeFactory serviceScopeFactory)
         {
             var usersDto = new List<UserDTO>();
@@ -71,7 +74,7 @@ namespace Identity.Controllers
 
 
         [HttpDelete("{userId}")]
-        [Authorize(Policy = "CanDeleteUsers")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersDelete)]
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -92,7 +95,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("update")]
-        [Authorize(Policy = "CanEditUsers")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersEdit)]
         public async Task<IActionResult> AssignRole(UserDTO model)
         {
             if (model == null || !ModelState.IsValid)

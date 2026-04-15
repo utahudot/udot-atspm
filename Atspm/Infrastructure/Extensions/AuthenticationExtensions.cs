@@ -39,6 +39,74 @@ using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
+    //public class PluginRegistrationService
+    //{
+    //    private readonly AtspmDbContext _context;
+
+    //    public PluginRegistrationService(AtspmDbContext context)
+    //    {
+    //        _context = context;
+    //    }
+
+    //    public async Task RegisterPluginAsync(IAtspmPlugin plugin)
+    //    {
+    //        var pluginName = plugin.GetType().Name;
+
+    //        // 1. Generate a new API Key for this plugin instance
+    //        string rawKey = ApiKeyGenerator.GenerateKey(); // Your method to make a random string
+    //        string hashedKey = ApiKeyGenerator.HashKey(rawKey);
+
+    //        var apiKey = new ApiKey
+    //        {
+    //            Id = Guid.NewGuid().ToString(),
+    //            OwnerId = $"Plugin:{pluginName}",
+    //            KeyHash = hashedKey,
+    //            CreatedAt = DateTime.UtcNow,
+    //            IsRevoked = false,
+    //            Claims = new List<ApiKeyClaim>()
+    //        };
+
+    //        // 2. THE ASSOCIATION LOGIC:
+    //        // Look at every interface we have mapped in AtspmSecurity
+    //        foreach (var mapping in AtspmSecurity.PluginInterfaceMap)
+    //        {
+    //            var requiredInterface = mapping.Key;
+    //            var grantedPermissions = mapping.Value;
+
+    //            // Does this specific plugin implement the mapped interface?
+    //            if (requiredInterface.IsAssignableFrom(plugin.GetType()))
+    //            {
+    //                // Give the plugin the capability claim (The "Feature" sticker)
+    //                apiKey.Claims.Add(new ApiKeyClaim
+    //                {
+    //                    Type = AtspmSecurity.PluginFeatureClaimType,
+    //                    Value = requiredInterface.Name // e.g., "IHasMigration"
+    //                });
+
+    //                // Give the plugin the standard permission claims (The "Role" stickers)
+    //                foreach (var permission in grantedPermissions)
+    //                {
+    //                    // THIS IS THE CRITICAL LINE:
+    //                    // It associates the plugin with the string your attribute checks!
+    //                    apiKey.Claims.Add(new ApiKeyClaim
+    //                    {
+    //                        Type = AtspmSecurity.RoleClaimType,
+    //                        Value = permission // e.g., "Data:Edit"
+    //                    });
+    //                }
+    //            }
+    //        }
+
+    //        // 3. Save to Database
+    //        _context.ApiKeys.Add(apiKey);
+    //        await _context.SaveChangesAsync();
+
+    //        // 4. Hand the raw key to the plugin so it can use it in headers
+    //        plugin.Initialize(rawKey);
+    //    }
+    //}
+
+
     /// <summary>
     /// Custom authentication handler that validates requests using an API key provided in the "X-API-KEY" header.
     /// </summary>
@@ -227,9 +295,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <remarks>
         /// This method performs the following actions:
         /// <list type="bullet">
-        /// <item>Uses reflection to iterate through all constant fields in <see cref="AtspmPermissions.Permissions"/>.</item>
+        /// <item>Uses reflection to iterate through all constant fields in <see cref="AtspmAuthorization.Permissions"/>.</item>
         /// <item>Generates policy names using the pattern "Can{Action}{Category}" (e.g., "Users:View" becomes "CanViewUsers").</item>
-        /// <item>Includes a global bypass for the <see cref="AtspmPermissions.Roles.Admin"/> role in every functional policy.</item>
+        /// <item>Includes a global bypass for the <see cref="AtspmAuthorization.Roles.Admin"/> role in every functional policy.</item>
         /// <item>Registers an "AdminOnly" policy for high-security system tasks.</item>
         /// <item>Supports both JWT Bearer and ApiKey authentication schemes.</item>
         /// </list>
@@ -242,7 +310,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             {
                 var schemes = new[] { JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
 
-                var permissions = typeof(AtspmPermissions.Permissions)
+                var permissions = typeof(AtspmAuthorization.Permissions)
                     .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                     .Where(f => f.IsLiteral && !f.IsInitOnly)
                     .Select(f => f.GetRawConstantValue()?.ToString())
@@ -251,26 +319,28 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 foreach (var permission in permissions!)
                 {
-                    if (permission == AtspmPermissions.Permissions.Admin) continue;
+                    if (permission == AtspmAuthorization.Permissions.Admin) continue;
 
-                    var policyName = AtspmPermissions.GetPolicyName(permission);
+                    var policyName = AtspmAuthorization.GetPolicyName(permission);
 
                     options.AddPolicy(policyName, policy =>
                     {
                         policy.AddAuthenticationSchemes(schemes);
+
                         policy.RequireAssertion(context =>
-                            context.User.HasClaim(c =>
-                                c.Type == AtspmPermissions.RoleClaimType &&
-                                (c.Value == permission || c.Value == AtspmPermissions.Roles.Admin)
-                            )
-                        );
+                        {
+                            var hasPermission = context.User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == permission);
+                            var isAdmin = context.User.IsInRole(AtspmAuthorization.Roles.Admin);
+
+                            return hasPermission || isAdmin;
+                        });
                     });
                 }
 
-                options.AddPolicy("AdminOnly", policy =>
+                options.AddPolicy(AtspmAuthorization.Roles.Admin, policy =>
                 {
                     policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireClaim(AtspmPermissions.RoleClaimType, AtspmPermissions.Roles.Admin);
+                    policy.RequireClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
                 });
             });
 

@@ -99,7 +99,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 if (result.Succeeded)
                 {
-                    var adminRole = AtspmPermissions.Roles.Admin;
+                    var adminRole = AtspmAuthorization.Roles.Admin;
 
                     if (!await roleManager.RoleExistsAsync(adminRole))
                     {
@@ -140,26 +140,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var logger = services.GetRequiredService<ILogger<IdentityContext>>();
 
-            if (await roleManager.RoleExistsAsync(AtspmPermissions.Roles.Admin))
+            if (await roleManager.RoleExistsAsync(AtspmAuthorization.Roles.Admin))
             {
                 logger.LogInformation("Identity roles already exist. Skipping claims seeding.");
                 return;
             }
 
-            var roleClaimsMap = new Dictionary<string, List<string>>
-            {
-                { AtspmPermissions.Roles.Admin, new List<string> { AtspmPermissions.Permissions.Admin } },
-                { AtspmPermissions.Roles.ApiKeyAdmin, new List<string> { AtspmPermissions.Permissions.ApiKeysCreate, AtspmPermissions.Permissions.ApiKeysView, AtspmPermissions.Permissions.ApiKeysRevoke } },
-                { AtspmPermissions.Roles.DataAdmin, new List<string> { AtspmPermissions.Permissions.DataView, AtspmPermissions.Permissions.DataEdit } },
-                { AtspmPermissions.Roles.GeneralConfigurationAdmin, new List<string> { AtspmPermissions.Permissions.GeneralConfigurationsView, AtspmPermissions.Permissions.GeneralConfigurationsEdit, AtspmPermissions.Permissions.GeneralConfigurationsDelete } },
-                { AtspmPermissions.Roles.LocationConfigurationAdmin, new List<string> { AtspmPermissions.Permissions.LocationConfigurationsView, AtspmPermissions.Permissions.LocationConfigurationsEdit, AtspmPermissions.Permissions.LocationConfigurationsDelete } },
-                { AtspmPermissions.Roles.ReportAdmin, new List<string> { AtspmPermissions.Permissions.ReportView } },
-                { AtspmPermissions.Roles.RoleAdmin, new List<string> { AtspmPermissions.Permissions.RolesView, AtspmPermissions.Permissions.RolesEdit, AtspmPermissions.Permissions.RolesDelete } },
-                { AtspmPermissions.Roles.UserAdmin, new List<string> { AtspmPermissions.Permissions.UsersView, AtspmPermissions.Permissions.UsersEdit, AtspmPermissions.Permissions.UsersDelete } },
-                { AtspmPermissions.Roles.WatchdogSubscriber, new List<string> { AtspmPermissions.Permissions.WatchdogView, AtspmPermissions.Permissions.ReportView } }
-            };
-
-            foreach (var entry in roleClaimsMap)
+            foreach (var entry in AtspmAuthorization.RoleClaimsMap)
             {
                 // 1. Check if role exists
                 var role = await roleManager.FindByNameAsync(entry.Key);
@@ -192,7 +179,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     if (!existingClaims.Any(c => c.Value == permission))
                     {
                         // This will now work because 'role' is properly tracked
-                        await roleManager.AddClaimAsync(role, new Claim(AtspmPermissions.RoleClaimType, permission));
+                        await roleManager.AddClaimAsync(role, new Claim(AtspmAuthorization.RoleClaimType, permission));
                         logger.LogDebug("Added permission {Permission} to role {Role}", permission, entry.Key);
                     }
                 }

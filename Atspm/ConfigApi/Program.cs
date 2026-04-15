@@ -15,9 +15,12 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.OData;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -148,6 +151,59 @@ builder.Host
 var app = builder.Build();
 
 await app.ApplyMigrations<ConfigContext>();
+
+
+
+
+
+
+
+
+
+
+
+
+if (!app.Environment.IsDevelopment())
+{
+    var provider = app.Services.GetRequiredService<IActionDescriptorCollectionProvider>();
+
+    Console.WriteLine("\n--- ATSPM SECURITY AUDIT ---");
+    foreach (var action in provider.ActionDescriptors.Items.OfType<ControllerActionDescriptor>())
+    {
+        // 1. Get all Authorize attributes (including your custom AuthorizePermission)
+        var authAttributes = action.MethodInfo.GetCustomAttributes(true)
+            .Union(action.ControllerTypeInfo.GetCustomAttributes(true))
+            .OfType<AuthorizeAttribute>();
+
+        // 2. Extract the policies
+        var policies = authAttributes.Select(a => a.Policy).Where(p => p != null).ToList();
+        var schemes = authAttributes.Select(a => a.AuthenticationSchemes).Where(s => s != null).ToList();
+
+        // 3. Format the output
+        var policyStr = policies.Any() ? string.Join(", ", policies) : "OPEN (Anonymous)";
+        var schemeStr = schemes.Any() ? $" [Schemes: {string.Join(", ", schemes)}]" : "";
+
+        Console.WriteLine($"Route: {action.AttributeRouteInfo?.Template?.PadRight(40)} | Policy: {policyStr}{schemeStr}");
+    }
+    Console.WriteLine("----------------------------\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #region Middleware Pipeline
 

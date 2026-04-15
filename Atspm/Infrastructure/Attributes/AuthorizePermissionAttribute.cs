@@ -11,10 +11,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizePermissionAttribute"/> class.
         /// </summary>
-        /// <param name="permission">The permission constant from <see cref="AtspmPermissions.Permissions"/>.</param>
+        /// <param name="permission">The permission constant from <see cref="AtspmAuthorization.Permissions"/>.</param>
         public AuthorizePermissionAttribute(string permission)
         {
-            Policy = AtspmPermissions.GetPolicyName(permission);
+            Policy = AtspmAuthorization.GetPolicyName(permission);
         }
     }
 }

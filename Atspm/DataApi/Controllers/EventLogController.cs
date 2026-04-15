@@ -29,7 +29,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// for querying raw device log data
     /// </summary>
     [ApiVersion("1.0")]
-    [Authorize(Policy = "CanViewData")]
     public class EventLogController(IEventLogRepository repository, ILocationRepository locations, IDeviceRepository devices, ILogger<EventLogController> log)
         : DataControllerBase<CompressedEventLogBase, EventLogModelBase>(repository, locations, log)
     {

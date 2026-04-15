@@ -19,7 +19,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
@@ -45,6 +47,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsView)]
         protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
         {
             return base.GetNavigationProperty<TType>(key);
@@ -52,6 +55,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
@@ -59,6 +63,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
@@ -66,6 +71,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsEdit)]
         public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
@@ -73,6 +79,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanDeleteGeneralConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.GeneralConfigurationsDelete)]
         public override Task<IActionResult> Delete(TKey key)
         {
             return base.Delete(key);

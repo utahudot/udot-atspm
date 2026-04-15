@@ -16,14 +16,15 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
@@ -38,19 +39,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// </summary>
     /// 
     [ApiVersion(1.0)]
-    public class LocationController : LocationPolicyControllerBase<Location, int>
+    public class LocationController(ILocationRepository repository, ILocationManager locationManager) : LocationPolicyControllerBase<Location, int>(repository)
     {
-        private readonly ILocationRepository _repository;
-        private readonly ILocationManager _locationManager;
-
-        //HACK: ILocationManager is temporary
-
-        /// <inheritdoc/>
-        public LocationController(ILocationRepository repository, ILocationManager locationManager) : base(repository)
-        {
-            _repository = repository;
-            _locationManager = locationManager;
-        }
+        private readonly ILocationRepository _repository = repository;
+        private readonly ILocationManager _locationManager = locationManager;
 
         #region NavigationProperties
 
@@ -112,7 +104,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <param name="newVersionLabel">Label of new version</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
         /// 
-        [Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         [HttpPost]
         [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -136,7 +128,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <param name="key">Key of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
         /// 
-        [Authorize(Policy = "CanDeleteLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsDelete)]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
@@ -160,7 +152,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <param name="key">Identifier of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
         /// 
-        [Authorize(Policy = "CanDeleteLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsDelete)]
         [HttpPost("/api/v1/Location/{key}/DeleteAllVersions")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]

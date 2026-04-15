@@ -23,7 +23,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
@@ -40,7 +42,7 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "CanViewRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesView)]
         public async Task<IActionResult> GetRolesAsync()
         {
             var roles = roleManager.Roles.ToList();
@@ -56,7 +58,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "CanEditRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesEdit)]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
             if (!ModelState.IsValid)
@@ -78,7 +80,7 @@ namespace Identity.Controllers
         }
 
         [HttpDelete("{roleName}")]
-        [Authorize(Policy = "CanDeleteRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesDelete)]
         public async Task<IActionResult> DeleteRole(string roleName)
         {
             var role = await roleManager.FindByNameAsync(roleName);
