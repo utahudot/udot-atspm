@@ -56,7 +56,7 @@ namespace Utah.Udot.Atspm.Data.Configuration.Identity
             {
                 "Admin", "UserAdmin", "RoleAdmin",
                 "LocationConfigurationAdmin", "GeneralConfigurationAdmin",
-                "DataAdmin", "WatchdogSubscriber", "ReportAdmin"
+                "DataAdmin", "ApiKeyAdmin", "WatchdogSubscriber", "ReportAdmin"
             };
 
                     foreach (var role in roles)
@@ -134,6 +134,13 @@ namespace Utah.Udot.Atspm.Data.Configuration.Identity
                     new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Data:Edit")
                 }
             },
+            { "ApiKeyAdmin", new List<Claim>
+                {
+                    new(ClaimTypes.Role, "ApiKey:View"),
+                    new(ClaimTypes.Role, "ApiKey:Edit"),
+                    new(ClaimTypes.Role, "ApiKey:Revoke")
+                }
+            },
             { "WatchdogSubscriber", new List<Claim>
                 {
                     new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Watchdog:View"),
@@ -173,7 +180,6 @@ namespace Utah.Udot.Atspm.Data.Configuration.Identity
                 logger.LogInformation("Role and claim seeding process completed.");
             }
         }
-
     }
 }
 

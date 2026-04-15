@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
@@ -80,48 +82,119 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             var email = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
             var password = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
-            var role = Environment.GetEnvironmentVariable("ADMIN_ROLE") ?? "Admin";
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                logger.LogWarning("Admin seeding skipped: Missing environment variables.");
+                logger.LogWarning("Admin seeding skipped: Missing ADMIN_EMAIL or ADMIN_PASSWORD environment variables.");
                 return;
             }
 
             var existingUser = await userManager.FindByEmailAsync(email);
             if (existingUser == null)
             {
+                logger.LogInformation("Admin user {Email} not found. Creating...", email);
+
                 var user = new ApplicationUser { UserName = email, Email = email };
                 var result = await userManager.CreateAsync(user, password);
 
                 if (result.Succeeded)
                 {
-                    if (!await roleManager.RoleExistsAsync(role))
+                    var adminRole = AtspmClaims.Roles.Admin;
+
+                    if (!await roleManager.RoleExistsAsync(adminRole))
                     {
-                        var roleResult = await roleManager.CreateAsync(new IdentityRole(role));
-                        if (!roleResult.Succeeded)
-                        {
-                            logger.LogError("Failed to create role {Role}: {Errors}",
-                                role, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
-                            return;
-                        }
+                        logger.LogInformation("Role {Role} not found during user seeding, creating it now.", adminRole);
+                        await roleManager.CreateAsync(new IdentityRole(adminRole));
                     }
 
-                    var addToRoleResult = await userManager.AddToRoleAsync(user, role);
+                    var addToRoleResult = await userManager.AddToRoleAsync(user, adminRole);
+
                     if (addToRoleResult.Succeeded)
                     {
-                        logger.LogInformation("Admin user {Email} created and assigned to {Role} successfully.", email, role);
+                        logger.LogInformation("Admin user {Email} created and assigned to {Role} successfully.", email, adminRole);
                     }
                     else
                     {
-                        logger.LogError("User created but failed to assign to role: {Errors}",
-                            string.Join(", ", addToRoleResult.Errors.Select(e => e.Description)));
+                        logger.LogError("User created but failed to assign to role {Role}: {Errors}",
+                            adminRole, string.Join(", ", addToRoleResult.Errors.Select(e => e.Description)));
                     }
                 }
                 else
                 {
                     logger.LogError("Failed to create admin user: {Errors}",
                         string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+            else
+            {
+                logger.LogDebug("Admin user {Email} already exists. Skipping user creation.", email);
+            }
+        }
+
+        /// <summary>
+        /// Seeds the roles and granular claims required for ATSPM authorization.
+        /// Only runs if the Admin role is missing.
+        /// </summary>
+        public static async Task SeedIdentityData(this IServiceProvider services)
+        {
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var logger = services.GetRequiredService<ILogger<IdentityContext>>();
+
+            if (await roleManager.RoleExistsAsync(AtspmClaims.Roles.Admin))
+            {
+                logger.LogInformation("Identity roles already exist. Skipping claims seeding.");
+                return;
+            }
+
+            var roleClaimsMap = new Dictionary<string, List<string>>
+            {
+                { AtspmClaims.Roles.Admin, new List<string> { AtspmClaims.Permissions.Admin } },
+                { AtspmClaims.Roles.ApiKeyAdmin, new List<string> { AtspmClaims.Permissions.ApiKeyCreate, AtspmClaims.Permissions.ApiKeyView, AtspmClaims.Permissions.ApiKeyRevoke } },
+                { AtspmClaims.Roles.DataAdmin, new List<string> { AtspmClaims.Permissions.DataView, AtspmClaims.Permissions.DataEdit } },
+                { AtspmClaims.Roles.GeneralConfigurationAdmin, new List<string> { AtspmClaims.Permissions.GeneralConfigurationView, AtspmClaims.Permissions.GeneralConfigurationEdit, AtspmClaims.Permissions.GeneralConfigurationDelete } },
+                { AtspmClaims.Roles.LocationConfigurationAdmin, new List<string> { AtspmClaims.Permissions.LocationConfigurationView, AtspmClaims.Permissions.LocationConfigurationEdit, AtspmClaims.Permissions.LocationConfigurationDelete } },
+                { AtspmClaims.Roles.ReportAdmin, new List<string> { AtspmClaims.Permissions.ReportView } },
+                { AtspmClaims.Roles.RoleAdmin, new List<string> { AtspmClaims.Permissions.RoleView, AtspmClaims.Permissions.RoleEdit, AtspmClaims.Permissions.RoleDelete } },
+                { AtspmClaims.Roles.UserAdmin, new List<string> { AtspmClaims.Permissions.UserView, AtspmClaims.Permissions.UserEdit, AtspmClaims.Permissions.UserDelete } },
+                { AtspmClaims.Roles.WatchdogSubscriber, new List<string> { AtspmClaims.Permissions.WatchdogView, AtspmClaims.Permissions.ReportView } }
+            };
+
+            foreach (var entry in roleClaimsMap)
+            {
+                // 1. Check if role exists
+                var role = await roleManager.FindByNameAsync(entry.Key);
+
+                if (role == null)
+                {
+                    // 2. Create the role object first
+                    role = new IdentityRole(entry.Key);
+
+                    // 3. Save it to the DB
+                    var result = await roleManager.CreateAsync(role);
+
+                    if (result.Succeeded)
+                    {
+                        logger.LogInformation("Created role: {Role}", entry.Key);
+                        // DO NOT RE-FETCH. The 'role' object is now tracked and has its ID.
+                    }
+                    else
+                    {
+                        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                        logger.LogError("Could not create role {Role}: {Errors}", entry.Key, errors);
+                        continue; // Skip claims if role creation failed
+                    }
+                }
+
+                // 4. Add claims
+                var existingClaims = await roleManager.GetClaimsAsync(role);
+                foreach (var permission in entry.Value)
+                {
+                    if (!existingClaims.Any(c => c.Value == permission))
+                    {
+                        // This will now work because 'role' is properly tracked
+                        await roleManager.AddClaimAsync(role, new Claim(AtspmClaims.RoleClaimType, permission));
+                        logger.LogDebug("Added permission {Permission} to role {Role}", permission, entry.Key);
+                    }
                 }
             }
         }

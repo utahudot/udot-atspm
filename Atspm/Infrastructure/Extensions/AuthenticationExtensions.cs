@@ -334,6 +334,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                         context.User.HasClaim(c => c.Type == ClaimTypes.Role && (c.Value == "Data:Edit" || c.Value == "Admin")));
                 });
 
+                options.AddPolicy("CanCreateApiKeys", policy => {
+                    policy.AddAuthenticationSchemes(schemes);
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(c => c.Type == ClaimTypes.Role &&
+                        (c.Value == "ApiKey:Create" || c.Value == "Admin")));
+                });
+
                 options.AddPolicy("CanViewWatchDog", policy => {
                     policy.AddAuthenticationSchemes(schemes);
                     policy.RequireAssertion(context =>
