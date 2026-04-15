@@ -227,9 +227,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <remarks>
         /// This method performs the following actions:
         /// <list type="bullet">
-        /// <item>Uses reflection to iterate through all constant fields in <see cref="AtspmClaims.Permissions"/>.</item>
+        /// <item>Uses reflection to iterate through all constant fields in <see cref="AtspmPermissions.Permissions"/>.</item>
         /// <item>Generates policy names using the pattern "Can{Action}{Category}" (e.g., "Users:View" becomes "CanViewUsers").</item>
-        /// <item>Includes a global bypass for the <see cref="AtspmClaims.Roles.Admin"/> role in every functional policy.</item>
+        /// <item>Includes a global bypass for the <see cref="AtspmPermissions.Roles.Admin"/> role in every functional policy.</item>
         /// <item>Registers an "AdminOnly" policy for high-security system tasks.</item>
         /// <item>Supports both JWT Bearer and ApiKey authentication schemes.</item>
         /// </list>
@@ -242,7 +242,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             {
                 var schemes = new[] { JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
 
-                var permissions = typeof(AtspmClaims.Permissions)
+                var permissions = typeof(AtspmPermissions.Permissions)
                     .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                     .Where(f => f.IsLiteral && !f.IsInitOnly)
                     .Select(f => f.GetRawConstantValue()?.ToString())
@@ -251,21 +251,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 foreach (var permission in permissions!)
                 {
-                    if (permission == AtspmClaims.Permissions.Admin) continue;
+                    if (permission == AtspmPermissions.Permissions.Admin) continue;
 
-                    var parts = permission.Split(':');
-                    var category = parts[0];
-                    var action = parts.Length > 1 ? parts[1] : string.Empty;
-
-                    var policyName = $"Can{action}{category}";
+                    var policyName = AtspmPermissions.GetPolicyName(permission);
 
                     options.AddPolicy(policyName, policy =>
                     {
                         policy.AddAuthenticationSchemes(schemes);
                         policy.RequireAssertion(context =>
                             context.User.HasClaim(c =>
-                                c.Type == AtspmClaims.RoleClaimType &&
-                                (c.Value == permission || c.Value == AtspmClaims.Roles.Admin)
+                                c.Type == AtspmPermissions.RoleClaimType &&
+                                (c.Value == permission || c.Value == AtspmPermissions.Roles.Admin)
                             )
                         );
                     });
@@ -274,7 +270,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.AddPolicy("AdminOnly", policy =>
                 {
                     policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireClaim(AtspmClaims.RoleClaimType, AtspmClaims.Roles.Admin);
+                    policy.RequireClaim(AtspmPermissions.RoleClaimType, AtspmPermissions.Roles.Admin);
                 });
             });
 
