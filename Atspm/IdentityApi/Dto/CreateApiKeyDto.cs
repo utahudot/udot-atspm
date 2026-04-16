@@ -18,9 +18,9 @@
         public DateTime? ExpiresAt { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of roles or permissions assigned to this API key.
+        /// Gets or sets the list of permissions assigned to this API key.
         /// </summary>
-        /// <value>A list of strings representing role names.</value>
-        public List<string> Roles { get; set; }
+        /// <value>A list of strings representing claim names.</value>
+        public List<string> Claims { get; set; }
     }
 }

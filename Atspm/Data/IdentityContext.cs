@@ -53,19 +53,40 @@ namespace Utah.Udot.Atspm.Data
         {
             base.OnModelCreating(builder);
 
+            var utcConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
             builder.Entity<ApiKey>(entity =>
             {
+                // Primary Key & Indexing
+                entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.KeyHash).IsUnique();
 
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("timestamp with time zone")
+                    .HasConversion(utcConverter)
+                    .IsRequired();
+
+                entity.Property(e => e.ExpiresAt)
+                    .HasColumnType("timestamp with time zone")
+                    .HasConversion(utcConverter);
+
+                // Relationships
                 entity.HasMany(e => e.Claims)
                       .WithOne()
                       .HasForeignKey(c => c.ApiKeyId)
                       .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.OwnerId).IsRequired();
             });
 
             builder.Entity<ApiKeyClaim>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Type).IsRequired();
+                entity.Property(e => e.Value).IsRequired();
             });
         }
     }

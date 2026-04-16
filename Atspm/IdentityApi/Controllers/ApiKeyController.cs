@@ -41,26 +41,40 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// <returns>An IActionResult containing the raw API key.</returns>
         /// <response code="200">Returns the generated raw key. Note: This is only shown once.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
+        /// <response code="403">Forbidden if the user attempts to grant claims they do not possess.</response>
         [AuthorizePermission(AtspmAuthorization.Permissions.ApiKeysCreate, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Create([FromBody] CreateApiKeyDto dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (dto == null)
+            {
+                return Problem(
+                    detail: "The request body could not be parsed. Check your JSON format and date strings.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Invalid Request Body"
+                );
+            }
+
+            var userId = _userManager.GetUserId(User);
             if (userId == null) return Unauthorized();
 
             var isGlobalAdmin = User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
 
             if (!isGlobalAdmin)
             {
-                foreach (var requestedRole in dto.Roles)
+                foreach (var requestedClaim in dto.Claims)
                 {
-                    if (!User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == requestedRole))
+                    if (!User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == requestedClaim))
                     {
-                        return StatusCode(StatusCodes.Status403Forbidden,
-                            $"You cannot grant the permission '{requestedRole}' because you do not possess it.");
+                        return Problem(
+                            detail: $"You cannot grant the permission '{requestedClaim}' because you do not possess it.",
+                            statusCode: StatusCodes.Status403Forbidden,
+                            title: "Insufficient Permissions"
+                        );
                     }
                 }
             }
@@ -72,9 +86,9 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 Name = dto.Name,
                 KeyHash = hash,
                 OwnerId = userId,
-                ExpiresAt = dto.ExpiresAt,
+                ExpiresAt = dto.ExpiresAt?.ToUniversalTime(),
                 IsRevoked = false,
-                Claims = dto.Roles.Select(r => new ApiKeyClaim
+                Claims = dto.Claims.Select(r => new ApiKeyClaim
                 {
                     Type = ClaimTypes.Role,
                     Value = r
@@ -96,9 +110,13 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// </summary>
         /// <returns>A list of API key metadata.</returns>
         /// <response code="200">Returns the list of keys associated with the user.</response>
+        /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
+        /// <response code="403">Forbidden if the user lacks the required view permission.</response>
         [AuthorizePermission(AtspmAuthorization.Permissions.ApiKeysView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("my-keys")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetMyKeys()
         {
             var userId = _userManager.GetUserId(User);
@@ -117,15 +135,19 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// <returns>A status message regarding the revocation.</returns>
         /// <response code="200">The key was successfully revoked.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
+        /// <response code="403">Forbidden if the user lacks the required revoke permission.</response>
         /// <response code="404">The key was not found or the user does not own it.</response>
+        /// <response code="500">Internal server error if the database update failed.</response>
         [AuthorizePermission(AtspmAuthorization.Permissions.ApiKeysRevoke, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("revoke/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Revoke(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userManager.GetUserId(User);
             if (userId == null) return Unauthorized();
 
             var apiKey = await _context.ApiKeys
@@ -133,12 +155,31 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
 
             if (apiKey == null)
             {
-                return NotFound("API Key not found or you do not have permission to revoke it.");
+                return Problem(
+                    detail: $"API Key with ID {id} not found or access denied.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Key Not Found"
+                );
+            }
+
+            if (apiKey.IsRevoked)
+            {
+                return Ok(new { Message = $"API Key '{apiKey.Name}' was already revoked." });
             }
 
             apiKey.IsRevoked = true;
+            _context.Entry(apiKey).State = EntityState.Modified;
 
-            await _context.SaveChangesAsync();
+            var rowsAffected = await _context.SaveChangesAsync();
+
+            if (rowsAffected == 0)
+            {
+                return Problem(
+                    detail: "The database confirmed 0 rows were updated. Check if the key still exists in Postgres.",
+                    statusCode: StatusCodes.Status500InternalServerError,
+                    title: "Database Update Failure"
+                );
+            }
 
             return Ok(new { Message = $"API Key '{apiKey.Name}' has been revoked." });
         }

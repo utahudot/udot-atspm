@@ -55,7 +55,7 @@
 //                new IdentityRole("User")
 //            };
 
-//            _roleManagerMock.Setup(rm => rm.Roles).Returns(roles.AsQueryable());
+//            _roleManagerMock.Setup(rm => rm.Claims).Returns(roles.AsQueryable());
 
 //            // Act
 //            var result = _rolesController.GetRolesAsync();

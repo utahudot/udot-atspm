@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for IdentityApi - Identity.Business.Roles/RolesResult.cs
+// for IdentityApi - Identity.Business.Claims/RolesResult.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

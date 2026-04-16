@@ -159,7 +159,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.ApiKey", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKey", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -168,10 +168,10 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsRevoked")
                         .HasColumnType("boolean");
@@ -182,7 +182,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
@@ -196,7 +197,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     b.ToTable("ApiKeys");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.ApiKeyClaim", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKeyClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -222,7 +223,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     b.ToTable("ApiKeyClaims");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -306,7 +307,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -315,7 +316,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -324,7 +325,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany("Roles")
                         .HasForeignKey("ApplicationUserId");
 
@@ -334,7 +335,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -343,28 +344,28 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.ApiKeyClaim", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKeyClaim", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.ApiKey", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKey", null)
                         .WithMany("Claims")
                         .HasForeignKey("ApiKeyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.ApiKey", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKey", b =>
                 {
                     b.Navigation("Claims");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", b =>
                 {
                     b.Navigation("Roles");
                 });
