@@ -127,13 +127,17 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                             };
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        _log.LogError("An error was thrown " + e);
                         return new DeviceEventDownload
                         {
                             DeviceId = device.Id,
                             Ipaddress = device.Ipaddress,
                             DeviceType = device.DeviceType,
+                            BeforeWorkflowEventCount = -1,
+                            AfterWorkflowEventCount = -1,
+                            ChangeInEventCount = -1
                         };
                     }
                     finally
