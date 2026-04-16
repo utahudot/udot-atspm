@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Services;
-using static Utah.Udot.Atspm.Common.AtspmAuthorization;
-
-namespace Utah.Udot.Atspm.Common
+﻿namespace Utah.Udot.Atspm.Common
 {
     //public interface IPluginHasController
     //{

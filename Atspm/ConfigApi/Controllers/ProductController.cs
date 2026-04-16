@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// </summary>
     /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class ProductController(IProductRepository repository) : LocationPolicyControllerBase<Product, int>(repository)
+    public class ProductController(IProductRepository repository) : DevicePolicyControllerBase<Product, int>(repository)
     {
         private readonly IProductRepository _repository = repository;
 

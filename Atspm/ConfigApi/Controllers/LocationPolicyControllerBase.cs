@@ -54,7 +54,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditLocationConfigurations")]
         [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         public override Task<IActionResult> Post([FromBody] T item)
         {
@@ -62,7 +61,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditLocationConfigurations")]
         [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
@@ -70,7 +68,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditLocationConfigurations")]
         [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
@@ -78,7 +75,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanDeleteLocationConfigurations")]
         [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsDelete)]
         public override Task<IActionResult> Delete(TKey key)
         {
