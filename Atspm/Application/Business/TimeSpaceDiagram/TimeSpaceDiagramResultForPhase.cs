@@ -28,11 +28,11 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             DateTime start,
             DateTime end,
             int phaseNumber,
-            string phaseNumberSort,
+            string direction,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             int speed,
-            int programmedCycleLength,
+            int? programmedCycleLength,
             List<CycleEventsDto> cycleAllEvents,
             List<CycleEventsDto> pedIntervals,
             List<TimeSpaceDetectorEventDto> laneByLaneCountDetectors,
@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             List<DetectorEventDto> priorityAndPreemptionEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
-            PhaseNumberSort = phaseNumberSort;
+            Direction = direction;
             DistanceToNextLocation = distanceToNextLocation;
             DistanceToPreviousLocation = distanceToPreviousLocation;
             Speed = speed;
@@ -71,12 +71,12 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
         public string PhaseType { get; set; }
-        public string PhaseNumberSort { get; set; }
+        public string Direction { get; set; }
         public double DistanceToNextLocation { get; set; }
         public double DistanceToPreviousLocation { get; set; }
-        public double PercentArrivalOnGreen { get; set; }
+        public double? PercentArrivalOnGreen { get; set; }
         public int Order { get; set; }
-        public int CycleLength { get; }
+        public int? CycleLength { get; }
         public TmcForPhaseDto TmcForPhase { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
         public List<CycleEventsDto> PedestrianIntervals { get; set; }
@@ -92,5 +92,6 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public ICollection<IndianaEvent> TspEvents { get; set; }
         public List<DetectorEventDto> PriorityAndPreemptionEvents { get; set; }
         public List<SrmEntityTrack> SrmEntityTracks { get; set; } = new();
+        public int? OffsetLengthChangeEvents { get; set; }
     }
 }

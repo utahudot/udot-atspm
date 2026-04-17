@@ -1,4 +1,6 @@
+import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import { Box, Button, Stack } from '@mui/material'
+import { nanoid } from 'nanoid'
 import { GpxUploadOptions } from '../../types'
 import { GpxUploadRow } from './GpxUploadRow'
 
@@ -10,9 +12,9 @@ interface Prop {
 
 function createEmptyEntry(primary = false): GpxUploadOptions {
   return {
-    id: '',
-    startLocationMode: '',
-    endLocationMode: '',
+    id: nanoid(),
+    startLocation: '',
+    endLocation: '',
     error: null,
     primary,
   }
@@ -37,7 +39,7 @@ export const GpxUploadComponent = (prop: Prop) => {
 
   return (
     <Box>
-      <Stack>
+      <Stack spacing={1}>
         {entries.map((entry, index) => (
           <GpxUploadRow
             key={`${index} ${entry.id}`}
@@ -53,9 +55,17 @@ export const GpxUploadComponent = (prop: Prop) => {
         <Button
           onClick={addEntry}
           variant="text"
-          sx={{ alignSelf: 'flex-start' }}
+          size="small"
+          startIcon={<AddRoundedIcon fontSize="small" />}
+          sx={{
+            alignSelf: 'flex-start',
+            px: 0.5,
+            fontSize: '0.76rem',
+            fontWeight: 600,
+            textTransform: 'none',
+          }}
         >
-          + Add another GPX
+          Add another GPX
         </Button>
       </Stack>
     </Box>

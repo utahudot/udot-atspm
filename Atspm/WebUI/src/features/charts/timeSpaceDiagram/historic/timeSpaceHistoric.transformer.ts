@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { IndianaEvent } from '@/api/data'
 import {
   createDisplayProps,
   createLegend,
@@ -27,8 +26,14 @@ import {
   generateCycleLabels,
   generateCycles,
   generateGreenEventLines,
+  getChartTimespanMs,
+  getTimeSpacePhaseRowDistances,
+  getTimeLikeMs,
   getDistancesLabelOption,
+  getCycleContinuationPatternFill,
   getLocationsLabelOption,
+  TIME_SPACE_CONTINUATION_NODE_NAME,
+  TIME_SPACE_MOVEMENT_SERIES_Z,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceDiagramResponse,
@@ -51,13 +56,20 @@ import {
   SeriesOption,
 } from 'echarts'
 import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
-import {
-  CycleColor,
-  EVENT_GROUPS,
-} from '../../timingAndActuation/timingAndActuation.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
-const opacity = 0.4
+const opacity = 1
+const MIN_SEGMENT = 2200
+const DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
+const Y_AXIS_EDGE_BUFFER_PX = 25
+const Y_AXIS_PADDING =
+  Y_AXIS_EDGE_BUFFER_PX * DISPLAY_DISTANCE_UNITS_PER_PIXEL
+const MIN_ROW_HEIGHT_PX = 100
+const DISPLAY_HEIGHT_BASE = 220
+const PASSIVE_DETECTION_SERIES_PROPS = {
+  silent: true,
+  tooltip: { show: false },
+} as const
 
 export default function transformTimeSpaceHistoricData(
   response: RawTimeSpaceDiagramResponse
@@ -104,6 +116,29 @@ export default function transformTimeSpaceHistoricData(
 
   return result
 }
+const PEDESTRIAN_LINE_WIDTH = 0.8
+const PEDESTRIAN_LINE_OFFSET_PX = 13
+const PEDESTRIAN_ZIGZAG_AMPLITUDE = 2
+const PEDESTRIAN_ZIGZAG_STEP_PX = 3
+const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
+const PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT = PEDESTRIAN_ZIGZAG_AMPLITUDE
+
+function getDisplayDistanceScale(distanceData: number[]): number {
+  const segments = distanceData.map((value, index) => {
+    if (index === 0) {
+      return 0
+    }
+
+    return value - distanceData[index - 1]
+  })
+
+  const positiveSegments = segments.filter((segment) => segment > 0)
+  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
+
+  return minSegment > 0 && minSegment < MIN_SEGMENT
+    ? MIN_SEGMENT / minSegment
+    : 1
+}
 
 function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryPhaseData = data.filter(
@@ -137,41 +172,60 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   } as const
 
   const xAxis = [
-    createXAxis(data[0].start, data[0].end),
+    {
+      ...createXAxis(data[0].start, data[0].end),
+      axisLine: {
+        onZero: false,
+      },
+    },
     { min: 0, max: 1, show: false },
     xAxisTopSeconds,
   ]
 
   let initialDistance = 0
 
-  const primaryDirection = primaryPhaseData[0].approachDescription.split(' ')[0]
-  const opposingDirection =
-    opposingPhaseData[0].approachDescription.split(' ')[0]
+  const primaryDirection = primaryPhaseData[0].approachDescription
+  const opposingDirection = opposingPhaseData[0].approachDescription
 
-  const distanceData: number[] = []
+  const rawDistanceData: number[] = []
   primaryPhaseData.forEach((location) => {
-    distanceData.push(initialDistance)
+    rawDistanceData.push(initialDistance)
     initialDistance += location.distanceToNextLocation
   })
+  const distanceScale = getDisplayDistanceScale(rawDistanceData)
+  const locationCenterDistanceData = rawDistanceData.map(
+    (distance) => distance * distanceScale
+  )
+  const {
+    primaryDistanceData,
+    opposingDistanceData,
+  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
+  const minDisplayDistance = Math.min(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
+  const maxDisplayDistance = Math.max(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
   const yAxis = createYAxis(false, {
     show: false,
-    data: distanceData,
+    data: locationCenterDistanceData,
     axisTick: { show: true },
-    max: distanceData[distanceData.length - 1] + 350,
-    min: -250,
+    max: maxDisplayDistance + Y_AXIS_PADDING,
+    min: minDisplayDistance - Y_AXIS_PADDING,
   })
 
   const title = createTitle({
     title: 'Time Space Diagram • Historic',
-    location: `Primary: ${primaryPhaseData[0].approachDescription} • Opposing: ${opposingPhaseData[0].approachDescription}`,
-    dateRange,
+    location: dateRange,
   })
 
   const grid: GridComponentOption = {
-    top: 120,
-    left: 270,
-    right: 300,
-    bottom: 100,
+    top: 30,
+    left: 220,
+    right: 195,
+    bottom: 80,
     show: true,
     borderWidth: 1,
   }
@@ -219,153 +273,201 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const series: SeriesOption[] = []
 
   series.push(
-    ...generateCycles(primaryPhaseData, distanceData, primaryDirection)
+    ...generateCycles(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      'primary'
+    )
+  )
+
+  series.push(
+    ...generateLaneByLaneCountEventLines(
+      opposingPhaseData,
+      opposingDistanceData,
+      'orange',
+      opposingDirection,
+      false,
+      distanceScale
+    )
+  )
+
+  series.push(
+    ...generateAdvanceCountEventLines(
+      opposingPhaseData,
+      opposingDistanceData,
+      'orange',
+      opposingDirection,
+      false,
+      distanceScale
+    )
+  )
+
+  series.push(
+    ...generateStopBarPresenceEventLines(
+      opposingPhaseData,
+      opposingDistanceData,
+      'orange',
+      opposingDirection,
+      false,
+      distanceScale
+    )
   )
 
   series.push(
     ...generateLaneByLaneCountEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       'darkblue',
       primaryDirection,
-      true
+      true,
+      distanceScale
     )
   )
 
   series.push(
     ...generateAdvanceCountEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       'darkblue',
       primaryDirection,
-      true
+      true,
+      distanceScale
     )
   )
 
   series.push(
     ...generateStopBarPresenceEventLines(
       primaryPhaseData,
-      distanceData,
-      'lightblue',
+      primaryDistanceData,
+      'darkblue',
       primaryDirection,
-      true
+      true,
+      distanceScale
     )
   )
 
   series.push(
     ...generateGreenEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       primaryDirection,
-      true
+      true,
+      distanceScale,
+      'primary'
     )
   )
 
   series.push(
     ...generatePedestrianIntervalLines(
       primaryPhaseData,
-      distanceData,
-      primaryDirection
+      primaryDistanceData,
+      primaryDirection,
+      'primary'
     )
   )
   series.push(
-    ...generateSrmEntityLines(primaryPhaseData, distanceData, primaryDirection)
+    ...generateSrmEntityLines(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      distanceScale,
+      'primary'
+    )
   )
 
   series.push(
-    ...generateTMCEvent(primaryPhaseData, distanceData, primaryDirection)
+    ...generateTMCEvent(
+      primaryPhaseData,
+      primaryDistanceData,
+      primaryDirection,
+      distanceScale,
+      'primary'
+    )
   )
 
   series.push(
-    ...buildCycleEventMarkersOnCyclesSeries(primaryPhaseData, distanceData)
+    ...buildCycleEventMarkersOnCyclesSeries(
+      primaryPhaseData,
+      primaryDistanceData,
+      'primary'
+    )
   )
 
   series.push(
-    ...buildTspRequestAndServiceLineSeries(primaryPhaseData, distanceData)
+    ...buildTspRequestAndServiceLineSeries(
+      primaryPhaseData,
+      primaryDistanceData,
+      'primary'
+    )
   )
 
   const locationLabels = getLocationsLabelOption(
     primaryPhaseData,
-    distanceData,
+    locationCenterDistanceData,
     grid
   )
   series.push(locationLabels)
   series.push(
-    getDistancesLabelOption(primaryPhaseData, distanceData, grid.left as number)
-  )
-
-  let reverseDistanceData = [...distanceData].reverse()
-  reverseDistanceData = reverseDistanceData.map((distance) => (distance += 300))
-  series.push(
-    ...generateCycles(opposingPhaseData, reverseDistanceData, opposingDirection)
-  )
-
-  series.push(
-    ...generateLaneByLaneCountEventLines(
-      opposingPhaseData,
-      reverseDistanceData,
-      'orange',
-      opposingDirection,
-      false
+    getDistancesLabelOption(
+      primaryPhaseData,
+      locationCenterDistanceData,
+      grid.left as number,
+      distanceScale
     )
   )
-
   series.push(
-    ...generateAdvanceCountEventLines(
+    ...generateCycles(
       opposingPhaseData,
-      reverseDistanceData,
-      'orange',
+      opposingDistanceData,
       opposingDirection,
-      false
-    )
-  )
-
-  series.push(
-    ...generateStopBarPresenceEventLines(
-      opposingPhaseData,
-      reverseDistanceData,
-      'orange',
-      opposingDirection,
-      false
+      'opposing'
     )
   )
 
   series.push(
     ...generateGreenEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       opposingDirection,
-      false
+      false,
+      distanceScale,
+      'opposing'
     )
   )
 
   series.push(
     ...generatePedestrianIntervalLines(
       opposingPhaseData,
-      reverseDistanceData,
-      opposingDirection
+      opposingDistanceData,
+      opposingDirection,
+      'opposing'
     )
   )
 
   series.push(
     ...generateSrmEntityLines(
       opposingPhaseData,
-      reverseDistanceData,
-      opposingDirection
+      opposingDistanceData,
+      opposingDirection,
+      distanceScale,
+      'opposing'
     )
   )
 
   series.push(
     ...buildCycleEventMarkersOnCyclesSeries(
       opposingPhaseData,
-      reverseDistanceData
+      opposingDistanceData,
+      'opposing'
     )
   )
 
   series.push(
     ...buildTspRequestAndServiceLineSeries(
       opposingPhaseData,
-      reverseDistanceData
+      opposingDistanceData,
+      'opposing'
     )
   )
 
@@ -381,28 +483,48 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
   ])
 
-  const opposingLinesByIndex = opposingPhaseData.map((p) => [
-    `AOG: ${formatPct(p.percentArrivalOnGreen)}`,
-  ])
+  const primaryHeadersByIndex = primaryPhaseData.map(
+    (p) => p.approachDescription
+  )
+
+  const opposingHeadersByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => p.approachDescription)
+
+  const opposingLinesByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => [`AOG: ${formatPct(p.percentArrivalOnGreen)}`])
+
+  const primaryIgnoredByIndex = primaryPhaseData.map((p) =>
+    Boolean(p.isIgnoredLocation)
+  )
+
+  const opposingIgnoredByIndex = [...opposingPhaseData]
+    .reverse()
+    .map((p) => Boolean(p.isIgnoredLocation))
 
   const primaryLabelSeries = generateCycleLabels(
-    distanceData,
+    locationCenterDistanceData,
     primaryDirection,
     grid.left as number,
+    primaryHeadersByIndex,
     primaryLinesByIndex,
-    'down'
+    'left',
+    primaryIgnoredByIndex
   )
 
   const opposingLabelSeries = generateCycleLabels(
-    distanceData,
+    locationCenterDistanceData,
     opposingDirection,
     grid.left as number,
+    opposingHeadersByIndex,
     opposingLinesByIndex,
-    'up'
+    'right',
+    opposingIgnoredByIndex
   )
 
-  // series.push(primaryLabelSeries)
-  // series.push(opposingLabelSeries)
+  series.push(primaryLabelSeries)
+  series.push(opposingLabelSeries)
 
   // series.push(
   //   ...getDraggableOffsetabelOption(
@@ -412,26 +534,18 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   //   )
   // )
 
-  const MIN_SEGMENT = 1600
-
-  const segments = distanceData.map((v, i) => v - (distanceData[i - 1] ?? 0))
-
-  const positiveSegments = segments.filter((d) => Number.isFinite(d) && d > 0)
-  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
-
-  const scale =
-    minSegment > 0 && minSegment < MIN_SEGMENT ? MIN_SEGMENT / minSegment : 1
-
-  const scaledCumulative = distanceData.map((d) =>
-    Number.isFinite(d) ? d * scale : d
-  )
-
-  const totalDistance = scaledCumulative[scaledCumulative.length - 1] ?? 0
+  const minHeightFromRows = primaryPhaseData.length * MIN_ROW_HEIGHT_PX
+  const heightFromDistance =
+    Math.ceil(
+      (maxDisplayDistance - minDisplayDistance + Y_AXIS_PADDING * 2) /
+        DISPLAY_DISTANCE_UNITS_PER_PIXEL
+    ) + DISPLAY_HEIGHT_BASE
+  const chartHeight = Math.max(heightFromDistance, minHeightFromRows + DISPLAY_HEIGHT_BASE)
 
   const displayProps = createDisplayProps({
     description: '',
     numberOfLocations: primaryPhaseData.length,
-    height: totalDistance / 19 + 220,
+    height: chartHeight,
     locations: primaryPhaseData.map((p) => p.locationIdentifier),
   })
 
@@ -447,6 +561,16 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
         name: `Cycles ${opposingDirection}`,
         icon: SolidLineSeriesSymbol,
         itemStyle: { color: '#f0807f' },
+      },
+      {
+        name: `Cycle Durations ${primaryDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
+      },
+      {
+        name: `Cycle Durations ${opposingDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `Green Bands ${primaryDirection}`,
@@ -486,11 +610,13 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Pedestrian Interval ${primaryDirection}`,
-        itemStyle: { color: 'grey' },
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `Pedestrian Interval ${opposingDirection}`,
-        itemStyle: { color: 'grey' },
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
       },
       {
         name: `SRM Entity ${primaryDirection}`,
@@ -513,26 +639,36 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       {
         name: `Early Green (113)`,
         icon: triangleSvgSymbol,
-        itemStyle: { color: Color.Black },
+        itemStyle: {
+          color: Color.White,
+          borderColor: Color.Black,
+          borderWidth: 1.5,
+        },
       },
       {
         name: `Extend Green (114)`,
-        itemStyle: { color: 'black' },
+        itemStyle: {
+          color: Color.White,
+          borderColor: Color.Black,
+          borderWidth: 1.5,
+        },
       },
       {
         name: `TSP Request (112-115)`,
         icon: SolidLineSeriesSymbol,
-        itemStyle: { color: Color.Red },
+        itemStyle: { color: Color.Black },
       },
       {
         name: `TSP Service (118-119)`,
         icon: SolidLineSeriesSymbol,
-        itemStyle: { color: Color.LightBlue },
+        itemStyle: { color: Color.Black },
       },
     ],
     selected: {
       [`Cycles ${primaryDirection}`]: true,
       [`Cycles ${opposingDirection}`]: true,
+      [`Cycle Durations ${primaryDirection}`]: true,
+      [`Cycle Durations ${opposingDirection}`]: true,
       [`Green Bands ${primaryDirection}`]: true,
       [`Green Bands ${opposingDirection}`]: true,
       [`Lane by Lane Count ${primaryDirection}`]: false,
@@ -580,25 +716,32 @@ function generateLaneByLaneCountEventLines(
   distanceData: number[],
   color: string,
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
     if (!location.laneByLaneCountDetectors) return
+    const sideScope = isPrimary ? 'primary' : 'opposing'
     const series: SeriesOption = {
       name: `Lane by Lane Count ${phaseType?.length && phaseType}`,
-      id: `LLC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `LLC ${location.locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${sideScope}`,
       type: 'line',
       symbol: 'none',
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       lineStyle: {
         width: 2,
         color,
-        opacity,
+        opacity: 0.7,
       },
       data: location.laneByLaneCountDetectors.flatMap((events) => {
         const distanceToNext = isPrimary
           ? location.calculatedDistanceToNext
           : -location.calculatedDistanceToNext
+        const displayDistanceToNext = distanceToNext * distanceScale
         const initialX = events.detectorOn
         const finalX = getArrivalTime(
           location.calculatedDistanceToNext,
@@ -607,7 +750,7 @@ function generateLaneByLaneCountEventLines(
         )
         const values = [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i] + distanceToNext],
+          [finalX, distanceData[i] + displayDistanceToNext],
           null,
         ]
         return values
@@ -641,7 +784,8 @@ function generateAdvanceCountEventLines(
   distanceData: number[],
   color: string,
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   const directionMultiplier = isPrimary ? 1 : -1
@@ -653,13 +797,19 @@ function generateAdvanceCountEventLines(
     const currentDistance = distanceData[i]
     const previousDistance =
       currentDistance -
-      directionMultiplier * Math.abs(location.calculatedDistanceToPrevious)
+      directionMultiplier *
+        Math.abs(location.calculatedDistanceToPrevious * distanceScale)
+    const sideScope = isPrimary ? 'primary' : 'opposing'
 
     const series: SeriesOption = {
       name: `Advance Count ${phaseType?.length && phaseType}`,
-      id: `AC ${location.locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `AC ${location.locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${sideScope}`,
       type: 'line',
       symbol: 'none',
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       lineStyle: {
         width: 2,
         color,
@@ -695,22 +845,29 @@ function generateStopBarPresenceEventLines(
   distanceData: number[],
   color: string,
   phaseType?: string,
-  isPrimary?: boolean
+  isPrimary?: boolean,
+  distanceScale = 1
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
 
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
     if (!location.stopBarPresenceDetectors) continue
+    const chartTimespanMs = getChartTimespanMs(location.start, location.end)
     const dataPoints = getStopBarPresenceDataPoints(location, distanceData[i])
+    const sideScope = isPrimary ? 'primary' : 'opposing'
 
     const seriesOption: SeriesOption = {
       name: `Stop Bar Presence ${phaseType?.length && phaseType}`,
-      id: `SBP ${data[i].locationIdentifier} ${phaseType?.length ? phaseType : ''}`,
+      id: `SBP ${data[i].locationIdentifier} ${
+        phaseType?.length ? phaseType : ''
+      } row-${i} ${sideScope}`,
       type: 'custom',
       data: dataPoints,
       clip: true,
       selectedMode: false,
+      z: TIME_SPACE_MOVEMENT_SERIES_Z,
+      ...PASSIVE_DETECTION_SERIES_PROPS,
       renderItem: function (params, api) {
         const i = params.dataIndex
         if (!dataPoints || i >= dataPoints.length - 1 || i % 2 !== 0) {
@@ -720,9 +877,11 @@ function generateStopBarPresenceEventLines(
         const distanceToNext = isPrimary
           ? location.calculatedDistanceToNext
           : -location.calculatedDistanceToNext
+        const displayDistanceToNext = distanceToNext * distanceScale
         const [x1, y1] = [api.value(0), api.value(1)]
-
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
+        const x1Ms = getTimeLikeMs(x1)
+        const x2Ms = getTimeLikeMs(x2)
         const currPointFinalX = getArrivalTime(
           location.calculatedDistanceToNext,
           location.speed,
@@ -733,30 +892,88 @@ function generateStopBarPresenceEventLines(
           location.speed,
           x2 as string
         )
-        const points = [
-          api.coord([x1, y1]),
-          api.coord([x2, y2]),
-          api.coord([nextPointFinalX, (y2 as number) + distanceToNext]),
-          api.coord([currPointFinalX, (y1 as number) + distanceToNext]),
+        const currPointFinalMs = getTimeLikeMs(currPointFinalX)
+        const nextPointFinalMs = getTimeLikeMs(nextPointFinalX)
+
+        if (
+          x1Ms == null ||
+          x2Ms == null ||
+          currPointFinalMs == null ||
+          nextPointFinalMs == null
+        ) {
+          return
+        }
+
+        const buildPoints = (shiftMs = 0) => [
+          api.coord([x1Ms + shiftMs, y1]),
+          api.coord([x2Ms + shiftMs, y2]),
+          api.coord([
+            nextPointFinalMs + shiftMs,
+            (y2 as number) + displayDistanceToNext,
+          ]),
+          api.coord([
+            currPointFinalMs + shiftMs,
+            (y1 as number) + displayDistanceToNext,
+          ]),
         ]
+
+        const children = []
+
+        if (chartTimespanMs != null && chartTimespanMs > 0) {
+          children.push(
+            buildStopBarPresencePolygon(buildPoints(-chartTimespanMs), true, color)
+          )
+        }
+
+        children.push(buildStopBarPresencePolygon(buildPoints(), false, color))
+
+        if (chartTimespanMs != null && chartTimespanMs > 0) {
+          children.push(
+            buildStopBarPresencePolygon(buildPoints(chartTimespanMs), true, color)
+          )
+        }
+
+        if (children.length === 1) {
+          return children[0]
+        }
+
         return {
-          type: 'polygon',
-          transition: ['shape'],
-          shape: {
-            points: points,
-          },
-          style: {
-            opacity: 1,
-            fill: color,
-            fillOpacity: opacity,
-            lineWidth: 3,
-          },
+          type: 'group',
+          emphasisDisabled: true,
+          children,
         }
       },
     }
     seriesOptions.push(seriesOption)
   }
   return seriesOptions
+}
+
+function buildStopBarPresencePolygon(
+  points: number[][],
+  isContinuation: boolean,
+  color: string
+): CustomSeriesRenderItemReturn {
+  return {
+    type: 'polygon',
+    ...(isContinuation ? { name: TIME_SPACE_CONTINUATION_NODE_NAME } : null),
+    z2: isContinuation ? 0 : 1,
+    transition: ['shape'],
+    emphasisDisabled: true,
+    shape: {
+      points,
+    },
+    style: isContinuation
+      ? {
+          fill: getCycleContinuationPatternFill(),
+        }
+      : {
+          opacity: 1,
+          fill: color,
+          fillOpacity: opacity,
+          lineWidth: 2,
+        },
+  }
 }
 
 function getStopBarPresenceDataPoints(
@@ -776,9 +993,11 @@ function getStopBarPresenceDataPoints(
 function generatePedestrianIntervalLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  idScope = 'default'
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   data.forEach((location, i) => {
     if (!location.pedestrianIntervals?.length) return
@@ -790,7 +1009,7 @@ function generatePedestrianIntervalLines(
 
     const series: SeriesOption = {
       name: `Pedestrian Interval ${phaseType?.length ? phaseType : ''}`,
-      id: `PI ${location.locationIdentifier} ${phaseType ?? ''}`,
+      id: `PI ${location.locationIdentifier} ${phaseType ?? ''} row-${i} ${idScope}`,
       type: 'custom',
       clip: true,
       data: pedData,
@@ -799,26 +1018,21 @@ function generatePedestrianIntervalLines(
         y: [3],
       },
       z: 6,
-      renderItem: (param, api): CustomSeriesRenderItemReturn => {
+      renderItem: (_param, api): CustomSeriesRenderItemReturn => {
         const x1 = api.value(0)
         const x2 = api.value(1)
         const interval = api.value(2)
         const distance = api.value(3)
-        const { color } = getEventDetails(interval as number)
         const p1 = api.coord([x1, distance])
         const p2 = api.coord([x2, distance])
-        return {
-          type: 'rect',
-          shape: {
-            x: p1[0],
-            y: p1[1] + 2.5,
-            width: p2[0] - p1[0],
-            height: 5,
-          },
-          style: {
-            fill: color,
-          },
-        }
+        const y = p1[1] + directionMultiplier * PEDESTRIAN_LINE_OFFSET_PX
+
+        return createPedestrianIntervalShape(
+          interval as number,
+          p1[0],
+          p2[0],
+          y
+        )
       },
     }
 
@@ -841,44 +1055,133 @@ function generatePedData(
   })
 }
 
-function getEventDetails(eventValue: number) {
-  for (const group of EVENT_GROUPS) {
-    if (group.codes.includes(eventValue)) {
-      return { name: group.name, color: group.color }
+function createPedestrianIntervalShape(
+  intervalValue: number,
+  startX: number,
+  endX: number,
+  y: number
+): CustomSeriesRenderItemReturn {
+  const baseStyle = {
+    stroke: Color.Black,
+    lineWidth: PEDESTRIAN_LINE_WIDTH,
+    fill: 'none',
+    lineCap: 'round',
+    lineJoin: 'round',
+  }
+  const boundaryTick = {
+    type: 'line',
+    shape: {
+      x1: startX,
+      y1: y - PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT,
+      x2: startX,
+      y2: y + PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT,
+    },
+    style: baseStyle,
+  }
+  let intervalShape
+
+  if (intervalValue === 22 || intervalValue === 68) {
+    intervalShape = {
+      type: 'line',
+      shape: { x1: startX, y1: y, x2: endX, y2: y },
+      style: { ...baseStyle, lineDash: PEDESTRIAN_CLEARANCE_DOT_PATTERN },
+    }
+  } else if (intervalValue === 23 || intervalValue === 69) {
+    intervalShape = {
+      type: 'polyline',
+      shape: {
+        points: buildPedestrianZigZagPoints(startX, endX, y),
+      },
+      style: baseStyle,
+    }
+  } else {
+    intervalShape = {
+      type: 'line',
+      shape: { x1: startX, y1: y, x2: endX, y2: y },
+      style: baseStyle,
     }
   }
-  return { name: 'Unknown Event', color: CycleColor.Default }
+
+  return {
+    type: 'group',
+    children: [intervalShape, boundaryTick],
+  }
+}
+
+function buildPedestrianZigZagPoints(
+  startX: number,
+  endX: number,
+  baseY: number
+): Array<[number, number]> {
+  const width = endX - startX
+  if (Math.abs(width) <= PEDESTRIAN_ZIGZAG_STEP_PX) {
+    return [
+      [startX, baseY],
+      [endX, baseY],
+    ]
+  }
+
+  const segmentCount = Math.max(
+    3,
+    Math.ceil(Math.abs(width) / PEDESTRIAN_ZIGZAG_STEP_PX)
+  )
+  const step = width / segmentCount
+  const points: Array<[number, number]> = [[startX, baseY]]
+
+  for (let i = 1; i < segmentCount; i++) {
+    const x = startX + step * i
+    const y =
+      baseY +
+      (i % 2 === 0 ? PEDESTRIAN_ZIGZAG_AMPLITUDE : -PEDESTRIAN_ZIGZAG_AMPLITUDE)
+    points.push([x, y])
+  }
+
+  points.push([endX, baseY])
+
+  return points
 }
 
 function generateTMCEvent(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  distanceScale = 1,
+  idScope = 'default'
 ) {
   const seriesOptions: SeriesOption[] = []
 
-  const leftTurnEvents: ((string | number)[] | null)[] = []
-  const rightTurnEvents: ((string | number)[] | null)[] = []
-
   data.forEach((location, i) => {
     if (!location.tmcForPhase) return
-    const leftTurns = location.tmcForPhase.leftTurnEvents.flatMap((lEvent) => {
+
+    const leftTurnEvents = location.tmcForPhase.leftTurnEvents.flatMap((lEvent) => {
       const initialX = lEvent.start
       const finalX = getArrivalTime(
         location.calculatedDistanceToNext,
         location.speed,
         initialX
       )
-      const values = [
+
+      return [
         [initialX, distanceData[i]],
-        [finalX, distanceData[i] + location.calculatedDistanceToNext],
+        [finalX, distanceData[i] + location.calculatedDistanceToNext * distanceScale],
         null,
       ]
-      return values
     })
-    leftTurnEvents.push(...leftTurns)
 
-    const rightTurns = location.tmcForPhase.rightTurnEvents.flatMap(
+    if (leftTurnEvents.length) {
+      seriesOptions.push({
+        name: `Left Turn ${phaseType}`,
+        id: `Left Turn ${location.locationIdentifier} ${phaseType ?? ''} row-${i} ${idScope}`,
+        type: 'line',
+        ...PASSIVE_DETECTION_SERIES_PROPS,
+        data: leftTurnEvents,
+        symbol: 'none',
+        z: TIME_SPACE_MOVEMENT_SERIES_Z,
+        color: 'black',
+      })
+    }
+
+    const rightTurnEvents = location.tmcForPhase.rightTurnEvents.flatMap(
       (rEvent) => {
         const initialX = rEvent.start
         const finalX = getArrivalTime(
@@ -886,35 +1189,31 @@ function generateTMCEvent(
           location.speed,
           initialX
         )
-        const values = [
+
+        return [
           [initialX, distanceData[i]],
-          [finalX, distanceData[i] + location.calculatedDistanceToNext],
+          [
+            finalX,
+            distanceData[i] + location.calculatedDistanceToNext * distanceScale,
+          ],
           null,
         ]
-        return values
       }
     )
-    rightTurnEvents.push(...rightTurns)
-  })
 
-  seriesOptions.push(
-    {
-      name: `Left Turn ${phaseType}`,
-      type: 'line',
-      data: leftTurnEvents,
-      symbol: 'none',
-      z: 10,
-      color: 'black',
-    },
-    {
-      name: `Right Turn ${phaseType}`,
-      type: 'line',
-      data: rightTurnEvents,
-      symbol: 'none',
-      z: 10,
-      color: 'black',
+    if (rightTurnEvents.length) {
+      seriesOptions.push({
+        name: `Right Turn ${phaseType}`,
+        id: `Right Turn ${location.locationIdentifier} ${phaseType ?? ''} row-${i} ${idScope}`,
+        type: 'line',
+        ...PASSIVE_DETECTION_SERIES_PROPS,
+        data: rightTurnEvents,
+        symbol: 'none',
+        z: TIME_SPACE_MOVEMENT_SERIES_Z,
+        color: 'black',
+      })
     }
-  )
+  })
 
   return seriesOptions
 }
@@ -922,7 +1221,9 @@ function generateTMCEvent(
 function generateSrmEntityLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
-  phaseType?: string
+  phaseType?: string,
+  distanceScale = 1,
+  idScope = 'default'
 ): SeriesOption[] {
   const isOpposing = (phaseType ?? '').toLowerCase().includes('opposing')
   const directionMultiplier = isOpposing ? -1 : 1
@@ -937,23 +1238,23 @@ function generateSrmEntityLines(
       const baseDistance = distanceData[i] ?? 0
       const points = track.points.map((point) => [
         point.time,
-        baseDistance + directionMultiplier * point.distance,
+        baseDistance + directionMultiplier * point.distance * distanceScale,
       ])
 
       seriesOptions.push({
         name: `SRM Entity ${phaseType?.length ? phaseType : ''}`,
         id: `SRM ${location.locationIdentifier} ${track.entityId} ${trackIndex} ${
           phaseType ?? ''
-        }`,
+        } row-${i} ${idScope}`,
         type: 'line',
         symbol: 'none',
+        z: TIME_SPACE_MOVEMENT_SERIES_Z,
         lineStyle: {
           width: 2,
           color: Color.Black,
           opacity: 0.85,
         },
         data: points,
-        z: 9,
       })
     })
   })
@@ -963,11 +1264,11 @@ function generateSrmEntityLines(
 
 function buildCycleEventMarkersOnCyclesSeries(
   rows: RawTimeSpaceHistoricData[] = [],
-  distanceData: number[] = []
+  distanceData: number[] = [],
+  idScope = 'default'
 ): SeriesOption[] {
-  const earlyGreens: Array<[string, number]> = []
-  const extendGreens: Array<[string, number]> = []
-  const seen = new Set<string>()
+  const result: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   rows.forEach((row, i) => {
     const yValue = distanceData[i]
@@ -977,8 +1278,11 @@ function buildCycleEventMarkersOnCyclesSeries(
     const rowEnd = Date.parse(row.end)
     if (!Number.isFinite(rowStart) || !Number.isFinite(rowEnd)) return
 
-    const tspEvents = (row.tspEvents ?? []) as IndianaEvent[]
+    const tspEvents = row.tspEvents ?? []
     if (!tspEvents.length) return
+    const earlyGreens: Array<[string, number]> = []
+    const extendGreens: Array<[string, number]> = []
+    const seen = new Set<string>()
 
     tspEvents.forEach((e) => {
       if (
@@ -991,12 +1295,14 @@ function buildCycleEventMarkersOnCyclesSeries(
       const tMs = Date.parse(e.timestamp as string)
       if (!Number.isFinite(tMs)) return
       if (tMs < rowStart || tMs > rowEnd) return
+      const timestamp = dateToTimestamp(e.timestamp as string)
+      if (!timestamp) return
 
       const key = `${e.eventCode}|${i}|${e.timestamp}`
       if (seen.has(key)) return
       seen.add(key)
 
-      const point: [string, number] = [e.timestamp, yValue - 100]
+      const point: [string, number] = [timestamp, yValue]
 
       if (e.eventCode === TSP_CODES.EarlyGreen) {
         earlyGreens.push(point)
@@ -1004,37 +1310,54 @@ function buildCycleEventMarkersOnCyclesSeries(
         extendGreens.push(point)
       }
     })
+
+    const createSeries = (
+      name: string,
+      id: string,
+      symbol: string | undefined,
+      data: Array<[string, number]>
+    ): SeriesOption => ({
+      type: 'scatter',
+      name,
+      id,
+      symbol: symbol ?? 'circle',
+      symbolSize: 7,
+      symbolOffset: [0, directionMultiplier * TSP_MARKER_OFFSET_PX],
+      itemStyle: {
+        color: Color.White,
+        borderColor: Color.Black,
+        borderWidth: 1.5,
+      },
+      z: TSP_MARKER_Z,
+      tooltip: {
+        show: true,
+        formatter: (p: any) => `${p.seriesName} ${p?.value?.[0] ?? ''}`,
+      },
+      data,
+    })
+
+    if (earlyGreens.length) {
+      result.push(
+        createSeries(
+          'Early Green (113)',
+          `Early Green ${row.locationIdentifier} row-${i} ${idScope}`,
+          'circle',
+          earlyGreens
+        )
+      )
+    }
+
+    if (extendGreens.length) {
+      result.push(
+        createSeries(
+          'Extend Green (114)',
+          `Extend Green ${row.locationIdentifier} row-${i} ${idScope}`,
+          triangleSvgSymbol,
+          extendGreens
+        )
+      )
+    }
   })
-
-  const createSeries = (
-    name: string,
-    symbol: string,
-    data: Array<[string, number]>
-  ): SeriesOption => ({
-    type: 'scatter',
-    name,
-    symbol,
-    symbolSize: 9,
-    itemStyle: { color: Color.Black },
-    z: 6,
-    tooltip: {
-      show: true,
-      formatter: (p: any) => `${p.seriesName} ${p?.value?.[0] ?? ''}`,
-    },
-    data,
-  })
-
-  const result: SeriesOption[] = []
-
-  if (earlyGreens.length) {
-    result.push(createSeries('Early Green (113)', 'circle', earlyGreens))
-  }
-
-  if (extendGreens.length) {
-    result.push(
-      createSeries('Extend Green (114)', triangleSvgSymbol, extendGreens)
-    )
-  }
 
   return result
 }
@@ -1045,15 +1368,22 @@ type TspHistoricEvent = {
   timestampMs: number
 }
 
-const CYCLE_BAND_HEIGHT = 10
 const TSP_OVERLAY_Z = 7
+const TSP_REQUEST_BAND_HEIGHT_PX = 2
+const TSP_SERVICE_BAND_HEIGHT_PX = 5
+const TSP_SERVICE_OVERLAY_Z = TSP_OVERLAY_Z + 1
+const TSP_SERVICE_OFFSET_PX = 20
+const TSP_REQUEST_OFFSET_PX = 20
+const TSP_MARKER_OFFSET_PX = 20
+const TSP_MARKER_Z = TSP_SERVICE_OVERLAY_Z + 1
 
 function buildTspRequestAndServiceLineSeries(
   rows: RawTimeSpaceHistoricData[] = [],
-  distanceData: number[] = []
+  distanceData: number[] = [],
+  idScope = 'default'
 ): SeriesOption[] {
-  const tspRequestData: ((string | number)[] | null)[] = []
-  const tspServiceData: ((string | number)[] | null)[] = []
+  const series: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   rows.forEach((row, i) => {
     const yValue = distanceData[i]
@@ -1063,11 +1393,11 @@ function buildTspRequestAndServiceLineSeries(
     const rowEndMs = Date.parse(row.end)
     if (!Number.isFinite(rowStartMs) || !Number.isFinite(rowEndMs)) return
 
-    const tspEvents = (row.tspEvents ?? []) as IndianaEvent[]
+    const tspEvents = row.tspEvents ?? []
     if (!tspEvents.length) return
 
-    const relevantEvents: TspHistoricEvent[] = tspEvents
-      .map((event) => {
+    const relevantEvents = tspEvents
+      .reduce<TspHistoricEvent[]>((events, event) => {
         const code = event.eventCode
         const timestampRaw = event.timestamp
         const timestampMs = Date.parse(timestampRaw as string)
@@ -1077,7 +1407,7 @@ function buildTspRequestAndServiceLineSeries(
           !timestampRaw ||
           !Number.isFinite(timestampMs)
         ) {
-          return null
+          return events
         }
 
         if (
@@ -1086,17 +1416,19 @@ function buildTspRequestAndServiceLineSeries(
           code !== TSP_CODES.ServiceStart &&
           code !== TSP_CODES.ServiceEnd
         ) {
-          return null
+          return events
         }
 
-        if (timestampMs < rowStartMs || timestampMs > rowEndMs) return null
+        if (timestampMs < rowStartMs || timestampMs > rowEndMs) {
+          return events
+        }
 
         const timestamp = dateToTimestamp(timestampRaw)
-        if (!timestamp) return null
+        if (!timestamp) return events
 
-        return { code, timestamp, timestampMs }
-      })
-      .filter((event): event is TspHistoricEvent => event !== null)
+        events.push({ code, timestamp, timestampMs })
+        return events
+      }, [])
       .sort((a, b) => {
         const dt = a.timestampMs - b.timestampMs
         if (dt !== 0) return dt
@@ -1116,6 +1448,8 @@ function buildTspRequestAndServiceLineSeries(
 
     let requestStart: TspHistoricEvent | null = null
     let serviceStart: TspHistoricEvent | null = null
+    const tspRequestData: [string, string, number][] = []
+    const tspServiceData: [string, string, number][] = []
 
     relevantEvents.forEach((event) => {
       if (event.code === TSP_CODES.CheckIn) {
@@ -1125,11 +1459,7 @@ function buildTspRequestAndServiceLineSeries(
 
       if (event.code === TSP_CODES.CheckOut) {
         if (requestStart && event.timestampMs > requestStart.timestampMs) {
-          tspRequestData.push(
-            [requestStart.timestamp, yValue - 60],
-            [event.timestamp, yValue - 60],
-            null
-          )
+          tspRequestData.push([requestStart.timestamp, event.timestamp, yValue])
         }
         requestStart = null
         return
@@ -1142,50 +1472,118 @@ function buildTspRequestAndServiceLineSeries(
 
       if (event.code === TSP_CODES.ServiceEnd) {
         if (serviceStart && event.timestampMs > serviceStart.timestampMs) {
-          tspServiceData.push(
-            [serviceStart.timestamp, yValue],
-            [event.timestamp, yValue],
-            null
-          )
+          tspServiceData.push([serviceStart.timestamp, event.timestamp, yValue])
         }
         serviceStart = null
       }
     })
+
+    if (tspRequestData.length) {
+      series.push({
+        name: 'TSP Request (112-115)',
+        id: `TSP Request ${row.locationIdentifier} row-${i} ${idScope}`,
+        type: 'custom',
+        clip: true,
+        encode: { x: [0, 1], y: 2 },
+        data: tspRequestData,
+        z: TSP_OVERLAY_Z,
+        renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+          const startValue = api.value(0)
+          const endValue = api.value(1)
+          const rowY = Number(api.value(2))
+          const startMs =
+            typeof startValue === 'number'
+              ? startValue
+              : Date.parse(String(startValue))
+          const endMs =
+            typeof endValue === 'number' ? endValue : Date.parse(String(endValue))
+          if (
+            !Number.isFinite(startMs) ||
+            !Number.isFinite(endMs) ||
+            !Number.isFinite(rowY)
+          ) {
+            return
+          }
+
+          const startPoint = api.coord([startMs, rowY])
+          const endPoint = api.coord([endMs, rowY])
+          const centerY = startPoint[1] + directionMultiplier * TSP_REQUEST_OFFSET_PX
+
+          return {
+            type: 'rect',
+            z2: TSP_OVERLAY_Z,
+            shape: {
+              x: Math.min(startPoint[0], endPoint[0]),
+              y: centerY - TSP_REQUEST_BAND_HEIGHT_PX / 2,
+              width: Math.max(1, Math.abs(endPoint[0] - startPoint[0])),
+              height: TSP_REQUEST_BAND_HEIGHT_PX,
+            },
+            style: {
+              fill: Color.Black,
+              opacity: 0.95,
+            },
+            emphasisDisabled: true,
+          }
+        },
+        tooltip: { show: false },
+      })
+    }
+
+    if (tspServiceData.length) {
+      series.push({
+        name: 'TSP Service (118-119)',
+        id: `TSP Service ${row.locationIdentifier} row-${i} ${idScope}`,
+        type: 'custom',
+        clip: true,
+        encode: { x: [0, 1], y: 2 },
+        data: tspServiceData,
+        z: TSP_SERVICE_OVERLAY_Z,
+        renderItem: (_param, api): CustomSeriesRenderItemReturn => {
+          const startValue = api.value(0)
+          const endValue = api.value(1)
+          const rowY = Number(api.value(2))
+          const startMs =
+            typeof startValue === 'number'
+              ? startValue
+              : Date.parse(String(startValue))
+          const endMs =
+            typeof endValue === 'number' ? endValue : Date.parse(String(endValue))
+          if (
+            !Number.isFinite(startMs) ||
+            !Number.isFinite(endMs) ||
+            !Number.isFinite(rowY)
+          ) {
+            return
+          }
+
+          const startPoint = api.coord([startMs, rowY])
+          const endPoint = api.coord([endMs, rowY])
+          const centerY = startPoint[1] + directionMultiplier * TSP_SERVICE_OFFSET_PX
+          const x = Math.min(startPoint[0], endPoint[0])
+          const width = Math.max(1, Math.abs(endPoint[0] - startPoint[0]))
+          const y = centerY - TSP_SERVICE_BAND_HEIGHT_PX / 2
+
+          return {
+            type: 'rect',
+            z2: TSP_SERVICE_OVERLAY_Z,
+            shape: {
+              x,
+              y,
+              width,
+              height: TSP_SERVICE_BAND_HEIGHT_PX,
+            },
+            style: {
+              fill: Color.Black,
+              opacity: 0.95,
+            },
+            emphasisDisabled: true,
+          }
+        },
+        tooltip: { show: false },
+      })
+    }
   })
-
-  const series: SeriesOption[] = []
-
-  if (tspRequestData.length) {
-    series.push({
-      name: 'TSP Request (112-115)',
-      type: 'line',
-      data: tspRequestData,
-      symbol: 'none',
-      lineStyle: {
-        width: CYCLE_BAND_HEIGHT,
-        color: Color.Red,
-        opacity: 0.95,
-      },
-      z: TSP_OVERLAY_Z,
-      tooltip: { show: false },
-    })
-  }
-
-  if (tspServiceData.length) {
-    series.push({
-      name: 'TSP Service (118-119)',
-      type: 'line',
-      data: tspServiceData,
-      symbol: 'none',
-      lineStyle: {
-        width: CYCLE_BAND_HEIGHT,
-        color: Color.LightBlue,
-        opacity: 0.95,
-      },
-      z: TSP_OVERLAY_Z,
-      tooltip: { show: false },
-    })
-  }
 
   return series
 }
+

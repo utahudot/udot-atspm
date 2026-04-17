@@ -33,6 +33,8 @@ import {
   getDistancesLabelOption,
   getLocationsLabelOption,
   getOffsetAndProgramSplitLabel,
+  getTimeSpacePhaseRowDistances,
+  TIME_SPACE_CYCLE_CENTER_OFFSET,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceAverageData,
@@ -137,14 +139,28 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     opposingPhaseData[0].approachDescription.split(' ')[0]
 
   let initialDistance = 0
-  const distanceData: number[] = []
+  const locationCenterDistanceData: number[] = []
   primaryPhaseData.forEach((location) => {
-    distanceData.push(initialDistance)
+    locationCenterDistanceData.push(initialDistance)
     initialDistance += location.distanceToNextLocation
   })
+  const {
+    primaryDistanceData,
+    opposingDistanceData,
+  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
+  const minDisplayDistance = Math.min(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
+  const maxDisplayDistance = Math.max(
+    ...primaryDistanceData,
+    ...opposingDistanceData
+  )
   const yAxis = createYAxis(false, {
     show: false,
-    data: distanceData,
+    data: locationCenterDistanceData,
+    min: minDisplayDistance - TIME_SPACE_CYCLE_CENTER_OFFSET,
+    max: maxDisplayDistance + TIME_SPACE_CYCLE_CENTER_OFFSET,
     axisLabel: {
       show: false,
     },
@@ -162,6 +178,16 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
         name: `Cycles ${opposingDirection}`,
         icon: SolidLineSeriesSymbol,
         itemStyle: { color: '#f0807f' },
+      },
+      {
+        name: `Cycle Durations ${primaryDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: 'black' },
+      },
+      {
+        name: `Cycle Durations ${opposingDirection}`,
+        icon: SolidLineSeriesSymbol,
+        itemStyle: { color: 'black' },
       },
       {
         name: `Green Bands ${primaryDirection}`,
@@ -222,66 +248,90 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     ToolType.TimeSpaceHistoric
   )
 
-  const colorMap: Map<number, string> = new Map([
-    [1, 'lightgreen'],
-    [8, 'yellow'],
-    [9, 'red'],
-  ])
-
   const series: SeriesOption[] = []
 
   series.push(
     ...generateCycles(
       primaryPhaseData,
-      distanceData,
-      colorMap,
-      primaryDirection
+      primaryDistanceData,
+      primaryDirection,
+      'primary'
     )
   )
   series.push(
     ...generateGreenEventLines(
       primaryPhaseData,
-      distanceData,
+      primaryDistanceData,
       primaryDirection,
-      true
+      true,
+      1,
+      'primary'
     )
   )
 
-  series.push(getLocationsLabelOption(primaryPhaseData, distanceData))
-  series.push(getDistancesLabelOption(primaryPhaseData, distanceData))
+  series.push(
+    getLocationsLabelOption(primaryPhaseData, locationCenterDistanceData, grid)
+  )
+  series.push(
+    getDistancesLabelOption(
+      primaryPhaseData,
+      locationCenterDistanceData,
+      grid.left as number
+    )
+  )
   series.push(
     getOffsetAndProgramSplitLabel(
       primaryPhaseData,
       opposingPhaseData,
-      distanceData,
+      locationCenterDistanceData,
       primaryDirection,
       opposingDirection,
       endDateFormat
     )
   )
-  series.push(generateCycleLabels(distanceData, primaryDirection))
+  series.push(
+    generateCycleLabels(
+      locationCenterDistanceData,
+      primaryDirection,
+      undefined,
+      primaryPhaseData.map((p) => p.approachDescription),
+      undefined,
+      'left',
+      primaryPhaseData.map((p) => Boolean(p.isIgnoredLocation))
+    )
+  )
 
-  let reverseDistanceData = distanceData.reverse()
-  reverseDistanceData = reverseDistanceData.map((distance) => (distance += 120))
   series.push(
     ...generateCycles(
       opposingPhaseData,
-      reverseDistanceData,
-      colorMap,
-      opposingDirection
+      opposingDistanceData,
+      opposingDirection,
+      'opposing'
     )
   )
 
   series.push(
     ...generateGreenEventLines(
       opposingPhaseData,
-      reverseDistanceData,
+      opposingDistanceData,
       opposingDirection,
-      false
+      false,
+      1,
+      'opposing'
     )
   )
 
-  series.push(generateCycleLabels(reverseDistanceData, opposingDirection))
+  series.push(
+    generateCycleLabels(
+      locationCenterDistanceData,
+      opposingDirection,
+      undefined,
+      [...opposingPhaseData].reverse().map((p) => p.approachDescription),
+      undefined,
+      'right',
+      [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
+    )
+  )
 
   const displayProps = createDisplayProps({
     description: '',

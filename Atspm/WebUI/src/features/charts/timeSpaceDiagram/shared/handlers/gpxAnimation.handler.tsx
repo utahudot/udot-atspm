@@ -1,7 +1,52 @@
 import { ECharts, SeriesOption } from 'echarts'
-import { useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { GpxPoint } from '../gpxFileParser'
-import { GpxUploadOptions } from '../types'
+import {
+  GpxUploadOptions,
+  TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
+} from '../types'
+
+const GPX_OVERLAY_SERIES_ID_PREFIXES = ['gpx-', 'srm-'] as const
+
+function isSeriesOption(
+  value: SeriesOption | null | undefined
+): value is SeriesOption {
+  return Boolean(value && typeof value === 'object')
+}
+
+function isGpxOverlaySeries(
+  series: SeriesOption | null | undefined
+): boolean {
+  if (!isSeriesOption(series) || typeof series.id !== 'string') {
+    return false
+  }
+
+  return GPX_OVERLAY_SERIES_ID_PREFIXES.some((prefix) =>
+    series.id.startsWith(prefix)
+  )
+}
+
+function getCurrentChartSeries(chart: ECharts): SeriesOption[] {
+  const option = chart.getOption()
+  const rawSeries = Array.isArray(option?.series)
+    ? option.series
+    : option?.series
+      ? [option.series]
+      : []
+
+  return rawSeries.filter(isSeriesOption)
+}
+
+export function mergeChartSeriesWithGpxOverlays(
+  currentSeries: Array<SeriesOption | null | undefined>,
+  overlaySeries: SeriesOption[]
+) {
+  const baseSeries = currentSeries.filter(
+    (series): series is SeriesOption => !isGpxOverlaySeries(series)
+  )
+
+  return [...baseSeries, ...overlaySeries]
+}
 
 function buildShiftedGpxData(
   chart: ECharts,
@@ -55,6 +100,7 @@ export const useGpxAnimationHandler = (
         if (upload.parsedData?.length) {
           series.push({
             id: `gpx-${upload.id}`,
+            name: TIME_SPACE_GPX_TRACKS_LEGEND_NAME,
             type: 'line',
             data: buildShiftedGpxData(chart, upload, upload.parsedData),
             color: 'black',
@@ -63,6 +109,7 @@ export const useGpxAnimationHandler = (
             lineStyle: {
               width: 3,
               color: 'black',
+              type: 'dotted',
             },
             clip: true,
           })
@@ -94,20 +141,24 @@ export const useGpxAnimationHandler = (
     () => processedSeries.flatMap((s) => s.data).at(-1)?.[0] ?? '',
     [processedSeries]
   )
-  const STEP = 10
 
-  const play = () => {
+  const play = useCallback(() => {
     if (!chart) return
 
-    playingRef.current = true
+    playingRef.current = processedSeries.length > 0
+
+    const nextSeries = mergeChartSeriesWithGpxOverlays(
+      getCurrentChartSeries(chart),
+      processedSeries
+    )
 
     chart.setOption(
       {
-        series: processedSeries,
+        series: nextSeries,
       },
       { replaceMerge: ['series'] }
     )
-  }
+  }, [chart, processedSeries])
 
   return {
     play,

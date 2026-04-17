@@ -7,10 +7,8 @@ import { AverageOptionsComponent } from '@/features/charts/timeSpaceDiagram/aver
 import { useAverageOptionsHandler } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions/timeSpaceAverageOptions.handler'
 import HistoricOptionsComponent from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/TimeSpaceHistoricOptions'
 import { useHistoricOptionsHandler } from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/historicTimeSpaceOptions.handler'
-import { buildHistoricRequestPayload } from '@/features/charts/timeSpaceDiagram/historic/historicRequestPayload'
 import {
   TimeSpaceAverageOptions,
-  TimeSpaceHistoricOptions,
   TimeSpaceOptions,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { useGetRoute } from '@/features/routes/api/getRoutes'
@@ -124,15 +122,9 @@ const TimeSpaceDiagram = () => {
   const handleGenerateCharts = async () => {
     setHasAttemptedGenerate(true)
 
-    let options = activeHandler.toOptions() as TimeSpaceOptions
+    const options = activeHandler.toOptions() as TimeSpaceOptions
     if (!options.routeId) return
     if (isTimeSpaceAverageInvalidOptions) return
-
-    if (currentTab === ToolType.TimeSpaceHistoric) {
-      options = await buildHistoricRequestPayload(
-        options as TimeSpaceHistoricOptions
-      )
-    }
 
     pushActiveParamsToUrl()
 
@@ -208,6 +200,7 @@ const TimeSpaceDiagram = () => {
               <TimeSpaceChart
                 timeSpaceData={chartData}
                 linkPivotTsdData={lpTsdData ?? []}
+                timeSpaceOptions={submittedOptions}
               />
             )}
           </Box>

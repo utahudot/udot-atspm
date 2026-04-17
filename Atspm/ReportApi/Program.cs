@@ -170,7 +170,8 @@ builder.Host
         s.AddScoped<SplitFailPhaseService>();
         s.AddScoped<SplitMonitorService>();
         s.AddScoped<TimeSpaceDiagramForPhaseService>();
-        s.AddScoped<TimeSpaceDiagramSrmCsvService>();
+        s.AddScoped<ITimeSpaceDiagramSrmSource, TimeSpaceDiagramSrmCsvSource>();
+        s.AddScoped<TimeSpaceDiagramSrmService>();
         s.AddScoped<TimeSpaceAverageService>();
         s.AddScoped<TimingAndActuationsForPhaseService>();
         s.AddScoped<PriorityDetailsReportService>();

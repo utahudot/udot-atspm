@@ -1,6 +1,6 @@
 #region license
 // Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Business.TimeSpaceDiagram/TimeSpaceDiagramSrmCsvService.cs
+// for Application - Utah.Udot.Atspm.Business.TimeSpaceDiagram/TimeSpaceDiagramSrmCsvSource.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,11 +52,11 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
     /// Temporary SRM provider backed by a local CSV file.
     /// Future implementation can replace this with an API-backed source.
     /// </summary>
-    public class TimeSpaceDiagramSrmCsvService
+    public class TimeSpaceDiagramSrmCsvSource : ITimeSpaceDiagramSrmSource
     {
         private readonly ILocationRepository locationRepository;
 
-        public TimeSpaceDiagramSrmCsvService(ILocationRepository locationRepository)
+        public TimeSpaceDiagramSrmCsvSource(ILocationRepository locationRepository)
         {
             this.locationRepository = locationRepository;
         }

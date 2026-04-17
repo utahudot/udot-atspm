@@ -23,6 +23,8 @@ import {
 import { GpxPoint } from './gpxFileParser'
 import type { SrmEntityTrack } from './srmFileParser'
 
+export const TIME_SPACE_GPX_TRACKS_LEGEND_NAME = 'GPX Tracks'
+
 // export interface TimeSpaceDetectorEvent {
 //   initialX: string
 //   finalX: string
@@ -72,14 +74,18 @@ export interface TimeSpaceHistoricOptions {
   locationIdentifier: string
   extendStartStopSearch: number
   showAllLanesInfo: boolean
-  includeSrmSearch: boolean
-  srmCsvContentBase64?: string
-  srmCsvFile?: File | null
   routeId: string
   chartType: string
   speedLimit: number | null
   start: Date
   end: Date
+}
+
+export interface TimeSpaceSrmOptions {
+  routeId: string
+  start: Date
+  end: Date
+  srmCsvContentBase64: string
 }
 
 export interface RawTimeSpaceBaseData extends BaseChartData {
@@ -97,11 +103,12 @@ export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
   calculatedDistanceToNext: number
   calculatedDistanceToPrevious: number
   isIgnoredLocation: boolean
+  offsetLengthChangeEvents?: number | null
 }
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {
   offset: number
-  cycleLength: number
+  cycleLength: number | null
   programmedSplit: number
   coordinatedPhases: boolean
   greenTimeEvents: TimeSpaceDetectorEvent[] | []
@@ -115,11 +122,11 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   stopBarPresenceDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
   cycleAllEvents: Cycle[] | null
   pedestrianIntervals: PedestrianInterval[] | []
-  percentArrivalOnGreen: number
+  percentArrivalOnGreen: number | null
   tmcForPhase: TmcForPhaseDto
 
   order: number
-  cycleLength: number
+  cycleLength: number | null
   isPhaseOverLap: boolean
 
   tspNumberCheckins: number
@@ -143,6 +150,13 @@ export interface SrmHistoricEntityTrack {
   points: SrmHistoricPoint[]
   startingIntersection?: string
   headingDirection?: number | string
+}
+
+export interface TimeSpaceSrmPhaseOverlay {
+  locationIdentifier: string
+  phaseType: 'Primary' | 'Opposing'
+  order: number
+  srmEntityTracks: SrmHistoricEntityTrack[]
 }
 
 export interface TmcForPhaseDto {
