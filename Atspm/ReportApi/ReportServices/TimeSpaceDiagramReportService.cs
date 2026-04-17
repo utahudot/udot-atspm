@@ -427,6 +427,19 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     isLastElement,
                     priorityDetails);
 
+                var offsetLengthChangeEventsForPhase = currentControllerEventLogs
+                    .GetEventsByEventCodes(
+                        parameter.Start.AddHours(-12),
+                        parameter.End.AddHours(12),
+                        new List<short> { (short)IndianaEnumerations.OffsetLengthChange })
+                    .ToList();
+
+                viewModel.OffsetLengthChangeEvents = GetEventOverlappingTime(
+                        parameter.Start,
+                        offsetLengthChangeEventsForPhase,
+                        "Offset Length Change")
+                    .FirstOrDefault()?.EventParam;
+
                 PopulateCommonPhaseFields(viewModel, currentPhase, phaseType, order, tmcEventsForPhase);
                 PopulateSrmTracks(
                     viewModel,
@@ -436,7 +449,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     isFirstElement,
                     isLastElement);
 
-                if (locationPhase != null)
+                if (locationPhase?.TotalVolume > 0)
                 {
                     viewModel.PercentArrivalOnGreen = locationPhase.PercentArrivalOnGreen;
                 }

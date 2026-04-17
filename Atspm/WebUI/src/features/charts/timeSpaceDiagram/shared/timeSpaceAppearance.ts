@@ -1,5 +1,8 @@
 import { Color } from '@/features/charts/utils'
-import { CYCLE_INDICATIONS } from './transformers/timeSpaceTransformerBase'
+import {
+  CYCLE_INDICATIONS,
+  TIME_SPACE_CONTINUATION_NODE_NAME,
+} from './transformers/timeSpaceTransformerBase'
 import type { CustomSeriesRenderItemReturn, EChartsOption, SeriesOption } from 'echarts'
 
 export type TimeSpaceAppearanceDirectionRole = 'primary' | 'opposing'
@@ -302,6 +305,10 @@ function applyGraphicFillAppearance(
   return wrapCustomRenderItem(series, (result) =>
     mapGraphicNode(result, (node) => {
       if (!node?.style) {
+        return node
+      }
+
+      if (node.name === TIME_SPACE_CONTINUATION_NODE_NAME) {
         return node
       }
 

@@ -103,6 +103,7 @@ export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
   calculatedDistanceToNext: number
   calculatedDistanceToPrevious: number
   isIgnoredLocation: boolean
+  offsetLengthChangeEvents?: number | null
 }
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {
@@ -121,7 +122,7 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
   stopBarPresenceDetectors: TimeSpaceDetectorEventWithDistanceDTO[] | []
   cycleAllEvents: Cycle[] | null
   pedestrianIntervals: PedestrianInterval[] | []
-  percentArrivalOnGreen: number
+  percentArrivalOnGreen: number | null
   tmcForPhase: TmcForPhaseDto
 
   order: number

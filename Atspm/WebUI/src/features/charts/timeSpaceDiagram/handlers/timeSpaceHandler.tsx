@@ -5,6 +5,15 @@ import { useEffect, useRef } from 'react'
 const HIT_TOLERANCE = 6
 const STEP_MS = 1000
 
+function shiftTimeLike(value: string | number, offsetX: number) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value + offsetX
+  }
+
+  const time = new Date(value).getTime()
+  return dateToTimestamp(new Date(time + offsetX))
+}
+
 function getOffsetData(
   offsetX: number,
   series: SeriesOption
@@ -17,46 +26,61 @@ function getOffsetData(
 function getData(
   offsetX: number,
   series: SeriesOption
-): [string, number, number][] {
+): [string | number, number, number][] {
   return (series?.data as any[]).map((d) => {
-    const time = new Date(d[0]).getTime()
-    const offset = time + offsetX
-    const newTime = dateToTimestamp(new Date(offset))
-    return [newTime, d[1], d[2]]
+    return [shiftTimeLike(d[0], offsetX), d[1], d[2]]
   })
 }
 
 function getBandData(
   offsetX: number,
   series: SeriesOption
-): [string, number][] {
+): [string | number, number][] {
   if (!series.data || (series.data as any[]).length === 0) {
     return []
   }
   return (series?.data as any[]).map((d) => {
-    const time = new Date(d[0]).getTime()
-    const offset = time + offsetX
-    const newTime = dateToTimestamp(new Date(offset))
-    return [newTime, d[1]]
+    return [shiftTimeLike(d[0], offsetX), d[1]]
+  })
+}
+
+function getRangeData(
+  offsetX: number,
+  series: SeriesOption
+): [string | number, string | number, ...unknown[]][] {
+  return (series?.data as any[]).map((d) => {
+    return [
+      shiftTimeLike(d[0], offsetX),
+      shiftTimeLike(d[1], offsetX),
+      ...d.slice(2),
+    ]
+  })
+}
+
+function getLabelData(
+  offsetX: number,
+  series: SeriesOption
+): [string | number, number, string][] {
+  return (series?.data as any[]).map((d) => {
+    return [shiftTimeLike(d[0], offsetX), d[1], d[2]]
   })
 }
 
 function getLLCData(
   offsetX: number,
   series: SeriesOption
-): ([string, number] | null)[] {
+): ([string | number, number] | null)[] {
   return (series?.data as any[]).map((d) => {
     if (d === null) return null
-    const time = new Date(d[0]).getTime()
-    const offset = time + offsetX
-    const newTime = dateToTimestamp(new Date(offset))
-    return [newTime, d[1] as number]
+    return [shiftTimeLike(d[0], offsetX), d[1] as number]
   })
 }
 
 function getSeriesKeyFromId(id: string) {
-  // Remove the leading category ("Cycles" / "Green Bands")
-  return id.replace(/^(Cycles|Green Bands|LLC|AC|SBP|Offset)\s+/, '')
+  return id.replace(
+    /^(Cycle Continuation|Cycle Duration Labels|Cycles|Green Bands|LLC|AC|SBP|Offset)\s+/,
+    ''
+  )
 }
 
 const getAllSeries = (chart: ECharts) => {
@@ -65,6 +89,8 @@ const getAllSeries = (chart: ECharts) => {
   if (options === null || !options.series) {
     return {
       base: [],
+      continuation: [],
+      durationLabels: [],
       bands: [],
       llc: [],
       ac: [],
@@ -76,6 +102,12 @@ const getAllSeries = (chart: ECharts) => {
 
   return {
     base: series.filter((s) => s.id?.toString().includes('Cycles')),
+    continuation: series.filter((s) =>
+      s.id?.toString().includes('Cycle Continuation')
+    ),
+    durationLabels: series.filter((s) =>
+      s.id?.toString().includes('Cycle Duration Labels')
+    ),
     bands: series.filter((s) => s.id?.toString().includes('Green Bands')),
     llc: series.filter((s) => s.id?.toString().includes('LLC')),
     ac: series.filter((s) => s.id?.toString().includes('AC')),
@@ -114,6 +146,8 @@ const updateLinkedSeries = (
   chart: any,
   offset: number,
   base: SeriesOption,
+  continuation: SeriesOption[],
+  durationLabels: SeriesOption[],
   bands: SeriesOption[],
   llc: SeriesOption[],
   ac: SeriesOption[],
@@ -123,6 +157,14 @@ const updateLinkedSeries = (
   const key = getSeriesKeyFromId(base.id as string)
 
   const band = bands.find(
+    (s) => typeof s.id === 'string' && getSeriesKeyFromId(s.id) === key
+  )
+
+  const continuationSeries = continuation.find(
+    (s) => typeof s.id === 'string' && getSeriesKeyFromId(s.id) === key
+  )
+
+  const durationLabelSeries = durationLabels.find(
     (s) => typeof s.id === 'string' && getSeriesKeyFromId(s.id) === key
   )
 
@@ -148,6 +190,14 @@ const updateLinkedSeries = (
     {
       series: [
         { id: base.id, data: getData(roundedOffset, base) },
+        continuationSeries && {
+          id: continuationSeries.id,
+          data: getRangeData(roundedOffset, continuationSeries),
+        },
+        durationLabelSeries && {
+          id: durationLabelSeries.id,
+          data: getLabelData(roundedOffset, durationLabelSeries),
+        },
         band && { id: band.id, data: getBandData(roundedOffset, band) },
         llcSeries && {
           id: llcSeries.id,
@@ -184,7 +234,8 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
 
     const zr = chart.getZr()
 
-    const { base, bands, llc, ac, sbp, offset } = getAllSeries(chart)
+    const { base, continuation, durationLabels, bands, llc, ac, sbp, offset } =
+      getAllSeries(chart)
     if (!base.length) return
 
     const onMouseDown = (e: any) => {
@@ -228,6 +279,8 @@ export const useTimeSpaceHandler = (chart: ECharts | null) => {
         chart,
         offsetRef.current,
         baseSeries,
+        continuation,
+        durationLabels,
         bands,
         llc,
         ac,

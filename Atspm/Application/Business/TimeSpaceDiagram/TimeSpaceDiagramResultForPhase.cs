@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public string Direction { get; set; }
         public double DistanceToNextLocation { get; set; }
         public double DistanceToPreviousLocation { get; set; }
-        public double PercentArrivalOnGreen { get; set; }
+        public double? PercentArrivalOnGreen { get; set; }
         public int Order { get; set; }
         public int? CycleLength { get; }
         public TmcForPhaseDto TmcForPhase { get; set; }
@@ -92,5 +92,6 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public ICollection<IndianaEvent> TspEvents { get; set; }
         public List<DetectorEventDto> PriorityAndPreemptionEvents { get; set; }
         public List<SrmEntityTrack> SrmEntityTracks { get; set; } = new();
+        public int? OffsetLengthChangeEvents { get; set; }
     }
 }
