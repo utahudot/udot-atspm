@@ -103,6 +103,7 @@ export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
   calculatedDistanceToNext: number
   calculatedDistanceToPrevious: number
   isIgnoredLocation: boolean
+  offsetLengthChangeEvents?: number | null
 }
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {

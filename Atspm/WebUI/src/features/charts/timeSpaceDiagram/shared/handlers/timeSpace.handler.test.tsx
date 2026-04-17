@@ -134,8 +134,8 @@ function buildOption(): EChartsOption {
       {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
         data: [
-          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 0],
-          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0],
+          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 0, 0, 0],
+          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0, 0, 0],
         ],
       },
     ],
@@ -159,9 +159,51 @@ function buildOptionWithBaseOffset(): EChartsOption {
       {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
         data: [
-          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 7],
-          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0],
+          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 7, 0, 0],
+          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0, 0, 0],
         ],
+      },
+    ],
+  }
+}
+
+function buildOptionWithEquivalentCycleOffset(): EChartsOption {
+  return {
+    grid: {
+      left: 220,
+    },
+    series: [
+      {
+        id: 'Cycles 1 Eastbound',
+        data: [['2026-03-20T00:00:00Z', 10, 0]],
+      },
+      {
+        id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+        data: [['2026-03-20T00:00:00Z', 10, '1', null, 120, 93, 93, 0]],
+      },
+    ],
+  }
+}
+
+function buildOptionWithChartTimespanLimit(): EChartsOption {
+  return {
+    xAxis: [
+      {
+        min: '2026-03-20T00:00:00Z',
+        max: '2026-03-20T00:01:00Z',
+      },
+    ],
+    grid: {
+      left: 220,
+    },
+    series: [
+      {
+        id: 'Cycles 1 Eastbound',
+        data: [['2026-03-20T00:00:00Z', 10, 0]],
+      },
+      {
+        id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+        data: [['2026-03-20T00:00:00Z', 10, '1', null, 150, 0, 0, 0]],
       },
     ],
   }
@@ -260,7 +302,7 @@ function buildOptionWithMissingCycleLength(): EChartsOption {
       },
       {
         id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
-        data: [['2026-03-20T00:00:00Z', 10, '1', null, null, 0]],
+        data: [['2026-03-20T00:00:00Z', 10, '1', null, null, 0, 0]],
       },
     ],
   }
@@ -323,6 +365,18 @@ function getLocationAxisOffsets(chart: MockChart): number[] {
 
   return data.map((datum) =>
     Array.isArray(datum) && typeof datum[5] === 'number' ? datum[5] : 0
+  )
+}
+
+function getLocationAxisUserAdjustments(chart: MockChart): number[] {
+  const series = Array.isArray(chart.option.series) ? chart.option.series : []
+  const locationAxis = series.find(
+    (entry) => entry?.id === TIME_SPACE_LOCATION_AXIS_SERIES_ID
+  )
+  const data = Array.isArray(locationAxis?.data) ? locationAxis.data : []
+
+  return data.map((datum) =>
+    Array.isArray(datum) && typeof datum[7] === 'number' ? datum[7] : 0
   )
 }
 
@@ -444,46 +498,100 @@ describe('useTimeSpaceHandler', () => {
     expect(getLocationAxisOffsets(chart)).toEqual([2, 0])
   })
 
-  it('limits rightward drag to one second less than the cycle length', () => {
+  it('keeps the full rightward drag on the cycle overlays while wrapping the displayed offset', () => {
     const chart = new MockChart(buildOption())
 
     renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
 
     dragGroup(chart, 10, 160000)
 
-    expect(getLocationAxisOffsets(chart)).toEqual([149, 0])
+    expect(getLocationAxisOffsets(chart)).toEqual([10, 0])
     expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:00Z', 149000), 10, 0],
+      [shiftTimestamp('2026-03-20T00:00:00Z', 160000), 10, 0],
     ])
   })
 
-  it('limits leftward drag to one second less than the cycle length', () => {
+  it('keeps the full leftward drag on the cycle overlays while wrapping the displayed offset', () => {
     const chart = new MockChart(buildOption())
 
     renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
 
     dragGroup(chart, 10, -160000)
 
-    expect(getLocationAxisOffsets(chart)).toEqual([-149, 0])
+    expect(getLocationAxisOffsets(chart)).toEqual([-10, 0])
     expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:00Z', -149000), 10, 0],
+      [shiftTimestamp('2026-03-20T00:00:00Z', -160000), 10, 0],
     ])
   })
 
-  it('falls back to a 179 second drag limit when cycle length is not found', () => {
+  it('wraps within a 180 second cycle when the cycle length is not found', () => {
     const chart = new MockChart(buildOptionWithMissingCycleLength())
 
     renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
 
     dragGroup(chart, 10, 200000)
 
-    expect(getLocationAxisOffsets(chart)).toEqual([179])
+    expect(getLocationAxisOffsets(chart)).toEqual([20])
     expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
-      [shiftTimestamp('2026-03-20T00:00:00Z', 179000), 10, 0],
+      [shiftTimestamp('2026-03-20T00:00:00Z', 200000), 10, 0],
     ])
   })
 
-  it('resets a dragged offset to zero when the offset badge is double clicked', () => {
+  it('wraps only the displayed current offset when a drag goes past the cycle length', () => {
+    const chart = new MockChart(buildOption())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 155000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([5, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 155000), 10, 0],
+    ])
+  })
+
+  it('keeps full-cycle drags marked as modified even when the displayed offset matches the base value', () => {
+    const chart = new MockChart(buildOptionWithEquivalentCycleOffset())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 120000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([93])
+    expect(getLocationAxisUserAdjustments(chart)).toEqual([120])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 120000), 10, 0],
+    ])
+
+    dragGroup(chart, 10, -120000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([93])
+    expect(getLocationAxisUserAdjustments(chart)).toEqual([0])
+  })
+
+  it('limits raw dragging to one chart timespan in either direction', () => {
+    const chart = new MockChart(buildOptionWithChartTimespanLimit())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 120000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([60])
+    expect(getLocationAxisUserAdjustments(chart)).toEqual([60])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 60000), 10, 0],
+    ])
+
+    dragGroup(chart, 10, -180000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([-60])
+    expect(getLocationAxisUserAdjustments(chart)).toEqual([-60])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', -60000), 10, 0],
+    ])
+  })
+
+  it('resets a dragged offset back to the base offset when the offset badge is double clicked', () => {
     const chart = new MockChart(buildOption())
 
     renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
@@ -499,7 +607,7 @@ describe('useTimeSpaceHandler', () => {
     ])
   })
 
-  it('resets a non-zero base offset back to zero on double click', () => {
+  it('resets a non-zero current offset back to its base offset on double click', () => {
     const chart = new MockChart(buildOptionWithBaseOffset())
 
     renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))

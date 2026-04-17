@@ -3,6 +3,7 @@ import {
   applyTimeSpaceAppearanceToOption,
   createDefaultTimeSpaceAppearanceSettings,
 } from './timeSpaceAppearance'
+import { TIME_SPACE_CONTINUATION_NODE_NAME } from './transformers/timeSpaceTransformerBase'
 
 type GraphicNode = {
   style?: Record<string, unknown>
@@ -198,5 +199,93 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     expect(cycleGraphic.children[0].style.opacity).toBe(0.55)
     expect(cycleGraphic.children[1].style.fill).toBe('#000')
     expect(cycleGraphic.children[1].style.opacity).toBe(1)
+  })
+
+  it('preserves continuation fills when applying custom series appearance', () => {
+    const appearance = createDefaultTimeSpaceAppearanceSettings()
+    appearance.greenBands.primary.color = '#234567'
+    appearance.greenBands.primary.opacity = 0.4
+    appearance.detection.stopBarPresence.primary.color = '#456789'
+    appearance.detection.stopBarPresence.primary.opacity = 0.7
+
+    const option: EChartsOption = {
+      series: [
+        {
+          name: 'Green Bands EB',
+          type: 'custom',
+          renderItem: jest.fn(() => ({
+            type: 'group',
+            children: [
+              {
+                type: 'polygon',
+                name: TIME_SPACE_CONTINUATION_NODE_NAME,
+                style: {
+                  fill: '#D5DBE3',
+                  opacity: 1,
+                },
+              },
+              {
+                type: 'polygon',
+                style: {
+                  fill: '#4F9BAC',
+                  opacity: 0.3,
+                },
+              },
+            ],
+          })),
+          data: [[0, 0]],
+        },
+        {
+          name: 'Stop Bar Presence EB',
+          type: 'custom',
+          renderItem: jest.fn(() => ({
+            type: 'group',
+            children: [
+              {
+                type: 'polygon',
+                name: TIME_SPACE_CONTINUATION_NODE_NAME,
+                style: {
+                  fill: '#D5DBE3',
+                  opacity: 1,
+                },
+              },
+              {
+                type: 'polygon',
+                style: {
+                  fill: '#56B4E9',
+                  fillOpacity: 1,
+                  opacity: 1,
+                },
+              },
+            ],
+          })),
+          data: [[0, 0]],
+        },
+      ],
+    }
+
+    const directionRoleBySeriesName = new Map([
+      ['Green Bands EB', 'primary' as const],
+      ['Stop Bar Presence EB', 'primary' as const],
+    ])
+
+    const nextOption = applyTimeSpaceAppearanceToOption(
+      option,
+      appearance,
+      directionRoleBySeriesName
+    )
+    const series = nextOption.series as SeriesOption[]
+
+    const greenBandGraphic = (
+      series[0] as SeriesOption & { renderItem: () => GraphicNode }
+    ).renderItem()
+    expect(greenBandGraphic.children?.[0]?.style?.fill).toBe('#D5DBE3')
+    expect(greenBandGraphic.children?.[1]?.style?.fill).toBe('#234567')
+
+    const stopBarGraphic = (
+      series[1] as SeriesOption & { renderItem: () => GraphicNode }
+    ).renderItem()
+    expect(stopBarGraphic.children?.[0]?.style?.fill).toBe('#D5DBE3')
+    expect(stopBarGraphic.children?.[1]?.style?.fill).toBe('#456789')
   })
 })

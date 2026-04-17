@@ -6,6 +6,8 @@ import type {
   RawTimeSpaceHistoricData,
 } from '../shared/types'
 
+let originalCanvasGetContext: typeof HTMLCanvasElement.prototype.getContext
+
 function buildHistoricLocation(
   phaseType: 'Primary' | 'Opposing',
   overrides: Partial<RawTimeSpaceHistoricData> = {}
@@ -70,7 +72,76 @@ function buildHistoricLocation(
   }
 }
 
+function renderStopBarPresenceNode(
+  location: RawTimeSpaceHistoricData,
+  { dataIndex = 0 }: { dataIndex?: number } = {}
+) {
+  const response: RawTimeSpaceDiagramResponse = {
+    type: ToolType.TimeSpaceHistoric,
+    data: [
+      {
+        isSuccess: true,
+        error: null,
+        result: location,
+      },
+      {
+        isSuccess: true,
+        error: null,
+        result: buildHistoricLocation('Opposing', {
+          locationIdentifier: 'secondary-location',
+          stopBarPresenceDetectors: [],
+        }),
+      },
+    ],
+  }
+
+  const result = transformTimeSpaceHistoricData(response)
+  const chart = result.data.chart as EChartsOption
+  const series = (Array.isArray(chart.series) ? chart.series : []).find(
+    (entry) =>
+      String((entry as SeriesOption).id).startsWith(`SBP ${location.locationIdentifier}`)
+  ) as
+    | (SeriesOption & {
+        data?: unknown[]
+        renderItem?: (
+          params: {
+            dataIndex: number
+          },
+          api: {
+            coord: (value: unknown[]) => [number, number]
+            value: (index: number, dataIndex?: number) => unknown
+          }
+        ) => unknown
+      })
+    | undefined
+
+  const dataPoints = Array.isArray(series?.data) ? (series.data as unknown[][]) : []
+
+  return series?.renderItem?.(
+    { dataIndex },
+    {
+      coord: (value) => [
+        typeof value[0] === 'number'
+          ? value[0]
+          : Date.parse(String(value[0] ?? '')),
+        Number(value[1] ?? 0),
+      ],
+      value: (index, renderDataIndex) =>
+        dataPoints[renderDataIndex ?? dataIndex]?.[index],
+    }
+  )
+}
+
 describe('transformTimeSpaceHistoricData detection series interaction', () => {
+  beforeAll(() => {
+    originalCanvasGetContext = HTMLCanvasElement.prototype.getContext
+    HTMLCanvasElement.prototype.getContext = jest.fn(() => null)
+  })
+
+  afterAll(() => {
+    HTMLCanvasElement.prototype.getContext = originalCanvasGetContext
+  })
+
   it('marks detection series as non-interactable', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,
@@ -213,5 +284,29 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(
       series.some((entry) => String(entry.name) === 'TSP Service (118-119)')
     ).toBe(false)
+  })
+
+  it('renders stop-bar-presence continuations in striped grey', () => {
+    const node = renderStopBarPresenceNode(
+      buildHistoricLocation('Primary', {
+        end: '2026-04-07T08:01:00Z',
+        stopBarPresenceDetectors: [
+          {
+            distanceToStopBar: 0,
+            detectorOn: new Date('2026-04-07T08:00:10Z'),
+            detectorOff: new Date('2026-04-07T08:00:20Z'),
+          },
+        ],
+      })
+    ) as {
+      children?: Array<{
+        style?: { fill?: unknown }
+      }>
+    }
+
+    expect(node?.children).toHaveLength(3)
+    expect(node.children?.[0]?.style?.fill).toBe('#D5DBE3')
+    expect(node.children?.[1]?.style?.fill).toBe('darkblue')
+    expect(node.children?.[2]?.style?.fill).toBe('#D5DBE3')
   })
 })

@@ -26,9 +26,13 @@ import {
   generateCycleLabels,
   generateCycles,
   generateGreenEventLines,
+  getChartTimespanMs,
   getTimeSpacePhaseRowDistances,
+  getTimeLikeMs,
   getDistancesLabelOption,
+  getCycleContinuationPatternFill,
   getLocationsLabelOption,
+  TIME_SPACE_CONTINUATION_NODE_NAME,
   TIME_SPACE_MOVEMENT_SERIES_Z,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
@@ -55,7 +59,7 @@ import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
 const opacity = 1
-const MIN_SEGMENT = 2000
+const MIN_SEGMENT = 2200
 const DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
 const Y_AXIS_EDGE_BUFFER_PX = 25
 const Y_AXIS_PADDING =
@@ -849,6 +853,7 @@ function generateStopBarPresenceEventLines(
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
     if (!location.stopBarPresenceDetectors) continue
+    const chartTimespanMs = getChartTimespanMs(location.start, location.end)
     const dataPoints = getStopBarPresenceDataPoints(location, distanceData[i])
     const sideScope = isPrimary ? 'primary' : 'opposing'
 
@@ -874,8 +879,9 @@ function generateStopBarPresenceEventLines(
           : -location.calculatedDistanceToNext
         const displayDistanceToNext = distanceToNext * distanceScale
         const [x1, y1] = [api.value(0), api.value(1)]
-
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
+        const x1Ms = getTimeLikeMs(x1)
+        const x2Ms = getTimeLikeMs(x2)
         const currPointFinalX = getArrivalTime(
           location.calculatedDistanceToNext,
           location.speed,
@@ -886,31 +892,88 @@ function generateStopBarPresenceEventLines(
           location.speed,
           x2 as string
         )
-        const points = [
-          api.coord([x1, y1]),
-          api.coord([x2, y2]),
-          api.coord([nextPointFinalX, (y2 as number) + displayDistanceToNext]),
-          api.coord([currPointFinalX, (y1 as number) + displayDistanceToNext]),
+        const currPointFinalMs = getTimeLikeMs(currPointFinalX)
+        const nextPointFinalMs = getTimeLikeMs(nextPointFinalX)
+
+        if (
+          x1Ms == null ||
+          x2Ms == null ||
+          currPointFinalMs == null ||
+          nextPointFinalMs == null
+        ) {
+          return
+        }
+
+        const buildPoints = (shiftMs = 0) => [
+          api.coord([x1Ms + shiftMs, y1]),
+          api.coord([x2Ms + shiftMs, y2]),
+          api.coord([
+            nextPointFinalMs + shiftMs,
+            (y2 as number) + displayDistanceToNext,
+          ]),
+          api.coord([
+            currPointFinalMs + shiftMs,
+            (y1 as number) + displayDistanceToNext,
+          ]),
         ]
+
+        const children = []
+
+        if (chartTimespanMs != null && chartTimespanMs > 0) {
+          children.push(
+            buildStopBarPresencePolygon(buildPoints(-chartTimespanMs), true, color)
+          )
+        }
+
+        children.push(buildStopBarPresencePolygon(buildPoints(), false, color))
+
+        if (chartTimespanMs != null && chartTimespanMs > 0) {
+          children.push(
+            buildStopBarPresencePolygon(buildPoints(chartTimespanMs), true, color)
+          )
+        }
+
+        if (children.length === 1) {
+          return children[0]
+        }
+
         return {
-          type: 'polygon',
-          transition: ['shape'],
+          type: 'group',
           emphasisDisabled: true,
-          shape: {
-            points: points,
-          },
-          style: {
-            opacity: 1,
-            fill: color,
-            fillOpacity: opacity,
-            lineWidth: 2,
-          },
+          children,
         }
       },
     }
     seriesOptions.push(seriesOption)
   }
   return seriesOptions
+}
+
+function buildStopBarPresencePolygon(
+  points: number[][],
+  isContinuation: boolean,
+  color: string
+): CustomSeriesRenderItemReturn {
+  return {
+    type: 'polygon',
+    ...(isContinuation ? { name: TIME_SPACE_CONTINUATION_NODE_NAME } : null),
+    z2: isContinuation ? 0 : 1,
+    transition: ['shape'],
+    emphasisDisabled: true,
+    shape: {
+      points,
+    },
+    style: isContinuation
+      ? {
+          fill: getCycleContinuationPatternFill(),
+        }
+      : {
+          opacity: 1,
+          fill: color,
+          fillOpacity: opacity,
+          lineWidth: 2,
+        },
+  }
 }
 
 function getStopBarPresenceDataPoints(

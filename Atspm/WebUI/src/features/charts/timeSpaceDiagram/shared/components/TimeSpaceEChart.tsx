@@ -2,6 +2,9 @@ import { ApacheEChartsProps } from '@/features/charts/components/apacheEChart'
 import { useTimeSpaceHandler } from '@/features/charts/timeSpaceDiagram/shared/handlers/timeSpace.handler'
 import {
   CYCLE_LABEL_SERIES_ID_PREFIX,
+  formatSignedOffsetSeconds,
+  getTimeSpaceLocationOffsetBadgeLayout,
+  hasModifiedOffset,
   TIME_SPACE_CYCLE_LABEL_CARD_LAYOUT,
   TIME_SPACE_LOCATION_CARD_LAYOUT,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
@@ -61,11 +64,25 @@ type LocationToggleButton = {
   location: string
 }
 
+type OffsetResetButton = {
+  active: boolean
+  height: number
+  left: number
+  location: string
+  top: number
+  width: number
+}
+
+const OFFSET_RESET_OVERLAY_OFFSET_X = 15
+const OFFSET_RESET_OVERLAY_OFFSET_Y = 15
+
 type LocationAxisDatum = {
+  actualOffset: number | null
   distance: number
   location: string
   offset: number
   time: string | number
+  userAdjustment: number
 }
 
 function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
@@ -1099,7 +1116,10 @@ function formatTopAxisTickLabel(
 
 function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
   const series = Array.isArray(option?.series)
-    ? (option.series as SeriesOption[])
+    ? (option.series as Array<SeriesOption | null | undefined>).filter(
+        (entry): entry is SeriesOption =>
+          Boolean(entry && typeof entry === 'object')
+      )
     : []
 
   const locationSeries = series.find((entry) => entry.name === 'Location axis')
@@ -1121,14 +1141,26 @@ function getLocationAxisData(option?: EChartsOption): LocationAxisDatum[] {
       const distance = Number(value[1])
       const location = String(value[2] ?? '')
       const offset = Number(value[5] ?? 0)
+      const rawActualOffset = value[6]
+      const rawUserAdjustment = value[7]
+      const actualOffset =
+        rawActualOffset == null || rawActualOffset === ''
+          ? null
+          : Number(rawActualOffset)
+      const userAdjustment =
+        rawUserAdjustment == null || rawUserAdjustment === ''
+          ? 0
+          : Number(rawUserAdjustment)
 
       if (!location || !Number.isFinite(distance)) return null
 
       return {
+        actualOffset: Number.isFinite(actualOffset) ? actualOffset : null,
         time: typeof time === 'string' || typeof time === 'number' ? time : '',
         distance,
         location,
         offset: Number.isFinite(offset) ? offset : 0,
+        userAdjustment: Number.isFinite(userAdjustment) ? userAdjustment : 0,
       }
     })
     .filter((item): item is LocationAxisDatum => item !== null)
@@ -1187,6 +1219,50 @@ function buildLocationToggleButtons(
       }
     })
     .filter((item): item is LocationToggleButton => item !== null)
+}
+
+export function buildOffsetResetButtons(
+  chart: ECharts,
+  option?: EChartsOption
+): OffsetResetButton[] {
+  const gridLeft = getGridLeft(chart, option)
+  const locationAxisData = getLocationAxisData(option)
+
+  if (!locationAxisData.length) {
+    return []
+  }
+
+  return locationAxisData
+    .map(({ actualOffset, distance, location, offset, time, userAdjustment }) => {
+      if (!Number.isFinite(offset)) {
+        return null
+      }
+
+      const pixel = getChartPixel(chart, time, distance)
+      if (!pixel) return null
+
+      const [, y] = pixel
+      if (!Number.isFinite(y)) {
+        return null
+      }
+
+      const badgeLayout = getTimeSpaceLocationOffsetBadgeLayout(
+        gridLeft,
+        y,
+        formatSignedOffsetSeconds(offset),
+        false
+      )
+
+      return {
+        active: hasModifiedOffset(offset, actualOffset, userAdjustment),
+        height: badgeLayout.highlightHeight,
+        left: badgeLayout.highlightX,
+        location,
+        top: badgeLayout.highlightY,
+        width: badgeLayout.highlightWidth,
+      }
+    })
+    .filter((item): item is OffsetResetButton => item !== null)
 }
 
 function getChartPixel(
@@ -1287,6 +1363,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const [chart, setChart] = useState<ECharts | null>(null)
   const [locationToggleButtons, setLocationToggleButtons] = useState<
     LocationToggleButton[]
+  >([])
+  const [offsetResetButtons, setOffsetResetButtons] = useState<
+    OffsetResetButton[]
   >([])
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isGuideCollapsed, setIsGuideCollapsed] = useState(false)
@@ -1708,6 +1787,38 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       window.removeEventListener('resize', syncButtons)
     }
   }, [chart, renderedOption, onToggleIgnoredLocation])
+
+  useEffect(() => {
+    if (!chart || !renderedOption) {
+      setOffsetResetButtons([])
+      return
+    }
+
+    let rafId = 0
+
+    const syncButtons = () => {
+      rafId = window.requestAnimationFrame(() => {
+        setOffsetResetButtons(
+          buildOffsetResetButtons(chart, chart.getOption() as EChartsOption)
+        )
+      })
+    }
+
+    syncButtons()
+
+    chart.on('rendered', syncButtons)
+    chart.on('finished', syncButtons)
+    chart.on('restore', syncButtons)
+    window.addEventListener('resize', syncButtons)
+
+    return () => {
+      window.cancelAnimationFrame(rafId)
+      chart.off('rendered', syncButtons)
+      chart.off('finished', syncButtons)
+      chart.off('restore', syncButtons)
+      window.removeEventListener('resize', syncButtons)
+    }
+  }, [chart, renderedOption])
 
   useEffect(() => {
     if (!chart || !renderedOption || !topAxisConfig) {
@@ -2433,6 +2544,89 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
                       </Tooltip>
                     )
                   })}
+                </div>
+              )}
+              {offsetResetButtons.some((button) => button.active) && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    pointerEvents: 'none',
+                    zIndex: 3,
+                  }}
+                >
+                  {offsetResetButtons
+                    .filter((button) => button.active)
+                    .map((button) => (
+                    <Tooltip
+                      key={`offset-reset-${button.location}`}
+                      title="double click to reset"
+                      placement="top"
+                      enterDelay={0}
+                      PopperProps={{
+                        modifiers: [
+                          {
+                            name: 'offset',
+                            options: {
+                              offset: [0, -10],
+                            },
+                          },
+                        ],
+                      }}
+                    >
+                      <Box
+                        component="button"
+                        type="button"
+                        onDoubleClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+
+                          if (!button.active) {
+                            return
+                          }
+
+                          const zr = chart?.getZr() as
+                            | {
+                                handler?: {
+                                  dispatch: (
+                                    eventName: 'dblclick',
+                                    eventArgs?: { zrX: number; zrY: number }
+                                  ) => void
+                                }
+                              }
+                            | undefined
+
+                          zr?.handler?.dispatch('dblclick', {
+                            zrX: button.left + button.width / 2,
+                            zrY: button.top + button.height / 2,
+                          })
+                        }}
+                        role="button"
+                        sx={{
+                          pointerEvents: 'auto',
+                          position: 'absolute',
+                          left: `${
+                            button.left + OFFSET_RESET_OVERLAY_OFFSET_X
+                          }px`,
+                          top: `${
+                            button.top + OFFSET_RESET_OVERLAY_OFFSET_Y
+                          }px`,
+                          width: `${button.width}px`,
+                          height: `${button.height}px`,
+                          display: 'block',
+                          p: 0,
+                          m: 0,
+                          border: 0,
+                          backgroundColor: 'transparent',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'rgba(15, 23, 42, 0.04)',
+                          },
+                        }}
+                        aria-label="double click to reset"
+                      />
+                    </Tooltip>
+                  ))}
                 </div>
               )}
             </div>
