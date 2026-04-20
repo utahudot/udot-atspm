@@ -75,6 +75,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchdogEmailRecipient> recipients,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
+            if (!(options.EmailPmErrors || options.EmailAmErrors || options.EmailRampErrors))
+            {
+                return;
+            }
+
             var mailingAddresses = ToMailingAddresses(recipients);
 
             if (options.EmailPmErrors || options.EmailAmErrors)

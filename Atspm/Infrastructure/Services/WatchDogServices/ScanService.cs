@@ -96,7 +96,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var locations = LocationRepository.GetLatestVersionOfAllLocations(scanDate).ToList();
 
             var regions = regionsRepository.GetList().ToList();
-            var userRegions = userRegionRepository.GetList();
+            var userRegions = userRegionRepository.GetList().ToList();
 
             var areas = areaRepository.GetList().ToList();
             var userAreas = userAreaRepository.GetList().ToList();
@@ -105,7 +105,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var userJurisdictions = userJurisdictionRepository.GetList().ToList();
 
             var recipients = await GetWatchdogEmailRecipientsAsync(
-                userRegions.ToList(),
+                userRegions,
                 userJurisdictions,
                 userAreas);
 
@@ -319,17 +319,18 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<UserArea> userAreas)
         {
             var recipients = new List<WatchdogEmailRecipient>();
+            var roleHasWatchdogClaimCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             foreach (var user in userManager.Users.ToList())
             {
                 var userRoles = await userManager.GetRolesAsync(user);
-                if (!await HasWatchdogClaimAsync(userRoles))
+                if (!await HasWatchdogClaimAsync(userRoles, roleHasWatchdogClaimCache))
                     continue;
 
                 recipients.Add(new WatchdogEmailRecipient
                 {
                     UserId = user.Id,
                     Email = user.Email ?? string.Empty,
-                    DisplayName = user.FullName.Trim(),
+                    DisplayName = user.FullName?.Trim() ?? string.Empty,
                     IsAdmin = userRoles.Any(role => string.Equals(role, AtspmAuthorization.Roles.Admin, StringComparison.OrdinalIgnoreCase)),
                     IsWatchdogSubscriber = userRoles.Any(role => string.Equals(role, AtspmAuthorization.Roles.WatchdogSubscriber, StringComparison.OrdinalIgnoreCase)),
                     RegionIds = userRegions.Where(ur => ur.UserId == user.Id).Select(ur => ur.RegionId).Distinct().ToList(),
@@ -341,18 +342,36 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             return recipients;
         }
 
-        private async Task<bool> HasWatchdogClaimAsync(IEnumerable<string> userRoles)
+        private async Task<bool> HasWatchdogClaimAsync(
+            IEnumerable<string> userRoles,
+            IDictionary<string, bool> roleHasWatchdogClaimCache)
         {
             var claimValue = AtspmAuthorization.Permissions.WatchdogView;
             foreach (var role in userRoles)
             {
+                if (roleHasWatchdogClaimCache.TryGetValue(role, out var hasWatchdogClaim))
+                {
+                    if (hasWatchdogClaim)
+                    {
+                        return true;
+                    }
+
+                    continue;
+                }
+
                 var identityRole = await roleManager.FindByNameAsync(role);
                 if (identityRole is null)
+                {
+                    roleHasWatchdogClaimCache[role] = false;
                     continue;
+                }
 
                 var roleClaims = await roleManager.GetClaimsAsync(identityRole);
-                if (roleClaims.Any(claim =>
-                        string.Equals(claim.Value, claimValue, StringComparison.OrdinalIgnoreCase)))
+                hasWatchdogClaim = roleClaims.Any(claim =>
+                    string.Equals(claim.Value, claimValue, StringComparison.OrdinalIgnoreCase));
+                roleHasWatchdogClaimCache[role] = hasWatchdogClaim;
+
+                if (hasWatchdogClaim)
                 {
                     return true;
                 }
