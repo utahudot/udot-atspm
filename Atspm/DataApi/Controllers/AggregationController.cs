@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 

@@ -68,7 +68,7 @@ builder.Host
         .AddEntityFrameworkStores<IdentityContext>()
         .AddDefaultTokenProviders();
         s.AddEmailServices(h);
-     s.AddScoped<IAgencyService, AgencyService>();
+        s.AddScoped<IAgencyService, AgencyService>();
         s.AddScoped<IAccountService, AccountService>();
         s.AddScoped<ClaimsService, ClaimsService>();
         s.AddScoped<TokenService, TokenService>();

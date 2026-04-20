@@ -19,7 +19,6 @@ using Asp.Versioning;
 using Identity.Business.Claims;
 using Identity.Business.Roles;
 using Identity.Models.Role;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;

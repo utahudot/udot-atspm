@@ -118,7 +118,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 services.Configure<DatabaseConfiguration>(contextName, host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"));
             }
 
-            services.AddDbContext<ConfigContext>((s, db) => {
+            services.AddDbContext<ConfigContext>((s, db) =>
+            {
                 db.DbDefaults<ConfigContext>(host);
                 db.AddInterceptors(s.GetRequiredService<AuditPropertiesInterceptor>());
             });
