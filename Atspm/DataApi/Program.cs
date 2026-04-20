@@ -55,45 +55,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //o.AddJwtAuthorization();
             o.AddAtspmSecurityDefinitions();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             //o.OperationFilter<TimestampFormatHeader>();
             o.OperationFilter<DataTypeEnumOperationFilter>();
             o.DocumentFilter<GenerateAggregationSchemas>();

@@ -15,17 +15,15 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.OData;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.ATSPM.ConfigApi.Mappings;
@@ -74,25 +72,7 @@ builder.Host
             o.IncludeXmlComments(typeof(Program).Assembly);
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.EnableAnnotations();
-
-
-
-
-
-
-
-
-
-            //o.AddJwtAuthorization();
             o.AddAtspmSecurityDefinitions();
-
-
-
-
-
-
-
-
             o.DocumentFilter<GenerateMeasureOptionSchemas>();
         }, v =>
         v.AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
@@ -116,28 +96,9 @@ builder.Host
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
         s.AddPathBaseFilter(h);
-
         s.AddAtspmIdentity(h);
-
-
-
-
-
-
-        s.Configure<GitHubReleaseConfiguration>(options =>
-        {
-            options.UserAgengt = "AtspmAgent";
-            options.RepositoryOwner = "utahudot";
-            options.RepositoryName = "udot-atspm";
-        });
-
-
-
-
-
-
-
         s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();
+        s.Configure<GitHubReleaseConfiguration>(h.Configuration.GetSection(nameof(GitHubReleaseConfiguration)));
 
         s.AddAutoMapper(c =>
         {

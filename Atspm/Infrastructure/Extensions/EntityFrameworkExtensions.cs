@@ -148,37 +148,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             foreach (var entry in AtspmAuthorization.RoleClaimsMap)
             {
-                // 1. Check if role exists
                 var role = await roleManager.FindByNameAsync(entry.Key);
 
                 if (role == null)
                 {
-                    // 2. Create the role object first
                     role = new IdentityRole(entry.Key);
 
-                    // 3. Save it to the DB
                     var result = await roleManager.CreateAsync(role);
 
                     if (result.Succeeded)
                     {
                         logger.LogInformation("Created role: {Role}", entry.Key);
-                        // DO NOT RE-FETCH. The 'role' object is now tracked and has its ID.
                     }
                     else
                     {
                         var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                         logger.LogError("Could not create role {Role}: {Errors}", entry.Key, errors);
-                        continue; // Skip claims if role creation failed
+                        continue;
                     }
                 }
 
-                // 4. Add claims
                 var existingClaims = await roleManager.GetClaimsAsync(role);
                 foreach (var permission in entry.Value)
                 {
                     if (!existingClaims.Any(c => c.Value == permission))
                     {
-                        // This will now work because 'role' is properly tracked
                         await roleManager.AddClaimAsync(role, new Claim(AtspmAuthorization.RoleClaimType, permission));
                         logger.LogDebug("Added permission {Permission} to role {Role}", permission, entry.Key);
                     }

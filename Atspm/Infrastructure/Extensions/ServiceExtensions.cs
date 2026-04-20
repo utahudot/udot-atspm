@@ -37,29 +37,6 @@ using Utah.Udot.NetStandardToolkit.Authentication;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
-    ///// <summary>
-    ///// Specifies database provider and connection string
-    ///// </summary>
-    //public class DatabaseOption
-    //{
-    //    /// <summary>
-    //    /// Provider Type
-    //    /// <list type="bullet">
-    //    /// <item><see cref="SqlServerProvider.ProviderName"/></item>
-    //    /// <item><see cref="PostgreSQLProvider.ProviderName"/></item>
-    //    /// <item><see cref="SqlLiteProvider.ProviderName"/></item>
-    //    /// <item><see cref="MySqlProvider.ProviderName"/></item>
-    //    /// <item><see cref="OracleProvider.ProviderName"/></item>
-    //    /// </list>
-    //    /// </summary>
-    //    public string Provider { get; set; }
-
-    //    /// <summary>
-    //    /// Database connection string for given <see cref="Provider"/>
-    //    /// </summary>
-    //    public string ConnectionString { get; set; }
-    //}
-
     /// <summary>
     /// Extensions for <see cref="Microsoft.Extensions.Hosting"/> environment
     /// </summary>

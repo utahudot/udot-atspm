@@ -77,7 +77,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-            o.AddJwtAuthorization();
+            o.AddAtspmSecurityDefinitions();
 
         });
         s.AddConfiguredCors(builder.Configuration);
