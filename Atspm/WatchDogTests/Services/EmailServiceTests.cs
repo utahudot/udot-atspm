@@ -18,6 +18,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
@@ -167,7 +168,31 @@ namespace Utah.Udot.Atspm.WatchDogTests.Services
             mockUser2.Setup(u => u.Email).Returns("dlowe@avenueconsultants.com");
 
 
-            var users = new List<ApplicationUser> { mockUser1.Object, mockUser2.Object };
+            var recipients = new List<WatchdogEmailRecipient>
+            {
+                new WatchdogEmailRecipient
+                {
+                    UserId = "1",
+                    Email = "derekjlowe@gmail.com",
+                    DisplayName = "Derek Lowe",
+                    IsAdmin = true,
+                    IsWatchdogSubscriber = true,
+                    RegionIds = new List<int> { 1 },
+                    JurisdictionIds = new List<int> { 1 },
+                    AreaIds = new List<int> { 1 }
+                },
+                new WatchdogEmailRecipient
+                {
+                    UserId = "2",
+                    Email = "dlowe@avenueconsultants.com",
+                    DisplayName = "Derek Lowe",
+                    IsAdmin = false,
+                    IsWatchdogSubscriber = true,
+                    RegionIds = new List<int> { 2 },
+                    JurisdictionIds = new List<int> { 2 },
+                    AreaIds = new List<int> { 2 }
+                }
+            };
 
             var Locations = new List<Location> { region1MockLocation.Object };
 
@@ -183,7 +208,7 @@ namespace Utah.Udot.Atspm.WatchDogTests.Services
             var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
 
 
-            await emailService.SendAllEmails(emailOptions, errors, Locations, users, jurisdictions, userJurisdictions.ToList(), areas, userAreas.ToList(), regions, userRegions.ToList(), recordsFromTheDayBefore);
+            await emailService.SendAllEmails(emailOptions, errors, errors, errors, Locations, recipients, jurisdictions, areas, regions, recordsFromTheDayBefore);
 
             Assert.Equal(1, 1);
         }

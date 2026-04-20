@@ -25,7 +25,6 @@ using System.Threading.Tasks;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.NetStandardToolkit.Services;
 using Xunit;
 
@@ -766,9 +765,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 PmScanDate = DateTime.Today
             };
 
-            var users = new List<ApplicationUser>
+            var recipients = new List<WatchdogEmailRecipient>
             {
-                new ApplicationUser { Id = "1", Email = "admin@test.com" }
+                new WatchdogEmailRecipient { UserId = "1", Email = "admin@test.com", IsAdmin = true, IsWatchdogSubscriber = true }
             };
 
             var emailServiceMock = new Mock<IEmailService>();
@@ -781,10 +780,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             await service.SendAllEmails(
                 options,
                 new(), new(), new(),
-                new(), users,
-                new(), new(),
-                new(), new(),
-                new(), new(),
+                new(), recipients,
+                new(),
+                new(),
+                new(),
                 new());
 
             // Assert
@@ -814,10 +813,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 options,
                 new(), new(), new(),      // newErrors, dailyRecurringErrors, recurringErrors
                 new(),                     // Locations
-                new(),                     // Users
-                new(), new(),              // Jurisdictions, UserJurisdictions
-                new(), new(),              // Areas, UserAreas
-                new(), new(),              // Regions, UserRegions
+                new(),                     // Recipients
+                new(),                     // Jurisdictions
+                new(),                     // Areas
+                new(),                     // Regions
                 new()                      // Logs from previous day
             );
 
@@ -841,18 +840,17 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             };
 
             var jurisdiction = new Jurisdiction { Id = 1, Name = "I-15 Ramp" };
-            var user = new ApplicationUser { Id = "1", Email = "ramp@test.com" };
+            var recipient = new WatchdogEmailRecipient { UserId = "1", Email = "ramp@test.com", JurisdictionIds = new List<int> { 1 } };
 
             // Act
             await _watchdogEmailService.SendAllEmails(
                 options,
                 new(), new(), new(), // newErrors, dailyRecurringErrors, recurringErrors
                 new List<Location> { new Location { JurisdictionId = 1 } },
-                new List<ApplicationUser> { user },
+                new List<WatchdogEmailRecipient> { recipient },
                 new List<Jurisdiction> { jurisdiction },
-                new List<UserJurisdiction> { new UserJurisdiction { JurisdictionId = 1, UserId = "1" } },
-                new(), new(), // Areas, UserAreas
-                new(), new(), // Regions, UserRegions
+                new(),
+                new(),
                 new()         // Logs from previous day
             );
 
@@ -1015,9 +1013,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 DefaultEmailAddress = "from@test.com"
             };
 
-            var users = new List<ApplicationUser>
+            var recipients = new List<WatchdogEmailRecipient>
     {
-        new ApplicationUser { Id = "1", Email = "admin@test.com" }
+        new WatchdogEmailRecipient { UserId = "1", Email = "admin@test.com", IsAdmin = true, IsWatchdogSubscriber = true }
     };
 
             // Act
@@ -1025,10 +1023,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 options,
                 new(), new(), new(), // newErrors, dailyRecurringErrors, recurringErrors
                 new(),                // Locations
-                users,                // Users
-                new(), new(),         // Jurisdictions, UserJurisdictions
-                new(), new(),         // Areas, UserAreas
-                new(), new(),         // Regions, UserRegions
+                recipients,           // Recipients
+                new(),                // Jurisdictions
+                new(),                // Areas
+                new(),                // Regions
                 new()                 // Logs from previous day
             );
 
@@ -1060,9 +1058,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 DefaultEmailAddress = "from@test.com"
             };
 
-            var users = new List<ApplicationUser>
+            var recipients = new List<WatchdogEmailRecipient>
             {
-                new ApplicationUser { Id = "1", Email = "admin@test.com" }
+                new WatchdogEmailRecipient { UserId = "1", Email = "admin@test.com", IsAdmin = true, IsWatchdogSubscriber = true }
             };
 
             // Act
@@ -1070,10 +1068,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 options,
                 new(), new(), new(), // newErrors, dailyRecurringErrors, recurringErrors
                 new(),                // Locations
-                users,                // Users
-                new(), new(),         // Jurisdictions, UserJurisdictions
-                new(), new(),         // Areas, UserAreas
-                new(), new(),         // Regions, UserRegions
+                recipients,           // Recipients
+                new(),                // Jurisdictions
+                new(),                // Areas
+                new(),                // Regions
                 new()                 // Logs from previous day
             );
 

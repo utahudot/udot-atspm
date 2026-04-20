@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
@@ -101,9 +102,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var userAreas = userAreaRepository.GetList().ToList();
 
             var jurisdictions = jurisdictionRepository.GetList().ToList(); // only look for ramp in jurisdiction if only .....
-            var userJurisdictions = userJurisdictionRepository.GetList();
+            var userJurisdictions = userJurisdictionRepository.GetList().ToList();
 
-            var users = await GetUsersWithWatchDogClaimAsync();
+            var recipients = await GetWatchdogEmailRecipientsAsync(
+                userRegions.ToList(),
+                userJurisdictions,
+                userAreas);
 
             var errors = new List<WatchDogLogEvent>();
             var existingEvents = watchDogLogEventRepository.GetList();
@@ -213,13 +217,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 finalDaily,
                 finalRecurring,
                 locations,
-                users,
+                recipients,
                 jurisdictions,
-                userJurisdictions.ToList(),
                 areas,
-                userAreas.ToList(),
                 regions,
-                userRegions.ToList(),
                 finalDayBefore);
         }
 
@@ -312,33 +313,52 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
 
 
-        public async Task<List<ApplicationUser>> GetUsersWithWatchDogClaimAsync()
+        public async Task<List<WatchdogEmailRecipient>> GetWatchdogEmailRecipientsAsync(
+            List<UserRegion> userRegions,
+            List<UserJurisdiction> userJurisdictions,
+            List<UserArea> userAreas)
         {
-            // Define the claim type you are looking for
-            const string claimValue = "Watchdog:View";
-
-            var usersWithWatchDogClaim = new List<ApplicationUser>();
-
-            // Get all users
-            var allUsers = userManager.Users.ToList();
-
-            foreach (var user in allUsers)
+            var recipients = new List<WatchdogEmailRecipient>();
+            foreach (var user in userManager.Users.ToList())
             {
                 var userRoles = await userManager.GetRolesAsync(user);
+                if (!await HasWatchdogClaimAsync(userRoles))
+                    continue;
 
-                foreach (var role in userRoles)
+                recipients.Add(new WatchdogEmailRecipient
                 {
-                    var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
+                    UserId = user.Id,
+                    Email = user.Email ?? string.Empty,
+                    DisplayName = user.FullName.Trim(),
+                    IsAdmin = userRoles.Any(role => string.Equals(role, AtspmAuthorization.Roles.Admin, StringComparison.OrdinalIgnoreCase)),
+                    IsWatchdogSubscriber = userRoles.Any(role => string.Equals(role, AtspmAuthorization.Roles.WatchdogSubscriber, StringComparison.OrdinalIgnoreCase)),
+                    RegionIds = userRegions.Where(ur => ur.UserId == user.Id).Select(ur => ur.RegionId).Distinct().ToList(),
+                    JurisdictionIds = userJurisdictions.Where(uj => uj.UserId == user.Id).Select(uj => uj.JurisdictionId).Distinct().ToList(),
+                    AreaIds = userAreas.Where(ua => ua.UserId == user.Id).Select(ua => ua.AreaId).Distinct().ToList()
+                });
+            }
 
-                    if (roleClaims.Any(claim => claim.Value == claimValue))
-                    {
-                        usersWithWatchDogClaim.Add(user);
-                        break; // Once we find the claim in one of the user's roles, no need to check further
-                    }
+            return recipients;
+        }
+
+        private async Task<bool> HasWatchdogClaimAsync(IEnumerable<string> userRoles)
+        {
+            var claimValue = AtspmAuthorization.Permissions.WatchdogView;
+            foreach (var role in userRoles)
+            {
+                var identityRole = await roleManager.FindByNameAsync(role);
+                if (identityRole is null)
+                    continue;
+
+                var roleClaims = await roleManager.GetClaimsAsync(identityRole);
+                if (roleClaims.Any(claim =>
+                        string.Equals(claim.Value, claimValue, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return true;
                 }
             }
 
-            return usersWithWatchDogClaim;
+            return false;
         }
 
 
