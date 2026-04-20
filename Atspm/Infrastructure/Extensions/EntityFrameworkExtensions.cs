@@ -33,39 +33,46 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             var options = services.GetRequiredService<IOptionsSnapshot<DatabaseConfiguration>>();
             var settings = options.Get(typeof(TContext).Name);
+            var contextName = typeof(TContext).Name;
+
+            var logMessage = new MigrationLogMessages(services.GetRequiredService<ILogger<TContext>>(), contextName);
+
+            logMessage.RunMigrationsFlag(contextName, settings.RunMigrations);
 
             if (!settings.RunMigrations)
             {
                 return;
             }
 
-            var logger = services.GetRequiredService<ILogger<TContext>>();
-            var context = services.GetRequiredService<TContext>();
-
             try
             {
-                logger.LogInformation("Ensuring database for {ContextName} exists on {Host}...", typeof(TContext).Name, settings.Host);
-
+                var context = services.GetRequiredService<TContext>();
                 var databaseCreator = context.GetService<IRelationalDatabaseCreator>();
+                var databaseExists = await databaseCreator.ExistsAsync();
 
-                if (!await databaseCreator.ExistsAsync())
+                logMessage.DatabaseExists(contextName, databaseExists);
+
+                if (databaseExists)
                 {
-                    logger.LogInformation("Database for {ContextName} does not exist. Creating...", typeof(TContext).Name);
+                    logMessage.CreateDatabase(contextName);
+
                     await databaseCreator.CreateAsync();
                 }
 
-                logger.LogInformation("Applying migrations for {ContextName}...", typeof(TContext).Name);
+                logMessage.ApplyngMigrations(contextName);
+
                 await context.Database.MigrateAsync();
 
                 if (seedAction != null)
                 {
+                    logMessage.ApplySeeding(contextName);
+
                     await seedAction(services);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                logger.LogError(ex, "An error occurred while migrating {ContextName}.", typeof(TContext).Name);
-                throw;
+                logMessage.ApplyMigrationsException(contextName, e);
             }
         }
 
@@ -76,7 +83,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task SeedAdminUser(this IServiceProvider services)
         {
-            var logger = services.GetRequiredService<ILogger<IdentityContext>>();
+            var logMessages = new UserSeedLogMessages(services.GetRequiredService<ILogger<IdentityContext>>());
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -85,14 +92,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                logger.LogWarning("Admin seeding skipped: Missing ADMIN_EMAIL or ADMIN_PASSWORD environment variables.");
+                logMessages.MissingCredentials();
                 return;
             }
 
             var existingUser = await userManager.FindByEmailAsync(email);
             if (existingUser == null)
             {
-                logger.LogInformation("Admin user {Email} not found. Creating...", email);
+                logMessages.AdminNotFound(email);
 
                 var user = new ApplicationUser { UserName = email, Email = email };
                 var result = await userManager.CreateAsync(user, password);
@@ -103,7 +110,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                     if (!await roleManager.RoleExistsAsync(adminRole))
                     {
-                        logger.LogInformation("Role {Role} not found during user seeding, creating it now.", adminRole);
+                        logMessages.CreatingRole(adminRole);
                         await roleManager.CreateAsync(new IdentityRole(adminRole));
                     }
 
@@ -111,23 +118,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                     if (addToRoleResult.Succeeded)
                     {
-                        logger.LogInformation("Admin user {Email} created and assigned to {Role} successfully.", email, adminRole);
+                        logMessages.SeedingSuccess(email, adminRole);
                     }
                     else
                     {
-                        logger.LogError("User created but failed to assign to role {Role}: {Errors}",
-                            adminRole, string.Join(", ", addToRoleResult.Errors.Select(e => e.Description)));
+                        var errors = string.Join(", ", addToRoleResult.Errors.Select(e => e.Description));
+                        logMessages.RoleAssignmentError(adminRole, errors);
                     }
                 }
                 else
                 {
-                    logger.LogError("Failed to create admin user: {Errors}",
-                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    logMessages.UserCreationError(errors);
                 }
             }
             else
             {
-                logger.LogDebug("Admin user {Email} already exists. Skipping user creation.", email);
+                logMessages.UserAlreadyExists(email);
             }
         }
 
@@ -138,11 +145,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         public static async Task SeedIdentityData(this IServiceProvider services)
         {
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            var logger = services.GetRequiredService<ILogger<IdentityContext>>();
+            var logMessages = new IdentitySeedLogMessages(services.GetRequiredService<ILogger<IdentityContext>>());
 
             if (await roleManager.RoleExistsAsync(AtspmAuthorization.Roles.Admin))
             {
-                logger.LogInformation("Identity roles already exist. Skipping claims seeding.");
+                logMessages.RolesAlreadyExist();
                 return;
             }
 
@@ -153,17 +160,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 if (role == null)
                 {
                     role = new IdentityRole(entry.Key);
-
                     var result = await roleManager.CreateAsync(role);
 
                     if (result.Succeeded)
                     {
-                        logger.LogInformation("Created role: {Role}", entry.Key);
+                        logMessages.RoleCreated(entry.Key);
                     }
                     else
                     {
                         var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                        logger.LogError("Could not create role {Role}: {Errors}", entry.Key, errors);
+                        logMessages.RoleCreationError(entry.Key, errors);
                         continue;
                     }
                 }
@@ -174,7 +180,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     if (!existingClaims.Any(c => c.Value == permission))
                     {
                         await roleManager.AddClaimAsync(role, new Claim(AtspmAuthorization.RoleClaimType, permission));
-                        logger.LogDebug("Added permission {Permission} to role {Role}", permission, entry.Key);
+                        logMessages.PermissionAdded(permission, entry.Key);
                     }
                 }
             }
