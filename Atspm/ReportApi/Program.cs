@@ -44,6 +44,7 @@ using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Business.WaitTime;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Infrastructure.Common;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
@@ -76,7 +77,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-            o.AddJwtAuthorization();
+            o.AddAtspmSecurityDefinitions();
 
         });
         s.AddConfiguredCors(builder.Configuration);
@@ -217,6 +218,10 @@ builder.Host
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<ConfigContext>();
+await app.ApplyMigrations<EventLogContext>();
+await app.ApplyMigrations<AggregationContext>();
 
 #region Middleware Pipeline
 

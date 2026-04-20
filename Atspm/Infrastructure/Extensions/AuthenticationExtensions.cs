@@ -15,21 +15,172 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
+    //public class PluginRegistrationService
+    //{
+    //    private readonly AtspmDbContext _context;
+
+    //    public PluginRegistrationService(AtspmDbContext context)
+    //    {
+    //        _context = context;
+    //    }
+
+    //    public async Task RegisterPluginAsync(IAtspmPlugin plugin)
+    //    {
+    //        var pluginName = plugin.GetType().Name;
+
+    //        // 1. Generate a new API Key for this plugin instance
+    //        string rawKey = ApiKeyGenerator.GenerateKey(); // Your method to make a random string
+    //        string hashedKey = ApiKeyGenerator.HashKey(rawKey);
+
+    //        var apiKey = new ApiKey
+    //        {
+    //            Id = Guid.NewGuid().ToString(),
+    //            OwnerId = $"Plugin:{pluginName}",
+    //            KeyHash = hashedKey,
+    //            CreatedAt = DateTime.UtcNow,
+    //            IsRevoked = false,
+    //            Claims = new List<ApiKeyClaim>()
+    //        };
+
+    //        // 2. THE ASSOCIATION LOGIC:
+    //        // Look at every interface we have mapped in AtspmSecurity
+    //        foreach (var mapping in AtspmSecurity.PluginInterfaceMap)
+    //        {
+    //            var requiredInterface = mapping.Key;
+    //            var grantedPermissions = mapping.Value;
+
+    //            // Does this specific plugin implement the mapped interface?
+    //            if (requiredInterface.IsAssignableFrom(plugin.GetType()))
+    //            {
+    //                // Give the plugin the capability claim (The "Feature" sticker)
+    //                apiKey.Claims.Add(new ApiKeyClaim
+    //                {
+    //                    Type = AtspmSecurity.PluginFeatureClaimType,
+    //                    Value = requiredInterface.Name // e.g., "IHasMigration"
+    //                });
+
+    //                // Give the plugin the standard permission claims (The "Role" stickers)
+    //                foreach (var permission in grantedPermissions)
+    //                {
+    //                    // THIS IS THE CRITICAL LINE:
+    //                    // It associates the plugin with the string your attribute checks!
+    //                    apiKey.Claims.Add(new ApiKeyClaim
+    //                    {
+    //                        Type = AtspmSecurity.RoleClaimType,
+    //                        Value = permission // e.g., "Data:Edit"
+    //                    });
+    //                }
+    //            }
+    //        }
+
+    //        // 3. Save to Database
+    //        _context.ApiKeys.Add(apiKey);
+    //        await _context.SaveChangesAsync();
+
+    //        // 4. Hand the raw key to the plugin so it can use it in headers
+    //        plugin.Initialize(rawKey);
+    //    }
+    //}
+
+
+    /// <summary>
+    /// Custom authentication handler that validates requests using an API key provided in the "X-API-KEY" header.
+    /// </summary>
+    public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    {
+        /// <summary>
+        /// The database context used to access and validate API keys.
+        /// </summary>
+        private readonly IdentityContext _context;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiKeyAuthenticationHandler"/> class.
+        /// </summary>
+        /// <param name="options">The monitor for the authentication scheme options.</param>
+        /// <param name="logger">The logger factory for capturing diagnostic information.</param>
+        /// <param name="encoder">The URL encoder for handling authentication-related strings.</param>
+        /// <param name="context">The <see cref="IdentityContext"/> used for database operations.</param>
+        public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, IdentityContext context) : base(options, logger, encoder)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Performs the core authentication logic by extracting the API key from the request header and verifying it against the database.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="AuthenticateResult"/> indicating success if the key is valid, active, and not expired; 
+        /// otherwise, an appropriate failure result.
+        /// </returns>
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            if (!Request.Headers.TryGetValue("X-API-KEY", out var extractedKey))
+            {
+                return AuthenticateResult.NoResult();
+            }
+
+            string providedKey = extractedKey.ToString();
+            string hashedKey = ApiKeyGenerator.HashKey(providedKey);
+
+            var apiKey = await _context.Set<ApiKey>()
+                .Include(k => k.Claims)
+                .FirstOrDefaultAsync(k => k.KeyHash == hashedKey
+                                       && !k.IsRevoked
+                                       && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
+
+            if (apiKey == null)
+            {
+                return AuthenticateResult.Fail("Invalid, revoked, or expired API Key.");
+            }
+            var claimsList = new List<Claim>();
+
+            if (apiKey.Claims != null)
+            {
+                foreach (var c in apiKey.Claims)
+                {
+                    claimsList.Add(new Claim(c.Type ?? ClaimTypes.Role, c.Value ?? ""));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(apiKey.OwnerId))
+            {
+                claimsList.Add(new Claim(ClaimTypes.NameIdentifier, apiKey.OwnerId));
+            }
+
+            claimsList.Add(new Claim("AuthenticationMethod", "ApiKey"));
+
+            var identity = new ClaimsIdentity(claimsList, Scheme.Name);
+            var principal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+            return AuthenticateResult.Success(ticket);
+        }
+    }
+
     /// <summary>
     /// Helper extensions for <see cref="Microsoft.Extensions.Hosting"/> using <see cref="Microsoft.AspNetCore.Authentication"/> 
     /// </summary>
@@ -85,7 +236,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(host.Configuration["Jwt:Key"]))
                 };
-            });
+            })
+
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
 
             var oidc = host.Configuration.GetSection("Oidc");
             if (oidc.Exists() && !string.IsNullOrEmpty(oidc["Authority"]) &&
@@ -126,26 +279,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                         return Task.CompletedTask;
                     },
-                    //OnTokenResponseReceived = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
-                    //OnUserInformationReceived = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
-                    //OnAuthorizationCodeReceived = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
-                    //OnTokenValidated = context =>
-                    //{
-                    //    var identity = context.Principal.Claims;
-                    //    return Task.CompletedTask;
-                    //},
                 };
             });
             }
@@ -157,99 +290,58 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
 
         /// <summary>
-        /// Add atspm authorization
+        /// Configures the ATSPM authorization system by dynamically generating policies based on defined permissions.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// This method performs the following actions:
+        /// <list type="bullet">
+        /// <item>Uses reflection to iterate through all constant fields in <see cref="AtspmAuthorization.Permissions"/>.</item>
+        /// <item>Generates policy names using the pattern "Can{Action}{Category}" (e.g., "Users:View" becomes "CanViewUsers").</item>
+        /// <item>Includes a global bypass for the <see cref="AtspmAuthorization.Roles.Admin"/> role in every functional policy.</item>
+        /// <item>Registers an "AdminOnly" policy for high-security system tasks.</item>
+        /// <item>Supports both JWT Bearer and ApiKey authentication schemes.</item>
+        /// </list>
+        /// </remarks>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+        /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services)
         {
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CanViewUsers", policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c =>
-                            c.Type == ClaimTypes.Role && c.Value == "User:View" ||
-                            c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanEditUsers", policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c =>
-                            c.Type == ClaimTypes.Role && c.Value == "User:Edit" ||
-                            c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanDeleteUsers", policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c =>
-                            c.Type == ClaimTypes.Role && c.Value == "User:Delete" ||
-                            c.Type == ClaimTypes.Role && c.Value == "Admin")));
+                var schemes = new[] { JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
 
+                var permissions = typeof(AtspmAuthorization.Permissions)
+                    .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                    .Where(f => f.IsLiteral && !f.IsInitOnly)
+                    .Select(f => f.GetRawConstantValue()?.ToString())
+                    .Where(v => v != null)
+                    .ToList();
 
-                options.AddPolicy("CanViewRoles", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "Role:View" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanEditRoles", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "Role:Edit" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanDeleteRoles", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "Role:Delete" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
+                foreach (var permission in permissions!)
+                {
+                    if (permission == AtspmAuthorization.Permissions.Admin) continue;
 
+                    var policyName = AtspmAuthorization.GetPolicyName(permission);
 
-                options.AddPolicy("CanViewLocationConfigurations", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:View" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanEditLocationConfigurations", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Edit" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanDeleteLocationConfigurations", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Delete" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
+                    options.AddPolicy(policyName, policy =>
+                    {
+                        policy.AddAuthenticationSchemes(schemes);
 
+                        policy.RequireAssertion(context =>
+                        {
+                            var hasPermission = context.User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == permission);
+                            var isAdmin = context.User.IsInRole(AtspmAuthorization.Roles.Admin);
 
-                options.AddPolicy("CanViewGeneralConfigurations", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:View" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanEditGeneralConfigurations", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Edit" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanDeleteGeneralConfigurations", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Delete" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
+                            return hasPermission || isAdmin;
+                        });
+                    });
+                }
 
-
-                options.AddPolicy("CanViewData", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "Data:View" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-                options.AddPolicy("CanEditData", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "Data:Edit" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
-
-
-                options.AddPolicy("CanViewWatchDog", policy =>
-                   policy.RequireAssertion(context =>
-                       context.User.HasClaim(c =>
-                           c.Type == ClaimTypes.Role && c.Value == "Watchdog:View" ||
-                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
+                options.AddPolicy(AtspmAuthorization.Roles.Admin, policy =>
+                {
+                    policy.AddAuthenticationSchemes(schemes);
+                    policy.RequireClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
+                });
             });
 
             return services;

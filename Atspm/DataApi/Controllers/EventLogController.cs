@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -29,7 +28,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// for querying raw device log data
     /// </summary>
     [ApiVersion("1.0")]
-    [Authorize(Policy = "CanViewData")]
     public class EventLogController(IEventLogRepository repository, ILocationRepository locations, IDeviceRepository devices, ILogger<EventLogController> log)
         : DataControllerBase<CompressedEventLogBase, EventLogModelBase>(repository, locations, log)
     {
@@ -72,6 +70,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
             [FromRoute] string locationIdentifier,
             [FromRoute] int deviceId,
@@ -129,6 +129,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<CompressedEventLogBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
             [FromRoute] string locationIdentifier,
             [FromRoute] int deviceId,
@@ -186,6 +188,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
@@ -250,6 +254,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<CompressedEventLogBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,

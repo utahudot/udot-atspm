@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
@@ -28,7 +27,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// </summary>
     /// <inheritdoc/>
     [ApiVersion("1.0")]
-    [Authorize(Policy = "CanViewData")]
     public class AggregationController(IAggregationRepository repository, ILocationRepository locations, ILogger<AggregationController> log)
         : DataControllerBase<CompressedAggregationBase, AggregationModelBase>(repository, locations, log)
     {
