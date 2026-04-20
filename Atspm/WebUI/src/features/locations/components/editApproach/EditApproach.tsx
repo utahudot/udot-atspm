@@ -59,7 +59,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const copyApproachInStore = useLocationStore((s) => s.copyApproach)
   const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
   const addDetectorInStore = useLocationStore((s) => s.addDetector)
-  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproach)
+  const updateSavedApproach = useLocationStore((s) => s.updateSavedApproach)
 
   const [open, setOpen] = useState(false)
   const [openHistory, setOpenHistory] = useState(false)
@@ -243,7 +243,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
           }
 
           updateApproachInStore(normalizedSaved)
-          updateSavedApproaches(normalizedSaved)
+          updateSavedApproach(normalizedSaved)
           addNotification({
             title: 'Approach saved successfully',
             type: 'success',
@@ -283,10 +283,10 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findLaneType,
     findDetectionHardware,
     findDetectionType,
-    updateSavedApproaches,
     updateApproachInStore,
     deleteApproachInStore,
     addNotification,
+    updateSavedApproach,
   ])
 
   const confirmDeleteSelected = useCallback(() => {
