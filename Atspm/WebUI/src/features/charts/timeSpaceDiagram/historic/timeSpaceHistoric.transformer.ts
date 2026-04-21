@@ -27,13 +27,16 @@ import {
   generateCycles,
   generateGreenEventLines,
   getChartTimespanMs,
-  getTimeSpacePhaseRowDistances,
-  getTimeLikeMs,
-  getDistancesLabelOption,
   getCycleContinuationPatternFill,
+  getDisplayDistanceScale,
+  getDistancesLabelOption,
   getLocationsLabelOption,
+  getTimeLikeMs,
+  getTimeSpaceChartHeight,
+  getTimeSpacePhaseRowDistances,
   TIME_SPACE_CONTINUATION_NODE_NAME,
   TIME_SPACE_MOVEMENT_SERIES_Z,
+  TIME_SPACE_Y_AXIS_PADDING,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceDiagramResponse,
@@ -59,13 +62,6 @@ import { TSP_CODES } from '../../prioritySummary/priorityDetails.transformer'
 import { PedestrianInterval } from '../../timingAndActuation/types'
 
 const opacity = 1
-const MIN_SEGMENT = 2200
-const DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
-const Y_AXIS_EDGE_BUFFER_PX = 25
-const Y_AXIS_PADDING =
-  Y_AXIS_EDGE_BUFFER_PX * DISPLAY_DISTANCE_UNITS_PER_PIXEL
-const MIN_ROW_HEIGHT_PX = 100
-const DISPLAY_HEIGHT_BASE = 220
 const PASSIVE_DETECTION_SERIES_PROPS = {
   silent: true,
   tooltip: { show: false },
@@ -123,23 +119,6 @@ const PEDESTRIAN_ZIGZAG_STEP_PX = 3
 const PEDESTRIAN_CLEARANCE_DOT_PATTERN = [1, 3]
 const PEDESTRIAN_BOUNDARY_TICK_HALF_HEIGHT = PEDESTRIAN_ZIGZAG_AMPLITUDE
 
-function getDisplayDistanceScale(distanceData: number[]): number {
-  const segments = distanceData.map((value, index) => {
-    if (index === 0) {
-      return 0
-    }
-
-    return value - distanceData[index - 1]
-  })
-
-  const positiveSegments = segments.filter((segment) => segment > 0)
-  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
-
-  return minSegment > 0 && minSegment < MIN_SEGMENT
-    ? MIN_SEGMENT / minSegment
-    : 1
-}
-
 function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const primaryPhaseData = data.filter(
     (location) => location.phaseType === 'Primary'
@@ -196,10 +175,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const locationCenterDistanceData = rawDistanceData.map(
     (distance) => distance * distanceScale
   )
-  const {
-    primaryDistanceData,
-    opposingDistanceData,
-  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
+  const { primaryDistanceData, opposingDistanceData } =
+    getTimeSpacePhaseRowDistances(locationCenterDistanceData)
   const minDisplayDistance = Math.min(
     ...primaryDistanceData,
     ...opposingDistanceData
@@ -212,8 +189,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     show: false,
     data: locationCenterDistanceData,
     axisTick: { show: true },
-    max: maxDisplayDistance + Y_AXIS_PADDING,
-    min: minDisplayDistance - Y_AXIS_PADDING,
+    max: maxDisplayDistance + TIME_SPACE_Y_AXIS_PADDING,
+    min: minDisplayDistance - TIME_SPACE_Y_AXIS_PADDING,
   })
 
   const title = createTitle({
@@ -534,13 +511,11 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   //   )
   // )
 
-  const minHeightFromRows = primaryPhaseData.length * MIN_ROW_HEIGHT_PX
-  const heightFromDistance =
-    Math.ceil(
-      (maxDisplayDistance - minDisplayDistance + Y_AXIS_PADDING * 2) /
-        DISPLAY_DISTANCE_UNITS_PER_PIXEL
-    ) + DISPLAY_HEIGHT_BASE
-  const chartHeight = Math.max(heightFromDistance, minHeightFromRows + DISPLAY_HEIGHT_BASE)
+  const chartHeight = getTimeSpaceChartHeight(
+    minDisplayDistance,
+    maxDisplayDistance,
+    primaryPhaseData.length
+  )
 
   const displayProps = createDisplayProps({
     description: '',
@@ -921,7 +896,11 @@ function generateStopBarPresenceEventLines(
 
         if (chartTimespanMs != null && chartTimespanMs > 0) {
           children.push(
-            buildStopBarPresencePolygon(buildPoints(-chartTimespanMs), true, color)
+            buildStopBarPresencePolygon(
+              buildPoints(-chartTimespanMs),
+              true,
+              color
+            )
           )
         }
 
@@ -929,7 +908,11 @@ function generateStopBarPresenceEventLines(
 
         if (chartTimespanMs != null && chartTimespanMs > 0) {
           children.push(
-            buildStopBarPresencePolygon(buildPoints(chartTimespanMs), true, color)
+            buildStopBarPresencePolygon(
+              buildPoints(chartTimespanMs),
+              true,
+              color
+            )
           )
         }
 
@@ -1153,20 +1136,25 @@ function generateTMCEvent(
   data.forEach((location, i) => {
     if (!location.tmcForPhase) return
 
-    const leftTurnEvents = location.tmcForPhase.leftTurnEvents.flatMap((lEvent) => {
-      const initialX = lEvent.start
-      const finalX = getArrivalTime(
-        location.calculatedDistanceToNext,
-        location.speed,
-        initialX
-      )
+    const leftTurnEvents = location.tmcForPhase.leftTurnEvents.flatMap(
+      (lEvent) => {
+        const initialX = lEvent.start
+        const finalX = getArrivalTime(
+          location.calculatedDistanceToNext,
+          location.speed,
+          initialX
+        )
 
-      return [
-        [initialX, distanceData[i]],
-        [finalX, distanceData[i] + location.calculatedDistanceToNext * distanceScale],
-        null,
-      ]
-    })
+        return [
+          [initialX, distanceData[i]],
+          [
+            finalX,
+            distanceData[i] + location.calculatedDistanceToNext * distanceScale,
+          ],
+          null,
+        ]
+      }
+    )
 
     if (leftTurnEvents.length) {
       seriesOptions.push({
@@ -1496,7 +1484,9 @@ function buildTspRequestAndServiceLineSeries(
               ? startValue
               : Date.parse(String(startValue))
           const endMs =
-            typeof endValue === 'number' ? endValue : Date.parse(String(endValue))
+            typeof endValue === 'number'
+              ? endValue
+              : Date.parse(String(endValue))
           if (
             !Number.isFinite(startMs) ||
             !Number.isFinite(endMs) ||
@@ -1507,7 +1497,8 @@ function buildTspRequestAndServiceLineSeries(
 
           const startPoint = api.coord([startMs, rowY])
           const endPoint = api.coord([endMs, rowY])
-          const centerY = startPoint[1] + directionMultiplier * TSP_REQUEST_OFFSET_PX
+          const centerY =
+            startPoint[1] + directionMultiplier * TSP_REQUEST_OFFSET_PX
 
           return {
             type: 'rect',
@@ -1547,7 +1538,9 @@ function buildTspRequestAndServiceLineSeries(
               ? startValue
               : Date.parse(String(startValue))
           const endMs =
-            typeof endValue === 'number' ? endValue : Date.parse(String(endValue))
+            typeof endValue === 'number'
+              ? endValue
+              : Date.parse(String(endValue))
           if (
             !Number.isFinite(startMs) ||
             !Number.isFinite(endMs) ||
@@ -1558,7 +1551,8 @@ function buildTspRequestAndServiceLineSeries(
 
           const startPoint = api.coord([startMs, rowY])
           const endPoint = api.coord([endMs, rowY])
-          const centerY = startPoint[1] + directionMultiplier * TSP_SERVICE_OFFSET_PX
+          const centerY =
+            startPoint[1] + directionMultiplier * TSP_SERVICE_OFFSET_PX
           const x = Math.min(startPoint[0], endPoint[0])
           const width = Math.max(1, Math.abs(endPoint[0] - startPoint[0]))
           const y = centerY - TSP_SERVICE_BAND_HEIGHT_PX / 2
@@ -1586,4 +1580,3 @@ function buildTspRequestAndServiceLineSeries(
 
   return series
 }
-

@@ -1682,10 +1682,20 @@ export interface TimeSpaceDiagramAverageResult {
   /** @nullable */
   phaseNumberSort?: string | null
   distanceToNextLocation?: number
+  distanceToPreviousLocation?: number
+  order?: number
   /** @nullable */
   cycleAllEvents?: CycleEventsDto[] | null
   /** @nullable */
   greenTimeEvents?: TimeSpaceEventBase[] | null
+}
+
+export interface TimeSpaceDiagramAveragePhaseResult {
+  /** @nullable */
+  error?: string | null
+  /** @nullable */
+  result?: TimeSpaceDiagramAverageResult | null
+  isSuccess?: boolean
 }
 
 export interface TimeSpaceDiagramOptions {

@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react'
-import type { ECharts, EChartsOption } from 'echarts'
 import { dateToTimestamp } from '@/utils/dateTime'
+import { act, renderHook } from '@testing-library/react'
+import type { ECharts, EChartsOption } from 'echarts'
 import {
   formatSignedOffsetSeconds,
   getTimeSpaceLocationOffsetBadgeLayout,
@@ -214,8 +214,10 @@ function buildOptionWithNullSeries(): EChartsOption {
 
   return {
     ...option,
-    series: [null, ...(Array.isArray(option.series) ? option.series : [])] as
-      unknown as EChartsOption['series'],
+    series: [
+      null,
+      ...(Array.isArray(option.series) ? option.series : []),
+    ] as unknown as EChartsOption['series'],
   }
 }
 
@@ -431,6 +433,23 @@ describe('useTimeSpaceHandler', () => {
 
     dragGroup(chart, 10, 2000)
     expect(getLocationAxisOffsets(chart)).toEqual([2, 0])
+  })
+
+  it('does not throw when the chart temporarily returns a null option', () => {
+    const chart = new MockChart(buildOption())
+    const { rerender } = renderHook(
+      ({ syncVersion }) =>
+        useTimeSpaceHandler(chart as unknown as ECharts, syncVersion),
+      {
+        initialProps: {
+          syncVersion: 0,
+        },
+      }
+    )
+
+    chart.replaceOption(null as unknown as EChartsOption)
+
+    expect(() => rerender({ syncVersion: 1 })).not.toThrow()
   })
 
   it('drags the cycle overlays that belong to the selected row', () => {

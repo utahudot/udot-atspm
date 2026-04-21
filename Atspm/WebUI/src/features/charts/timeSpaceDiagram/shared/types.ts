@@ -107,6 +107,7 @@ export interface TimeSpaceBaseData extends RawTimeSpaceBaseData {
 }
 
 export interface RawTimeSpaceAverageData extends TimeSpaceBaseData {
+  order: number
   offset: number
   cycleLength: number | null
   programmedSplit: number

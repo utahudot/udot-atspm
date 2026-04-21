@@ -30,11 +30,13 @@ import {
   generateCycleLabels,
   generateCycles,
   generateGreenEventLines,
+  getDisplayDistanceScale,
   getDistancesLabelOption,
   getLocationsLabelOption,
   getOffsetAndProgramSplitLabel,
+  getTimeSpaceChartHeight,
   getTimeSpacePhaseRowDistances,
-  TIME_SPACE_CYCLE_CENTER_OFFSET,
+  TIME_SPACE_Y_AXIS_PADDING,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceAverageData,
@@ -43,8 +45,8 @@ import {
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
-  SolidLineSeriesSymbol,
   formatChartDateTimeRange,
+  SolidLineSeriesSymbol,
 } from '@/features/charts/utils'
 import { format } from 'date-fns'
 import {
@@ -97,20 +99,20 @@ export default function transformTimeSpaceAverageData(
     result.errors = errorMessages
   }
 
-  return {
-    type: ToolType.TimeSpaceHistoric,
-    data,
-  }
+  return result
 }
 
 function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
-  const primaryPhaseData = data.filter(
-    (location) => location.phaseType === 'Primary'
-  )
+  const byOrder = (a: RawTimeSpaceAverageData, b: RawTimeSpaceAverageData) =>
+    (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
 
-  const opposingPhaseData = data.filter(
-    (location) => location.phaseType === 'Opposing'
-  )
+  const primaryPhaseData = data
+    .filter((location) => location.phaseType === 'Primary')
+    .sort(byOrder)
+
+  const opposingPhaseData = data
+    .filter((location) => location.phaseType === 'Opposing')
+    .sort(byOrder)
   const titleHeader = `Time Space Diagram (50th Percentile),\nPrimary Phase - ${primaryPhaseData[0].approachDescription},\nOpposing Phase - ${opposingPhaseData[0].approachDescription},\nCoordinated Phases - ${data[0].coordinatedPhases}`
   const dateRange = formatChartDateTimeRange(data[0].start, data[0].end)
   const title = createTitle({
@@ -139,15 +141,17 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     opposingPhaseData[0].approachDescription.split(' ')[0]
 
   let initialDistance = 0
-  const locationCenterDistanceData: number[] = []
+  const rawDistanceData: number[] = []
   primaryPhaseData.forEach((location) => {
-    locationCenterDistanceData.push(initialDistance)
+    rawDistanceData.push(initialDistance)
     initialDistance += location.distanceToNextLocation
   })
-  const {
-    primaryDistanceData,
-    opposingDistanceData,
-  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
+  const distanceScale = getDisplayDistanceScale(rawDistanceData)
+  const locationCenterDistanceData = rawDistanceData.map(
+    (distance) => distance * distanceScale
+  )
+  const { primaryDistanceData, opposingDistanceData } =
+    getTimeSpacePhaseRowDistances(locationCenterDistanceData)
   const minDisplayDistance = Math.min(
     ...primaryDistanceData,
     ...opposingDistanceData
@@ -159,15 +163,31 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   const yAxis = createYAxis(false, {
     show: false,
     data: locationCenterDistanceData,
-    min: minDisplayDistance - TIME_SPACE_CYCLE_CENTER_OFFSET,
-    max: maxDisplayDistance + TIME_SPACE_CYCLE_CENTER_OFFSET,
+    min: minDisplayDistance - TIME_SPACE_Y_AXIS_PADDING,
+    max: maxDisplayDistance + TIME_SPACE_Y_AXIS_PADDING,
     axisLabel: {
       show: false,
     },
   })
 
+  const chartHeight = getTimeSpaceChartHeight(
+    minDisplayDistance,
+    maxDisplayDistance,
+    primaryPhaseData.length
+  )
+
+  const grid: GridComponentOption = {
+    top: 200,
+    left: 220,
+    right: 325,
+    bottom: 80,
+    show: true,
+    borderWidth: 1,
+    // borderColor: Color.Black,
+  }
+
   const legends = createLegend({
-    top: 195,
+    top: grid.top,
     data: [
       {
         name: `Cycles ${primaryDirection}`,
@@ -200,20 +220,15 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     ],
   })
 
-  const grid: GridComponentOption = {
-    top: 200,
-    left: 100,
-    right: 325,
-    show: true,
-    borderWidth: 1,
-    // borderColor: Color.Black,
-  }
-
-  const start = new Date(
-    data[0].cycleAllEvents[data[0].cycleAllEvents?.length - 1].start
-  )
-  const end = new Date(data[0].cycleAllEvents[0].start)
-  const timeDiff = (start.getTime() - end.getTime()) / 3600000
+  const cycleEvents = data[0].cycleAllEvents ?? []
+  const startEvent = cycleEvents[cycleEvents.length - 1]
+  const endEvent = cycleEvents[0]
+  const timeDiff =
+    startEvent != null && endEvent != null
+      ? (new Date(startEvent.start).getTime() -
+          new Date(endEvent.start).getTime()) /
+        3600000
+      : 0
 
   let dataZoom: DataZoomComponentOption[]
 
@@ -264,7 +279,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryDistanceData,
       primaryDirection,
       true,
-      1,
+      distanceScale,
       'primary'
     )
   )
@@ -276,7 +291,8 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     getDistancesLabelOption(
       primaryPhaseData,
       locationCenterDistanceData,
-      grid.left as number
+      grid.left as number,
+      distanceScale
     )
   )
   series.push(
@@ -316,7 +332,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       opposingDistanceData,
       opposingDirection,
       false,
-      1,
+      distanceScale,
       'opposing'
     )
   )
@@ -335,7 +351,9 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
 
   const displayProps = createDisplayProps({
     description: '',
-    numberOfLocations: data.length,
+    numberOfLocations: primaryPhaseData.length,
+    height: chartHeight,
+    locations: primaryPhaseData.map((p) => p.locationIdentifier),
   })
 
   const tooltip = createTooltip()

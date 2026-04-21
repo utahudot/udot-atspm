@@ -1,10 +1,10 @@
 import { ToolType } from '@/features/charts/common/types'
 import type { EChartsOption, SeriesOption } from 'echarts'
-import transformTimeSpaceHistoricData from './timeSpaceHistoric.transformer'
 import type {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
 } from '../shared/types'
+import transformTimeSpaceHistoricData from './timeSpaceHistoric.transformer'
 
 let originalCanvasGetContext: typeof HTMLCanvasElement.prototype.getContext
 
@@ -99,7 +99,9 @@ function renderStopBarPresenceNode(
   const chart = result.data.chart as EChartsOption
   const series = (Array.isArray(chart.series) ? chart.series : []).find(
     (entry) =>
-      String((entry as SeriesOption).id).startsWith(`SBP ${location.locationIdentifier}`)
+      String((entry as SeriesOption).id).startsWith(
+        `SBP ${location.locationIdentifier}`
+      )
   ) as
     | (SeriesOption & {
         data?: unknown[]
@@ -115,7 +117,9 @@ function renderStopBarPresenceNode(
       })
     | undefined
 
-  const dataPoints = Array.isArray(series?.data) ? (series.data as unknown[][]) : []
+  const dataPoints = Array.isArray(series?.data)
+    ? (series.data as unknown[][])
+    : []
 
   return series?.renderItem?.(
     { dataIndex },
@@ -305,8 +309,8 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     }
 
     expect(node?.children).toHaveLength(3)
-    expect(node.children?.[0]?.style?.fill).toBe('#D5DBE3')
+    expect(node.children?.[0]?.style?.fill).toBe('#eef1f5')
     expect(node.children?.[1]?.style?.fill).toBe('darkblue')
-    expect(node.children?.[2]?.style?.fill).toBe('#D5DBE3')
+    expect(node.children?.[2]?.style?.fill).toBe('#eef1f5')
   })
 })

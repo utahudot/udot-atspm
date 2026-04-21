@@ -119,6 +119,51 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   },
 ] as const
 
+export const TIME_SPACE_MIN_SEGMENT = 2200
+export const TIME_SPACE_DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
+export const TIME_SPACE_Y_AXIS_EDGE_BUFFER_PX = 25
+export const TIME_SPACE_Y_AXIS_PADDING =
+  TIME_SPACE_Y_AXIS_EDGE_BUFFER_PX * TIME_SPACE_DISPLAY_DISTANCE_UNITS_PER_PIXEL
+export const TIME_SPACE_MIN_ROW_HEIGHT_PX = 100
+export const TIME_SPACE_DISPLAY_HEIGHT_BASE = 220
+
+export function getDisplayDistanceScale(distanceData: number[]): number {
+  const segments = distanceData.map((value, index) => {
+    if (index === 0) {
+      return 0
+    }
+
+    return value - distanceData[index - 1]
+  })
+
+  const positiveSegments = segments.filter((segment) => segment > 0)
+  const minSegment = positiveSegments.length ? Math.min(...positiveSegments) : 0
+
+  return minSegment > 0 && minSegment < TIME_SPACE_MIN_SEGMENT
+    ? TIME_SPACE_MIN_SEGMENT / minSegment
+    : 1
+}
+
+export function getTimeSpaceChartHeight(
+  minDisplayDistance: number,
+  maxDisplayDistance: number,
+  rowCount: number
+): number {
+  const minHeightFromRows = rowCount * TIME_SPACE_MIN_ROW_HEIGHT_PX
+  const heightFromDistance =
+    Math.ceil(
+      (maxDisplayDistance -
+        minDisplayDistance +
+        TIME_SPACE_Y_AXIS_PADDING * 2) /
+        TIME_SPACE_DISPLAY_DISTANCE_UNITS_PER_PIXEL
+    ) + TIME_SPACE_DISPLAY_HEIGHT_BASE
+
+  return Math.max(
+    heightFromDistance,
+    minHeightFromRows + TIME_SPACE_DISPLAY_HEIGHT_BASE
+  )
+}
+
 type OffsetDeltaDirection = 'positive' | 'negative' | 'neutral'
 
 type OffsetDeltaVisuals = {
@@ -646,7 +691,12 @@ function buildCycleContinuationBandGroup(
   centerY: number,
   width: number
 ): CustomSeriesRenderItemReturn {
-  return buildCycleBackgroundBandGroup(x, centerY, width, CYCLE_CONTINUATION_FILL)
+  return buildCycleBackgroundBandGroup(
+    x,
+    centerY,
+    width,
+    CYCLE_CONTINUATION_FILL
+  )
 }
 
 // function renderMissingCycle(
