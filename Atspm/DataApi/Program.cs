@@ -23,6 +23,7 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.Infrastructure.Common;
 
@@ -54,8 +55,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-            o.AddJwtAuthorization();
-
+            o.AddAtspmSecurityDefinitions();
             //o.OperationFilter<TimestampFormatHeader>();
             o.OperationFilter<DataTypeEnumOperationFilter>();
             o.DocumentFilter<GenerateAggregationSchemas>();
@@ -81,6 +81,9 @@ builder.Host
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<EventLogContext>();
+await app.ApplyMigrations<AggregationContext>();
 
 #region Middleware Pipeline
 
@@ -120,6 +123,8 @@ app.MapJsonHealthChecks();
 #endregion
 
 app.Run();
+
+
 
 
 //builder.Services.Configure<RateLimitingOptions>(

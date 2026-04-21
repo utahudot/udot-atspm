@@ -20,7 +20,9 @@ using Identity.Business.Claims;
 using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Enums;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
@@ -38,7 +40,7 @@ namespace Identity.Controllers
 
         // GET: api/claims
         [HttpGet]
-        [Authorize(Policy = "CanViewRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesView)]
         public async Task<IActionResult> GetClaims()
         {
             var descriptions = Enum.GetValues(typeof(ClaimTypes))
@@ -51,7 +53,7 @@ namespace Identity.Controllers
 
         // GET: api/claims/roleName
         [HttpGet("{roleName}")]
-        [Authorize(Policy = "CanViewRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesView)]
         public async Task<IActionResult> GetClaimsForRole(string roleName)
         {
             return Ok(await claimsService.GetAllClaimsForRole(roleName));
@@ -59,7 +61,7 @@ namespace Identity.Controllers
 
         // POST: api/claims/roleName
         [HttpPost("{roleName}")]
-        [Authorize(Policy = "CanEditRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesEdit)]
         public async Task<IActionResult> AddClaimToRole(string roleName, [FromBody] ClaimModel claim)
         {
             if (await claimsService.AddClaimToRole(roleName, claim.Type, claim.Value))
@@ -69,7 +71,7 @@ namespace Identity.Controllers
 
         // POST: api/claims/addClaims/roleName
         [HttpPost("add/{roleName}")]
-        [Authorize(Policy = "CanEditRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesEdit)]
         public async Task<IActionResult> AddClaimsToRole(string roleName, [FromBody] ClaimsModel model)
         {
             try
@@ -84,11 +86,9 @@ namespace Identity.Controllers
             }
         }
 
-
-
         // DELETE: api/claims/roleName
         [HttpDelete("{roleName}")]
-        [Authorize(Policy = "CanEditRoles")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesEdit)]
         public async Task<IActionResult> RemoveClaimFromRole(string roleName, [FromBody] ClaimModel claim)
         {
             if (await claimsService.RemoveClaimFromRole(roleName, claim.Type, claim.Value))

@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.NetStandardToolkit.Services;
 using Xunit;
 

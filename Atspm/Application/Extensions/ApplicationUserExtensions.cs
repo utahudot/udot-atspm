@@ -16,6 +16,7 @@
 #endregion
 
 using System.Net.Mail;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Extensions
 {
