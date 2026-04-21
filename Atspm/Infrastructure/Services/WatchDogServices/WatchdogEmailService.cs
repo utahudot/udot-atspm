@@ -20,7 +20,6 @@ using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
@@ -46,22 +45,24 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
-            List<ApplicationUser> users,
+            List<WatchdogEmailRecipient> recipients,
             List<Jurisdiction> jurisdictions,
-            List<UserJurisdiction> userJurisdictions,
             List<Area> areas,
-            List<UserArea> userAreas,
             List<Region> regions,
-            List<UserRegion> userRegions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            await SendRegionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, users, regions, userRegions, logsFromPreviousDay);
-            await SendJurisdictionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, users, jurisdictions, userJurisdictions, logsFromPreviousDay);
-            await SendAreaEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, users, areas, userAreas, logsFromPreviousDay);
-            var otherUsers = users.Where(u => !userRegions.Any(ur => ur.UserId == u.Id)
-                                              && !userJurisdictions.Any(uj => uj.UserId == u.Id)
-                                              && !userAreas.Any(ua => ua.UserId == u.Id)).ToList();
-            await SendAdminEmail(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, "All Locations", otherUsers, logsFromPreviousDay);
+            await SendRegionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, regions, logsFromPreviousDay);
+            await SendJurisdictionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, jurisdictions, logsFromPreviousDay);
+            await SendAreaEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, areas, logsFromPreviousDay);
+            await SendAdminEmail(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, "All Locations", recipients.Where(r => r.CanReceiveAllLocationsEmail).ToList(), logsFromPreviousDay);
+
+            logger.LogInformation(
+                "Watchdog email recipients resolved. Total watchdog users: {TotalUsers}, admin subscriber users: {AdminSubscriberUsers}, regions: {Regions}, jurisdictions: {Jurisdictions}, areas: {Areas}",
+                recipients.Count,
+                recipients.Count(r => r.CanReceiveAllLocationsEmail),
+                regions.Count,
+                jurisdictions.Count,
+                areas.Count);
         }
 
         private async Task SendAdminEmail(
@@ -71,9 +72,16 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> locations,
             string v,
-            List<ApplicationUser> users,
+            List<WatchdogEmailRecipient> recipients,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
+            if (!(options.EmailPmErrors || options.EmailAmErrors || options.EmailRampErrors))
+            {
+                return;
+            }
+
+            var mailingAddresses = ToMailingAddresses(recipients);
+
             if (options.EmailPmErrors || options.EmailAmErrors)
             {
                 string emailScanDatesString = BuildEmailScanDatesShortString(options);
@@ -81,7 +89,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 var emailBody = await CreateEmailBody(options, newErrors, dailyRecurringErrors, recurringErrors
                     , locations, logsFromPreviousDay);
 
-                await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), subject, emailBody, true);
+                if (mailingAddresses.Any())
+                {
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
+                }
             }
 
             //This will send the ramp email.
@@ -93,7 +104,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     , locations, logsFromPreviousDay, true);
 
 
-                await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), rampsubject, rampEmailBody, true);
+                if (mailingAddresses.Any())
+                {
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, rampsubject, rampEmailBody, true);
+                }
             }
 
         }
@@ -104,17 +118,17 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
-            List<ApplicationUser> users,
+            List<WatchdogEmailRecipient> recipients,
             List<Jurisdiction> jurisdictions,
-            List<UserJurisdiction> userJurisdictions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
             foreach (var jurisdiction in jurisdictions)
             {
-                var userIdsByJurisdiction = userJurisdictions.Where(uj => uj.JurisdictionId == jurisdiction.Id).ToList();
-                if (userIdsByJurisdiction.IsNullOrEmpty())
+                var recipientsByJurisdiction = recipients
+                    .Where(r => r.JurisdictionIds.Contains(jurisdiction.Id))
+                    .ToList();
+                if (recipientsByJurisdiction.IsNullOrEmpty())
                     continue;
-                var usersByJurisdiction = users.Where(u => userIdsByJurisdiction.Any(uj => uj.UserId == u.Id)).ToList();
                 var LocationsByJurisdiction = Locations.Where(s => s.JurisdictionId == jurisdiction.Id).ToList();
 
                 string emailScanDatesString = BuildEmailScanDatesShortString(options);
@@ -123,7 +137,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 {
                     emailScanDatesString = BuildEmailScanDatesShortString(options, true);
                     var subject = $"{jurisdiction.Name} ATSPM Ramp Alerts for {emailScanDatesString}";
-                    if (!userIdsByJurisdiction.IsNullOrEmpty() && !LocationsByJurisdiction.IsNullOrEmpty())
+                    var mailingAddresses = ToMailingAddresses(recipientsByJurisdiction);
+
+                    if (mailingAddresses.Any() && !LocationsByJurisdiction.IsNullOrEmpty())
                     {
                         var emailBody = await CreateEmailBody(
                             options,
@@ -131,23 +147,24 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                             LocationsByJurisdiction,
                             logsFromPreviousDay, true);
 
-                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
+                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
                     }
                 }
                 else if (options.EmailPmErrors || options.EmailAmErrors)
                 {
 
                     var subject = $"{jurisdiction.Name} ATSPM Alerts for {emailScanDatesString}";
-                    if (!userIdsByJurisdiction.IsNullOrEmpty() && !LocationsByJurisdiction.IsNullOrEmpty())
+                    var mailingAddresses = ToMailingAddresses(recipientsByJurisdiction);
+
+                    if (mailingAddresses.Any() && !LocationsByJurisdiction.IsNullOrEmpty())
                     {
                         var emailBody = await CreateEmailBody(
                             options,
                             newErrors, dailyRecurringErrors, recurringErrors,
                             LocationsByJurisdiction,
                             logsFromPreviousDay);
-                        //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
 
-                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
+                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
                     }
                 }
             }
@@ -159,9 +176,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
-            List<ApplicationUser> users,
+            List<WatchdogEmailRecipient> recipients,
             List<Area> areas,
-            List<UserArea> userAreas,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
             if (!(options.EmailPmErrors || options.EmailAmErrors))
@@ -170,14 +186,16 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
             foreach (var area in areas)
             {
-                var userIdsByArea = userAreas.Where(ua => ua.AreaId == area.Id).ToList();
-                if (userIdsByArea.IsNullOrEmpty())
+                var recipientsByArea = recipients
+                    .Where(r => r.AreaIds.Contains(area.Id))
+                    .ToList();
+                if (recipientsByArea.IsNullOrEmpty())
                     continue;
-                var usersByArea = users.Where(u => userIdsByArea.Any(ua => ua.UserId == u.Id)).ToList();
+                var mailingAddresses = ToMailingAddresses(recipientsByArea);
                 var LocationsByArea = Locations.Where(s => s.Areas.Select(a => a.Id).Contains(area.Id)).ToList();
                 string emailScanDatesString = BuildEmailScanDatesShortString(options);
                 var subject = $"{area.Name} ATSPM Alerts for {emailScanDatesString}";
-                if (!userIdsByArea.IsNullOrEmpty() && !LocationsByArea.IsNullOrEmpty())
+                if (mailingAddresses.Any() && !LocationsByArea.IsNullOrEmpty())
                 {
                     var emailBody = await CreateEmailBody(
                         options,
@@ -187,7 +205,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         LocationsByArea,
                         logsFromPreviousDay);
 
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByArea.GetMailingAddresses(), subject, emailBody, true);
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
                 }
             }
         }
@@ -197,10 +215,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
-            List<ApplicationUser> users,
+            List<WatchdogEmailRecipient> recipients,
             List<Region> regions,
-            List<UserRegion> userRegions,
-                List<WatchDogLogEvent> logsFromPreviousDay)
+            List<WatchDogLogEvent> logsFromPreviousDay)
         {
             if (!(options.EmailPmErrors || options.EmailAmErrors))
             {
@@ -208,14 +225,16 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
             foreach (var region in regions)
             {
-                var userIdsByRegion = userRegions.Where(ur => ur.RegionId == region.Id).ToList();
-                if (userIdsByRegion.IsNullOrEmpty())
+                var recipientsByRegion = recipients
+                    .Where(r => r.RegionIds.Contains(region.Id))
+                    .ToList();
+                if (recipientsByRegion.IsNullOrEmpty())
                     continue;
-                var usersByRegion = users.Where(u => userIdsByRegion.Any(ur => ur.UserId == u.Id)).ToList();
+                var mailingAddresses = ToMailingAddresses(recipientsByRegion);
                 var LocationsByRegion = Locations.Where(s => s.RegionId == region.Id).ToList();
                 string emailScanDatesString = BuildEmailScanDatesShortString(options);
                 var subject = $"{region.Description} ATSPM Alerts for {emailScanDatesString}";
-                if (!userIdsByRegion.IsNullOrEmpty() && !LocationsByRegion.IsNullOrEmpty())
+                if (mailingAddresses.Any() && !LocationsByRegion.IsNullOrEmpty())
                 {
                     var emailBody = await CreateEmailBody(
                         options,
@@ -225,9 +244,17 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         LocationsByRegion,
                         logsFromPreviousDay);
 
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByRegion.GetMailingAddresses(), subject, emailBody, true);
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
                 }
             }
+        }
+
+        private static IReadOnlyList<MailAddress> ToMailingAddresses(IEnumerable<WatchdogEmailRecipient> recipients)
+        {
+            return recipients
+                .Where(r => !string.IsNullOrWhiteSpace(r.Email))
+                .Select(r => new MailAddress(r.Email, r.DisplayName))
+                .ToList();
         }
 
         public async Task<string> CreateEmailBody(

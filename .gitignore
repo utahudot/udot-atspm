@@ -92,6 +92,7 @@ secrets.json
 *.log
 logs/
 *.cache
+*.lscache
 *.tmp
 
 # IDE and tooling files
