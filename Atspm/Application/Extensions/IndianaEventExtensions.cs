@@ -402,21 +402,51 @@ namespace Utah.Udot.Atspm.Extensions
         }
 
         /// <summary>
-        /// Returns a list of <see cref="IndianaEvent"/> where, for the specified <paramref name="eventCode"/>,
-        /// only the first occurrence in any sequence of consecutive events with that code is kept.
-        /// Other event codes are included as-is.
+        /// Filters a sequence of events to keep only the first occurrence in any consecutive run of the same EventCode.
         /// </summary>
-        /// <param name="events">The collection of <see cref="IndianaEvent"/> to filter.</param>
-        /// <param name="eventCode">The event code to filter for first-in-sequence occurrences.</param>
-        /// <returns>
-        /// A list of <see cref="IndianaEvent"/> with only the first event of each consecutive sequence
-        /// of the specified event code included.
-        /// </returns>
+        /// <param name="events">The sequence of IndianaEvents to process.</param>
+        /// <returns>An enumerable containing events where no two adjacent items share the same EventCode.</returns>
+        public static IEnumerable<IndianaEvent> KeepFirstSequentialEvent(this IEnumerable<IndianaEvent> events)
+        {
+            var sortedEvents = events.OrderBy(o => o.Timestamp).ToList();
+            return sortedEvents.Where((w, i) => i == 0 || w.EventCode != sortedEvents[i - 1].EventCode);
+        }
+
+        /// <summary>
+        /// Filters a sequence of events to ensure that a specific EventCode does not appear consecutively. 
+        /// Other EventCodes are preserved as they appear in the timeline.
+        /// </summary>
+        /// <param name="events">The sequence of IndianaEvents to process.</param>
+        /// <param name="eventCode">The specific EventCode to monitor for sequential duplicates.</param>
+        /// <returns>An enumerable where the specified EventCode only appears when it represents a state change.</returns>
         public static IEnumerable<IndianaEvent> KeepFirstSequentialEvent(this IEnumerable<IndianaEvent> events, IndianaEnumerations eventCode)
         {
             var sort = events.OrderBy(o => o.Timestamp).ToList();
-
             return sort.Where((w, i) => i == 0 || w.EventCode != (int)eventCode || (w.EventCode == (int)eventCode && w.EventCode != sort[i - 1].EventCode));
+        }
+
+        /// <summary>
+        /// Filters a sequence of events to keep only the first occurrence in any consecutive run of the same EventParam.
+        /// </summary>
+        /// <param name="events">The sequence of IndianaEvents to process.</param>
+        /// <returns>An enumerable containing events where no two adjacent items share the same EventParam.</returns>
+        public static IEnumerable<IndianaEvent> KeepFirstSequentialParam(this IEnumerable<IndianaEvent> events)
+        {
+            var sortedEvents = events.OrderBy(o => o.Timestamp).ToList();
+            return sortedEvents.Where((w, i) => i == 0 || w.EventParam != sortedEvents[i - 1].EventParam);
+        }
+
+        /// <summary>
+        /// Filters a sequence of events to ensure that a specific EventParam value does not appear consecutively.
+        /// Other EventParam values are preserved as they appear in the timeline.
+        /// </summary>
+        /// <param name="events">The sequence of IndianaEvents to process.</param>
+        /// <param name="param">The specific parameter value to monitor for sequential duplicates.</param>
+        /// <returns>An enumerable where the specified parameter only appears when it represents a state change.</returns>
+        public static IEnumerable<IndianaEvent> KeepFirstSequentialParam(this IEnumerable<IndianaEvent> events, short param)
+        {
+            var sort = events.OrderBy(o => o.Timestamp).ToList();
+            return sort.Where((w, i) => i == 0 || w.EventParam != (int)param || (w.EventParam == (int)param && w.EventParam != sort[i - 1].EventParam));
         }
 
         /// <summary>

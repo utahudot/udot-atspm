@@ -27,6 +27,6 @@ namespace Utah.Udot.Atspm.Data.Interfaces
         /// <summary>
         /// Plan number as derrived from the event parameter on <see cref="IndianaEnumerations.CoordPatternChange"/> event
         /// </summary>
-        int PlanNumber { get; set; }
+        short PlanNumber { get; set; }
     }
 }

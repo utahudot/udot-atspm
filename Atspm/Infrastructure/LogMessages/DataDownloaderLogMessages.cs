@@ -77,5 +77,4 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         [LoggerMessage(EventId = 203, EventName = "Api Call Error", Level = LogLevel.Error, Message = "Api Call Has Error: {usageEntry}")]
         public partial void CallError(UsageEntry usageEntry, Exception ex = null);
     }
-
 }

@@ -627,6 +627,6 @@ namespace Utah.Udot.Atspm.Data.Models
         /// Used to associate performance metrics with specific coordination patterns
         /// or time‑of‑day schedules.
         /// </summary>
-        public int PlanNumber { get; set; }
+        public short PlanNumber { get; set; }
     }
 }

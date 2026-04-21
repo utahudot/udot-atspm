@@ -16,9 +16,14 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using Org.BouncyCastle.Ocsp;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.ATSPM.Infrastructure.WorkflowSteps;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Workflows
@@ -63,12 +68,47 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         ///<inheritdoc cref="SaveArchivedEventLogs"/>
         public SaveArchivedEventLogs SaveEventsToRepo { get; private set; }
 
+
+
+
+
+
+
+        public BroadcastBlock<Tuple<Device, EventLogModelBase>[]> BroadcastEvents { get; private set; }
+
+        public FilterPlanDataProcessStep FilterPlanDataProcessStep { get; private set; }
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
             Steps.Add(DownloadDeviceData);
             Steps.Add(DecodeDeviceData);
             Steps.Add(BatchEventLogs);
+
+
+
+
+            
+            Steps.Add(BroadcastEvents);
+            Steps.Add(FilterPlanDataProcessStep);
+
+
+
+
+
+
             Steps.Add(ArchiveDeviceData);
             Steps.Add(SaveEventsToRepo);
         }
@@ -79,6 +119,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             DownloadDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             DecodeDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             BatchEventLogs = new(_batchSize);
+
+
+
+
+
+
             ArchiveDeviceData = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = _cancellationToken });
         }
@@ -92,6 +138,34 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             BatchEventLogs.LinkTo(ArchiveDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
             ArchiveDeviceData.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
             SaveEventsToRepo.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
+
+
+    public class GenerateSignalPlansStep(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], SignalPlanAggregation>(dataflowBlockOptions)
+    {
+        protected override IAsyncEnumerable<SignalPlanAggregation> Process(Tuple<Device, EventLogModelBase>[] input, CancellationToken cancelToken = default)
+        {
+            return input
+                .Select(s => s.Item2)
+                .OfType<IndianaEvent>()
+                .FromSpecification(new IndianaPlanDataSpecification())
+                .GroupBy(e => e.LocationIdentifier)
+                .SelectMany(group =>
+                {
+                    var unique = group.KeepFirstSequentialParam().ToList();
+
+                    if (unique.Count == 0) return Enumerable.Empty<SignalPlanAggregation>();
+
+                    return unique.Zip(unique.Skip(1).Append(null), (current, next) => new SignalPlanAggregation
+                    {
+                        LocationIdentifier = current.LocationIdentifier,
+                        PlanNumber = current.EventParam,
+                        Start = current.Timestamp,
+                        End = next?.Timestamp ?? DateTime.MinValue
+                    });
+                })
+                .ToAsyncEnumerable();
         }
     }
 }
