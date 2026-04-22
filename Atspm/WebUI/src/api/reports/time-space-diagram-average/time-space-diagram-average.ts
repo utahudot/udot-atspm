@@ -5,6 +5,10 @@
  * ATSPM Reporting with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
+import {
+  useMutation,
+  useQuery
+} from 'react-query';
 import type {
   MutationFunction,
   QueryFunction,
@@ -12,171 +16,145 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from 'react-query'
-import { useMutation, useQuery } from 'react-query'
+  UseQueryResult
+} from 'react-query';
 
 import type {
   ProblemDetails,
   TimeSpaceDiagramAverageOptions,
-  TimeSpaceDiagramAveragePhaseResult,
-} from '../report-api.schemas'
+  TimeSpaceDiagramAveragePhaseResult
+} from '../report-api.schemas';
 
-import { reportsRequest } from '../../../lib/axios'
+import { reportsRequest } from '../../../lib/axios';
+
+
+
 
 /**
  * @summary Get example data for testing
  */
-export const getTimeSpaceDiagramAverageTestData = (signal?: AbortSignal) => {
-  return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>({
-    url: `/TimeSpaceDiagramAverage/test`,
-    method: 'GET',
-    signal,
-  })
-}
+export const getTimeSpaceDiagramAverageTestData = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>(
+      {url: `/TimeSpaceDiagramAverage/test`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 export const getGetTimeSpaceDiagramAverageTestDataQueryKey = () => {
-  return [`/TimeSpaceDiagramAverage/test`] as const
+    return [`/TimeSpaceDiagramAverage/test`] as const;
+    }
+
+    
+export const getGetTimeSpaceDiagramAverageTestDataQueryOptions = <TData = Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>, TError = ProblemDetails>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTimeSpaceDiagramAverageTestDataQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>> = ({ signal }) => getTimeSpaceDiagramAverageTestData(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export const getGetTimeSpaceDiagramAverageTestDataQueryOptions = <
-  TData = Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>,
-  TError = ProblemDetails,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>,
-    TError,
-    TData
-  >
-}) => {
-  const { query: queryOptions } = options ?? {}
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGetTimeSpaceDiagramAverageTestDataQueryKey()
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>
-  > = ({ signal }) => getTimeSpaceDiagramAverageTestData(signal)
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey }
-}
-
-export type GetTimeSpaceDiagramAverageTestDataQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>
->
+export type GetTimeSpaceDiagramAverageTestDataQueryResult = NonNullable<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>>
 export type GetTimeSpaceDiagramAverageTestDataQueryError = ProblemDetails
+
 
 /**
  * @summary Get example data for testing
  */
 
-export function useGetTimeSpaceDiagramAverageTestData<
-  TData = Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>,
-  TError = ProblemDetails,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>,
-    TError,
-    TData
-  >
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions =
-    getGetTimeSpaceDiagramAverageTestDataQueryOptions(options)
+export function useGetTimeSpaceDiagramAverageTestData<TData = Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>, TError = ProblemDetails>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey
-  }
+  const queryOptions = getGetTimeSpaceDiagramAverageTestDataQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey
+  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
-  return query
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
 }
+
+
 
 /**
  * @summary Get report data
  */
 export const getTimeSpaceDiagramAverageReportData = (
-  timeSpaceDiagramAverageOptions: TimeSpaceDiagramAverageOptions,
-  signal?: AbortSignal
+    timeSpaceDiagramAverageOptions: TimeSpaceDiagramAverageOptions,
+ signal?: AbortSignal
 ) => {
-  return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>({
-    url: `/TimeSpaceDiagramAverage/getReportData`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: timeSpaceDiagramAverageOptions,
-    signal,
-  })
-}
+      
+      
+      return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>(
+      {url: `/TimeSpaceDiagramAverage/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramAverageOptions, signal
+    },
+      );
+    }
+  
 
-export const getGetTimeSpaceDiagramAverageReportDataMutationOptions = <
-  TError = ProblemDetails,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>,
-    TError,
-    { data: TimeSpaceDiagramAverageOptions },
-    TContext
-  >
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>,
-  TError,
-  { data: TimeSpaceDiagramAverageOptions },
-  TContext
-> => {
-  const mutationKey = ['getTimeSpaceDiagramAverageReportData']
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } }
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>,
-    { data: TimeSpaceDiagramAverageOptions }
-  > = (props) => {
-    const { data } = props ?? {}
+export const getGetTimeSpaceDiagramAverageReportDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>, TError,{data: TimeSpaceDiagramAverageOptions}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>, TError,{data: TimeSpaceDiagramAverageOptions}, TContext> => {
 
-    return getTimeSpaceDiagramAverageReportData(data)
-  }
+const mutationKey = ['getTimeSpaceDiagramAverageReportData'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions }
-}
+      
 
-export type GetTimeSpaceDiagramAverageReportDataMutationResult = NonNullable<
-  Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>
->
-export type GetTimeSpaceDiagramAverageReportDataMutationBody =
-  TimeSpaceDiagramAverageOptions
-export type GetTimeSpaceDiagramAverageReportDataMutationError = ProblemDetails
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>, {data: TimeSpaceDiagramAverageOptions}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getTimeSpaceDiagramAverageReportData(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetTimeSpaceDiagramAverageReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>>
+    export type GetTimeSpaceDiagramAverageReportDataMutationBody = TimeSpaceDiagramAverageOptions
+    export type GetTimeSpaceDiagramAverageReportDataMutationError = ProblemDetails
+
+    /**
  * @summary Get report data
  */
-export const useGetTimeSpaceDiagramAverageReportData = <
-  TError = ProblemDetails,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>,
-    TError,
-    { data: TimeSpaceDiagramAverageOptions },
-    TContext
-  >
-}): UseMutationResult<
-  Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>,
-  TError,
-  { data: TimeSpaceDiagramAverageOptions },
-  TContext
-> => {
-  const mutationOptions =
-    getGetTimeSpaceDiagramAverageReportDataMutationOptions(options)
+export const useGetTimeSpaceDiagramAverageReportData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>, TError,{data: TimeSpaceDiagramAverageOptions}, TContext>, }
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getTimeSpaceDiagramAverageReportData>>,
+        TError,
+        {data: TimeSpaceDiagramAverageOptions},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions)
-}
+      const mutationOptions = getGetTimeSpaceDiagramAverageReportDataMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    

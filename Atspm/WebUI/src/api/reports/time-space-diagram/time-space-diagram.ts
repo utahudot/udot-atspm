@@ -22,7 +22,9 @@ import type {
 import type {
   ProblemDetails,
   TimeSpaceDiagramOptions,
-  TimeSpaceDiagramResultForPhase
+  TimeSpaceDiagramPhaseResult,
+  TimeSpaceDiagramSrmOptions,
+  TimeSpaceDiagramSrmPhaseOverlay
 } from '../report-api.schemas';
 
 import { reportsRequest } from '../../../lib/axios';
@@ -30,7 +32,65 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-/**
+export const getTimeSpaceDiagramSrmData = (
+    timeSpaceDiagramSrmOptions: TimeSpaceDiagramSrmOptions,
+ signal?: AbortSignal
+) => {
+      
+      
+      return reportsRequest<TimeSpaceDiagramSrmPhaseOverlay[]>(
+      {url: `/TimeSpaceDiagram/getSrmData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramSrmOptions, signal
+    },
+      );
+    }
+  
+
+
+export const getGetTimeSpaceDiagramSrmDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramSrmData>>, TError,{data: TimeSpaceDiagramSrmOptions}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramSrmData>>, TError,{data: TimeSpaceDiagramSrmOptions}, TContext> => {
+
+const mutationKey = ['getTimeSpaceDiagramSrmData'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramSrmData>>, {data: TimeSpaceDiagramSrmOptions}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getTimeSpaceDiagramSrmData(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetTimeSpaceDiagramSrmDataMutationResult = NonNullable<Awaited<ReturnType<typeof getTimeSpaceDiagramSrmData>>>
+    export type GetTimeSpaceDiagramSrmDataMutationBody = TimeSpaceDiagramSrmOptions
+    export type GetTimeSpaceDiagramSrmDataMutationError = ProblemDetails
+
+    export const useGetTimeSpaceDiagramSrmData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getTimeSpaceDiagramSrmData>>, TError,{data: TimeSpaceDiagramSrmOptions}, TContext>, }
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getTimeSpaceDiagramSrmData>>,
+        TError,
+        {data: TimeSpaceDiagramSrmOptions},
+        TContext
+      > => {
+
+      const mutationOptions = getGetTimeSpaceDiagramSrmDataMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    /**
  * @summary Get example data for testing
  */
 export const getTimeSpaceDiagramTestData = (
@@ -39,7 +99,7 @@ export const getTimeSpaceDiagramTestData = (
 ) => {
       
       
-      return reportsRequest<TimeSpaceDiagramResultForPhase[]>(
+      return reportsRequest<TimeSpaceDiagramPhaseResult[]>(
       {url: `/TimeSpaceDiagram/test`, method: 'GET', signal
     },
       );
@@ -102,7 +162,7 @@ export const getTimeSpaceDiagramReportData = (
 ) => {
       
       
-      return reportsRequest<TimeSpaceDiagramResultForPhase[]>(
+      return reportsRequest<TimeSpaceDiagramPhaseResult[]>(
       {url: `/TimeSpaceDiagram/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: timeSpaceDiagramOptions, signal
