@@ -17,15 +17,39 @@
 
 namespace Identity.Business.Users
 {
+    public class UserAreaDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class UserJurisdictionDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class UserRegionDTO
+    {
+        public int Id { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+
     public class UserDTO
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Agency { get; set; }
-        public string Email { get; set; }
-        public string UserName { get; set; }
-        public string UserId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Agency { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         public string FullName { get { return $"{FirstName} {LastName}"; } }
-        public ICollection<string> Roles { get; set; }
+        public ICollection<string> Roles { get; set; } = [];
+        public ICollection<UserJurisdictionDTO> Jurisdictions { get; set; } = [];
+        public ICollection<UserAreaDTO> Areas { get; set; } = [];
+        public ICollection<UserRegionDTO> Regions { get; set; } = [];
+        public ICollection<int> JurisdictionIds { get; set; } = [];
+        public ICollection<int> AreaIds { get; set; } = [];
+        public ICollection<int> RegionIds { get; set; } = [];
     }
 }

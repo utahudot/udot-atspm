@@ -16,6 +16,9 @@
 #endregion
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Identity.Business.Users
@@ -23,10 +26,12 @@ namespace Identity.Business.Users
     public class UsersService
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ConfigContext configContext;
 
-        public UsersService(UserManager<ApplicationUser> userManager)
+        public UsersService(UserManager<ApplicationUser> userManager, ConfigContext configContext)
         {
             this.userManager = userManager;
+            this.configContext = configContext;
         }
 
         public async Task updateUserFields(UserDTO model)
@@ -60,6 +65,96 @@ namespace Identity.Business.Users
             catch (Exception ex)
             {
                 throw new ArgumentException(ex.Message);
+            }
+
+            await SyncUserAreasAsync(user.Id, model.AreaIds);
+            await SyncUserRegionsAsync(user.Id, model.RegionIds);
+            await SyncUserJurisdictionsAsync(user.Id, model.JurisdictionIds);
+
+            await configContext.SaveChangesAsync();
+        }
+
+        private async Task SyncUserAreasAsync(string userId, IEnumerable<int>? selectedIds)
+        {
+            var selectedIdSet = (selectedIds ?? []).ToHashSet();
+            var currentAssignments = await configContext.UserAreas
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            var assignmentsToRemove = currentAssignments
+                .Where(x => !selectedIdSet.Contains(x.AreaId))
+                .ToList();
+
+            if (assignmentsToRemove.Count > 0)
+            {
+                configContext.UserAreas.RemoveRange(assignmentsToRemove);
+            }
+
+            var currentIds = currentAssignments.Select(x => x.AreaId).ToHashSet();
+            var assignmentsToAdd = selectedIdSet
+                .Except(currentIds)
+                .Select(id => new UserArea { UserId = userId, AreaId = id })
+                .ToList();
+
+            if (assignmentsToAdd.Count > 0)
+            {
+                await configContext.UserAreas.AddRangeAsync(assignmentsToAdd);
+            }
+        }
+
+        private async Task SyncUserRegionsAsync(string userId, IEnumerable<int>? selectedIds)
+        {
+            var selectedIdSet = (selectedIds ?? []).ToHashSet();
+            var currentAssignments = await configContext.UserRegions
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            var assignmentsToRemove = currentAssignments
+                .Where(x => !selectedIdSet.Contains(x.RegionId))
+                .ToList();
+
+            if (assignmentsToRemove.Count > 0)
+            {
+                configContext.UserRegions.RemoveRange(assignmentsToRemove);
+            }
+
+            var currentIds = currentAssignments.Select(x => x.RegionId).ToHashSet();
+            var assignmentsToAdd = selectedIdSet
+                .Except(currentIds)
+                .Select(id => new UserRegion { UserId = userId, RegionId = id })
+                .ToList();
+
+            if (assignmentsToAdd.Count > 0)
+            {
+                await configContext.UserRegions.AddRangeAsync(assignmentsToAdd);
+            }
+        }
+
+        private async Task SyncUserJurisdictionsAsync(string userId, IEnumerable<int>? selectedIds)
+        {
+            var selectedIdSet = (selectedIds ?? []).ToHashSet();
+            var currentAssignments = await configContext.UserJurisdictions
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            var assignmentsToRemove = currentAssignments
+                .Where(x => !selectedIdSet.Contains(x.JurisdictionId))
+                .ToList();
+
+            if (assignmentsToRemove.Count > 0)
+            {
+                configContext.UserJurisdictions.RemoveRange(assignmentsToRemove);
+            }
+
+            var currentIds = currentAssignments.Select(x => x.JurisdictionId).ToHashSet();
+            var assignmentsToAdd = selectedIdSet
+                .Except(currentIds)
+                .Select(id => new UserJurisdiction { UserId = userId, JurisdictionId = id })
+                .ToList();
+
+            if (assignmentsToAdd.Count > 0)
+            {
+                await configContext.UserJurisdictions.AddRangeAsync(assignmentsToAdd);
             }
         }
     }

@@ -2,11 +2,13 @@ import AuditInfo from '@/components/AuditInfo'
 import {
   Box,
   Button,
+  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
 } from '@mui/material'
+import { useId } from 'react'
 
 interface ATSPM_DialogProps {
   children: React.ReactNode
@@ -22,6 +24,7 @@ interface ATSPM_DialogProps {
   title?: string
   dialogProps?: object
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false
+  saveButtonProps?: ButtonProps
 }
 
 const ATSPMDialog = ({
@@ -33,7 +36,10 @@ const ATSPMDialog = ({
   title,
   dialogProps,
   maxWidth = 'sm',
+  saveButtonProps,
 }: ATSPM_DialogProps) => {
+  const formId = useId()
+
   return (
     <Dialog
       open={isOpen}
@@ -45,7 +51,7 @@ const ATSPMDialog = ({
       <DialogTitle id={`${title}-dialog-title`} variant="h4">
         {title}
       </DialogTitle>
-      <form onSubmit={onSubmit}>
+      <form id={formId} onSubmit={onSubmit} noValidate>
         <DialogContent sx={{ pt: 0, ...dialogProps }}>
           {children}
           <DialogActions
@@ -60,7 +66,13 @@ const ATSPMDialog = ({
               <Button variant="outlined" onClick={onClose} color="primary">
                 Cancel
               </Button>
-              <Button variant="contained" type="submit" color="primary">
+              <Button
+                variant="contained"
+                type={saveButtonProps?.onClick ? 'button' : 'submit'}
+                form={formId}
+                color="primary"
+                {...saveButtonProps}
+              >
                 Save
               </Button>
             </Box>

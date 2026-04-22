@@ -19,7 +19,9 @@ using Asp.Versioning;
 using Identity.Business.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
@@ -32,11 +34,16 @@ namespace Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly UsersService usersService;
+        private readonly ConfigContext configContext;
 
-        public UsersController(UserManager<ApplicationUser> userManager, UsersService usersService)
+        public UsersController(
+            UserManager<ApplicationUser> userManager,
+            UsersService usersService,
+            ConfigContext configContext)
         {
             this.userManager = userManager;
             this.usersService = usersService;
+            this.configContext = configContext;
         }
 
         [HttpGet]
@@ -44,7 +51,21 @@ namespace Identity.Controllers
         public async Task<IActionResult> GetUsersAsync([FromServices] IServiceScopeFactory serviceScopeFactory)
         {
             var usersDto = new List<UserDTO>();
-            var users = userManager.Users.OrderBy(u => u.UserName);
+            var users = userManager.Users.OrderBy(u => u.UserName).ToList();
+            var userIds = users.Select(u => u.Id).ToList();
+
+            var userAreas = await configContext.UserAreas
+                .Where(x => userIds.Contains(x.UserId))
+                .Include(x => x.Area)
+                .ToListAsync();
+            var userRegions = await configContext.UserRegions
+                .Where(x => userIds.Contains(x.UserId))
+                .Include(x => x.Region)
+                .ToListAsync();
+            var userJurisdictions = await configContext.UserJurisdictions
+                .Where(x => userIds.Contains(x.UserId))
+                .Include(x => x.Jurisdiction)
+                .ToListAsync();
 
             foreach (var user in users)
             {
@@ -60,7 +81,49 @@ namespace Identity.Controllers
                         Agency = user.Agency,
                         Email = user.Email ?? string.Empty,
                         UserName = user.UserName ?? string.Empty,
-                        Roles = await scopedUserManager.GetRolesAsync(user)
+                        Roles = await scopedUserManager.GetRolesAsync(user),
+                        Areas = userAreas
+                            .Where(x => x.UserId == user.Id)
+                            .Select(x => new UserAreaDTO
+                            {
+                                Id = x.AreaId,
+                                Name = x.Area?.Name ?? string.Empty
+                            })
+                            .OrderBy(x => x.Name)
+                            .ToList(),
+                        AreaIds = userAreas
+                            .Where(x => x.UserId == user.Id)
+                            .Select(x => x.AreaId)
+                            .OrderBy(x => x)
+                            .ToList(),
+                        Regions = userRegions
+                            .Where(x => x.UserId == user.Id)
+                            .Select(x => new UserRegionDTO
+                            {
+                                Id = x.RegionId,
+                                Description = x.Region?.Description ?? string.Empty
+                            })
+                            .OrderBy(x => x.Description)
+                            .ToList(),
+                        RegionIds = userRegions
+                            .Where(x => x.UserId == user.Id)
+                            .Select(x => x.RegionId)
+                            .OrderBy(x => x)
+                            .ToList(),
+                        Jurisdictions = userJurisdictions
+                            .Where(x => x.UserId == user.Id)
+                            .Select(x => new UserJurisdictionDTO
+                            {
+                                Id = x.JurisdictionId,
+                                Name = x.Jurisdiction?.Name ?? string.Empty
+                            })
+                            .OrderBy(x => x.Name)
+                            .ToList(),
+                        JurisdictionIds = userJurisdictions
+                            .Where(x => x.UserId == user.Id)
+                            .Select(x => x.JurisdictionId)
+                            .OrderBy(x => x)
+                            .ToList()
                     };
                     usersDto.Add(userDto);
                 }
