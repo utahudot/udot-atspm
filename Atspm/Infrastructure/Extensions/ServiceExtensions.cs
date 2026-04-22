@@ -39,100 +39,92 @@ using Utah.Udot.NetStandardToolkit.Authentication;
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
     /// <summary>
-    /// Specifies database provider and connection string
-    /// </summary>
-    public class DatabaseOption
-    {
-        /// <summary>
-        /// Provider Type
-        /// <list type="bullet">
-        /// <item><see cref="SqlServerProvider.ProviderName"/></item>
-        /// <item><see cref="PostgreSQLProvider.ProviderName"/></item>
-        /// <item><see cref="SqlLiteProvider.ProviderName"/></item>
-        /// <item><see cref="MySqlProvider.ProviderName"/></item>
-        /// <item><see cref="OracleProvider.ProviderName"/></item>
-        /// </list>
-        /// </summary>
-        public string Provider { get; set; }
-
-        /// <summary>
-        /// Database connection string for given <see cref="Provider"/>
-        /// </summary>
-        public string ConnectionString { get; set; }
-    }
-
-    /// <summary>
     /// Extensions for <see cref="Microsoft.Extensions.Hosting"/> environment
     /// </summary>
     public static class ServiceExtensions
     {
-        internal static DbContextOptionsBuilder GetDbProviderInfo<T>(this DbContextOptionsBuilder builder, HostBuilderContext host)
+        /// <summary>
+        /// Configures the <see cref="DbContextOptionsBuilder"/> with the appropriate database provider and connection string 
+        /// based on the application's configuration settings.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="DbContext"/> being configured.</typeparam>
+        /// <param name="builder">The builder used to configure the database context options.</param>
+        /// <param name="host">The host builder context providing access to the configuration system.</param>
+        /// <returns>
+        /// The <see cref="DbContextOptionsBuilder"/> configured with the selected database provider. 
+        /// If the provider type is unrecognized, it falls back to an in-memory database using the connection string as the identifier.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">Thrown if the required configuration section for the context type is missing.</exception>
+        internal static DbContextOptionsBuilder GetDbProviderInfo<T>(this DbContextOptionsBuilder builder, HostBuilderContext host) where T : DbContext
         {
-            var opt = host.Configuration.GetSection($"ConnectionStrings:{typeof(T).Name}").Get<DatabaseOption>();
+            var settings = host.Configuration
+                .GetSection($"DatabaseConfiguration:{typeof(T).Name}")
+                .Get<DatabaseConfiguration>() ?? throw new InvalidOperationException($"Configuration section 'DatabaseConfiguration:{typeof(T).Name}' is missing.");
 
-            switch (opt.Provider)
+            var connectionString = settings.BuildConnectionString();
+
+            return settings.DBType.ToLower() switch
             {
-                case SqlServerProvider.ProviderName:
-                    {
-                        return builder.UseSqlServer(opt.ConnectionString, opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
-                    }
+                "sqlserver" => builder.UseSqlServer(connectionString,
+                    o => o.MigrationsAssembly(SqlServerProvider.Migration)),
 
-                case PostgreSQLProvider.ProviderName:
-                    {
-                        return builder.UseNpgsql(opt.ConnectionString, opt => opt.MigrationsAssembly(PostgreSQLProvider.Migration));
-                    }
+                "postgresql" => builder.UseNpgsql(connectionString,
+                    o => o.MigrationsAssembly(PostgreSQLProvider.Migration)),
 
-                case SqlLiteProvider.ProviderName:
-                    {
-                        return builder.UseSqlite(opt.ConnectionString, opt => opt.MigrationsAssembly(SqlLiteProvider.Migration));
-                    }
+                "mysql" => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                    o => o.MigrationsAssembly(MySqlProvider.Migration)),
 
-                case MySqlProvider.ProviderName:
-                    {
-                        return builder.UseMySql(ServerVersion.AutoDetect(opt.ConnectionString), opt => opt.MigrationsAssembly(SqlLiteProvider.Migration));
-                    }
+                "oracle" => builder.UseOracle(connectionString,
+                    o => o.MigrationsAssembly(OracleProvider.Migration)),
 
-                case OracleProvider.ProviderName:
-                    {
-                        return builder.UseOracle(opt.ConnectionString, opt => opt.MigrationsAssembly(OracleProvider.Migration));
-                    }
+                "sqlite" => builder.UseSqlite(connectionString,
+                    o => o.MigrationsAssembly(SqlLiteProvider.Migration)),
 
-                default:
-                    {
-                        return builder.UseInMemoryDatabase(Guid.NewGuid().ToString());
-                    }
-            }
+                _ => builder.UseInMemoryDatabase(connectionString)
+            };
         }
 
         /// <summary>
-        /// Adds database context based on connection string and assigns database provider
+        /// Configures default settings for a <see cref="DbContext"/>, including provider information, 
+        /// query tracking behavior, and sensitive data logging based on the environment.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="builder"></param>
-        /// <param name="host"></param>
-        /// <param name="tracking"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of <see cref="DbContext"/> being configured.</typeparam>
+        /// <param name="builder">The options builder to configure.</param>
+        /// <param name="host">The host builder context providing configuration and environment information.</param>
+        /// <param name="tracking">The query tracking behavior to apply. Defaults to <see cref="QueryTrackingBehavior.TrackAll"/>.</param>
+        /// <returns>The configured <see cref="DbContextOptionsBuilder"/>.</returns>
         public static DbContextOptionsBuilder DbDefaults<T>(this DbContextOptionsBuilder builder, HostBuilderContext host, QueryTrackingBehavior tracking = QueryTrackingBehavior.TrackAll) where T : DbContext
         {
-            builder.GetDbProviderInfo<T>(host).UseQueryTrackingBehavior(tracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment());
-
-            return builder;
+            return builder.GetDbProviderInfo<T>(host)
+                .UseQueryTrackingBehavior(tracking)
+                .EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment());
         }
 
         /// <summary>
-        /// Adds database contexts based connection strings and assigns database provider
-        /// <seealso href="https://learn.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli"/>
+        /// Registers and configures the ATSPM database contexts, identity services, 
+        /// and health checks within the service collection.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="host"></param>
-        /// <returns></returns>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+        /// <param name="host">The host builder context providing access to configuration sections.</param>
+        /// <returns>The updated <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
             services.AddScoped<AuditPropertiesInterceptor>();
 
-            services.AddDbContext<ConfigContext>((s, db) => db.DbDefaults<ConfigContext>(host).AddInterceptors(s.GetService<AuditPropertiesInterceptor>()));
+            string[] contexts = { nameof(ConfigContext), nameof(AggregationContext), nameof(EventLogContext), nameof(IdentityContext) };
+            foreach (var contextName in contexts)
+            {
+                services.Configure<DatabaseConfiguration>(contextName, host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"));
+            }
+
+            services.AddDbContext<ConfigContext>((s, db) =>
+            {
+                db.DbDefaults<ConfigContext>(host);
+                db.AddInterceptors(s.GetRequiredService<AuditPropertiesInterceptor>());
+            });
+
             services.AddDbContext<AggregationContext>(db => db.DbDefaults<AggregationContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<EventLogContext>(db => db.DbDefaults<EventLogContext>(host, QueryTrackingBehavior.NoTracking));
             services.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(host, QueryTrackingBehavior.NoTracking));

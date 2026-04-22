@@ -28,16 +28,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <summary>
     /// Region controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class RegionController : LocationPolicyControllerBase<Region, int>
+    public class RegionController(IRegionsRepository repository) : LocationPolicyControllerBase<Region, int>(repository)
     {
-        private readonly IRegionsRepository _repository;
-
-        /// <inheritdoc/>
-        public RegionController(IRegionsRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IRegionsRepository _repository = repository;
 
         #region NavigationProperties
 

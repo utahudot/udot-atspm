@@ -17,7 +17,6 @@
 
 using Asp.Versioning;
 using Identity.Business.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +45,7 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "CanViewUsers")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersView)]
         public async Task<IActionResult> GetUsersAsync([FromServices] IServiceScopeFactory serviceScopeFactory)
         {
             var usersDto = new List<UserDTO>();
@@ -134,7 +133,7 @@ namespace Identity.Controllers
 
 
         [HttpDelete("{userId}")]
-        [Authorize(Policy = "CanDeleteUsers")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersDelete)]
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -155,7 +154,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("update")]
-        [Authorize(Policy = "CanEditUsers")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersEdit)]
         public async Task<IActionResult> AssignRole(UserDTO model)
         {
             if (model == null || !ModelState.IsValid)

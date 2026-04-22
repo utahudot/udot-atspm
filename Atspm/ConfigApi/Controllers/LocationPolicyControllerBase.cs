@@ -15,11 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
@@ -45,34 +46,35 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsView)]
         protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
         {
             return base.GetNavigationProperty<TType>(key);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
         }
 
         /// <inheritdoc/>
-        [Authorize(Policy = "CanDeleteLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsDelete)]
         public override Task<IActionResult> Delete(TKey key)
         {
             return base.Delete(key);
