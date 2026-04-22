@@ -26,7 +26,6 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.Infrastructure.Services.EmailServices;
 using Utah.Udot.Atspm.MySqlDatabaseProvider;
 using Utah.Udot.Atspm.OracleDatabaseProvider;
 using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
@@ -272,20 +271,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             //return services.RegisterServicesByInterfaceAndConfiguration<IEmailService, EmailConfiguration>(host);
 
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
-            var registeredAny = false;
             foreach (var t in types)
             {
                 if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
                 {
                     services.Add(new ServiceDescriptor(typeof(IEmailService), t, ServiceLifetime.Transient));
                     services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
-                    registeredAny = true;
                 }
-            }
-
-            if (!registeredAny)
-            {
-                services.AddTransient<IEmailService, NoOpEmailService>();
             }
 
             return services;
