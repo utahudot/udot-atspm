@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Xunit;
 
 namespace Utah.Udot.Atspm.IdentityTests.Controllers

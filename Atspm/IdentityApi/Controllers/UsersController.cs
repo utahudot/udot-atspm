@@ -20,8 +20,10 @@ using Identity.Business.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
