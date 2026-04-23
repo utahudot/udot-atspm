@@ -15,18 +15,28 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Provides utility methods for generating and hashing secure API keys.
+    /// </summary>
     public static class ApiKeyGenerator
     {
+        /// <summary>
+        /// Computes a SHA256 hash of the provided raw API key.
+        /// </summary>
+        /// <param name="rawKey">The plain-text API key to hash.</param>
+        /// <returns>A Base64-encoded string representing the hashed key.</returns>
+        /// <remarks>
+        /// This should be used to store keys in the database so that plain-text 
+        /// keys are never exposed if the data is compromised.
+        /// </remarks>
         public static string HashKey(string rawKey)
         {
             var inputBytes = Encoding.UTF8.GetBytes(rawKey);
@@ -34,6 +44,20 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             return Convert.ToBase64String(hashBytes);
         }
 
+        /// <summary>
+        /// Creates a new cryptographically secure API key and its corresponding hash.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// <list type="bullet">
+        /// <item><description><c>RawKey</c>: The plain-text key to be shown to the user once.</description></item>
+        /// <item><description><c>Hash</c>: The hashed version of the key to be stored in the database.</description></item>
+        /// </list>
+        /// </returns>
+        /// <remarks>
+        /// The raw key is sanitized to remove non-alphanumeric Base64 characters (+, /, =) 
+        /// for better compatibility in headers and URLs.
+        /// </remarks>
         public static (string RawKey, string Hash) CreateKey()
         {
             var bytes = RandomNumberGenerator.GetBytes(32);
@@ -44,59 +68,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
     }
 
-    public static class StuffToMove
-    {
-        public static SwaggerGenOptions AddAtspmSecurityDefinitions(this SwaggerGenOptions swaggerGenOptions)
-        {
-            // 1. Define the JWT Scheme
-            var jwtSecurityScheme = new OpenApiSecurityScheme
-            {
-                BearerFormat = "JWT",
-                Name = "JWT Authentication",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-                Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-                Reference = new OpenApiReference
-                {
-                    Id = JwtBearerDefaults.AuthenticationScheme,
-                    Type = ReferenceType.SecurityScheme
-                }
-            };
-
-            // 2. Define the API Key Scheme
-            var apiKeySecurityScheme = new OpenApiSecurityScheme
-            {
-                Name = "X-API-KEY", // The actual header name the code looks for
-                Description = "Enter your API Key directly (no 'Bearer' prefix needed)",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "ApiKey",
-                Reference = new OpenApiReference
-                {
-                    Id = "ApiKey", // This ID is used for the requirement below
-                    Type = ReferenceType.SecurityScheme
-                }
-            };
-
-            // 3. Register both definitions
-            swaggerGenOptions.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-            swaggerGenOptions.AddSecurityDefinition(apiKeySecurityScheme.Reference.Id, apiKeySecurityScheme);
-
-            // 4. Require BOTH for all operations
-            // Swagger will allow EITHER to satisfy the requirement if the user provides one
-            swaggerGenOptions.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() },
-        { apiKeySecurityScheme, Array.Empty<string>() }
-    });
-
-            return swaggerGenOptions;
-        }
-    }
-
     public static class TempHelpers
     {
+        /// <summary>
+        /// Provides a <see cref="Task"/> that completes when the <see cref="ISupportInitializeNotification"/> 
+        /// service has finished initialization.
+        /// </summary>
+        /// <param name="service">The service to monitor for initialization.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that represents the initialization process. 
+        /// If the service is already initialized, the returned task will be already completed.
+        /// </returns>
+        /// <remarks>
+        /// This method uses <see cref="TaskCompletionSource{TResult}"/> to wrap the 
+        /// <see cref="ISupportInitializeNotification.Initialized"/> event. 
+        /// It ensures that the event handler is properly unsubscribed once the initialization 
+        /// is detected to prevent memory leaks.
+        /// </remarks>
         public static Task WhenInitialized(this ISupportInitializeNotification service)
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -120,5 +108,83 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             return tcs.Task;
         }
+
+        /// <summary>
+        /// Executes multiple isolated instances of a workflow in parallel by chunking the input source into batches.
+        /// </summary>
+        /// <typeparam name="TInput">The type of the input data items to be processed.</typeparam>
+        /// <typeparam name="TOutput">The type of the output data generated by the workflow.</typeparam>
+        /// <param name="factory">A delegate factory used to instantiate a fresh, isolated workflow for each parallel batch.</param>
+        /// <param name="source">An asynchronous stream of input data items.</param>
+        /// <param name="batchSize">The number of items to include in each chunk/batch.</param>
+        /// <param name="parallelInstances">The maximum number of workflow instances to run concurrently.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the completion of all batches across all workflow instances.</returns>
+        /// <remarks>
+        /// This method uses a <see cref="BatchBlock{T}"/> to group items and an <see cref="ActionBlock{TInput}"/> 
+        /// to manage the parallel workflow lifecycle. It includes a polling mechanism to ensure the workflow 
+        /// base class has completed its background initialization before data is sent to the input block.
+        /// </remarks>
+        public static async Task BatchRunAsync<TInput, TOutput>(
+            this Func<WorkflowBase<TInput, TOutput>> factory,
+            IAsyncEnumerable<TInput> source,
+            int batchSize,
+            int parallelInstances,
+            CancellationToken cancellationToken)
+        {
+            var batcher = new BatchBlock<TInput>(batchSize, new GroupingDataflowBlockOptions
+            {
+                BoundedCapacity = batchSize * (parallelInstances + 2),
+                CancellationToken = cancellationToken
+            });
+
+            var manager = new ActionBlock<TInput[]>(async chunk =>
+            {
+                using var workflow = factory();
+
+                #region Remove when base services are fixed
+
+                int attempts = 0;
+                while (workflow.Input == null && attempts < 150)
+                {
+                    await Task.Delay(50, cancellationToken);
+                    attempts++;
+                }
+
+                attempts = 0;
+                while (!workflow.IsInitialized && attempts < 150)
+                {
+                    await Task.Delay(50, cancellationToken);
+                    attempts++;
+                }
+
+                #endregion
+
+                foreach (var item in chunk)
+                {
+                    await workflow.Input.SendAsync(item, cancellationToken);
+                }
+
+                workflow.Input.Complete();
+                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+            },
+            new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = parallelInstances,
+                BoundedCapacity = parallelInstances + 1,
+                CancellationToken = cancellationToken
+            });
+
+            batcher.LinkTo(manager, new DataflowLinkOptions { PropagateCompletion = true });
+
+            await foreach (var item in source.WithCancellation(cancellationToken))
+            {
+                await batcher.SendAsync(item, cancellationToken);
+            }
+
+            batcher.Complete();
+            await manager.Completion;
+        }
     }
+}
 }

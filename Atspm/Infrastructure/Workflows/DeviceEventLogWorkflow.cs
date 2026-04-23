@@ -344,14 +344,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         protected override async IAsyncEnumerable<IEnumerable<SignalTimingPlan>> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var groups = input.GroupBy(g => (g.LocationIdentifier, g.PlanNumber));
+            if (!groups.Any()) yield break;
 
             using var scope = _services.CreateAsyncScope();
             var repo = scope.ServiceProvider.GetService<ISignalTimingPlanRepository>();
 
             foreach (var g in groups)
             {
-                Console.WriteLine($"Merging signal timing plans for Location: {g.Key.LocationIdentifier} | Plan: {g.Key.PlanNumber}");
-
                 var minStart = g.Min(p => p.Start).AddHours(-12);
                 var maxStart = g.Max(p => p.Start).AddHours(12);
 
@@ -380,8 +379,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
             foreach (var g in groups)
             {
-                Console.WriteLine($"Reconciling signal timing plans for Location: {g.Key.LocationIdentifier} | Plan: {g.Key.PlanNumber}");
-
                 var ordered = g.OrderBy(p => p.Start).ToList();
 
                 var finalized = ordered.Zip(ordered.Skip(1).Append(null), (current, next) =>
@@ -408,8 +405,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
             foreach (var i in input)
             {
-                Console.WriteLine($"Saving signal timing plan for Location: {i.LocationIdentifier} | Plan: {i.PlanNumber} | Start: {i.Start} | End: {i.End}");
-
                 var existing = await repo.LookupAsync(i);
 
                 if (existing != null && existing.End != i.End)

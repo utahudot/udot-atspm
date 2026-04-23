@@ -29,6 +29,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -201,6 +203,68 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             //}
 
             return services;
+        }
+
+        /// <summary>
+        /// Configures Swagger to include security definitions and requirements for both 
+        /// JWT Bearer tokens and X-API-KEY headers.
+        /// </summary>
+        /// <param name="swaggerGenOptions">The Swagger generation options to configure.</param>
+        /// <returns>The configured <see cref="SwaggerGenOptions"/> instance for method chaining.</returns>
+        /// <remarks>
+        /// This method registers two security schemes:
+        /// <list type="bullet">
+        /// <item>
+        /// <description><b>JWT Bearer:</b> Uses the standard Authorization header with the Bearer scheme.</description>
+        /// </item>
+        /// <item>
+        /// <description><b>API Key:</b> Uses a custom <c>X-API-KEY</c> header.</description>
+        /// </item>
+        /// </list>
+        /// By default, this adds a global security requirement that prompts the user for these credentials 
+        /// in the Swagger UI for all API operations.
+        /// </remarks>
+        public static SwaggerGenOptions AddAtspmSecurityDefinitions(this SwaggerGenOptions swaggerGenOptions)
+        {
+            var jwtSecurityScheme = new OpenApiSecurityScheme
+            {
+                BearerFormat = "JWT",
+                Name = "JWT Authentication",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
+                Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+                Reference = new OpenApiReference
+                {
+                    Id = JwtBearerDefaults.AuthenticationScheme,
+                    Type = ReferenceType.SecurityScheme
+                }
+            };
+
+            var apiKeySecurityScheme = new OpenApiSecurityScheme
+            {
+                Name = "X-API-KEY",
+                Description = "Enter your API Key directly (no 'Bearer' prefix needed)",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "ApiKey",
+                Reference = new OpenApiReference
+                {
+                    Id = "ApiKey",
+                    Type = ReferenceType.SecurityScheme
+                }
+            };
+
+            swaggerGenOptions.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+            swaggerGenOptions.AddSecurityDefinition(apiKeySecurityScheme.Reference.Id, apiKeySecurityScheme);
+
+            swaggerGenOptions.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                { jwtSecurityScheme, Array.Empty<string>() },
+                { apiKeySecurityScheme, Array.Empty<string>() }
+            });
+
+            return swaggerGenOptions;
         }
 
         /// <summary>
