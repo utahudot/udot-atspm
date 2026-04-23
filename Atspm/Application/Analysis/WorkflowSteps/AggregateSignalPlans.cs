@@ -20,14 +20,14 @@ using Utah.Udot.Atspm.Analysis.Plans;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class AggregateLocationPlans : TransformProcessStepBase<Tuple<Location, int, IEnumerable<Plan>>, IEnumerable<SignalPlanAggregation>>
+    public class AggregateLocationPlans : TransformProcessStepBase<Tuple<Location, int, IEnumerable<Plan>>, IEnumerable<SignalTimingPlan>>
     {
         public AggregateLocationPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<SignalPlanAggregation>> Process(Tuple<Location, int, IEnumerable<Plan>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<SignalTimingPlan>> Process(Tuple<Location, int, IEnumerable<Plan>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item3
-                .Select(s => new SignalPlanAggregation()
+                .Select(s => new SignalTimingPlan()
                 {
                     LocationIdentifier = s.LocationIdentifier,
                     PlanNumber = s.PlanNumber,

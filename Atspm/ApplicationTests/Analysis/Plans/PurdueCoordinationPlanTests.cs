@@ -70,9 +70,9 @@ namespace ApplicationCoreTests.Analysis.Plans
                 {
                      var unique = group.KeepFirstSequentialParam().ToList();
 
-                     if (unique.Count == 0) return Enumerable.Empty<SignalPlanAggregation>();
+                     if (unique.Count == 0) return Enumerable.Empty<SignalTimingPlan>();
 
-                     return unique.Zip(unique.Skip(1).Append(null), (current, next) => new SignalPlanAggregation
+                     return unique.Zip(unique.Skip(1).Append(null), (current, next) => new SignalTimingPlan
                      {
                          LocationIdentifier = current.LocationIdentifier,
                          PlanNumber = current.EventParam,

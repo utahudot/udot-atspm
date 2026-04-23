@@ -32,7 +32,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 l.Select((s, i) => new T()
                 {
                     LocationIdentifier = input.Item1.LocationIdentifier,
-                    PlanNumber = input.Item2,
+                    PlanNumber = (short)input.Item2,
                     Start = l.ElementAt(i).Timestamp,
                     End = i < l.Count() - 1 ? l.ElementAt(i + 1).Timestamp : default
                 }))

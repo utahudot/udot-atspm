@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Utah.Udot.Atspm.Data;
@@ -11,9 +12,11 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    partial class AggregationContextModelSnapshot : ModelSnapshot
+    [Migration("20260423153645_5_3")]
+    partial class _5_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

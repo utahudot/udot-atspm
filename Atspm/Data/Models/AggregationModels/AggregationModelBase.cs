@@ -30,9 +30,7 @@ namespace Utah.Udot.Atspm.Data.Models
     /// </summary>
     public abstract class AggregationModelBase : StartEndRange, ILocationLayer
     {
-        /// <summary>
-        /// Identifer of the location
-        /// </summary>
+        /// <inheritdoc cref="ILocationLayer.LocationIdentifier"/>
         [JsonIgnore]
         public string LocationIdentifier { get; set; }
     }
@@ -613,20 +611,5 @@ namespace Utah.Udot.Atspm.Data.Models
         /// and identifying periods of abnormal activity.
         /// </summary>
         public int EventCount { get; set; }
-    }
-
-    /// <summary>
-    /// Represents aggregated information for a specific signal timing plan.  
-    /// Timing plans define coordinated operation, cycle length, offsets, and splits,
-    /// and this model allows performance data to be grouped by the active plan.
-    /// </summary>
-    public partial class SignalPlanAggregation : AggregationModelBase, IPlanLayer
-    {
-        /// <summary>
-        /// The identifier of the signal timing plan active during the aggregation period.  
-        /// Used to associate performance metrics with specific coordination patterns
-        /// or time‑of‑day schedules.
-        /// </summary>
-        public short PlanNumber { get; set; }
     }
 }

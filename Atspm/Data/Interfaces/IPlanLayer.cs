@@ -25,7 +25,9 @@ namespace Utah.Udot.Atspm.Data.Interfaces
     public interface IPlanLayer : ILocationLayer
     {
         /// <summary>
-        /// Plan number as derrived from the event parameter on <see cref="IndianaEnumerations.CoordPatternChange"/> event
+        /// The identifier of the signal timing plan active during the aggregation period.  
+        /// Used to associate performance metrics with specific coordination patterns
+        /// or time‑of‑day schedules.
         /// </summary>
         short PlanNumber { get; set; }
     }

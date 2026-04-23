@@ -213,7 +213,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IPreemptionAggregationRepository, PreemptionAggregationEFRepository>();
             services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
             services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
-            services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
+            services.AddScoped<ISignalTimingPlanRepository, SignalTimingPlanEFRepository>();
 
             return services;
         }

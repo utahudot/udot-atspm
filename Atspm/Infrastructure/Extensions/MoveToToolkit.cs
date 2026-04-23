@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -91,6 +92,33 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
     });
 
             return swaggerGenOptions;
+        }
+    }
+
+    public static class TempHelpers
+    {
+        public static Task WhenInitialized(this ISupportInitializeNotification service)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            if (service.IsInitialized) return Task.CompletedTask;
+
+            EventHandler handler = null;
+            handler = (s, e) =>
+            {
+                service.Initialized -= handler;
+                tcs.TrySetResult(true);
+            };
+
+            service.Initialized += handler;
+
+            if (service.IsInitialized)
+            {
+                service.Initialized -= handler;
+                tcs.TrySetResult(true);
+            }
+
+            return tcs.Task;
         }
     }
 }
