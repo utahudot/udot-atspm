@@ -1,3 +1,4 @@
+import { ToolType } from '@/features/charts/common/types'
 import { nanoid } from 'nanoid'
 import type {
   GpxUploadOptions,
@@ -123,6 +124,18 @@ export function recomputeWrappedTimeSpaceData(
       isSuccess: true,
     }
   }) as RawTimeSpaceDiagramResponse['data']
+}
+
+export function canFetchLinkPivotForTimeSpace(
+  toolType: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage
+) {
+  return toolType === ToolType.TimeSpaceHistoric
+}
+
+export function supportsLinkPivotForTimeSpace(
+  timeSpaceType: RawTimeSpaceDiagramResponse['type']
+) {
+  return timeSpaceType === ToolType.TimeSpaceHistoric
 }
 
 export function mergeSrmOverlaysIntoWrappedData(

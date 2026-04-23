@@ -3,6 +3,7 @@ import { useTimeSpaceCall } from '@/features/charts/api/getTools'
 import { ToolType } from '@/features/charts/common/types'
 import { useLinkPivotForTsd } from '@/features/charts/timeSpaceDiagram/api/getLinkPivotForTsd'
 import TimeSpaceResultsContainer from '@/features/charts/timeSpaceDiagram/app/components/TimeSpaceResultsContainer'
+import { canFetchLinkPivotForTimeSpace } from '@/features/charts/timeSpaceDiagram/app/utils/timeSpaceResultData'
 import { AverageOptionsComponent } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions'
 import { useAverageOptionsHandler } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions/timeSpaceAverageOptions.handler'
 import HistoricOptionsComponent from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/TimeSpaceHistoricOptions'
@@ -93,9 +94,11 @@ const TimeSpaceDiagram = () => {
   useEffect(() => {
     if (!shouldFetch) return
     refetch()
-    fetchLp()
+    if (canFetchLinkPivotForTimeSpace(currentTab)) {
+      fetchLp()
+    }
     setShouldFetch(false)
-  }, [shouldFetch, refetch, fetchLp])
+  }, [shouldFetch, refetch, fetchLp, currentTab])
 
   const handleChange = (
     _: React.SyntheticEvent,
@@ -199,7 +202,11 @@ const TimeSpaceDiagram = () => {
             {chartData && (
               <TimeSpaceResultsContainer
                 timeSpaceData={chartData}
-                linkPivotTsdData={lpTsdData ?? []}
+                linkPivotTsdData={
+                  chartData.type === ToolType.TimeSpaceHistoric
+                    ? (lpTsdData ?? [])
+                    : []
+                }
                 timeSpaceOptions={submittedOptions}
               />
             )}

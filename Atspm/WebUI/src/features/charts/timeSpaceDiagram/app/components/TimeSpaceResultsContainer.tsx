@@ -33,6 +33,7 @@ import {
   getPrimaryTimeSpaceLocations,
   mergeSrmOverlaysIntoWrappedData,
   recomputeWrappedTimeSpaceData,
+  supportsLinkPivotForTimeSpace,
 } from '../utils/timeSpaceResultData'
 
 export interface TimeSpaceResultsContainerProps {
@@ -70,6 +71,9 @@ export default function TimeSpaceResultsContainer({
     createEmptyTimeSpaceEntry(locations),
   ])
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
+  const supportsLinkPivot = supportsLinkPivotForTimeSpace(
+    baseTimeSpaceData.type
+  )
 
   const toggleIgnoredLocation = (location: string) => {
     setIgnoredLocation((prev) =>
@@ -125,6 +129,7 @@ export default function TimeSpaceResultsContainer({
     const nextBaseData = addDefaultTimeSpaceValues(timeSpaceData)
     const nextLocations = getPrimaryTimeSpaceLocations(nextBaseData)
 
+    setActiveTab(0)
     setBaseTimeSpaceData(nextBaseData)
     setIgnoredLocation([])
     setGpxEntries([createEmptyTimeSpaceEntry(nextLocations)])
@@ -214,16 +219,23 @@ export default function TimeSpaceResultsContainer({
         </Box>
       )}
 
-      <Tabs
-        value={activeTab}
-        onChange={(_, value) => setActiveTab(value)}
-        sx={{ mt: 2 }}
-      >
-        <Tab label="Time Space Chart" />
-        <Tab label="Link Pivot" />
-      </Tabs>
+      {supportsLinkPivot && (
+        <Tabs
+          value={activeTab}
+          onChange={(_, value) => setActiveTab(value)}
+          sx={{ mt: 2 }}
+        >
+          <Tab label="Time Space Chart" />
+          <Tab label="Link Pivot" />
+        </Tabs>
+      )}
 
-      <Box sx={{ display: activeTab === 0 ? 'block' : 'none' }}>
+      <Box
+        sx={{
+          display: !supportsLinkPivot || activeTab === 0 ? 'block' : 'none',
+          mt: supportsLinkPivot ? 0 : 2,
+        }}
+      >
         <Paper sx={{ p: 0, ml: '2px', bgcolor: 'white' }}>
           <Box
             sx={{
@@ -250,7 +262,12 @@ export default function TimeSpaceResultsContainer({
         </Paper>
       </Box>
 
-      <Box sx={{ display: activeTab === 1 ? 'block' : 'none', m: 2 }}>
+      <Box
+        sx={{
+          display: supportsLinkPivot && activeTab === 1 ? 'block' : 'none',
+          m: 2,
+        }}
+      >
         {linkPivotTsdData.map((pivot) => (
           <Box key={pivot.direction} sx={{ mb: 6 }}>
             <Typography variant="h4" fontWeight="bold" sx={{ my: 3 }}>

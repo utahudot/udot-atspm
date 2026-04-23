@@ -12,11 +12,13 @@ jest.mock('nanoid', () => ({
 
 import {
   addDefaultTimeSpaceValues,
+  canFetchLinkPivotForTimeSpace,
   createEmptyTimeSpaceEntry,
   getPrimaryTimeSpaceLocations,
   mergeSrmOverlaysIntoWrappedData,
   recomputeTimeSpaceData,
   recomputeWrappedTimeSpaceData,
+  supportsLinkPivotForTimeSpace,
 } from './timeSpaceResultData'
 
 type LaneDatum = TimeSpaceBaseData & {
@@ -108,6 +110,16 @@ describe('timeSpaceResultData', () => {
     })
     expect(typeof entry.id).toBe('string')
     expect(entry.id.length).toBeGreaterThan(0)
+  })
+
+  it('only allows link-pivot fetches for historic runs', () => {
+    expect(canFetchLinkPivotForTimeSpace(ToolType.TimeSpaceAverage)).toBe(false)
+    expect(canFetchLinkPivotForTimeSpace(ToolType.TimeSpaceHistoric)).toBe(true)
+  })
+
+  it('only shows link-pivot UI for historic results', () => {
+    expect(supportsLinkPivotForTimeSpace(ToolType.TimeSpaceAverage)).toBe(false)
+    expect(supportsLinkPivotForTimeSpace(ToolType.TimeSpaceHistoric)).toBe(true)
   })
 
   it('recomputes distances around ignored locations separately for each direction lane', () => {

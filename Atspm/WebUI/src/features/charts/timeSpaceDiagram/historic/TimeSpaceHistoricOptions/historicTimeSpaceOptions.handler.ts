@@ -26,6 +26,30 @@ interface Props {
   routes: Route[]
 }
 
+export function inferHistoricLocationIdentifier(
+  routes: Route[],
+  routeId: string,
+  locationIdentifier: string
+) {
+  const route = routes.find((candidate) => String(candidate.id) === routeId)
+  const routeLocationIdentifiers =
+    route?.routeLocations
+      ?.slice()
+      .sort((a, b) => a.order - b.order)
+      .map((routeLocation) => routeLocation.locationIdentifier)
+      .filter((identifier) => identifier.trim().length > 0) ?? []
+
+  if (routeLocationIdentifiers.length === 0) {
+    return locationIdentifier.trim()
+  }
+
+  if (routeLocationIdentifiers.includes(locationIdentifier.trim())) {
+    return locationIdentifier.trim()
+  }
+
+  return routeLocationIdentifiers[0]
+}
+
 export const useHistoricOptionsHandler = ({
   routes,
 }: Props): TSHistoricHandler => {
@@ -104,16 +128,24 @@ export const useHistoricOptionsHandler = ({
     }
   }
 
-  const toOptions = (): TimeSpaceHistoricOptions => ({
-    extendStartStopSearch,
-    showAllLanesInfo,
-    start: startDateTime,
-    end: endDateTime,
-    routeId,
-    chartType,
-    speedLimit,
-    locationIdentifier,
-  })
+  const toOptions = (): TimeSpaceHistoricOptions => {
+    const inferredLocationIdentifier = inferHistoricLocationIdentifier(
+      routes,
+      routeId,
+      locationIdentifier
+    )
+
+    return {
+      extendStartStopSearch,
+      showAllLanesInfo,
+      start: startDateTime,
+      end: endDateTime,
+      routeId,
+      chartType,
+      speedLimit,
+      locationIdentifier: inferredLocationIdentifier,
+    }
+  }
 
   const toSearchParams = () => {
     const o = toOptions()
