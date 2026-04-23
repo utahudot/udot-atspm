@@ -31,6 +31,7 @@ import {
   GUIDE_EASING,
   GUIDE_TRANSITION_MS,
 } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartLayout'
+import { buildTimeSpaceExportOption } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartExport'
 import {
   extractHeaderContent,
   getChartDownloadName,
@@ -841,20 +842,54 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     setTimeSpaceHandlerSyncVersion((current) => current + 1)
   }
 
-  const handleDownloadChart = () => {
+  const handleDownloadChart = async () => {
     const chartInstance = chartInstanceRef.current
-    if (!chartInstance) return
+    const chartElement = chartRef.current
+    if (!chartInstance || !chartElement) return
 
-    const dataUrl = chartInstance.getDataURL({
-      type: 'png',
-      pixelRatio: 2,
-      backgroundColor: '#ffffff',
-    })
+    const { width, height } = chartElement.getBoundingClientRect()
+    if (width <= 0 || height <= 0) return
 
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = `${getChartDownloadName(option)}.png`
-    link.click()
+    const exportContainer = document.createElement('div')
+    exportContainer.style.position = 'fixed'
+    exportContainer.style.left = '-10000px'
+    exportContainer.style.top = '0'
+    exportContainer.style.width = `${Math.ceil(width)}px`
+    exportContainer.style.height = `${Math.ceil(height)}px`
+    exportContainer.style.pointerEvents = 'none'
+    exportContainer.style.opacity = '0'
+    document.body.appendChild(exportContainer)
+
+    const exportChart = init(exportContainer, theme, { useDirtyRect: true })
+
+    try {
+      const exportOption = buildTimeSpaceExportOption(
+        chartInstance.getOption() as EChartsOption,
+        option
+      )
+
+      exportChart.setOption(exportOption, true)
+
+      await new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => resolve())
+        })
+      })
+
+      const dataUrl = exportChart.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+      })
+
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = `${getChartDownloadName(option)}.png`
+      link.click()
+    } finally {
+      exportChart.dispose()
+      exportContainer.remove()
+    }
   }
 
   return (
