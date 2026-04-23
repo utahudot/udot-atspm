@@ -1,4 +1,5 @@
 import { ToolType } from '@/features/charts/common/types'
+import type { TSBaseHandler } from '@/features/charts/timeSpaceDiagram/shared/options/timeSpaceBaseHandler'
 import { TimeSpaceHistoricOptions } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Route } from '@/features/routes/types'
 import { DateTimeProps } from '@/types/TimeProps'
@@ -7,14 +8,7 @@ import { set, subDays } from 'date-fns'
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
-export interface TSBaseHandler {
-  routes: Route[]
-  routeId: string
-  speedLimit: number | null
-
-  setRouteId(routeId: string): void
-  setSpeedLimit(speedLimit: number | null): void
-}
+export type { TSBaseHandler } from '@/features/charts/timeSpaceDiagram/shared/options/timeSpaceBaseHandler'
 
 export interface TSHistoricHandler extends TSBaseHandler, DateTimeProps {
   // state <-> request payload

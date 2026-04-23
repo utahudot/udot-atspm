@@ -488,7 +488,13 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
           : Math.round(offsetMs / STEP_MS) * STEP_MS,
         chartTimespanMsRef.current
       )
-      const updates: Array<{ id: string; data: any[] }> = []
+      const updates: Array<{
+        id: string
+        data: any[]
+        animation: boolean
+        animationDurationUpdate: number
+        animationDelayUpdate: number
+      }> = []
 
       for (const [id, original] of Object.entries(
         originalDataByIdRef.current
@@ -503,6 +509,9 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
               original,
               offsetsByGroupRef.current
             ),
+            animation: false,
+            animationDurationUpdate: 0,
+            animationDelayUpdate: 0,
           })
           continue
         }
@@ -512,6 +521,9 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
         updates.push({
           id,
           data: buildShiftedData(kind, original, nextRawOffsetMs),
+          animation: false,
+          animationDurationUpdate: 0,
+          animationDelayUpdate: 0,
         })
       }
 

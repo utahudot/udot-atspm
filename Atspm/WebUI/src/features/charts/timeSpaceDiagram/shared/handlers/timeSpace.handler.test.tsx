@@ -31,6 +31,7 @@ class MockChart {
   option: EChartsOption
   zrHandlers: Record<string, MouseHandler[]> = {}
   chartHandlers: Record<string, ChartHandler[]> = {}
+  setOptionCalls: EChartsOption[] = []
 
   constructor(option: EChartsOption) {
     this.option = cloneOption(option)
@@ -41,6 +42,8 @@ class MockChart {
   }
 
   setOption(nextOption: EChartsOption) {
+    this.setOptionCalls.push(cloneOption(nextOption))
+
     if (!Array.isArray(nextOption.series)) {
       this.option = {
         ...this.option,
@@ -237,8 +240,38 @@ function buildOptionWithAssociatedSeries(): EChartsOption {
         data: [[Date.parse('2026-03-20T00:00:05Z'), 10, '5']],
       },
       {
+        id: 'Green Bands 1 Eastbound row-0 primary',
+        data: [
+          ['2026-03-20T00:00:01Z', 10],
+          ['2026-03-20T00:00:03Z', 10],
+        ],
+      },
+      {
         id: 'PI 1 Eastbound row-0 primary',
         data: [['2026-03-20T00:00:00Z', '2026-03-20T00:00:04Z', 21, 10]],
+      },
+      {
+        id: 'LLC 1 Eastbound row-0 primary',
+        data: [
+          ['2026-03-20T00:00:01Z', 10],
+          ['2026-03-20T00:00:03Z', 12],
+          null,
+        ],
+      },
+      {
+        id: 'AC 1 Eastbound row-0 primary',
+        data: [
+          ['2026-03-20T00:00:02Z', 8],
+          ['2026-03-20T00:00:04Z', 10],
+          null,
+        ],
+      },
+      {
+        id: 'SBP 1 Eastbound row-0 primary',
+        data: [
+          ['2026-03-20T00:00:03Z', 10],
+          ['2026-03-20T00:00:05Z', 10],
+        ],
       },
       {
         id: 'Left Turn 1 Eastbound row-0 primary',
@@ -279,6 +312,14 @@ function buildOptionWithAssociatedSeries(): EChartsOption {
       {
         id: 'PI 2 Eastbound row-1 primary',
         data: [['2026-03-20T00:00:10Z', '2026-03-20T00:00:14Z', 21, 20]],
+      },
+      {
+        id: 'LLC 2 Eastbound row-1 primary',
+        data: [
+          ['2026-03-20T00:00:11Z', 20],
+          ['2026-03-20T00:00:13Z', 22],
+          null,
+        ],
       },
       {
         id: 'TSP Request 2 row-1 primary',
@@ -387,6 +428,20 @@ function getSeriesData(chart: MockChart, id: string) {
   return series.find((entry) => entry?.id === id)?.data
 }
 
+function getLatestSeriesUpdate(chart: MockChart, id: string) {
+  const calls = [...chart.setOptionCalls].reverse()
+
+  for (const call of calls) {
+    const series = Array.isArray(call.series) ? call.series : []
+    const update = series.find((entry) => entry?.id === id)
+    if (update) {
+      return update
+    }
+  }
+
+  return null
+}
+
 function shiftTimestamp(value: string, offsetMs: number) {
   return dateToTimestamp(new Date(new Date(value).getTime() + offsetMs))
 }
@@ -463,6 +518,12 @@ describe('useTimeSpaceHandler', () => {
     expect(getSeriesData(chart, 'Cycle Duration Labels 1 Eastbound')).toEqual([
       [Date.parse('2026-03-20T00:00:07Z'), 10, '5'],
     ])
+    expect(getSeriesData(chart, 'Green Bands 1 Eastbound row-0 primary')).toEqual(
+      [
+        [shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), 10],
+        [shiftTimestamp('2026-03-20T00:00:03Z', offsetMs), 10],
+      ]
+    )
     expect(getSeriesData(chart, 'PI 1 Eastbound row-0 primary')).toEqual([
       [
         shiftTimestamp('2026-03-20T00:00:00Z', offsetMs),
@@ -470,6 +531,20 @@ describe('useTimeSpaceHandler', () => {
         21,
         10,
       ],
+    ])
+    expect(getSeriesData(chart, 'LLC 1 Eastbound row-0 primary')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:01Z', offsetMs), 10],
+      [shiftTimestamp('2026-03-20T00:00:03Z', offsetMs), 12],
+      null,
+    ])
+    expect(getSeriesData(chart, 'AC 1 Eastbound row-0 primary')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:02Z', offsetMs), 8],
+      [shiftTimestamp('2026-03-20T00:00:04Z', offsetMs), 10],
+      null,
+    ])
+    expect(getSeriesData(chart, 'SBP 1 Eastbound row-0 primary')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:03Z', offsetMs), 10],
+      [shiftTimestamp('2026-03-20T00:00:05Z', offsetMs), 10],
     ])
     expect(getSeriesData(chart, 'Left Turn 1 Eastbound row-0 primary')).toEqual(
       [
@@ -511,10 +586,64 @@ describe('useTimeSpaceHandler', () => {
     expect(getSeriesData(chart, 'PI 2 Eastbound row-1 primary')).toEqual([
       ['2026-03-20T00:00:10Z', '2026-03-20T00:00:14Z', 21, 20],
     ])
+    expect(getSeriesData(chart, 'LLC 2 Eastbound row-1 primary')).toEqual([
+      ['2026-03-20T00:00:11Z', 20],
+      ['2026-03-20T00:00:13Z', 22],
+      null,
+    ])
     expect(getSeriesData(chart, 'TSP Request 2 row-1 primary')).toEqual([
       ['2026-03-20T00:00:13Z', '2026-03-20T00:00:15Z', 20],
     ])
     expect(getLocationAxisOffsets(chart)).toEqual([2, 0])
+  })
+
+  it('disables update animation for drag-shifted series', () => {
+    const chart = new MockChart(buildOptionWithAssociatedSeries())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 2000)
+
+    const laneByLaneUpdate = getLatestSeriesUpdate(
+      chart,
+      'LLC 1 Eastbound row-0 primary'
+    ) as {
+      animation?: unknown
+      animationDurationUpdate?: unknown
+      animationDelayUpdate?: unknown
+    } | null
+    const stopBarUpdate = getLatestSeriesUpdate(
+      chart,
+      'SBP 1 Eastbound row-0 primary'
+    ) as {
+      animation?: unknown
+      animationDurationUpdate?: unknown
+      animationDelayUpdate?: unknown
+    } | null
+    const locationAxisUpdate = getLatestSeriesUpdate(
+      chart,
+      TIME_SPACE_LOCATION_AXIS_SERIES_ID
+    ) as {
+      animation?: unknown
+      animationDurationUpdate?: unknown
+      animationDelayUpdate?: unknown
+    } | null
+
+    expect(laneByLaneUpdate).toMatchObject({
+      animation: false,
+      animationDurationUpdate: 0,
+      animationDelayUpdate: 0,
+    })
+    expect(stopBarUpdate).toMatchObject({
+      animation: false,
+      animationDurationUpdate: 0,
+      animationDelayUpdate: 0,
+    })
+    expect(locationAxisUpdate).toMatchObject({
+      animation: false,
+      animationDurationUpdate: 0,
+      animationDelayUpdate: 0,
+    })
   })
 
   it('keeps the full rightward drag on the cycle overlays while wrapping the displayed offset', () => {

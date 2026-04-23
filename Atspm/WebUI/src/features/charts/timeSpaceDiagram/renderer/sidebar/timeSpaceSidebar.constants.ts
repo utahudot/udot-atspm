@@ -1,0 +1,1 @@
+export const TIME_SPACE_GUIDE_WIDTH = 360

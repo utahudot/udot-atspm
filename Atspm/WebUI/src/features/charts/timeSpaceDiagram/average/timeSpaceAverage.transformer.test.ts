@@ -68,6 +68,57 @@ describe('transformTimeSpaceAverageData', () => {
     expect(result.data.chart).toBeDefined()
   })
 
+  it('builds the same header and axis scaffolding used by the historic chart shell', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceAverage,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildAverageLocation('Primary'),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildAverageLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceAverageData(response)
+    const chart = result.data.chart as EChartsOption
+    const titleEntries = Array.isArray(chart.title)
+      ? chart.title
+      : [chart.title]
+    const xAxes = Array.isArray(chart.xAxis) ? chart.xAxis : [chart.xAxis]
+    const toolbox = Array.isArray(chart.toolbox)
+      ? chart.toolbox[0]
+      : chart.toolbox
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    expect(titleEntries[0]).toMatchObject({
+      text: 'Time Space Diagram - 50th Percentile',
+    })
+    expect(String(titleEntries[1]?.text ?? '')).toMatch(
+      /^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}, \d{4} - \d{2}:\d{2}-\d{2}:\d{2}$/
+    )
+    expect(xAxes).toHaveLength(3)
+    expect(xAxes[2]).toMatchObject({
+      position: 'top',
+      name: 'Time Since Start (seconds)',
+    })
+    expect(toolbox).toMatchObject({
+      feature: {
+        restore: {},
+      },
+    })
+    expect(
+      series.some((entry) => entry.name === 'Labels offset and program split')
+    ).toBe(false)
+  })
+
   it('returns errors and empty chart when all wrapped results fail', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceAverage,

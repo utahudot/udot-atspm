@@ -1,8 +1,8 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useTimeSpaceCall } from '@/features/charts/api/getTools'
 import { ToolType } from '@/features/charts/common/types'
-import TimeSpaceChart from '@/features/charts/components/defaultToolResults/DefaultToolResults'
 import { useLinkPivotForTsd } from '@/features/charts/timeSpaceDiagram/api/getLinkPivotForTsd'
+import TimeSpaceResultsContainer from '@/features/charts/timeSpaceDiagram/app/components/TimeSpaceResultsContainer'
 import { AverageOptionsComponent } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions'
 import { useAverageOptionsHandler } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions/timeSpaceAverageOptions.handler'
 import HistoricOptionsComponent from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/TimeSpaceHistoricOptions'
@@ -197,7 +197,7 @@ const TimeSpaceDiagram = () => {
             </Box>
 
             {chartData && (
-              <TimeSpaceChart
+              <TimeSpaceResultsContainer
                 timeSpaceData={chartData}
                 linkPivotTsdData={lpTsdData ?? []}
                 timeSpaceOptions={submittedOptions}

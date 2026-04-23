@@ -4,6 +4,7 @@ import type {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
 } from '../shared/types'
+import { getCycleContinuationPatternFill } from '../shared/transformers/timeSpaceTransformerBase'
 import transformTimeSpaceHistoricData from './timeSpaceHistoric.transformer'
 
 let originalCanvasGetContext: typeof HTMLCanvasElement.prototype.getContext
@@ -309,8 +310,12 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     }
 
     expect(node?.children).toHaveLength(3)
-    expect(node.children?.[0]?.style?.fill).toBe('#eef1f5')
+    expect(node.children?.[0]?.style?.fill).toBe(
+      getCycleContinuationPatternFill()
+    )
     expect(node.children?.[1]?.style?.fill).toBe('darkblue')
-    expect(node.children?.[2]?.style?.fill).toBe('#eef1f5')
+    expect(node.children?.[2]?.style?.fill).toBe(
+      getCycleContinuationPatternFill()
+    )
   })
 })
