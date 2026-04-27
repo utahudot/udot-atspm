@@ -273,7 +273,23 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var headers = WatchdogEmailService.GetTableHeadersForErrorType(sectionTitle, includeErrorCounts, includeConsecutive);
 
             // Assert
-            var expectedHeaders = new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Date of First Occurrence" };
+            var expectedHeaders = new List<string> { "Location", "Location Description", "Detector Config Id", "Issue Details", "Date of First Occurrence" };
+            Assert.Equal(expectedHeaders, headers);
+        }
+
+        [Fact]
+        public void GetTableHeadersForErrorType_ShouldReturnHeadersForRampErrors()
+        {
+            // Arrange
+            var sectionTitle = "Ramp Mainline Errors";
+            var includeErrorCounts = false;
+            var includeConsecutive = false;
+
+            // Act
+            var headers = WatchdogEmailService.GetTableHeadersForErrorType(sectionTitle, includeErrorCounts, includeConsecutive);
+
+            // Assert
+            var expectedHeaders = new List<string> { "Location", "Location Description", "Detector Config Id", "Issue Details", "Date of First Occurrence" };
             Assert.Equal(expectedHeaders, headers);
         }
 

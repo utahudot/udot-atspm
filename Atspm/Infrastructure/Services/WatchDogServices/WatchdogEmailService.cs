@@ -421,8 +421,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 "Missing Records Errors" => new List<string> { "Location", "Location Description", "Issue Details", "Date of First Occurrence" },
                 "Force Off Errors" or "Max Out Errors" or "High Pedestrian Activation Errors" or "Unconfigured Approaches Errors" =>
                     new List<string> { "Location", "Location Description", "Phase", "Issue Details", "Date of First Occurrence" },
-                "Low Detection Count Errors" or "Unconfigured Detectors Errors" =>
-                    new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Date of First Occurrence" },
+                "Low Detection Count Errors" or "Unconfigured Detectors Errors" or "Ramp Mainline Errors" or "Ramp Detectors Threshold Errors" =>
+                    new List<string> { "Location", "Location Description", "Detector Config Id", "Issue Details", "Date of First Occurrence" },
                 _ => new List<string> { "Location", "Location Description", "Issue Details", "Date of First Occurrence" }
             };
 

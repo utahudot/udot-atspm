@@ -272,6 +272,81 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         }
 
         [Fact]
+        public void CheckForLowRampDetectorHits_Should_IgnoreDetectorsWithoutRampDetectionTypes()
+        {
+            // Arrange
+            var options = new WatchdogRampLoggingOptions
+            {
+                RampMissedDetectorHitsStartScanDate = DateTime.Today.AddHours(6),
+                RampMissedDetectorHitsEndScanDate = DateTime.Today.AddHours(9),
+                RampMissedEventsThreshold = 0,
+                RampDetectorStartHour = 7,
+                RampDetectorEndHour = 8,
+                LowHitRampThreshold = 5
+            };
+
+            var validDetector = new Detector
+            {
+                Id = 1,
+                DetectorChannel = 1,
+                DetectionTypes = new List<DetectionType>
+                {
+                    new DetectionType { Id = DetectionTypes.P }
+                }
+            };
+
+            var nonRampDetector = new Detector
+            {
+                Id = 2,
+                DetectorChannel = 2,
+                DetectionTypes = new List<DetectionType>
+                {
+                    new DetectionType { Id = DetectionTypes.AC }
+                }
+            };
+
+            var approach = new Approach
+            {
+                Id = 1,
+                LocationId = 1,
+                Detectors = new List<Detector> { validDetector, nonRampDetector }
+            };
+
+            var location = new Location
+            {
+                Id = 1,
+                LocationIdentifier = "LOC1",
+                LocationTypeId = 2,
+                Approaches = new List<Approach> { approach }
+            };
+
+            var locationEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = location.LocationIdentifier,
+                    Timestamp = options.RampDetectorStart.AddMinutes(10),
+                    EventCode = 81,
+                    EventParam = 1
+                }
+            };
+
+            var errors = new ConcurrentBag<WatchDogLogEvent>();
+
+            // Act
+            _watchDogRampLogService.CheckForLowRampDetectorHits(
+                location,
+                options,
+                locationEvents,
+                errors,
+                new List<short> { 81, 82 });
+
+            // Assert
+            Assert.Single(errors);
+            Assert.Equal(validDetector.Id, errors.First().ComponentId);
+        }
+
+        [Fact]
         public async Task GetWatchDogIssues_Should_HonorCancellationToken()
         {
             // Arrange

@@ -106,10 +106,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var detectors = location.GetDetectorsForLocation();
             var detectionTypeValidIds = new List<int> { 8, 9, 10, 11 };
 
-            var result = detectors
+            var rampDetectors = detectors
                 .Where(d => d.DetectionTypes.Any(i => detectionTypeValidIds.Contains((int)i.Id)));
 
-            foreach (var detector in detectors)
+            foreach (var detector in rampDetectors)
                 try
                 {
                     var channel = detector.DetectorChannel;
