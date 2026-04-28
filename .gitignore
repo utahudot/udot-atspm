@@ -70,6 +70,7 @@ dkms.conf
 appsettings.Development.json
 appsettings.Local.json
 appsettings.*.json
+.dotnet_home/
 
 # Publish profiles
 **/Properties/PublishProfiles/*.pubxml

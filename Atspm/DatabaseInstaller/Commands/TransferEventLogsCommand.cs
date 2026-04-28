@@ -72,6 +72,8 @@ namespace DatabaseInstaller.Commands
         public DateTime End { get; set; }
         public int? Device { get; set; }
         public int? Batch { get; set; }
+        public int MaxConcurrency { get; set; } = 2;
+        public int CopyBatchSize { get; set; } = 250;
         public string Locations { get; set; }
 
     }

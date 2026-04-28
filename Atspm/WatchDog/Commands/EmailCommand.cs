@@ -46,6 +46,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.Configure<EmailConfiguration>(host.Configuration.GetSection("EmailConfiguration"));
+            services.AddSingleton(TimeProvider.System);
             services.AddScoped<WatchdogEmailService>();
 
             services.AddSingleton(GetOptionsBinder());

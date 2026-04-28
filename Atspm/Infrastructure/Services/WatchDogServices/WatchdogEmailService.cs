@@ -31,7 +31,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
         public WatchdogEmailService(
             ILogger<WatchdogEmailService> logger,
-            IEmailService mailService)
+            IEmailService mailService,
+            TimeProvider? timeProvider = null)
         {
             this.logger = logger;
             this.mailService = mailService;
@@ -51,6 +52,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Region> regions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
+            if (ShouldSuppressWeekendEmails(options))
+            {
+                logger.LogInformation(
+                    "WeekdayOnly is enabled and one or more configured scan dates fall on a weekend; skipping watchdog email delivery.");
+                return;
+            }
+
             await SendRegionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, regions, logsFromPreviousDay);
             await SendJurisdictionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, jurisdictions, logsFromPreviousDay);
             await SendAreaEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, areas, logsFromPreviousDay);
@@ -63,6 +71,33 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 regions.Count,
                 jurisdictions.Count,
                 areas.Count);
+        }
+
+        private bool ShouldSuppressWeekendEmails(WatchdogEmailOptions options)
+        {
+            if (!options.WeekdayOnly)
+            {
+                return false;
+            }
+
+            var scanDates = new List<DateTime>();
+
+            if (options.EmailPmErrors)
+            {
+                scanDates.Add(options.PmScanDate);
+            }
+
+            if (options.EmailAmErrors)
+            {
+                scanDates.Add(options.AmScanDate);
+            }
+
+            if (options.EmailRampErrors)
+            {
+                scanDates.Add(options.RampMissedDetectorHitsStartScanDate);
+            }
+
+            return scanDates.Any(d => d.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday);
         }
 
         private async Task SendAdminEmail(
@@ -421,8 +456,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 "Missing Records Errors" => new List<string> { "Location", "Location Description", "Issue Details", "Date of First Occurrence" },
                 "Force Off Errors" or "Max Out Errors" or "High Pedestrian Activation Errors" or "Unconfigured Approaches Errors" =>
                     new List<string> { "Location", "Location Description", "Phase", "Issue Details", "Date of First Occurrence" },
-                "Low Detection Count Errors" or "Unconfigured Detectors Errors" =>
-                    new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Date of First Occurrence" },
+                "Low Detection Count Errors" or "Unconfigured Detectors Errors" or "Ramp Mainline Errors" or "Ramp Detectors Threshold Errors" =>
+                    new List<string> { "Location", "Location Description", "Detector Config Id", "Issue Details", "Date of First Occurrence" },
                 _ => new List<string> { "Location", "Location Description", "Issue Details", "Date of First Occurrence" }
             };
 
