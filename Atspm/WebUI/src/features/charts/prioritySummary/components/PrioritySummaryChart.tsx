@@ -1,4 +1,4 @@
-import { getPriorityDetailsReportData } from '@/api/reports'
+import { getPriorityDetailsReportData } from '@/api/reports/priority-details/priority-details'
 import transformPriorityDetailsData from '@/features/charts/prioritySummary/priorityDetails.transformer'
 import { dateToTimestamp } from '@/utils/dateTime'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
