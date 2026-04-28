@@ -31,7 +31,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
         public WatchdogEmailService(
             ILogger<WatchdogEmailService> logger,
-            IEmailService mailService)
+            IEmailService mailService,
+            TimeProvider? timeProvider = null)
         {
             this.logger = logger;
             this.mailService = mailService;
@@ -51,6 +52,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Region> regions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
+            if (ShouldSuppressWeekendEmails(options))
+            {
+                logger.LogInformation(
+                    "WeekdayOnly is enabled and one or more configured scan dates fall on a weekend; skipping watchdog email delivery.");
+                return;
+            }
+
             await SendRegionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, regions, logsFromPreviousDay);
             await SendJurisdictionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, jurisdictions, logsFromPreviousDay);
             await SendAreaEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, areas, logsFromPreviousDay);
@@ -63,6 +71,33 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 regions.Count,
                 jurisdictions.Count,
                 areas.Count);
+        }
+
+        private bool ShouldSuppressWeekendEmails(WatchdogEmailOptions options)
+        {
+            if (!options.WeekdayOnly)
+            {
+                return false;
+            }
+
+            var scanDates = new List<DateTime>();
+
+            if (options.EmailPmErrors)
+            {
+                scanDates.Add(options.PmScanDate);
+            }
+
+            if (options.EmailAmErrors)
+            {
+                scanDates.Add(options.AmScanDate);
+            }
+
+            if (options.EmailRampErrors)
+            {
+                scanDates.Add(options.RampMissedDetectorHitsStartScanDate);
+            }
+
+            return scanDates.Any(d => d.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday);
         }
 
         private async Task SendAdminEmail(

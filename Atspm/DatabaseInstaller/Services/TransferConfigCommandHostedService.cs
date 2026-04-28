@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Data;
@@ -50,6 +51,7 @@ public class TransferConfigCommandHostedService : IHostedService
     private readonly IServiceProvider _serviceProvider;
     private readonly IDeviceRepository _deviceRepository;
     private readonly TransferConfigCommandConfiguration _config;
+    private const int LocationBatchSize = 20;
 
     public TransferConfigCommandHostedService(
         ILogger<TransferConfigCommandHostedService> logger,
@@ -116,7 +118,12 @@ public class TransferConfigCommandHostedService : IHostedService
             ImportRegions(sourceData.Regions);
             ImportAreas(sourceData.Areas);
             ImportJurisdictions(sourceData.Jurisdictions);
-            ImportLocations(sourceData.Locations, sourceData.LocationAreaIds);
+            ImportLocations(
+                sourceData.Locations,
+                sourceData.LocationAreaIds,
+                sourceData.Jurisdictions,
+                sourceData.Regions,
+                sourceData.Areas);
             ImportApproaches(sourceData.Approaches);
             ImportDetectors(sourceData.Detectors, sourceData.DetectorDetectionTypeIds);
             ImportRoutes(sourceData.Routes);
@@ -144,88 +151,112 @@ public class TransferConfigCommandHostedService : IHostedService
         using var client = CreateApiClient();
 
         _logger.LogInformation("Downloading configuration from {ApiBaseUrl}", _config.ApiBaseUrl);
+        var loadStopwatch = Stopwatch.StartNew();
 
+        var phaseStopwatch = Stopwatch.StartNew();
         var products = SanitizeProducts(await GetODataCollectionAsync<Product>(
             client,
             "api/v1/Product",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} products in {Elapsed}", products.Count, phaseStopwatch.Elapsed);
 
+        phaseStopwatch.Restart();
         var deviceConfigurations = SanitizeDeviceConfigurations(await GetODataCollectionAsync<DeviceConfiguration>(
             client,
             "api/v1/DeviceConfiguration",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} device configurations in {Elapsed}", deviceConfigurations.Count, phaseStopwatch.Elapsed);
 
+        phaseStopwatch.Restart();
         var regions = SanitizeRegions(await GetODataCollectionAsync<Region>(
             client,
             "api/v1/Region",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} regions in {Elapsed}", regions.Count, phaseStopwatch.Elapsed);
 
+        phaseStopwatch.Restart();
         var areas = SanitizeAreas(await GetODataCollectionAsync<Area>(
             client,
             "api/v1/Area",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} areas in {Elapsed}", areas.Count, phaseStopwatch.Elapsed);
 
+        phaseStopwatch.Restart();
         var jurisdictions = SanitizeJurisdictions(await GetODataCollectionAsync<Jurisdiction>(
             client,
             "api/v1/Jurisdiction",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} jurisdictions in {Elapsed}", jurisdictions.Count, phaseStopwatch.Elapsed);
 
-        var rawLocations = await GetODataCollectionAsync<Location>(
+        phaseStopwatch.Restart();
+        var latestLocations = await GetODataCollectionAsync<Location>(
             client,
-            "api/v1/Location?$expand=Areas&$orderby=Start desc",
+            "api/v1/Location/GetLatestVersionOfAllLocations",
             cancellationToken);
+        _logger.LogInformation("Loaded {Count} latest location identifiers in {Elapsed}", latestLocations.Count, phaseStopwatch.Elapsed);
 
-        var latestLocations = rawLocations
-            .GroupBy(l => l.LocationIdentifier, StringComparer.OrdinalIgnoreCase)
-            .Select(g => g.OrderByDescending(l => l.Start).First())
-            .ToList();
+        phaseStopwatch.Restart();
+        var rawLocations = await LoadLocationVersionsAsync(client, latestLocations, cancellationToken);
+        _logger.LogInformation("Loaded {Count} historical location versions in {Elapsed}", rawLocations.Count, phaseStopwatch.Elapsed);
 
-        var locationAreaIds = latestLocations.ToDictionary(
+        phaseStopwatch.Restart();
+        var locationAreaIds = rawLocations.ToDictionary(
             l => l.Id,
             l => l.Areas.Select(a => a.Id).Distinct().ToList());
 
-        var locations = SanitizeLocations(latestLocations);
-        var locationIds = locations.Select(l => l.Id).ToHashSet();
+        var locations = SanitizeLocations(rawLocations);
+        _logger.LogInformation("Sanitized {Count} locations in {Elapsed}", locations.Count, phaseStopwatch.Elapsed);
 
-        var approaches = SanitizeApproaches((await GetODataCollectionAsync<Approach>(
-            client,
-            "api/v1/Approach",
-            cancellationToken))
-            .Where(a => locationIds.Contains(a.LocationId))
-            .ToList());
+        phaseStopwatch.Restart();
+        var approaches = SanitizeApproaches(
+            rawLocations
+                .SelectMany(l => l.Approaches)
+                .GroupBy(a => a.Id)
+                .Select(g => g.First()));
+        _logger.LogInformation("Sanitized {Count} approaches in {Elapsed}", approaches.Count, phaseStopwatch.Elapsed);
 
-        var approachIds = approaches.Select(a => a.Id).ToHashSet();
+        phaseStopwatch.Restart();
+        var detectors = SanitizeDetectors(
+            rawLocations
+                .SelectMany(l => l.Approaches)
+                .SelectMany(a => a.Detectors)
+                .GroupBy(d => d.Id)
+                .Select(g => g.First()));
+        _logger.LogInformation("Sanitized {Count} detectors in {Elapsed}", detectors.Count, phaseStopwatch.Elapsed);
 
-        var rawDetectors = (await GetODataCollectionAsync<Detector>(
-            client,
-            "api/v1/Detector?$expand=DetectionTypes",
-            cancellationToken))
-            .Where(d => approachIds.Contains(d.ApproachId))
-            .ToList();
+        phaseStopwatch.Restart();
+        var detectorDetectionTypeIds = rawLocations
+            .SelectMany(l => l.Approaches)
+            .SelectMany(a => a.Detectors)
+            .GroupBy(d => d.Id)
+            .ToDictionary(
+                g => g.Key,
+                g => g.First().DetectionTypes.Select(dt => dt.Id).Distinct().ToList());
+        _logger.LogInformation("Built detector detection type map for {Count} detectors in {Elapsed}", detectorDetectionTypeIds.Count, phaseStopwatch.Elapsed);
 
-        var detectorDetectionTypeIds = rawDetectors.ToDictionary(
-            d => d.Id,
-            d => d.DetectionTypes.Select(dt => dt.Id).Distinct().ToList());
+        phaseStopwatch.Restart();
+        var devices = SanitizeDevices(
+            rawLocations
+                .SelectMany(l => l.Devices)
+                .GroupBy(d => d.Id)
+                .Select(g => g.First()));
+        _logger.LogInformation("Sanitized {Count} devices in {Elapsed}", devices.Count, phaseStopwatch.Elapsed);
 
-        var detectors = SanitizeDetectors(rawDetectors);
-
-        var devices = SanitizeDevices((await GetODataCollectionAsync<Device>(
-            client,
-            "api/v1/Device",
-            cancellationToken))
-            .Where(d => locationIds.Contains(d.LocationId))
-            .ToList());
-
+        phaseStopwatch.Restart();
         var routes = SanitizeRoutes(await GetODataCollectionAsync<Route>(
             client,
             "api/v1/Route",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} routes in {Elapsed}", routes.Count, phaseStopwatch.Elapsed);
 
+        phaseStopwatch.Restart();
         var routeLocations = SanitizeRouteLocations(await GetODataCollectionAsync<RouteLocation>(
             client,
             "api/v1/RouteLocation",
             cancellationToken));
+        _logger.LogInformation("Loaded {Count} route locations in {Elapsed}", routeLocations.Count, phaseStopwatch.Elapsed);
 
+        phaseStopwatch.Restart();
         var speedConfigurationIds = deviceConfigurations
             .Where(dc =>
                 string.Equals(dc.Description, "Speed", StringComparison.OrdinalIgnoreCase) ||
@@ -238,7 +269,9 @@ public class TransferConfigCommandHostedService : IHostedService
         var speedDevices = devices
             .Where(d => d.DeviceConfigurationId.HasValue && speedConfigurationIds.Contains(d.DeviceConfigurationId.Value))
             .ToList();
+        _logger.LogInformation("Identified {Count} speed devices in {Elapsed}", speedDevices.Count, phaseStopwatch.Elapsed);
 
+        _logger.LogInformation("Finished downloading and preparing configuration in {Elapsed}", loadStopwatch.Elapsed);
         return new SourceConfigData
         {
             Products = products,
@@ -292,13 +325,127 @@ public class TransferConfigCommandHostedService : IHostedService
         return options;
     }
 
+    private static string BuildLocationBatchUrl(IEnumerable<string> locationIdentifiers)
+    {
+        var filter = string.Join(" or ", locationIdentifiers.Select(identifier =>
+            $"LocationIdentifier eq '{identifier.Replace("'", "''", StringComparison.Ordinal)}'"));
+
+        return $"api/v1/Location?$filter={filter}&$orderby=LocationIdentifier asc,Start desc&$expand=Areas,Approaches($expand=Detectors($expand=DetectionTypes),DirectionType),Devices($expand=DeviceConfiguration($expand=Product))";
+    }
+
+    private async Task<List<Location>> LoadLocationVersionsAsync(
+        HttpClient client,
+        IEnumerable<Location> latestLocations,
+        CancellationToken cancellationToken)
+    {
+        var rawLocations = new List<Location>();
+
+        var locationIdentifiers = latestLocations
+            .Select(l => l.LocationIdentifier)
+            .Where(l => !string.IsNullOrWhiteSpace(l))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        _logger.LogInformation(
+            "Loading {LocationCount} location identifiers in batches of {BatchSize}",
+            locationIdentifiers.Count,
+            LocationBatchSize);
+
+        for (var index = 0; index < locationIdentifiers.Count; index += LocationBatchSize)
+        {
+            var batch = locationIdentifiers
+                .Skip(index)
+                .Take(LocationBatchSize)
+                .ToList();
+
+            if (batch.Count == 0)
+            {
+                continue;
+            }
+
+            var batchNumber = index / LocationBatchSize + 1;
+            var batchStopwatch = Stopwatch.StartNew();
+            _logger.LogInformation(
+                "Loading location batch {BatchNumber} of {TotalBatches} containing {Count} identifiers",
+                batchNumber,
+                (int)Math.Ceiling(locationIdentifiers.Count / (double)LocationBatchSize),
+                batch.Count);
+
+            var locationVersions = await LoadLocationBatchWithFallbackAsync(
+                client,
+                batch,
+                cancellationToken);
+
+            rawLocations.AddRange(locationVersions);
+
+            _logger.LogInformation(
+                "Loaded {Count} version rows for batch {BatchNumber} in {Elapsed}. Total loaded so far: {Total}",
+                locationVersions.Count,
+                batchNumber,
+                batchStopwatch.Elapsed,
+                rawLocations.Count);
+        }
+
+        return rawLocations;
+    }
+
+    private async Task<List<Location>> LoadLocationBatchWithFallbackAsync(
+        HttpClient client,
+        IReadOnlyList<string> batch,
+        CancellationToken cancellationToken)
+    {
+        var batchStopwatch = Stopwatch.StartNew();
+
+        try
+        {
+            var locationVersions = await GetODataCollectionAsync<Location>(
+                client,
+                BuildLocationBatchUrl(batch),
+                cancellationToken);
+
+            _logger.LogInformation(
+                "Loaded {Count} version rows for batch of {BatchCount} identifiers in {Elapsed}",
+                locationVersions.Count,
+                batch.Count,
+                batchStopwatch.Elapsed);
+
+            return locationVersions;
+        }
+        catch (HttpRequestException ex) when (IsNodeLimitExceeded(ex) && batch.Count > 1)
+        {
+            var midpoint = batch.Count / 2;
+            var left = batch.Take(midpoint).ToList();
+            var right = batch.Skip(midpoint).ToList();
+
+            _logger.LogWarning(
+                "Batch of {Count} identifiers exceeded the OData node limit after {Elapsed}; splitting into {LeftCount} and {RightCount}",
+                batch.Count,
+                batchStopwatch.Elapsed,
+                left.Count,
+                right.Count);
+
+            var leftResults = await LoadLocationBatchWithFallbackAsync(client, left, cancellationToken);
+            var rightResults = await LoadLocationBatchWithFallbackAsync(client, right, cancellationToken);
+
+            return leftResults.Concat(rightResults).ToList();
+        }
+    }
+
+    private static bool IsNodeLimitExceeded(HttpRequestException ex) =>
+        ex.Message.Contains("node count limit", StringComparison.OrdinalIgnoreCase);
+
     private async Task<List<T>> GetODataCollectionAsync<T>(HttpClient client, string relativeOrAbsoluteUrl, CancellationToken cancellationToken)
     {
         var items = new List<T>();
         var nextUrl = relativeOrAbsoluteUrl;
+        var pageNumber = 0;
 
         while (!string.IsNullOrWhiteSpace(nextUrl))
         {
+            pageNumber++;
+            var requestStopwatch = Stopwatch.StartNew();
+            _logger.LogInformation("Requesting page {PageNumber} for {EntityType} from {Url}", pageNumber, typeof(T).Name, nextUrl);
+
             using var response = await client.GetAsync(nextUrl, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -314,7 +461,18 @@ public class TransferConfigCommandHostedService : IHostedService
                 items.AddRange(payload.Value);
             }
 
+            _logger.LogInformation(
+                "Loaded page {PageNumber} for {EntityType} with {Count} items in {Elapsed}",
+                pageNumber,
+                typeof(T).Name,
+                payload?.Value?.Count ?? 0,
+                requestStopwatch.Elapsed);
+
             nextUrl = payload?.NextLink;
+            if (!string.IsNullOrWhiteSpace(nextUrl))
+            {
+                _logger.LogInformation("Continuing {EntityType} pagination with next link", typeof(T).Name);
+            }
         }
 
         return items;
@@ -640,7 +798,12 @@ public class TransferConfigCommandHostedService : IHostedService
         }
     }
 
-    private void ImportLocations(List<Location> locations, Dictionary<int, List<int>> locationAreaIds)
+    private void ImportLocations(
+        List<Location> locations,
+        Dictionary<int, List<int>> locationAreaIds,
+        List<Jurisdiction> sourceJurisdictions,
+        List<Region> sourceRegions,
+        List<Area> sourceAreas)
     {
         if (_config.Delete && _locationRepository.GetList().Any())
         {
@@ -650,16 +813,165 @@ public class TransferConfigCommandHostedService : IHostedService
 
         _logger.LogInformation("Importing Locations...");
 
-        var areasById = _areaRepository.GetList().ToDictionary(a => a.Id);
+        var defaultJurisdictionId = EnsureDefaultJurisdiction();
+        var defaultRegionId = EnsureDefaultRegion();
+        var defaultAreaId = EnsureDefaultArea();
+
+        var targetJurisdictions = _jurisdictionRepository.GetList().ToList();
+        var targetJurisdictionsByName = targetJurisdictions
+            .Where(j => !string.IsNullOrWhiteSpace(j.Name))
+            .GroupBy(j => j.Name!, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First().Id, StringComparer.OrdinalIgnoreCase);
+        var targetRegionsByDescription = _regionsRepository
+            .GetList()
+            .Where(r => !string.IsNullOrWhiteSpace(r.Description))
+            .ToDictionary(r => r.Description!, r => r.Id, StringComparer.OrdinalIgnoreCase);
+        var targetAreasByName = _areaRepository
+            .GetList()
+            .Where(a => !string.IsNullOrWhiteSpace(a.Name))
+            .ToDictionary(a => a.Name!, a => a.Id, StringComparer.OrdinalIgnoreCase);
+
+        var sourceJurisdictionsById = sourceJurisdictions.ToDictionary(j => j.Id);
+        var sourceRegionsById = sourceRegions.ToDictionary(r => r.Id);
+        var sourceAreasById = sourceAreas.ToDictionary(a => a.Id);
+
+        var locationsWithMissingJurisdiction = 0;
+        var locationsWithMissingRegion = 0;
+        var locationsWithMissingAreas = 0;
+
+        var missingJurisdictionReferences = 0;
+        var remappedJurisdictionReferences = 0;
+        var missingRegionReferences = 0;
+        var remappedRegionReferences = 0;
+        var fallbackAreaReferences = 0;
+
         foreach (var location in locations)
         {
-            if (locationAreaIds.TryGetValue(location.Id, out var areaIds))
+            if (location.JurisdictionId.HasValue)
             {
-                foreach (var areaId in areaIds.Where(areasById.ContainsKey))
+                if (targetJurisdictions.Any(j => j.Id == location.JurisdictionId.Value))
                 {
-                    location.Areas.Add(areasById[areaId]);
+                    location.Jurisdiction = null;
+                }
+                else if (sourceJurisdictionsById.TryGetValue(location.JurisdictionId.Value, out var sourceJurisdiction) &&
+                         targetJurisdictionsByName.TryGetValue(sourceJurisdiction.Name, out var targetJurisdictionId))
+                {
+                    remappedJurisdictionReferences++;
+                    _logger.LogInformation(
+                        "Location {LocationIdentifier} remapped jurisdiction {SourceJurisdictionId} ({JurisdictionName}) to target jurisdiction {TargetJurisdictionId}",
+                        location.LocationIdentifier,
+                        location.JurisdictionId,
+                        sourceJurisdiction.Name,
+                        targetJurisdictionId);
+                    location.JurisdictionId = targetJurisdictionId;
+                    location.Jurisdiction = null;
+                }
+                else
+                {
+                    locationsWithMissingJurisdiction++;
+                    missingJurisdictionReferences++;
+                    _logger.LogWarning(
+                        "Location {LocationIdentifier} references missing jurisdiction {JurisdictionId}; using default jurisdiction {DefaultJurisdictionId}",
+                        location.LocationIdentifier,
+                        location.JurisdictionId,
+                        defaultJurisdictionId);
+                    location.JurisdictionId = defaultJurisdictionId;
+                    location.Jurisdiction = null;
                 }
             }
+            else
+            {
+                locationsWithMissingJurisdiction++;
+                location.JurisdictionId = defaultJurisdictionId;
+                location.Jurisdiction = null;
+            }
+
+            if (location.RegionId.HasValue)
+            {
+                if (targetRegionsByDescription.Values.Contains(location.RegionId.Value))
+                {
+                    location.Region = null;
+                }
+                else if (sourceRegionsById.TryGetValue(location.RegionId.Value, out var sourceRegion) &&
+                         targetRegionsByDescription.TryGetValue(sourceRegion.Description, out var targetRegionId))
+                {
+                    remappedRegionReferences++;
+                    _logger.LogInformation(
+                        "Location {LocationIdentifier} remapped region {SourceRegionId} ({RegionDescription}) to target region {TargetRegionId}",
+                        location.LocationIdentifier,
+                        location.RegionId,
+                        sourceRegion.Description,
+                        targetRegionId);
+                    location.RegionId = targetRegionId;
+                    location.Region = null;
+                }
+                else
+                {
+                    locationsWithMissingRegion++;
+                    missingRegionReferences++;
+                    _logger.LogWarning(
+                        "Location {LocationIdentifier} references missing region {RegionId}; using default region {DefaultRegionId}",
+                        location.LocationIdentifier,
+                        location.RegionId,
+                        defaultRegionId);
+                    location.RegionId = defaultRegionId;
+                    location.Region = null;
+                }
+            }
+            else
+            {
+                locationsWithMissingRegion++;
+                location.RegionId = defaultRegionId;
+                location.Region = null;
+            }
+
+            if (locationAreaIds.TryGetValue(location.Id, out var areaIds))
+            {
+                var resolvedAreaIds = new HashSet<int>();
+                foreach (var areaId in areaIds)
+                {
+                    if (sourceAreasById.TryGetValue(areaId, out var sourceArea) &&
+                        targetAreasByName.TryGetValue(sourceArea.Name, out var targetAreaId))
+                    {
+                        resolvedAreaIds.Add(targetAreaId);
+                        continue;
+                    }
+
+                    locationsWithMissingAreas++;
+                    fallbackAreaReferences++;
+                    resolvedAreaIds.Add(defaultAreaId);
+                    _logger.LogWarning(
+                        "Location {LocationIdentifier} references missing area {AreaId}; using default area {DefaultAreaId}",
+                        location.LocationIdentifier,
+                        areaId,
+                        defaultAreaId);
+                }
+
+                foreach (var areaId in resolvedAreaIds)
+                {
+                    var area = _areaRepository.Lookup(areaId);
+                    if (area != null)
+                    {
+                        location.Areas.Add(area);
+                    }
+                }
+            }
+            else
+            {
+                locationsWithMissingAreas++;
+                location.Areas.Add(_areaRepository.Lookup(defaultAreaId));
+            }
+        }
+
+        if (locationsWithMissingJurisdiction > 0 || locationsWithMissingRegion > 0 || locationsWithMissingAreas > 0)
+        {
+            _logger.LogWarning(
+                "Preflight cleanup result: remapped {RemappedJurisdictionCount} jurisdiction references, remapped {RemappedRegionCount} region references, used {JurisdictionCount} default jurisdictions, used {RegionCount} default regions, and used {AreaCount} default areas before importing locations",
+                remappedJurisdictionReferences,
+                remappedRegionReferences,
+                locationsWithMissingJurisdiction,
+                locationsWithMissingRegion,
+                fallbackAreaReferences);
         }
 
         if (_config.Delete)
@@ -980,6 +1292,57 @@ public class TransferConfigCommandHostedService : IHostedService
             LocationId = device.LocationId,
             DeviceConfigurationId = device.DeviceConfigurationId
         })).ToList();
+
+    private int EnsureDefaultJurisdiction()
+    {
+        var existing = _jurisdictionRepository.GetList().FirstOrDefault(j => j.Name == "Default Jurisdiction");
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var jurisdiction = new Jurisdiction
+        {
+            Name = "Default Jurisdiction"
+        };
+
+        _jurisdictionRepository.Add(jurisdiction);
+        return jurisdiction.Id;
+    }
+
+    private int EnsureDefaultRegion()
+    {
+        var existing = _regionsRepository.GetList().FirstOrDefault(r => r.Description == "Default Region");
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var region = new Region
+        {
+            Description = "Default Region"
+        };
+
+        _regionsRepository.Add(region);
+        return region.Id;
+    }
+
+    private int EnsureDefaultArea()
+    {
+        var existing = _areaRepository.GetList().FirstOrDefault(a => a.Name == "Default Area");
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var area = new Area
+        {
+            Name = "Default Area"
+        };
+
+        _areaRepository.Add(area);
+        return area.Id;
+    }
 
     private static TTarget CopyAuditFields<TKey, TTarget>(AtspmConfigModelBase<TKey> source, TTarget target)
         where TTarget : AtspmConfigModelBase<TKey>

@@ -26,20 +26,22 @@ namespace DatabaseInstaller.Commands
 {
     public class MoveEventLogsSqlServerToPostgresCommand : Command, ICommandOption<TransferCommandConfiguration>
     {
-        public MoveEventLogsSqlServerToPostgresCommand() : base("copy-sql", "Apply migrations and optionally seed the admin user")
+        public MoveEventLogsSqlServerToPostgresCommand() : base("copy-sql", "Copy event logs from SQL Server into PostgreSQL")
         {
             AddOption(SourceOption);
             AddOption(StartOption);
             AddOption(EndOption);
             AddOption(LocationsOption);
             AddOption(DeviceOption);
+            AddOption(BatchSizeOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
         public Option<DateTime> StartOption { get; set; } = new("--start", "Start Date");
-        public Option<DateTime> EndOption { get; set; } = new("--end", "Start Date");
+        public Option<DateTime> EndOption { get; set; } = new("--end", "End Date");
         public Option<string> LocationsOption { get; set; } = new("--locations", "Comma seperated list of location identifiers") { IsRequired = false };
         public Option<int?> DeviceOption { get; set; } = new("--device", "Id of Device Type used to import events for just that device type") { IsRequired = false };
+        public Option<int?> BatchSizeOption { get; set; } = new("--batch-size", "Size of insert batches for copy-sql") { IsRequired = false };
 
         public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
@@ -50,6 +52,7 @@ namespace DatabaseInstaller.Commands
             binder.BindMemberFromValue(b => b.End, EndOption);
             binder.BindMemberFromValue(b => b.Locations, LocationsOption);
             binder.BindMemberFromValue(b => b.Device, DeviceOption);
+            binder.BindMemberFromValue(b => b.CopyBatchSize, BatchSizeOption);
 
             return binder;
         }

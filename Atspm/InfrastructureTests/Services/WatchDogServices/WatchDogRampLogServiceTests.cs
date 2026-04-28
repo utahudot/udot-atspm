@@ -78,6 +78,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             {
                 RampMissedDetectorHitsStartScanDate = DateTime.Today.AddHours(6),
                 RampMissedDetectorHitsEndScanDate = DateTime.Today.AddHours(9),
+                RampMissedDetectorHitStartHour = 6,
+                RampMissedDetectorHitEndHour = 9,
                 RampMissedEventsThreshold = 0,
                 RampDetectorStartHour = 6,
                 RampDetectorEndHour = 9,
@@ -124,16 +126,18 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         }
 
         [Fact]
-        public void CheckRampMissedDetectorHits_Should_AddError_WhenMissingData()
+        public void CheckRampMissedDetectorHits_Should_NotAddError_WhenRampMainlineMetricsExist()
         {
             // Arrange
             var options = new WatchdogRampLoggingOptions
             {
                 RampMissedDetectorHitsStartScanDate = DateTime.Today.AddHours(6),
-                RampMissedDetectorHitsEndScanDate = DateTime.Today.AddHours(9),
+                RampMissedDetectorHitsEndScanDate = DateTime.Today.AddHours(7),
+                RampMissedDetectorHitStartHour = 6,
+                RampMissedDetectorHitEndHour = 7,
                 RampMissedEventsThreshold = 0,
                 RampDetectorStartHour = 6,
-                RampDetectorEndHour = 9,
+                RampDetectorEndHour = 7,
                 LowHitRampThreshold = 0
             };
 
@@ -163,32 +167,26 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             };
 
             var errors = new ConcurrentBag<WatchDogLogEvent>();
-            var events = new List<IndianaEvent>
+            var events = new List<IndianaEvent>();
+            var eventCodes = new short[] { 1371, 1372, 1373 };
+
+            for (var timestamp = options.RampMissedDetectorHitStart; timestamp < options.RampMissedDetectorHitEnd; timestamp = timestamp.AddSeconds(20))
             {
-                new IndianaEvent
+                var code = eventCodes[(int)((timestamp - options.RampMissedDetectorHitStart).TotalSeconds / 20) % eventCodes.Length];
+                events.Add(new IndianaEvent
                 {
                     LocationIdentifier = location.LocationIdentifier,
-                    Timestamp = options.RampMissedDetectorHitsStartScanDate.AddMinutes(5),
-                    EventCode = 1371,      // example detector on / hit event code
-                    EventParam = 1
-                },
-                new IndianaEvent
-                {
-                    LocationIdentifier = location.LocationIdentifier,
-                    Timestamp = options.RampMissedDetectorHitsStartScanDate.AddMinutes(10),
-                    EventCode = 1372,
-                    EventParam = 1
-                }
-            };
+                    Timestamp = timestamp,
+                    EventCode = code,
+                    EventParam = (short)(code == 1371 ? 1700 : code == 1372 ? 118 : 116)
+                });
+            }
 
             // Act
             _watchDogRampLogService.CheckRampMissedDetectorHits(location, options, events, errors);
 
             // Assert
-            Assert.Single(errors);
-            var error = errors.First();
-            Assert.Equal(WatchDogIssueTypes.RampMissedDetectorHits, error.IssueType);
-            Assert.Equal(detector.Id, error.ComponentId);
+            Assert.Empty(errors);
         }
 
         [Fact]
@@ -231,7 +229,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 Approaches = new List<Approach> { approach }
             };
 
-            var detectorEventCodes = new List<short> { 1371 };
+            var detectorEventCodes = new List<short> { 81, 82 };
 
             var locationEvents = new List<IndianaEvent>
             {
@@ -344,6 +342,95 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Assert
             Assert.Single(errors);
             Assert.Equal(validDetector.Id, errors.First().ComponentId);
+        }
+
+        [Fact]
+        public void CheckForLowRampDetectorHits_Should_NotAddError_WhenRampMainlineMetricsExist_AndDetectorHitsAreAboveThreshold()
+        {
+            var options = new WatchdogRampLoggingOptions
+            {
+                RampMissedDetectorHitsStartScanDate = DateTime.Today.AddHours(6),
+                RampMissedDetectorHitsEndScanDate = DateTime.Today.AddHours(9),
+                RampMissedEventsThreshold = 0,
+                RampDetectorStartHour = 6,
+                RampDetectorEndHour = 9,
+                LowHitRampThreshold = 2
+            };
+
+            var detector = new Detector
+            {
+                Id = 1,
+                DetectorChannel = 1,
+                DetectionTypes = new List<DetectionType>
+                {
+                    new DetectionType { Id = (DetectionTypes)8 }
+                }
+            };
+
+            var approach = new Approach
+            {
+                Id = 1,
+                LocationId = 1,
+                Detectors = new List<Detector> { detector }
+            };
+
+            var location = new Location
+            {
+                Id = 1,
+                LocationIdentifier = "LOC1",
+                LocationTypeId = 2,
+                Approaches = new List<Approach> { approach }
+            };
+
+            var locationEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = location.LocationIdentifier,
+                    Timestamp = options.RampDetectorStart.AddMinutes(1),
+                    EventCode = 81,
+                    EventParam = 1
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = location.LocationIdentifier,
+                    Timestamp = options.RampDetectorStart.AddMinutes(2),
+                    EventCode = 82,
+                    EventParam = 1
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = location.LocationIdentifier,
+                    Timestamp = options.RampDetectorStart.AddMinutes(3),
+                    EventCode = 1371,
+                    EventParam = 1700
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = location.LocationIdentifier,
+                    Timestamp = options.RampDetectorStart.AddMinutes(3),
+                    EventCode = 1372,
+                    EventParam = 118
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = location.LocationIdentifier,
+                    Timestamp = options.RampDetectorStart.AddMinutes(3),
+                    EventCode = 1373,
+                    EventParam = 116
+                }
+            };
+
+            var errors = new ConcurrentBag<WatchDogLogEvent>();
+
+            _watchDogRampLogService.CheckForLowRampDetectorHits(
+                location,
+                options,
+                locationEvents,
+                errors,
+                new List<short> { 81, 82 });
+
+            Assert.Empty(errors);
         }
 
         [Fact]

@@ -119,6 +119,20 @@ public class TransferConfigCommandTests
         Assert.Equal(TransportProtocols.Ftp, configuration.Protocol);
     }
 
+    [Fact]
+    public void BuildLocationBatchUrl_UsesExpectedODataSyntax()
+    {
+        var assembly = LoadDatabaseInstallerAssembly();
+        var hostedServiceType = assembly.GetType("TransferConfigCommandHostedService", throwOnError: true)!;
+        var method = hostedServiceType.GetMethod("BuildLocationBatchUrl", BindingFlags.NonPublic | BindingFlags.Static)!;
+
+        var locationUrl = (string)method.Invoke(null, new object[] { new[] { "1001", "1002" } })!;
+
+        Assert.Equal(
+            "api/v1/Location?$filter=LocationIdentifier eq '1001' or LocationIdentifier eq '1002'&$orderby=LocationIdentifier asc,Start desc&$expand=Areas,Approaches($expand=Detectors($expand=DetectionTypes),DirectionType),Devices($expand=DeviceConfiguration($expand=Product))",
+            locationUrl);
+    }
+
     private static Assembly LoadDatabaseInstallerAssembly()
     {
         Assert.True(File.Exists(DatabaseInstallerAssemblyPath), $"Missing assembly: {DatabaseInstallerAssemblyPath}");
