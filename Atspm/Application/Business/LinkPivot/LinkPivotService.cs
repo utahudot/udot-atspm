@@ -37,6 +37,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         public async Task<LinkPivotResult> GetData(LinkPivotOptions options, List<RouteLocation> routeLocations)
         {
+            routeLocations = routeLocations.OrderBy(routeLocation => routeLocation.Order).ToList();
             LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
             var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
 
@@ -153,7 +154,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             int[] daysOfWeek = options.DaysOfWeek ?? Array.Empty<int>();
-            var daysToInclude = GetDaysToProcess(options.StartDate, options.EndDate, options.DaysOfWeek);
+            var daysToInclude = GetDaysToProcess(options.StartDate, options.EndDate, daysOfWeek);
             await CreatePairedApproaches(options, routeLocations, pairedApproaches, indices, daysToInclude);
 
             //Cycle through the LinkPivotPair list and add the statistics to the LinkPivotadjustmentTable
@@ -263,42 +264,33 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         {
             foreach (var i in indices)
             {
-                var location = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i - 1 : i].LocationIdentifier);
-                var primaryPhase = routeLocations[i].PrimaryPhase;
-                var downstreamPrimaryPhase = routeLocations[options.Direction == "Upstream" ? i - 1 : i + 1].OpposingPhase;
-                if (downstreamPrimaryPhase != null)
-                {
-                    var downstreamLocation = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i : i + 1].LocationIdentifier);
-                    var downstreamApproach = getDownstreamApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, options.Direction);
-                    var approach = getApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, options.Direction);
-                    var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(approach, downstreamApproach, options, daysToInclude, i + 1);
-                    PairedApproaches.Add(linkPivotPair);
-                }
+                var upstreamRouteLocation = routeLocations[i];
+                var downstreamRouteLocation = routeLocations[options.Direction == "Upstream" ? i - 1 : i + 1];
+                var usePrimaryApproach = options.Direction != "Upstream";
+
+                var upstreamLocation = locationRepository.GetLatestVersionOfLocation(upstreamRouteLocation.LocationIdentifier);
+                var downstreamLocation = locationRepository.GetLatestVersionOfLocation(downstreamRouteLocation.LocationIdentifier);
+
+                var upstreamApproach = GetApproach(upstreamLocation, upstreamRouteLocation, usePrimaryApproach);
+                var downstreamApproach = GetApproach(downstreamLocation, downstreamRouteLocation, usePrimaryApproach);
+                var linkNumber = i + 1;
+
+                var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(upstreamApproach, downstreamApproach, options, daysToInclude, linkNumber);
+                PairedApproaches.Add(linkPivotPair);
             }
         }
 
-        private Approach getDownstreamApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
+        private static Approach GetApproach(Location location, RouteLocation routeLocation, bool usePrimaryApproach)
         {
-            if (direction == "Upstream")
-            {
-                return location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == primaryPhase);
-            }
-            else
-            {
-                return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase);
-            }
-        }
+            var phaseNumber = usePrimaryApproach ? routeLocation.PrimaryPhase : routeLocation.OpposingPhase;
+            var directionTypeId = usePrimaryApproach ? routeLocation.PrimaryDirectionId : routeLocation.OpposingDirectionId;
+            var isOverlap = usePrimaryApproach ? routeLocation.IsPrimaryOverlap : routeLocation.IsOpposingOverlap;
 
-        private Approach getApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
-        {
-            if (direction == "Upstream")
-            {
-                return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase);
-            }
-            else
-            {
-                return location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == primaryPhase);
-            }
+            return location.Approaches.FirstOrDefault(a =>
+                a.ProtectedPhaseNumber == phaseNumber &&
+                a.DirectionTypeId == directionTypeId &&
+                a.IsProtectedPhaseOverlap == isOverlap
+                );
         }
 
         private List<DateOnly> GetDaysToProcess(DateOnly startDate, DateOnly endDate, int[] daysOfWeek)
