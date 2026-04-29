@@ -91,10 +91,10 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
     routeData?.routeLocations
       .map((loc) => {
         const primary = loc.approaches.find(
-          (a) => a.protectedPhaseNumber === loc.primaryPhase
+          (a) => a.protectedPhaseNumber === loc.primaryPhase && a.isProtectedPhaseOverlap === loc.isPrimaryOverlap
         )
         const opposing = loc.approaches.find(
-          (a) => a.protectedPhaseNumber === loc.opposingPhase
+          (a) => a.protectedPhaseNumber === loc.opposingPhase && a.isProtectedPhaseOverlap === loc.isOpposingOverlap
         )
 
         return {
