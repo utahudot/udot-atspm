@@ -15,26 +15,32 @@
 // limitations under the License.
 // #endregion
 import {
-  createDataZoom,
   createDisplayProps,
   createLegend,
   createTitle,
-  createToolbox,
-  createTooltip,
-  createXAxis,
   createYAxis,
-  formatExportFileName,
 } from '@/features/charts/common/transformers'
 import { ToolType } from '@/features/charts/common/types'
+import {
+  buildTimeSpaceChartScaffold,
+  buildTimeSpaceDataZoom,
+  buildTimeSpaceGrid,
+  buildTimeSpaceToolbox,
+  buildTimeSpaceXAxis,
+} from '@/features/charts/timeSpaceDiagram/core/transformers/timeSpaceChartScaffold'
+import { buildTimeSpacePhaseLayout } from '@/features/charts/timeSpaceDiagram/core/transformers/timeSpacePhaseLayout'
+import {
+  buildEmptyTimeSpaceTransformResult,
+  buildTimeSpaceTransformResult,
+  unwrapTimeSpaceTransformResults,
+} from '@/features/charts/timeSpaceDiagram/core/transformers/timeSpaceTransformResult'
 import {
   generateCycleLabels,
   generateCycles,
   generateGreenEventLines,
   getDistancesLabelOption,
   getLocationsLabelOption,
-  getOffsetAndProgramSplitLabel,
-  getTimeSpacePhaseRowDistances,
-  TIME_SPACE_CYCLE_CENTER_OFFSET,
+  TIME_SPACE_Y_AXIS_PADDING,
 } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import {
   RawTimeSpaceAverageData,
@@ -42,132 +48,91 @@ import {
   TimeSpaceDiagramPhaseResult,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
-import {
-  SolidLineSeriesSymbol,
-  formatChartDateTimeRange,
-} from '@/features/charts/utils'
-import { format } from 'date-fns'
-import {
-  DataZoomComponentOption,
-  EChartsOption,
-  GridComponentOption,
-  SeriesOption,
-} from 'echarts'
+import { SolidLineSeriesSymbol } from '@/features/charts/utils'
+import { format, isSameDay } from 'date-fns'
+import { EChartsOption, SeriesOption } from 'echarts'
 
 export default function transformTimeSpaceAverageData(
   response: RawTimeSpaceDiagramResponse
 ): TransformedTimeSpaceResponse & { errors?: string[] } {
-  // Extract successful results and filter out errors
   const wrappedData =
     response.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceAverageData>[]
-
-  // Collect error messages
-  const errorMessages = wrappedData
-    .filter((item) => !item.isSuccess && item.error)
-    .map((item) => item.error as string)
-
-  // Extract only successful results
-  const successfulData = wrappedData
-    .filter((item) => item.isSuccess && item.result)
-    .map((item) => item.result as RawTimeSpaceAverageData)
+  const { errorMessages, successfulData } =
+    unwrapTimeSpaceTransformResults(wrappedData)
 
   if (successfulData.length === 0) {
-    // Return error information instead of throwing
-    return {
-      type: ToolType.TimeSpaceAverage,
-      data: { chart: {} },
-      errors:
-        errorMessages.length > 0
-          ? errorMessages
-          : [
-              'No valid time space diagram data available. All phases returned errors.',
-            ],
-    }
+    return buildEmptyTimeSpaceTransformResult(
+      ToolType.TimeSpaceAverage,
+      errorMessages
+    )
   }
 
-  const result: TransformedTimeSpaceResponse & { errors?: string[] } = {
-    type: ToolType.TimeSpaceAverage,
-    data: {
-      chart: transformData(successfulData),
-    },
-  }
-
-  // Include errors if some phases failed but we still have partial data
-  if (errorMessages.length > 0) {
-    result.errors = errorMessages
-  }
-
-  return {
-    type: ToolType.TimeSpaceHistoric,
-    data,
-  }
+  return buildTimeSpaceTransformResult(
+    ToolType.TimeSpaceAverage,
+    transformData(successfulData),
+    errorMessages
+  )
 }
 
 function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
-  const primaryPhaseData = data.filter(
-    (location) => location.phaseType === 'Primary'
-  )
-
-  const opposingPhaseData = data.filter(
-    (location) => location.phaseType === 'Opposing'
-  )
-  const titleHeader = `Time Space Diagram (50th Percentile),\nPrimary Phase - ${primaryPhaseData[0].approachDescription},\nOpposing Phase - ${opposingPhaseData[0].approachDescription},\nCoordinated Phases - ${data[0].coordinatedPhases}`
-  const dateRange = formatChartDateTimeRange(data[0].start, data[0].end)
-  const title = createTitle({
-    title: titleHeader,
-    dateRange,
-    info: `Route data from ${data[0].locationDescription} to ${
-      data[data.length - 1].locationDescription
-    } \n`,
-  })
-
-  const startDate = new Date(data[0].start)
-  const endDate = new Date(data[0].end)
-
-  startDate.setHours(
-    endDate.getHours(),
-    endDate.getMinutes(),
-    endDate.getSeconds()
-  )
-
-  const endDateFormat = format(startDate, "yyyy-MM-dd'T'HH:mm:ss")
-
-  const xAxis = createXAxis(data[0].start, endDateFormat)
-
-  const primaryDirection = primaryPhaseData[0].approachDescription.split(' ')[0]
-  const opposingDirection =
-    opposingPhaseData[0].approachDescription.split(' ')[0]
-
-  let initialDistance = 0
-  const locationCenterDistanceData: number[] = []
-  primaryPhaseData.forEach((location) => {
-    locationCenterDistanceData.push(initialDistance)
-    initialDistance += location.distanceToNextLocation
-  })
   const {
-    primaryDistanceData,
+    chartHeight,
+    distanceScale,
+    locationCenterDistanceData,
+    maxDisplayDistance,
+    minDisplayDistance,
+    opposingDirection,
     opposingDistanceData,
-  } = getTimeSpacePhaseRowDistances(locationCenterDistanceData)
-  const minDisplayDistance = Math.min(
-    ...primaryDistanceData,
-    ...opposingDistanceData
+    opposingPhaseData,
+    primaryDirection,
+    primaryDistanceData,
+    primaryPhaseData,
+  } = buildTimeSpacePhaseLayout(data, {
+    sortByOrder: true,
+  })
+  const chartStart = new Date(data[0].start)
+  const rawEnd = new Date(data[0].end)
+  const chartEnd = new Date(chartStart)
+
+  chartEnd.setHours(
+    rawEnd.getHours(),
+    rawEnd.getMinutes(),
+    rawEnd.getSeconds(),
+    rawEnd.getMilliseconds()
   )
-  const maxDisplayDistance = Math.max(
-    ...primaryDistanceData,
-    ...opposingDistanceData
+
+  if (chartEnd <= chartStart) {
+    chartEnd.setDate(chartEnd.getDate() + 1)
+  }
+
+  const chartStartIso = chartStart.toISOString()
+  const chartEndIso = chartEnd.toISOString()
+  const title = createTitle({
+    title: 'Time Space Diagram - 50th Percentile',
+    location: buildAverageHeaderRange(chartStart, rawEnd, chartEnd),
+  })
+
+  const chartStartMs = chartStart.getTime()
+  const chartEndMs = chartEnd.getTime()
+  const xAxis = buildTimeSpaceXAxis(
+    chartStartIso,
+    chartEndIso,
+    chartStartMs,
+    chartEndMs
   )
   const yAxis = createYAxis(false, {
     show: false,
     data: locationCenterDistanceData,
-    min: minDisplayDistance - TIME_SPACE_CYCLE_CENTER_OFFSET,
-    max: maxDisplayDistance + TIME_SPACE_CYCLE_CENTER_OFFSET,
+    min: minDisplayDistance - TIME_SPACE_Y_AXIS_PADDING,
+    max: maxDisplayDistance + TIME_SPACE_Y_AXIS_PADDING,
     axisLabel: {
       show: false,
     },
   })
+  const grid = buildTimeSpaceGrid()
 
   const legends = createLegend({
-    top: 195,
+    top: grid.top,
     data: [
       {
         name: `Cycles ${primaryDirection}`,
@@ -198,55 +163,18 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
         itemStyle: { color: 'green', opacity: 0.3 },
       },
     ],
+    selected: {
+      [`Cycles ${primaryDirection}`]: true,
+      [`Cycles ${opposingDirection}`]: true,
+      [`Cycle Durations ${primaryDirection}`]: true,
+      [`Cycle Durations ${opposingDirection}`]: true,
+      [`Green Bands ${primaryDirection}`]: true,
+      [`Green Bands ${opposingDirection}`]: true,
+    },
   })
 
-  const grid: GridComponentOption = {
-    top: 200,
-    left: 100,
-    right: 325,
-    show: true,
-    borderWidth: 1,
-    // borderColor: Color.Black,
-  }
-
-  const start = new Date(
-    data[0].cycleAllEvents[data[0].cycleAllEvents?.length - 1].start
-  )
-  const end = new Date(data[0].cycleAllEvents[0].start)
-  const timeDiff = (start.getTime() - end.getTime()) / 3600000
-
-  let dataZoom: DataZoomComponentOption[]
-
-  if (timeDiff > 6) {
-    dataZoom = [
-      {
-        type: 'slider',
-        filterMode: 'filter',
-        show: true,
-        start: 0,
-        end: 10,
-        maxSpan: 10,
-        minSpan: 0.2,
-      },
-      {
-        type: 'inside',
-        filterMode: 'none',
-        show: true,
-        minSpan: 0.2,
-      },
-    ]
-  } else {
-    dataZoom = createDataZoom()
-  }
-
-  const toolbox = createToolbox(
-    {
-      title: formatExportFileName(titleHeader, data[0].start, data[0].end),
-      dateRange,
-    },
-    data[0].locationIdentifier,
-    ToolType.TimeSpaceHistoric
-  )
+  const dataZoom = buildTimeSpaceDataZoom(chartStartMs, chartEndMs)
+  const toolbox = buildTimeSpaceToolbox('Time Space Diagram - 50th Percentile')
 
   const series: SeriesOption[] = []
 
@@ -264,7 +192,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryDistanceData,
       primaryDirection,
       true,
-      1,
+      distanceScale,
       'primary'
     )
   )
@@ -276,17 +204,8 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     getDistancesLabelOption(
       primaryPhaseData,
       locationCenterDistanceData,
-      grid.left as number
-    )
-  )
-  series.push(
-    getOffsetAndProgramSplitLabel(
-      primaryPhaseData,
-      opposingPhaseData,
-      locationCenterDistanceData,
-      primaryDirection,
-      opposingDirection,
-      endDateFormat
+      grid.left as number,
+      distanceScale
     )
   )
   series.push(
@@ -295,7 +214,9 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryDirection,
       undefined,
       primaryPhaseData.map((p) => p.approachDescription),
-      undefined,
+      primaryPhaseData.map((p) => [
+        `Split: ${formatSecondsDetail(p.programmedSplit)}`,
+      ]),
       'left',
       primaryPhaseData.map((p) => Boolean(p.isIgnoredLocation))
     )
@@ -316,7 +237,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       opposingDistanceData,
       opposingDirection,
       false,
-      1,
+      distanceScale,
       'opposing'
     )
   )
@@ -327,7 +248,9 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       opposingDirection,
       undefined,
       [...opposingPhaseData].reverse().map((p) => p.approachDescription),
-      undefined,
+      [...opposingPhaseData]
+        .reverse()
+        .map((p) => [`Split: ${formatSecondsDetail(p.programmedSplit)}`]),
       'right',
       [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
     )
@@ -335,24 +258,40 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
 
   const displayProps = createDisplayProps({
     description: '',
-    numberOfLocations: data.length,
+    numberOfLocations: primaryPhaseData.length,
+    height: chartHeight,
+    locations: primaryPhaseData.map((p) => p.locationIdentifier),
   })
 
-  const tooltip = createTooltip()
-
-  const chartOptions: EChartsOption = {
-    title: title,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    grid: grid,
-    dataZoom: dataZoom,
+  return buildTimeSpaceChartScaffold({
+    title,
+    xAxis,
+    yAxis,
+    grid,
+    dataZoom,
     legend: legends,
-    toolbox: toolbox,
-    animation: false,
-    series: series,
-    tooltip,
+    toolbox,
+    series,
     displayProps,
+    animation: true,
+  })
+}
+
+function buildAverageHeaderRange(rawStart: Date, rawEnd: Date, chartEnd: Date) {
+  const dateRange = isSameDay(rawStart, rawEnd)
+    ? format(rawStart, 'EEE, MMM d, yyyy')
+    : `${format(rawStart, 'EEE, MMM d, yyyy')} - ${format(
+        rawEnd,
+        'EEE, MMM d, yyyy'
+      )}`
+
+  return `${dateRange} - ${format(rawStart, 'HH:mm')}-${format(chartEnd, 'HH:mm')}`
+}
+
+function formatSecondsDetail(value: number | null | undefined) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return 'unknown'
   }
 
-  return chartOptions
+  return `${value}s`
 }

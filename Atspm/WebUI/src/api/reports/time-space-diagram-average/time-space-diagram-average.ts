@@ -39,7 +39,7 @@ import type {
 import type {
   ProblemDetails,
   TimeSpaceDiagramAverageOptions,
-  TimeSpaceDiagramAverageResult
+  TimeSpaceDiagramAveragePhaseResult
 } from '../report-api.schemas';
 
 import { reportsRequest } from '../../../lib/axios';

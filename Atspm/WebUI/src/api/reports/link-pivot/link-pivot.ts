@@ -37,11 +37,13 @@ import type {
 } from 'react-query';
 
 import type {
+  LinkPivotForTsd,
   LinkPivotOptions,
   LinkPivotPcdOptions,
   LinkPivotPcdResult,
   LinkPivotResult,
-  ProblemDetails
+  ProblemDetails,
+  TimeSpaceDiagramOptions
 } from '../report-api.schemas';
 
 import { reportsRequest } from '../../../lib/axios';
@@ -104,6 +106,64 @@ const {mutation: mutationOptions} = options ?
       > => {
 
       const mutationOptions = getGetLinkPivotPcdDataMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    export const getLinkPivotLinkPivotForTSD = (
+    timeSpaceDiagramOptions: TimeSpaceDiagramOptions,
+ signal?: AbortSignal
+) => {
+      
+      
+      return reportsRequest<LinkPivotForTsd[]>(
+      {url: `/LinkPivot/getLinkPivotForTsd`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramOptions, signal
+    },
+      );
+    }
+  
+
+
+export const getGetLinkPivotLinkPivotForTSDMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLinkPivotLinkPivotForTSD>>, TError,{data: TimeSpaceDiagramOptions}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof getLinkPivotLinkPivotForTSD>>, TError,{data: TimeSpaceDiagramOptions}, TContext> => {
+
+const mutationKey = ['getLinkPivotLinkPivotForTSD'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getLinkPivotLinkPivotForTSD>>, {data: TimeSpaceDiagramOptions}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getLinkPivotLinkPivotForTSD(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetLinkPivotLinkPivotForTSDMutationResult = NonNullable<Awaited<ReturnType<typeof getLinkPivotLinkPivotForTSD>>>
+    export type GetLinkPivotLinkPivotForTSDMutationBody = TimeSpaceDiagramOptions
+    export type GetLinkPivotLinkPivotForTSDMutationError = ProblemDetails
+
+    export const useGetLinkPivotLinkPivotForTSD = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLinkPivotLinkPivotForTSD>>, TError,{data: TimeSpaceDiagramOptions}, TContext>, }
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getLinkPivotLinkPivotForTSD>>,
+        TError,
+        {data: TimeSpaceDiagramOptions},
+        TContext
+      > => {
+
+      const mutationOptions = getGetLinkPivotLinkPivotForTSDMutationOptions(options);
 
       return useMutation(mutationOptions );
     }

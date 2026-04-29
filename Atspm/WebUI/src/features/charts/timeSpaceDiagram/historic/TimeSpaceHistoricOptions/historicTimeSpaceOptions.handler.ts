@@ -1,4 +1,5 @@
 import { ToolType } from '@/features/charts/common/types'
+import type { TSBaseHandler } from '@/features/charts/timeSpaceDiagram/shared/options/timeSpaceBaseHandler'
 import { TimeSpaceHistoricOptions } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Route } from '@/features/routes/types'
 import { DateTimeProps } from '@/types/TimeProps'
@@ -7,14 +8,7 @@ import { set, subDays } from 'date-fns'
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
-export interface TSBaseHandler {
-  routes: Route[]
-  routeId: string
-  speedLimit: number | null
-
-  setRouteId(routeId: string): void
-  setSpeedLimit(speedLimit: number | null): void
-}
+export type { TSBaseHandler } from '@/features/charts/timeSpaceDiagram/shared/options/timeSpaceBaseHandler'
 
 export interface TSHistoricHandler extends TSBaseHandler, DateTimeProps {
   // state <-> request payload
@@ -30,6 +24,30 @@ export interface TSHistoricHandler extends TSBaseHandler, DateTimeProps {
 
 interface Props {
   routes: Route[]
+}
+
+export function inferHistoricLocationIdentifier(
+  routes: Route[],
+  routeId: string,
+  locationIdentifier: string
+) {
+  const route = routes.find((candidate) => String(candidate.id) === routeId)
+  const routeLocationIdentifiers =
+    route?.routeLocations
+      ?.slice()
+      .sort((a, b) => a.order - b.order)
+      .map((routeLocation) => routeLocation.locationIdentifier)
+      .filter((identifier) => identifier.trim().length > 0) ?? []
+
+  if (routeLocationIdentifiers.length === 0) {
+    return locationIdentifier.trim()
+  }
+
+  if (routeLocationIdentifiers.includes(locationIdentifier.trim())) {
+    return locationIdentifier.trim()
+  }
+
+  return routeLocationIdentifiers[0]
 }
 
 export const useHistoricOptionsHandler = ({
@@ -110,16 +128,24 @@ export const useHistoricOptionsHandler = ({
     }
   }
 
-  const toOptions = (): TimeSpaceHistoricOptions => ({
-    extendStartStopSearch,
-    showAllLanesInfo,
-    start: startDateTime,
-    end: endDateTime,
-    routeId,
-    chartType,
-    speedLimit,
-    locationIdentifier,
-  })
+  const toOptions = (): TimeSpaceHistoricOptions => {
+    const inferredLocationIdentifier = inferHistoricLocationIdentifier(
+      routes,
+      routeId,
+      locationIdentifier
+    )
+
+    return {
+      extendStartStopSearch,
+      showAllLanesInfo,
+      start: startDateTime,
+      end: endDateTime,
+      routeId,
+      chartType,
+      speedLimit,
+      locationIdentifier: inferredLocationIdentifier,
+    }
+  }
 
   const toSearchParams = () => {
     const o = toOptions()

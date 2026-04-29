@@ -1,6 +1,6 @@
 import { LocationWithCoordPhases, LocationWithSequence } from '@/api/config'
 import { ToolType } from '@/features/charts/common/types'
-import { TSBaseHandler } from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/historicTimeSpaceOptions.handler'
+import type { TSBaseHandler } from '@/features/charts/timeSpaceDiagram/shared/options/timeSpaceBaseHandler'
 import { TimeSpaceAverageOptions } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Route, RouteLocation } from '@/features/routes/types'
 import { DateTimeProps, TimeOnlyProps } from '@/types/TimeProps'
@@ -58,8 +58,8 @@ export const useAverageOptionsHandler = ({
 }: Props): TSAverageHandler => {
   const yesterday = subDays(new Date(), 1)
 
-  const defaultStartDate = useMemo(() => subMonths(yesterday, 1), [])
-  const defaultEndDate = useMemo(() => yesterday, [])
+  const defaultStartDate = useMemo(() => subMonths(yesterday, 1), [yesterday])
+  const defaultEndDate = useMemo(() => yesterday, [yesterday])
   const defaultStartTime = useMemo(
     () =>
       set(new Date(), { hours: 16, minutes: 0, seconds: 0, milliseconds: 0 }),
