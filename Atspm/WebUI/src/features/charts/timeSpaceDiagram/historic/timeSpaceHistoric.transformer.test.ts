@@ -1,4 +1,5 @@
 import { ToolType } from '@/features/charts/common/types'
+import { triangleSvgSymbol } from '@/features/charts/utils'
 import type { EChartsOption, SeriesOption } from 'echarts'
 import type {
   RawTimeSpaceDiagramResponse,
@@ -289,6 +290,153 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(
       series.some((entry) => String(entry.name) === 'TSP Service (118-119)')
     ).toBe(false)
+  })
+
+  it('renders TSP request as grey and service as a hollow overlay', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            tspEvents: [
+              {
+                eventCode: 112,
+                timestamp: '2026-04-07T08:05:00Z',
+              },
+              {
+                eventCode: 118,
+                timestamp: '2026-04-07T08:05:10Z',
+              },
+              {
+                eventCode: 119,
+                timestamp: '2026-04-07T08:05:40Z',
+              },
+              {
+                eventCode: 115,
+                timestamp: '2026-04-07T08:06:00Z',
+              },
+            ] as RawTimeSpaceHistoricData['tspEvents'],
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+    const requestSeries = series.find(
+      (entry) => String(entry.name) === 'TSP Request (112-115)'
+    ) as
+      | (SeriesOption & {
+          renderItem: (
+            params: { dataIndex: number },
+            api: {
+              coord: (value: unknown[]) => [number, number]
+              value: (index: number, dataIndex?: number) => unknown
+            }
+          ) => GraphicNode
+        })
+      | undefined
+    const serviceSeries = series.find(
+      (entry) => String(entry.name) === 'TSP Service (118-119)'
+    ) as typeof requestSeries
+
+    const renderSeries = (entry: typeof requestSeries) => {
+      const dataPoints = Array.isArray(entry?.data)
+        ? (entry.data as unknown[][])
+        : []
+
+      return entry?.renderItem(
+        { dataIndex: 0 },
+        {
+          coord: (value) => [
+            typeof value[0] === 'number'
+              ? value[0]
+              : Date.parse(String(value[0] ?? '')),
+            Number(value[1] ?? 0),
+          ],
+          value: (index, renderDataIndex) =>
+            dataPoints[renderDataIndex ?? 0]?.[index],
+        }
+      )
+    }
+
+    const requestNode = renderSeries(requestSeries)
+    const serviceNode = renderSeries(serviceSeries)
+
+    expect(requestNode?.style?.fill).toBe('#808080')
+    expect(requestNode?.style?.opacity).toBe(0.95)
+    expect(serviceNode?.style?.fill).toBe('transparent')
+    expect(serviceNode?.style?.stroke).toBe('#000000')
+    expect(serviceNode?.style?.lineWidth).toBe(1.5)
+    expect(serviceNode?.style?.strokeOpacity).toBe(0.95)
+  })
+
+  it('keeps early and extend green marker symbols aligned with their event codes', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            tspEvents: [
+              {
+                eventCode: 113,
+                timestamp: '2026-04-07T08:05:00Z',
+              },
+              {
+                eventCode: 114,
+                timestamp: '2026-04-07T08:06:00Z',
+              },
+            ] as RawTimeSpaceHistoricData['tspEvents'],
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+    const legend = Array.isArray(chart.legend) ? chart.legend[0] : chart.legend
+    const legendData =
+      legend && 'data' in legend && Array.isArray(legend.data)
+        ? legend.data
+        : []
+
+    const earlySeries = series.find(
+      (entry) => String(entry.name) === 'Early Green (113)'
+    )
+    const extendSeries = series.find(
+      (entry) => String(entry.name) === 'Extend Green (114)'
+    )
+    const earlyLegend = legendData.find(
+      (entry) => typeof entry === 'object' && entry.name === 'Early Green (113)'
+    )
+    const extendLegend = legendData.find(
+      (entry) => typeof entry === 'object' && entry.name === 'Extend Green (114)'
+    )
+
+    expect(earlySeries?.symbol).toBe('circle')
+    expect(extendSeries?.symbol).toBe(triangleSvgSymbol)
+    expect(earlyLegend).toMatchObject({ icon: 'circle' })
+    expect(extendLegend).toMatchObject({ icon: triangleSvgSymbol })
   })
 
   it('renders stop-bar-presence continuations in striped grey', () => {

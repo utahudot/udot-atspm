@@ -41,14 +41,6 @@ export interface TimeSpaceSidebarProps {
   showTabs?: boolean
 }
 
-function getSidebarTabLabel(tab: SidebarTab) {
-  if (tab === 'styles') {
-    return 'Styles'
-  }
-
-  return tab === 'legend' ? 'Legend' : 'Uploads'
-}
-
 export default function TimeSpaceSidebar({
   option,
   selectedSeries,

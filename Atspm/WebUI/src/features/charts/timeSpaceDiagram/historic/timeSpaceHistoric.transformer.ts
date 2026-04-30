@@ -493,7 +493,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Early Green (113)`,
-        icon: triangleSvgSymbol,
+        icon: 'circle',
         itemStyle: {
           color: Color.White,
           borderColor: Color.Black,
@@ -502,6 +502,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Extend Green (114)`,
+        icon: triangleSvgSymbol,
         itemStyle: {
           color: Color.White,
           borderColor: Color.Black,

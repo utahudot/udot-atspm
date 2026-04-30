@@ -66,7 +66,6 @@ function flattenTspEvents(rows: PriorityDetailsResult[]): PriorityEvent[] {
     if (!tspEvents?.length) continue
     out.push(...tspEvents)
   }
-  console.log('flattened TSP events:', out)
   return out
 }
 
@@ -134,13 +133,9 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     )
   }
 
-  // event markers (112/113/114/115/118/119)
-  const checkIns: Array<[string, number]> = []
+  // 112/115 and 118/119 are represented by request/service ranges.
   const earlyGreens: Array<[string, number]> = []
   const extendGreens: Array<[string, number]> = []
-  const checkOuts: Array<[string, number]> = []
-  const serviceStarts: Array<[string, number]> = []
-  const serviceEnds: Array<[string, number]> = []
 
   for (const e of allEvents) {
     const rowIndex = tspRowIndex(e.eventParam)
@@ -152,39 +147,13 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     const pt: [string, number] = [t, rowIndex]
 
     switch (e.eventCode) {
-      case TSP_CODES.CheckIn:
-        checkIns.push(pt)
-        break
       case TSP_CODES.EarlyGreen:
         earlyGreens.push(pt)
         break
       case TSP_CODES.ExtendGreen:
         extendGreens.push(pt)
         break
-      case TSP_CODES.CheckOut:
-        checkOuts.push(pt)
-        break
-      case TSP_CODES.ServiceStart:
-        serviceStarts.push(pt)
-        break
-      case TSP_CODES.ServiceEnd:
-        serviceEnds.push(pt)
-        break
     }
-  }
-
-  if (checkIns.length) {
-    series.push({
-      name: 'Check In (112)',
-      type: 'scatter',
-      xAxisIndex: 0,
-      yAxisIndex: 0,
-      data: checkIns,
-      symbol: 'circle',
-      symbolSize: 9,
-      itemStyle: { color: Color.Black },
-      z: 10,
-    })
   }
 
   if (earlyGreens.length) {
