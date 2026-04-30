@@ -123,7 +123,59 @@
         }
       ],
       "@typescript-eslint/no-explicit-any": "warn"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/features/charts/timeSpaceDiagram/core/**/*.ts",
+          "src/features/charts/timeSpaceDiagram/core/**/*.tsx"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                "next/*",
+                "react-query",
+                "axios",
+                "@/lib/axios",
+                "@/features/routes/*",
+                "@/features/tools/link-pivot/*",
+                "@/pages/*",
+                "@/features/charts/api/*",
+                "@/features/charts/timeSpaceDiagram/api/*",
+                "@/features/charts/timeSpaceDiagram/app/*"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/features/charts/timeSpaceDiagram/renderer/**/*.ts",
+          "src/features/charts/timeSpaceDiagram/renderer/**/*.tsx"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                "next/*",
+                "react-query",
+                "axios",
+                "@/lib/axios",
+                "@/features/routes/*",
+                "@/features/tools/link-pivot/*",
+                "@/pages/*",
+                "@/features/charts/api/*",
+                "@/features/charts/timeSpaceDiagram/api/*",
+                "@/features/charts/timeSpaceDiagram/app/*"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
   "prettier": {
     "plugins": [

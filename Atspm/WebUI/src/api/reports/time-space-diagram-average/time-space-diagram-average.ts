@@ -22,7 +22,7 @@ import type {
 import type {
   ProblemDetails,
   TimeSpaceDiagramAverageOptions,
-  TimeSpaceDiagramAverageResult
+  TimeSpaceDiagramAveragePhaseResult
 } from '../report-api.schemas';
 
 import { reportsRequest } from '../../../lib/axios';
@@ -39,7 +39,7 @@ export const getTimeSpaceDiagramAverageTestData = (
 ) => {
       
       
-      return reportsRequest<TimeSpaceDiagramAverageResult[]>(
+      return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>(
       {url: `/TimeSpaceDiagramAverage/test`, method: 'GET', signal
     },
       );
@@ -102,7 +102,7 @@ export const getTimeSpaceDiagramAverageReportData = (
 ) => {
       
       
-      return reportsRequest<TimeSpaceDiagramAverageResult[]>(
+      return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>(
       {url: `/TimeSpaceDiagramAverage/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: timeSpaceDiagramAverageOptions, signal

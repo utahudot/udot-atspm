@@ -1,11 +1,11 @@
 import { dateToTimestamp } from '@/utils/dateTime'
+import { ECharts, EChartsOption, SeriesOption } from 'echarts'
+import { useEffect, useRef } from 'react'
 import {
   getTimeSpaceLocationOffsetBadgeLayout,
   hasModifiedOffset,
   TIME_SPACE_LOCATION_AXIS_SERIES_ID,
 } from '../transformers/timeSpaceTransformerBase'
-import { ECharts, EChartsOption, SeriesOption } from 'echarts'
-import { useEffect, useRef } from 'react'
 
 const HIT_TOLERANCE = 10
 const STEP_MS = 1000
@@ -46,12 +46,7 @@ const POINT_SERIES_PREFIXES = [
   'Extend Green',
 ]
 
-const POINT_WITH_GAPS_SERIES_PREFIXES = [
-  'LLC',
-  'AC',
-  'Left Turn',
-  'Right Turn',
-]
+const POINT_WITH_GAPS_SERIES_PREFIXES = ['LLC', 'AC', 'Left Turn', 'Right Turn']
 
 const RANGE_SERIES_PREFIXES = [
   'Cycle Continuation',
@@ -112,7 +107,9 @@ const getAllSeries = (chart: ECharts) => {
     }
   }
 
-  const rawSeries = Array.isArray(options.series) ? options.series : [options.series]
+  const rawSeries = Array.isArray(options.series)
+    ? options.series
+    : [options.series]
   const series = rawSeries.filter(isSeriesOption)
   const withId = series.filter((s) => typeof s.id === 'string')
 
@@ -195,7 +192,13 @@ function getTimeLikeMs(value: unknown): number | null {
   return null
 }
 
-function getOptionChartTimespanMs(option: EChartsOption): number | null {
+function getOptionChartTimespanMs(
+  option: EChartsOption | null | undefined
+): number | null {
+  if (!option || typeof option !== 'object') {
+    return null
+  }
+
   const xAxis = Array.isArray(option.xAxis) ? option.xAxis[0] : option.xAxis
   const minMs = getTimeLikeMs(xAxis?.min)
   const maxMs = getTimeLikeMs(xAxis?.max)
@@ -223,7 +226,9 @@ function buildShiftedData(kind: SeriesKind, original: any[], offsetMs: number) {
     case 'point':
       return original.map((d) => shiftPointDatum(d, offsetMs))
     case 'point-with-gaps':
-      return original.map((d) => (d === null ? null : shiftPointDatum(d, offsetMs)))
+      return original.map((d) =>
+        d === null ? null : shiftPointDatum(d, offsetMs)
+      )
     case 'range':
       return original.map((d) => [
         shiftTimeLike(d[0], offsetMs),
@@ -327,15 +332,11 @@ function getOffsetRowBounds(
     return null
   }
 
-  const pixel = chart.convertToPixel(
-    { xAxisIndex: 0, yAxisIndex: 0 },
-    [datum[0], distanceValue]
-  )
-  if (
-    !Array.isArray(pixel) ||
-    pixel.length < 2 ||
-    !Number.isFinite(pixel[1])
-  ) {
+  const pixel = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
+    datum[0],
+    distanceValue,
+  ])
+  if (!Array.isArray(pixel) || pixel.length < 2 || !Number.isFinite(pixel[1])) {
     return null
   }
 
@@ -487,7 +488,13 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
           : Math.round(offsetMs / STEP_MS) * STEP_MS,
         chartTimespanMsRef.current
       )
-      const updates: Array<{ id: string; data: any[] }> = []
+      const updates: Array<{
+        id: string
+        data: any[]
+        animation: boolean
+        animationDurationUpdate: number
+        animationDelayUpdate: number
+      }> = []
 
       for (const [id, original] of Object.entries(
         originalDataByIdRef.current
@@ -498,7 +505,13 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
         if (kind === 'location-axis') {
           updates.push({
             id,
-            data: buildLocationAxisOffsetData(original, offsetsByGroupRef.current),
+            data: buildLocationAxisOffsetData(
+              original,
+              offsetsByGroupRef.current
+            ),
+            animation: false,
+            animationDurationUpdate: 0,
+            animationDelayUpdate: 0,
           })
           continue
         }
@@ -508,6 +521,9 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
         updates.push({
           id,
           data: buildShiftedData(kind, original, nextRawOffsetMs),
+          animation: false,
+          animationDurationUpdate: 0,
+          animationDelayUpdate: 0,
         })
       }
 
@@ -613,9 +629,9 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
       if (xData == null) return
 
       const latestSeries = Array.isArray(chart.getOption()?.series)
-        ? (chart.getOption()?.series as Array<SeriesOption | null | undefined>).filter(
-            isSeriesOption
-          )
+        ? (
+            chart.getOption()?.series as Array<SeriesOption | null | undefined>
+          ).filter(isSeriesOption)
         : []
       const latestBase = latestSeries.filter(
         (s) => typeof s.id === 'string' && s.id.includes('Cycles')

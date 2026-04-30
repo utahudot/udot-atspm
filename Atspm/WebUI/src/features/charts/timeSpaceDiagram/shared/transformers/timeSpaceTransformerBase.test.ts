@@ -277,7 +277,7 @@ function renderGreenBandNode(
   location: RawTimeSpaceAverageData,
   { dataIndex = 0 }: { dataIndex?: number } = {}
 ): unknown {
-  const series = generateGreenEventLines([location], [0], 'NB', true, 1, 'test')[0] as {
+  const series = getGreenBandSeries(location) as {
     data?: unknown[]
     renderItem?: (
       params: {
@@ -308,6 +308,10 @@ function renderGreenBandNode(
   )
 
   return renderResult
+}
+
+function getGreenBandSeries(location: RawTimeSpaceAverageData): unknown {
+  return generateGreenEventLines([location], [0], 'NB', true, 1, 'test')[0]
 }
 
 describe('timeSpaceTransformerBase offset formatting', () => {
@@ -490,15 +494,42 @@ describe('timeSpaceTransformerBase offset formatting', () => {
         ],
       })
     ) as {
+      emphasisDisabled?: unknown
       children?: Array<{
         style?: { fill?: unknown }
       }>
     }
 
+    expect(greenBandNode?.emphasisDisabled).toBe(true)
     expect(greenBandNode?.children).toHaveLength(3)
     expect(greenBandNode.children?.[0]?.style?.fill).toBe('#D5DBE3')
     expect(greenBandNode.children?.[1]?.style?.fill).toBe('#4f9bac')
     expect(greenBandNode.children?.[2]?.style?.fill).toBe('#D5DBE3')
+  })
+
+  it('marks green-band series as non-interactable', () => {
+    const series = getGreenBandSeries(
+      buildLocation({
+        greenTimeEvents: [
+          {
+            initialX: '2026-03-20T00:00:10Z',
+            isDetectorOn: true,
+          },
+          {
+            initialX: '2026-03-20T00:00:20Z',
+            isDetectorOn: false,
+          },
+        ],
+      })
+    ) as {
+      silent?: unknown
+      selectedMode?: unknown
+      tooltip?: { show?: unknown }
+    }
+
+    expect(series?.silent).toBe(true)
+    expect(series?.selectedMode).toBe(false)
+    expect(series?.tooltip).toMatchObject({ show: false })
   })
 
   it('keeps a full-cycle user adjustment visible even when the displayed offset matches the base value', () => {

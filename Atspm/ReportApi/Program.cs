@@ -135,7 +135,7 @@ builder.Host
         s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
         s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
         s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramPhaseResult>>, TimeSpaceDiagramReportService>();
-        s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
+        s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAveragePhaseResult>>, TimeSpaceDiagramAverageReportService>();
         s.AddScoped<IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>, TransitSignalPriorityReportService>();
         s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
         s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
