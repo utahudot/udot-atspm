@@ -638,7 +638,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Early Green (113)`,
-        icon: triangleSvgSymbol,
+        icon: 'circle',
         itemStyle: {
           color: Color.White,
           borderColor: Color.Black,
@@ -647,6 +647,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       },
       {
         name: `Extend Green (114)`,
+        icon: triangleSvgSymbol,
         itemStyle: {
           color: Color.White,
           borderColor: Color.Black,
@@ -1371,6 +1372,7 @@ type TspHistoricEvent = {
 const TSP_OVERLAY_Z = 7
 const TSP_REQUEST_BAND_HEIGHT_PX = 2
 const TSP_SERVICE_BAND_HEIGHT_PX = 5
+const TSP_REQUEST_COLOR = '#808080'
 const TSP_SERVICE_OVERLAY_Z = TSP_OVERLAY_Z + 1
 const TSP_SERVICE_OFFSET_PX = 20
 const TSP_REQUEST_OFFSET_PX = 20
@@ -1519,7 +1521,7 @@ function buildTspRequestAndServiceLineSeries(
               height: TSP_REQUEST_BAND_HEIGHT_PX,
             },
             style: {
-              fill: Color.Black,
+              fill: TSP_REQUEST_COLOR,
               opacity: 0.95,
             },
             emphasisDisabled: true,
@@ -1573,8 +1575,11 @@ function buildTspRequestAndServiceLineSeries(
               height: TSP_SERVICE_BAND_HEIGHT_PX,
             },
             style: {
-              fill: Color.Black,
-              opacity: 0.95,
+              fill: 'transparent',
+              stroke: Color.Black,
+              lineWidth: 1.5,
+              opacity: 1,
+              strokeOpacity: 0.95,
             },
             emphasisDisabled: true,
           }

@@ -292,8 +292,8 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     key: 'early-green',
     label: 'Early Green',
     category: 'Transit Priority',
-    description: 'Triangle marker for an early-green priority event.',
-    preview: 'triangle',
+    description: 'Circle marker for an early-green priority event.',
+    preview: 'circle',
     control: 'visibility',
     match: (name) => (name.startsWith('Early Green') ? '' : null),
   },
@@ -301,8 +301,8 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     key: 'extend-green',
     label: 'Extend Green',
     category: 'Transit Priority',
-    description: 'Circle marker for a green-extension priority event.',
-    preview: 'circle',
+    description: 'Triangle marker for a green-extension priority event.',
+    preview: 'triangle',
     control: 'visibility',
     match: (name) => (name.startsWith('Extend Green') ? '' : null),
   },
@@ -1067,8 +1067,10 @@ function PreviewCard({
             y="25"
             width="54"
             height="8"
-            fill={appearanceSettings.tspService.color}
-            opacity={appearanceSettings.tspService.opacity}
+            fill="transparent"
+            stroke={appearanceSettings.tspService.color}
+            strokeOpacity={appearanceSettings.tspService.opacity}
+            strokeWidth="2"
           />
         )}
       </Box>
