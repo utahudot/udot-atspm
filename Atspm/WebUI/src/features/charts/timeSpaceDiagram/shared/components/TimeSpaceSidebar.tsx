@@ -41,14 +41,6 @@ export interface TimeSpaceSidebarProps {
   showTabs?: boolean
 }
 
-function getSidebarTabLabel(tab: SidebarTab) {
-  if (tab === 'styles') {
-    return 'Styles'
-  }
-
-  return tab === 'legend' ? 'Legend' : 'Uploads'
-}
-
 export default function TimeSpaceSidebar({
   option,
   selectedSeries,
@@ -67,7 +59,8 @@ export default function TimeSpaceSidebar({
 }: TimeSpaceSidebarProps) {
   const availabilityOverrides = {
     'gpx-tracks': gpxTracksAvailable,
-    'srm-entity': srmTracksAvailable,
+    'srm-entity-continuous': srmTracksAvailable,
+    'srm-entity-gap': srmTracksAvailable,
   } satisfies SidebarAvailabilityOverrides
   const { directionControls, items } = buildSidebarModel(
     option,

@@ -13,6 +13,7 @@ import { RawLinkPivotForTsdData } from '@/features/tools/link-pivot/types'
 import {
   Alert,
   Box,
+  CircularProgress,
   Paper,
   Tab,
   Tabs,
@@ -40,12 +41,14 @@ export interface TimeSpaceResultsContainerProps {
   timeSpaceData: RawTimeSpaceDiagramResponse
   linkPivotTsdData: RawLinkPivotForTsdData[]
   timeSpaceOptions: TimeSpaceOptions
+  isLinkPivotLoading?: boolean
 }
 
 export default function TimeSpaceResultsContainer({
   timeSpaceData,
   linkPivotTsdData,
   timeSpaceOptions,
+  isLinkPivotLoading = false,
 }: TimeSpaceResultsContainerProps) {
   const theme = useTheme()
   const [activeTab, setActiveTab] = useState(0)
@@ -174,6 +177,15 @@ export default function TimeSpaceResultsContainer({
   const chartHeight = transformedData.data.chart.displayProps?.height ?? 500
   const pcdTimeWindow =
     getLinkPivotPcdTimeWindowFromTimeSpaceOptions(timeSpaceOptions)
+  const linkPivotTabLabel = (
+    <Box
+      component="span"
+      sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}
+    >
+      Link Pivot
+      {isLinkPivotLoading && <CircularProgress color="inherit" size={14} />}
+    </Box>
+  )
   const sidebarUploadContent = (
     <>
       {baseTimeSpaceData.type === ToolType.TimeSpaceHistoric && (
@@ -226,7 +238,7 @@ export default function TimeSpaceResultsContainer({
           sx={{ mt: 2 }}
         >
           <Tab label="Time Space Chart" />
-          <Tab label="Link Pivot" />
+          <Tab label={linkPivotTabLabel} />
         </Tabs>
       )}
 

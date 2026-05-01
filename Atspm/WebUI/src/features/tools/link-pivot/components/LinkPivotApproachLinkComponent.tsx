@@ -23,6 +23,22 @@ interface props {
   pcdTimeWindow: LinkPivotPcdTimeWindow
 }
 
+const LocationCell = ({
+  identifier,
+  location,
+}: {
+  identifier: string
+  location: string
+}) => (
+  <TableCell>
+    <Box component="span" sx={{ fontWeight: 700 }}>
+      {identifier}
+    </Box>
+    {' - '}
+    {location}
+  </TableCell>
+)
+
 export const LinkPivotApproachLinkComponent = ({
   data,
   corridorSummary,
@@ -154,8 +170,14 @@ export const LinkPivotApproachLinkComponent = ({
                     </Box>
                   </TableCell>
                   <TableCell>{row.linkNumber}</TableCell>
-                  <TableCell>{row.location}</TableCell>
-                  <TableCell>{row.downstreamLocation}</TableCell>
+                  <LocationCell
+                    identifier={row.locationIdentifier}
+                    location={row.location}
+                  />
+                  <LocationCell
+                    identifier={row.downstreamLocationIdentifier}
+                    location={row.downstreamLocation}
+                  />
                   {createCells(
                     row.aogUpstreamBefore,
                     row.paogUpstreamBefore,

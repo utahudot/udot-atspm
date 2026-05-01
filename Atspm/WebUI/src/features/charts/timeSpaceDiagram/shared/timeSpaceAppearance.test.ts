@@ -182,8 +182,10 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     const tspServiceGraphic = (
       series[4] as SeriesOption & { renderItem: () => GraphicNode }
     ).renderItem()
-    expect(tspServiceGraphic.style.fill).toBe('#6789ab')
-    expect(tspServiceGraphic.style.opacity).toBe(0.45)
+    expect(tspServiceGraphic.style.fill).toBe('transparent')
+    expect(tspServiceGraphic.style.stroke).toBe('#6789ab')
+    expect(tspServiceGraphic.style.strokeOpacity).toBe(0.45)
+    expect(tspServiceGraphic.style.opacity).toBe(1)
 
     const stopBarGraphic = (
       series[6] as SeriesOption & { renderItem: () => GraphicNode }

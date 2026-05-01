@@ -91,7 +91,7 @@ export const TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS: TimeSpaceAppearanceSettings
       },
     },
     tspRequest: {
-      color: Color.Black,
+      color: '#808080',
       opacity: 0.95,
     },
     tspService: {
@@ -327,6 +327,34 @@ function applyGraphicFillAppearance(
   )
 }
 
+function applyGraphicStrokeAppearance(
+  series: SeriesOption,
+  appearance: TimeSpaceDirectionalAppearance
+) {
+  return wrapCustomRenderItem(series, (result) =>
+    mapGraphicNode(result, (node) => {
+      if (!node?.style) {
+        return node
+      }
+
+      if (node.name === TIME_SPACE_CONTINUATION_NODE_NAME) {
+        return node
+      }
+
+      return {
+        ...node,
+        style: {
+          ...(node.style as Record<string, unknown> | undefined),
+          fill: 'transparent',
+          stroke: appearance.color,
+          strokeOpacity: appearance.opacity,
+          opacity: 1,
+        },
+      }
+    }) as CustomSeriesRenderItemReturn
+  )
+}
+
 export function applyTimeSpaceAppearanceToOption(
   option: EChartsOption,
   appearance: TimeSpaceAppearanceSettings,
@@ -393,7 +421,7 @@ export function applyTimeSpaceAppearanceToOption(
 
     if (name === 'TSP Service (118-119)') {
       return series.type === 'custom'
-        ? applyGraphicFillAppearance(series, appearance.tspService)
+        ? applyGraphicStrokeAppearance(series, appearance.tspService)
         : applyLineAppearance(series, appearance.tspService)
     }
 

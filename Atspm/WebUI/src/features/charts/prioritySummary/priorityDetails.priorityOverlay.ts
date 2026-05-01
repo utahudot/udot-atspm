@@ -136,12 +136,9 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     )
   }
 
-  const checkIns: Array<[string, number]> = []
+  // 112/115 and 118/119 are represented by request/service ranges.
   const earlyGreens: Array<[string, number]> = []
   const extendGreens: Array<[string, number]> = []
-  const checkOuts: Array<[string, number]> = []
-  const serviceStarts: Array<[string, number]> = []
-  const serviceEnds: Array<[string, number]> = []
 
   for (const e of allEvents) {
     const rowIndex = tspRowIndex(e.eventParam)
@@ -153,23 +150,11 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
     const pt: [string, number] = [t, rowIndex]
 
     switch (e.eventCode) {
-      case TSP_CODES.CheckIn:
-        checkIns.push(pt)
-        break
       case TSP_CODES.EarlyGreen:
         earlyGreens.push(pt)
         break
       case TSP_CODES.ExtendGreen:
         extendGreens.push(pt)
-        break
-      case TSP_CODES.CheckOut:
-        checkOuts.push(pt)
-        break
-      case TSP_CODES.ServiceStart:
-        serviceStarts.push(pt)
-        break
-      case TSP_CODES.ServiceEnd:
-        serviceEnds.push(pt)
         break
     }
   }

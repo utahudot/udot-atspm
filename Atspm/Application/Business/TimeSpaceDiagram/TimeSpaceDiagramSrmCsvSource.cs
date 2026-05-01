@@ -27,6 +27,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public string Time { get; set; } = string.Empty;
         public double Distance { get; set; }
         public long TimestampMs { get; set; }
+        public string IntersectionId { get; set; } = string.Empty;
     }
 
     public class SrmEntityTrack
@@ -143,7 +144,8 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                         Time = FormatLocalTimestamp(
                             DateTimeOffset.FromUnixTimeMilliseconds(row.TimestampMs).LocalDateTime),
                         Distance = totalDistance,
-                        TimestampMs = row.TimestampMs
+                        TimestampMs = row.TimestampMs,
+                        IntersectionId = row.IntersectionId
                     });
 
                     lastLat = row.Lat;

@@ -134,13 +134,14 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   )
   const hasSrmTracks = useMemo(
     () =>
+      hasSrmSeriesData(option) ||
       (gpxEntries ?? []).some(
         (entry) =>
           !entry?.error &&
           Array.isArray(entry.parsedEntityData) &&
           entry.parsedEntityData.length > 0
       ),
-    [gpxEntries]
+    [gpxEntries, option]
   )
   const baseSelectedSeries = useMemo(() => getLegendSelectedMap(option), [option])
   const defaultSelectedSeries = useMemo(() => {
