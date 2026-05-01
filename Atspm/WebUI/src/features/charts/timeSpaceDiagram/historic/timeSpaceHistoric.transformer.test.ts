@@ -439,6 +439,236 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(extendLegend).toMatchObject({ icon: triangleSvgSymbol })
   })
 
+  it('renders SRM intersection changes as dotted connector segments', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            locationIdentifier: 'location-1',
+            distanceToNextLocation: 2200,
+            srmEntityTracks: [
+              {
+                entityId: 'bus-42',
+                points: [
+                  {
+                    time: '2026-04-07T08:00:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:00:00Z'),
+                    distance: 0,
+                    intersectionId: 'location-1',
+                  },
+                  {
+                    time: '2026-04-07T08:01:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:01:00Z'),
+                    distance: 10,
+                    intersectionId: 'location-1',
+                  },
+                  {
+                    time: '2026-04-07T08:02:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:02:00Z'),
+                    distance: 20,
+                    intersectionId: 'location-2',
+                  },
+                  {
+                    time: '2026-04-07T08:03:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:03:00Z'),
+                    distance: 30,
+                    intersectionId: 'location-2',
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing', {
+            locationIdentifier: 'opposing-location',
+            distanceToNextLocation: 2200,
+          }),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    const continuousSeries = series.filter(
+      (entry) => String(entry.name) === 'SRM Entity Continuous NBT ph2'
+    )
+    const firstContinuousSeries = continuousSeries.find((entry) =>
+      String(entry.id).includes('segment-0')
+    )
+    const secondContinuousSeries = continuousSeries.find((entry) =>
+      String(entry.id).includes('segment-1')
+    )
+    const gapSeries = series.find(
+      (entry) => String(entry.name) === 'SRM Entity Gap NBT ph2'
+    )
+
+    expect(continuousSeries).toHaveLength(2)
+    expect(gapSeries?.lineStyle).toMatchObject({ type: 'dotted' })
+    expect(gapSeries?.data).toEqual([
+      (firstContinuousSeries?.data as unknown[][])?.[1],
+      (secondContinuousSeries?.data as unknown[][])?.[0],
+    ])
+    expect(chart.legend).toMatchObject({
+      selected: {
+        'SRM Entity Continuous NBT ph2': true,
+        'SRM Entity Gap NBT ph2': true,
+      },
+    })
+  })
+
+  it('does not render SRM gaps just because matching entities appear on adjacent rows', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            locationIdentifier: 'location-1',
+            distanceToNextLocation: 2200,
+            srmEntityTracks: [
+              {
+                entityId: 'bus-42',
+                points: [
+                  {
+                    time: '2026-04-07T08:00:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:00:00Z'),
+                    distance: 0,
+                    intersectionId: 'location-1',
+                  },
+                  {
+                    time: '2026-04-07T08:01:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:01:00Z'),
+                    distance: 10,
+                    intersectionId: 'location-1',
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            locationIdentifier: 'location-2',
+            distanceToNextLocation: 2200,
+            order: 2,
+            srmEntityTracks: [
+              {
+                entityId: 'bus-42',
+                points: [
+                  {
+                    time: '2026-04-07T08:02:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:02:00Z'),
+                    distance: 0,
+                    intersectionId: 'location-2',
+                  },
+                  {
+                    time: '2026-04-07T08:03:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:03:00Z'),
+                    distance: 20,
+                    intersectionId: 'location-2',
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing', {
+            locationIdentifier: 'opposing-location',
+            distanceToNextLocation: 2200,
+          }),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    expect(
+      series.filter(
+        (entry) => String(entry.name) === 'SRM Entity Continuous NBT ph2'
+      )
+    ).toHaveLength(2)
+    expect(
+      series.some((entry) => String(entry.name) === 'SRM Entity Gap NBT ph2')
+    ).toBe(false)
+  })
+
+  it('renders legacy SRM points without intersection ids as one solid track', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            locationIdentifier: 'location-1',
+            distanceToNextLocation: 2200,
+            srmEntityTracks: [
+              {
+                entityId: 'bus-42',
+                points: [
+                  {
+                    time: '2026-04-07T08:00:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:00:00Z'),
+                    distance: 0,
+                  },
+                  {
+                    time: '2026-04-07T08:01:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:01:00Z'),
+                    distance: 10,
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing', {
+            locationIdentifier: 'opposing-location',
+            distanceToNextLocation: 2200,
+          }),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    const continuousSeries = series.filter(
+      (entry) => String(entry.name) === 'SRM Entity Continuous NBT ph2'
+    )
+
+    expect(continuousSeries).toHaveLength(1)
+    expect(continuousSeries[0]?.data).toHaveLength(2)
+    expect(
+      series.some((entry) => String(entry.name) === 'SRM Entity Gap NBT ph2')
+    ).toBe(false)
+  })
+
   it('renders stop-bar-presence continuations in striped grey', () => {
     const node = renderStopBarPresenceNode(
       buildHistoricLocation('Primary', {

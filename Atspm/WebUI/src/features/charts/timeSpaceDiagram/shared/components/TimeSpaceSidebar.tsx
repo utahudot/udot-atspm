@@ -59,7 +59,8 @@ export default function TimeSpaceSidebar({
 }: TimeSpaceSidebarProps) {
   const availabilityOverrides = {
     'gpx-tracks': gpxTracksAvailable,
-    'srm-entity': srmTracksAvailable,
+    'srm-entity-continuous': srmTracksAvailable,
+    'srm-entity-gap': srmTracksAvailable,
   } satisfies SidebarAvailabilityOverrides
   const { directionControls, items } = buildSidebarModel(
     option,

@@ -228,7 +228,7 @@ function transformData(data: RawGreenTimeUtilizationData) {
       position: 'right',
     },
     {
-      name: 'Time Since Start of Green',
+      name: 'Time Since Start of Green (seconds)',
       nameLocation: 'middle',
       nameGap: 40,
       type: 'category',

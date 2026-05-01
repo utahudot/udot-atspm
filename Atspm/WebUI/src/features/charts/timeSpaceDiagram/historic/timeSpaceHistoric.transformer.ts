@@ -62,6 +62,7 @@ import {
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
   Color,
+  DottedLineSeriesSymbol,
   formatChartDateTimeRange,
   SolidLineSeriesSymbol,
   triangleSvgSymbol,
@@ -474,13 +475,23 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
         itemStyle: { color: Color.Black },
       },
       {
-        name: `SRM Entity ${primaryDirection}`,
+        name: `${SRM_CONTINUOUS_LEGEND_PREFIX} ${primaryDirection}`,
         icon: SolidLineSeriesSymbol,
         itemStyle: { color: Color.Black },
       },
       {
-        name: `SRM Entity ${opposingDirection}`,
+        name: `${SRM_CONTINUOUS_LEGEND_PREFIX} ${opposingDirection}`,
         icon: SolidLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
+      },
+      {
+        name: `${SRM_GAP_LEGEND_PREFIX} ${primaryDirection}`,
+        icon: DottedLineSeriesSymbol,
+        itemStyle: { color: Color.Black },
+      },
+      {
+        name: `${SRM_GAP_LEGEND_PREFIX} ${opposingDirection}`,
+        icon: DottedLineSeriesSymbol,
         itemStyle: { color: Color.Black },
       },
       {
@@ -535,8 +546,10 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       [`Stop Bar Presence ${opposingDirection}`]: false,
       [`Pedestrian Interval ${primaryDirection}`]: false,
       [`Pedestrian Interval ${opposingDirection}`]: false,
-      [`SRM Entity ${primaryDirection}`]: true,
-      [`SRM Entity ${opposingDirection}`]: true,
+      [`${SRM_CONTINUOUS_LEGEND_PREFIX} ${primaryDirection}`]: true,
+      [`${SRM_CONTINUOUS_LEGEND_PREFIX} ${opposingDirection}`]: true,
+      [`${SRM_GAP_LEGEND_PREFIX} ${primaryDirection}`]: true,
+      [`${SRM_GAP_LEGEND_PREFIX} ${opposingDirection}`]: true,
       [`Left Turn ${primaryDirection}`]: false,
       [`Right Turn ${primaryDirection}`]: false,
       [`Early Green (113)`]: false,
