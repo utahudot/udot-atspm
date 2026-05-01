@@ -1,21 +1,16 @@
 import { TSP_CODES } from '@/features/charts/prioritySummary/priorityDetails.transformer'
-import {
-  TIME_SPACE_MOVEMENT_SERIES_Z,
-} from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
+import { TIME_SPACE_MOVEMENT_SERIES_Z } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import { RawTimeSpaceHistoricData } from '@/features/charts/timeSpaceDiagram/shared/types'
-import {
-  Color,
-  triangleSvgSymbol,
-} from '@/features/charts/utils'
+import { Color, triangleSvgSymbol } from '@/features/charts/utils'
 import { dateToTimestamp } from '@/utils/dateTime'
-import {
-  CustomSeriesRenderItemReturn,
-  SeriesOption,
-} from 'echarts'
+import { CustomSeriesRenderItemReturn, SeriesOption } from 'echarts'
 import {
   getArrivalTime,
   PASSIVE_DETECTION_SERIES_PROPS,
 } from './timeSpaceHistoricSeries.shared'
+
+export const SRM_CONTINUOUS_LEGEND_PREFIX = 'SRM Entity Continuous'
+export const SRM_GAP_LEGEND_PREFIX = 'SRM Entity Gap'
 
 const TSP_OVERLAY_Z = 7
 const TSP_REQUEST_BAND_HEIGHT_PX = 2
@@ -31,6 +26,12 @@ type TspHistoricEvent = {
   timestamp: string
   timestampMs: number
 }
+
+type SrmTrackPoint = NonNullable<
+  RawTimeSpaceHistoricData['srmEntityTracks']
+>[number]['points'][number]
+
+type SrmSeriesPoint = [string, number]
 
 export function generateTMCEvent(
   data: RawTimeSpaceHistoricData[],
@@ -135,27 +136,93 @@ export function generateSrmEntityLines(
       const points = track.points.map((point) => [
         point.time,
         baseDistance + directionMultiplier * point.distance * distanceScale,
-      ])
+      ]) as SrmSeriesPoint[]
 
-      seriesOptions.push({
-        name: `SRM Entity ${phaseType?.length ? phaseType : ''}`,
-        id: `SRM ${location.locationIdentifier} ${track.entityId} ${trackIndex} ${
-          phaseType ?? ''
-        } row-${i} ${idScope}`,
-        type: 'line',
-        symbol: 'none',
-        z: TIME_SPACE_MOVEMENT_SERIES_Z,
-        lineStyle: {
-          width: 2,
-          color: Color.Black,
-          opacity: 0.85,
-        },
-        data: points,
+      const segments = splitSrmTrackByIntersection(track.points, points)
+
+      segments.forEach((segment, segmentIndex) => {
+        seriesOptions.push({
+          name: `${SRM_CONTINUOUS_LEGEND_PREFIX} ${
+            phaseType?.length ? phaseType : ''
+          }`,
+          id: `SRM ${location.locationIdentifier} ${
+            track.entityId
+          } ${trackIndex} segment-${segmentIndex} ${
+            phaseType ?? ''
+          } row-${i} ${idScope}`,
+          type: 'line',
+          symbol: 'none',
+          z: TIME_SPACE_MOVEMENT_SERIES_Z,
+          lineStyle: {
+            width: 2,
+            color: Color.Black,
+            opacity: 0.85,
+          },
+          data: segment,
+        })
+      })
+
+      segments.slice(1).forEach((segment, gapIndex) => {
+        const previousSegment = segments[gapIndex]
+        const previousPoint = previousSegment[previousSegment.length - 1]
+        const nextPoint = segment[0]
+        if (!previousPoint || !nextPoint) return
+
+        seriesOptions.push({
+          name: `${SRM_GAP_LEGEND_PREFIX} ${
+            phaseType?.length ? phaseType : ''
+          }`,
+          id: `SRM ${location.locationIdentifier} ${
+            track.entityId
+          } ${trackIndex} gap-${gapIndex} ${phaseType ?? ''} row-${i} ${idScope}`,
+          type: 'line',
+          symbol: 'none',
+          z: TIME_SPACE_MOVEMENT_SERIES_Z,
+          lineStyle: {
+            width: 2,
+            color: Color.Black,
+            opacity: 0.85,
+            type: 'dotted',
+          },
+          data: [previousPoint, nextPoint],
+        })
       })
     })
   })
 
   return seriesOptions
+}
+
+function splitSrmTrackByIntersection(
+  rawPoints: SrmTrackPoint[],
+  points: SrmSeriesPoint[]
+): SrmSeriesPoint[][] {
+  const hasIntersectionIds = rawPoints.some((point) =>
+    Boolean(point.intersectionId?.trim())
+  )
+
+  if (!hasIntersectionIds) {
+    return [points]
+  }
+
+  return rawPoints.reduce<SrmSeriesPoint[][]>((segments, point, index) => {
+    const currentPoint = points[index]
+    if (!currentPoint) return segments
+
+    const currentIntersection = point.intersectionId?.trim() ?? ''
+    const previousIntersection = rawPoints[index - 1]?.intersectionId?.trim()
+
+    if (
+      segments.length === 0 ||
+      (index > 0 && currentIntersection !== previousIntersection)
+    ) {
+      segments.push([currentPoint])
+    } else {
+      segments[segments.length - 1].push(currentPoint)
+    }
+
+    return segments
+  }, [])
 }
 
 export function buildCycleEventMarkersOnCyclesSeries(
@@ -227,8 +294,12 @@ export function buildCycleEventMarkersOnCyclesSeries(
       z: TSP_MARKER_Z,
       tooltip: {
         show: true,
-        formatter: (p: { seriesName?: string; value?: unknown[] }) =>
-          `${p.seriesName ?? ''} ${p?.value?.[0] ?? ''}`,
+        formatter: (params) => {
+          const point = Array.isArray(params) ? params[0] : params
+          const value = Array.isArray(point?.value) ? point.value : []
+
+          return `${point?.seriesName ?? ''} ${value[0] ?? ''}`
+        },
       },
       data,
     })
@@ -404,7 +475,7 @@ export function buildTspRequestAndServiceLineSeries(
               height: TSP_REQUEST_BAND_HEIGHT_PX,
             },
             style: {
-              fill: Color.Black,
+              fill: '#808080',
               opacity: 0.95,
             },
             emphasisDisabled: true,
@@ -461,8 +532,10 @@ export function buildTspRequestAndServiceLineSeries(
               height: TSP_SERVICE_BAND_HEIGHT_PX,
             },
             style: {
-              fill: Color.Black,
-              opacity: 0.95,
+              fill: 'transparent',
+              stroke: Color.Black,
+              lineWidth: 1.5,
+              strokeOpacity: 0.95,
             },
             emphasisDisabled: true,
           }
