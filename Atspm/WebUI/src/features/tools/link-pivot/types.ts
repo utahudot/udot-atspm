@@ -57,13 +57,14 @@ export interface AdjustmentDto {
   locationIdentifier: string
   location: string
   delta: number
+  existingOffset: number
   adjustment: number
 }
 
 export interface TransformedAdjustmentDto extends AdjustmentDto {
   editLinkData: number
-  existingOffset: number
   newOffset: number
+  index: number
 }
 
 export interface ApproachLinksDto {

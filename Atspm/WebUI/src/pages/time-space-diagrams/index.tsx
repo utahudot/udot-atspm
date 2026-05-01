@@ -60,7 +60,11 @@ const TimeSpaceDiagram = () => {
     toolOptions: submittedOptions,
   })
 
-  const { refetch: fetchLp, data: lpTsdData } = useLinkPivotForTsd({
+  const {
+    refetch: fetchLp,
+    data: lpTsdData,
+    isFetching: isLinkPivotLoading,
+  } = useLinkPivotForTsd({
     toolType: ToolType.LpTsd,
     toolOptions: submittedOptions,
   })
@@ -208,6 +212,7 @@ const TimeSpaceDiagram = () => {
                     : []
                 }
                 timeSpaceOptions={submittedOptions}
+                isLinkPivotLoading={isLinkPivotLoading}
               />
             )}
           </Box>

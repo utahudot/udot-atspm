@@ -16,9 +16,12 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.Atspm.Business.LinkPivot
 {
@@ -61,6 +64,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                     a.LocationIdentifier,
                     a.Location,
                     a.Delta,
+                    a.ExistingOffset,
                     a.Adjustment));
 
                 linkPivotResult.ApproachLinks.Add(new LinkPivotApproachLink(a.LocationIdentifier,
@@ -137,6 +141,12 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             List<LinkPivotPair> pairedApproaches = new List<LinkPivotPair>();
             List<AdjustmentObject> adjustments = new List<AdjustmentObject>();
             var routeLocationsInTraversalOrder = GetRouteLocationsInTraversalOrder(options, routeLocations);
+            var existingOffsetsByLocationIdentifier = routeLocationsInTraversalOrder
+                .Select(routeLocation => routeLocation.LocationIdentifier)
+                .Distinct()
+                .ToDictionary(
+                    locationIdentifier => locationIdentifier,
+                    locationIdentifier => GetExistingOffset(options, locationIdentifier));
 
             int[] daysOfWeek = options.DaysOfWeek ?? Array.Empty<int>();
             var daysToInclude = GetDaysToProcess(options.StartDate, options.EndDate, daysOfWeek);
@@ -162,6 +172,9 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                         Location = FormatLocationName(lpp.UpstreamLocationApproach.Location),
                         DownstreamLocation = FormatLocationName(lpp.DownstreamLocationApproach.Location),
                         Delta = Convert.ToInt32(lpp.SecondsAdded),
+                        ExistingOffset = GetExistingOffsetValue(
+                            existingOffsetsByLocationIdentifier,
+                            lpp.UpstreamLocationApproach.Location.LocationIdentifier),
                         PAOGDownstreamBefore = lpp.PaogDownstreamBefore,
                         PAOGDownstreamPredicted = lpp.PaogDownstreamPredicted,
                         PAOGUpstreamBefore = lpp.PaogUpstreamBefore,
@@ -188,7 +201,10 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
             //Set the end row to have zero for the ajustments. No adjustment can be made because 
             //downstream is unknown. The end row is determined by the starting point seleceted by the user
-            AddLastAdjusment(routeLocationsInTraversalOrder.LastOrDefault(), adjustments);
+            AddLastAdjusment(
+                routeLocationsInTraversalOrder.LastOrDefault(),
+                adjustments,
+                existingOffsetsByLocationIdentifier);
 
             var cumulativeChange = 0;
 
@@ -218,7 +234,10 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 : routeLocations.OrderBy(routeLocation => routeLocation.Order).ToList();
         }
 
-        private void AddLastAdjusment(RouteLocation routeLocation, List<AdjustmentObject> adjustments)
+        private void AddLastAdjusment(
+            RouteLocation routeLocation,
+            List<AdjustmentObject> adjustments,
+            Dictionary<string, int> existingOffsetsByLocationIdentifier)
         {
             if (routeLocation != null)
             {
@@ -230,6 +249,9 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                     Location = FormatLocationName(location),
                     DownstreamLocation = "",
                     Delta = 0,
+                    ExistingOffset = GetExistingOffsetValue(
+                        existingOffsetsByLocationIdentifier,
+                        routeLocation.LocationIdentifier),
                     PAOGDownstreamBefore = 0,
                     PAOGDownstreamPredicted = 0,
                     PAOGUpstreamBefore = 0,
@@ -262,6 +284,51 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
             return string.Join(" & ", new[] { location.PrimaryName, location.SecondaryName }
                 .Where(name => !string.IsNullOrWhiteSpace(name)));
+        }
+
+        private int GetExistingOffset(LinkPivotOptions options, string locationIdentifier)
+        {
+            var start = options.StartDate.ToDateTime(options.StartTime);
+            var end = options.EndDate.ToDateTime(options.EndTime);
+            var controllerEventLogs = controllerEventLogRepository
+                .GetEventsBetweenDates(locationIdentifier, start.AddHours(-12), end.AddHours(12))
+                .ToList();
+            var offsetLengthChangeEvents = controllerEventLogs
+                .GetEventsByEventCodes(
+                    start.AddHours(-12),
+                    end.AddHours(12),
+                    new List<short> { (short)IndianaEnumerations.OffsetLengthChange });
+
+            return GetEventOverlappingTime(start, offsetLengthChangeEvents)
+                .FirstOrDefault()?.EventParam ?? 0;
+        }
+
+        private static int GetExistingOffsetValue(
+            Dictionary<string, int> existingOffsetsByLocationIdentifier,
+            string locationIdentifier)
+        {
+            return existingOffsetsByLocationIdentifier.TryGetValue(locationIdentifier, out var existingOffset)
+                ? existingOffset
+                : 0;
+        }
+
+        private static List<IndianaEvent> GetEventOverlappingTime(
+            DateTime start,
+            IReadOnlyList<IndianaEvent> events)
+        {
+            var eventAtStart = events.Where(e => e.Timestamp == start).ToList();
+            if (eventAtStart.Count == 0)
+            {
+                var eventsInTimeSpan = events.Where(e => e.Timestamp < start)
+                    ?.GroupBy(log => log.EventCode)
+                    ?.Select(group => group.OrderByDescending(e => e.Timestamp).FirstOrDefault())
+                    .ToList();
+
+                if (eventsInTimeSpan != null && eventsInTimeSpan.Count != 0)
+                    eventAtStart = eventsInTimeSpan;
+            }
+
+            return eventAtStart.ToList();
         }
 
         private async Task CreatePairedApproaches(
