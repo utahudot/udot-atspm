@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 throw new Exception($"No Route Locations configured for route");
             }
-            var result = await Task.Run(() => linkPivotService.GetData(parameter, routeLocations));
+            var result = await Task.Run(() => linkPivotService.GetData(parameter, routeLocations, new LinkPivotRequestCache()));
 
             return result;
         }
@@ -60,14 +60,15 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 throw new Exception($"No Route Locations configured for route");
             }
+            var cache = new LinkPivotRequestCache();
             var linkPivotOptions = TransformOptions(options);
-            linkPivotOptions.CycleLength = GetModeCycleLength(linkPivotOptions, routeLocations);
-            var result = await Task.Run(() => linkPivotService.GetData(linkPivotOptions, routeLocations));
+            linkPivotOptions.CycleLength = GetModeCycleLength(linkPivotOptions, routeLocations, cache);
+            var result = await Task.Run(() => linkPivotService.GetData(linkPivotOptions, routeLocations, cache));
 
             linkPivotOptions.Direction = "Upstream";
             linkPivotOptions.BiasDirection = "Upstream";
 
-            var opposingResult = await Task.Run(() => linkPivotService.GetData(linkPivotOptions, routeLocations));
+            var opposingResult = await Task.Run(() => linkPivotService.GetData(linkPivotOptions, routeLocations, cache));
 
             var primaryData = new LinkPivotForTsd("Primary", result);
             var opposingData = new LinkPivotForTsd("Opposing", opposingResult);
@@ -119,21 +120,22 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return routeLocations ?? new List<RouteLocation>();
         }
 
-        private int GetModeCycleLength(LinkPivotOptions options, List<RouteLocation> routeLocations)
+        private int GetModeCycleLength(LinkPivotOptions options, List<RouteLocation> routeLocations, LinkPivotRequestCache cache = null)
         {
             List<int> cycleLengths = new List<int>();
             var locationIdentifiers = routeLocations.Select(i => i.LocationIdentifier).ToList();
             foreach (var locationIdentifier in locationIdentifiers)
             {
-                var controllerEventLogs = controllerEventLogRepository
-                    .GetEventsBetweenDates(locationIdentifier, options.StartDate.ToDateTime(options.StartTime).AddHours(-12), options.EndDate.ToDateTime(options.EndTime).AddHours(12)).ToList();
+                var start = options.StartDate.ToDateTime(options.StartTime).AddHours(-12);
+                var end = options.EndDate.ToDateTime(options.EndTime).AddHours(12);
+                var controllerEventLogs = GetEventsBetweenDates(locationIdentifier, start, end, cache);
 
                 if (controllerEventLogs.IsNullOrEmpty())
                 {
                     throw new Exception($"No Controller Event Logs found for Location {locationIdentifier}");
                 }
                 var programmedCycleForPlan = controllerEventLogs
-                    .GetEventsByEventCodes(options.StartDate.ToDateTime(options.StartTime).AddHours(-12), options.EndDate.ToDateTime(options.EndTime).AddHours(12), new List<short>() { 132 });
+                    .GetEventsByEventCodes(start, end, new List<short>() { 132 });
                 var cycleLength = GetEventOverlappingTime(options.StartDate.ToDateTime(options.StartTime), programmedCycleForPlan, "CycleLength").FirstOrDefault();
                 if (cycleLength != null)
                     cycleLengths.Add(cycleLength.EventParam);
@@ -146,6 +148,20 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     .First().Key
                 : 90;
             return mode;
+        }
+
+        private IReadOnlyList<IndianaEvent> GetEventsBetweenDates(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            LinkPivotRequestCache cache)
+        {
+            return cache?.GetEvents(
+                locationIdentifier,
+                start,
+                end,
+                controllerEventLogRepository.GetEventsBetweenDates)
+                ?? controllerEventLogRepository.GetEventsBetweenDates(locationIdentifier, start, end);
         }
 
         private List<IndianaEvent> GetEventOverlappingTime(DateTime start, IReadOnlyList<IndianaEvent> programmedCycleForPlan, string eventType)
