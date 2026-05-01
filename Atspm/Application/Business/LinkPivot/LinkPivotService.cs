@@ -38,11 +38,11 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             this.linkPivotPairService = linkPivotPairService;
         }
 
-        public async Task<LinkPivotResult> GetData(LinkPivotOptions options, List<RouteLocation> routeLocations)
+        public async Task<LinkPivotResult> GetData(LinkPivotOptions options, List<RouteLocation> routeLocations, LinkPivotRequestCache cache = null)
         {
             routeLocations = routeLocations.OrderBy(routeLocation => routeLocation.Order).ToList();
             LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
-            var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
+            var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations, cache);
 
             if (lp.Count == 0 || pairedApproches.Count == 0)
             {
@@ -136,7 +136,10 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             return linkPivotResult;
         }
 
-        private async Task<(List<AdjustmentObject>, List<LinkPivotPair>)> GetAdjustmentObjectsAsync(LinkPivotOptions options, List<RouteLocation> routeLocations)
+        private async Task<(List<AdjustmentObject>, List<LinkPivotPair>)> GetAdjustmentObjectsAsync(
+            LinkPivotOptions options,
+            List<RouteLocation> routeLocations,
+            LinkPivotRequestCache cache)
         {
             List<LinkPivotPair> pairedApproaches = new List<LinkPivotPair>();
             List<AdjustmentObject> adjustments = new List<AdjustmentObject>();
@@ -146,7 +149,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 .Distinct()
                 .ToDictionary(
                     locationIdentifier => locationIdentifier,
-                    locationIdentifier => GetExistingOffset(options, locationIdentifier));
+                    locationIdentifier => GetExistingOffset(options, locationIdentifier, cache));
 
             int[] daysOfWeek = options.DaysOfWeek ?? Array.Empty<int>();
             var daysToInclude = GetDaysToProcess(options.StartDate, options.EndDate, daysOfWeek);
@@ -154,7 +157,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 routeLocationsInTraversalOrder,
                 pairedApproaches,
                 daysToInclude,
-                options);
+                options,
+                cache);
 
             //Cycle through the LinkPivotPair list and add the statistics to the LinkPivotadjustmentTable
             for (var i = 0; i < routeLocationsInTraversalOrder.Count - 1; i++)
@@ -204,7 +208,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             AddLastAdjusment(
                 routeLocationsInTraversalOrder.LastOrDefault(),
                 adjustments,
-                existingOffsetsByLocationIdentifier);
+                existingOffsetsByLocationIdentifier,
+                cache);
 
             var cumulativeChange = 0;
 
@@ -237,11 +242,12 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         private void AddLastAdjusment(
             RouteLocation routeLocation,
             List<AdjustmentObject> adjustments,
-            Dictionary<string, int> existingOffsetsByLocationIdentifier)
+            Dictionary<string, int> existingOffsetsByLocationIdentifier,
+            LinkPivotRequestCache cache)
         {
             if (routeLocation != null)
             {
-                var location = locationRepository.GetLatestVersionOfLocation(routeLocation.LocationIdentifier);
+                var location = GetLatestVersionOfLocation(routeLocation.LocationIdentifier, cache);
 
                 adjustments.Add(new AdjustmentObject()
                 {
@@ -286,13 +292,15 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 .Where(name => !string.IsNullOrWhiteSpace(name)));
         }
 
-        private int GetExistingOffset(LinkPivotOptions options, string locationIdentifier)
+        private int GetExistingOffset(LinkPivotOptions options, string locationIdentifier, LinkPivotRequestCache cache)
         {
             var start = options.StartDate.ToDateTime(options.StartTime);
             var end = options.EndDate.ToDateTime(options.EndTime);
-            var controllerEventLogs = controllerEventLogRepository
-                .GetEventsBetweenDates(locationIdentifier, start.AddHours(-12), end.AddHours(12))
-                .ToList();
+            var controllerEventLogs = GetEventsBetweenDates(
+                locationIdentifier,
+                start.AddHours(-12),
+                end.AddHours(12),
+                cache);
             var offsetLengthChangeEvents = controllerEventLogs
                 .GetEventsByEventCodes(
                     start.AddHours(-12),
@@ -301,6 +309,26 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
             return GetEventOverlappingTime(start, offsetLengthChangeEvents)
                 .FirstOrDefault()?.EventParam ?? 0;
+        }
+
+        private Location GetLatestVersionOfLocation(string locationIdentifier, LinkPivotRequestCache cache)
+        {
+            return cache?.GetLocation(locationIdentifier, locationRepository.GetLatestVersionOfLocation)
+                ?? locationRepository.GetLatestVersionOfLocation(locationIdentifier);
+        }
+
+        private IReadOnlyList<IndianaEvent> GetEventsBetweenDates(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            LinkPivotRequestCache cache)
+        {
+            return cache?.GetEvents(
+                locationIdentifier,
+                start,
+                end,
+                controllerEventLogRepository.GetEventsBetweenDates)
+                ?? controllerEventLogRepository.GetEventsBetweenDates(locationIdentifier, start, end);
         }
 
         private static int GetExistingOffsetValue(
@@ -335,21 +363,28 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             List<RouteLocation> routeLocations,
             List<LinkPivotPair> PairedApproaches,
             List<DateOnly> daysToInclude,
-            LinkPivotOptions options)
+            LinkPivotOptions options,
+            LinkPivotRequestCache cache)
         {
             for (var i = 0; i < routeLocations.Count - 1; i++)
             {
                 var upstreamRouteLocation = routeLocations[i];
                 var downstreamRouteLocation = routeLocations[i + 1];
 
-                var upstreamLocation = locationRepository.GetLatestVersionOfLocation(upstreamRouteLocation.LocationIdentifier);
-                var downstreamLocation = locationRepository.GetLatestVersionOfLocation(downstreamRouteLocation.LocationIdentifier);
+                var upstreamLocation = GetLatestVersionOfLocation(upstreamRouteLocation.LocationIdentifier, cache);
+                var downstreamLocation = GetLatestVersionOfLocation(downstreamRouteLocation.LocationIdentifier, cache);
 
                 var upstreamApproach = GetApproach(upstreamLocation, upstreamRouteLocation, downstreamRouteLocation);
                 var downstreamApproach = GetApproach(downstreamLocation, downstreamRouteLocation, upstreamRouteLocation);
                 var linkNumber = i + 1;
 
-                var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(upstreamApproach, downstreamApproach, options, daysToInclude, linkNumber);
+                var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(
+                    upstreamApproach,
+                    downstreamApproach,
+                    options,
+                    daysToInclude,
+                    linkNumber,
+                    cache);
                 PairedApproaches.Add(linkPivotPair);
             }
         }
@@ -385,5 +420,43 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
             return datesToInclude;
         }
+    }
+
+    public class LinkPivotRequestCache
+    {
+        private readonly Dictionary<string, Location> locationsByIdentifier = [];
+        private readonly Dictionary<EventLogCacheKey, List<IndianaEvent>> eventLogsByRange = [];
+
+        public Location GetLocation(string locationIdentifier, Func<string, Location> loadLocation)
+        {
+            if (!locationsByIdentifier.TryGetValue(locationIdentifier, out var location))
+            {
+                location = loadLocation(locationIdentifier);
+                locationsByIdentifier[locationIdentifier] = location;
+            }
+
+            return location;
+        }
+
+        public List<IndianaEvent> GetEvents(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            Func<string, DateTime, DateTime, IReadOnlyList<IndianaEvent>> loadEvents)
+        {
+            var key = new EventLogCacheKey(locationIdentifier, start, end);
+            if (!eventLogsByRange.TryGetValue(key, out var events))
+            {
+                events = loadEvents(locationIdentifier, start, end).ToList();
+                eventLogsByRange[key] = events;
+            }
+
+            return events;
+        }
+
+        private readonly record struct EventLogCacheKey(
+            string LocationIdentifier,
+            DateTime Start,
+            DateTime End);
     }
 }
