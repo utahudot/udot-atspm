@@ -70,7 +70,7 @@ const LinkPivotAdjustmentTable = ({
 
   const updateLinkDelta = (row: TransformedAdjustmentDto, value: string) => {
     const updatedRows = rows
-      .map((oldRow, index) =>
+      .map((oldRow) =>
         oldRow.index === row.index
           ? {
               ...oldRow,
@@ -109,7 +109,6 @@ const LinkPivotAdjustmentTable = ({
           <TableHead>
             <TableRow>
               <TableCell>Link</TableCell>
-              <TableCell>Location Identifier</TableCell>
               <TableCell>Location</TableCell>
               <TableCell>Link Delta</TableCell>
               <StyledTC>Edit Link Delta</StyledTC>
@@ -129,11 +128,14 @@ const LinkPivotAdjustmentTable = ({
                   },
                 }}
               >
-                <TableCell sx={{ width: '160px' }}>{index + 1}</TableCell>
-                <TableCell sx={{ width: '160px' }}>
-                  {row.locationIdentifier}
+                <TableCell sx={{ width: '160px' }}>{row.linkNumber}</TableCell>
+                <TableCell sx={{ width: '460px' }}>
+                  <Box component="span" sx={{ fontWeight: 700 }}>
+                    {row.locationIdentifier}
+                  </Box>
+                  {' - '}
+                  {row.location}
                 </TableCell>
-                <TableCell sx={{ width: '300px' }}>{row.location}</TableCell>
                 <TableCell sx={{ width: '160px' }}>{row.delta}</TableCell>
                 <LinkPivotEditableCell
                   value={row.editLinkData}
