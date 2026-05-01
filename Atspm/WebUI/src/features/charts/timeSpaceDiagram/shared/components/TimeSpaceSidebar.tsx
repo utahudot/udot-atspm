@@ -24,6 +24,14 @@ export { TIME_SPACE_GUIDE_WIDTH }
 
 export type SidebarTab = TimeSpaceRendererTab
 
+function getSidebarTabLabel(tab: SidebarTab) {
+  if (tab === 'styles') {
+    return 'Styles'
+  }
+
+  return tab === 'legend' ? 'Legend' : 'Uploads'
+}
+
 export interface TimeSpaceSidebarProps {
   option?: EChartsOption
   selectedSeries: Record<string, boolean>

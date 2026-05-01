@@ -77,6 +77,43 @@ export { buildOffsetResetButtons } from '@/features/charts/timeSpaceDiagram/rend
 
 export type TimeSpaceChartProps = TimeSpaceChartRendererProps
 
+const SRM_LEGEND_PREFIXES = [
+  'SRM Entity Continuous',
+  'SRM Entity Gap',
+  'SRM Entity',
+] as const
+
+function getOptionSeries(option?: EChartsOption): SeriesOption[] {
+  if (!option?.series) {
+    return []
+  }
+
+  return Array.isArray(option.series)
+    ? (option.series as SeriesOption[])
+    : [option.series as SeriesOption]
+}
+
+function hasRenderableSrmData(series: SeriesOption) {
+  if (!Array.isArray(series.data)) {
+    return false
+  }
+
+  return series.data.some((entry) => entry != null)
+}
+
+function hasSrmSeriesData(option?: EChartsOption) {
+  return getOptionSeries(option).some((series) => {
+    const name = typeof series.name === 'string' ? series.name.trim() : ''
+    const id = typeof series.id === 'string' ? series.id : ''
+    const isSrmSeries =
+      SRM_LEGEND_PREFIXES.some((prefix) => name.startsWith(prefix)) ||
+      id.startsWith('SRM ') ||
+      id.startsWith('srm-')
+
+    return isSrmSeries && hasRenderableSrmData(series)
+  })
+}
+
 export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
   const {
     id,
@@ -180,7 +217,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     [optionWithoutHeaderTitle]
   )
   const sidebarAdjustedOption = useMemo(
-    () => buildChartOptionWithSidebar(optionWithOverlayLegend, showPhaseInfo),
+    () =>
+      optionWithOverlayLegend
+        ? buildChartOptionWithSidebar(optionWithOverlayLegend, showPhaseInfo)
+        : {},
     [optionWithOverlayLegend, showPhaseInfo]
   )
   const bottomAxisConfig = useMemo(

@@ -10,6 +10,11 @@ import transformTimeSpaceHistoricData from './timeSpaceHistoric.transformer'
 
 let originalCanvasGetContext: typeof HTMLCanvasElement.prototype.getContext
 
+type GraphicNode = {
+  style?: Record<string, unknown>
+  children?: GraphicNode[]
+}
+
 function buildHistoricLocation(
   phaseType: 'Primary' | 'Opposing',
   overrides: Partial<RawTimeSpaceHistoricData> = {}

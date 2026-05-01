@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { DataZoomComponentOption, ECharts } from 'echarts'
+import type { DataZoomComponentOption, ECharts, SeriesOption } from 'echarts'
 import { ChartType, MarkAreaData, PlanData } from './common/types'
 
 export enum Color {

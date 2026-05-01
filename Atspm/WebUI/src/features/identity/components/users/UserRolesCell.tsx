@@ -1,9 +1,15 @@
+import type { ReactNode } from 'react'
 import { Chip, Stack } from '@mui/material'
 
 export interface CustomCellProps {
   value: any
   row: any
   headerKey: string
+}
+
+export interface CustomCellConfig {
+  headerKey: string
+  component: (value: any, row: any) => ReactNode
 }
 
 export const UserRolesCell = ({ value }: CustomCellProps) => {
@@ -21,5 +27,3 @@ export const UserRolesCell = ({ value }: CustomCellProps) => {
     </Stack>
   )
 }
-
-export type { CustomCellConfig }

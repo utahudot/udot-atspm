@@ -44,6 +44,8 @@ import {
   buildTspRequestAndServiceLineSeries,
   generateSrmEntityLines,
   generateTMCEvent,
+  SRM_CONTINUOUS_LEGEND_PREFIX,
+  SRM_GAP_LEGEND_PREFIX,
 } from '@/features/charts/timeSpaceDiagram/historic/series/timeSpaceHistoricMovementSeries'
 import { generatePedestrianIntervalLines } from '@/features/charts/timeSpaceDiagram/historic/series/timeSpaceHistoricPedestrianSeries'
 import {
@@ -337,7 +339,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   // for each series set the xAxisIndex to 0
   series.forEach((s) => {
-    s.xAxisIndex = 0
+    Object.assign(s, { xAxisIndex: 0 })
   })
 
   const formatPct = (v?: number | null) =>

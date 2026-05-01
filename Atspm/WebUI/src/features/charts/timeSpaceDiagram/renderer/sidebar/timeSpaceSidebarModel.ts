@@ -75,6 +75,11 @@ export type SidebarLegendModel = {
   items: SidebarItem[]
 }
 
+type SidebarAvailabilityKey =
+  | 'gpx-tracks'
+  | 'srm-entity-continuous'
+  | 'srm-entity-gap'
+
 export const CATEGORY_ORDER = [
   'Signal Timing',
   'Pedestrian',
@@ -94,7 +99,8 @@ const ITEM_NO_DATA_MESSAGES: Record<string, string> = {
   'left-turn': 'No left turns found.',
   'right-turn': 'No right turns found.',
   'gpx-tracks': 'No GPX tracks found.',
-  'srm-entity': 'No SRM entity tracks found.',
+  'srm-entity-continuous': 'No continuous SRM entity tracks found.',
+  'srm-entity-gap': 'No SRM entity gap tracks found.',
   'early-green': 'No early greens found.',
   'extend-green': 'No extend greens found.',
   'tsp-request': 'No transit-signal priority requests found.',
@@ -227,13 +233,22 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     match: (name) => (name === TIME_SPACE_GPX_TRACKS_LEGEND_NAME ? '' : null),
   },
   {
-    key: 'srm-entity',
-    label: 'SRM Entity',
+    key: 'srm-entity-continuous',
+    label: 'SRM Entity Continuous',
     category: 'Movements & Tracks',
     description:
       'SRM or connected-vehicle entity tracks drawn through the corridor.',
     preview: 'srm',
-    match: (name) => matchDirectionalPrefix(name, 'SRM Entity'),
+    match: (name) => matchDirectionalPrefix(name, 'SRM Entity Continuous'),
+  },
+  {
+    key: 'srm-entity-gap',
+    label: 'SRM Entity Gap',
+    category: 'Movements & Tracks',
+    description:
+      'Dotted connector between SRM entity track points separated by a location gap.',
+    preview: 'srm',
+    match: (name) => matchDirectionalPrefix(name, 'SRM Entity Gap'),
   },
   {
     key: 'early-green',
@@ -326,17 +341,25 @@ function hasSeriesDataForDefinition(
 }
 
 export type SidebarAvailabilityOverrides = Partial<
-  Record<'gpx-tracks' | 'srm-entity', boolean>
+  Record<SidebarAvailabilityKey, boolean>
 >
+
+function isAvailabilityOverrideKey(key: string): key is SidebarAvailabilityKey {
+  return (
+    key === 'gpx-tracks' ||
+    key === 'srm-entity-continuous' ||
+    key === 'srm-entity-gap'
+  )
+}
 
 function hasSidebarItemData(
   definition: SidebarItemDefinition,
   option: EChartsOption | undefined,
   availabilityOverrides?: SidebarAvailabilityOverrides
 ) {
-  const availabilityOverride = availabilityOverrides?.[
-    definition.key as 'gpx-tracks' | 'srm-entity'
-  ]
+  const availabilityOverride = isAvailabilityOverrideKey(definition.key)
+    ? availabilityOverrides?.[definition.key]
+    : undefined
 
   if (typeof availabilityOverride === 'boolean') {
     return availabilityOverride
@@ -356,7 +379,10 @@ function getSidebarItemNote(
       : 'Upload GPX data from the Uploads tab to show these tracks.'
   }
 
-  if (definition.key === 'srm-entity') {
+  if (
+    definition.key === 'srm-entity-continuous' ||
+    definition.key === 'srm-entity-gap'
+  ) {
     return hasSidebarItemData(definition, option, availabilityOverrides)
       ? undefined
       : 'Upload SRM data from the Uploads tab to show these tracks.'
