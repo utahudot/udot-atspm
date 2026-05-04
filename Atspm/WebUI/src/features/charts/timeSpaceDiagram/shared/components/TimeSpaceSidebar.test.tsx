@@ -657,6 +657,41 @@ describe('TimeSpaceSidebar directional controls', () => {
     expect(screen.getByText('TSP Service')).not.toBeNull()
   })
 
+  it('renders the TSP Service legend preview as a hollow interval', () => {
+    const appearanceSettings = createDefaultTimeSpaceAppearanceSettings()
+    appearanceSettings.tspService.color = '#123456'
+    appearanceSettings.tspService.opacity = 0.42
+
+    render(
+      <TimeSpaceSidebar
+        option={buildTransitNoDataOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'Early Green (113)': false,
+          'Extend Green (114)': false,
+          'TSP Request (112-115)': false,
+          'TSP Service (118-119)': false,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        appearanceSettings={appearanceSettings}
+        showTabs={false}
+      />
+    )
+
+    const tspServiceCard = screen
+      .getByText('TSP Service')
+      .closest('.MuiPaper-root') as HTMLElement
+    const tspServicePreview = tspServiceCard.querySelector(
+      'rect[x="12"][y="25"]'
+    )
+
+    expect(tspServicePreview?.getAttribute('fill')).toBe('transparent')
+    expect(tspServicePreview?.getAttribute('stroke')).toBe('#123456')
+    expect(tspServicePreview?.getAttribute('stroke-opacity')).toBe('0.42')
+  })
+
   it('updates turn appearance settings from the styles tab controls', () => {
     jest.useFakeTimers()
     const onAppearanceChange = jest.fn()
