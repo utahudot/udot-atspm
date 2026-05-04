@@ -71,6 +71,7 @@ appsettings.Development.json
 appsettings.Local.json
 appsettings.*.json
 .dotnet_home/
+.dotnet-home/
 
 # Publish profiles
 **/Properties/PublishProfiles/*.pubxml

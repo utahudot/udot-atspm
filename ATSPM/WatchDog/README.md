@@ -12,6 +12,7 @@ The app:
 - generates missing watchdog log events when they do not already exist
 - segments errors into new, daily recurring, and recurring buckets
 - sends watchdog emails to qualified recipients
+- suppresses email (but still runs the scan and saves errors) on Saturdays and Sundays when `WeekdayOnly` is enabled
 
 ## How To Run
 
@@ -232,6 +233,7 @@ Current watchdog recipient behavior:
 
 If watchdog runs but no emails are sent:
 
+- if running on a Saturday or Sunday, check whether `WeekdayOnly` is `true` — the scan will complete and errors will be saved, but email is intentionally suppressed on weekends when this flag is set
 - verify `DatabaseConfiguration` uses the current nested object shape
 - verify `ConfigContext` points to a populated ATSPM config database
 - verify `IdentityContext` points to a populated identity database

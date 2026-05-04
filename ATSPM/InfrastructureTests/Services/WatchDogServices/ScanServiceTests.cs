@@ -21,10 +21,13 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Repositories;
@@ -143,6 +146,124 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             Assert.Equal(new List<int> { 4 }, namelessRecipient.AreaIds);
 
             Assert.DoesNotContain(recipients, r => r.UserId == "3");
+        }
+
+        // April 25, 2026 = Saturday; April 26 = Sunday; April 27 = Monday
+        [Theory]
+        [InlineData("2026-04-25", true, false)]  // Saturday + WeekdayOnly → no email
+        [InlineData("2026-04-26", true, false)]  // Sunday + WeekdayOnly → no email
+        [InlineData("2026-04-25", false, true)]  // Saturday + !WeekdayOnly → email sent
+        [InlineData("2026-04-27", true, true)]   // Monday + WeekdayOnly → email sent
+        public async Task StartScan_WeekdayOnly_ControlsEmailSendingOnWeekends(
+            string scanDateStr, bool weekdayOnly, bool expectEmailSent)
+        {
+            var scanDate = DateTime.Parse(scanDateStr);
+
+            var amEvent = new WatchDogLogEvent
+            {
+                Timestamp = scanDate,
+                IssueType = WatchDogIssueTypes.StuckPed,
+                LocationIdentifier = "Loc1"
+            };
+
+            var watchdogRepoMock = new Mock<IWatchDogEventLogRepository>();
+            watchdogRepoMock.Setup(r => r.GetList())
+                .Returns(new List<WatchDogLogEvent> { amEvent }.AsQueryable());
+            watchdogRepoMock.Setup(r => r.GetList(It.IsAny<Expression<Func<WatchDogLogEvent, bool>>>()))
+                .Returns(new List<WatchDogLogEvent>().AsQueryable());
+
+            var emailServiceMock = new Mock<IWatchdogEmailService>();
+            emailServiceMock
+                .Setup(e => e.SendAllEmails(
+                    It.IsAny<WatchdogEmailOptions>(),
+                    It.IsAny<List<WatchDogLogEventWithCountAndDate>>(),
+                    It.IsAny<List<WatchDogLogEventWithCountAndDate>>(),
+                    It.IsAny<List<WatchDogLogEventWithCountAndDate>>(),
+                    It.IsAny<List<Location>>(),
+                    It.IsAny<List<WatchdogEmailRecipient>>(),
+                    It.IsAny<List<Jurisdiction>>(),
+                    It.IsAny<List<Area>>(),
+                    It.IsAny<List<Region>>(),
+                    It.IsAny<List<WatchDogLogEvent>>()))
+                .Returns(Task.CompletedTask);
+
+            var ignoreServiceMock = new Mock<IWatchDogIgnoreEventService>();
+            ignoreServiceMock
+                .Setup(s => s.GetFilteredWatchDogEventsForEmail(It.IsAny<List<WatchDogLogEvent>>(), It.IsAny<DateTime>()))
+                .Returns((List<WatchDogLogEvent> events, DateTime _) => events);
+
+            var locationRepoMock = new Mock<ILocationRepository>();
+            locationRepoMock
+                .Setup(r => r.GetLatestVersionOfAllLocations(It.IsAny<DateTime>()))
+                .Returns(new List<Location>().AsQueryable());
+
+            var regionsRepoMock = new Mock<IRegionsRepository>();
+            regionsRepoMock.Setup(r => r.GetList()).Returns(new List<Region>().AsQueryable());
+
+            var userRegionRepoMock = new Mock<IUserRegionRepository>();
+            userRegionRepoMock.Setup(r => r.GetList()).Returns(new List<UserRegion>().AsQueryable());
+
+            var areaRepoMock = new Mock<IAreaRepository>();
+            areaRepoMock.Setup(r => r.GetList()).Returns(new List<Area>().AsQueryable());
+
+            var userAreaRepoMock = new Mock<IUserAreaRepository>();
+            userAreaRepoMock.Setup(r => r.GetList()).Returns(new List<UserArea>().AsQueryable());
+
+            var jurisdictionRepoMock = new Mock<IJurisdictionRepository>();
+            jurisdictionRepoMock.Setup(r => r.GetList()).Returns(new List<Jurisdiction>().AsQueryable());
+
+            var userJurisdictionRepoMock = new Mock<IUserJurisdictionRepository>();
+            userJurisdictionRepoMock.Setup(r => r.GetList()).Returns(new List<UserJurisdiction>().AsQueryable());
+
+            var userManager = CreateUserManagerMock(new List<ApplicationUser>(), new Dictionary<string, IList<string>>());
+            var roleManager = CreateRoleManagerMock(new Dictionary<string, IList<Claim>>(StringComparer.OrdinalIgnoreCase));
+            var segmentedErrorsService = new SegmentedErrorsService(watchdogRepoMock.Object);
+
+            var service = new ScanService(
+                locationRepoMock.Object,
+                watchdogRepoMock.Object,
+                regionsRepoMock.Object,
+                jurisdictionRepoMock.Object,
+                areaRepoMock.Object,
+                userRegionRepoMock.Object,
+                userJurisdictionRepoMock.Object,
+                userAreaRepoMock.Object,
+                userManager.Object,
+                roleManager.Object,
+                null!,
+                null!,
+                null!,
+                emailServiceMock.Object,
+                Mock.Of<ILogger<ScanService>>(),
+                segmentedErrorsService,
+                ignoreServiceMock.Object);
+
+            var emailOptions = new WatchdogEmailOptions
+            {
+                WeekdayOnly = weekdayOnly,
+                EmailAmErrors = true,
+                AmScanDate = scanDate,
+                Sort = "LocationIdentifier"
+            };
+
+            await service.StartScan(
+                new WatchdogLoggingOptions { AmScanDate = scanDate },
+                emailOptions,
+                CancellationToken.None);
+
+            emailServiceMock.Verify(
+                e => e.SendAllEmails(
+                    It.IsAny<WatchdogEmailOptions>(),
+                    It.IsAny<List<WatchDogLogEventWithCountAndDate>>(),
+                    It.IsAny<List<WatchDogLogEventWithCountAndDate>>(),
+                    It.IsAny<List<WatchDogLogEventWithCountAndDate>>(),
+                    It.IsAny<List<Location>>(),
+                    It.IsAny<List<WatchdogEmailRecipient>>(),
+                    It.IsAny<List<Jurisdiction>>(),
+                    It.IsAny<List<Area>>(),
+                    It.IsAny<List<Region>>(),
+                    It.IsAny<List<WatchDogLogEvent>>()),
+                expectEmailSent ? Times.Once() : Times.Never());
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock(

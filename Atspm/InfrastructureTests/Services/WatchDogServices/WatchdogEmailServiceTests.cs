@@ -846,9 +846,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         }
 
         [Fact]
-        public async Task SendAllEmails_ShouldSkipDelivery_WhenWeekdayOnlyAndWeekend()
+        public async Task SendAllEmails_ShouldSendDelivery_WhenWeekdayOnlyAndWeekend()
         {
-            var service = new WatchdogEmailService(_loggerMock.Object, _emailServiceMock.Object, _weekdayClock);
             var options = new WatchdogEmailOptions
             {
                 WeekdayOnly = true,
@@ -868,6 +867,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 }
             };
 
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(m => m.SendEmailAsync(It.IsAny<MailMessage>()))
+                .ReturnsAsync(true);
+
+            var service = new WatchdogEmailService(_loggerMock.Object, emailServiceMock.Object, _weekdayClock);
+
             await service.SendAllEmails(
                 options,
                 new(),
@@ -880,15 +885,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 new List<Region> { new Region { Id = 1, Description = "Region 1" } },
                 new());
 
-            _emailServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MailMessage>()), Times.Never);
-            _loggerMock.Verify(
-                x => x.Log(
-                    It.Is<LogLevel>(l => l == LogLevel.Information),
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("skipping watchdog email delivery", StringComparison.OrdinalIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-                Times.Once);
+            emailServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MailMessage>()), Times.Once);
         }
 
         [Fact]
