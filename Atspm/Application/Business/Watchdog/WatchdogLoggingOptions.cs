@@ -60,7 +60,10 @@ namespace Utah.Udot.Atspm.Business.Watchdog
         public int LowHitThreshold { get; set; }
 
         public DateTime PmAnalysisStart => PmScanDate.Date + new TimeSpan(PmPeakStartHour, 0, 0);
-        public DateTime PmAnalysisEnd => PmScanDate.Date + new TimeSpan(PmPeakEndHour, 0, 0);
+        public DateTime PmAnalysisEnd =>
+            (PmScanDate.Date + new TimeSpan(PmPeakEndHour, 0, 0)) < PmAnalysisStart
+                ? throw new InvalidOperationException("PM analysis end time cannot be before the start time.")
+                : PmScanDate.Date + new TimeSpan(PmPeakEndHour, 0, 0);
     }
 
     public class WatchdogAmLoggingOptions

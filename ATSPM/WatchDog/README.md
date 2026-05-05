@@ -194,6 +194,8 @@ Typical required watchdog settings:
 
 Important:
 
+- `Sort` controls the ordering within each watchdog bucket only
+- the email sections stay in this fixed order: `New Errors`, `Daily Recurring Errors`, `Recurring Errors`
 - `Sort` should be a plain string such as `Error`, `Consecutive`, or `Location`
 - do not put comments inside the JSON
 - for the afternoon ramp test, use `15` to `19` for both ramp detector windows

@@ -53,6 +53,7 @@ dkms.conf
 # Build artifacts
 **/bin/
 **/obj/
+.dotnet/
 
 # Visual Studio files
 .vs/
@@ -64,6 +65,13 @@ dkms.conf
 # User-specific project files
 *.csproj.user
 *.vbproj.user
+
+# Generated code files
+*.Designer.cs
+*.designer.cs
+*.g.cs
+*.g.i.cs
+*.generated.cs
 
 # Local configuration files
 **/Properties/launchSettings.json
