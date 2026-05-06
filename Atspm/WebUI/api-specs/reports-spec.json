@@ -4656,7 +4656,7 @@
         },
         "additionalProperties": false
       },
-      "KeyValuePair`2": {
+      "KeyValuePair2": {
         "type": "object",
         "properties": {
           "key": {
@@ -5553,6 +5553,10 @@
             "nullable": true
           },
           "delta": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "existingOffset": {
             "type": "integer",
             "format": "int32"
           },
@@ -7218,28 +7222,6 @@
         },
         "additionalProperties": false
       },
-      "PrioritySummaryUnassignedEventsDto": {
-        "type": "object",
-        "properties": {
-          "earlyGreen": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
-          },
-          "extendGreen": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "PrioritySummaryOptions": {
         "type": "object",
         "properties": {
@@ -7311,6 +7293,28 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PrioritySummaryCycleDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PrioritySummaryUnassignedEventsDto": {
+        "type": "object",
+        "properties": {
+          "earlyGreen": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "nullable": true
+          },
+          "extendGreen": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
             },
             "nullable": true
           }
@@ -7970,6 +7974,10 @@
           "timestampMs": {
             "type": "integer",
             "format": "int64"
+          },
+          "intersectionId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -9071,7 +9079,7 @@
             "nullable": true
           },
           "peakHour": {
-            "$ref": "#/components/schemas/KeyValuePair`2"
+            "$ref": "#/components/schemas/KeyValuePair2"
           },
           "peakHourFactor": {
             "type": "number",
@@ -9430,7 +9438,7 @@
         },
         "additionalProperties": false
       },
-      "WatchDogModel`1": {
+      "WatchDogModel1": {
         "type": "object",
         "properties": {
           "name": {
@@ -9498,7 +9506,7 @@
           "model": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/WatchDogModel`1"
+              "$ref": "#/components/schemas/WatchDogModel1"
             },
             "nullable": true
           }

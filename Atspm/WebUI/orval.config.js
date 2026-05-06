@@ -1,23 +1,23 @@
 module.exports = {
-  config: {
-    input: {
-      target: './api-specs/config-spec.json',
-    },
-    output: {
-      workspace: './src/api/config',
-      target: './config-api.ts',
-      client: 'react-query',
-      mock: true,
-      templates: './orval-templates',
-      mode: 'tags-split',
-      override: {
-        mutator: {
-          path: '../../lib/axios.ts',
-          name: 'dataRequest',
-        },
-      },
-    },
-  },
+  // config: {
+  //   input: {
+  //     target: './api-specs/config-spec.json',
+  //   },
+  //   output: {
+  //     workspace: './src/api/config',
+  //     target: './config-api.ts',
+  //     client: 'react-query',
+  //     mock: true,
+  //     templates: './orval-templates',
+  //     mode: 'tags-split',
+  //     override: {
+  //       mutator: {
+  //         path: '../../lib/axios.ts',
+  //         name: 'dataRequest',
+  //       },
+  //     },
+  //   },
+  // },
   reports: {
     input: {
       target: './api-specs/reports-spec.json',
@@ -37,23 +37,23 @@ module.exports = {
       },
     },
   },
-  data: {
-    input: {
-      target: './api-specs/data-spec.json',
-    },
-    output: {
-      workspace: './src/api/data',
-      target: './data-api.ts',
-      client: 'react-query',
-      mock: true,
-      templates: './orval-templates',
-      mode: 'tags-split',
-      override: {
-        mutator: {
-          path: '../../lib/axios.ts',
-          name: 'dataRequest',
-        },
-      },
-    },
-  },
+  // data: {
+  //   input: {
+  //     target: './api-specs/data-spec.json',
+  //   },
+  //   output: {
+  //     workspace: './src/api/data',
+  //     target: './data-api.ts',
+  //     client: 'react-query',
+  //     mock: true,
+  //     templates: './orval-templates',
+  //     mode: 'tags-split',
+  //     override: {
+  //       mutator: {
+  //         path: '../../lib/axios.ts',
+  //         name: 'dataRequest',
+  //       },
+  //     },
+  //   },
+  // },
 }

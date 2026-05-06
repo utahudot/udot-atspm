@@ -817,6 +817,7 @@ export interface LinkPivotAdjustment {
   /** @nullable */
   location?: string | null;
   delta?: number;
+  existingOffset?: number;
   adjustment?: number;
 }
 
@@ -1379,13 +1380,6 @@ export interface PrioritySummaryOptions {
   end?: string;
 }
 
-export interface PrioritySummaryUnassignedEventsDto {
-  /** @nullable */
-  earlyGreen?: string[] | null;
-  /** @nullable */
-  extendGreen?: string[] | null;
-}
-
 export interface PrioritySummaryResult {
   start?: string;
   end?: string;
@@ -1403,6 +1397,13 @@ export interface PrioritySummaryResult {
   events?: IndianaEvent[] | null;
   /** @nullable */
   cycles?: PrioritySummaryCycleDto[] | null;
+}
+
+export interface PrioritySummaryUnassignedEventsDto {
+  /** @nullable */
+  earlyGreen?: string[] | null;
+  /** @nullable */
+  extendGreen?: string[] | null;
 }
 
 export interface ProblemDetails {
@@ -1639,6 +1640,8 @@ export interface SrmEntityTrackPoint {
   time?: string | null;
   distance?: number;
   timestampMs?: number;
+  /** @nullable */
+  intersectionId?: string | null;
 }
 
 export interface SummaryData {
