@@ -7218,6 +7218,28 @@
         },
         "additionalProperties": false
       },
+      "PrioritySummaryUnassignedEventsDto": {
+        "type": "object",
+        "properties": {
+          "earlyGreen": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "nullable": true
+          },
+          "extendGreen": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "PrioritySummaryOptions": {
         "type": "object",
         "properties": {
@@ -7274,6 +7296,9 @@
           "numberExtendedGreens": {
             "type": "number",
             "format": "double"
+          },
+          "unassigned": {
+            "$ref": "#/components/schemas/PrioritySummaryUnassignedEventsDto"
           },
           "events": {
             "type": "array",

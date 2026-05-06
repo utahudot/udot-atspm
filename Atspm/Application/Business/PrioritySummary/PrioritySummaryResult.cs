@@ -34,6 +34,7 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
             double numberCheckouts,
             double numberEarlyGreens,
             double numberExtendedGreens,
+            PrioritySummaryUnassignedEventsDto unassigned,
             ICollection<PrioritySummaryCycleDto> cycles,
             ICollection<IndianaEvent> indianaEvents) : base(locationId, start, end)
         {
@@ -42,6 +43,7 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
             NumberCheckouts = numberCheckouts;
             NumberEarlyGreens = numberEarlyGreens;
             NumberExtendedGreens = numberExtendedGreens;
+            Unassigned = unassigned;
             Events = indianaEvents;
             Cycles = cycles;
         }
@@ -50,6 +52,7 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
         public double NumberCheckouts { get; set; }
         public double NumberEarlyGreens { get; set; }
         public double NumberExtendedGreens { get; set; }
+        public PrioritySummaryUnassignedEventsDto Unassigned { get; set; }
         public ICollection<IndianaEvent> Events { get; set; }
 
         public ICollection<PrioritySummaryCycleDto> Cycles { get; set; }

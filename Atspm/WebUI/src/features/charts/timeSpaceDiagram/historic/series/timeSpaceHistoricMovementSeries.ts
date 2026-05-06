@@ -123,7 +123,10 @@ export function generateSrmEntityLines(
   distanceScale = 1,
   idScope = 'default'
 ): SeriesOption[] {
-  const isOpposing = (phaseType ?? '').toLowerCase().includes('opposing')
+  const isOpposing =
+    idScope === 'opposing' ||
+    (idScope === 'default' &&
+      (phaseType ?? '').toLowerCase().includes('opposing'))
   const directionMultiplier = isOpposing ? -1 : 1
   const seriesOptions: SeriesOption[] = []
 

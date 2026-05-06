@@ -680,6 +680,56 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     ).toBe(false)
   })
 
+  it('draws opposing SRM tracks in the opposing distance direction', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary'),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing', {
+            srmEntityTracks: [
+              {
+                entityId: 'bus-42',
+                points: [
+                  {
+                    time: '2026-04-07T08:00:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:00:00Z'),
+                    distance: 0,
+                    intersectionId: 'opposing-location',
+                  },
+                  {
+                    time: '2026-04-07T08:01:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:01:00Z'),
+                    distance: 20,
+                    intersectionId: 'opposing-location',
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+    const srmCollection = series.find(
+      (entry) => String(entry.name) === 'SRM Collection SBT ph6'
+    )
+    const data = srmCollection?.data as [string, number][]
+
+    expect(data[1][1]).toBeLessThan(data[0][1])
+  })
+
   it('renders stop-bar-presence continuations in striped grey', () => {
     const node = renderStopBarPresenceNode(
       buildHistoricLocation('Primary', {

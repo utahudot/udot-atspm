@@ -1379,6 +1379,13 @@ export interface PrioritySummaryOptions {
   end?: string;
 }
 
+export interface PrioritySummaryUnassignedEventsDto {
+  /** @nullable */
+  earlyGreen?: string[] | null;
+  /** @nullable */
+  extendGreen?: string[] | null;
+}
+
 export interface PrioritySummaryResult {
   start?: string;
   end?: string;
@@ -1391,6 +1398,7 @@ export interface PrioritySummaryResult {
   numberCheckouts?: number;
   numberEarlyGreens?: number;
   numberExtendedGreens?: number;
+  unassigned?: PrioritySummaryUnassignedEventsDto;
   /** @nullable */
   events?: IndianaEvent[] | null;
   /** @nullable */

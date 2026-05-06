@@ -43,6 +43,7 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
 
             // Build cycles (backend equivalent of rollIntoCycles + finalizeCycle)
             var cycles = BuildCycles(options.LocationIdentifier, events, options.End);
+            var unassigned = BuildUnassignedEvents(events, cycles);
 
             // Average duration: keep same semantics as your old code:
             // only include cycles that actually closed via a 115 (not report-end fallback)
@@ -65,6 +66,7 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
                 checkOutEvents,
                 earlyGreensEvents,
                 extendedGreenEvents,
+                unassigned,
                 cycles.ToList(),
                 events.ToList()
             );
@@ -217,6 +219,41 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
 
             // finalize into DTO with offsets (seconds since 112)
             return closed.Select(FinalizeCycle).ToList();
+        }
+
+        private static PrioritySummaryUnassignedEventsDto BuildUnassignedEvents(
+            IReadOnlyList<IndianaEvent> events,
+            IReadOnlyList<PrioritySummaryCycleDto> cycles)
+        {
+            var cyclesByTsp = cycles
+                .GroupBy(c => c.TspNumber)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var earlyGreen = new List<DateTime>();
+            var extendGreen = new List<DateTime>();
+
+            foreach (var e in events
+                .Where(e => e.EventCode == 113 || e.EventCode == 114)
+                .OrderBy(e => e.Timestamp)
+                .ThenBy(e => e.EventCode))
+            {
+                if (cyclesByTsp.TryGetValue(e.EventParam, out var tspCycles) &&
+                    tspCycles.Any(c => e.Timestamp >= c.CheckIn && e.Timestamp <= c.CheckOut))
+                {
+                    continue;
+                }
+
+                if (e.EventCode == 113)
+                {
+                    earlyGreen.Add(e.Timestamp);
+                }
+                else
+                {
+                    extendGreen.Add(e.Timestamp);
+                }
+            }
+
+            return new PrioritySummaryUnassignedEventsDto(earlyGreen, extendGreen);
         }
 
         private static PrioritySummaryCycleDto FinalizeCycle(MutableCycle c)
