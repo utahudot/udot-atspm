@@ -99,8 +99,8 @@ const ITEM_NO_DATA_MESSAGES: Record<string, string> = {
   'left-turn': 'No left turns found.',
   'right-turn': 'No right turns found.',
   'gpx-tracks': 'No GPX tracks found.',
-  'srm-entity-continuous': 'No continuous SRM entity tracks found.',
-  'srm-entity-gap': 'No SRM entity gap tracks found.',
+  'srm-entity-continuous': 'No SRM collections found.',
+  'srm-entity-gap': 'No SRM estimated trajectories found.',
   'early-green': 'No early greens found.',
   'extend-green': 'No extend greens found.',
   'tsp-request': 'No transit-signal priority requests found.',
@@ -234,21 +234,21 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
   },
   {
     key: 'srm-entity-continuous',
-    label: 'SRM Entity Continuous',
+    label: 'SRM Collection',
     category: 'Movements & Tracks',
     description:
       'SRM or connected-vehicle entity tracks drawn through the corridor.',
     preview: 'srm',
-    match: (name) => matchDirectionalPrefix(name, 'SRM Entity Continuous'),
+    match: (name) => matchDirectionalPrefix(name, 'SRM Collection'),
   },
   {
     key: 'srm-entity-gap',
-    label: 'SRM Entity Gap',
+    label: 'SRM Estimated Trajectory',
     category: 'Movements & Tracks',
     description:
       'Dotted connector between SRM entity track points separated by a location gap.',
     preview: 'srm',
-    match: (name) => matchDirectionalPrefix(name, 'SRM Entity Gap'),
+    match: (name) => matchDirectionalPrefix(name, 'SRM Estimated Trajectory'),
   },
   {
     key: 'early-green',

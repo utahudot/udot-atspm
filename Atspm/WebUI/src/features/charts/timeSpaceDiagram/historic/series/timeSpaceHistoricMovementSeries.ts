@@ -9,8 +9,8 @@ import {
   PASSIVE_DETECTION_SERIES_PROPS,
 } from './timeSpaceHistoricSeries.shared'
 
-export const SRM_CONTINUOUS_LEGEND_PREFIX = 'SRM Entity Continuous'
-export const SRM_GAP_LEGEND_PREFIX = 'SRM Entity Gap'
+export const SRM_CONTINUOUS_LEGEND_PREFIX = 'SRM Collection'
+export const SRM_GAP_LEGEND_PREFIX = 'SRM Estimated Trajectory'
 
 const TSP_OVERLAY_Z = 7
 const TSP_REQUEST_BAND_HEIGHT_PX = 2
@@ -32,6 +32,7 @@ type SrmTrackPoint = NonNullable<
 >[number]['points'][number]
 
 type SrmSeriesPoint = [string, number]
+type SrmSeriesDataPoint = SrmSeriesPoint | null
 
 export function generateTMCEvent(
   data: RawTimeSpaceHistoricData[],
@@ -140,16 +141,15 @@ export function generateSrmEntityLines(
 
       const segments = splitSrmTrackByIntersection(track.points, points)
 
-      segments.forEach((segment, segmentIndex) => {
+      const collectionData = joinSrmSegments(segments)
+      if (collectionData.length) {
         seriesOptions.push({
           name: `${SRM_CONTINUOUS_LEGEND_PREFIX} ${
             phaseType?.length ? phaseType : ''
           }`,
           id: `SRM ${location.locationIdentifier} ${
             track.entityId
-          } ${trackIndex} segment-${segmentIndex} ${
-            phaseType ?? ''
-          } row-${i} ${idScope}`,
+          } ${trackIndex} collection ${phaseType ?? ''} row-${i} ${idScope}`,
           type: 'line',
           symbol: 'none',
           z: TIME_SPACE_MOVEMENT_SERIES_Z,
@@ -158,9 +158,9 @@ export function generateSrmEntityLines(
             color: Color.Black,
             opacity: 0.85,
           },
-          data: segment,
+          data: collectionData,
         })
-      })
+      }
 
       segments.slice(1).forEach((segment, gapIndex) => {
         const previousSegment = segments[gapIndex]
@@ -222,6 +222,15 @@ function splitSrmTrackByIntersection(
     }
 
     return segments
+  }, [])
+}
+
+function joinSrmSegments(segments: SrmSeriesPoint[][]): SrmSeriesDataPoint[] {
+  return segments.reduce<SrmSeriesDataPoint[]>((points, segment, index) => {
+    if (!segment.length) return points
+    if (index > 0) points.push(null)
+    points.push(...segment)
+    return points
   }, [])
 }
 

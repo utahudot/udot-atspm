@@ -67,11 +67,11 @@ function buildLocationPhaseLabelOption(): EChartsOption {
 function buildSrmOption(): EChartsOption {
   return {
     legend: {
-      data: ['Cycles EB', 'SRM Entity Continuous EB', 'SRM Entity Gap EB'],
+      data: ['Cycles EB', 'SRM Collection EB', 'SRM Estimated Trajectory EB'],
       selected: {
         'Cycles EB': true,
-        'SRM Entity Continuous EB': true,
-        'SRM Entity Gap EB': true,
+        'SRM Collection EB': true,
+        'SRM Estimated Trajectory EB': true,
       },
     },
   }
@@ -318,14 +318,14 @@ describe('TimeSpaceSidebar directional controls', () => {
     ).toBeNull()
   })
 
-  it('explains that SRM Entity Continuous requires uploaded SRM data with an info tooltip', async () => {
+  it('explains that SRM Collection requires uploaded SRM data with an info tooltip', async () => {
     render(
       <TimeSpaceSidebar
         option={buildSrmOption()}
         selectedSeries={{
           'Cycles EB': true,
-          'SRM Entity Continuous EB': true,
-          'SRM Entity Gap EB': true,
+          'SRM Collection EB': true,
+          'SRM Estimated Trajectory EB': true,
         }}
         suppressedDirections={{}}
         onSetSeriesVisibility={jest.fn()}
@@ -334,18 +334,18 @@ describe('TimeSpaceSidebar directional controls', () => {
       />
     )
 
-    const infoIcon = screen.getByLabelText('SRM Entity Continuous info')
+    const infoIcon = screen.getByLabelText('SRM Collection info')
 
     expect(infoIcon).not.toBeNull()
     expect(screen.queryByRole('alert')).toBeNull()
     expect(
-      screen.queryByLabelText('SRM Entity Continuous unavailable')
+      screen.queryByLabelText('SRM Collection unavailable')
     ).toBeNull()
     expect(window.getComputedStyle(infoIcon).color).toBe('rgb(148, 163, 184)')
     expect(
       window.getComputedStyle(
         screen
-          .getByText('SRM Entity Continuous')
+          .getByText('SRM Collection')
           .closest('.MuiPaper-root') as HTMLElement
       ).opacity
     ).toBe('0.6')

@@ -45,8 +45,10 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public double Lat { get; set; }
         public double Lon { get; set; }
         public long TimestampMs { get; set; }
+        public int? MessageRank { get; set; }
         public double? HeadingDegrees { get; set; }
         public DirectionTypes HeadingDirection { get; set; } = DirectionTypes.NA;
+        public int SourceOrder { get; set; }
     }
 
     /// <summary>
@@ -87,13 +89,11 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             var routeLocationCoordinates = GetRouteLocationCoordinates(
                 routeLocationsList,
                 startLocal);
-            var rows = ParseRows(
+            var rows = OrderRows(ParseRows(
                     startLocal,
                     endLocal,
                     allowedIntersectionIds,
-                    csvContentBase64)
-                .OrderBy(r => r.TimestampMs)
-                .ToList();
+                    csvContentBase64));
             if (!rows.Any())
             {
                 return new List<SrmEntityTrack>();
@@ -106,60 +106,60 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             var tracks = new List<SrmEntityTrack>();
             foreach (var group in grouped)
             {
-                var ordered = group.OrderBy(r => r.TimestampMs).ToList();
+                var ordered = OrderRows(group);
                 var anchorCoordinates = GetAnchorCoordinatesForEntity(
                     ordered,
                     routeLocationCoordinates);
+                var sequenceStartIndex = 0;
+                var distanceAnchorIndex = 0;
                 if (anchorCoordinates != null && ordered.Count > 0)
                 {
-                    var startIndex = FindClosestRowIndex(
+                    distanceAnchorIndex = FindClosestRowIndex(
                         ordered,
                         anchorCoordinates.Value.Latitude,
                         anchorCoordinates.Value.Longitude);
 
-                    if (startIndex > 0)
-                    {
-                        ordered = ordered.Skip(startIndex).ToList();
-                    }
+                    sequenceStartIndex = FindSequenceStartIndex(
+                        ordered,
+                        distanceAnchorIndex);
                 }
 
+                var retainedRows = ordered.Skip(sequenceStartIndex).ToList();
+                var retainedAnchorIndex = Math.Max(0, distanceAnchorIndex - sequenceStartIndex);
+                var cumulativeDistances = GetCumulativeDistances(retainedRows);
+                var anchorDistance = retainedAnchorIndex < cumulativeDistances.Count
+                    ? cumulativeDistances[retainedAnchorIndex]
+                    : 0;
                 var points = new List<SrmEntityTrackPoint>();
-                var startingIntersection = ordered
-                    .Select(r => r.IntersectionId)
-                    .FirstOrDefault(id => !string.IsNullOrWhiteSpace(id)) ?? string.Empty;
 
-                double totalDistance = 0;
-                double? lastLat = null;
-                double? lastLon = null;
-
-                foreach (var row in ordered)
+                for (var i = 0; i < retainedRows.Count; i++)
                 {
-                    if (lastLat.HasValue && lastLon.HasValue)
-                    {
-                        totalDistance += Haversine(lastLat.Value, lastLon.Value, row.Lat, row.Lon);
-                    }
+                    var row = retainedRows[i];
 
                     points.Add(new SrmEntityTrackPoint
                     {
                         Time = FormatLocalTimestamp(
                             DateTimeOffset.FromUnixTimeMilliseconds(row.TimestampMs).LocalDateTime),
-                        Distance = totalDistance,
+                        Distance = cumulativeDistances[i] - anchorDistance,
                         TimestampMs = row.TimestampMs,
                         IntersectionId = row.IntersectionId
                     });
-
-                    lastLat = row.Lat;
-                    lastLon = row.Lon;
                 }
 
                 if (points.Count > 0)
                 {
+                    var startingIntersection = retainedAnchorIndex < retainedRows.Count
+                        ? retainedRows[retainedAnchorIndex].IntersectionId
+                        : retainedRows
+                            .Select(r => r.IntersectionId)
+                            .FirstOrDefault(id => !string.IsNullOrWhiteSpace(id)) ?? string.Empty;
+
                     tracks.Add(new SrmEntityTrack
                     {
                         EntityId = group.Key,
                         Points = points.Take(500).ToList(),
                         StartingIntersection = startingIntersection,
-                        HeadingDirection = GetTrackHeadingDirection(ordered)
+                        HeadingDirection = GetTrackHeadingDirection(retainedRows)
                     });
                 }
             }
@@ -239,6 +239,68 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             }
 
             return closestIndex;
+        }
+
+        private static int FindSequenceStartIndex(
+            IReadOnlyList<ParsedSrmRow> rows,
+            int closestIndex)
+        {
+            if (rows.Count == 0 || closestIndex < 0 || closestIndex >= rows.Count)
+            {
+                return 0;
+            }
+
+            var closestRow = rows[closestIndex];
+            if (!closestRow.MessageRank.HasValue)
+            {
+                return 0;
+            }
+
+            if (closestRow.MessageRank.Value <= 1)
+            {
+                return closestIndex;
+            }
+
+            for (var i = closestIndex; i >= 0; i--)
+            {
+                var row = rows[i];
+                if (!string.Equals(
+                    row.IntersectionId,
+                    closestRow.IntersectionId,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
+                if (row.MessageRank == 1)
+                {
+                    return i;
+                }
+            }
+
+            return closestIndex;
+        }
+
+        private static List<double> GetCumulativeDistances(IReadOnlyList<ParsedSrmRow> rows)
+        {
+            var cumulativeDistances = new List<double>();
+            double totalDistance = 0;
+            double? lastLat = null;
+            double? lastLon = null;
+
+            foreach (var row in rows)
+            {
+                if (lastLat.HasValue && lastLon.HasValue)
+                {
+                    totalDistance += Haversine(lastLat.Value, lastLon.Value, row.Lat, row.Lon);
+                }
+
+                cumulativeDistances.Add(totalDistance);
+                lastLat = row.Lat;
+                lastLon = row.Lon;
+            }
+
+            return cumulativeDistances;
         }
 
         private IEnumerable<ParsedSrmRow> ParseRows(
@@ -322,6 +384,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             var timestampIndex = FindHeaderIndex(headers, "TMSTPUTC", "DATETIME");
             var dateIndex = FindHeaderIndex(headers, "DATE");
             var timeIndex = FindHeaderIndex(headers, "TIME", "TMSTP");
+            var messageRankIndex = FindHeaderIndex(headers, "MSGRANK");
 
             if (latIndex == -1 || lonIndex == -1)
             {
@@ -329,6 +392,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             }
 
             var rows = new List<ParsedSrmRow>();
+            var sourceOrder = 0;
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
@@ -391,12 +455,64 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                     Lat = lat,
                     Lon = lon,
                     TimestampMs = new DateTimeOffset(parsedUtc.Value).ToUnixTimeMilliseconds(),
+                    MessageRank = ParseMessageRank(cols, messageRankIndex),
                     HeadingDegrees = headingDegrees,
-                    HeadingDirection = GetHeadingDirection(headingDegrees)
+                    HeadingDirection = GetHeadingDirection(headingDegrees),
+                    SourceOrder = sourceOrder++
                 });
             }
 
             return rows;
+        }
+
+        private static List<ParsedSrmRow> OrderRows(IEnumerable<ParsedSrmRow> rows)
+        {
+            var ordered = rows.ToList();
+            ordered.Sort(CompareRows);
+            return ordered;
+        }
+
+        private static int CompareRows(ParsedSrmRow left, ParsedSrmRow right)
+        {
+            var timestampCompare = left.TimestampMs.CompareTo(right.TimestampMs);
+            if (timestampCompare != 0)
+            {
+                return timestampCompare;
+            }
+
+            if (string.Equals(
+                left.IntersectionId,
+                right.IntersectionId,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                var rankCompare = CompareMessageRank(left.MessageRank, right.MessageRank);
+                if (rankCompare != 0)
+                {
+                    return rankCompare;
+                }
+            }
+
+            return left.SourceOrder.CompareTo(right.SourceOrder);
+        }
+
+        private static int CompareMessageRank(int? left, int? right)
+        {
+            if (!left.HasValue && !right.HasValue)
+            {
+                return 0;
+            }
+
+            if (!left.HasValue)
+            {
+                return 1;
+            }
+
+            if (!right.HasValue)
+            {
+                return -1;
+            }
+
+            return left.Value.CompareTo(right.Value);
         }
 
         private static DateTime? ParseUtcTimestamp(string timestampValue, string dateValue, string timeValue)
@@ -620,6 +736,37 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         private static string FormatLocalTimestamp(DateTime localDateTime)
         {
             return localDateTime.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+        }
+
+        private static int? ParseMessageRank(List<string> cols, int messageRankIndex)
+        {
+            if (messageRankIndex == -1 || messageRankIndex >= cols.Count)
+            {
+                return null;
+            }
+
+            var raw = cols[messageRankIndex];
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return null;
+            }
+
+            if (int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerRank) ||
+                int.TryParse(raw, NumberStyles.Integer, CultureInfo.CurrentCulture, out integerRank))
+            {
+                return integerRank > 0 ? integerRank : null;
+            }
+
+            if (!double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var numericRank) &&
+                !double.TryParse(raw, NumberStyles.Float, CultureInfo.CurrentCulture, out numericRank))
+            {
+                return null;
+            }
+
+            var roundedRank = (int)Math.Round(numericRank);
+            return numericRank > 0 && Math.Abs(numericRank - roundedRank) < 0.001
+                ? roundedRank
+                : null;
         }
 
         private static double? ParseHeadingDegrees(List<string> cols, int headingIndex)

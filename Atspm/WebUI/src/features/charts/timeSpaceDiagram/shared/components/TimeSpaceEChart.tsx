@@ -78,8 +78,8 @@ export { buildOffsetResetButtons } from '@/features/charts/timeSpaceDiagram/rend
 export type TimeSpaceChartProps = TimeSpaceChartRendererProps
 
 const SRM_LEGEND_PREFIXES = [
-  'SRM Entity Continuous',
-  'SRM Entity Gap',
+  'SRM Collection',
+  'SRM Estimated Trajectory',
   'SRM Entity',
 ] as const
 
