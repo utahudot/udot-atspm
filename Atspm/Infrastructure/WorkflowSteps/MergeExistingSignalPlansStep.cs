@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.NetStandardToolkit.Workflows;
@@ -13,6 +14,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
     {
         private readonly IServiceScopeFactory _services = services;
 
+        /// <inheritdoc/>
         protected override async IAsyncEnumerable<IEnumerable<SignalTimingPlan>> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var groups = input.GroupBy(g => (g.LocationIdentifier, g.PlanNumber));
@@ -21,10 +23,13 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
             using var scope = _services.CreateAsyncScope();
             var repo = scope.ServiceProvider.GetService<ISignalTimingPlanRepository>();
 
+            var options = scope.ServiceProvider.GetService<IOptions<DeviceEventLoggingConfiguration>>();
+            var planOffset = options?.Value.SignalTimingPlanOffsetHours ?? 12;
+
             foreach (var g in groups)
             {
-                var minStart = g.Min(p => p.Start).AddHours(-12);
-                var maxStart = g.Max(p => p.Start).AddHours(12);
+                var minStart = g.Min(p => p.Start).AddHours(-planOffset);
+                var maxStart = g.Max(p => p.Start).AddHours(planOffset);
 
                 var existing = await repo.GetList()
                     .AsNoTracking()

@@ -102,7 +102,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             var deviceEventLoggingConfiguration = new ModelBinder<DeviceEventLoggingConfiguration>();
 
             deviceEventLoggingConfiguration.BindMemberFromValue(b => b.Path, PathCommandOption);
-            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.BatchSize, BatchSizeOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.ProcessingBatchSize, BatchSizeOption);
             deviceEventLoggingConfiguration.BindMemberFromValue(b => b.ParallelProcesses, PrallelProcessesOption);
 
             var deviceEventLoggingQueryOptions = new ModelBinder<DeviceEventLoggingQueryOptions>();

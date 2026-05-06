@@ -30,14 +30,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         public string Path { get; set; } = System.IO.Path.GetTempPath();
 
         /// <summary>
-        /// Batch size of <see cref="EventLogModelBase"/> objects when saving to repository
+        /// Batch size of <see cref="EventLogModelBase"/> chunks to to upsert to the repository at a time.
         /// </summary>
-        public int BatchSize { get; set; }
+        public int ProcessingBatchSize { get; set; } = 50000;
 
         /// <summary>
-        /// Amount of processes that can be run in parallel
+        /// The amount of parallel process to run in the workflow
         /// </summary>
-        public int ParallelProcesses { get; set; }
+        public int ParallelProcesses { get; set; } = 5;
+
+        public int WorkflowBatchSize { get; set; } = 20;
+
+        public int DevicesBatchSize { get; set; }
+
+        /// <summary>
+        /// The number of hours to look behind and ahead when querying for events to log.
+        /// This is to ensure the previous plan is pulled in so it can be merged and compared with the plans being logged.
+        /// </summary>
+        public int SignalTimingPlanOffsetHours { get; set; } = 12;
 
         /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
         public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new();
