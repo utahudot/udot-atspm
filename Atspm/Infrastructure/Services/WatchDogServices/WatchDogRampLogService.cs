@@ -106,10 +106,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var detectors = location.GetDetectorsForLocation();
             var detectionTypeValidIds = new List<int> { 8, 9, 10, 11 };
 
-            var result = detectors
+            var rampDetectors = detectors
                 .Where(d => d.DetectionTypes.Any(i => detectionTypeValidIds.Contains((int)i.Id)));
 
-            foreach (var detector in detectors)
+            foreach (var detector in rampDetectors)
                 try
                 {
                     var channel = detector.DetectorChannel;
@@ -144,132 +144,81 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             if (location.LocationTypeId != 2)
                 return;
 
-            var detectors = location.GetDetectorsForLocation();
             var validDetectionTypeIds = new HashSet<int> { 8, 9, 10, 11 };
             var validEventCodes = new HashSet<short> { 1371, 1372, 1373 };
             var bucketSizeSeconds = 20;
             int wiggleSeconds = 9;
+            var detectors = location.GetDetectorsForLocation()
+                .Where(d => d.DetectionTypes.Any(dt => validDetectionTypeIds.Contains((int)dt.Id)))
+                .ToList();
 
-            // 1️⃣ Determine ramp window
-            DateTime now = DateTime.Now;
-            DateTime rampStart = options.RampMissedDetectorHitsStartScanDate;
-            DateTime rampEnd = options.RampMissedDetectorHitsEndScanDate;
-
-            // Ensure max 24-hour window
-            if ((rampEnd - rampStart).TotalHours > 24)
-                rampEnd = rampStart.AddHours(24);
-
-            // 2️⃣ Define 3-hour periods
-            var periodDefinitions = new List<(TimeSpan Start, TimeSpan End, string Label)>
+            if (!detectors.Any())
             {
-                (TimeSpan.FromHours(0), TimeSpan.FromHours(3), "12am-3am"),
-                (TimeSpan.FromHours(3), TimeSpan.FromHours(6), "3am-6am"),
-                (TimeSpan.FromHours(6), TimeSpan.FromHours(9), "6am-9am"),
-                (TimeSpan.FromHours(9), TimeSpan.FromHours(12), "9am-12pm"),
-                (TimeSpan.FromHours(12), TimeSpan.FromHours(15), "12pm-3pm"),
-                (TimeSpan.FromHours(15), TimeSpan.FromHours(18), "3pm-6pm"),
-                (TimeSpan.FromHours(18), TimeSpan.FromHours(21), "6pm-9pm"),
-                (TimeSpan.FromHours(21), TimeSpan.FromHours(24), "9pm-12am")
-            };
+                return;
+            }
 
-            foreach (var detector in detectors.Where(d => d.DetectionTypes.Any(dt => validDetectionTypeIds.Contains((int)dt.Id))))
+            var representativeDetector = detectors.First();
+            var rampStart = options.RampMissedDetectorHitStart;
+            var rampEnd = options.RampMissedDetectorHitEnd;
+
+            if (rampEnd <= rampStart)
             {
-                try
+                rampEnd = rampEnd.AddDays(1);
+            }
+
+            var timestamps = locationEvents
+                .Where(e => validEventCodes.Contains(e.EventCode) &&
+                            e.Timestamp >= rampStart &&
+                            e.Timestamp < rampEnd)
+                .Select(e => e.Timestamp)
+                .OrderBy(ts => ts)
+                .ToList();
+
+            if (!timestamps.Any())
+            {
+                AddDetectorError(
+                    location,
+                    options.RampMissedDetectorHitsStartScanDate,
+                    representativeDetector,
+                    WatchDogIssueTypes.RampMissedDetectorHits,
+                    "No ramp mainline events received in the configured window",
+                    errors,
+                    representativeDetector.DetectorChannel.ToString());
+                return;
+            }
+
+            int totalBuckets = (int)Math.Ceiling((rampEnd - rampStart).TotalSeconds / bucketSizeSeconds);
+            var bucketsWithHits = new HashSet<int>();
+
+            foreach (var ts in timestamps)
+            {
+                int bucketIndex = (int)((ts - rampStart).TotalSeconds / bucketSizeSeconds);
+                bucketsWithHits.Add(bucketIndex);
+
+                var secondsIntoBucket = (ts - rampStart).TotalSeconds % bucketSizeSeconds;
+
+                if (bucketIndex > 0 && secondsIntoBucket <= wiggleSeconds)
                 {
-                    var channel = detector.DetectorChannel;
-
-                    // Pull timestamps for this detector in ramp window
-                    var timestamps = locationEvents
-                        .Where(e => e.EventParam == channel && validEventCodes.Contains(e.EventCode) &&
-                                    e.Timestamp >= rampStart && e.Timestamp <= rampEnd)
-                        .Select(e => e.Timestamp)
-                        .ToList();
-
-                    if (!timestamps.Any())
-                    {
-                        AddDetectorError(
-                            location,
-                            options.RampMissedDetectorHitsStartScanDate,
-                            detector,
-                            WatchDogIssueTypes.RampMissedDetectorHits,
-                            $"CH: {channel} - No events received in entire ramp window",
-                            errors,
-                            channel.ToString());
-                        continue;
-                    }
-
-                    // 3️⃣ Process each 3-hour period, clipped to ramp window
-                    var periods = new List<(DateTime Start, DateTime End, string Label)>();
-                    foreach (var (startTs, endTs, label) in periodDefinitions)
-                    {
-                        DateTime periodStart = rampStart.Date + startTs;
-                        DateTime periodEnd = rampStart.Date + endTs;
-
-                        // Skip periods outside ramp window
-                        if (periodEnd <= rampStart || periodStart >= rampEnd)
-                            continue;
-
-                        // Clip periods to ramp window
-                        periodStart = periodStart < rampStart ? rampStart : periodStart;
-                        periodEnd = periodEnd > rampEnd ? rampEnd : periodEnd;
-
-                        periods.Add((periodStart, periodEnd, label));
-                    }
-
-                    foreach (var (periodStart, periodEnd, label) in periods)
-                    {
-                        var periodTimestamps = timestamps
-                            .Where(ts => ts >= periodStart && ts < periodEnd)
-                            .ToList();
-
-                        if (!periodTimestamps.Any())
-                        {
-                            AddDetectorError(
-                                location,
-                                options.RampMissedDetectorHitsStartScanDate,
-                                detector,
-                                WatchDogIssueTypes.RampMissedDetectorHits,
-                                $"CH: {channel} - No events in period {label}",
-                                errors,
-                                channel.ToString());
-                            continue;
-                        }
-
-                        int totalBuckets = (int)Math.Ceiling((periodEnd - periodStart).TotalSeconds / bucketSizeSeconds);
-                        var bucketsWithHits = new HashSet<int>();
-
-                        foreach (var ts in periodTimestamps)
-                        {
-                            int bucketIndex = (int)((ts - periodStart).TotalSeconds / bucketSizeSeconds);
-                            bucketsWithHits.Add(bucketIndex);
-
-                            // Previous bucket if within wiggle
-                            if (bucketIndex > 0 && (ts - periodStart).TotalSeconds % bucketSizeSeconds <= wiggleSeconds)
-                                bucketsWithHits.Add(bucketIndex - 1);
-
-                            // Next bucket if within wiggle
-                            if (bucketIndex < totalBuckets - 1 && (bucketSizeSeconds - (ts - periodStart).TotalSeconds % bucketSizeSeconds) <= wiggleSeconds)
-                                bucketsWithHits.Add(bucketIndex + 1);
-                        }
-
-                        int missedBuckets = totalBuckets - bucketsWithHits.Count;
-                        if (missedBuckets > options.RampMissedEventsThreshold)
-                        {
-                            AddDetectorError(
-                                location,
-                                options.RampMissedDetectorHitsStartScanDate,
-                                detector,
-                                WatchDogIssueTypes.RampMissedDetectorHits,
-                                $"CH: {channel} - Period {label} missed {missedBuckets} intervals",
-                                errors,
-                                channel.ToString());
-                        }
-                    }
+                    bucketsWithHits.Add(bucketIndex - 1);
                 }
-                catch (Exception ex)
+
+                if (bucketIndex < totalBuckets - 1 && (bucketSizeSeconds - secondsIntoBucket) <= wiggleSeconds)
                 {
-                    logger.LogError($"CheckRampMissedDetectorHits {detector.Id} {ex.Message}");
+                    bucketsWithHits.Add(bucketIndex + 1);
                 }
+            }
+
+            int missedBuckets = totalBuckets - bucketsWithHits.Count;
+            if (missedBuckets > options.RampMissedEventsThreshold)
+            {
+                AddDetectorError(
+                    location,
+                    options.RampMissedDetectorHitsStartScanDate,
+                    representativeDetector,
+                    WatchDogIssueTypes.RampMissedDetectorHits,
+                    $"Ramp mainline window missed {missedBuckets} intervals between {rampStart:t} and {rampEnd:t}",
+                    errors,
+                    representativeDetector.DetectorChannel.ToString());
             }
         }
 

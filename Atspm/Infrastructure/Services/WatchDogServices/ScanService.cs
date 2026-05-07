@@ -211,6 +211,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 finalDayBefore.AddRange(rampResult.DayBefore);
             }
 
+            var isWeekend = scanDate.DayOfWeek == DayOfWeek.Saturday || scanDate.DayOfWeek == DayOfWeek.Sunday;
+            if (emailOptions.WeekdayOnly && isWeekend)
+            {
+                logger.LogInformation("Skipping watchdog email: WeekdayOnly is enabled and scan date {Date} falls on a weekend.", scanDate);
+                return;
+            }
+
             await emailService.SendAllEmails(
                 emailOptions,
                 finalNew,

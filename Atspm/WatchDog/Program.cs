@@ -54,6 +54,7 @@ cmdBuilder.UseHost(hostBuilder =>
     })
     .ConfigureServices((h, s) =>
     {
+        s.AddSingleton(TimeProvider.System);
         s.AddEmailServices(h);
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();

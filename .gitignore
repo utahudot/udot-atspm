@@ -53,6 +53,7 @@ dkms.conf
 # Build artifacts
 **/bin/
 **/obj/
+.dotnet/
 
 # Visual Studio files
 .vs/
@@ -65,11 +66,21 @@ dkms.conf
 *.csproj.user
 *.vbproj.user
 
+# Generated code files
+*.Designer.cs
+*.designer.cs
+*.g.cs
+*.g.i.cs
+*.generated.cs
+
 # Local configuration files
+.claude/
 **/Properties/launchSettings.json
 appsettings.Development.json
 appsettings.Local.json
 appsettings.*.json
+.dotnet_home/
+.dotnet-home/
 
 # Publish profiles
 **/Properties/PublishProfiles/*.pubxml

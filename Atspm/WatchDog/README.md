@@ -12,6 +12,7 @@ The app:
 - generates missing watchdog log events when they do not already exist
 - segments errors into new, daily recurring, and recurring buckets
 - sends watchdog emails to qualified recipients
+- suppresses email (but still runs the scan and saves errors) on Saturdays and Sundays when `WeekdayOnly` is enabled
 
 ## How To Run
 
@@ -77,7 +78,7 @@ The app requires configuration for:
 
 ### DatabaseConfiguration
 
-The current code expects `DatabaseConfiguration:<ContextName>` sections to bind to `DatabaseConfiguration`.
+The current code expects nested `DatabaseConfiguration` sections to bind to `DatabaseConfiguration`.
 
 Each database entry must use this shape:
 
@@ -146,7 +147,7 @@ Each database entry must use this shape:
 
 Important:
 
-- do not use `Provider` and `ConnectionString` here
+- keep the nested object shape shown above
 - the current app expects `DBType`, `Host`, `Port`, `Database`, `User`, `Password`, and optional `Options`
 
 ### WatchdogConfiguration
@@ -156,18 +157,18 @@ Typical required watchdog settings:
 ```json
 {
   "WatchdogConfiguration": {
-    "PmScanDate": "2025-02-18",
-    "AmScanDate": "2025-02-19",
-    "RampMissedDetectorHitsStartScanDate": "2025-02-17",
-    "RampMissedDetectorHitsEndScanDate": "2025-02-18",
+    "PmScanDate": "2026-04-24",
+    "AmScanDate": "2026-04-24",
+    "RampMissedDetectorHitsStartScanDate": "2026-04-24",
+    "RampMissedDetectorHitsEndScanDate": "2026-04-24",
     "AmStartHour": 1,
     "AmEndHour": 5,
     "PmPeakStartHour": 18,
     "PmPeakEndHour": 17,
-    "RampDetectorStartHour": 7,
-    "RampDetectorEndHour": 8,
+    "RampDetectorStartHour": 15,
+    "RampDetectorEndHour": 19,
     "RampMissedDetectorHitStartHour": 15,
-    "RampMissedDetectorHitEndHour": 7,
+    "RampMissedDetectorHitEndHour": 19,
     "RampMainlineStartHour": 15,
     "RampMainlineEndHour": 19,
     "RampStuckQueueStartHour": 1,
@@ -193,8 +194,11 @@ Typical required watchdog settings:
 
 Important:
 
+- `Sort` controls the ordering within each watchdog bucket only
+- the email sections stay in this fixed order: `New Errors`, `Daily Recurring Errors`, `Recurring Errors`
 - `Sort` should be a plain string such as `Error`, `Consecutive`, or `Location`
 - do not put comments inside the JSON
+- for the afternoon ramp test, use `15` to `19` for both ramp detector windows
 
 ### EmailConfiguration
 
@@ -231,7 +235,8 @@ Current watchdog recipient behavior:
 
 If watchdog runs but no emails are sent:
 
-- verify `DatabaseConfiguration` uses the current object shape, not `ConnectionString`
+- if running on a Saturday or Sunday, check whether `WeekdayOnly` is `true` — the scan will complete and errors will be saved, but email is intentionally suppressed on weekends when this flag is set
+- verify `DatabaseConfiguration` uses the current nested object shape
 - verify `ConfigContext` points to a populated ATSPM config database
 - verify `IdentityContext` points to a populated identity database
 - verify users have email addresses
