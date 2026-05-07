@@ -53,7 +53,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                     : routeLocation.PrimaryDirectionId;
 
             return allForLocation
-                .Where(t => IsDirectionMatch(t.HeadingDirection, targetDirection))
+                .Where(t => IsDirectionMatch(t, targetDirection))
                 .ToList();
         }
 
@@ -72,6 +72,17 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                     locationIdentifier,
                     StringComparison.OrdinalIgnoreCase))
                 .ToList();
+        }
+
+        private static bool IsDirectionMatch(SrmEntityTrack track, DirectionTypes target)
+        {
+            if (track.HeadingDirectionCandidates.Count > 0)
+            {
+                return track.HeadingDirectionCandidates
+                    .Any(heading => IsDirectionMatch(heading, target));
+            }
+
+            return IsDirectionMatch(track.HeadingDirection, target);
         }
 
         private static bool IsDirectionMatch(DirectionTypes heading, DirectionTypes target)
