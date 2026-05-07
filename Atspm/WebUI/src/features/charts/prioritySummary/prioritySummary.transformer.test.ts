@@ -2,7 +2,7 @@ import type { PrioritySummaryResult } from '@/api/reports'
 import transformPrioritySummaryData from './prioritySummary.transformer'
 
 describe('transformPrioritySummaryData', () => {
-  it('creates a combined chart before one chart per TSP number and places unassigned events on the baseline', () => {
+  it('creates a combined chart before one chart per TSP number and filters unassigned events by TSP', () => {
     const response: PrioritySummaryResult = {
       start: '2026-04-07T08:00:00Z',
       end: '2026-04-07T08:10:00Z',
@@ -14,8 +14,8 @@ describe('transformPrioritySummaryData', () => {
       numberEarlyGreens: 1,
       numberExtendedGreens: 1,
       unassigned: {
-        earlyGreen: ['2026-04-07T08:03:00Z'],
-        extendGreen: ['2026-04-07T08:04:00Z'],
+        earlyGreen: [{ timestamp: '2026-04-07T08:03:00Z', value: 2 }],
+        extendGreen: [{ timestamp: '2026-04-07T08:04:00Z', value: 3 }],
       },
       cycles: [
         {
@@ -37,7 +37,7 @@ describe('transformPrioritySummaryData', () => {
 
     const transformed = transformPrioritySummaryData(response)
 
-    expect(transformed.data.charts).toHaveLength(3)
+    expect(transformed.data.charts).toHaveLength(4)
 
     const titles = transformed.data.charts.map((chartWrapper) => {
       const title = chartWrapper.chart.title
@@ -48,6 +48,7 @@ describe('transformPrioritySummaryData', () => {
       'Priority Summary',
       'Priority Summary - TSP 1',
       'Priority Summary - TSP 2',
+      'Priority Summary - TSP 3',
     ])
 
     const combinedSeries = transformed.data.charts[0].chart.series
@@ -59,33 +60,51 @@ describe('transformPrioritySummaryData', () => {
 
     expect(combinedRequestBar?.data).toHaveLength(2)
 
-    for (const chartWrapper of transformed.data.charts) {
-      const series = chartWrapper.chart.series
+    const getSeries = (chartIndex: number, name: string) => {
+      const series = transformed.data.charts[chartIndex].chart.series
       expect(Array.isArray(series)).toBe(true)
-
-      const earlyGreen = series?.find(
-        (entry) => entry.name === 'Unassociated Early Green (113)'
-      )
-      const extendGreen = series?.find(
-        (entry) => entry.name === 'Unassociated Extend Green (114)'
-      )
-
-      expect(earlyGreen?.data).toEqual([['2026-04-07T08:03:00Z', 0]])
-      expect(extendGreen?.data).toEqual([['2026-04-07T08:04:00Z', 0]])
-      expect(earlyGreen?.z).toBe(100000)
-      expect(extendGreen?.z).toBe(100000)
-      expect(earlyGreen?.zlevel).toBe(1)
-      expect(extendGreen?.zlevel).toBe(1)
-      expect(earlyGreen?.itemStyle).toMatchObject({
-        borderColor: '#000000',
-        borderWidth: 1,
-        opacity: 1,
-      })
-      expect(extendGreen?.itemStyle).toMatchObject({
-        borderColor: '#000000',
-        borderWidth: 1,
-        opacity: 1,
-      })
+      return series?.find((entry) => entry.name === name)
     }
+
+    const combinedEarlyGreen = getSeries(
+      0,
+      'Unassociated Early Green (113)'
+    )
+    const combinedExtendGreen = getSeries(
+      0,
+      'Unassociated Extend Green (114)'
+    )
+
+    expect(combinedEarlyGreen?.data).toEqual([
+      ['2026-04-07T08:03:00Z', 0, 2],
+    ])
+    expect(combinedExtendGreen?.data).toEqual([
+      ['2026-04-07T08:04:00Z', 0, 3],
+    ])
+    expect(combinedEarlyGreen?.z).toBe(100000)
+    expect(combinedExtendGreen?.z).toBe(100000)
+    expect(combinedEarlyGreen?.zlevel).toBe(1)
+    expect(combinedExtendGreen?.zlevel).toBe(1)
+    expect(combinedEarlyGreen?.itemStyle).toMatchObject({
+      borderColor: '#000000',
+      borderWidth: 1,
+      opacity: 1,
+    })
+    expect(combinedExtendGreen?.itemStyle).toMatchObject({
+      borderColor: '#000000',
+      borderWidth: 1,
+      opacity: 1,
+    })
+
+    expect(getSeries(1, 'Unassociated Early Green (113)')).toBeUndefined()
+    expect(getSeries(1, 'Unassociated Extend Green (114)')).toBeUndefined()
+    expect(getSeries(2, 'Unassociated Early Green (113)')?.data).toEqual([
+      ['2026-04-07T08:03:00Z', 0, 2],
+    ])
+    expect(getSeries(2, 'Unassociated Extend Green (114)')).toBeUndefined()
+    expect(getSeries(3, 'Unassociated Early Green (113)')).toBeUndefined()
+    expect(getSeries(3, 'Unassociated Extend Green (114)')?.data).toEqual([
+      ['2026-04-07T08:04:00Z', 0, 3],
+    ])
   })
 })

@@ -7228,16 +7228,14 @@
           "earlyGreen": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "date-time"
+              "$ref": "#/components/schemas/DataPointForInt"
             },
             "nullable": true
           },
           "extendGreen": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "date-time"
+              "$ref": "#/components/schemas/DataPointForInt"
             },
             "nullable": true
           }
@@ -7327,16 +7325,14 @@
           "earlyGreen": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "date-time"
+              "$ref": "#/components/schemas/DataPointForInt"
             },
             "nullable": true
           },
           "extendGreen": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "date-time"
+              "$ref": "#/components/schemas/DataPointForInt"
             },
             "nullable": true
           }

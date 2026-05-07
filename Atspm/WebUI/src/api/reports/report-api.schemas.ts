@@ -1382,9 +1382,9 @@ export interface PrioritySummaryOptions {
 
 export interface PrioritySummaryUnassignedEventsDto {
   /** @nullable */
-  earlyGreen?: string[] | null;
+  earlyGreen?: DataPointForInt[] | null;
   /** @nullable */
-  extendGreen?: string[] | null;
+  extendGreen?: DataPointForInt[] | null;
 }
 
 export interface PrioritySummaryResult {
@@ -1408,9 +1408,9 @@ export interface PrioritySummaryResult {
 
 export interface PrioritySummaryUnassignedEventsDto {
   /** @nullable */
-  earlyGreen?: string[] | null;
+  earlyGreen?: DataPointForInt[] | null;
   /** @nullable */
-  extendGreen?: string[] | null;
+  extendGreen?: DataPointForInt[] | null;
 }
 
 export interface ProblemDetails {

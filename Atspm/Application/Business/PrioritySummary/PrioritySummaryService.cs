@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Business.PrioritySummary
@@ -229,8 +230,8 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
                 .GroupBy(c => c.TspNumber)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            var earlyGreen = new List<DateTime>();
-            var extendGreen = new List<DateTime>();
+            var earlyGreen = new List<DataPointForInt>();
+            var extendGreen = new List<DataPointForInt>();
 
             foreach (var e in events
                 .Where(e => e.EventCode == 113 || e.EventCode == 114)
@@ -245,11 +246,11 @@ namespace Utah.Udot.Atspm.Business.PrioritySummary
 
                 if (e.EventCode == 113)
                 {
-                    earlyGreen.Add(e.Timestamp);
+                    earlyGreen.Add(new DataPointForInt(e.Timestamp, e.EventParam));
                 }
                 else
                 {
-                    extendGreen.Add(e.Timestamp);
+                    extendGreen.Add(new DataPointForInt(e.Timestamp, e.EventParam));
                 }
             }
 

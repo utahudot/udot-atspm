@@ -15,7 +15,7 @@
 // limitations under the License.
 // #endregion
 
-import { PrioritySummaryResult } from '@/api/reports'
+import { DataPointForInt, PrioritySummaryResult } from '@/api/reports'
 import {
   createDataZoom,
   createDisplayProps,
@@ -81,13 +81,7 @@ function durationToSeconds(duration: string): string {
 
 function transformLocation(data: PrioritySummaryResult) {
   const cycles = data.cycles || []
-  const tspNumbers = Array.from(
-    new Set(
-      cycles
-        .map((c) => c.tspNumber)
-        .filter((tspNumber): tspNumber is number => tspNumber != null)
-    )
-  ).sort((a, b) => a - b)
+  const tspNumbers = getTspNumbers(data, cycles)
 
   const combinedChart = transformTspChart(data, cycles)
 
@@ -263,10 +257,12 @@ function transformTspChart(
   const preemptForceOffPts = toIconPoints(cycles, 116)
   const tspEarlyForceOffPts = toIconPoints(cycles, 117)
   const unassignedEarlyGreenPts = toUnassignedPoints(
-    data.unassigned?.earlyGreen
+    data.unassigned?.earlyGreen,
+    tspNumber
   )
   const unassignedExtendGreenPts = toUnassignedPoints(
-    data.unassigned?.extendGreen
+    data.unassigned?.extendGreen,
+    tspNumber
   )
 
   if (earlyGreenPts.length > 0) {
@@ -370,12 +366,40 @@ function transformTspChart(
   return chartOptions
 }
 
+function getTspNumbers(
+  data: PrioritySummaryResult,
+  cycles: NonNullable<PrioritySummaryResult['cycles']>
+) {
+  const tspNumbers = new Set<number>()
+
+  cycles.forEach((cycle) => {
+    if (cycle.tspNumber != null) tspNumbers.add(cycle.tspNumber)
+  })
+
+  data.unassigned?.earlyGreen?.forEach((point) => {
+    if (point.value != null) tspNumbers.add(point.value)
+  })
+
+  data.unassigned?.extendGreen?.forEach((point) => {
+    if (point.value != null) tspNumbers.add(point.value)
+  })
+
+  return Array.from(tspNumbers).sort((a, b) => a - b)
+}
+
 function toUnassignedPoints(
-  timestamps?: string[] | null
-): Array<[string, number]> {
-  return (timestamps ?? [])
-    .filter((timestamp) => Number.isFinite(Date.parse(timestamp)))
-    .map((timestamp) => [timestamp, 0])
+  points?: DataPointForInt[] | null,
+  tspNumber?: number
+): Array<[string, number, number]> {
+  return (points ?? [])
+    .filter(
+      (point): point is DataPointForInt & { timestamp: string; value: number } =>
+        point.timestamp != null &&
+        Number.isFinite(Date.parse(point.timestamp)) &&
+        point.value != null &&
+        (tspNumber == null || point.value === tspNumber)
+    )
+    .map((point) => [point.timestamp, 0, point.value])
 }
 
 function buildLegendWidthHintGraphic(text: string) {
