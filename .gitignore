@@ -74,6 +74,7 @@ dkms.conf
 *.generated.cs
 
 # Local configuration files
+.claude/
 **/Properties/launchSettings.json
 appsettings.Development.json
 appsettings.Local.json
