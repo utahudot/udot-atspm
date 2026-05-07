@@ -16,16 +16,17 @@
 #endregion
 
 using DatabaseInstaller.Commands;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
@@ -39,16 +40,19 @@ namespace DatabaseInstaller.Services
         private readonly IHostApplicationLifetime _lifetime;
         private readonly TransferCommandConfiguration _config;
         private readonly ILocationRepository _locationRepository;
+        private readonly IOptionsMonitor<DatabaseConfiguration> _databaseConfiguration;
 
         public MoveEventLogsSqlServerToPostgresHostedService(
             IServiceProvider serviceProvider,
             IOptions<TransferCommandConfiguration> config,
+            IOptionsMonitor<DatabaseConfiguration> databaseConfiguration,
             ILogger<MoveEventLogsSqlServerToPostgresHostedService> logger,
             IHostApplicationLifetime lifetime,
             ILocationRepository locationRepository)
         {
             _serviceProvider = serviceProvider;
             _config = config.Value;
+            _databaseConfiguration = databaseConfiguration;
             _logger = logger;
             _lifetime = lifetime;
             _locationRepository = locationRepository;
@@ -59,10 +63,16 @@ namespace DatabaseInstaller.Services
             try
             {
                 var locations = GetTargetLocations();
-                foreach (var location in locations)
+                var parallelOptions = new ParallelOptions
                 {
-                    await ProcessLocationAsync(location, cancellationToken);
-                }
+                    CancellationToken = cancellationToken,
+                    MaxDegreeOfParallelism = GetMaxConcurrency()
+                };
+
+                await Parallel.ForEachAsync(locations, parallelOptions, async (location, token) =>
+                {
+                    await ProcessLocationAsync(location, token);
+                });
 
                 _logger.LogInformation("Event logs moved successfully.");
             }
@@ -109,90 +119,163 @@ namespace DatabaseInstaller.Services
         {
             _logger.LogInformation("Processing location {LocationId}", location.LocationIdentifier);
 
+            var destinationConnectionString = GetDestinationConnectionString();
+
+            await using var sourceConnection = new SqlConnection(_config.Source);
+            await sourceConnection.OpenAsync(cancellationToken);
+
+            await using var destinationConnection = new NpgsqlConnection(destinationConnectionString);
+            await destinationConnection.OpenAsync(cancellationToken);
+
             for (var date = _config.Start.Date;
                  date <= _config.End.Date;
                  date = date.AddDays(1))
             {
-                await ProcessDateAsync(location, date, cancellationToken);
+                await ProcessDateAsync(location, date, sourceConnection, destinationConnection, cancellationToken);
             }
         }
 
-        private async Task ProcessDateAsync(Location location, DateTime date, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException("I removed the archive date and didn't know how to change this -CB");
-            //using var scope = _serviceProvider.CreateScope();
-            //var sqlContext = CreateSqlContext();
-            //var sqlRepo = new IndianaEventLogEFRepository(sqlContext, scope.ServiceProvider.GetRequiredService<ILogger<IndianaEventLogEFRepository>>());
-
-            //var allLogs = sqlRepo.GetList()
-            //    .Where(l => l.LocationIdentifier == location.LocationIdentifier && l.ArchiveDate == DateOnly.FromDateTime(date))
-            //    .AsNoTracking()
-            //    .AsEnumerable()
-            //    .SelectMany(m => m.Data)
-            //    .FromSpecification(new EventLogSpecification(location.LocationIdentifier, date, date.AddDays(1).AddMilliseconds(-1)))
-            //    .Cast<IndianaEvent>()
-            //    .ToList();
-
-            //for (int hour = 0; hour < 24; hour++)
-            //{
-            //    var hourlyLogs = allLogs.Where(l => l.Timestamp.Hour == hour).ToList();
-            //    if (!hourlyLogs.Any()) continue;
-
-            //    await SaveHourlyLogsAsync(location, date, hourlyLogs, scope, cancellationToken);
-            //}
-        }
-
-        private async Task SaveHourlyLogsAsync(
+        private async Task ProcessDateAsync(
             Location location,
             DateTime date,
-            List<IndianaEvent> logs,
-            IServiceScope scope,
+            SqlConnection sourceConnection,
+            NpgsqlConnection destinationConnection,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var postgresContext = scope.ServiceProvider.GetRequiredService<EventLogContext>();
-                var pgRepo = new IndianaEventLogEFRepository(postgresContext, scope.ServiceProvider.GetRequiredService<ILogger<IndianaEventLogEFRepository>>());
+            var dayStart = date.Date;
+            var dayEnd = dayStart.AddDays(1);
 
-                var deviceId = location.Devices
-                    .FirstOrDefault(d => d.DeviceType == DeviceTypes.RampController)
-                    ?.Id;
-                if (deviceId == null)
+            const string selectQuery = """
+                SELECT [LocationIdentifier], [DeviceId], [DataType], [Start], [End], [Data]
+                FROM [CompressedEvents]
+                WHERE [LocationIdentifier] = @locationIdentifier
+                  AND [End] > @start
+                  AND [Start] < @end
+                ORDER BY [Start], [End], [DeviceId], [DataType]
+                """;
+
+            await using var command = new SqlCommand(selectQuery, sourceConnection);
+            command.Parameters.AddWithValue("@locationIdentifier", location.LocationIdentifier);
+            command.Parameters.AddWithValue("@start", dayStart);
+            command.Parameters.AddWithValue("@end", dayEnd);
+            command.CommandTimeout = 120;
+
+            var batchSize = GetCopyBatchSize();
+            var rows = new List<CompressedEventLogRow>(batchSize);
+            var inserted = 0;
+
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                rows.Add(new CompressedEventLogRow(
+                    reader.GetString(0),
+                    reader.GetInt32(1),
+                    reader.GetString(2),
+                    reader.GetDateTime(3),
+                    reader.GetDateTime(4),
+                    reader.IsDBNull(5) ? null : (byte[])reader[5]));
+
+                if (rows.Count >= batchSize)
                 {
-                    _logger.LogWarning("No SignalController device for {LocationId}", location.LocationIdentifier);
-                    return;
+                    inserted += await InsertBatchAsync(destinationConnection, rows, cancellationToken);
+                    rows.Clear();
                 }
-
-                var archiveLog = new CompressedEventLogs<IndianaEvent>
-                {
-                    //ArchiveDate = DateOnly.FromDateTime(date),
-                    LocationIdentifier = location.LocationIdentifier,
-                    DeviceId = deviceId.Value,
-                    Data = logs
-                };
-
-                pgRepo.Add(archiveLog);
-                await postgresContext.SaveChangesAsync(cancellationToken);
-
-                _logger.LogInformation(
-                    "Saved {Count} logs for {LocationId} at hour {Hour}",
-                    logs.Count,
-                    location.LocationIdentifier,
-                    date.Hour);
             }
-            catch (Exception ex)
+
+            if (rows.Count > 0)
             {
-                _logger.LogError(ex, "Failed to save logs for {LocationId} on {Date}", location.LocationIdentifier, date);
+                inserted += await InsertBatchAsync(destinationConnection, rows, cancellationToken);
             }
+
+            _logger.LogInformation(
+                "Copied {Count} compressed rows for {LocationId} on {Date}",
+                inserted,
+                location.LocationIdentifier,
+                dayStart);
         }
 
-        private EventLogContext CreateSqlContext()
+        private async Task<int> InsertBatchAsync(
+            NpgsqlConnection destinationConnection,
+            List<CompressedEventLogRow> rows,
+            CancellationToken cancellationToken)
         {
-            var options = new DbContextOptionsBuilder<EventLogContext>()
-                .UseSqlServer(_config.Source)
-                .Options;
+            if (rows.Count == 0)
+            {
+                return 0;
+            }
 
-            return new EventLogContext(options);
+            const string insertQuery = """
+                INSERT INTO "CompressedEvents" ("LocationIdentifier", "DeviceId", "DataType", "Start", "End", "Data")
+                VALUES (@locationIdentifier, @deviceId, @dataType, @start, @end, @data)
+                ON CONFLICT ("LocationIdentifier", "DeviceId", "DataType", "Start", "End") DO NOTHING
+                """;
+
+            await using var transaction = await destinationConnection.BeginTransactionAsync(cancellationToken);
+            await using var batch = new NpgsqlBatch(destinationConnection, transaction);
+
+            foreach (var row in rows)
+            {
+                var batchCommand = new NpgsqlBatchCommand(insertQuery);
+                batchCommand.Parameters.AddWithValue("locationIdentifier", row.LocationIdentifier);
+                batchCommand.Parameters.AddWithValue("deviceId", row.DeviceId);
+                batchCommand.Parameters.AddWithValue("dataType", row.DataType);
+                batchCommand.Parameters.AddWithValue("start", row.Start);
+                batchCommand.Parameters.AddWithValue("end", row.End);
+                batchCommand.Parameters.AddWithValue("data", row.Data is null ? DBNull.Value : row.Data);
+                batch.BatchCommands.Add(batchCommand);
+            }
+
+            var inserted = await batch.ExecuteNonQueryAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return inserted;
         }
+
+        private string GetDestinationConnectionString()
+        {
+            var settings = _databaseConfiguration.Get(nameof(EventLogContext));
+
+            if (settings is null)
+            {
+                throw new InvalidOperationException("DatabaseConfiguration:EventLogContext is not configured.");
+            }
+
+            if (!string.Equals(settings.DBType, "PostgreSQL", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException(
+                    $"DatabaseConfiguration:EventLogContext must be PostgreSQL for copy-sql, but was '{settings.DBType}'.");
+            }
+
+            return settings.BuildConnectionString();
+        }
+
+        private int GetMaxConcurrency()
+        {
+            if (_config.MaxConcurrency < 1)
+            {
+                _logger.LogWarning("MaxConcurrency was set to {MaxConcurrency}; defaulting to 1.", _config.MaxConcurrency);
+                return 1;
+            }
+
+            return _config.MaxConcurrency;
+        }
+
+        private int GetCopyBatchSize()
+        {
+            if (_config.CopyBatchSize < 1)
+            {
+                _logger.LogWarning("CopyBatchSize was set to {CopyBatchSize}; defaulting to 1.", _config.CopyBatchSize);
+                return 1;
+            }
+
+            return _config.CopyBatchSize;
+        }
+
+        private sealed record CompressedEventLogRow(
+            string LocationIdentifier,
+            int DeviceId,
+            string DataType,
+            DateTime Start,
+            DateTime End,
+            byte[]? Data);
     }
 }

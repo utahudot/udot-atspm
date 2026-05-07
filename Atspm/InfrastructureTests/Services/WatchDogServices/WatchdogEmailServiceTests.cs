@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
@@ -35,12 +36,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         private readonly Mock<ILogger<WatchdogEmailService>> _loggerMock;
         private readonly Mock<IEmailService> _emailServiceMock;
         private readonly WatchdogEmailService _watchdogEmailService;
+        private readonly TimeProvider _weekdayClock = new FixedTimeProvider(new DateTimeOffset(2026, 4, 24, 12, 0, 0, TimeSpan.Zero));
 
         public WatchdogEmailServiceTests()
         {
             _loggerMock = new Mock<ILogger<WatchdogEmailService>>();
             _emailServiceMock = new Mock<IEmailService>();
-            _watchdogEmailService = new WatchdogEmailService(_loggerMock.Object, _emailServiceMock.Object);
+            _watchdogEmailService = new WatchdogEmailService(_loggerMock.Object, _emailServiceMock.Object, _weekdayClock);
         }
 
         [Fact]
@@ -273,7 +275,23 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var headers = WatchdogEmailService.GetTableHeadersForErrorType(sectionTitle, includeErrorCounts, includeConsecutive);
 
             // Assert
-            var expectedHeaders = new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Date of First Occurrence" };
+            var expectedHeaders = new List<string> { "Location", "Location Description", "Detector Config Id", "Issue Details", "Date of First Occurrence" };
+            Assert.Equal(expectedHeaders, headers);
+        }
+
+        [Fact]
+        public void GetTableHeadersForErrorType_ShouldReturnHeadersForRampErrors()
+        {
+            // Arrange
+            var sectionTitle = "Ramp Mainline Errors";
+            var includeErrorCounts = false;
+            var includeConsecutive = false;
+
+            // Act
+            var headers = WatchdogEmailService.GetTableHeadersForErrorType(sectionTitle, includeErrorCounts, includeConsecutive);
+
+            // Assert
+            var expectedHeaders = new List<string> { "Location", "Location Description", "Detector Config Id", "Issue Details", "Date of First Occurrence" };
             Assert.Equal(expectedHeaders, headers);
         }
 
@@ -774,7 +792,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             emailServiceMock.Setup(m => m.SendEmailAsync(It.IsAny<MailMessage>()))
                             .ReturnsAsync(true);
 
-            var service = new WatchdogEmailService(_loggerMock.Object, emailServiceMock.Object);
+            var service = new WatchdogEmailService(_loggerMock.Object, emailServiceMock.Object, _weekdayClock);
 
             // Act
             await service.SendAllEmails(
@@ -825,6 +843,171 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 m.SendEmailAsync(It.IsAny<MailMessage>()),
                 Times.Never
             );
+        }
+
+        [Fact]
+        public async Task SendAllEmails_ShouldSendDelivery_WhenWeekdayOnlyAndWeekend()
+        {
+            var options = new WatchdogEmailOptions
+            {
+                WeekdayOnly = true,
+                EmailPmErrors = true,
+                DefaultEmailAddress = "from@test.com",
+                PmScanDate = new DateTime(2026, 4, 25)
+            };
+
+            var recipients = new List<WatchdogEmailRecipient>
+            {
+                new WatchdogEmailRecipient
+                {
+                    UserId = "1",
+                    Email = "admin@test.com",
+                    IsAdmin = true,
+                    IsWatchdogSubscriber = true
+                }
+            };
+
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(m => m.SendEmailAsync(It.IsAny<MailMessage>()))
+                .ReturnsAsync(true);
+
+            var service = new WatchdogEmailService(_loggerMock.Object, emailServiceMock.Object, _weekdayClock);
+
+            await service.SendAllEmails(
+                options,
+                new(),
+                new(),
+                new(),
+                new List<Location> { new Location { Id = 1, LocationIdentifier = "Loc1", RegionId = 1, JurisdictionId = 1, Areas = new List<Area>() } },
+                recipients,
+                new List<Jurisdiction> { new Jurisdiction { Id = 1, Name = "Jurisdiction 1" } },
+                new List<Area> { new Area { Id = 1, Name = "Area 1" } },
+                new List<Region> { new Region { Id = 1, Description = "Region 1" } },
+                new());
+
+            emailServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MailMessage>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendAllEmails_ShouldSendDelivery_WhenWeekdayOnlyAndWeekday()
+        {
+            var options = new WatchdogEmailOptions
+            {
+                WeekdayOnly = true,
+                EmailPmErrors = true,
+                DefaultEmailAddress = "from@test.com",
+                PmScanDate = new DateTime(2026, 4, 24)
+            };
+
+            var recipients = new List<WatchdogEmailRecipient>
+            {
+                new WatchdogEmailRecipient
+                {
+                    UserId = "1",
+                    Email = "admin@test.com",
+                    IsAdmin = true,
+                    IsWatchdogSubscriber = true
+                }
+            };
+
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(m => m.SendEmailAsync(It.IsAny<MailMessage>()))
+                .ReturnsAsync(true);
+
+            var service = new WatchdogEmailService(_loggerMock.Object, emailServiceMock.Object, _weekdayClock);
+
+            await service.SendAllEmails(
+                options,
+                new(),
+                new(),
+                new(),
+                new List<Location> { new Location { Id = 1, LocationIdentifier = "Loc1", RegionId = 1, JurisdictionId = 1, Areas = new List<Area>() } },
+                recipients,
+                new List<Jurisdiction> { new Jurisdiction { Id = 1, Name = "Jurisdiction 1" } },
+                new List<Area> { new Area { Id = 1, Name = "Area 1" } },
+                new List<Region> { new Region { Id = 1, Description = "Region 1" } },
+                new());
+
+            emailServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MailMessage>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendAllEmails_ShouldSendRampEmail_WhenWeekdayOnlyAndWeekday()
+        {
+            var options = new WatchdogEmailOptions
+            {
+                WeekdayOnly = true,
+                EmailRampErrors = true,
+                DefaultEmailAddress = "from@test.com",
+                RampMissedDetectorHitsStartScanDate = new DateTime(2026, 4, 24)
+            };
+
+            var recipient = new WatchdogEmailRecipient
+            {
+                UserId = "1",
+                Email = "ramp@test.com",
+                JurisdictionIds = new List<int> { 1 }
+            };
+
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(m => m.SendEmailAsync(It.IsAny<MailMessage>()))
+                .ReturnsAsync(true);
+
+            var service = new WatchdogEmailService(_loggerMock.Object, emailServiceMock.Object, _weekdayClock);
+
+            await service.SendAllEmails(
+                options,
+                new(),
+                new(),
+                new(),
+                new List<Location> { new Location { JurisdictionId = 1 } },
+                new List<WatchdogEmailRecipient> { recipient },
+                new List<Jurisdiction> { new Jurisdiction { Id = 1, Name = "I-15 Ramp" } },
+                new(),
+                new(),
+                new());
+
+            emailServiceMock.Verify(m =>
+                m.SendEmailAsync(It.Is<MailMessage>(msg =>
+                    msg.From.Address == "from@test.com" &&
+                    msg.Subject.Contains("Ramp") &&
+                    msg.To.Cast<MailAddress>().Any(to => to.Address == "ramp@test.com")
+                )),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task SendAllEmails_ShouldSkipRampDelivery_WhenWeekdayOnlyAndWeekend()
+        {
+            var service = new WatchdogEmailService(_loggerMock.Object, _emailServiceMock.Object, _weekdayClock);
+            var options = new WatchdogEmailOptions
+            {
+                WeekdayOnly = true,
+                EmailRampErrors = true,
+                DefaultEmailAddress = "from@test.com",
+                RampMissedDetectorHitsStartScanDate = new DateTime(2026, 4, 25)
+            };
+
+            var recipient = new WatchdogEmailRecipient
+            {
+                UserId = "1",
+                Email = "ramp@test.com",
+                JurisdictionIds = new List<int> { 1 }
+            };
+
+            await service.SendAllEmails(
+                options,
+                new(),
+                new(),
+                new(),
+                new List<Location> { new Location { JurisdictionId = 1 } },
+                new List<WatchdogEmailRecipient> { recipient },
+                new List<Jurisdiction> { new Jurisdiction { Id = 1, Name = "I-15 Ramp" } },
+                new(),
+                new(),
+                new());
+
+            _emailServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MailMessage>()), Times.Never);
         }
 
 
@@ -1237,7 +1420,41 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             Assert.DoesNotContain("PM", result);
         }
 
+        private sealed class FixedTimeProvider : TimeProvider
+        {
+            private readonly DateTimeOffset _utcNow;
 
+            public FixedTimeProvider(DateTimeOffset utcNow)
+            {
+                _utcNow = utcNow;
+            }
+
+            public override DateTimeOffset GetUtcNow() => _utcNow;
+
+            public override TimeZoneInfo LocalTimeZone => TimeZoneInfo.Utc;
+
+            public override long GetTimestamp() => 0;
+
+            public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
+            {
+                return new NoOpTimer();
+            }
+
+            private sealed class NoOpTimer : ITimer
+            {
+                public bool Change(TimeSpan dueTime, TimeSpan period) => true;
+
+                public void Dispose()
+                {
+                }
+
+                public ValueTask DisposeAsync()
+                {
+                    Dispose();
+                    return ValueTask.CompletedTask;
+                }
+            }
+        }
 
     }
 }

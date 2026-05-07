@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for DatabaseInstaller - %Namespace%/TransferConfigCommandHostedService.cs
 // 
@@ -16,24 +16,27 @@
 #endregion
 
 using DatabaseInstaller.Commands;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
+using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 public class TransferConfigCommandHostedService : IHostedService
 {
+    private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
+
     private readonly ILogger<TransferConfigCommandHostedService> _logger;
     private readonly IJurisdictionRepository _jurisdictionRepository;
-    private readonly ILocationTypeRepository _locationTypeRepository;
     private readonly ILocationRepository _locationRepository;
     private readonly IApproachRepository _approachRepository;
     private readonly IDetectorRepository _detectorRepository;
@@ -48,6 +51,7 @@ public class TransferConfigCommandHostedService : IHostedService
     private readonly IServiceProvider _serviceProvider;
     private readonly IDeviceRepository _deviceRepository;
     private readonly TransferConfigCommandConfiguration _config;
+    private const int LocationBatchSize = 20;
 
     public TransferConfigCommandHostedService(
         ILogger<TransferConfigCommandHostedService> logger,
@@ -71,7 +75,6 @@ public class TransferConfigCommandHostedService : IHostedService
     {
         _logger = logger;
         _jurisdictionRepository = jurisdictionRepository;
-        _locationTypeRepository = locationTypeRepository;
         _locationRepository = locationRepository;
         _approachRepository = approachRepository;
         _detectorRepository = detectorRepository;
@@ -101,34 +104,378 @@ public class TransferConfigCommandHostedService : IHostedService
             DeleteProducts();
         }
 
-        IConfiguration config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+        SourceConfigData? sourceData = null;
+        if (_config.UpdateLocations || _config.ImportSpeedDevices)
+        {
+            sourceData = await LoadSourceConfigDataAsync(cancellationToken);
+        }
 
-        Dictionary<string, string> queries = GetLocationQueries(config);
-        var columnMappings = GetColumnMappings(config);
-        if (_config.UpdateLocations)
+        if (_config.UpdateLocations && sourceData is not null)
         {
             SetDetectionTypeMesureType();
-            ImportProducts(queries, columnMappings);
-            ImportDeviceConfigurations(queries, columnMappings);
-            ImportRegions(queries, columnMappings);
-            ImportAreas(queries, columnMappings);
-            ImportJurisdictions(queries, columnMappings);
-            ImportLocations(queries, columnMappings);
-            ImportApproaches(queries, columnMappings);
-            ImportDetectors(queries, columnMappings);
-            ImportRoutes(queries, columnMappings);
-            ImportRouteLocations(queries, columnMappings);
-            ImportDevices(queries, columnMappings);
+            ImportProducts(sourceData.Products);
+            ImportDeviceConfigurations(sourceData.DeviceConfigurations);
+            ImportRegions(sourceData.Regions);
+            ImportAreas(sourceData.Areas);
+            ImportJurisdictions(sourceData.Jurisdictions);
+            ImportLocations(
+                sourceData.Locations,
+                sourceData.LocationAreaIds,
+                sourceData.Jurisdictions,
+                sourceData.Regions,
+                sourceData.Areas);
+            ImportApproaches(sourceData.Approaches);
+            ImportDetectors(sourceData.Detectors, sourceData.DetectorDetectionTypeIds);
+            ImportRoutes(sourceData.Routes);
+            ImportRouteLocations(sourceData.RouteLocations);
+            ImportDevices(sourceData.Devices);
             ResetSequences();
         }
-        if (_config.ImportSpeedDevices)
+
+        if (_config.ImportSpeedDevices && sourceData is not null)
         {
-            ImportSpeedDevices(queries, columnMappings);
+            ImportProducts(sourceData.Products);
+            ImportDeviceConfigurations(sourceData.DeviceConfigurations);
+            ImportSpeedDevices(sourceData.SpeedDevices);
             ResetSequences();
         }
+    }
+
+    private async Task<SourceConfigData> LoadSourceConfigDataAsync(CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(_config.BearerToken))
+        {
+            throw new InvalidOperationException("A bearer token is required when transferring configuration from the Config API.");
+        }
+
+        using var client = CreateApiClient();
+
+        _logger.LogInformation("Downloading configuration from {ApiBaseUrl}", _config.ApiBaseUrl);
+        var loadStopwatch = Stopwatch.StartNew();
+
+        var phaseStopwatch = Stopwatch.StartNew();
+        var products = SanitizeProducts(await GetODataCollectionAsync<Product>(
+            client,
+            "api/v1/Product",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} products in {Elapsed}", products.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var deviceConfigurations = SanitizeDeviceConfigurations(await GetODataCollectionAsync<DeviceConfiguration>(
+            client,
+            "api/v1/DeviceConfiguration",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} device configurations in {Elapsed}", deviceConfigurations.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var regions = SanitizeRegions(await GetODataCollectionAsync<Region>(
+            client,
+            "api/v1/Region",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} regions in {Elapsed}", regions.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var areas = SanitizeAreas(await GetODataCollectionAsync<Area>(
+            client,
+            "api/v1/Area",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} areas in {Elapsed}", areas.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var jurisdictions = SanitizeJurisdictions(await GetODataCollectionAsync<Jurisdiction>(
+            client,
+            "api/v1/Jurisdiction",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} jurisdictions in {Elapsed}", jurisdictions.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var latestLocations = await GetODataCollectionAsync<Location>(
+            client,
+            "api/v1/Location/GetLatestVersionOfAllLocations",
+            cancellationToken);
+        _logger.LogInformation("Loaded {Count} latest location identifiers in {Elapsed}", latestLocations.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var rawLocations = await LoadLocationVersionsAsync(client, latestLocations, cancellationToken);
+        _logger.LogInformation("Loaded {Count} historical location versions in {Elapsed}", rawLocations.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var locationAreaIds = rawLocations.ToDictionary(
+            l => l.Id,
+            l => l.Areas.Select(a => a.Id).Distinct().ToList());
+
+        var locations = SanitizeLocations(rawLocations);
+        _logger.LogInformation("Sanitized {Count} locations in {Elapsed}", locations.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var approaches = SanitizeApproaches(
+            rawLocations
+                .SelectMany(l => l.Approaches)
+                .GroupBy(a => a.Id)
+                .Select(g => g.First()));
+        _logger.LogInformation("Sanitized {Count} approaches in {Elapsed}", approaches.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var detectors = SanitizeDetectors(
+            rawLocations
+                .SelectMany(l => l.Approaches)
+                .SelectMany(a => a.Detectors)
+                .GroupBy(d => d.Id)
+                .Select(g => g.First()));
+        _logger.LogInformation("Sanitized {Count} detectors in {Elapsed}", detectors.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var detectorDetectionTypeIds = rawLocations
+            .SelectMany(l => l.Approaches)
+            .SelectMany(a => a.Detectors)
+            .GroupBy(d => d.Id)
+            .ToDictionary(
+                g => g.Key,
+                g => g.First().DetectionTypes.Select(dt => dt.Id).Distinct().ToList());
+        _logger.LogInformation("Built detector detection type map for {Count} detectors in {Elapsed}", detectorDetectionTypeIds.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var devices = SanitizeDevices(
+            rawLocations
+                .SelectMany(l => l.Devices)
+                .GroupBy(d => d.Id)
+                .Select(g => g.First()));
+        _logger.LogInformation("Sanitized {Count} devices in {Elapsed}", devices.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var routes = SanitizeRoutes(await GetODataCollectionAsync<Route>(
+            client,
+            "api/v1/Route",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} routes in {Elapsed}", routes.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var routeLocations = SanitizeRouteLocations(await GetODataCollectionAsync<RouteLocation>(
+            client,
+            "api/v1/RouteLocation",
+            cancellationToken));
+        _logger.LogInformation("Loaded {Count} route locations in {Elapsed}", routeLocations.Count, phaseStopwatch.Elapsed);
+
+        phaseStopwatch.Restart();
+        var speedConfigurationIds = deviceConfigurations
+            .Where(dc =>
+                string.Equals(dc.Description, "Speed", StringComparison.OrdinalIgnoreCase) ||
+                products.Any(p =>
+                    p.Id == dc.ProductId &&
+                    string.Equals(p.Manufacturer, "Wavetronix", StringComparison.OrdinalIgnoreCase)))
+            .Select(dc => dc.Id)
+            .ToHashSet();
+
+        var speedDevices = devices
+            .Where(d => d.DeviceConfigurationId.HasValue && speedConfigurationIds.Contains(d.DeviceConfigurationId.Value))
+            .ToList();
+        _logger.LogInformation("Identified {Count} speed devices in {Elapsed}", speedDevices.Count, phaseStopwatch.Elapsed);
+
+        _logger.LogInformation("Finished downloading and preparing configuration in {Elapsed}", loadStopwatch.Elapsed);
+        return new SourceConfigData
+        {
+            Products = products,
+            DeviceConfigurations = deviceConfigurations,
+            Regions = regions,
+            Areas = areas,
+            Jurisdictions = jurisdictions,
+            Locations = locations,
+            LocationAreaIds = locationAreaIds,
+            Approaches = approaches,
+            Detectors = detectors,
+            DetectorDetectionTypeIds = detectorDetectionTypeIds,
+            Routes = routes,
+            RouteLocations = routeLocations,
+            Devices = devices,
+            SpeedDevices = speedDevices
+        };
+    }
+
+    private HttpClient CreateApiClient()
+    {
+        var client = new HttpClient
+        {
+            BaseAddress = BuildBaseUri(_config.ApiBaseUrl)
+        };
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _config.BearerToken);
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        return client;
+    }
+
+    private static Uri BuildBaseUri(string apiBaseUrl)
+    {
+        if (string.IsNullOrWhiteSpace(apiBaseUrl))
+        {
+            throw new InvalidOperationException("An API base URL is required when transferring configuration from the Config API.");
+        }
+
+        return apiBaseUrl.EndsWith("/", StringComparison.Ordinal)
+            ? new Uri(apiBaseUrl, UriKind.Absolute)
+            : new Uri($"{apiBaseUrl}/", UriKind.Absolute);
+    }
+
+    private static JsonSerializerOptions CreateJsonOptions()
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        options.Converters.Add(new JsonStringEnumConverter());
+        return options;
+    }
+
+    private static string BuildLocationBatchUrl(IEnumerable<string> locationIdentifiers)
+    {
+        var filter = string.Join(" or ", locationIdentifiers.Select(identifier =>
+            $"LocationIdentifier eq '{identifier.Replace("'", "''", StringComparison.Ordinal)}'"));
+
+        return $"api/v1/Location?$filter={filter}&$orderby=LocationIdentifier asc,Start desc&$expand=Areas,Approaches($expand=Detectors($expand=DetectionTypes),DirectionType),Devices($expand=DeviceConfiguration($expand=Product))";
+    }
+
+    private async Task<List<Location>> LoadLocationVersionsAsync(
+        HttpClient client,
+        IEnumerable<Location> latestLocations,
+        CancellationToken cancellationToken)
+    {
+        var rawLocations = new List<Location>();
+
+        var locationIdentifiers = latestLocations
+            .Select(l => l.LocationIdentifier)
+            .Where(l => !string.IsNullOrWhiteSpace(l))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        _logger.LogInformation(
+            "Loading {LocationCount} location identifiers in batches of {BatchSize}",
+            locationIdentifiers.Count,
+            LocationBatchSize);
+
+        for (var index = 0; index < locationIdentifiers.Count; index += LocationBatchSize)
+        {
+            var batch = locationIdentifiers
+                .Skip(index)
+                .Take(LocationBatchSize)
+                .ToList();
+
+            if (batch.Count == 0)
+            {
+                continue;
+            }
+
+            var batchNumber = index / LocationBatchSize + 1;
+            var batchStopwatch = Stopwatch.StartNew();
+            _logger.LogInformation(
+                "Loading location batch {BatchNumber} of {TotalBatches} containing {Count} identifiers",
+                batchNumber,
+                (int)Math.Ceiling(locationIdentifiers.Count / (double)LocationBatchSize),
+                batch.Count);
+
+            var locationVersions = await LoadLocationBatchWithFallbackAsync(
+                client,
+                batch,
+                cancellationToken);
+
+            rawLocations.AddRange(locationVersions);
+
+            _logger.LogInformation(
+                "Loaded {Count} version rows for batch {BatchNumber} in {Elapsed}. Total loaded so far: {Total}",
+                locationVersions.Count,
+                batchNumber,
+                batchStopwatch.Elapsed,
+                rawLocations.Count);
+        }
+
+        return rawLocations;
+    }
+
+    private async Task<List<Location>> LoadLocationBatchWithFallbackAsync(
+        HttpClient client,
+        IReadOnlyList<string> batch,
+        CancellationToken cancellationToken)
+    {
+        var batchStopwatch = Stopwatch.StartNew();
+
+        try
+        {
+            var locationVersions = await GetODataCollectionAsync<Location>(
+                client,
+                BuildLocationBatchUrl(batch),
+                cancellationToken);
+
+            _logger.LogInformation(
+                "Loaded {Count} version rows for batch of {BatchCount} identifiers in {Elapsed}",
+                locationVersions.Count,
+                batch.Count,
+                batchStopwatch.Elapsed);
+
+            return locationVersions;
+        }
+        catch (HttpRequestException ex) when (IsNodeLimitExceeded(ex) && batch.Count > 1)
+        {
+            var midpoint = batch.Count / 2;
+            var left = batch.Take(midpoint).ToList();
+            var right = batch.Skip(midpoint).ToList();
+
+            _logger.LogWarning(
+                "Batch of {Count} identifiers exceeded the OData node limit after {Elapsed}; splitting into {LeftCount} and {RightCount}",
+                batch.Count,
+                batchStopwatch.Elapsed,
+                left.Count,
+                right.Count);
+
+            var leftResults = await LoadLocationBatchWithFallbackAsync(client, left, cancellationToken);
+            var rightResults = await LoadLocationBatchWithFallbackAsync(client, right, cancellationToken);
+
+            return leftResults.Concat(rightResults).ToList();
+        }
+    }
+
+    private static bool IsNodeLimitExceeded(HttpRequestException ex) =>
+        ex.Message.Contains("node count limit", StringComparison.OrdinalIgnoreCase);
+
+    private async Task<List<T>> GetODataCollectionAsync<T>(HttpClient client, string relativeOrAbsoluteUrl, CancellationToken cancellationToken)
+    {
+        var items = new List<T>();
+        var nextUrl = relativeOrAbsoluteUrl;
+        var pageNumber = 0;
+
+        while (!string.IsNullOrWhiteSpace(nextUrl))
+        {
+            pageNumber++;
+            var requestStopwatch = Stopwatch.StartNew();
+            _logger.LogInformation("Requesting page {PageNumber} for {EntityType} from {Url}", pageNumber, typeof(T).Name, nextUrl);
+
+            using var response = await client.GetAsync(nextUrl, cancellationToken);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Request to '{nextUrl}' failed with status {(int)response.StatusCode}: {content}");
+            }
+
+            var payload = JsonSerializer.Deserialize<ODataResponse<T>>(content, JsonOptions);
+            if (payload?.Value != null)
+            {
+                items.AddRange(payload.Value);
+            }
+
+            _logger.LogInformation(
+                "Loaded page {PageNumber} for {EntityType} with {Count} items in {Elapsed}",
+                pageNumber,
+                typeof(T).Name,
+                payload?.Value?.Count ?? 0,
+                requestStopwatch.Elapsed);
+
+            nextUrl = payload?.NextLink;
+            if (!string.IsNullOrWhiteSpace(nextUrl))
+            {
+                _logger.LogInformation("Continuing {EntityType} pagination with next link", typeof(T).Name);
+            }
+        }
+
+        return items;
     }
 
     private void ResetSequences()
@@ -136,7 +483,6 @@ public class TransferConfigCommandHostedService : IHostedService
         using var scope = _serviceProvider.CreateScope();
         var configContext = scope.ServiceProvider.GetRequiredService<ConfigContext>();
 
-        // Check if the provider is PostgreSQL
         var databaseProvider = configContext.Database.ProviderName;
         if (databaseProvider != "Npgsql.EntityFrameworkCore.PostgreSQL")
         {
@@ -144,113 +490,63 @@ public class TransferConfigCommandHostedService : IHostedService
             return;
         }
 
-        string[] sequences = new string[]
+        string[] sequences =
         {
-        "\"Locations_Id_seq\"",
-        "\"Jurisdictions_Id_seq\"",
-        "\"Approaches_Id_seq\"",
-        "\"Detectors_Id_seq\"",
-        "\"Products_Id_seq\"",
-        "\"DeviceConfigurations_Id_seq\"",
-        "\"Regions_Id_seq\"",
-        "\"Devices_Id_seq\"",
-        "\"Routes_Id_seq\"",
-        "\"Areas_Id_seq\"",
-        "\"MenuItems_Id_seq\"",
-        "\"RouteLocations_Id_seq\""
+            "\"Locations_Id_seq\"",
+            "\"Jurisdictions_Id_seq\"",
+            "\"Approaches_Id_seq\"",
+            "\"Detectors_Id_seq\"",
+            "\"Products_Id_seq\"",
+            "\"DeviceConfigurations_Id_seq\"",
+            "\"Regions_Id_seq\"",
+            "\"Devices_Id_seq\"",
+            "\"Routes_Id_seq\"",
+            "\"Areas_Id_seq\"",
+            "\"MenuItems_Id_seq\"",
+            "\"RouteLocations_Id_seq\""
         };
 
         foreach (string sequence in sequences)
         {
-            // Correctly format table name derived from sequence name
             string tableName = sequence.Replace("_Id_seq\"", "").Replace("\"", "");
-
             string query = $"SELECT setval('public.{sequence}',(SELECT COALESCE(MAX(\"Id\"), 0) FROM public.\"{tableName}\") + 1);";
 
             configContext.Database.ExecuteSqlRaw(query);
-
             Console.WriteLine($"Sequence {sequence} reset successfully.");
         }
     }
 
-
-    private void ImportSpeedDevices(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportSpeedDevices(List<Device> devices)
     {
-        var products = _productRepository.GetList().ToList();
-        if (_productRepository.GetList().Any(p => p.Manufacturer == "Wavetronix"))
-        {
-            _logger.LogInformation("Speed Product already exist");
-        }
-        else
-        {
-            _productRepository.Add(new Product { Manufacturer = "Wavetronix", Model = "Speed Detection" });
-        }
-        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Description == "Speed"))
-        {
-            _logger.LogInformation("Speed Device Configuration already exist");
-        }
-        else
-        {
-            _deviceConfigurationRepository.Add(new DeviceConfiguration
-            {
-                Description = "Speed",
-                Protocol = TransportProtocols.Unknown,
-                ConnectionTimeout = 2000,
-                Path = "Unkown",
-                OperationTimeout = 2000,
-                Port = 0,
-                UserName = "Unknown",
-                Password = "Unkown",
-                ProductId = _productRepository.GetList().First(p => p.Manufacturer == "Wavetronix").Id
-            });
-        }
-        _logger.LogInformation($"Importing Speed Devices");
-        var devices = ImportData<Device>(queries["SpeedDevices"], columnMappings["SpeedDevices"]);
-        //check if device cofiguration exists
-        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Description == "Speed");
-        if (speedDeviceConfiguration == null)
-        {
-            _logger.LogInformation($"Speed Device Configuration not found for configuration.");
-            return;
-        }
-        foreach (var device in devices)
-        {
-            device.DeviceConfiguration = speedDeviceConfiguration;
-            var location = _locationRepository.GetLatestVersionOfLocation(device.DeviceIdentifier);
-            if (location == null)
-            {
-                _logger.LogInformation($"Location not found for device {device.DeviceIdentifier}");
-                continue;
-            }
-            device.LocationId = location.Id;
-        }
+        _logger.LogInformation("Importing Speed Devices");
+
         if (_config.Delete)
         {
             try
             {
                 _deviceRepository.AddRange(devices);
-                _logger.LogInformation($"Speed Devices Imported");
+                _logger.LogInformation("Speed Devices Imported");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error importing speed devices");
+                _logger.LogError(ex, "Error importing speed devices");
                 throw;
             }
         }
         else
         {
-            var deviceIds = _deviceRepository.GetList().Select(d => d.Id).ToList();
+            var deviceIds = _deviceRepository.GetList().Select(d => d.Id).ToHashSet();
             var newDevices = devices.Where(d => !deviceIds.Contains(d.Id)).ToList();
             foreach (var device in newDevices)
             {
                 try
                 {
                     _deviceRepository.Add(device);
-                    _logger.LogInformation($"Speed Device ${device.DeviceIdentifier} Imported");
+                    _logger.LogInformation("Speed Device {DeviceIdentifier} Imported", device.DeviceIdentifier);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message, $"Error importing speed device {device.DeviceIdentifier}");
+                    _logger.LogError(ex, "Error importing speed device {DeviceIdentifier}", device.DeviceIdentifier);
                 }
             }
         }
@@ -258,125 +554,124 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void DeleteProducts()
     {
-        _logger.LogInformation($"Deleting all products");
+        _logger.LogInformation("Deleting all products");
         try
         {
             _productRepository.RemoveRange(_productRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting products");
+            _logger.LogError(ex, "Error deleting products");
             throw;
         }
     }
 
     private void DeleteDevicesConfigurations()
     {
-        _logger.LogInformation($"Deleting all device configurations");
+        _logger.LogInformation("Deleting all device configurations");
         try
         {
             _deviceConfigurationRepository.RemoveRange(_deviceConfigurationRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting device configurations");
+            _logger.LogError(ex, "Error deleting device configurations");
             throw;
         }
     }
 
-    private void ImportJurisdictions(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportJurisdictions(List<Jurisdiction> jurisdictions)
     {
         if (_jurisdictionRepository.GetList().Any())
         {
             _logger.LogInformation("Jurisdictions already exist");
             return;
         }
-        _logger.LogInformation($"Importing Jurisdictions...");
-        var jurisdictions = ImportData<Jurisdiction>(queries["Jurisdictions"], columnMappings["Jurisdictions"]);
+
+        _logger.LogInformation("Importing Jurisdictions...");
         _jurisdictionRepository.AddRange(jurisdictions);
-        _logger.LogInformation($"Jurisdictions Imported");
+        _logger.LogInformation("Jurisdictions Imported");
     }
 
-    private void ImportAreas(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportAreas(List<Area> areas)
     {
         if (_areaRepository.GetList().Any())
         {
             _logger.LogInformation("Areas already exist");
             return;
         }
-        _logger.LogInformation($"Importing Areas...");
-        var areas = ImportData<Area>(queries["Areas"], columnMappings["Areas"]);
+
+        _logger.LogInformation("Importing Areas...");
         _areaRepository.AddRange(areas);
-        _logger.LogInformation($"Areas Imported");
+        _logger.LogInformation("Areas Imported");
     }
 
-    private void ImportRegions(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportRegions(List<Region> regions)
     {
         if (_regionsRepository.GetList().Any())
         {
             _logger.LogInformation("Regions already exist");
             return;
         }
-        _logger.LogInformation($"Importing Regions...");
-        var regions = ImportData<Region>(queries["Regions"], columnMappings["Regions"]);
+
+        _logger.LogInformation("Importing Regions...");
         _regionsRepository.AddRange(regions);
-        _logger.LogInformation($"Regions Imported");
+        _logger.LogInformation("Regions Imported");
     }
 
-    private void ImportRoutes(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportRoutes(List<Route> routes)
     {
         if (_routeRepository.GetList().Any())
         {
             _logger.LogInformation("Routes already exist");
             return;
         }
-        _logger.LogInformation($"Importing Routes");
-        var routes = ImportData<Route>(queries["Routes"], columnMappings["Routes"]);
+
+        _logger.LogInformation("Importing Routes");
         _routeRepository.AddRange(routes);
-        _logger.LogInformation($"Routes Imported");
+        _logger.LogInformation("Routes Imported");
     }
 
-    private void ImportRouteLocations(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportRouteLocations(List<RouteLocation> routeLocations)
     {
         if (_routeLocationsRepository.GetList().Any())
         {
             _logger.LogInformation("Route Locations already exist");
             return;
         }
-        _logger.LogInformation($"Importing Route Locations");
-        var routeLocations = ImportData<RouteLocation>(queries["RouteLocations"], columnMappings["RouteLocations"]);
+
+        _logger.LogInformation("Importing Route Locations");
         _routeLocationsRepository.AddRange(routeLocations);
-        _logger.LogInformation($"Route Locations Imported");
+        _logger.LogInformation("Route Locations Imported");
     }
 
-
-    private void ImportDeviceConfigurations(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportDeviceConfigurations(List<DeviceConfiguration> deviceConfigurations)
     {
         if (_deviceConfigurationRepository.GetList().Any())
         {
             _logger.LogInformation("Device Configurations already exist");
             return;
         }
+
         _logger.LogInformation("Adding Device Configurations");
-        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);
         _deviceConfigurationRepository.AddRange(deviceConfigurations);
         _logger.LogInformation("Device Configurations Added");
     }
 
-    private void ImportProducts(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportProducts(List<Product> products)
     {
         if (_productRepository.GetList().Any())
         {
             _logger.LogInformation("Products already exist");
             return;
         }
+
         _logger.LogInformation("Adding Products");
-        var products = ImportData<Product>(queries["Products"], columnMappings["Products"]);
         _productRepository.AddRange(products);
         _logger.LogInformation("Products Added");
     }
 
-    private void ImportApproaches(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportApproaches(List<Approach> approaches)
     {
         if (_config.Delete && _approachRepository.GetList().Any())
         {
@@ -384,12 +679,9 @@ public class TransferConfigCommandHostedService : IHostedService
             return;
         }
 
-        _logger.LogInformation($"Importing Approaches");
+        _logger.LogInformation("Importing Approaches");
 
-        // Import all approaches at once
-        var approaches = ImportData<Approach>(queries["Approaches"], columnMappings["Approaches"]);
-
-        if (_config.Delete == true)
+        if (_config.Delete)
         {
             const int batchSize = 5000;
             int total = approaches.Count;
@@ -399,74 +691,54 @@ public class TransferConfigCommandHostedService : IHostedService
             {
                 var batch = approaches.Skip(i * batchSize).Take(batchSize).ToList();
                 _approachRepository.AddRange(batch);
-                _logger.LogInformation($"Batch {i + 1}/{batches} imported ({batch.Count} approaches).");
+                _logger.LogInformation("Batch {Batch}/{Batches} imported ({Count} approaches).", i + 1, batches, batch.Count);
             }
 
-            _logger.LogInformation($"All Approaches Imported");
+            _logger.LogInformation("All Approaches Imported");
         }
         else
         {
-            var approachIds = approaches.Select(a => a.Id).ToList();
-            //Get approaches that are not in the approachIds list
-            var newApproaches = approaches.Where(a => !approachIds.Contains(a.Id)).ToList();
+            var existingApproachIds = _approachRepository.GetList().Select(a => a.Id).ToHashSet();
+            var newApproaches = approaches.Where(a => !existingApproachIds.Contains(a.Id)).ToList();
             foreach (var approach in newApproaches)
             {
                 try
                 {
                     _approachRepository.Add(approach);
-                    _logger.LogInformation($"Approach {approach.Id} Imported");
+                    _logger.LogInformation("Approach {ApproachId} Imported", approach.Id);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message, $"Error importing approach {approach.Id}");
+                    _logger.LogError(ex, "Error importing approach {ApproachId}", approach.Id);
                 }
-
             }
         }
     }
 
-
-    private void ImportDevices(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportDevices(List<Device> devices)
     {
         if (_deviceRepository.GetList().Any())
         {
             _logger.LogInformation("Devices already exist");
             return;
         }
-        _logger.LogInformation($"Importing Devices");
-        var devices = ImportData<Device>(queries["Devices"], columnMappings["Devices"]);
-        //check if device cofiguration exists
-        var configurations = _deviceConfigurationRepository.GetList().ToList();
-        foreach (var device in devices)
-        {
-            var configuration = configurations.FirstOrDefault(c => c.Id == device.DeviceConfigurationId);
-            if (configuration == null)
-            {
-                _logger.LogInformation($"Device Configuration not found for configuration {device.DeviceConfigurationId} on location{device.Notes}");
-                continue;
-            }
-            device.DeviceConfiguration = configuration;
-        }
 
+        _logger.LogInformation("Importing Devices");
         _deviceRepository.AddRange(devices);
-        _logger.LogInformation($"Devices Imported");
+        _logger.LogInformation("Devices Imported");
     }
 
-    private void ImportDetectors(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private void ImportDetectors(List<Detector> detectors, Dictionary<int, List<DetectionTypes>> detectorDetectionTypeIds)
     {
-        if (_config.Delete == true && _detectorRepository.GetList().Any())
+        if (_config.Delete && _detectorRepository.GetList().Any())
         {
             _logger.LogInformation("Detectors already exist");
             return;
         }
-        _logger.LogInformation($"Importing Detectors");
+
+        _logger.LogInformation("Importing Detectors");
 
         var detectionTypes = _detectionTypeRepository.GetList().ToList();
-
-        var detectionTypeDetectors = ImportData<DetectionTypeDetector>(queries["DetectionTypeDetector"], columnMappings["DetectionTypeDetector"]);
-
-        var detectors = ImportData<Detector>(queries["Detectors"], columnMappings["Detectors"]);
-
 
         if (_config.Delete)
         {
@@ -474,103 +746,261 @@ public class TransferConfigCommandHostedService : IHostedService
             for (int i = 0; i < detectors.Count; i += batchSize)
             {
                 var batch = detectors.Skip(i).Take(batchSize).ToList();
-                foreach (var detectionType in detectionTypes)
-                {
-
-                    if (detectionType.Id == DetectionTypes.B)
-                    {
-                        foreach (var detector in batch)
-                        {
-                            detectionType.Detectors.Add(detector);
-                        }
-                    }
-                    else
-                    {
-                        var detectorIds = detectionTypeDetectors
-                        .Where(d => d.DetectionTypesId == (int)detectionType.Id)
-                        .Select(d => d.DetectorsId)
-                        .ToList();
-                        foreach (var detector in batch.Where(d => detectorIds.Contains(d.Id)))
-                        {
-                            detectionType.Detectors.Add(detector);
-                        }
-                    }
-                }
+                AttachDetectionTypes(batch, detectionTypes, detectorDetectionTypeIds);
                 _detectorRepository.AddRange(batch);
-                _logger.LogInformation($"Processed batch of {batch.Count} detectors");
+                _logger.LogInformation("Processed batch of {Count} detectors", batch.Count);
             }
 
-            _logger.LogInformation($"Detectors Imported");
+            _logger.LogInformation("Detectors Imported");
         }
         else
         {
-            var detectorIds = _detectorRepository.GetList().Select(d => d.Id).ToList();
-            var newDetectors = detectors.Where(d => !detectorIds.Contains(d.Id)).ToList();
+            var existingDetectorIds = _detectorRepository.GetList().Select(d => d.Id).ToHashSet();
+            var newDetectors = detectors.Where(d => !existingDetectorIds.Contains(d.Id)).ToList();
             foreach (var detector in newDetectors)
             {
                 try
                 {
+                    AttachDetectionTypes(new List<Detector> { detector }, detectionTypes, detectorDetectionTypeIds);
                     _detectorRepository.Add(detector);
-                    _logger.LogInformation($"Detector {detector.DectectorIdentifier} Imported");
+                    _logger.LogInformation("Detector {DetectorIdentifier} Imported", detector.DectectorIdentifier);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message, $"Error importing detector {detector.DectectorIdentifier}");
+                    _logger.LogError(ex, "Error importing detector {DetectorIdentifier}", detector.DectectorIdentifier);
                 }
             }
         }
     }
 
-    private void ImportLocations(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    private static void AttachDetectionTypes(
+        List<Detector> detectors,
+        List<DetectionType> detectionTypes,
+        Dictionary<int, List<DetectionTypes>> detectorDetectionTypeIds)
     {
-        if (_config.Delete == true && _locationRepository.GetList().Any())
+        foreach (var detectionType in detectionTypes)
+        {
+            if (detectionType.Id == DetectionTypes.B)
+            {
+                foreach (var detector in detectors)
+                {
+                    detectionType.Detectors.Add(detector);
+                }
+
+                continue;
+            }
+
+            foreach (var detector in detectors.Where(d =>
+                         detectorDetectionTypeIds.TryGetValue(d.Id, out var ids) && ids.Contains(detectionType.Id)))
+            {
+                detectionType.Detectors.Add(detector);
+            }
+        }
+    }
+
+    private void ImportLocations(
+        List<Location> locations,
+        Dictionary<int, List<int>> locationAreaIds,
+        List<Jurisdiction> sourceJurisdictions,
+        List<Region> sourceRegions,
+        List<Area> sourceAreas)
+    {
+        if (_config.Delete && _locationRepository.GetList().Any())
         {
             _logger.LogInformation("Locations already exist");
             return;
         }
-        _logger.LogInformation($"Importing Locations...");
 
-        var areas = _areaRepository.GetList().ToList();
+        _logger.LogInformation("Importing Locations...");
 
-        var locationAreas = ImportData<AreaLocation>(queries["AreaLocations"], columnMappings["AreaLocations"]);
+        var defaultJurisdictionId = EnsureDefaultJurisdiction();
+        var defaultRegionId = EnsureDefaultRegion();
+        var defaultAreaId = EnsureDefaultArea();
 
-        var locations = ImportData<Location>(queries["Locations"], columnMappings["Locations"]);
+        var targetJurisdictions = _jurisdictionRepository.GetList().ToList();
+        var targetJurisdictionsByName = targetJurisdictions
+            .Where(j => !string.IsNullOrWhiteSpace(j.Name))
+            .GroupBy(j => j.Name!, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First().Id, StringComparer.OrdinalIgnoreCase);
+        var targetRegionsByDescription = _regionsRepository
+            .GetList()
+            .Where(r => !string.IsNullOrWhiteSpace(r.Description))
+            .ToDictionary(r => r.Description!, r => r.Id, StringComparer.OrdinalIgnoreCase);
+        var targetAreasByName = _areaRepository
+            .GetList()
+            .Where(a => !string.IsNullOrWhiteSpace(a.Name))
+            .ToDictionary(a => a.Name!, a => a.Id, StringComparer.OrdinalIgnoreCase);
 
-        foreach (var area in areas)
+        var sourceJurisdictionsById = sourceJurisdictions.ToDictionary(j => j.Id);
+        var sourceRegionsById = sourceRegions.ToDictionary(r => r.Id);
+        var sourceAreasById = sourceAreas.ToDictionary(a => a.Id);
+
+        var locationsWithMissingJurisdiction = 0;
+        var locationsWithMissingRegion = 0;
+        var locationsWithMissingAreas = 0;
+
+        var missingJurisdictionReferences = 0;
+        var remappedJurisdictionReferences = 0;
+        var missingRegionReferences = 0;
+        var remappedRegionReferences = 0;
+        var fallbackAreaReferences = 0;
+
+        foreach (var location in locations)
         {
-            var locationIds = locationAreas.Where(l => l.AreasId == area.Id).Select(l => l.LocationsId).ToList();
-            foreach (var location in locations.Where(l => locationIds.Contains(l.Id)))
+            if (location.JurisdictionId.HasValue)
             {
-                location.Areas.Add(area);
+                if (targetJurisdictions.Any(j => j.Id == location.JurisdictionId.Value))
+                {
+                    location.Jurisdiction = null;
+                }
+                else if (sourceJurisdictionsById.TryGetValue(location.JurisdictionId.Value, out var sourceJurisdiction) &&
+                         targetJurisdictionsByName.TryGetValue(sourceJurisdiction.Name, out var targetJurisdictionId))
+                {
+                    remappedJurisdictionReferences++;
+                    _logger.LogInformation(
+                        "Location {LocationIdentifier} remapped jurisdiction {SourceJurisdictionId} ({JurisdictionName}) to target jurisdiction {TargetJurisdictionId}",
+                        location.LocationIdentifier,
+                        location.JurisdictionId,
+                        sourceJurisdiction.Name,
+                        targetJurisdictionId);
+                    location.JurisdictionId = targetJurisdictionId;
+                    location.Jurisdiction = null;
+                }
+                else
+                {
+                    locationsWithMissingJurisdiction++;
+                    missingJurisdictionReferences++;
+                    _logger.LogWarning(
+                        "Location {LocationIdentifier} references missing jurisdiction {JurisdictionId}; using default jurisdiction {DefaultJurisdictionId}",
+                        location.LocationIdentifier,
+                        location.JurisdictionId,
+                        defaultJurisdictionId);
+                    location.JurisdictionId = defaultJurisdictionId;
+                    location.Jurisdiction = null;
+                }
+            }
+            else
+            {
+                locationsWithMissingJurisdiction++;
+                location.JurisdictionId = defaultJurisdictionId;
+                location.Jurisdiction = null;
+            }
+
+            if (location.RegionId.HasValue)
+            {
+                if (targetRegionsByDescription.Values.Contains(location.RegionId.Value))
+                {
+                    location.Region = null;
+                }
+                else if (sourceRegionsById.TryGetValue(location.RegionId.Value, out var sourceRegion) &&
+                         targetRegionsByDescription.TryGetValue(sourceRegion.Description, out var targetRegionId))
+                {
+                    remappedRegionReferences++;
+                    _logger.LogInformation(
+                        "Location {LocationIdentifier} remapped region {SourceRegionId} ({RegionDescription}) to target region {TargetRegionId}",
+                        location.LocationIdentifier,
+                        location.RegionId,
+                        sourceRegion.Description,
+                        targetRegionId);
+                    location.RegionId = targetRegionId;
+                    location.Region = null;
+                }
+                else
+                {
+                    locationsWithMissingRegion++;
+                    missingRegionReferences++;
+                    _logger.LogWarning(
+                        "Location {LocationIdentifier} references missing region {RegionId}; using default region {DefaultRegionId}",
+                        location.LocationIdentifier,
+                        location.RegionId,
+                        defaultRegionId);
+                    location.RegionId = defaultRegionId;
+                    location.Region = null;
+                }
+            }
+            else
+            {
+                locationsWithMissingRegion++;
+                location.RegionId = defaultRegionId;
+                location.Region = null;
+            }
+
+            if (locationAreaIds.TryGetValue(location.Id, out var areaIds))
+            {
+                var resolvedAreaIds = new HashSet<int>();
+                foreach (var areaId in areaIds)
+                {
+                    if (sourceAreasById.TryGetValue(areaId, out var sourceArea) &&
+                        targetAreasByName.TryGetValue(sourceArea.Name, out var targetAreaId))
+                    {
+                        resolvedAreaIds.Add(targetAreaId);
+                        continue;
+                    }
+
+                    locationsWithMissingAreas++;
+                    fallbackAreaReferences++;
+                    resolvedAreaIds.Add(defaultAreaId);
+                    _logger.LogWarning(
+                        "Location {LocationIdentifier} references missing area {AreaId}; using default area {DefaultAreaId}",
+                        location.LocationIdentifier,
+                        areaId,
+                        defaultAreaId);
+                }
+
+                foreach (var areaId in resolvedAreaIds)
+                {
+                    var area = _areaRepository.Lookup(areaId);
+                    if (area != null)
+                    {
+                        location.Areas.Add(area);
+                    }
+                }
+            }
+            else
+            {
+                locationsWithMissingAreas++;
+                location.Areas.Add(_areaRepository.Lookup(defaultAreaId));
             }
         }
+
+        if (locationsWithMissingJurisdiction > 0 || locationsWithMissingRegion > 0 || locationsWithMissingAreas > 0)
+        {
+            _logger.LogWarning(
+                "Preflight cleanup result: remapped {RemappedJurisdictionCount} jurisdiction references, remapped {RemappedRegionCount} region references, used {JurisdictionCount} default jurisdictions, used {RegionCount} default regions, and used {AreaCount} default areas before importing locations",
+                remappedJurisdictionReferences,
+                remappedRegionReferences,
+                locationsWithMissingJurisdiction,
+                locationsWithMissingRegion,
+                fallbackAreaReferences);
+        }
+
         if (_config.Delete)
         {
             try
             {
                 _locationRepository.AddRange(locations);
-                _logger.LogInformation($"Locations Imported");
+                _logger.LogInformation("Locations Imported");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error importing locations");
+                _logger.LogError(ex, "Error importing locations");
                 throw;
             }
         }
         else
         {
-            var locationIds = _locationRepository.GetList().Select(l => l.Id).ToList();
-            var newLocations = locations.Where(l => !locationIds.Contains(l.Id)).ToList();
+            var existingLocationIds = _locationRepository.GetList().Select(l => l.Id).ToHashSet();
+            var newLocations = locations.Where(l => !existingLocationIds.Contains(l.Id)).ToList();
             foreach (var location in newLocations)
             {
                 try
                 {
                     _locationRepository.Add(location);
-                    _logger.LogInformation($"Location {location.LocationIdentifier} Imported");
+                    _logger.LogInformation("Location {LocationIdentifier} Imported", location.LocationIdentifier);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message, $"Error importing location {location.LocationIdentifier}");
+                    _logger.LogError(ex, "Error importing location {LocationIdentifier}", location.LocationIdentifier);
                 }
             }
         }
@@ -586,6 +1016,7 @@ public class TransferConfigCommandHostedService : IHostedService
             _logger.LogInformation("Detection Types to Measure Types already exist");
             return;
         }
+
         var detectionTypes = _detectionTypeRepository.GetList().ToList();
         var measureTypes = _measureTypeRepository.GetList().ToList();
         var measureTypesForBasic = measureTypes.Where(m => new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 }.Contains(m.Id)).ToList();
@@ -594,6 +1025,7 @@ public class TransferConfigCommandHostedService : IHostedService
         var measureTypesForLlc = measureTypes.Where(m => new List<int> { 5, 7, 31, 36 }.Contains(m.Id)).ToList();
         var measureTypesForLls = measureTypes.Where(m => new List<int> { 11 }.Contains(m.Id)).ToList();
         var measureTypesForStopBarPresence = measureTypes.Where(m => new List<int> { 12, 31, 32 }.Contains(m.Id)).ToList();
+
         foreach (var detectionType in detectionTypes)
         {
             switch (detectionType.Id)
@@ -635,273 +1067,317 @@ public class TransferConfigCommandHostedService : IHostedService
                     }
                     break;
             }
+
             _detectionTypeRepository.Update(detectionType);
         }
     }
 
     private void DeleteJurisdictions()
     {
-        _logger.LogInformation($"Deleting all jurisdictions");
+        _logger.LogInformation("Deleting all jurisdictions");
         try
         {
-            var jurisdictions = _jurisdictionRepository.GetList().ToList();
-            _jurisdictionRepository.RemoveRange(jurisdictions);
+            _jurisdictionRepository.RemoveRange(_jurisdictionRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting jurisdictions");
+            _logger.LogError(ex, "Error deleting jurisdictions");
             throw;
         }
     }
 
     private void DeleteAreas()
     {
-        _logger.LogInformation($"Deleting all areas");
+        _logger.LogInformation("Deleting all areas");
         try
         {
-            var areas = _areaRepository.GetList().ToList();
-            _areaRepository.RemoveRange(areas);
+            _areaRepository.RemoveRange(_areaRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting areas");
+            _logger.LogError(ex, "Error deleting areas");
             throw;
         }
     }
 
     private void DeleteRegions()
     {
-        _logger.LogInformation($"Deleting all regions");
+        _logger.LogInformation("Deleting all regions");
         try
         {
-            var regions = _regionsRepository.GetList().ToList();
-            _regionsRepository.RemoveRange(regions);
+            _regionsRepository.RemoveRange(_regionsRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting regions");
+            _logger.LogError(ex, "Error deleting regions");
             throw;
         }
-
     }
-
-
-    private List<T> ImportData<T>(string query, Dictionary<string, string> columnMappings) where T : new()
-    {
-        var entities = new List<T>();
-
-        using (var sourceConnection = new SqlConnection(_config.Source))
-        {
-            sourceConnection.Open();
-            using (SqlCommand sourceCommand = new SqlCommand(query, sourceConnection))
-            {
-                using (SqlDataReader reader = sourceCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var entity = new T(); // Create an instance of the generic type
-
-                        // Iterate through column mappings
-
-                        foreach (var mapping in columnMappings)
-                        {
-                            var propertyName = mapping.Value; // Name of the property in the class
-                            var columnName = mapping.Key;       // Name of the column in the data reader
-
-                            // Get the value from the reader
-                            var value = reader[columnName];
-
-                            // Use reflection to set the property value
-                            var propertyInfo = entity.GetType().GetProperty(propertyName);
-                            if (propertyInfo != null && value != DBNull.Value)
-                            {
-                                var propertyType = propertyInfo.PropertyType;
-                                // Handle nullable types
-                                var targetType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-
-                                // Special handling for enums
-                                if (targetType.IsEnum)
-                                {
-                                    var enumValue = Enum.ToObject(targetType, value);
-                                    propertyInfo.SetValue(entity, enumValue);
-                                }
-                                else if (targetType == typeof(Dictionary<string, object>))
-                                {
-                                    // Convert the value to string (which should be valid JSON) and deserialize it
-                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
-                                    if (!string.IsNullOrWhiteSpace(jsonString))
-                                    {
-                                        try
-                                        {
-                                            var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonString);
-                                            propertyInfo.SetValue(entity, dictionary);
-                                        }
-                                        catch (JsonException ex)
-                                        {
-                                            throw new InvalidOperationException(
-                                                $"Failed to deserialize JSON for property '{propertyName}'.", ex);
-                                        }
-                                    }
-                                }
-                                else if (targetType == typeof(string[]))
-                                {
-                                    // Convert the value to string and then deserialize the JSON array
-                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
-                                    if (!string.IsNullOrWhiteSpace(jsonString))
-                                    {
-                                        try
-                                        {
-                                            string[] arrayValue = JsonSerializer.Deserialize<string[]>(jsonString);
-                                            propertyInfo.SetValue(entity, arrayValue);
-                                        }
-                                        catch (JsonException ex)
-                                        {
-                                            throw new InvalidOperationException(
-                                                $"Failed to deserialize JSON array for property '{propertyName}'.", ex);
-                                        }
-                                    }
-                                }
-                                else if (targetType == typeof(string))
-                                {
-                                    // For string, simply convert it (optionally, unescape if needed)
-                                    string stringValue = Convert.ChangeType(value, typeof(string)) as string;
-                                    propertyInfo.SetValue(entity, stringValue);
-                                }
-                                else
-                                {
-                                    // Convert and assign other types
-                                    propertyInfo.SetValue(entity, Convert.ChangeType(value, targetType));
-                                }
-                            }
-                        }
-
-
-                        entities.Add(entity);
-                    }
-                }
-            }
-        }
-
-        return entities;
-    }
-
-    public static Dictionary<string, Dictionary<string, string>> GetColumnMappings(IConfiguration configuration)
-    {
-        // Retrieve the "ColumnMappings" section from the configuration
-        var columnMappingsSection = configuration.GetSection("ColumnMappings");
-
-        if (!columnMappingsSection.Exists())
-        {
-            throw new KeyNotFoundException("The 'ColumnMappings' section was not found in the configuration.");
-        }
-
-        // Create the dictionary to hold the mappings
-        var columnMappings = new Dictionary<string, Dictionary<string, string>>();
-
-        foreach (var tableSection in columnMappingsSection.GetChildren())
-        {
-            var tableName = tableSection.Key;
-            var columnMap = new Dictionary<string, string>();
-
-            foreach (var columnSection in tableSection.GetChildren())
-            {
-                columnMap[columnSection.Key] = columnSection.Value;
-            }
-
-            columnMappings[tableName] = columnMap;
-        }
-
-        return columnMappings;
-    }
-
-    private Dictionary<string, string> GetLocationQueries(IConfiguration config)
-    {
-        var queries = new Dictionary<string, string>();
-
-        // Get the "LocationQueries" section from the config
-        var locationQueriesSection = config.GetSection("LocationQueries");
-
-        if (!locationQueriesSection.Exists())
-            throw new InvalidOperationException("The 'LocationQueries' section is missing in the configuration.");
-
-        // Iterate through each key-value pair in the section
-        foreach (var child in locationQueriesSection.GetChildren())
-        {
-            queries[child.Key] = child.Value ?? string.Empty;
-        }
-
-        return queries;
-    }
-
-    //private void ManuallyAddSpeedDevice()
-    //{
-    //    productRepository.Add(new Product { Id = 11, Manufacturer = "Wavetronix", Model = "Wavetronix Advance Detection" });
-    //    deviceConfigurationRepository.Add(new Device
-    //    {
-    //        Id = 11,
-    //        Description = "None",
-    //        Protocol = ATSPM.Table.Enums.TransportProtocols.Unknown,
-    //        ConnectionTimeout = 2000,
-    //        Directory = "Unkown",
-    //        OperationTimout = 2000,
-    //        Port = 0,
-    //        UserName = "Unknown",
-    //        Password = "Unkown",
-    //        ProductId = 11
-    //    });
-    //    deviceRepository.Add(new Device
-    //    {
-    //         DeviceConfigurationId= 11, DeviceStatus = ATSPM.Table.Enums.DeviceStatus.Active, Ipaddress = "127.0.0.1", 
-    //    });
-    //}
-
-
 
     private void DeleteLocations()
     {
-        _logger.LogInformation($"Deleting all locations");
+        _logger.LogInformation("Deleting all locations");
         try
         {
-            var locations = _locationRepository.GetList().ToList();
-            _locationRepository.RemoveRange(locations);
+            _locationRepository.RemoveRange(_locationRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting locations");
+            _logger.LogError(ex, "Error deleting locations");
             throw;
         }
     }
 
     private void DeleteDevices()
     {
-        _logger.LogInformation($"Deleting all devices");
+        _logger.LogInformation("Deleting all devices");
         try
         {
             _deviceRepository.RemoveRange(_deviceRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, "Error deleting devices");
+            _logger.LogError(ex, "Error deleting devices");
             throw;
         }
     }
 
-
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
+    private static List<Product> SanitizeProducts(IEnumerable<Product> products) =>
+        products.Select(product => CopyAuditFields(product, new Product
+        {
+            Id = product.Id,
+            Manufacturer = product.Manufacturer,
+            Model = product.Model,
+            WebPage = product.WebPage,
+            Notes = product.Notes
+        })).ToList();
+
+    private static List<DeviceConfiguration> SanitizeDeviceConfigurations(IEnumerable<DeviceConfiguration> deviceConfigurations) =>
+        deviceConfigurations.Select(dc => CopyAuditFields(dc, new DeviceConfiguration
+        {
+            Id = dc.Id,
+            Description = dc.Description,
+            Notes = dc.Notes,
+            Protocol = dc.Protocol,
+            Port = dc.Port,
+            ConnectionProperties = dc.ConnectionProperties,
+            Path = dc.Path,
+            Query = dc.Query,
+            ConnectionTimeout = dc.ConnectionTimeout,
+            OperationTimeout = dc.OperationTimeout,
+            LoggingOffset = dc.LoggingOffset,
+            Decoders = dc.Decoders,
+            UserName = dc.UserName,
+            Password = dc.Password,
+            ProductId = dc.ProductId
+        })).ToList();
+
+    private static List<Region> SanitizeRegions(IEnumerable<Region> regions) =>
+        regions.Select(region => CopyAuditFields(region, new Region
+        {
+            Id = region.Id,
+            Description = region.Description
+        })).ToList();
+
+    private static List<Area> SanitizeAreas(IEnumerable<Area> areas) =>
+        areas.Select(area => CopyAuditFields(area, new Area
+        {
+            Id = area.Id,
+            Name = area.Name
+        })).ToList();
+
+    private static List<Jurisdiction> SanitizeJurisdictions(IEnumerable<Jurisdiction> jurisdictions) =>
+        jurisdictions.Select(jurisdiction => CopyAuditFields(jurisdiction, new Jurisdiction
+        {
+            Id = jurisdiction.Id,
+            Name = jurisdiction.Name,
+            Mpo = jurisdiction.Mpo,
+            CountyParish = jurisdiction.CountyParish,
+            OtherPartners = jurisdiction.OtherPartners
+        })).ToList();
+
+    private static List<Location> SanitizeLocations(IEnumerable<Location> locations) =>
+        locations.Select(location => CopyAuditFields(location, new Location
+        {
+            Id = location.Id,
+            Latitude = location.Latitude,
+            Longitude = location.Longitude,
+            PrimaryName = location.PrimaryName,
+            SecondaryName = location.SecondaryName,
+            ChartEnabled = location.ChartEnabled,
+            VersionAction = location.VersionAction,
+            Note = location.Note,
+            Start = location.Start,
+            PedsAre1to1 = location.PedsAre1to1,
+            LocationIdentifier = location.LocationIdentifier,
+            JurisdictionId = location.JurisdictionId,
+            LocationTypeId = location.LocationTypeId,
+            RegionId = location.RegionId
+        })).ToList();
+
+    private static List<Approach> SanitizeApproaches(IEnumerable<Approach> approaches) =>
+        approaches.Select(approach => CopyAuditFields(approach, new Approach
+        {
+            Id = approach.Id,
+            Description = approach.Description,
+            Mph = approach.Mph,
+            ProtectedPhaseNumber = approach.ProtectedPhaseNumber,
+            IsProtectedPhaseOverlap = approach.IsProtectedPhaseOverlap,
+            PermissivePhaseNumber = approach.PermissivePhaseNumber,
+            IsPermissivePhaseOverlap = approach.IsPermissivePhaseOverlap,
+            PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
+            IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
+            PedestrianDetectors = approach.PedestrianDetectors,
+            LocationId = approach.LocationId,
+            DirectionTypeId = approach.DirectionTypeId
+        })).ToList();
+
+    private static List<Detector> SanitizeDetectors(IEnumerable<Detector> detectors) =>
+        detectors.Select(detector => CopyAuditFields(detector, new Detector
+        {
+            Id = detector.Id,
+            DectectorIdentifier = detector.DectectorIdentifier,
+            DetectorChannel = detector.DetectorChannel,
+            DistanceFromStopBar = detector.DistanceFromStopBar,
+            MinSpeedFilter = detector.MinSpeedFilter,
+            DateAdded = detector.DateAdded,
+            DateDisabled = detector.DateDisabled,
+            LaneNumber = detector.LaneNumber,
+            MovementType = detector.MovementType,
+            LaneType = detector.LaneType,
+            DetectionHardware = detector.DetectionHardware,
+            DecisionPoint = detector.DecisionPoint,
+            MovementDelay = detector.MovementDelay,
+            LatencyCorrection = detector.LatencyCorrection,
+            ApproachId = detector.ApproachId
+        })).ToList();
+
+    private static List<Route> SanitizeRoutes(IEnumerable<Route> routes) =>
+        routes.Select(route => CopyAuditFields(route, new Route
+        {
+            Id = route.Id,
+            Name = route.Name
+        })).ToList();
+
+    private static List<RouteLocation> SanitizeRouteLocations(IEnumerable<RouteLocation> routeLocations) =>
+        routeLocations.Select(routeLocation => CopyAuditFields(routeLocation, new RouteLocation
+        {
+            Id = routeLocation.Id,
+            Order = routeLocation.Order,
+            PrimaryPhase = routeLocation.PrimaryPhase,
+            OpposingPhase = routeLocation.OpposingPhase,
+            PrimaryDirectionId = routeLocation.PrimaryDirectionId,
+            OpposingDirectionId = routeLocation.OpposingDirectionId,
+            IsPrimaryOverlap = routeLocation.IsPrimaryOverlap,
+            IsOpposingOverlap = routeLocation.IsOpposingOverlap,
+            PreviousLocationDistanceId = routeLocation.PreviousLocationDistanceId,
+            NextLocationDistanceId = routeLocation.NextLocationDistanceId,
+            LocationIdentifier = routeLocation.LocationIdentifier,
+            RouteId = routeLocation.RouteId
+        })).ToList();
+
+    private static List<Device> SanitizeDevices(IEnumerable<Device> devices) =>
+        devices.Select(device => CopyAuditFields(device, new Device
+        {
+            Id = device.Id,
+            DeviceIdentifier = device.DeviceIdentifier,
+            DeviceProperties = device.DeviceProperties,
+            LoggingEnabled = device.LoggingEnabled,
+            Ipaddress = null,
+            DeviceStatus = device.DeviceStatus,
+            DeviceType = device.DeviceType,
+            Notes = device.Notes,
+            LocationId = device.LocationId,
+            DeviceConfigurationId = device.DeviceConfigurationId
+        })).ToList();
+
+    private int EnsureDefaultJurisdiction()
+    {
+        var existing = _jurisdictionRepository.GetList().FirstOrDefault(j => j.Name == "Default Jurisdiction");
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var jurisdiction = new Jurisdiction
+        {
+            Name = "Default Jurisdiction"
+        };
+
+        _jurisdictionRepository.Add(jurisdiction);
+        return jurisdiction.Id;
+    }
+
+    private int EnsureDefaultRegion()
+    {
+        var existing = _regionsRepository.GetList().FirstOrDefault(r => r.Description == "Default Region");
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var region = new Region
+        {
+            Description = "Default Region"
+        };
+
+        _regionsRepository.Add(region);
+        return region.Id;
+    }
+
+    private int EnsureDefaultArea()
+    {
+        var existing = _areaRepository.GetList().FirstOrDefault(a => a.Name == "Default Area");
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var area = new Area
+        {
+            Name = "Default Area"
+        };
+
+        _areaRepository.Add(area);
+        return area.Id;
+    }
+
+    private static TTarget CopyAuditFields<TKey, TTarget>(AtspmConfigModelBase<TKey> source, TTarget target)
+        where TTarget : AtspmConfigModelBase<TKey>
+    {
+        target.Created = source.Created;
+        target.Modified = source.Modified;
+        target.CreatedBy = source.CreatedBy;
+        target.ModifiedBy = source.ModifiedBy;
+        return target;
+    }
+
+    private sealed class ODataResponse<T>
+    {
+        [JsonPropertyName("value")]
+        public List<T>? Value { get; set; }
+
+        [JsonPropertyName("@odata.nextLink")]
+        public string? NextLink { get; set; }
+    }
+
+    private sealed class SourceConfigData
+    {
+        public List<Product> Products { get; set; } = new();
+        public List<DeviceConfiguration> DeviceConfigurations { get; set; } = new();
+        public List<Region> Regions { get; set; } = new();
+        public List<Area> Areas { get; set; } = new();
+        public List<Jurisdiction> Jurisdictions { get; set; } = new();
+        public List<Location> Locations { get; set; } = new();
+        public Dictionary<int, List<int>> LocationAreaIds { get; set; } = new();
+        public List<Approach> Approaches { get; set; } = new();
+        public List<Detector> Detectors { get; set; } = new();
+        public Dictionary<int, List<DetectionTypes>> DetectorDetectionTypeIds { get; set; } = new();
+        public List<Route> Routes { get; set; } = new();
+        public List<RouteLocation> RouteLocations { get; set; } = new();
+        public List<Device> Devices { get; set; } = new();
+        public List<Device> SpeedDevices { get; set; } = new();
+    }
 }
-
-
-public class AreaLocation
-{
-    public int AreasId { get; set; }
-    public int LocationsId { get; set; }
-}
-
-public class DetectionTypeDetector
-{
-    public int DetectionTypesId { get; set; }
-    public int DetectorsId { get; set; }
-}
-
-

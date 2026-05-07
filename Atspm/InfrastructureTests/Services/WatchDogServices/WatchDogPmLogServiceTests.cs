@@ -106,6 +106,20 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
         }
 
         [Fact]
+        public void PmAnalysisEnd_Should_Throw_WhenPeakWindowCrossesMidnight()
+        {
+            var options = new WatchdogPmLoggingOptions
+            {
+                PmScanDate = new DateTime(2026, 5, 3),
+                PmPeakStartHour = 18,
+                PmPeakEndHour = 17
+            };
+
+            var ex = Assert.Throws<InvalidOperationException>(() => _ = options.PmAnalysisEnd);
+            Assert.Equal("PM analysis end time cannot be before the start time.", ex.Message);
+        }
+
+        [Fact]
         public void CheckForUnconfiguredApproaches_Should_AddError_WhenPhaseNotConfigured()
         {
             var location = new Location

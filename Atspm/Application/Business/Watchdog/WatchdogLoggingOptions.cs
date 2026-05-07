@@ -60,7 +60,10 @@ namespace Utah.Udot.Atspm.Business.Watchdog
         public int LowHitThreshold { get; set; }
 
         public DateTime PmAnalysisStart => PmScanDate.Date + new TimeSpan(PmPeakStartHour, 0, 0);
-        public DateTime PmAnalysisEnd => PmScanDate.Date + new TimeSpan(PmPeakEndHour, 0, 0);
+        public DateTime PmAnalysisEnd =>
+            (PmScanDate.Date + new TimeSpan(PmPeakEndHour, 0, 0)) < PmAnalysisStart
+                ? throw new InvalidOperationException("PM analysis end time cannot be before the start time.")
+                : PmScanDate.Date + new TimeSpan(PmPeakEndHour, 0, 0);
     }
 
     public class WatchdogAmLoggingOptions
@@ -91,6 +94,6 @@ namespace Utah.Udot.Atspm.Business.Watchdog
         public DateTime RampMissedDetectorHitStart => RampMissedDetectorHitsStartScanDate.Date + new TimeSpan(RampMissedDetectorHitStartHour, 0, 0);
         public DateTime RampMissedDetectorHitEnd => RampMissedDetectorHitsEndScanDate.Date + new TimeSpan(RampMissedDetectorHitEndHour, 0, 0);
         public DateTime RampDetectorStart => RampMissedDetectorHitsStartScanDate.Date + new TimeSpan(RampDetectorStartHour, 0, 0);
-        public DateTime RampDetectorEnd => RampMissedDetectorHitsStartScanDate.Date + new TimeSpan(RampDetectorEndHour, 0, 0);
+        public DateTime RampDetectorEnd => RampMissedDetectorHitsEndScanDate.Date + new TimeSpan(RampDetectorEndHour, 0, 0);
     }
 }
