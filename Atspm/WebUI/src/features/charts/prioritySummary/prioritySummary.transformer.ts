@@ -89,15 +89,20 @@ function transformLocation(data: PrioritySummaryResult) {
     )
   ).sort((a, b) => a - b)
 
-  if (!tspNumbers.length) return [transformTspChart(data, cycles)]
+  const combinedChart = transformTspChart(data, cycles)
 
-  return tspNumbers.map((tspNumber) =>
-    transformTspChart(
-      data,
-      cycles.filter((c) => c.tspNumber === tspNumber),
-      tspNumber
-    )
-  )
+  if (!tspNumbers.length) return [combinedChart]
+
+  return [
+    combinedChart,
+    ...tspNumbers.map((tspNumber) =>
+      transformTspChart(
+        data,
+        cycles.filter((c) => c.tspNumber === tspNumber),
+        tspNumber
+      )
+    ),
+  ]
 }
 
 function transformTspChart(

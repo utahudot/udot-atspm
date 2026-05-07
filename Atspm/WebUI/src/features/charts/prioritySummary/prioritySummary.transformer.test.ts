@@ -2,7 +2,7 @@ import type { PrioritySummaryResult } from '@/api/reports'
 import transformPrioritySummaryData from './prioritySummary.transformer'
 
 describe('transformPrioritySummaryData', () => {
-  it('creates one chart per TSP number and places unassigned events on the baseline', () => {
+  it('creates a combined chart before one chart per TSP number and places unassigned events on the baseline', () => {
     const response: PrioritySummaryResult = {
       start: '2026-04-07T08:00:00Z',
       end: '2026-04-07T08:10:00Z',
@@ -37,7 +37,7 @@ describe('transformPrioritySummaryData', () => {
 
     const transformed = transformPrioritySummaryData(response)
 
-    expect(transformed.data.charts).toHaveLength(2)
+    expect(transformed.data.charts).toHaveLength(3)
 
     const titles = transformed.data.charts.map((chartWrapper) => {
       const title = chartWrapper.chart.title
@@ -45,9 +45,19 @@ describe('transformPrioritySummaryData', () => {
     })
 
     expect(titles).toEqual([
+      'Priority Summary',
       'Priority Summary - TSP 1',
       'Priority Summary - TSP 2',
     ])
+
+    const combinedSeries = transformed.data.charts[0].chart.series
+    expect(Array.isArray(combinedSeries)).toBe(true)
+
+    const combinedRequestBar = combinedSeries?.find(
+      (entry) => entry.type === 'bar' && entry.stack == null
+    )
+
+    expect(combinedRequestBar?.data).toHaveLength(2)
 
     for (const chartWrapper of transformed.data.charts) {
       const series = chartWrapper.chart.series
@@ -67,13 +77,13 @@ describe('transformPrioritySummaryData', () => {
       expect(earlyGreen?.zlevel).toBe(1)
       expect(extendGreen?.zlevel).toBe(1)
       expect(earlyGreen?.itemStyle).toMatchObject({
-        borderColor: '#FFFFFF',
-        borderWidth: 2,
+        borderColor: '#000000',
+        borderWidth: 1,
         opacity: 1,
       })
       expect(extendGreen?.itemStyle).toMatchObject({
-        borderColor: '#FFFFFF',
-        borderWidth: 2,
+        borderColor: '#000000',
+        borderWidth: 1,
         opacity: 1,
       })
     }
