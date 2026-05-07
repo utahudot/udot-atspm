@@ -120,7 +120,16 @@ const CustomSelect = ({
   }
 
   return (
-    <FormControl fullWidth={fullWidth} error={error} sx={{ height: '56px' }}>
+    <FormControl
+      fullWidth={fullWidth}
+      error={error}
+      margin="dense"
+      sx={{
+        '& .MuiInputBase-root': {
+          minHeight: 56,
+        },
+      }}
+    >
       {!hideLabel && <InputLabel htmlFor={labelId}>{label}</InputLabel>}
       <Select
         inputProps={{ id: labelId }}
@@ -140,7 +149,7 @@ const CustomSelect = ({
       >
         {renderOptions()}
       </Select>
-      <FormHelperText>{helperText}</FormHelperText>
+      {helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
     </FormControl>
   )
 }
