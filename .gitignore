@@ -66,6 +66,7 @@ dkms.conf
 *.vbproj.user
 
 # Local configuration files
+.claude/
 **/Properties/launchSettings.json
 appsettings.Development.json
 appsettings.Local.json
