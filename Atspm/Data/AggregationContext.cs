@@ -102,9 +102,9 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<CompressedAggregations<SignalEventCountAggregation>> SignalEventCountAggregations { get; set; }
 
         /// <summary>
-        /// <inheritdoc cref="SignalPlanAggregation"/>
+        /// <inheritdoc cref="SignalTimingPlan"/>
         /// </summary>
-        public virtual DbSet<CompressedAggregations<SignalPlanAggregation>> SignalPlanAggregations { get; set; }
+        public virtual DbSet<SignalTimingPlan> SignalTimingPlans { get; set; }
 
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -139,6 +139,32 @@ namespace Utah.Udot.Atspm.Data
 
                 builder.Property(e => e.Data)
                 .HasConversion<CompressedListConverter<AggregationModelBase>, AbstractListComparer<AggregationModelBase>>();
+            });
+
+            modelBuilder.Entity<SignalTimingPlan>(builder =>
+            {
+                builder.ToTable(t => t.HasComment("Signal Timing Plans"));
+
+                builder.HasKey(e => new { e.LocationIdentifier, e.PlanNumber, e.Start });
+
+                builder.Property(e => e.LocationIdentifier)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                var property = builder.Property(s => s.Valid);
+
+                if (this.Database.IsNpgsql())
+                {
+                    property.HasComputedColumnSql("(\"End\" > \"Start\")", stored: true);
+                }
+                else if (this.Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+                {
+                    property.HasComputedColumnSql("\"End\" > \"Start\"");
+                }
+                else
+                {
+                    property.HasComputedColumnSql("[End] > [Start]");
+                }
             });
 
             OnModelCreatingPartial(modelBuilder);

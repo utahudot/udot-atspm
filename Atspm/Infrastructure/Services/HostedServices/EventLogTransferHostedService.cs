@@ -105,6 +105,53 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 Console.WriteLine($"batch complete: {i + 1}");
             }
+
+
+
+            //// 1. Define the blocks ONCE outside the loop
+            //var dataflowOptions = new ExecutionDataflowBlockOptions
+            //{
+            //    // This allows multiple batches to be read/written at the same time
+            //    MaxDegreeOfParallelism = 4,
+            //    EnsureOrdered = true
+            //};
+
+            //var readBlock = new TransformBlock<int, IEnumerable<CompressedEventLogBase>>(async batchIndex =>
+            //{
+            //    using var s = scope.ServiceProvider.GetService<IServiceScopeFactory>().CreateAsyncScope();
+            //    using var sourceContext = s.ServiceProvider.GetKeyedService<EventLogContext>(nameof(EventLogTransferOptions.SourceRepository));
+
+            //    return await sourceContext.CompressedEvents
+            //        .AsNoTracking()
+            //        .Where(w => w.Start >= _options.Value.StartDate && w.End <= _options.Value.EndDate)
+            //        .OrderBy(o => o.LocationIdentifier).ThenBy(o => o.DeviceId) // ... etc
+            //        .Skip(batchIndex * batchSize)
+            //        .Take(batchSize)
+            //        .ToListAsync(cancellationToken);
+            //}, dataflowOptions);
+
+            //var writeBlock = new ActionBlock<IEnumerable<CompressedEventLogBase>>(async batch =>
+            //{
+            //    using var s = scope.ServiceProvider.GetService<IServiceScopeFactory>().CreateAsyncScope();
+            //    using var destContext = s.ServiceProvider.GetKeyedService<EventLogContext>(nameof(EventLogTransferOptions.DestinationRepository));
+
+            //    await destContext.CompressedEvents.AddRangeAsync(batch);
+            //    await destContext.SaveChangesAsync(cancellationToken);
+            //}, dataflowOptions);
+
+            //// 2. Link them
+            //readBlock.LinkTo(writeBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+            //// 3. Push all work into the pipeline without awaiting inside the loop
+            //int totalBatches = (int)Math.Ceiling((double)total / batchSize);
+            //for (int i = 0; i < totalBatches; i++)
+            //{
+            //    await readBlock.SendAsync(i, cancellationToken);
+            //}
+
+            //// 4. Signal completion and await the WHOLE thing once
+            //readBlock.Complete();
+            //await writeBlock.Completion;
         }
     }
 }

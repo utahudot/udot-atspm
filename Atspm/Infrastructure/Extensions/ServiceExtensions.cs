@@ -115,7 +115,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             string[] contexts = { nameof(ConfigContext), nameof(AggregationContext), nameof(EventLogContext), nameof(IdentityContext) };
             foreach (var contextName in contexts)
             {
-                services.Configure<DatabaseConfiguration>(contextName, host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"));
+                services.AddOptions<DatabaseConfiguration>(contextName)
+                    .Bind(host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"))
+                    .ValidateDataAnnotations()
+                    .ValidateOnStart();
             }
 
             services.AddDbContext<ConfigContext>((s, db) =>
@@ -213,7 +216,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IPreemptionAggregationRepository, PreemptionAggregationEFRepository>();
             services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
             services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
-            services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
+            services.AddScoped<ISignalTimingPlanRepository, SignalTimingPlanEFRepository>();
 
             return services;
         }
