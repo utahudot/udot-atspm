@@ -251,7 +251,15 @@ namespace Identity.Controllers
             //HACK: FIX THIS
 
             var message = new MailMessage(identityOptions.Value.DefaultEmailAddress, model.Email, "Reset Password", $"<p>Please reset your password by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
-            await emailService.SendEmailAsync(message);
+            var emailSent = await emailService.SendEmailAsync(message);
+
+            if (!emailSent)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    Message = "Password reset email could not be sent because no email service is configured."
+                });
+            }
 
             //await emailService.SendEmailAsync(
             //    model.Email,
