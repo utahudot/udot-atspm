@@ -41,8 +41,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch, CancellationToken cancellationToken = default)
         {
-            Console.WriteLine($"options: {_options.Value}");
-
             var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
             var scopeFactory = scope.ServiceProvider.GetService<IServiceScopeFactory>();
 

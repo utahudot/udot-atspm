@@ -149,6 +149,12 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public ProcessingBatchSizeOption() : base("--processing-batch-size", "Batch size of event logs to save to repository")
         {
             AddAlias("-pbs");
+
+            AddValidator(r =>
+            {
+                var value = r.GetValueForOption(this);
+                if (value > 1000000) r.ErrorMessage = "It is not recommended to set Processing Batch Size greater than 1,000,000";
+            });
         }
     }
 
@@ -157,6 +163,12 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public WorkflowBatchSizeOption() : base("--workflow-batch-size", "Batch size of workflow instances to run")
         {
             AddAlias("-wbs");
+
+            AddValidator(r =>
+            {
+                var value = r.GetValueForOption(this);
+                if (value > 100) r.ErrorMessage = "It is not recommended to set WorkflowBatchSize greater than 100";
+            });
         }
     }
 

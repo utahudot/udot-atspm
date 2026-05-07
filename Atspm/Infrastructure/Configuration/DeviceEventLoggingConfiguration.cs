@@ -27,6 +27,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <summary>
         /// The local directory path where event logs are temporarily stored or archived.
         /// </summary>
+        [Required]
+        [StringLength(512)]
         public string Path { get; set; } = System.IO.Path.GetTempPath();
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// Potato Analogy: This is the size of the **basket** at the end of the table. 
         /// Once the basket hits this limit, it is carried to the cellar (Database) to be stored.
         /// </remarks>
+        [Range(1, 1000000, ErrorMessage = "It is not recommended to set Processing Batch Size greater than 1,000,000")]
         public int ProcessingBatchSize { get; set; } = 50000;
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// Potato Analogy: This is the number of **people peeling potatoes** at a single table. 
         /// More people peel the table's pile faster, but too many may bump elbows (CPU contention).
         /// </remarks>
+        [Range(1, 100, ErrorMessage = "It is not recommended to set Parallel Processes than 100")]
         public int ParallelProcesses { get; set; } = 5;
 
         /// <summary>
@@ -54,6 +58,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// Potato Analogy: This is the total number of **tables** set up in the kitchen. 
         /// Each table operates independently with its own set of peelers.
         /// </remarks>
+        [Range(1, 100, ErrorMessage = "It is not recommended to set WorkflowBatchSize greater than 100")]
         public int WorkflowBatchSize { get; set; } = 20;
 
         /// <summary>
@@ -68,15 +73,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <summary>
         /// The time window (in hours) used to buffer event queries, ensuring overlapping plans are captured for comparison.
         /// </summary>
-        [Range(0, 72, ErrorMessage = "The offset hours cannot exceed 72 hours.")]
+        [Range(0, 72, ErrorMessage = "The offset hours cannot exceed 72 hours")]
         public int SignalTimingPlanOffsetHours { get; set; } = 12;
 
         /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
         public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new();
-
-        public override string ToString()
-        {
-            return $"Path: {Path}, ProcessingBatchSize: {ProcessingBatchSize}, ParallelProcesses: {ParallelProcesses}, WorkflowBatchSize: {WorkflowBatchSize}, DevicesBatchSize: {DevicesBatchSize}, SignalTimingPlanOffsetHours: {SignalTimingPlanOffsetHours}";
-        }
     }
 }
