@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for Data - %Namespace%/ApproachSpeedAggregationConfiguration.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories/SignalTimingPlanEFRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,19 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
 
-namespace Utah.Udot.Atspm.Data.Configuration
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
-    public class ApproachSpeedAggregationConfiguration : IEntityTypeConfiguration<ApproachSpeedAggregation>
+    ///<inheritdoc cref="ISignalTimingPlanRepository"/>
+    public class SignalTimingPlanEFRepository : ATSPMRepositoryEFBase<SignalTimingPlan>, ISignalTimingPlanRepository
     {
-        public void Configure(EntityTypeBuilder<ApproachSpeedAggregation> builder)
-        {
-            builder.HasComment("Approach Speed Aggregation");
+        ///<inheritdoc/>
+        public SignalTimingPlanEFRepository(AggregationContext db, ILogger<SignalTimingPlanEFRepository> log) : base(db, log) { }
 
-            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.ApproachId });
+        #region ISignalTimingPlanRepository
 
-            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
-        }
+        #endregion
     }
 }

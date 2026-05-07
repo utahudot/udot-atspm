@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Repositories.AggregationRepositories/ISignalPlanAggregationRepository.cs
+// for Application - Utah.Udot.Atspm.Repositories.AggregationRepositories/ISignalTimingPlanRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.NetStandardToolkit.Services;
+
 namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
 {
     /// <summary>
-    /// Signal plan aggregation repository
+    /// Signal timing plan repository
     /// </summary>
-    public interface ISignalPlanAggregationRepository : IAggregationRepository<SignalPlanAggregation> { }
+    public interface ISignalTimingPlanRepository : IAsyncRepository<SignalTimingPlan> { }
 
 }

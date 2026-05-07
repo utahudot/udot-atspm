@@ -20,6 +20,7 @@ using Microsoft.Data.Sqlite;
 using MySqlConnector;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
@@ -32,7 +33,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <summary>
         /// Gets or sets the type of database provider (e.g., "sqlserver", "postgresql", "mysql", "oracle", "sqlite").
         /// </summary>
-        public string DBType { get; set; } = string.Empty;
+        [AllowedValues("sqlserver", "postgresql", "mysql", "oracle", "sqlite", "in-memory", ErrorMessage = "Invalid database type")]
+        public string DBType { get; set; } = "in-memory";
 
         /// <summary>
         /// Gets or sets the network address or hostname of the database server.
