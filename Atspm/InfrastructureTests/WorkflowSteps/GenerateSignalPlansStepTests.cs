@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.ATSPM.Infrastructure.Workflows;
+using Utah.Udot.Atspm.Infrastructure.WorkflowSteps;
 using Xunit;
 using Xunit.Abstractions;
 
