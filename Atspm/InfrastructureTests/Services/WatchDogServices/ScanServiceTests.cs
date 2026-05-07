@@ -36,7 +36,7 @@ using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Xunit;
 
-namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
+namespace Utah.Udot.ATSPM.InfrastructureTests.Services.WatchDogServices
 {
     public class ScanServiceTests
     {
