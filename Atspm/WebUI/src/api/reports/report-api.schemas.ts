@@ -1380,6 +1380,13 @@ export interface PrioritySummaryOptions {
   end?: string;
 }
 
+export interface PrioritySummaryUnassignedEventsDto {
+  /** @nullable */
+  earlyGreen?: string[] | null;
+  /** @nullable */
+  extendGreen?: string[] | null;
+}
+
 export interface PrioritySummaryResult {
   start?: string;
   end?: string;

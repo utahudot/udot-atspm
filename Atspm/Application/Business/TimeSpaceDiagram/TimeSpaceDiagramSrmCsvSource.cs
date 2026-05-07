@@ -36,6 +36,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public List<SrmEntityTrackPoint> Points { get; set; } = new();
         public string StartingIntersection { get; set; } = string.Empty;
         public DirectionTypes HeadingDirection { get; set; } = DirectionTypes.NA;
+        internal List<DirectionTypes> HeadingDirectionCandidates { get; set; } = new();
     }
 
     internal class ParsedSrmRow
@@ -58,6 +59,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
     public class TimeSpaceDiagramSrmCsvSource : ITimeSpaceDiagramSrmSource
     {
         private readonly ILocationRepository locationRepository;
+        private const double MinimumGeometryHeadingDistanceFeet = 10.0;
 
         public TimeSpaceDiagramSrmCsvSource(ILocationRepository locationRepository)
         {
@@ -153,13 +155,19 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                         : retainedRows
                             .Select(r => r.IntersectionId)
                             .FirstOrDefault(id => !string.IsNullOrWhiteSpace(id)) ?? string.Empty;
+                    var headingDirectionCandidates = GetTrackHeadingDirectionCandidates(
+                        retainedRows,
+                        retainedAnchorIndex);
 
                     tracks.Add(new SrmEntityTrack
                     {
                         EntityId = group.Key,
-                        Points = points.Take(500).ToList(),
+                        Points = points.ToList(),
                         StartingIntersection = startingIntersection,
-                        HeadingDirection = GetTrackHeadingDirection(retainedRows)
+                        HeadingDirection = headingDirectionCandidates.Count > 0
+                            ? headingDirectionCandidates[0]
+                            : DirectionTypes.NA,
+                        HeadingDirectionCandidates = headingDirectionCandidates
                     });
                 }
             }
@@ -251,34 +259,35 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             }
 
             var closestRow = rows[closestIndex];
-            if (!closestRow.MessageRank.HasValue)
-            {
-                return 0;
-            }
-
-            if (closestRow.MessageRank.Value <= 1)
-            {
-                return closestIndex;
-            }
-
-            for (var i = closestIndex; i >= 0; i--)
-            {
-                var row = rows[i];
-                if (!string.Equals(
-                    row.IntersectionId,
+            var segmentStart = closestIndex;
+            while (segmentStart > 0 &&
+                string.Equals(
+                    rows[segmentStart - 1].IntersectionId,
                     closestRow.IntersectionId,
                     StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
+            {
+                segmentStart--;
+            }
 
-                if (row.MessageRank == 1)
+            var segmentEnd = closestIndex;
+            while (segmentEnd + 1 < rows.Count &&
+                string.Equals(
+                    rows[segmentEnd + 1].IntersectionId,
+                    closestRow.IntersectionId,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                segmentEnd++;
+            }
+
+            for (var i = segmentStart; i <= segmentEnd; i++)
+            {
+                if (rows[i].MessageRank == 1)
                 {
                     return i;
                 }
             }
 
-            return closestIndex;
+            return segmentStart;
         }
 
         private static List<double> GetCumulativeDistances(IReadOnlyList<ParsedSrmRow> rows)
@@ -326,12 +335,12 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
 
                 using (contentStream)
                 {
-                using var reader = new StreamReader(contentStream);
-                return ParseRowsFromReader(
-                    reader,
-                    startLocal,
-                    endLocal,
-                    allowedIntersectionIds);
+                    using var reader = new StreamReader(contentStream);
+                    return ParseRowsFromReader(
+                        reader,
+                        startLocal,
+                        endLocal,
+                        allowedIntersectionIds);
                 }
             }
             catch (FormatException)
@@ -385,6 +394,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             var dateIndex = FindHeaderIndex(headers, "DATE");
             var timeIndex = FindHeaderIndex(headers, "TIME", "TMSTP");
             var messageRankIndex = FindHeaderIndex(headers, "MSGRANK");
+            var vehicleRoleIndex = FindHeaderIndex(headers, "VEHICLEROLE");
 
             if (latIndex == -1 || lonIndex == -1)
             {
@@ -402,6 +412,11 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                 }
 
                 var cols = SplitDelimitedLine(line, delimiter).Select(CleanCell).ToList();
+                if (!IsTransitVehicleRole(cols, vehicleRoleIndex))
+                {
+                    continue;
+                }
+
                 if (latIndex >= cols.Count || lonIndex >= cols.Count)
                 {
                     continue;
@@ -668,6 +683,19 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             return -1;
         }
 
+        private static bool IsTransitVehicleRole(List<string> cols, int vehicleRoleIndex)
+        {
+            if (vehicleRoleIndex == -1 || vehicleRoleIndex >= cols.Count)
+            {
+                return false;
+            }
+
+            return string.Equals(
+                cols[vehicleRoleIndex],
+                "transit",
+                StringComparison.OrdinalIgnoreCase);
+        }
+
         private static string NormalizeHeader(string value)
         {
             return new string(value
@@ -845,22 +873,153 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             return DirectionTypes.NW;
         }
 
-        private static DirectionTypes GetTrackHeadingDirection(IReadOnlyList<ParsedSrmRow> rows)
+        private static List<DirectionTypes> GetTrackHeadingDirectionCandidates(
+            IReadOnlyList<ParsedSrmRow> retainedRows,
+            int retainedAnchorIndex)
+        {
+            var candidates = new List<DirectionTypes>();
+            if (retainedRows.Count == 0)
+            {
+                return candidates;
+            }
+
+            var startingIntersectionRows = GetIntersectionSegmentRows(
+                retainedRows,
+                retainedAnchorIndex);
+
+            AddHeadingDirectionCandidates(
+                candidates,
+                GetHeadingDirectionsByFrequency(startingIntersectionRows));
+            AddHeadingDirectionCandidates(
+                candidates,
+                GetHeadingDirectionsByFrequency(retainedRows));
+            AddHeadingDirectionCandidate(
+                candidates,
+                GetGeometryHeadingDirection(startingIntersectionRows));
+            AddHeadingDirectionCandidate(
+                candidates,
+                GetGeometryHeadingDirection(retainedRows));
+
+            return candidates;
+        }
+
+        private static List<ParsedSrmRow> GetIntersectionSegmentRows(
+            IReadOnlyList<ParsedSrmRow> rows,
+            int anchorIndex)
         {
             if (rows.Count == 0)
+            {
+                return new List<ParsedSrmRow>();
+            }
+
+            var safeAnchorIndex = Math.Min(Math.Max(anchorIndex, 0), rows.Count - 1);
+            var anchorIntersection = rows[safeAnchorIndex].IntersectionId;
+            var segmentStart = safeAnchorIndex;
+
+            while (segmentStart > 0 &&
+                string.Equals(
+                    rows[segmentStart - 1].IntersectionId,
+                    anchorIntersection,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                segmentStart--;
+            }
+
+            var segmentEnd = safeAnchorIndex;
+            while (segmentEnd + 1 < rows.Count &&
+                string.Equals(
+                    rows[segmentEnd + 1].IntersectionId,
+                    anchorIntersection,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                segmentEnd++;
+            }
+
+            return rows
+                .Skip(segmentStart)
+                .Take(segmentEnd - segmentStart + 1)
+                .ToList();
+        }
+
+        private static void AddHeadingDirectionCandidates(
+            List<DirectionTypes> candidates,
+            IEnumerable<DirectionTypes> directions)
+        {
+            foreach (var direction in directions)
+            {
+                AddHeadingDirectionCandidate(candidates, direction);
+            }
+        }
+
+        private static void AddHeadingDirectionCandidate(
+            List<DirectionTypes> candidates,
+            DirectionTypes direction)
+        {
+            if (direction == DirectionTypes.NA || candidates.Contains(direction))
+            {
+                return;
+            }
+
+            candidates.Add(direction);
+        }
+
+        private static List<DirectionTypes> GetHeadingDirectionsByFrequency(IReadOnlyList<ParsedSrmRow> rows)
+        {
+            if (rows.Count == 0)
+            {
+                return new List<DirectionTypes>();
+            }
+
+            return rows
+                .Where(r => r.HeadingDirection != DirectionTypes.NA)
+                .GroupBy(r => r.HeadingDirection)
+                .OrderByDescending(g => g.Count())
+                .ThenBy(g => g.Min(r => r.SourceOrder))
+                .Select(g => g.Key)
+                .ToList();
+        }
+
+        private static DirectionTypes GetGeometryHeadingDirection(IReadOnlyList<ParsedSrmRow> rows)
+        {
+            if (rows.Count < 2)
             {
                 return DirectionTypes.NA;
             }
 
-            // Use most frequent non-unknown row direction for the entity track.
-            var heading = rows
-                .Where(r => r.HeadingDirection != DirectionTypes.NA)
-                .GroupBy(r => r.HeadingDirection)
-                .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
-                .FirstOrDefault();
+            var start = rows[0];
+            for (var i = 1; i < rows.Count; i++)
+            {
+                var distance = Haversine(start.Lat, start.Lon, rows[i].Lat, rows[i].Lon);
+                if (distance >= MinimumGeometryHeadingDistanceFeet)
+                {
+                    return GetHeadingDirection(BearingDegrees(start.Lat, start.Lon, rows[i].Lat, rows[i].Lon));
+                }
+            }
 
-            return heading == default ? DirectionTypes.NA : heading;
+            return DirectionTypes.NA;
+        }
+
+        private static double BearingDegrees(double lat1, double lon1, double lat2, double lon2)
+        {
+            static double ToRad(double d) => d * Math.PI / 180.0;
+            static double ToDeg(double r) => r * 180.0 / Math.PI;
+
+            var phi1 = ToRad(lat1);
+            var phi2 = ToRad(lat2);
+            var dLon = ToRad(lon2 - lon1);
+
+            var y = Math.Sin(dLon) * Math.Cos(phi2);
+            var x = Math.Cos(phi1) * Math.Sin(phi2) -
+                Math.Sin(phi1) * Math.Cos(phi2) * Math.Cos(dLon);
+
+            var bearing = ToDeg(Math.Atan2(y, x));
+            bearing %= 360.0;
+            if (bearing < 0)
+            {
+                bearing += 360.0;
+            }
+
+            return bearing;
         }
 
         private static double Haversine(double lat1, double lon1, double lat2, double lon2)
