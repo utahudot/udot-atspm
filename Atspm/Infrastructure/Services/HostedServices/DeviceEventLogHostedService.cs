@@ -41,19 +41,29 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch, CancellationToken cancellationToken = default)
         {
+            Console.WriteLine($"options: {_options.Value}");
+
             var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
             var scopeFactory = scope.ServiceProvider.GetService<IServiceScopeFactory>();
 
             var devices = repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions);
-            var total = await devices.CountAsync(cancellationToken);
+            int targetInstances = _options.Value.WorkflowBatchSize;
 
-            int targetInstances = 20;
-            int devicesPerWorkflow = (int)Math.Ceiling((double)total / targetInstances);
-            int actualInstances = total < targetInstances ? total : targetInstances;
+            int devicesPerWorkflow;
+
+            if (_options.Value.DevicesBatchSize > 0)
+            {
+                devicesPerWorkflow = _options.Value.DevicesBatchSize.Value;
+            }
+            else
+            {
+                var totalDevices = await devices.CountAsync(cancellationToken);
+                devicesPerWorkflow = (int)Math.Ceiling((double)totalDevices / targetInstances);
+            }
 
             Func<DeviceEventLogWorkflow> workflowFactory = () => new DeviceEventLogWorkflow(scopeFactory, _options.Value.ProcessingBatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-            await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, actualInstances, cancellationToken);
+            await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, targetInstances, cancellationToken);
         }
     }
 }

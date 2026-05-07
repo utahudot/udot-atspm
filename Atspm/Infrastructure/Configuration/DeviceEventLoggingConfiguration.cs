@@ -15,41 +15,68 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
-    /// Configuration options for device event logging
+    /// Configuration options for the Device Event Logging background service.
     /// </summary>
     public class DeviceEventLoggingConfiguration
     {
         /// <summary>
-        /// Path to local directory where event logs are saved
+        /// The local directory path where event logs are temporarily stored or archived.
         /// </summary>
         public string Path { get; set; } = System.IO.Path.GetTempPath();
 
         /// <summary>
-        /// Batch size of <see cref="EventLogModelBase"/> chunks to to upsert to the repository at a time.
+        /// The number of processed events to accumulate before performing a bulk database upsert.
         /// </summary>
+        /// <remarks>
+        /// Potato Analogy: This is the size of the **basket** at the end of the table. 
+        /// Once the basket hits this limit, it is carried to the cellar (Database) to be stored.
+        /// </remarks>
         public int ProcessingBatchSize { get; set; } = 50000;
 
         /// <summary>
-        /// The amount of parallel process to run in the workflow
+        /// The number of concurrent threads processing items within a single workflow instance.
         /// </summary>
+        /// <remarks>
+        /// Potato Analogy: This is the number of **people peeling potatoes** at a single table. 
+        /// More people peel the table's pile faster, but too many may bump elbows (CPU contention).
+        /// </remarks>
         public int ParallelProcesses { get; set; } = 5;
 
+        /// <summary>
+        /// The maximum number of workflow instances to run concurrently.
+        /// </summary>
+        /// <remarks>
+        /// Potato Analogy: This is the total number of **tables** set up in the kitchen. 
+        /// Each table operates independently with its own set of peelers.
+        /// </remarks>
         public int WorkflowBatchSize { get; set; } = 20;
 
-        public int DevicesBatchSize { get; set; }
+        /// <summary>
+        /// The number of devices assigned to a single workflow instance. 
+        /// If null or 0, the system automatically balances the total device count across the available <see cref="WorkflowBatchSize"/>.
+        /// </summary>
+        /// <remarks>
+        /// Potato Analogy: This is the size of the **pile of potatoes** delivered to each table.
+        /// </remarks>
+        public int? DevicesBatchSize { get; set; }
 
         /// <summary>
-        /// The number of hours to look behind and ahead when querying for events to log.
-        /// This is to ensure the previous plan is pulled in so it can be merged and compared with the plans being logged.
+        /// The time window (in hours) used to buffer event queries, ensuring overlapping plans are captured for comparison.
         /// </summary>
+        [Range(0, 72, ErrorMessage = "The offset hours cannot exceed 72 hours.")]
         public int SignalTimingPlanOffsetHours { get; set; } = 12;
 
         /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
         public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new();
+
+        public override string ToString()
+        {
+            return $"Path: {Path}, ProcessingBatchSize: {ProcessingBatchSize}, ParallelProcesses: {ParallelProcesses}, WorkflowBatchSize: {WorkflowBatchSize}, DevicesBatchSize: {DevicesBatchSize}, SignalTimingPlanOffsetHours: {SignalTimingPlanOffsetHours}";
+        }
     }
 }

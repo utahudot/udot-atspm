@@ -45,8 +45,11 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddArgument(PingDeviceArg);
 
             AddGlobalOption(PathCommandOption);
-            AddGlobalOption(BatchSizeOption);
+            AddGlobalOption(ProcessingBatchSizeOption);
             AddGlobalOption(PrallelProcessesOption);
+            AddGlobalOption(WorkflowBatchSizeOption);
+            AddGlobalOption(DevicesBatchSizeOption);
+            AddGlobalOption(SignalTimingPlanOffsetHoursOption);
 
             AddGlobalOption(DeviceIdentifierOption);
             AddGlobalOption(DeviceConfigurationOption);
@@ -69,9 +72,15 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
-        public BatchSizeOption BatchSizeOption { get; set; } = new();
+        public ProcessingBatchSizeOption ProcessingBatchSizeOption { get; set; } = new();
 
         public PrallelProcessesOption PrallelProcessesOption { get; set; } = new();
+
+        public WorkflowBatchSizeOption WorkflowBatchSizeOption { get; set; } = new();
+
+        public DevicesBatchSizeOption DevicesBatchSizeOption { get; set; } = new();
+
+        public SignalTimingPlanOffsetHoursOption SignalTimingPlanOffsetHoursOption { get; set; } = new();
 
         public DeviceIncludeCommandOption DeviceIdentifierOption { get; set; } = new();
 
@@ -102,8 +111,11 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             var deviceEventLoggingConfiguration = new ModelBinder<DeviceEventLoggingConfiguration>();
 
             deviceEventLoggingConfiguration.BindMemberFromValue(b => b.Path, PathCommandOption);
-            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.ProcessingBatchSize, BatchSizeOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.ProcessingBatchSize, ProcessingBatchSizeOption);
             deviceEventLoggingConfiguration.BindMemberFromValue(b => b.ParallelProcesses, PrallelProcessesOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.WorkflowBatchSize, WorkflowBatchSizeOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.SignalTimingPlanOffsetHours, SignalTimingPlanOffsetHoursOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.DevicesBatchSize, DevicesBatchSizeOption);
 
             var deviceEventLoggingQueryOptions = new ModelBinder<DeviceEventLoggingQueryOptions>();
 
@@ -124,18 +136,49 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                 {
                     deviceEventLoggingConfiguration.UpdateInstance(a, b);
                     deviceEventLoggingQueryOptions.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
-                });
+                })
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddHostedService<DeviceEventLogHostedService>();
         }
     }
 
-    public class BatchSizeOption : Option<int>
+    public class ProcessingBatchSizeOption : Option<int>
     {
-        public BatchSizeOption() : base("--batch-size", "Batch size of event logs to save to repository")
+        public ProcessingBatchSizeOption() : base("--processing-batch-size", "Batch size of event logs to save to repository")
         {
-            AddAlias("-bs");
-            //SetDefaultValue(50000);
+            AddAlias("-pbs");
+        }
+    }
+
+    public class WorkflowBatchSizeOption : Option<int>
+    {
+        public WorkflowBatchSizeOption() : base("--workflow-batch-size", "Batch size of workflow instances to run")
+        {
+            AddAlias("-wbs");
+        }
+    }
+
+    public class DevicesBatchSizeOption : Option<int?>
+    {
+        public DevicesBatchSizeOption() : base("--device-batch-size", "Batch size of devices to feed to each workflow instance")
+        {
+            AddAlias("-dbs");
+        }
+    }
+
+    public class SignalTimingPlanOffsetHoursOption : Option<int>
+    {
+        public SignalTimingPlanOffsetHoursOption() : base("-plan-offset", "Time window (in hours) to compare existing timing plans")
+        {
+            AddAlias("-po");
+
+            AddValidator(r =>
+            {
+                var value = r.GetValueForOption(this);
+                if (value > 72) r.ErrorMessage = "The offset hours cannot exceed 72 hours";
+            });
         }
     }
 
