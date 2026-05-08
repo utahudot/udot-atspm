@@ -175,57 +175,6 @@ function transformTspChart(
       ]
     })
 
-  if (slowServiceTicks.length > 0) {
-    series.push({
-      name: 'Time to Service Start (sec)',
-      type: 'scatter',
-
-      data: slowServiceTicks.map((p) => [p.x, 100, p.sec]),
-
-      dimensions: ['time', 'y', 'sec'],
-
-      encode: {
-        x: 'time',
-        y: 'y',
-        tooltip: ['sec'],
-      },
-
-      symbol: 'rect',
-      symbolSize: (_val, params) => {
-        const v = params?.value
-        const sec = Array.isArray(v) ? Number(v[2]) : NaN
-        const h = Number.isFinite(sec) ? sec * 2.5 : 0
-        return [1.5, h]
-      },
-      symbolOffset: (_val, params) => {
-        const v = params?.value
-        const sec = Array.isArray(v) ? Number(v[2]) : NaN
-        const h = Number.isFinite(sec) ? sec : 0
-        return [0, (h * 2.5) / 2]
-      },
-      itemStyle: { color: Color.Grey },
-      legendHoverLink: false,
-      z: 20,
-      clip: false,
-
-      tooltip: {
-        valueFormatter: (v) => {
-          const n = Array.isArray(v) ? Number(v[0]) : Number(v)
-          return Number.isFinite(n) ? `${n.toFixed(1)} s` : ''
-        },
-      },
-      label: {
-        show: true,
-        position: 'top',
-        formatter: (p) => {
-          const v = Array.isArray(p?.value) ? p.value : []
-          const sec = Number(v?.[2])
-          return Number.isFinite(sec) && sec > 1 ? `${sec.toFixed(1)} s` : ''
-        },
-      },
-    })
-  }
-
   if (requestBar.length > 0) {
     series.push({
       name: 'TSP Request (112→115)',
@@ -445,7 +394,9 @@ function toUnassignedPoints(
 ): Array<[string, number, number]> {
   return (points ?? [])
     .filter(
-      (point): point is DataPointForInt & { timestamp: string; value: number } =>
+      (
+        point
+      ): point is DataPointForInt & { timestamp: string; value: number } =>
         point.timestamp != null &&
         Number.isFinite(Date.parse(point.timestamp)) &&
         point.value != null &&
