@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getPurduePhaseTerminationTestDataResponse200 = {
-  data: PhaseTerminationResult
-  status: 200
-}
-
-export type getPurduePhaseTerminationTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPurduePhaseTerminationTestDataResponseSuccess = (getPurduePhaseTerminationTestDataResponse200) & {
-  headers: Headers;
-};
-export type getPurduePhaseTerminationTestDataResponseError = (getPurduePhaseTerminationTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPurduePhaseTerminationTestDataResponse = (getPurduePhaseTerminationTestDataResponseSuccess | getPurduePhaseTerminationTestDataResponseError)
-
-export const getGetPurduePhaseTerminationTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/PurduePhaseTermination/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getPurduePhaseTerminationTestData = async ( options?: RequestInit): Promise<getPurduePhaseTerminationTestDataResponse> => {
+export const getPurduePhaseTerminationTestData = (
 
-  return reportsRequest<getPurduePhaseTerminationTestDataResponse>(getGetPurduePhaseTerminationTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PhaseTerminationResult>(
+      {url: `/api/v1/PurduePhaseTermination/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPurduePhaseTerminationTestData>>> = ({ signal }) => getPurduePhaseTerminationTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPurduePhaseTerminationTestData>>> = ({ signal }) => getPurduePhaseTerminationTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetPurduePhaseTerminationTestData<TData = Awaited<ReturnType<
 
 
 
-export type getPurduePhaseTerminationReportDataResponse200 = {
-  data: PhaseTerminationResult
-  status: 200
-}
-
-export type getPurduePhaseTerminationReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPurduePhaseTerminationReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPurduePhaseTerminationReportDataResponseSuccess = (getPurduePhaseTerminationReportDataResponse200) & {
-  headers: Headers;
-};
-export type getPurduePhaseTerminationReportDataResponseError = (getPurduePhaseTerminationReportDataResponse400 | getPurduePhaseTerminationReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPurduePhaseTerminationReportDataResponse = (getPurduePhaseTerminationReportDataResponseSuccess | getPurduePhaseTerminationReportDataResponseError)
-
-export const getGetPurduePhaseTerminationReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/PurduePhaseTermination/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getPurduePhaseTerminationReportData = async (purduePhaseTerminationOptions?: PurduePhaseTerminationOptions, options?: RequestInit): Promise<getPurduePhaseTerminationReportDataResponse> => {
+export const getPurduePhaseTerminationReportData = (
+    purduePhaseTerminationOptions?: PurduePhaseTerminationOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getPurduePhaseTerminationReportDataResponse>(getGetPurduePhaseTerminationReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      purduePhaseTerminationOptions,)
-  }
-);}
 
+      return reportsRequest<PhaseTerminationResult>(
+      {url: `/api/v1/PurduePhaseTermination/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: purduePhaseTerminationOptions, signal
+    },
+      );
+    }
 
 
 

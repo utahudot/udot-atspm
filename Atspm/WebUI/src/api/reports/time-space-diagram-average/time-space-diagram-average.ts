@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getTimeSpaceDiagramAverageTestDataResponse200 = {
-  data: TimeSpaceDiagramAveragePhaseResult[]
-  status: 200
-}
-
-export type getTimeSpaceDiagramAverageTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimeSpaceDiagramAverageTestDataResponseSuccess = (getTimeSpaceDiagramAverageTestDataResponse200) & {
-  headers: Headers;
-};
-export type getTimeSpaceDiagramAverageTestDataResponseError = (getTimeSpaceDiagramAverageTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimeSpaceDiagramAverageTestDataResponse = (getTimeSpaceDiagramAverageTestDataResponseSuccess | getTimeSpaceDiagramAverageTestDataResponseError)
-
-export const getGetTimeSpaceDiagramAverageTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/TimeSpaceDiagramAverage/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getTimeSpaceDiagramAverageTestData = async ( options?: RequestInit): Promise<getTimeSpaceDiagramAverageTestDataResponse> => {
+export const getTimeSpaceDiagramAverageTestData = (
 
-  return reportsRequest<getTimeSpaceDiagramAverageTestDataResponse>(getGetTimeSpaceDiagramAverageTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>(
+      {url: `/api/v1/TimeSpaceDiagramAverage/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>> = ({ signal }) => getTimeSpaceDiagramAverageTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramAverageTestData>>> = ({ signal }) => getTimeSpaceDiagramAverageTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetTimeSpaceDiagramAverageTestData<TData = Awaited<ReturnType
 
 
 
-export type getTimeSpaceDiagramAverageReportDataResponse200 = {
-  data: TimeSpaceDiagramAveragePhaseResult[]
-  status: 200
-}
-
-export type getTimeSpaceDiagramAverageReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getTimeSpaceDiagramAverageReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimeSpaceDiagramAverageReportDataResponseSuccess = (getTimeSpaceDiagramAverageReportDataResponse200) & {
-  headers: Headers;
-};
-export type getTimeSpaceDiagramAverageReportDataResponseError = (getTimeSpaceDiagramAverageReportDataResponse400 | getTimeSpaceDiagramAverageReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimeSpaceDiagramAverageReportDataResponse = (getTimeSpaceDiagramAverageReportDataResponseSuccess | getTimeSpaceDiagramAverageReportDataResponseError)
-
-export const getGetTimeSpaceDiagramAverageReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/TimeSpaceDiagramAverage/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getTimeSpaceDiagramAverageReportData = async (timeSpaceDiagramAverageOptions?: TimeSpaceDiagramAverageOptions, options?: RequestInit): Promise<getTimeSpaceDiagramAverageReportDataResponse> => {
+export const getTimeSpaceDiagramAverageReportData = (
+    timeSpaceDiagramAverageOptions?: TimeSpaceDiagramAverageOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getTimeSpaceDiagramAverageReportDataResponse>(getGetTimeSpaceDiagramAverageReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      timeSpaceDiagramAverageOptions,)
-  }
-);}
 
+      return reportsRequest<TimeSpaceDiagramAveragePhaseResult[]>(
+      {url: `/api/v1/TimeSpaceDiagramAverage/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramAverageOptions, signal
+    },
+      );
+    }
 
 
 

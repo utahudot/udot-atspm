@@ -57,47 +57,20 @@ type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
 
 
 
-export type getApproachVolumeTestDataResponse200 = {
-  data: ApproachVolumeResult[]
-  status: 200
-}
-
-export type getApproachVolumeTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getApproachVolumeTestDataResponseSuccess = (getApproachVolumeTestDataResponse200) & {
-  headers: Headers;
-};
-export type getApproachVolumeTestDataResponseError = (getApproachVolumeTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getApproachVolumeTestDataResponse = (getApproachVolumeTestDataResponseSuccess | getApproachVolumeTestDataResponseError)
-
-export const getGetApproachVolumeTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/ApproachVolume/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getApproachVolumeTestData = async ( options?: RequestInit): Promise<getApproachVolumeTestDataResponse> => {
+export const getApproachVolumeTestData = (
 
-  return reportsRequest<getApproachVolumeTestDataResponse>(getGetApproachVolumeTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<ApproachVolumeResult[]>(
+      {url: `/api/v1/ApproachVolume/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -118,7 +91,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApproachVolumeTestData>>> = ({ signal }) => getApproachVolumeTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApproachVolumeTestData>>> = ({ signal }) => getApproachVolumeTestData(signal);
 
 
 
@@ -152,53 +125,22 @@ export function useGetApproachVolumeTestData<TData = Awaited<ReturnType<typeof g
 
 
 
-export type getApproachVolumeReportDataResponse200 = {
-  data: ApproachVolumeResult[]
-  status: 200
-}
-
-export type getApproachVolumeReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getApproachVolumeReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getApproachVolumeReportDataResponseSuccess = (getApproachVolumeReportDataResponse200) & {
-  headers: Headers;
-};
-export type getApproachVolumeReportDataResponseError = (getApproachVolumeReportDataResponse400 | getApproachVolumeReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getApproachVolumeReportDataResponse = (getApproachVolumeReportDataResponseSuccess | getApproachVolumeReportDataResponseError)
-
-export const getGetApproachVolumeReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/ApproachVolume/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getApproachVolumeReportData = async (approachVolumeOptions?: NonReadonly<ApproachVolumeOptions>, options?: RequestInit): Promise<getApproachVolumeReportDataResponse> => {
+export const getApproachVolumeReportData = (
+    approachVolumeOptions?: NonReadonly<ApproachVolumeOptions>,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getApproachVolumeReportDataResponse>(getGetApproachVolumeReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      approachVolumeOptions,)
-  }
-);}
 
+      return reportsRequest<ApproachVolumeResult[]>(
+      {url: `/api/v1/ApproachVolume/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: approachVolumeOptions, signal
+    },
+      );
+    }
 
 
 

@@ -25,50 +25,19 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getWatchDogDashboardDashboardGroupResponse200 = {
-  data: WatchDogIssueTypeGroup
-  status: 200
-}
-
-export type getWatchDogDashboardDashboardGroupResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getWatchDogDashboardDashboardGroupResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getWatchDogDashboardDashboardGroupResponseSuccess = (getWatchDogDashboardDashboardGroupResponse200) & {
-  headers: Headers;
-};
-export type getWatchDogDashboardDashboardGroupResponseError = (getWatchDogDashboardDashboardGroupResponse400 | getWatchDogDashboardDashboardGroupResponse406) & {
-  headers: Headers;
-};
-
-export type getWatchDogDashboardDashboardGroupResponse = (getWatchDogDashboardDashboardGroupResponseSuccess | getWatchDogDashboardDashboardGroupResponseError)
-
-export const getGetWatchDogDashboardDashboardGroupUrl = () => {
+export const getWatchDogDashboardDashboardGroup = (
+    watchDogDashboardOptions?: WatchDogDashboardOptions,
+ signal?: AbortSignal
+) => {
 
 
-
-
-  return `/api/v1/WatchDogDashboard/getDashboardGroup`
-}
-
-export const getWatchDogDashboardDashboardGroup = async (watchDogDashboardOptions?: WatchDogDashboardOptions, options?: RequestInit): Promise<getWatchDogDashboardDashboardGroupResponse> => {
-
-  return reportsRequest<getWatchDogDashboardDashboardGroupResponse>(getGetWatchDogDashboardDashboardGroupUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      watchDogDashboardOptions,)
-  }
-);}
-
+      return reportsRequest<WatchDogIssueTypeGroup>(
+      {url: `/api/v1/WatchDogDashboard/getDashboardGroup`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: watchDogDashboardOptions, signal
+    },
+      );
+    }
 
 
 

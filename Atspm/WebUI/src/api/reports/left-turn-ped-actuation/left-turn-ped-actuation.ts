@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getLeftTurnPedActuationTestDataResponse200 = {
-  data: PedActuationResult
-  status: 200
-}
-
-export type getLeftTurnPedActuationTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnPedActuationTestDataResponseSuccess = (getLeftTurnPedActuationTestDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnPedActuationTestDataResponseError = (getLeftTurnPedActuationTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnPedActuationTestDataResponse = (getLeftTurnPedActuationTestDataResponseSuccess | getLeftTurnPedActuationTestDataResponseError)
-
-export const getGetLeftTurnPedActuationTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnPedActuation/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getLeftTurnPedActuationTestData = async ( options?: RequestInit): Promise<getLeftTurnPedActuationTestDataResponse> => {
+export const getLeftTurnPedActuationTestData = (
 
-  return reportsRequest<getLeftTurnPedActuationTestDataResponse>(getGetLeftTurnPedActuationTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PedActuationResult>(
+      {url: `/api/v1/LeftTurnPedActuation/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnPedActuationTestData>>> = ({ signal }) => getLeftTurnPedActuationTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnPedActuationTestData>>> = ({ signal }) => getLeftTurnPedActuationTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetLeftTurnPedActuationTestData<TData = Awaited<ReturnType<ty
 
 
 
-export type getLeftTurnPedActuationReportDataResponse200 = {
-  data: PedActuationResult
-  status: 200
-}
-
-export type getLeftTurnPedActuationReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLeftTurnPedActuationReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnPedActuationReportDataResponseSuccess = (getLeftTurnPedActuationReportDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnPedActuationReportDataResponseError = (getLeftTurnPedActuationReportDataResponse400 | getLeftTurnPedActuationReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnPedActuationReportDataResponse = (getLeftTurnPedActuationReportDataResponseSuccess | getLeftTurnPedActuationReportDataResponseError)
-
-export const getGetLeftTurnPedActuationReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnPedActuation/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getLeftTurnPedActuationReportData = async (pedActuationOptions?: PedActuationOptions, options?: RequestInit): Promise<getLeftTurnPedActuationReportDataResponse> => {
+export const getLeftTurnPedActuationReportData = (
+    pedActuationOptions?: PedActuationOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getLeftTurnPedActuationReportDataResponse>(getGetLeftTurnPedActuationReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      pedActuationOptions,)
-  }
-);}
 
+      return reportsRequest<PedActuationResult>(
+      {url: `/api/v1/LeftTurnPedActuation/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: pedActuationOptions, signal
+    },
+      );
+    }
 
 
 

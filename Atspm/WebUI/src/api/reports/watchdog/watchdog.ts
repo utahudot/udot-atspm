@@ -30,37 +30,17 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getWatchdogIssueTypesResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
+export const getWatchdogIssueTypes = (
 
-;
-export type getWatchdogIssueTypesResponseError = (getWatchdogIssueTypesResponse406) & {
-  headers: Headers;
-};
-
-export type getWatchdogIssueTypesResponse = (getWatchdogIssueTypesResponseError)
-
-export const getGetWatchdogIssueTypesUrl = () => {
+ signal?: AbortSignal
+) => {
 
 
-
-
-  return `/api/v1/Watchdog/GetIssueTypes`
-}
-
-export const getWatchdogIssueTypes = async ( options?: RequestInit): Promise<getWatchdogIssueTypesResponse> => {
-
-  return reportsRequest<getWatchdogIssueTypesResponse>(getGetWatchdogIssueTypesUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+      return reportsRequest<unknown>(
+      {url: `/api/v1/Watchdog/GetIssueTypes`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -81,7 +61,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWatchdogIssueTypes>>> = ({ signal }) => getWatchdogIssueTypes({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWatchdogIssueTypes>>> = ({ signal }) => getWatchdogIssueTypes(signal);
 
 
 
@@ -112,47 +92,20 @@ export function useGetWatchdogIssueTypes<TData = Awaited<ReturnType<typeof getWa
 
 
 
-export type getWatchdogTestDataResponse200 = {
-  data: WatchDogResult
-  status: 200
-}
-
-export type getWatchdogTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getWatchdogTestDataResponseSuccess = (getWatchdogTestDataResponse200) & {
-  headers: Headers;
-};
-export type getWatchdogTestDataResponseError = (getWatchdogTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getWatchdogTestDataResponse = (getWatchdogTestDataResponseSuccess | getWatchdogTestDataResponseError)
-
-export const getGetWatchdogTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/Watchdog/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getWatchdogTestData = async ( options?: RequestInit): Promise<getWatchdogTestDataResponse> => {
+export const getWatchdogTestData = (
 
-  return reportsRequest<getWatchdogTestDataResponse>(getGetWatchdogTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<WatchDogResult>(
+      {url: `/api/v1/Watchdog/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -173,7 +126,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWatchdogTestData>>> = ({ signal }) => getWatchdogTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWatchdogTestData>>> = ({ signal }) => getWatchdogTestData(signal);
 
 
 
@@ -207,53 +160,22 @@ export function useGetWatchdogTestData<TData = Awaited<ReturnType<typeof getWatc
 
 
 
-export type getWatchdogReportDataResponse200 = {
-  data: WatchDogResult
-  status: 200
-}
-
-export type getWatchdogReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getWatchdogReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getWatchdogReportDataResponseSuccess = (getWatchdogReportDataResponse200) & {
-  headers: Headers;
-};
-export type getWatchdogReportDataResponseError = (getWatchdogReportDataResponse400 | getWatchdogReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getWatchdogReportDataResponse = (getWatchdogReportDataResponseSuccess | getWatchdogReportDataResponseError)
-
-export const getGetWatchdogReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/Watchdog/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getWatchdogReportData = async (watchDogOptions?: WatchDogOptions, options?: RequestInit): Promise<getWatchdogReportDataResponse> => {
+export const getWatchdogReportData = (
+    watchDogOptions?: WatchDogOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getWatchdogReportDataResponse>(getGetWatchdogReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      watchDogOptions,)
-  }
-);}
 
+      return reportsRequest<WatchDogResult>(
+      {url: `/api/v1/Watchdog/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: watchDogOptions, signal
+    },
+      );
+    }
 
 
 

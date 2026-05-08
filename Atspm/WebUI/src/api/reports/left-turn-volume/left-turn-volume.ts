@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getLeftTurnVolumeTestDataResponse200 = {
-  data: VolumeResult
-  status: 200
-}
-
-export type getLeftTurnVolumeTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnVolumeTestDataResponseSuccess = (getLeftTurnVolumeTestDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnVolumeTestDataResponseError = (getLeftTurnVolumeTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnVolumeTestDataResponse = (getLeftTurnVolumeTestDataResponseSuccess | getLeftTurnVolumeTestDataResponseError)
-
-export const getGetLeftTurnVolumeTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnVolume/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getLeftTurnVolumeTestData = async ( options?: RequestInit): Promise<getLeftTurnVolumeTestDataResponse> => {
+export const getLeftTurnVolumeTestData = (
 
-  return reportsRequest<getLeftTurnVolumeTestDataResponse>(getGetLeftTurnVolumeTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<VolumeResult>(
+      {url: `/api/v1/LeftTurnVolume/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnVolumeTestData>>> = ({ signal }) => getLeftTurnVolumeTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnVolumeTestData>>> = ({ signal }) => getLeftTurnVolumeTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetLeftTurnVolumeTestData<TData = Awaited<ReturnType<typeof g
 
 
 
-export type getLeftTurnVolumeReportDataResponse200 = {
-  data: VolumeResult
-  status: 200
-}
-
-export type getLeftTurnVolumeReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLeftTurnVolumeReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnVolumeReportDataResponseSuccess = (getLeftTurnVolumeReportDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnVolumeReportDataResponseError = (getLeftTurnVolumeReportDataResponse400 | getLeftTurnVolumeReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnVolumeReportDataResponse = (getLeftTurnVolumeReportDataResponseSuccess | getLeftTurnVolumeReportDataResponseError)
-
-export const getGetLeftTurnVolumeReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnVolume/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getLeftTurnVolumeReportData = async (volumeOptions?: VolumeOptions, options?: RequestInit): Promise<getLeftTurnVolumeReportDataResponse> => {
+export const getLeftTurnVolumeReportData = (
+    volumeOptions?: VolumeOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getLeftTurnVolumeReportDataResponse>(getGetLeftTurnVolumeReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      volumeOptions,)
-  }
-);}
 
+      return reportsRequest<VolumeResult>(
+      {url: `/api/v1/LeftTurnVolume/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: volumeOptions, signal
+    },
+      );
+    }
 
 
 

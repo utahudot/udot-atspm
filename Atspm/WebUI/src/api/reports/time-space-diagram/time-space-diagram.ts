@@ -32,50 +32,19 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getTimeSpaceDiagramSrmDataResponse200 = {
-  data: TimeSpaceDiagramSrmPhaseOverlay[]
-  status: 200
-}
-
-export type getTimeSpaceDiagramSrmDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getTimeSpaceDiagramSrmDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimeSpaceDiagramSrmDataResponseSuccess = (getTimeSpaceDiagramSrmDataResponse200) & {
-  headers: Headers;
-};
-export type getTimeSpaceDiagramSrmDataResponseError = (getTimeSpaceDiagramSrmDataResponse400 | getTimeSpaceDiagramSrmDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimeSpaceDiagramSrmDataResponse = (getTimeSpaceDiagramSrmDataResponseSuccess | getTimeSpaceDiagramSrmDataResponseError)
-
-export const getGetTimeSpaceDiagramSrmDataUrl = () => {
+export const getTimeSpaceDiagramSrmData = (
+    timeSpaceDiagramSrmOptions?: TimeSpaceDiagramSrmOptions,
+ signal?: AbortSignal
+) => {
 
 
-
-
-  return `/api/v1/TimeSpaceDiagram/getSrmData`
-}
-
-export const getTimeSpaceDiagramSrmData = async (timeSpaceDiagramSrmOptions?: TimeSpaceDiagramSrmOptions, options?: RequestInit): Promise<getTimeSpaceDiagramSrmDataResponse> => {
-
-  return reportsRequest<getTimeSpaceDiagramSrmDataResponse>(getGetTimeSpaceDiagramSrmDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      timeSpaceDiagramSrmOptions,)
-  }
-);}
-
+      return reportsRequest<TimeSpaceDiagramSrmPhaseOverlay[]>(
+      {url: `/api/v1/TimeSpaceDiagram/getSrmData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramSrmOptions, signal
+    },
+      );
+    }
 
 
 
@@ -120,47 +89,20 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getGetTimeSpaceDiagramSrmDataMutationOptions(options));
     }
-    export type getTimeSpaceDiagramTestDataResponse200 = {
-  data: TimeSpaceDiagramPhaseResult[]
-  status: 200
-}
-
-export type getTimeSpaceDiagramTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimeSpaceDiagramTestDataResponseSuccess = (getTimeSpaceDiagramTestDataResponse200) & {
-  headers: Headers;
-};
-export type getTimeSpaceDiagramTestDataResponseError = (getTimeSpaceDiagramTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimeSpaceDiagramTestDataResponse = (getTimeSpaceDiagramTestDataResponseSuccess | getTimeSpaceDiagramTestDataResponseError)
-
-export const getGetTimeSpaceDiagramTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/TimeSpaceDiagram/test`
-}
-
-/**
+    /**
  * @summary Get example data for testing
  */
-export const getTimeSpaceDiagramTestData = async ( options?: RequestInit): Promise<getTimeSpaceDiagramTestDataResponse> => {
+export const getTimeSpaceDiagramTestData = (
 
-  return reportsRequest<getTimeSpaceDiagramTestDataResponse>(getGetTimeSpaceDiagramTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<TimeSpaceDiagramPhaseResult[]>(
+      {url: `/api/v1/TimeSpaceDiagram/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -181,7 +123,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramTestData>>> = ({ signal }) => getTimeSpaceDiagramTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeSpaceDiagramTestData>>> = ({ signal }) => getTimeSpaceDiagramTestData(signal);
 
 
 
@@ -215,53 +157,22 @@ export function useGetTimeSpaceDiagramTestData<TData = Awaited<ReturnType<typeof
 
 
 
-export type getTimeSpaceDiagramReportDataResponse200 = {
-  data: TimeSpaceDiagramPhaseResult[]
-  status: 200
-}
-
-export type getTimeSpaceDiagramReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getTimeSpaceDiagramReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimeSpaceDiagramReportDataResponseSuccess = (getTimeSpaceDiagramReportDataResponse200) & {
-  headers: Headers;
-};
-export type getTimeSpaceDiagramReportDataResponseError = (getTimeSpaceDiagramReportDataResponse400 | getTimeSpaceDiagramReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimeSpaceDiagramReportDataResponse = (getTimeSpaceDiagramReportDataResponseSuccess | getTimeSpaceDiagramReportDataResponseError)
-
-export const getGetTimeSpaceDiagramReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/TimeSpaceDiagram/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getTimeSpaceDiagramReportData = async (timeSpaceDiagramOptions?: TimeSpaceDiagramOptions, options?: RequestInit): Promise<getTimeSpaceDiagramReportDataResponse> => {
+export const getTimeSpaceDiagramReportData = (
+    timeSpaceDiagramOptions?: TimeSpaceDiagramOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getTimeSpaceDiagramReportDataResponse>(getGetTimeSpaceDiagramReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      timeSpaceDiagramOptions,)
-  }
-);}
 
+      return reportsRequest<TimeSpaceDiagramPhaseResult[]>(
+      {url: `/api/v1/TimeSpaceDiagram/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramOptions, signal
+    },
+      );
+    }
 
 
 

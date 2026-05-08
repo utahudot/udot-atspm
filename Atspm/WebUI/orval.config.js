@@ -61,6 +61,7 @@ module.exports = {
       workspace: './src/api/reports',
       target: './report-api.ts',
       client: 'react-query',
+      httpClient: 'axios',
       mock: true,
       templates: './orval-templates',
       mode: 'tags-split',

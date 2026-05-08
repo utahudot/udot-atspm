@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getLeftTurnSplitFailTestDataResponse200 = {
-  data: LeftTurnSplitFailResult
-  status: 200
-}
-
-export type getLeftTurnSplitFailTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnSplitFailTestDataResponseSuccess = (getLeftTurnSplitFailTestDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnSplitFailTestDataResponseError = (getLeftTurnSplitFailTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnSplitFailTestDataResponse = (getLeftTurnSplitFailTestDataResponseSuccess | getLeftTurnSplitFailTestDataResponseError)
-
-export const getGetLeftTurnSplitFailTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnSplitFail/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getLeftTurnSplitFailTestData = async ( options?: RequestInit): Promise<getLeftTurnSplitFailTestDataResponse> => {
+export const getLeftTurnSplitFailTestData = (
 
-  return reportsRequest<getLeftTurnSplitFailTestDataResponse>(getGetLeftTurnSplitFailTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<LeftTurnSplitFailResult>(
+      {url: `/api/v1/LeftTurnSplitFail/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnSplitFailTestData>>> = ({ signal }) => getLeftTurnSplitFailTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnSplitFailTestData>>> = ({ signal }) => getLeftTurnSplitFailTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetLeftTurnSplitFailTestData<TData = Awaited<ReturnType<typeo
 
 
 
-export type getLeftTurnSplitFailReportDataResponse200 = {
-  data: LeftTurnSplitFailResult
-  status: 200
-}
-
-export type getLeftTurnSplitFailReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLeftTurnSplitFailReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnSplitFailReportDataResponseSuccess = (getLeftTurnSplitFailReportDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnSplitFailReportDataResponseError = (getLeftTurnSplitFailReportDataResponse400 | getLeftTurnSplitFailReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnSplitFailReportDataResponse = (getLeftTurnSplitFailReportDataResponseSuccess | getLeftTurnSplitFailReportDataResponseError)
-
-export const getGetLeftTurnSplitFailReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnSplitFail/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getLeftTurnSplitFailReportData = async (leftTurnSplitFailOptions?: LeftTurnSplitFailOptions, options?: RequestInit): Promise<getLeftTurnSplitFailReportDataResponse> => {
+export const getLeftTurnSplitFailReportData = (
+    leftTurnSplitFailOptions?: LeftTurnSplitFailOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getLeftTurnSplitFailReportDataResponse>(getGetLeftTurnSplitFailReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      leftTurnSplitFailOptions,)
-  }
-);}
 
+      return reportsRequest<LeftTurnSplitFailResult>(
+      {url: `/api/v1/LeftTurnSplitFail/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: leftTurnSplitFailOptions, signal
+    },
+      );
+    }
 
 
 

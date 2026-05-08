@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getPreemptServiceTestDataResponse200 = {
-  data: PreemptServiceResult
-  status: 200
-}
-
-export type getPreemptServiceTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPreemptServiceTestDataResponseSuccess = (getPreemptServiceTestDataResponse200) & {
-  headers: Headers;
-};
-export type getPreemptServiceTestDataResponseError = (getPreemptServiceTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPreemptServiceTestDataResponse = (getPreemptServiceTestDataResponseSuccess | getPreemptServiceTestDataResponseError)
-
-export const getGetPreemptServiceTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/PreemptService/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getPreemptServiceTestData = async ( options?: RequestInit): Promise<getPreemptServiceTestDataResponse> => {
+export const getPreemptServiceTestData = (
 
-  return reportsRequest<getPreemptServiceTestDataResponse>(getGetPreemptServiceTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PreemptServiceResult>(
+      {url: `/api/v1/PreemptService/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPreemptServiceTestData>>> = ({ signal }) => getPreemptServiceTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPreemptServiceTestData>>> = ({ signal }) => getPreemptServiceTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetPreemptServiceTestData<TData = Awaited<ReturnType<typeof g
 
 
 
-export type getPreemptServiceReportDataResponse200 = {
-  data: PreemptServiceResult
-  status: 200
-}
-
-export type getPreemptServiceReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPreemptServiceReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPreemptServiceReportDataResponseSuccess = (getPreemptServiceReportDataResponse200) & {
-  headers: Headers;
-};
-export type getPreemptServiceReportDataResponseError = (getPreemptServiceReportDataResponse400 | getPreemptServiceReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPreemptServiceReportDataResponse = (getPreemptServiceReportDataResponseSuccess | getPreemptServiceReportDataResponseError)
-
-export const getGetPreemptServiceReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/PreemptService/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getPreemptServiceReportData = async (preemptServiceOptions?: PreemptServiceOptions, options?: RequestInit): Promise<getPreemptServiceReportDataResponse> => {
+export const getPreemptServiceReportData = (
+    preemptServiceOptions?: PreemptServiceOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getPreemptServiceReportDataResponse>(getGetPreemptServiceReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      preemptServiceOptions,)
-  }
-);}
 
+      return reportsRequest<PreemptServiceResult>(
+      {url: `/api/v1/PreemptService/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: preemptServiceOptions, signal
+    },
+      );
+    }
 
 
 

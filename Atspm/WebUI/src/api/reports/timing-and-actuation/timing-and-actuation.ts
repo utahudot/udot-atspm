@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getTimingAndActuationTestDataResponse200 = {
-  data: TimingAndActuationsForPhaseResult[]
-  status: 200
-}
-
-export type getTimingAndActuationTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimingAndActuationTestDataResponseSuccess = (getTimingAndActuationTestDataResponse200) & {
-  headers: Headers;
-};
-export type getTimingAndActuationTestDataResponseError = (getTimingAndActuationTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimingAndActuationTestDataResponse = (getTimingAndActuationTestDataResponseSuccess | getTimingAndActuationTestDataResponseError)
-
-export const getGetTimingAndActuationTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/TimingAndActuation/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getTimingAndActuationTestData = async ( options?: RequestInit): Promise<getTimingAndActuationTestDataResponse> => {
+export const getTimingAndActuationTestData = (
 
-  return reportsRequest<getTimingAndActuationTestDataResponse>(getGetTimingAndActuationTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<TimingAndActuationsForPhaseResult[]>(
+      {url: `/api/v1/TimingAndActuation/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimingAndActuationTestData>>> = ({ signal }) => getTimingAndActuationTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimingAndActuationTestData>>> = ({ signal }) => getTimingAndActuationTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetTimingAndActuationTestData<TData = Awaited<ReturnType<type
 
 
 
-export type getTimingAndActuationReportDataResponse200 = {
-  data: TimingAndActuationsForPhaseResult[]
-  status: 200
-}
-
-export type getTimingAndActuationReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getTimingAndActuationReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTimingAndActuationReportDataResponseSuccess = (getTimingAndActuationReportDataResponse200) & {
-  headers: Headers;
-};
-export type getTimingAndActuationReportDataResponseError = (getTimingAndActuationReportDataResponse400 | getTimingAndActuationReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTimingAndActuationReportDataResponse = (getTimingAndActuationReportDataResponseSuccess | getTimingAndActuationReportDataResponseError)
-
-export const getGetTimingAndActuationReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/TimingAndActuation/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getTimingAndActuationReportData = async (timingAndActuationsOptions?: TimingAndActuationsOptions, options?: RequestInit): Promise<getTimingAndActuationReportDataResponse> => {
+export const getTimingAndActuationReportData = (
+    timingAndActuationsOptions?: TimingAndActuationsOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getTimingAndActuationReportDataResponse>(getGetTimingAndActuationReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      timingAndActuationsOptions,)
-  }
-);}
 
+      return reportsRequest<TimingAndActuationsForPhaseResult[]>(
+      {url: `/api/v1/TimingAndActuation/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timingAndActuationsOptions, signal
+    },
+      );
+    }
 
 
 

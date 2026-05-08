@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getYellowRedActivationsTestDataResponse200 = {
-  data: YellowRedActivationsResult[]
-  status: 200
-}
-
-export type getYellowRedActivationsTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getYellowRedActivationsTestDataResponseSuccess = (getYellowRedActivationsTestDataResponse200) & {
-  headers: Headers;
-};
-export type getYellowRedActivationsTestDataResponseError = (getYellowRedActivationsTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getYellowRedActivationsTestDataResponse = (getYellowRedActivationsTestDataResponseSuccess | getYellowRedActivationsTestDataResponseError)
-
-export const getGetYellowRedActivationsTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/YellowRedActivations/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getYellowRedActivationsTestData = async ( options?: RequestInit): Promise<getYellowRedActivationsTestDataResponse> => {
+export const getYellowRedActivationsTestData = (
 
-  return reportsRequest<getYellowRedActivationsTestDataResponse>(getGetYellowRedActivationsTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<YellowRedActivationsResult[]>(
+      {url: `/api/v1/YellowRedActivations/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getYellowRedActivationsTestData>>> = ({ signal }) => getYellowRedActivationsTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getYellowRedActivationsTestData>>> = ({ signal }) => getYellowRedActivationsTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetYellowRedActivationsTestData<TData = Awaited<ReturnType<ty
 
 
 
-export type getYellowRedActivationsReportDataResponse200 = {
-  data: YellowRedActivationsResult[]
-  status: 200
-}
-
-export type getYellowRedActivationsReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getYellowRedActivationsReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getYellowRedActivationsReportDataResponseSuccess = (getYellowRedActivationsReportDataResponse200) & {
-  headers: Headers;
-};
-export type getYellowRedActivationsReportDataResponseError = (getYellowRedActivationsReportDataResponse400 | getYellowRedActivationsReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getYellowRedActivationsReportDataResponse = (getYellowRedActivationsReportDataResponseSuccess | getYellowRedActivationsReportDataResponseError)
-
-export const getGetYellowRedActivationsReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/YellowRedActivations/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getYellowRedActivationsReportData = async (yellowRedActivationsOptions?: YellowRedActivationsOptions, options?: RequestInit): Promise<getYellowRedActivationsReportDataResponse> => {
+export const getYellowRedActivationsReportData = (
+    yellowRedActivationsOptions?: YellowRedActivationsOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getYellowRedActivationsReportDataResponse>(getGetYellowRedActivationsReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      yellowRedActivationsOptions,)
-  }
-);}
 
+      return reportsRequest<YellowRedActivationsResult[]>(
+      {url: `/api/v1/YellowRedActivations/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: yellowRedActivationsOptions, signal
+    },
+      );
+    }
 
 
 

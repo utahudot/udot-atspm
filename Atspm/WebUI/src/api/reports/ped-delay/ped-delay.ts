@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getPedDelayTestDataResponse200 = {
-  data: PedDelayResult[]
-  status: 200
-}
-
-export type getPedDelayTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPedDelayTestDataResponseSuccess = (getPedDelayTestDataResponse200) & {
-  headers: Headers;
-};
-export type getPedDelayTestDataResponseError = (getPedDelayTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPedDelayTestDataResponse = (getPedDelayTestDataResponseSuccess | getPedDelayTestDataResponseError)
-
-export const getGetPedDelayTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/PedDelay/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getPedDelayTestData = async ( options?: RequestInit): Promise<getPedDelayTestDataResponse> => {
+export const getPedDelayTestData = (
 
-  return reportsRequest<getPedDelayTestDataResponse>(getGetPedDelayTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PedDelayResult[]>(
+      {url: `/api/v1/PedDelay/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPedDelayTestData>>> = ({ signal }) => getPedDelayTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPedDelayTestData>>> = ({ signal }) => getPedDelayTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetPedDelayTestData<TData = Awaited<ReturnType<typeof getPedD
 
 
 
-export type getPedDelayReportDataResponse200 = {
-  data: PedDelayResult[]
-  status: 200
-}
-
-export type getPedDelayReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPedDelayReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPedDelayReportDataResponseSuccess = (getPedDelayReportDataResponse200) & {
-  headers: Headers;
-};
-export type getPedDelayReportDataResponseError = (getPedDelayReportDataResponse400 | getPedDelayReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPedDelayReportDataResponse = (getPedDelayReportDataResponseSuccess | getPedDelayReportDataResponseError)
-
-export const getGetPedDelayReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/PedDelay/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getPedDelayReportData = async (pedDelayOptions?: PedDelayOptions, options?: RequestInit): Promise<getPedDelayReportDataResponse> => {
+export const getPedDelayReportData = (
+    pedDelayOptions?: PedDelayOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getPedDelayReportDataResponse>(getGetPedDelayReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      pedDelayOptions,)
-  }
-);}
 
+      return reportsRequest<PedDelayResult[]>(
+      {url: `/api/v1/PedDelay/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: pedDelayOptions, signal
+    },
+      );
+    }
 
 
 

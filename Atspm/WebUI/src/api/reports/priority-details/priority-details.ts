@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getPriorityDetailsTestDataResponse200 = {
-  data: PriorityDetailsResult[]
-  status: 200
-}
-
-export type getPriorityDetailsTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPriorityDetailsTestDataResponseSuccess = (getPriorityDetailsTestDataResponse200) & {
-  headers: Headers;
-};
-export type getPriorityDetailsTestDataResponseError = (getPriorityDetailsTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPriorityDetailsTestDataResponse = (getPriorityDetailsTestDataResponseSuccess | getPriorityDetailsTestDataResponseError)
-
-export const getGetPriorityDetailsTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/PriorityDetails/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getPriorityDetailsTestData = async ( options?: RequestInit): Promise<getPriorityDetailsTestDataResponse> => {
+export const getPriorityDetailsTestData = (
 
-  return reportsRequest<getPriorityDetailsTestDataResponse>(getGetPriorityDetailsTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PriorityDetailsResult[]>(
+      {url: `/api/v1/PriorityDetails/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriorityDetailsTestData>>> = ({ signal }) => getPriorityDetailsTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriorityDetailsTestData>>> = ({ signal }) => getPriorityDetailsTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetPriorityDetailsTestData<TData = Awaited<ReturnType<typeof 
 
 
 
-export type getPriorityDetailsReportDataResponse200 = {
-  data: PriorityDetailsResult[]
-  status: 200
-}
-
-export type getPriorityDetailsReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPriorityDetailsReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPriorityDetailsReportDataResponseSuccess = (getPriorityDetailsReportDataResponse200) & {
-  headers: Headers;
-};
-export type getPriorityDetailsReportDataResponseError = (getPriorityDetailsReportDataResponse400 | getPriorityDetailsReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPriorityDetailsReportDataResponse = (getPriorityDetailsReportDataResponseSuccess | getPriorityDetailsReportDataResponseError)
-
-export const getGetPriorityDetailsReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/PriorityDetails/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getPriorityDetailsReportData = async (priorityDetailsOptions?: PriorityDetailsOptions, options?: RequestInit): Promise<getPriorityDetailsReportDataResponse> => {
+export const getPriorityDetailsReportData = (
+    priorityDetailsOptions?: PriorityDetailsOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getPriorityDetailsReportDataResponse>(getGetPriorityDetailsReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      priorityDetailsOptions,)
-  }
-);}
 
+      return reportsRequest<PriorityDetailsResult[]>(
+      {url: `/api/v1/PriorityDetails/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: priorityDetailsOptions, signal
+    },
+      );
+    }
 
 
 

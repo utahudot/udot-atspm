@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getSplitMonitorTestDataResponse200 = {
-  data: SplitMonitorResult[]
-  status: 200
-}
-
-export type getSplitMonitorTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getSplitMonitorTestDataResponseSuccess = (getSplitMonitorTestDataResponse200) & {
-  headers: Headers;
-};
-export type getSplitMonitorTestDataResponseError = (getSplitMonitorTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getSplitMonitorTestDataResponse = (getSplitMonitorTestDataResponseSuccess | getSplitMonitorTestDataResponseError)
-
-export const getGetSplitMonitorTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/SplitMonitor/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getSplitMonitorTestData = async ( options?: RequestInit): Promise<getSplitMonitorTestDataResponse> => {
+export const getSplitMonitorTestData = (
 
-  return reportsRequest<getSplitMonitorTestDataResponse>(getGetSplitMonitorTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<SplitMonitorResult[]>(
+      {url: `/api/v1/SplitMonitor/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSplitMonitorTestData>>> = ({ signal }) => getSplitMonitorTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSplitMonitorTestData>>> = ({ signal }) => getSplitMonitorTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetSplitMonitorTestData<TData = Awaited<ReturnType<typeof get
 
 
 
-export type getSplitMonitorReportDataResponse200 = {
-  data: SplitMonitorResult[]
-  status: 200
-}
-
-export type getSplitMonitorReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getSplitMonitorReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getSplitMonitorReportDataResponseSuccess = (getSplitMonitorReportDataResponse200) & {
-  headers: Headers;
-};
-export type getSplitMonitorReportDataResponseError = (getSplitMonitorReportDataResponse400 | getSplitMonitorReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getSplitMonitorReportDataResponse = (getSplitMonitorReportDataResponseSuccess | getSplitMonitorReportDataResponseError)
-
-export const getGetSplitMonitorReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/SplitMonitor/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getSplitMonitorReportData = async (splitMonitorOptions?: SplitMonitorOptions, options?: RequestInit): Promise<getSplitMonitorReportDataResponse> => {
+export const getSplitMonitorReportData = (
+    splitMonitorOptions?: SplitMonitorOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getSplitMonitorReportDataResponse>(getGetSplitMonitorReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      splitMonitorOptions,)
-  }
-);}
 
+      return reportsRequest<SplitMonitorResult[]>(
+      {url: `/api/v1/SplitMonitor/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: splitMonitorOptions, signal
+    },
+      );
+    }
 
 
 

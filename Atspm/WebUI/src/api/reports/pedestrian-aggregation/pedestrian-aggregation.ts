@@ -30,52 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getPedestrianAggregationTestDataResponse200 = {
-  data: void
-  status: 200
-}
-
-export type getPedestrianAggregationTestDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPedestrianAggregationTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPedestrianAggregationTestDataResponseSuccess = (getPedestrianAggregationTestDataResponse200) & {
-  headers: Headers;
-};
-export type getPedestrianAggregationTestDataResponseError = (getPedestrianAggregationTestDataResponse400 | getPedestrianAggregationTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPedestrianAggregationTestDataResponse = (getPedestrianAggregationTestDataResponseSuccess | getPedestrianAggregationTestDataResponseError)
-
-export const getGetPedestrianAggregationTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/PedestrianAggregation/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getPedestrianAggregationTestData = async ( options?: RequestInit): Promise<getPedestrianAggregationTestDataResponse> => {
+export const getPedestrianAggregationTestData = (
 
-  return reportsRequest<getPedestrianAggregationTestDataResponse>(getGetPedestrianAggregationTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<void>(
+      {url: `/api/v1/PedestrianAggregation/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -96,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPedestrianAggregationTestData>>> = ({ signal }) => getPedestrianAggregationTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPedestrianAggregationTestData>>> = ({ signal }) => getPedestrianAggregationTestData(signal);
 
 
 
@@ -130,53 +98,22 @@ export function useGetPedestrianAggregationTestData<TData = Awaited<ReturnType<t
 
 
 
-export type getPedestrianAggregationLocationDataResponse200 = {
-  data: PedatLocationData[]
-  status: 200
-}
-
-export type getPedestrianAggregationLocationDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPedestrianAggregationLocationDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPedestrianAggregationLocationDataResponseSuccess = (getPedestrianAggregationLocationDataResponse200) & {
-  headers: Headers;
-};
-export type getPedestrianAggregationLocationDataResponseError = (getPedestrianAggregationLocationDataResponse400 | getPedestrianAggregationLocationDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPedestrianAggregationLocationDataResponse = (getPedestrianAggregationLocationDataResponseSuccess | getPedestrianAggregationLocationDataResponseError)
-
-export const getGetPedestrianAggregationLocationDataUrl = () => {
-
-
-
-
-  return `/api/v1/PedestrianAggregation/getReportData`
-}
-
 /**
  * @summary Get traffic location data based on query
  */
-export const getPedestrianAggregationLocationData = async (pedatLocationDataQuery?: PedatLocationDataQuery, options?: RequestInit): Promise<getPedestrianAggregationLocationDataResponse> => {
+export const getPedestrianAggregationLocationData = (
+    pedatLocationDataQuery?: PedatLocationDataQuery,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getPedestrianAggregationLocationDataResponse>(getGetPedestrianAggregationLocationDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      pedatLocationDataQuery,)
-  }
-);}
 
+      return reportsRequest<PedatLocationData[]>(
+      {url: `/api/v1/PedestrianAggregation/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: pedatLocationDataQuery, signal
+    },
+      );
+    }
 
 
 

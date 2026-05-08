@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getLeftTurnPeakHoursTestDataResponse200 = {
-  data: PeakHourResult
-  status: 200
-}
-
-export type getLeftTurnPeakHoursTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnPeakHoursTestDataResponseSuccess = (getLeftTurnPeakHoursTestDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnPeakHoursTestDataResponseError = (getLeftTurnPeakHoursTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnPeakHoursTestDataResponse = (getLeftTurnPeakHoursTestDataResponseSuccess | getLeftTurnPeakHoursTestDataResponseError)
-
-export const getGetLeftTurnPeakHoursTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnPeakHours/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getLeftTurnPeakHoursTestData = async ( options?: RequestInit): Promise<getLeftTurnPeakHoursTestDataResponse> => {
+export const getLeftTurnPeakHoursTestData = (
 
-  return reportsRequest<getLeftTurnPeakHoursTestDataResponse>(getGetLeftTurnPeakHoursTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PeakHourResult>(
+      {url: `/api/v1/LeftTurnPeakHours/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnPeakHoursTestData>>> = ({ signal }) => getLeftTurnPeakHoursTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnPeakHoursTestData>>> = ({ signal }) => getLeftTurnPeakHoursTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetLeftTurnPeakHoursTestData<TData = Awaited<ReturnType<typeo
 
 
 
-export type getLeftTurnPeakHoursReportDataResponse200 = {
-  data: PeakHourResult
-  status: 200
-}
-
-export type getLeftTurnPeakHoursReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLeftTurnPeakHoursReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnPeakHoursReportDataResponseSuccess = (getLeftTurnPeakHoursReportDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnPeakHoursReportDataResponseError = (getLeftTurnPeakHoursReportDataResponse400 | getLeftTurnPeakHoursReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnPeakHoursReportDataResponse = (getLeftTurnPeakHoursReportDataResponseSuccess | getLeftTurnPeakHoursReportDataResponseError)
-
-export const getGetLeftTurnPeakHoursReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnPeakHours/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getLeftTurnPeakHoursReportData = async (peakHourOptions?: PeakHourOptions, options?: RequestInit): Promise<getLeftTurnPeakHoursReportDataResponse> => {
+export const getLeftTurnPeakHoursReportData = (
+    peakHourOptions?: PeakHourOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getLeftTurnPeakHoursReportDataResponse>(getGetLeftTurnPeakHoursReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      peakHourOptions,)
-  }
-);}
 
+      return reportsRequest<PeakHourResult>(
+      {url: `/api/v1/LeftTurnPeakHours/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: peakHourOptions, signal
+    },
+      );
+    }
 
 
 

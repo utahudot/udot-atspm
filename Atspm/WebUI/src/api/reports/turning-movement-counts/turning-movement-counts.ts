@@ -57,47 +57,20 @@ type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
 
 
 
-export type getTurningMovementCountsTestDataResponse200 = {
-  data: TurningMovementCountsResult
-  status: 200
-}
-
-export type getTurningMovementCountsTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTurningMovementCountsTestDataResponseSuccess = (getTurningMovementCountsTestDataResponse200) & {
-  headers: Headers;
-};
-export type getTurningMovementCountsTestDataResponseError = (getTurningMovementCountsTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTurningMovementCountsTestDataResponse = (getTurningMovementCountsTestDataResponseSuccess | getTurningMovementCountsTestDataResponseError)
-
-export const getGetTurningMovementCountsTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/TurningMovementCounts/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getTurningMovementCountsTestData = async ( options?: RequestInit): Promise<getTurningMovementCountsTestDataResponse> => {
+export const getTurningMovementCountsTestData = (
 
-  return reportsRequest<getTurningMovementCountsTestDataResponse>(getGetTurningMovementCountsTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<TurningMovementCountsResult>(
+      {url: `/api/v1/TurningMovementCounts/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -118,7 +91,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTurningMovementCountsTestData>>> = ({ signal }) => getTurningMovementCountsTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTurningMovementCountsTestData>>> = ({ signal }) => getTurningMovementCountsTestData(signal);
 
 
 
@@ -152,53 +125,22 @@ export function useGetTurningMovementCountsTestData<TData = Awaited<ReturnType<t
 
 
 
-export type getTurningMovementCountsReportDataResponse200 = {
-  data: TurningMovementCountsResult
-  status: 200
-}
-
-export type getTurningMovementCountsReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getTurningMovementCountsReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTurningMovementCountsReportDataResponseSuccess = (getTurningMovementCountsReportDataResponse200) & {
-  headers: Headers;
-};
-export type getTurningMovementCountsReportDataResponseError = (getTurningMovementCountsReportDataResponse400 | getTurningMovementCountsReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTurningMovementCountsReportDataResponse = (getTurningMovementCountsReportDataResponseSuccess | getTurningMovementCountsReportDataResponseError)
-
-export const getGetTurningMovementCountsReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/TurningMovementCounts/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getTurningMovementCountsReportData = async (turningMovementCountsOptions?: NonReadonly<TurningMovementCountsOptions>, options?: RequestInit): Promise<getTurningMovementCountsReportDataResponse> => {
+export const getTurningMovementCountsReportData = (
+    turningMovementCountsOptions?: NonReadonly<TurningMovementCountsOptions>,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getTurningMovementCountsReportDataResponse>(getGetTurningMovementCountsReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      turningMovementCountsOptions,)
-  }
-);}
 
+      return reportsRequest<TurningMovementCountsResult>(
+      {url: `/api/v1/TurningMovementCounts/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: turningMovementCountsOptions, signal
+    },
+      );
+    }
 
 
 

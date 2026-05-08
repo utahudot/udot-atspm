@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getAggregationTestDataResponse200 = {
-  data: AggregationResult[]
-  status: 200
-}
-
-export type getAggregationTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getAggregationTestDataResponseSuccess = (getAggregationTestDataResponse200) & {
-  headers: Headers;
-};
-export type getAggregationTestDataResponseError = (getAggregationTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getAggregationTestDataResponse = (getAggregationTestDataResponseSuccess | getAggregationTestDataResponseError)
-
-export const getGetAggregationTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/Aggregation/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getAggregationTestData = async ( options?: RequestInit): Promise<getAggregationTestDataResponse> => {
+export const getAggregationTestData = (
 
-  return reportsRequest<getAggregationTestDataResponse>(getGetAggregationTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<AggregationResult[]>(
+      {url: `/api/v1/Aggregation/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAggregationTestData>>> = ({ signal }) => getAggregationTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAggregationTestData>>> = ({ signal }) => getAggregationTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetAggregationTestData<TData = Awaited<ReturnType<typeof getA
 
 
 
-export type getAggregationReportDataResponse200 = {
-  data: AggregationResult[]
-  status: 200
-}
-
-export type getAggregationReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getAggregationReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getAggregationReportDataResponseSuccess = (getAggregationReportDataResponse200) & {
-  headers: Headers;
-};
-export type getAggregationReportDataResponseError = (getAggregationReportDataResponse400 | getAggregationReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getAggregationReportDataResponse = (getAggregationReportDataResponseSuccess | getAggregationReportDataResponseError)
-
-export const getGetAggregationReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/Aggregation/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getAggregationReportData = async (aggregationOptions?: AggregationOptions, options?: RequestInit): Promise<getAggregationReportDataResponse> => {
+export const getAggregationReportData = (
+    aggregationOptions?: AggregationOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getAggregationReportDataResponse>(getGetAggregationReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      aggregationOptions,)
-  }
-);}
 
+      return reportsRequest<AggregationResult[]>(
+      {url: `/api/v1/Aggregation/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: aggregationOptions, signal
+    },
+      );
+    }
 
 
 

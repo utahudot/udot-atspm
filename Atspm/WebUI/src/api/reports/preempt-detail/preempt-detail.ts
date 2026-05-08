@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getPreemptDetailTestDataResponse200 = {
-  data: PreemptDetailResult
-  status: 200
-}
-
-export type getPreemptDetailTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPreemptDetailTestDataResponseSuccess = (getPreemptDetailTestDataResponse200) & {
-  headers: Headers;
-};
-export type getPreemptDetailTestDataResponseError = (getPreemptDetailTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPreemptDetailTestDataResponse = (getPreemptDetailTestDataResponseSuccess | getPreemptDetailTestDataResponseError)
-
-export const getGetPreemptDetailTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/PreemptDetail/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getPreemptDetailTestData = async ( options?: RequestInit): Promise<getPreemptDetailTestDataResponse> => {
+export const getPreemptDetailTestData = (
 
-  return reportsRequest<getPreemptDetailTestDataResponse>(getGetPreemptDetailTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<PreemptDetailResult>(
+      {url: `/api/v1/PreemptDetail/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPreemptDetailTestData>>> = ({ signal }) => getPreemptDetailTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPreemptDetailTestData>>> = ({ signal }) => getPreemptDetailTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetPreemptDetailTestData<TData = Awaited<ReturnType<typeof ge
 
 
 
-export type getPreemptDetailReportDataResponse200 = {
-  data: PreemptDetailResult
-  status: 200
-}
-
-export type getPreemptDetailReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getPreemptDetailReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getPreemptDetailReportDataResponseSuccess = (getPreemptDetailReportDataResponse200) & {
-  headers: Headers;
-};
-export type getPreemptDetailReportDataResponseError = (getPreemptDetailReportDataResponse400 | getPreemptDetailReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getPreemptDetailReportDataResponse = (getPreemptDetailReportDataResponseSuccess | getPreemptDetailReportDataResponseError)
-
-export const getGetPreemptDetailReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/PreemptDetail/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getPreemptDetailReportData = async (preemptDetailOptions?: PreemptDetailOptions, options?: RequestInit): Promise<getPreemptDetailReportDataResponse> => {
+export const getPreemptDetailReportData = (
+    preemptDetailOptions?: PreemptDetailOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getPreemptDetailReportDataResponse>(getGetPreemptDetailReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      preemptDetailOptions,)
-  }
-);}
 
+      return reportsRequest<PreemptDetailResult>(
+      {url: `/api/v1/PreemptDetail/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: preemptDetailOptions, signal
+    },
+      );
+    }
 
 
 

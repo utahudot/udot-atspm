@@ -1535,6 +1535,8 @@ export interface PriorityDetailsResult {
   /** @nullable */
   approachDescription?: string | null;
   phaseNumber?: number;
+  /** @nullable */
+  transitSignalPriorityNumber?: number | null;
   isPhaseOverLap?: boolean;
   /** @nullable */
   phaseNumberSort?: string | null;

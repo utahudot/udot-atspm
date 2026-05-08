@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getApproachDelayTestDataResponse200 = {
-  data: ApproachDelayResult[]
-  status: 200
-}
-
-export type getApproachDelayTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getApproachDelayTestDataResponseSuccess = (getApproachDelayTestDataResponse200) & {
-  headers: Headers;
-};
-export type getApproachDelayTestDataResponseError = (getApproachDelayTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getApproachDelayTestDataResponse = (getApproachDelayTestDataResponseSuccess | getApproachDelayTestDataResponseError)
-
-export const getGetApproachDelayTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/ApproachDelay/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getApproachDelayTestData = async ( options?: RequestInit): Promise<getApproachDelayTestDataResponse> => {
+export const getApproachDelayTestData = (
 
-  return reportsRequest<getApproachDelayTestDataResponse>(getGetApproachDelayTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<ApproachDelayResult[]>(
+      {url: `/api/v1/ApproachDelay/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApproachDelayTestData>>> = ({ signal }) => getApproachDelayTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApproachDelayTestData>>> = ({ signal }) => getApproachDelayTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetApproachDelayTestData<TData = Awaited<ReturnType<typeof ge
 
 
 
-export type getApproachDelayReportDataResponse200 = {
-  data: ApproachDelayResult[]
-  status: 200
-}
-
-export type getApproachDelayReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getApproachDelayReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getApproachDelayReportDataResponseSuccess = (getApproachDelayReportDataResponse200) & {
-  headers: Headers;
-};
-export type getApproachDelayReportDataResponseError = (getApproachDelayReportDataResponse400 | getApproachDelayReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getApproachDelayReportDataResponse = (getApproachDelayReportDataResponseSuccess | getApproachDelayReportDataResponseError)
-
-export const getGetApproachDelayReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/ApproachDelay/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getApproachDelayReportData = async (approachDelayOptions?: ApproachDelayOptions, options?: RequestInit): Promise<getApproachDelayReportDataResponse> => {
+export const getApproachDelayReportData = (
+    approachDelayOptions?: ApproachDelayOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getApproachDelayReportDataResponse>(getGetApproachDelayReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      approachDelayOptions,)
-  }
-);}
 
+      return reportsRequest<ApproachDelayResult[]>(
+      {url: `/api/v1/ApproachDelay/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: approachDelayOptions, signal
+    },
+      );
+    }
 
 
 

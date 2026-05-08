@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getArrivalOnRedTestDataResponse200 = {
-  data: ArrivalOnRedResult[]
-  status: 200
-}
-
-export type getArrivalOnRedTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getArrivalOnRedTestDataResponseSuccess = (getArrivalOnRedTestDataResponse200) & {
-  headers: Headers;
-};
-export type getArrivalOnRedTestDataResponseError = (getArrivalOnRedTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getArrivalOnRedTestDataResponse = (getArrivalOnRedTestDataResponseSuccess | getArrivalOnRedTestDataResponseError)
-
-export const getGetArrivalOnRedTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/ArrivalOnRed/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getArrivalOnRedTestData = async ( options?: RequestInit): Promise<getArrivalOnRedTestDataResponse> => {
+export const getArrivalOnRedTestData = (
 
-  return reportsRequest<getArrivalOnRedTestDataResponse>(getGetArrivalOnRedTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<ArrivalOnRedResult[]>(
+      {url: `/api/v1/ArrivalOnRed/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getArrivalOnRedTestData>>> = ({ signal }) => getArrivalOnRedTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getArrivalOnRedTestData>>> = ({ signal }) => getArrivalOnRedTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetArrivalOnRedTestData<TData = Awaited<ReturnType<typeof get
 
 
 
-export type getArrivalOnRedReportDataResponse200 = {
-  data: ArrivalOnRedResult[]
-  status: 200
-}
-
-export type getArrivalOnRedReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getArrivalOnRedReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getArrivalOnRedReportDataResponseSuccess = (getArrivalOnRedReportDataResponse200) & {
-  headers: Headers;
-};
-export type getArrivalOnRedReportDataResponseError = (getArrivalOnRedReportDataResponse400 | getArrivalOnRedReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getArrivalOnRedReportDataResponse = (getArrivalOnRedReportDataResponseSuccess | getArrivalOnRedReportDataResponseError)
-
-export const getGetArrivalOnRedReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/ArrivalOnRed/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getArrivalOnRedReportData = async (arrivalOnRedOptions?: ArrivalOnRedOptions, options?: RequestInit): Promise<getArrivalOnRedReportDataResponse> => {
+export const getArrivalOnRedReportData = (
+    arrivalOnRedOptions?: ArrivalOnRedOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getArrivalOnRedReportDataResponse>(getGetArrivalOnRedReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      arrivalOnRedOptions,)
-  }
-);}
 
+      return reportsRequest<ArrivalOnRedResult[]>(
+      {url: `/api/v1/ArrivalOnRed/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: arrivalOnRedOptions, signal
+    },
+      );
+    }
 
 
 

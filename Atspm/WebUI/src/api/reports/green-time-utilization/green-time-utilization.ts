@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getGreenTimeUtilizationTestDataResponse200 = {
-  data: GreenTimeUtilizationResult[]
-  status: 200
-}
-
-export type getGreenTimeUtilizationTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getGreenTimeUtilizationTestDataResponseSuccess = (getGreenTimeUtilizationTestDataResponse200) & {
-  headers: Headers;
-};
-export type getGreenTimeUtilizationTestDataResponseError = (getGreenTimeUtilizationTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getGreenTimeUtilizationTestDataResponse = (getGreenTimeUtilizationTestDataResponseSuccess | getGreenTimeUtilizationTestDataResponseError)
-
-export const getGetGreenTimeUtilizationTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/GreenTimeUtilization/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getGreenTimeUtilizationTestData = async ( options?: RequestInit): Promise<getGreenTimeUtilizationTestDataResponse> => {
+export const getGreenTimeUtilizationTestData = (
 
-  return reportsRequest<getGreenTimeUtilizationTestDataResponse>(getGetGreenTimeUtilizationTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<GreenTimeUtilizationResult[]>(
+      {url: `/api/v1/GreenTimeUtilization/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGreenTimeUtilizationTestData>>> = ({ signal }) => getGreenTimeUtilizationTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGreenTimeUtilizationTestData>>> = ({ signal }) => getGreenTimeUtilizationTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetGreenTimeUtilizationTestData<TData = Awaited<ReturnType<ty
 
 
 
-export type getGreenTimeUtilizationReportDataResponse200 = {
-  data: GreenTimeUtilizationResult[]
-  status: 200
-}
-
-export type getGreenTimeUtilizationReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getGreenTimeUtilizationReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getGreenTimeUtilizationReportDataResponseSuccess = (getGreenTimeUtilizationReportDataResponse200) & {
-  headers: Headers;
-};
-export type getGreenTimeUtilizationReportDataResponseError = (getGreenTimeUtilizationReportDataResponse400 | getGreenTimeUtilizationReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getGreenTimeUtilizationReportDataResponse = (getGreenTimeUtilizationReportDataResponseSuccess | getGreenTimeUtilizationReportDataResponseError)
-
-export const getGetGreenTimeUtilizationReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/GreenTimeUtilization/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getGreenTimeUtilizationReportData = async (greenTimeUtilizationOptions?: GreenTimeUtilizationOptions, options?: RequestInit): Promise<getGreenTimeUtilizationReportDataResponse> => {
+export const getGreenTimeUtilizationReportData = (
+    greenTimeUtilizationOptions?: GreenTimeUtilizationOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getGreenTimeUtilizationReportDataResponse>(getGetGreenTimeUtilizationReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      greenTimeUtilizationOptions,)
-  }
-);}
 
+      return reportsRequest<GreenTimeUtilizationResult[]>(
+      {url: `/api/v1/GreenTimeUtilization/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: greenTimeUtilizationOptions, signal
+    },
+      );
+    }
 
 
 

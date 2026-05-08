@@ -34,50 +34,19 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getLinkPivotPcdDataResponse200 = {
-  data: LinkPivotPcdResult
-  status: 200
-}
-
-export type getLinkPivotPcdDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLinkPivotPcdDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLinkPivotPcdDataResponseSuccess = (getLinkPivotPcdDataResponse200) & {
-  headers: Headers;
-};
-export type getLinkPivotPcdDataResponseError = (getLinkPivotPcdDataResponse400 | getLinkPivotPcdDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLinkPivotPcdDataResponse = (getLinkPivotPcdDataResponseSuccess | getLinkPivotPcdDataResponseError)
-
-export const getGetLinkPivotPcdDataUrl = () => {
+export const getLinkPivotPcdData = (
+    linkPivotPcdOptions?: LinkPivotPcdOptions,
+ signal?: AbortSignal
+) => {
 
 
-
-
-  return `/api/v1/LinkPivot/getPcdData`
-}
-
-export const getLinkPivotPcdData = async (linkPivotPcdOptions?: LinkPivotPcdOptions, options?: RequestInit): Promise<getLinkPivotPcdDataResponse> => {
-
-  return reportsRequest<getLinkPivotPcdDataResponse>(getGetLinkPivotPcdDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      linkPivotPcdOptions,)
-  }
-);}
-
+      return reportsRequest<LinkPivotPcdResult>(
+      {url: `/api/v1/LinkPivot/getPcdData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: linkPivotPcdOptions, signal
+    },
+      );
+    }
 
 
 
@@ -122,50 +91,19 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getGetLinkPivotPcdDataMutationOptions(options));
     }
-    export type getLinkPivotLinkPivotForTSDResponse200 = {
-  data: LinkPivotForTsd[]
-  status: 200
-}
-
-export type getLinkPivotLinkPivotForTSDResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLinkPivotLinkPivotForTSDResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLinkPivotLinkPivotForTSDResponseSuccess = (getLinkPivotLinkPivotForTSDResponse200) & {
-  headers: Headers;
-};
-export type getLinkPivotLinkPivotForTSDResponseError = (getLinkPivotLinkPivotForTSDResponse400 | getLinkPivotLinkPivotForTSDResponse406) & {
-  headers: Headers;
-};
-
-export type getLinkPivotLinkPivotForTSDResponse = (getLinkPivotLinkPivotForTSDResponseSuccess | getLinkPivotLinkPivotForTSDResponseError)
-
-export const getGetLinkPivotLinkPivotForTSDUrl = () => {
+    export const getLinkPivotLinkPivotForTSD = (
+    timeSpaceDiagramOptions?: TimeSpaceDiagramOptions,
+ signal?: AbortSignal
+) => {
 
 
-
-
-  return `/api/v1/LinkPivot/getLinkPivotForTsd`
-}
-
-export const getLinkPivotLinkPivotForTSD = async (timeSpaceDiagramOptions?: TimeSpaceDiagramOptions, options?: RequestInit): Promise<getLinkPivotLinkPivotForTSDResponse> => {
-
-  return reportsRequest<getLinkPivotLinkPivotForTSDResponse>(getGetLinkPivotLinkPivotForTSDUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      timeSpaceDiagramOptions,)
-  }
-);}
-
+      return reportsRequest<LinkPivotForTsd[]>(
+      {url: `/api/v1/LinkPivot/getLinkPivotForTsd`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: timeSpaceDiagramOptions, signal
+    },
+      );
+    }
 
 
 
@@ -210,47 +148,20 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getGetLinkPivotLinkPivotForTSDMutationOptions(options));
     }
-    export type getLinkPivotTestDataResponse200 = {
-  data: LinkPivotResult
-  status: 200
-}
-
-export type getLinkPivotTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLinkPivotTestDataResponseSuccess = (getLinkPivotTestDataResponse200) & {
-  headers: Headers;
-};
-export type getLinkPivotTestDataResponseError = (getLinkPivotTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLinkPivotTestDataResponse = (getLinkPivotTestDataResponseSuccess | getLinkPivotTestDataResponseError)
-
-export const getGetLinkPivotTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/LinkPivot/test`
-}
-
-/**
+    /**
  * @summary Get example data for testing
  */
-export const getLinkPivotTestData = async ( options?: RequestInit): Promise<getLinkPivotTestDataResponse> => {
+export const getLinkPivotTestData = (
 
-  return reportsRequest<getLinkPivotTestDataResponse>(getGetLinkPivotTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<LinkPivotResult>(
+      {url: `/api/v1/LinkPivot/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -271,7 +182,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLinkPivotTestData>>> = ({ signal }) => getLinkPivotTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLinkPivotTestData>>> = ({ signal }) => getLinkPivotTestData(signal);
 
 
 
@@ -305,53 +216,22 @@ export function useGetLinkPivotTestData<TData = Awaited<ReturnType<typeof getLin
 
 
 
-export type getLinkPivotReportDataResponse200 = {
-  data: LinkPivotResult
-  status: 200
-}
-
-export type getLinkPivotReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLinkPivotReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLinkPivotReportDataResponseSuccess = (getLinkPivotReportDataResponse200) & {
-  headers: Headers;
-};
-export type getLinkPivotReportDataResponseError = (getLinkPivotReportDataResponse400 | getLinkPivotReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLinkPivotReportDataResponse = (getLinkPivotReportDataResponseSuccess | getLinkPivotReportDataResponseError)
-
-export const getGetLinkPivotReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/LinkPivot/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getLinkPivotReportData = async (linkPivotOptions?: LinkPivotOptions, options?: RequestInit): Promise<getLinkPivotReportDataResponse> => {
+export const getLinkPivotReportData = (
+    linkPivotOptions?: LinkPivotOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getLinkPivotReportDataResponse>(getGetLinkPivotReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      linkPivotOptions,)
-  }
-);}
 
+      return reportsRequest<LinkPivotResult>(
+      {url: `/api/v1/LinkPivot/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: linkPivotOptions, signal
+    },
+      );
+    }
 
 
 

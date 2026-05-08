@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getLeftTurnGapReportDataCheckTestDataResponse200 = {
-  data: LeftTurnGapDataCheckResult
-  status: 200
-}
-
-export type getLeftTurnGapReportDataCheckTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnGapReportDataCheckTestDataResponseSuccess = (getLeftTurnGapReportDataCheckTestDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnGapReportDataCheckTestDataResponseError = (getLeftTurnGapReportDataCheckTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnGapReportDataCheckTestDataResponse = (getLeftTurnGapReportDataCheckTestDataResponseSuccess | getLeftTurnGapReportDataCheckTestDataResponseError)
-
-export const getGetLeftTurnGapReportDataCheckTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnGapReportDataCheck/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getLeftTurnGapReportDataCheckTestData = async ( options?: RequestInit): Promise<getLeftTurnGapReportDataCheckTestDataResponse> => {
+export const getLeftTurnGapReportDataCheckTestData = (
 
-  return reportsRequest<getLeftTurnGapReportDataCheckTestDataResponse>(getGetLeftTurnGapReportDataCheckTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<LeftTurnGapDataCheckResult>(
+      {url: `/api/v1/LeftTurnGapReportDataCheck/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnGapReportDataCheckTestData>>> = ({ signal }) => getLeftTurnGapReportDataCheckTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeftTurnGapReportDataCheckTestData>>> = ({ signal }) => getLeftTurnGapReportDataCheckTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetLeftTurnGapReportDataCheckTestData<TData = Awaited<ReturnT
 
 
 
-export type getLeftTurnGapReportDataCheckReportDataResponse200 = {
-  data: LeftTurnGapDataCheckResult
-  status: 200
-}
-
-export type getLeftTurnGapReportDataCheckReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getLeftTurnGapReportDataCheckReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLeftTurnGapReportDataCheckReportDataResponseSuccess = (getLeftTurnGapReportDataCheckReportDataResponse200) & {
-  headers: Headers;
-};
-export type getLeftTurnGapReportDataCheckReportDataResponseError = (getLeftTurnGapReportDataCheckReportDataResponse400 | getLeftTurnGapReportDataCheckReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getLeftTurnGapReportDataCheckReportDataResponse = (getLeftTurnGapReportDataCheckReportDataResponseSuccess | getLeftTurnGapReportDataCheckReportDataResponseError)
-
-export const getGetLeftTurnGapReportDataCheckReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/LeftTurnGapReportDataCheck/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getLeftTurnGapReportDataCheckReportData = async (leftTurnGapDataCheckOptions?: LeftTurnGapDataCheckOptions, options?: RequestInit): Promise<getLeftTurnGapReportDataCheckReportDataResponse> => {
+export const getLeftTurnGapReportDataCheckReportData = (
+    leftTurnGapDataCheckOptions?: LeftTurnGapDataCheckOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getLeftTurnGapReportDataCheckReportDataResponse>(getGetLeftTurnGapReportDataCheckReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      leftTurnGapDataCheckOptions,)
-  }
-);}
 
+      return reportsRequest<LeftTurnGapDataCheckResult>(
+      {url: `/api/v1/LeftTurnGapReportDataCheck/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: leftTurnGapDataCheckOptions, signal
+    },
+      );
+    }
 
 
 

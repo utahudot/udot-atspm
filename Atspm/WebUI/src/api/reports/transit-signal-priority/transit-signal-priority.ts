@@ -30,47 +30,20 @@ import { reportsRequest } from '../../../lib/axios';
 
 
 
-export type getTransitSignalPriorityTestDataResponse200 = {
-  data: TransitSignalPriorityResult[]
-  status: 200
-}
-
-export type getTransitSignalPriorityTestDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTransitSignalPriorityTestDataResponseSuccess = (getTransitSignalPriorityTestDataResponse200) & {
-  headers: Headers;
-};
-export type getTransitSignalPriorityTestDataResponseError = (getTransitSignalPriorityTestDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTransitSignalPriorityTestDataResponse = (getTransitSignalPriorityTestDataResponseSuccess | getTransitSignalPriorityTestDataResponseError)
-
-export const getGetTransitSignalPriorityTestDataUrl = () => {
-
-
-
-
-  return `/api/v1/TransitSignalPriority/test`
-}
-
 /**
  * @summary Get example data for testing
  */
-export const getTransitSignalPriorityTestData = async ( options?: RequestInit): Promise<getTransitSignalPriorityTestDataResponse> => {
+export const getTransitSignalPriorityTestData = (
 
-  return reportsRequest<getTransitSignalPriorityTestDataResponse>(getGetTransitSignalPriorityTestDataUrl(),
-  {
-    ...options,
-    method: 'GET'
+ signal?: AbortSignal
+) => {
 
 
-  }
-);}
-
+      return reportsRequest<TransitSignalPriorityResult[]>(
+      {url: `/api/v1/TransitSignalPriority/test`, method: 'GET', signal
+    },
+      );
+    }
 
 
 
@@ -91,7 +64,7 @@ const {query: queryOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTransitSignalPriorityTestData>>> = ({ signal }) => getTransitSignalPriorityTestData({ signal });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTransitSignalPriorityTestData>>> = ({ signal }) => getTransitSignalPriorityTestData(signal);
 
 
 
@@ -125,53 +98,22 @@ export function useGetTransitSignalPriorityTestData<TData = Awaited<ReturnType<t
 
 
 
-export type getTransitSignalPriorityReportDataResponse200 = {
-  data: TransitSignalPriorityResult[]
-  status: 200
-}
-
-export type getTransitSignalPriorityReportDataResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type getTransitSignalPriorityReportDataResponse406 = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getTransitSignalPriorityReportDataResponseSuccess = (getTransitSignalPriorityReportDataResponse200) & {
-  headers: Headers;
-};
-export type getTransitSignalPriorityReportDataResponseError = (getTransitSignalPriorityReportDataResponse400 | getTransitSignalPriorityReportDataResponse406) & {
-  headers: Headers;
-};
-
-export type getTransitSignalPriorityReportDataResponse = (getTransitSignalPriorityReportDataResponseSuccess | getTransitSignalPriorityReportDataResponseError)
-
-export const getGetTransitSignalPriorityReportDataUrl = () => {
-
-
-
-
-  return `/api/v1/TransitSignalPriority/getReportData`
-}
-
 /**
  * @summary Get report data
  */
-export const getTransitSignalPriorityReportData = async (transitSignalPriorityOptions?: TransitSignalPriorityOptions, options?: RequestInit): Promise<getTransitSignalPriorityReportDataResponse> => {
+export const getTransitSignalPriorityReportData = (
+    transitSignalPriorityOptions?: TransitSignalPriorityOptions,
+ signal?: AbortSignal
+) => {
 
-  return reportsRequest<getTransitSignalPriorityReportDataResponse>(getGetTransitSignalPriorityReportDataUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      transitSignalPriorityOptions,)
-  }
-);}
 
+      return reportsRequest<TransitSignalPriorityResult[]>(
+      {url: `/api/v1/TransitSignalPriority/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: transitSignalPriorityOptions, signal
+    },
+      );
+    }
 
 
 
