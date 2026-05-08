@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/EventAggregationHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
+            scope.ServiceProvider.PrintHostInformation();
+
             Console.WriteLine($"{_options.Value}");
             Console.WriteLine($"{_options.Value.EventAggregationQueryOptions}");
 
@@ -58,7 +60,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 workflow.Input.Complete();
 
-                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+
                 await workflow.Output.Completion;
                 await result.Completion;
             }

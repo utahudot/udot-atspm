@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for DataApi - Utah.Udot.Atspm.DataApi.Controllers/AggregationController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
@@ -28,7 +27,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// </summary>
     /// <inheritdoc/>
     [ApiVersion("1.0")]
-    [Authorize(Policy = "CanViewData")]
     public class AggregationController(IAggregationRepository repository, ILocationRepository locations, ILogger<AggregationController> log)
         : DataControllerBase<CompressedAggregationBase, AggregationModelBase>(repository, locations, log)
     {

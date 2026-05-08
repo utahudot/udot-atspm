@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/FaqController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,15 +25,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// FAQ Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class FaqController : GeneralPolicyControllerBase<Faq, int>
+    public class FaqController(IFaqRepository repository) : GeneralPolicyControllerBase<Faq, int>(repository)
     {
-        private readonly IFaqRepository _repository;
-
-        /// <inheritdoc/>
-        public FaqController(IFaqRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IFaqRepository _repository = repository;
 
         #region NavigationProperties
 

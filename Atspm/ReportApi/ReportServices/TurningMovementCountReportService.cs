@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/TurningMovementCountReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
     /// </summary>
     public class TurningMovementCountReportService : ReportServiceBase<TurningMovementCountsOptions, TurningMovementCountsResult>
     {
+        private const string CombinedThruRightMovementType = "Thru + Thru-Right";
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
         private readonly ILocationRepository LocationRepository;
@@ -94,29 +95,33 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             //Get Lane results by direction and movement type and bin size anc create a list of TurningMovementCountData for each direction and movement type
             foreach (var direction in Location.Approaches.Select(a => a.DirectionTypeId).Distinct())
             {
-                var laneResultsByDirection = finalLaneResultcheck.Where(r => r.Direction == direction.GetAttributeOfType<DisplayAttribute>().Name).ToList();
-                var movementTypes = laneResultsByDirection.Select(r => r.MovementType).Distinct().ToList();
-                foreach (var movementType in movementTypes)
+                var distinctLaneTypesByDirection = finalLaneResultcheck.Where(r => r.Direction == direction.GetAttributeOfType<DisplayAttribute>().Name).Select(i => i.LaneType).Distinct().ToList();
+                foreach (var laneTypeByDirection in distinctLaneTypesByDirection)
                 {
-                    var laneResultsByMovementType = laneResultsByDirection.Where(r => r.MovementType == movementType).ToList();
-                    if (laneResultsByMovementType.IsNullOrEmpty())
+                    var laneResultsByDirection = finalLaneResultcheck.Where(r => r.Direction == direction.GetAttributeOfType<DisplayAttribute>().Name && r.LaneType == laneTypeByDirection).ToList();
+                    var movementTypes = laneResultsByDirection.Select(r => r.MovementType).Distinct().ToList();
+                    foreach (var movementType in movementTypes)
                     {
-                        continue;
-                    }
-                    var turningMovementCountData = new TurningMovementCountData
-                    {
-                        Direction = direction.GetAttributeOfType<DisplayAttribute>().Name,
-                        LaneType = laneResultsByMovementType.FirstOrDefault().LaneType,
-                        MovementType = movementType
-                    };
+                        var laneResultsByMovementType = laneResultsByDirection.Where(r => r.MovementType == movementType).ToList();
+                        if (laneResultsByMovementType.IsNullOrEmpty())
+                        {
+                            continue;
+                        }
+                        var turningMovementCountData = new TurningMovementCountData
+                        {
+                            Direction = direction.GetAttributeOfType<DisplayAttribute>().Name,
+                            LaneType = laneResultsByMovementType.FirstOrDefault().LaneType,
+                            MovementType = movementType
+                        };
 
-                    //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes
-                    turningMovementCountData.Volumes = laneResultsByMovementType
-                        .SelectMany(r => r.TotalVolumes)
-                        .GroupBy(v => v.Timestamp)
-                        .Select(g => new DataPointForInt(g.Key, g.Sum(v => v.Value)))
-                        .ToList();
-                    finalResultcheck.Table.Add(turningMovementCountData);
+                        //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes
+                        turningMovementCountData.Volumes = laneResultsByMovementType
+                            .SelectMany(r => r.TotalVolumes)
+                            .GroupBy(v => v.Timestamp)
+                            .Select(g => new DataPointForInt(g.Key, g.Sum(v => v.Value)))
+                            .ToList();
+                        finalResultcheck.Table.Add(turningMovementCountData);
+                    }
                 }
             }
             ComputePeakHourAndFactor(finalResultcheck, parameter.Start, parameter.End, parameter.BinSize);
@@ -236,6 +241,30 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 : Math.Round((double)bestSum / denom, 2);
         }
 
+        private static IReadOnlyList<(string DisplayName, MovementTypes[] MovementTypes)> GetMovementTypeGroups(
+            bool combineThruRight)
+        {
+            if (combineThruRight)
+            {
+                return new List<(string DisplayName, MovementTypes[] MovementTypes)>
+                {
+                    (MovementTypes.L.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.L }),
+                    (MovementTypes.TL.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.TL }),
+                    (CombinedThruRightMovementType, new[] { MovementTypes.T, MovementTypes.TR }),
+                    (MovementTypes.R.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.R }),
+                };
+            }
+
+            return new List<(string DisplayName, MovementTypes[] MovementTypes)>
+            {
+                (MovementTypes.L.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.L }),
+                (MovementTypes.TL.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.TL }),
+                (MovementTypes.T.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.T }),
+                (MovementTypes.TR.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.TR }),
+                (MovementTypes.R.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.R }),
+            };
+        }
+
         private async Task<IEnumerable<TurningMovementCountsLanesResult>> GetChartDataForLaneType(
             Location Location,
             LaneTypes laneType,
@@ -253,12 +282,11 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 var detectorsForDirection = Location.Approaches.Where(a => a.DirectionTypeId == direction).SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).ToList();
 
-                var movementTypesSorted = new List<MovementTypes> { MovementTypes.L, MovementTypes.TL, MovementTypes.T, MovementTypes.TR, MovementTypes.R };
-                foreach (var movementType in movementTypesSorted)
+                foreach (var movementTypeGroup in GetMovementTypeGroups(options.CombineThruRight))
                 {
-                    var movementTypeDetectors = new List<Detector>();
-
-                    movementTypeDetectors = detectorsForDirection.Where(d => d.MovementType == movementType).ToList();
+                    var movementTypeDetectors = detectorsForDirection
+                        .Where(d => movementTypeGroup.MovementTypes.Contains(d.MovementType))
+                        .ToList();
 
                     if (!movementTypeDetectors.IsNullOrEmpty())
                     {
@@ -267,7 +295,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                             plans,
                             controllerEventLogs,
                             movementTypeDetectors,
-                            movementType,
+                            movementTypeGroup.DisplayName,
                             laneType,
                             Location.LocationIdentifier,
                             Location.LocationDescription(),
@@ -286,7 +314,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             List<Plan> planEvents,
             List<IndianaEvent> controllerEventLogs,
             List<Detector> detectors,
-            MovementTypes movementType,
+            string movementTypeLabel,
             LaneTypes laneType,
             string locationIdentifier,
             string LocationDescription,
@@ -306,7 +334,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var result = turningMovementCountsService.GetChartData(
                 detectors,
                 laneType,
-                movementType,
+                movementTypeLabel,
                 directionType,
                 options,
                 detectorEvents,

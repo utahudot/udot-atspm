@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/DetectorController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,15 +29,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Detector Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectorController : LocationPolicyControllerBase<Detector, int>
+    public class DetectorController(IDetectorRepository repository) : LocationPolicyControllerBase<Detector, int>(repository)
     {
-        private readonly IDetectorRepository _repository;
-
-        /// <inheritdoc/>
-        public DetectorController(IDetectorRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IDetectorRepository _repository = repository;
 
         #region NavigationProperties
 

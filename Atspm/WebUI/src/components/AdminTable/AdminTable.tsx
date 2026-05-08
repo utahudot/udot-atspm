@@ -18,15 +18,20 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Toolbar,
   Typography,
   useTheme,
 } from '@mui/material'
 import type { ReactElement } from 'react'
 import React, { cloneElement, useMemo, useState } from 'react'
 
-interface HasId {
+interface BaseObj {
   id: number
   name: string
+  created: string
+  createdBy: string
+  modified: string
+  modifiedBy: string
 }
 
 interface DeleteModalProps<T> {
@@ -48,16 +53,19 @@ interface CreateModalProps {
   onClose?: () => void
 }
 
-interface CustomCellConfig<T> {
-  headerKey: keyof T
-  component: (value: T[keyof T], row: T) => React.ReactNode
+interface Cell<T> {
+  key: string
+  label: string
+  align?: 'right' | 'left' | 'center'
+  component?: (value: T[keyof T], row: T) => React.ReactNode
+  customSortFunction?: (a: T, b: T) => number
 }
 
-interface AdminChartProps<T extends HasId> {
-  headers: string[]
-  headerKeys: (keyof T)[]
+interface AdminChartProps<T extends BaseObj> {
+  cells: Cell<T>[]
   data: T[]
   pageName: string
+  marginTop?: number | string
   hasEditPrivileges?: boolean
   hasDeletePrivileges?: boolean
   protectedFromDeleteItems?: string[]
@@ -65,16 +73,16 @@ interface AdminChartProps<T extends HasId> {
   editModal?: ReactElement<EditModalProps<T>>
   deleteModal?: ReactElement<DeleteModalProps<T>>
   createModal?: ReactElement<CreateModalProps>
-  customCellRender?: CustomCellConfig<T>[]
+  hideAuditProperties?: boolean
 }
 
 type Order = 'asc' | 'desc'
 
-const AdminTable = <T extends HasId>({
-  headers,
-  headerKeys,
+const AdminTable = <T extends BaseObj>({
+  cells,
   data,
   pageName,
+  marginTop,
   hasEditPrivileges,
   hasDeletePrivileges,
   protectedFromDeleteItems,
@@ -82,7 +90,7 @@ const AdminTable = <T extends HasId>({
   editModal,
   deleteModal,
   createModal,
-  customCellRender,
+  hideAuditProperties,
 }: AdminChartProps<T>) => {
   const theme = useTheme()
   const { isSidebarOpen } = useSidebarStore()
@@ -125,11 +133,33 @@ const AdminTable = <T extends HasId>({
     setOrderBy(property)
   }
 
+  const AdminCell = ({ cell, width }: { cell: Cell<T>; width?: number }) => {
+    const { key, label, align } = cell
+    return (
+      <TableCell
+        sortDirection={orderBy === label ? order : false}
+        align={align}
+        width={width}
+        sx={{
+          backgroundColor: '#dae5f0',
+        }}
+      >
+        <TableSortLabel
+          active={orderBy === key}
+          direction={orderBy === key ? order : 'asc'}
+          onClick={() => handleRequestSort(key as keyof T)}
+        >
+          {label}
+        </TableSortLabel>
+      </TableCell>
+    )
+  }
+
   const sortedData = useMemo(
     () =>
       [...data].sort((a, b) => {
-        let aValue = a[orderBy] as string | number
-        let bValue = b[orderBy] as string | number
+        let aValue = a[orderBy] as string | number | null
+        let bValue = b[orderBy] as string | number | null
 
         if (typeof aValue === 'string' && typeof bValue === 'string') {
           aValue = aValue.toLowerCase()
@@ -137,6 +167,8 @@ const AdminTable = <T extends HasId>({
         }
 
         if (orderBy === '') return 0
+        if (!aValue) return 1
+        if (!bValue) return -1
         if (aValue < bValue) return order === 'asc' ? -1 : 1
         if (aValue > bValue) return order === 'asc' ? 1 : -1
         return 0
@@ -173,65 +205,94 @@ const AdminTable = <T extends HasId>({
     })
   }
 
+  const resolvedMarginTop = marginTop ?? (createModal ? -4 : 3)
+  const actionsColumnWidth = 100
+  const stickyActionsCellSx = {
+    position: 'sticky',
+    right: 0,
+    width: actionsColumnWidth,
+    minWidth: actionsColumnWidth,
+    boxShadow: 'inset 1px 0 0 rgba(0, 0, 0, 0.12)',
+  }
+
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
         minWidth: '375px',
-        marginTop: -4,
+        marginTop: resolvedMarginTop,
         [theme.breakpoints.up('md')]: {
           maxWidth: isSidebarOpen ? 'calc(100vw - 340px)' : '100%',
         },
       }}
     >
-      <Box display="flex" justifyContent="flex-end" alignItems="center">
-        {createModal && (
-          <Button
-            variant="contained"
-            color="success"
-            startIcon={<AddIcon />}
-            sx={{ mb: 3 }}
-            onClick={() => setIsCreateModalOpen(true)}
+      {createModal && (
+        <Toolbar disableGutters>
+          <Box
+            sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1.5 }}
           >
-            New {pageName}
-          </Button>
-        )}
-
-        {!createModal && <Box sx={{ mb: 7.5 }}></Box>}
-      </Box>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<AddIcon />}
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              New {pageName}
+            </Button>
+          </Box>
+        </Toolbar>
+      )}
 
       <Box>
         <TableContainer
           component={Paper}
-          sx={{ maxHeight: 'calc(100vh - 190px)' }}
+          sx={{
+            maxHeight: 'calc(100vh - 190px)',
+            overflowX: 'auto',
+          }}
         >
-          <Table stickyHeader size="small">
+          <Table
+            stickyHeader
+            size="small"
+            sx={{
+              minWidth: '100%',
+              width: 'max-content',
+            }}
+          >
             <TableHead>
               <TableRow>
-                {headers.map((header) => (
-                  <TableCell
-                    key={header}
-                    sortDirection={orderBy === header ? order : false}
-                    sx={{ backgroundColor: '#dae5f0' }}
-                  >
-                    <TableSortLabel
-                      active={orderBy === header}
-                      direction={orderBy === header ? order : 'asc'}
-                      onClick={() => handleRequestSort(header)}
-                    >
-                      {header}
-                    </TableSortLabel>
-                  </TableCell>
+                {cells.map((cell) => (
+                  <AdminCell key={cell.key} cell={cell} />
                 ))}
+                {!hideAuditProperties && (
+                  <>
+                    <AdminCell
+                      cell={{ key: 'modified', label: 'Modified On' }}
+                      width={150}
+                    />
+                    <AdminCell
+                      cell={{ key: 'modifiedBy', label: 'Modified By' }}
+                      width={150}
+                    />
+                    <AdminCell
+                      cell={{ key: 'created', label: 'Created On' }}
+                      width={140}
+                    />
+                    <AdminCell
+                      cell={{ key: 'createdBy', label: 'Created By' }}
+                      width={150}
+                    />
+                  </>
+                )}
                 {(hasEditPrivileges || hasDeletePrivileges) && (
                   <TableCell
+                    align="right"
                     sx={{
-                      width: 100,
-                      textAlign: 'right',
-                      position: 'sticky',
                       top: 0,
                       backgroundColor: '#dae5f0',
+                      zIndex: 3,
+                      ...stickyActionsCellSx,
                     }}
                   >
                     Actions
@@ -242,28 +303,41 @@ const AdminTable = <T extends HasId>({
             <TableBody>
               {sortedData.map((row) => (
                 <TableRow hover key={row.id}>
-                  {headerKeys.map((header) => {
-                    const customRenderer = customCellRender?.find(
-                      (config) => config.headerKey === header
-                    )
-
+                  {cells.map((cell) => {
+                    const Component = cell.component
                     return (
                       <TableCell
-                        key={
-                          typeof header === 'symbol'
-                            ? header.toString()
-                            : header
-                        }
-                        sx={{ height: '53px' }}
+                        key={cell.key}
+                        align={cell?.align || 'left'}
+                        sx={{
+                          height: '53px',
+                        }}
                       >
-                        {customRenderer
-                          ? customRenderer.component(row[header], row)
-                          : (row[header] as string | number)}
+                        {Component ? (
+                          <Component value={row[cell.key]} row={row} />
+                        ) : (
+                          (row[cell.key] as string | number)
+                        )}
                       </TableCell>
                     )
                   })}
+                  {!hideAuditProperties && (
+                    <>
+                      <TableCell>{row.modified}</TableCell>
+                      <TableCell>{row.modifiedBy}</TableCell>
+                      <TableCell>{row.created}</TableCell>
+                      <TableCell>{row.createdBy}</TableCell>
+                    </>
+                  )}
                   {(hasEditPrivileges || hasDeletePrivileges) && (
-                    <TableCell sx={{ width: 100, textAlign: 'right' }}>
+                    <TableCell
+                      align="right"
+                      sx={{
+                        backgroundColor: theme.palette.background.paper,
+                        zIndex: 1,
+                        ...stickyActionsCellSx,
+                      }}
+                    >
                       <IconButton
                         aria-label="more"
                         aria-controls="actions-menu"
@@ -299,7 +373,7 @@ const AdminTable = <T extends HasId>({
         {hasDeletePrivileges &&
           selectedRow &&
           !protectedFromDeleteItems?.includes(
-            selectedRow[headerKeys[0]] as string
+            selectedRow[cells[0].key] as string
           ) && (
             <MenuItem onClick={handleDeleteClick}>
               <ListItemIcon>

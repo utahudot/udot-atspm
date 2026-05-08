@@ -39,13 +39,13 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Call completed successfully and returns the list of data types.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AggregationResult"
+                    "$ref": "#/components/schemas/DataTypeMeta"
                   }
                 }
               }
@@ -183,7 +183,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -191,9 +191,9 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully streamed",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -204,9 +204,9 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range or malformed request.",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -227,7 +227,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -289,20 +289,20 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ApproachSpeedResult"
+                    "$ref": "#/components/schemas/CompressedDataBase"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range or malformed request.",
             "content": {
               "application/json": {
                 "schema": {
@@ -477,7 +477,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -485,9 +485,9 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully streamed",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -498,9 +498,9 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -521,7 +521,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -681,20 +681,20 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/LeftTurnGapAnalysisResult"
+                    "$ref": "#/components/schemas/CompressedDataBase"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
               "application/json": {
                 "schema": {
@@ -871,20 +871,21 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/LeftTurnGapReportResult"
+                    "type": "string",
+                    "format": "date"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1452,7 +1453,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully streamed",
             "content": {
               "application/json": {
                 "schema": {
@@ -1642,7 +1643,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2206,20 +2207,20 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PurdueCoordinationDiagramResult"
+                    "$ref": "#/components/schemas/CompressedEventLogBase"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2342,7 +2343,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Call completed successfully and returns the list of data types.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2440,7 +2441,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SplitFailsResult"
+                    "$ref": "#/components/schemas/DataTypeMeta"
                   }
                 }
               }
@@ -2640,7 +2641,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2661,9 +2662,9 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range or malformed request.",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2684,7 +2685,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -2844,7 +2845,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2857,7 +2858,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range or malformed request.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3032,7 +3033,7 @@
           "406": {
             "description": "Not Acceptable",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3040,9 +3041,9 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully streamed",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -3053,9 +3054,9 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
-              "application/json": {
+              "application/x-ndjson": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -3230,7 +3231,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3243,7 +3244,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid date range, malformed request, or invalid data type.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3445,7 +3446,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "Data successfully retrieved (may be empty).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3670,50 +3671,11 @@
           "binSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "getPermissivePhase": {
-            "type": "boolean"
-          },
-          "getVolume": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
       },
-      "ApproachDelayPlan": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "averageDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "totalDelay": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ApproachDelayResult": {
+      "ApproachPcdAggregation": {
         "type": "object",
         "properties": {
           "start": {
@@ -3728,19 +3690,11 @@
             "type": "string",
             "nullable": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
+          "arrivalsOnGreen": {
             "type": "integer",
             "format": "int32"
           },
@@ -3799,93 +3753,29 @@
             "type": "integer",
             "format": "int32"
           },
-          "metricTypeId": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ApproachSpeedResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
+          "arrivalsOnYellow": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
+          "isProtectedPhase": {
+            "type": "boolean"
           },
           "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "phaseDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "detectionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "distanceFromStopBar": {
+          "totalDelay": {
             "type": "integer",
             "format": "int32"
           },
-          "postedSpeed": {
-            "type": "number",
-            "format": "double"
-          },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SpeedPlan"
-            },
-            "nullable": true
-          },
-          "averageSpeeds": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "eightyFifthSpeeds": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "fifteenthSpeeds": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
+          "volume": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
       },
-      "ApproachVolumeOptions": {
+      "ApproachSpeedAggregation": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -3904,116 +3794,15 @@
             "type": "integer",
             "format": "int32"
           },
-          "showDirectionalSplits": {
-            "type": "boolean"
-          },
-          "getVolume": {
-            "type": "boolean"
-          },
-          "showNbEbVolume": {
-            "type": "boolean"
-          },
-          "showSbWbVolume": {
-            "type": "boolean"
-          },
-          "showTMCDetection": {
-            "type": "boolean"
-          },
-          "showAdvanceDetection": {
-            "type": "boolean"
-          },
-          "metricTypeId": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ApproachVolumeResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "primaryDirectionName": {
-            "type": "string",
-            "nullable": true
-          },
-          "opposingDirectionName": {
-            "type": "string",
-            "nullable": true
-          },
-          "distanceFromStopBar": {
+          "speed15th": {
             "type": "integer",
             "format": "int32"
           },
-          "detectorType": {
-            "type": "string",
-            "nullable": true
+          "speed85th": {
+            "type": "integer",
+            "format": "int32"
           },
-          "primaryDirectionVolumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "opposingDirectionVolumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "combinedDirectionVolumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "primaryDFactors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "opposingDFactors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "summaryData": {
-            "$ref": "#/components/schemas/SummaryData"
-          }
-        },
-        "additionalProperties": false
-      },
-      "AreaDTO": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
+          "speedVolume": {
             "type": "integer",
             "format": "int32"
           }
@@ -4038,47 +3827,11 @@
           "binSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "getPermissivePhase": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
       },
-      "ArrivalOnRedPlan": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "percentArrivalOnRed": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentRedTime": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ArrivalOnRedResult": {
+      "ApproachSplitFailAggregation": {
         "type": "object",
         "properties": {
           "start": {
@@ -4093,77 +3846,19 @@
             "type": "string",
             "nullable": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
+          "cycles": {
             "type": "integer",
             "format": "int32"
           },
-          "phaseDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "totalDetectorHits": {
-            "type": "number",
-            "format": "double"
-          },
-          "totalArrivalOnRed": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentArrivalOnRed": {
-            "type": "number",
-            "format": "double"
-          },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ArrivalOnRedPlan"
-            },
-            "nullable": true
-          },
-          "percentArrivalsOnRed": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "totalVehicles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "arrivalsOnRed": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "BarStack": {
-        "type": "object",
-        "properties": {
-          "x": {
+          "greenOccupancySum": {
             "type": "integer",
             "format": "int32"
           },
-          "y": {
+          "greenTimeSum": {
             "type": "integer",
             "format": "int32"
           },
@@ -4195,58 +3890,26 @@
           "value": {
             "type": "integer",
             "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DataPointBase": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DataPointForDetectorEvent": {
-        "type": "object",
-        "properties": {
-          "detectorOn": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
           },
-          "detectorOff": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
+          "redTimeSum": {
+            "type": "integer",
+            "format": "int32"
           },
-          "value": {
+          "splitFailures": {
             "type": "integer",
             "format": "int32"
           }
         },
         "additionalProperties": false
       },
-      "DataPointForDouble": {
+      "ApproachYellowRedActivationAggregation": {
         "type": "object",
         "properties": {
-          "timestamp": {
+          "start": {
             "type": "string",
             "format": "date-time"
           },
-          "value": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DataPointForInt": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
+          "end": {
             "type": "string",
             "format": "date-time"
           },
@@ -4262,7 +3925,7 @@
         "properties": {
           "initialX": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "isDetectorOn": {
             "type": "boolean",
@@ -4372,80 +4035,28 @@
             "type": "integer",
             "format": "int32"
           },
-          "exclude": {
-            "type": "boolean"
+          "totalRedLightViolations": {
+            "type": "integer",
+            "format": "int32"
           },
-          "detectors": {
+          "violationTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "yellowActivations": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Assembly": {
+        "type": "object",
+        "properties": {
+          "definedTypes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/FilterDetector"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "FilterDetector": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "exclude": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "FilterDirection": {
-        "type": "object",
-        "properties": {
-          "directionTypeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "include": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "FilterMovement": {
-        "type": "object",
-        "properties": {
-          "movementTypeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "include": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "FilterSignal": {
-        "type": "object",
-        "properties": {
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "exclude": {
-            "type": "boolean"
-          },
-          "approaches": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FilterApproach"
+              "$ref": "#/components/schemas/TypeInfo"
             },
             "nullable": true
           }
@@ -4490,43 +4101,8 @@
           "daysOfWeek": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "format": "int32"
+              "$ref": "#/components/schemas/Type"
             },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "GapDurationResult": {
-        "type": "object",
-        "properties": {
-          "gapDurationPercent": {
-            "type": "number",
-            "format": "double"
-          },
-          "capacity": {
-            "type": "number",
-            "format": "double"
-          },
-          "demand": {
-            "type": "number",
-            "format": "double"
-          },
-          "acceptableGaps": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "direction": {
-            "type": "string",
-            "nullable": true
-          },
-          "opposingDirection": {
-            "type": "string",
             "nullable": true,
             "readOnly": true
           }
@@ -4542,11 +4118,12 @@
           },
           "start": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true,
+            "readOnly": true,
+            "deprecated": true
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "entryPoint": {
+            "$ref": "#/components/schemas/MethodInfo"
           },
           "metricTypeId": {
             "type": "integer",
@@ -4568,65 +4145,51 @@
         "properties": {
           "start": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true,
+            "readOnly": true
           },
-          "end": {
+          "isDynamic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "location": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true,
+            "readOnly": true
           },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
+          "reflectionOnly": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "approachId": {
-            "type": "integer",
-            "format": "int32"
+          "isFullyTrusted": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "bins": {
+          "customAttributes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/BarStack"
+              "$ref": "#/components/schemas/CustomAttributeData"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "averageSplits": {
+          "escapedCodeBase": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true,
+            "deprecated": true
+          },
+          "manifestModule": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "modules": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "programmedSplits": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "yAxisBinSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "xAxisBinSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlanSplitMonitorData"
+              "$ref": "#/components/schemas/Module"
             },
             "nullable": true,
             "readOnly": true
@@ -4675,22 +4238,11 @@
         "properties": {
           "laneNumber": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int64",
+            "readOnly": true
           },
-          "movementType": {
-            "type": "string",
-            "nullable": true
-          },
-          "volume": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "laneType": {
-            "$ref": "#/components/schemas/LaneTypes"
+          "securityRuleSet": {
+            "$ref": "#/components/schemas/SecurityRuleSet"
           }
         },
         "additionalProperties": false
@@ -4708,7 +4260,7 @@
         ],
         "type": "string"
       },
-      "LeftTurnGapAnalysisOptions": {
+      "CompressedDataBase": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -4727,122 +4279,17 @@
             "type": "number",
             "format": "double"
           },
-          "gap1Max": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap2Min": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap2Max": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap3Min": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap3Max": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap4Min": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap4Max": {
-            "type": "number",
-            "format": "double",
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ILocationLayer"
+            },
             "nullable": true
-          },
-          "gap5Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap5Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap6Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap6Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap7Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap7Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap8Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap8Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap9Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap9Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap10Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap10Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "sumDurationGap1": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "sumDurationGap2": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "sumDurationGap3": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "trendLineGapThreshold": {
-            "type": "number",
-            "format": "double"
-          },
-          "binSize": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false
       },
-      "LeftTurnGapAnalysisResult": {
+      "CompressedEventLogBase": {
         "type": "object",
         "properties": {
           "start": {
@@ -4857,260 +4304,184 @@
             "type": "string",
             "nullable": true
           },
-          "locationDescription": {
-            "type": "string",
+          "dataType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventLogModelBase"
+            },
             "nullable": true
           },
-          "approachId": {
+          "deviceId": {
             "type": "integer",
             "format": "int32"
-          },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "phaseDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "detectionTypeDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "gap1Min": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap1Max": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap1Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap2Min": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap2Max": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap2Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap3Min": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap3Max": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap3Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap4Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap4Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap4Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap5Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap5Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap5Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap6Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap6Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap6Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap7Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap7Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap7Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap8Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap8Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap8Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap9Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap9Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap9Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap10Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap10Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "gap10Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "gap11Min": {
-            "type": "number",
-            "format": "double",
-            "nullable": true,
-            "readOnly": true
-          },
-          "gap11Max": {
-            "type": "number",
-            "format": "double",
-            "nullable": true,
-            "readOnly": true
-          },
-          "gap11Count": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true,
-            "readOnly": true
-          },
-          "sumDuration1": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "sumDuration2": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "sumDuration3": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "sumGreenTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "highestTotal": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "detectionTypeStr": {
-            "type": "string",
-            "nullable": true
-          },
-          "trendLineGapThreshold": {
-            "type": "number",
-            "format": "double"
-          },
-          "binSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "percentTurnableSeries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "LeftTurnGapDataCheckOptions": {
+      "ConstructorInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/MethodAttributes"
+          },
+          "methodImplementationFlags": {
+            "$ref": "#/components/schemas/MethodImplAttributes"
+          },
+          "callingConvention": {
+            "$ref": "#/components/schemas/CallingConventions"
+          },
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructor": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFinal": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isHideBySig": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isStatic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamily": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyAndAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyOrAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrivate": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructedGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethodDefinition": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "methodHandle": {
+            "$ref": "#/components/schemas/RuntimeMethodHandle"
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomAttributeData": {
+        "type": "object",
+        "properties": {
+          "attributeType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "constructor": {
+            "$ref": "#/components/schemas/ConstructorInfo"
+          },
+          "constructorArguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeTypedArgument"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "namedArguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeNamedArgument"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomAttributeNamedArgument": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -5121,9 +4492,8 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "typedValue": {
+            "$ref": "#/components/schemas/CustomAttributeTypedArgument"
           },
           "approachId": {
             "type": "integer",
@@ -5152,319 +4522,44 @@
         },
         "additionalProperties": false
       },
-      "LeftTurnGapDataCheckResult": {
+      "CustomAttributeTypedArgument": {
         "type": "object",
         "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
+          "argumentType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
+          "value": {
             "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "leftTurnVolumeOk": {
-            "type": "boolean"
-          },
-          "gapOutOk": {
-            "type": "boolean"
-          },
-          "pedCycleOk": {
-            "type": "boolean"
-          },
-          "insufficientDetectorEventCount": {
-            "type": "boolean"
-          },
-          "insufficientCycleAggregation": {
-            "type": "boolean"
-          },
-          "insufficientPhaseTermination": {
-            "type": "boolean"
-          },
-          "insufficientPedAggregations": {
-            "type": "boolean"
-          },
-          "insufficientSplitFailAggregations": {
-            "type": "boolean"
-          },
-          "insufficientLeftTurnGapAggregations": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
       },
-      "LeftTurnGapReportOptions": {
+      "DataTypeMeta": {
         "type": "object",
         "properties": {
-          "locationIdentifier": {
+          "name": {
             "type": "string",
+            "description": "The name of the property being described.",
             "nullable": true
           },
-          "start": {
+          "description": {
             "type": "string",
-            "format": "date-time"
+            "description": "The XML documentation summary associated with the property, if available.",
+            "nullable": true
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "approachIds": {
+          "properties": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "format": "int32"
+              "$ref": "#/components/schemas/PropertyMeta"
             },
-            "nullable": true
-          },
-          "daysOfWeek": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
-          },
-          "startHour": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "startMinute": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "endHour": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "endMinute": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "getAMPMPeakPeriod": {
-            "type": "boolean"
-          },
-          "getAMPMPeakHour": {
-            "type": "boolean"
-          },
-          "get24HourPeriod": {
-            "type": "boolean"
-          },
-          "getGapReport": {
-            "type": "boolean"
-          },
-          "acceptableGapPercentage": {
-            "type": "number",
-            "format": "double"
-          },
-          "getSplitFail": {
-            "type": "boolean"
-          },
-          "acceptableSplitFailPercentage": {
-            "type": "number",
-            "format": "double"
-          },
-          "getPedestrianCall": {
-            "type": "boolean"
-          },
-          "getConflictingVolume": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "LeftTurnGapReportResult": {
-        "type": "object",
-        "properties": {
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "signalId": {
-            "type": "string",
-            "nullable": true
-          },
-          "location": {
-            "type": "string",
-            "nullable": true
-          },
-          "get24HourPeriod": {
-            "type": "boolean"
-          },
-          "phaseType": {
-            "type": "string",
-            "nullable": true
-          },
-          "signalType": {
-            "type": "string",
-            "nullable": true
-          },
-          "speedLimit": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "peakPeriodDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-span"
-          },
-          "endTime": {
-            "type": "string",
-            "format": "date-span"
-          },
-          "cyclesWithSplitFailNum": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cyclesWithSplitFailPercent": {
-            "type": "number",
-            "format": "double"
-          },
-          "cyclesWithPedCallNum": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cyclesWithPedCallPercent": {
-            "type": "number",
-            "format": "double"
-          },
-          "crossProductValue": {
-            "type": "number",
-            "format": "double"
-          },
-          "calculatedVolumeBoundary": {
-            "type": "number",
-            "format": "double"
-          },
-          "gapDurationConsiderForStudy": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "splitFailsConsiderForStudy": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "pedActuationsConsiderForStudy": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "volumesConsiderForStudy": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "capacity": {
-            "type": "number",
-            "format": "double"
-          },
-          "demand": {
-            "type": "number",
-            "format": "double"
-          },
-          "vcRatio": {
-            "type": "number",
-            "format": "double"
-          },
-          "gapOutPercent": {
-            "type": "number",
-            "format": "double"
-          },
-          "opposingLanes": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "crossProductReview": {
-            "type": "boolean"
-          },
-          "decisionBoundariesReview": {
-            "type": "boolean"
-          },
-          "leftTurnVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "opposingThroughVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "crossProductConsiderForStudy": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "acceptableGapList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "percentCyclesWithPedsList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "demandList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "percentCyclesWithSplitFailList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "direction": {
-            "type": "string",
-            "nullable": true
-          },
-          "opposingDirection": {
-            "type": "string",
+            "description": "The collection of properties defined on the data type, each including\r\nits name and associated XML documentation summary.",
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Represents metadata describing a data type, including its own documentation\r\nand the metadata for each of its public properties."
       },
-      "LeftTurnSplitFailOptions": {
+      "DetectorEventCountAggregation": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -5483,56 +4578,13 @@
             "type": "integer",
             "format": "int32"
           },
-          "startHour": {
+          "detectorPrimaryId": {
             "type": "integer",
             "format": "int32"
           },
-          "startMinute": {
+          "eventCount": {
             "type": "integer",
             "format": "int32"
-          },
-          "endHour": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "endMinute": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "daysOfWeek": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "LeftTurnSplitFailResult": {
-        "type": "object",
-        "properties": {
-          "splitFailPercent": {
-            "type": "number",
-            "format": "double"
-          },
-          "cyclesWithSplitFails": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "percentCyclesWithSplitFailList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true,
-            "readOnly": true
-          },
-          "direction": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -5567,165 +4619,65 @@
         },
         "additionalProperties": false
       },
-      "LinkPivotApproachLink": {
+      "EventInfo": {
         "type": "object",
         "properties": {
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "location": {
-            "type": "string",
-            "nullable": true
-          },
-          "upstreamApproachDirection": {
-            "type": "string",
-            "nullable": true
-          },
-          "downstreamLocationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "downstreamLocation": {
-            "type": "string",
-            "nullable": true
-          },
-          "downstreamApproachDirection": {
-            "type": "string",
-            "nullable": true
-          },
-          "paogUpstreamBefore": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "paogUpstreamPredicted": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "paogDownstreamBefore": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "paogDownstreamPredicted": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "aogUpstreamBefore": {
-            "type": "number",
-            "format": "double"
-          },
-          "aogUpstreamPredicted": {
-            "type": "number",
-            "format": "double"
-          },
-          "aogDownstreamBefore": {
-            "type": "number",
-            "format": "double"
-          },
-          "aogDownstreamPredicted": {
-            "type": "number",
-            "format": "double"
-          },
-          "delta": {
-            "type": "number",
-            "format": "double"
-          },
-          "resultChartLocation": {
-            "type": "string",
-            "nullable": true
-          },
-          "upstreamCombinedLocation": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "downstreamCombinedLocation": {
-            "type": "string",
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
             "nullable": true,
             "readOnly": true
           },
-          "aogTotalBefore": {
-            "type": "number",
-            "format": "double"
-          },
-          "pAogTotalBefore": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "aogTotalPredicted": {
-            "type": "number",
-            "format": "double"
-          },
-          "pAogTotalPredicted": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalChartExisting": {
-            "type": "number",
-            "format": "double"
-          },
-          "totalChartPositiveChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalChartNegativeChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalChartRemaining": {
-            "type": "number",
-            "format": "double"
-          },
-          "upstreamChartExisting": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "upstreamChartPositiveChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "upstreamChartNegativeChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "upstreamChartRemaining": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "downstreamChartExisting": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "downstreamChartPositiveChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "downstreamChartNegativeChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "downstreamChartRemaining": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalChartName": {
-            "type": "string",
-            "nullable": true,
+          "isCollectible": {
+            "type": "boolean",
             "readOnly": true
           },
-          "upstreamChartName": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "downstreamChartName": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "linkNumber": {
+          "metadataToken": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "readOnly": true
+          },
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/EventAttributes"
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "addMethod": {
+            "$ref": "#/components/schemas/MethodInfo"
+          },
+          "removeMethod": {
+            "$ref": "#/components/schemas/MethodInfo"
+          },
+          "raiseMethod": {
+            "$ref": "#/components/schemas/MethodInfo"
+          },
+          "isMulticast": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "eventHandlerType": {
+            "$ref": "#/components/schemas/Type"
           }
         },
         "additionalProperties": false
@@ -5746,49 +4698,13 @@
       "LinkPivotOptions": {
         "type": "object",
         "properties": {
-          "routeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cycleLength": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "direction": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "bias": {
-            "type": "number",
-            "format": "double"
-          },
-          "biasDirection": {
+          "timestamp": {
             "type": "string",
-            "nullable": true
-          },
-          "daysOfWeek": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "endTime": {
-            "type": "string",
-            "format": "time"
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -5843,159 +4759,109 @@
       "LinkPivotPcdResult": {
         "type": "object",
         "properties": {
-          "existingTotalAOG": {
-            "type": "number",
-            "format": "double"
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
           },
-          "existingTotalPAOG": {
-            "type": "number",
-            "format": "double"
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "predictedTotalAOG": {
-            "type": "number",
-            "format": "double"
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "predictedTotalPAOG": {
-            "type": "number",
-            "format": "double"
+          "module": {
+            "$ref": "#/components/schemas/Module"
           },
-          "predictedVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "existingVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "pcdExisting": {
+          "customAttributes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PurdueCoordinationDiagramResult"
+              "$ref": "#/components/schemas/CustomAttributeData"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "pcdPredicted": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PurdueCoordinationDiagramResult"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "LinkPivotResult": {
-        "type": "object",
-        "properties": {
-          "adjustments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LinkPivotAdjustment"
-            },
-            "nullable": true
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "approachLinks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LinkPivotApproachLink"
-            },
-            "nullable": true
-          },
-          "totalAogDownstreamBefore": {
-            "type": "number",
-            "format": "double"
-          },
-          "totalPaogDownstreamBefore": {
+          "metadataToken": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "readOnly": true
           },
-          "totalAogDownstreamPredicted": {
-            "type": "number",
-            "format": "double"
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
           },
-          "totalPaogDownstreamPredicted": {
-            "type": "integer",
-            "format": "int32"
+          "attributes": {
+            "$ref": "#/components/schemas/FieldAttributes"
           },
-          "totalAogUpstreamBefore": {
-            "type": "number",
-            "format": "double"
+          "fieldType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "totalPaogUpstreamBefore": {
-            "type": "integer",
-            "format": "int32"
+          "isInitOnly": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalAogUpstreamPredicted": {
-            "type": "number",
-            "format": "double"
+          "isLiteral": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalPaogUpstreamPredicted": {
-            "type": "integer",
-            "format": "int32"
+          "isNotSerialized": {
+            "type": "boolean",
+            "readOnly": true,
+            "deprecated": true
           },
-          "totalAogBefore": {
-            "type": "number",
-            "format": "double"
+          "isPinvokeImpl": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalPaogBefore": {
-            "type": "integer",
-            "format": "int32"
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalAogPredicted": {
-            "type": "number",
-            "format": "double"
+          "isStatic": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalPaogPredicted": {
-            "type": "integer",
-            "format": "int32"
+          "isAssembly": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalChartExisting": {
-            "type": "integer",
-            "format": "int32"
+          "isFamily": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalChartPositiveChange": {
-            "type": "integer",
-            "format": "int32"
+          "isFamilyAndAssembly": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalChartNegativeChange": {
-            "type": "integer",
-            "format": "int32"
+          "isFamilyOrAssembly": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalChartRemaining": {
-            "type": "integer",
-            "format": "int32"
+          "isPrivate": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalUpstreamChartExisting": {
-            "type": "integer",
-            "format": "int32"
+          "isPublic": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalUpstreamChartPositiveChange": {
-            "type": "integer",
-            "format": "int32"
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalUpstreamChartNegativeChange": {
-            "type": "integer",
-            "format": "int32"
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalUpstreamChartRemaining": {
-            "type": "integer",
-            "format": "int32"
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "totalDownstreamChartExisting": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalDownstreamChartPositiveChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalDownstreamChartNegativeChange": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalDownstreamChartRemaining": {
-            "type": "integer",
-            "format": "int32"
+          "fieldHandle": {
+            "$ref": "#/components/schemas/RuntimeFieldHandle"
           }
         },
         "additionalProperties": false
@@ -6022,25 +4888,17 @@
         },
         "additionalProperties": false
       },
-      "LocationWithCoordPhases": {
+      "ILocationLayer": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
             "type": "string",
             "nullable": true
-          },
-          "coordinatedPhases": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "LocationWithSequence": {
+      "IndianaEvent": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -6080,56 +4938,23 @@
             "type": "integer",
             "format": "int32"
           },
-          "daysOfWeek": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
+          "eventParam": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
       },
-      "PeakHourResult": {
+      "IntPtr": {
         "type": "object",
-        "properties": {
-          "amStartHour": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "amEndHour": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "amStartMinute": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "amEndMinute": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pmStartHour": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pmEndHour": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pmStartMinute": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pmEndMinute": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
         "additionalProperties": false
       },
-      "PedActuationOptions": {
+      "LayoutKind": {
+        "enum": [0, 2, 3],
+        "type": "integer",
+        "format": "int32"
+      },
+      "MemberInfo": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -6140,67 +4965,34 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
+          "name": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true,
+            "readOnly": true
           },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "startHour": {
-            "type": "integer",
-            "format": "int32"
+          "module": {
+            "$ref": "#/components/schemas/Module"
           },
-          "startMinute": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "endHour": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "endMinute": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "daysOfWeek": {
+          "customAttributes": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "format": "int32"
+              "$ref": "#/components/schemas/CustomAttributeData"
             },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PedActuationResult": {
-        "type": "object",
-        "properties": {
-          "cyclesWithPedCallsNum": {
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
             "type": "integer",
-            "format": "int32"
-          },
-          "cyclesWithPedCallsPercent": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentCyclesWithPedsList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "direction": {
-            "type": "string",
-            "nullable": true
-          },
-          "opposingDirection": {
-            "type": "string",
-            "nullable": true
+            "format": "int32",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -6243,607 +5035,351 @@
         },
         "additionalProperties": false
       },
-      "PedDelayPlan": {
+      "MethodBase": {
         "type": "object",
         "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
           },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "pedRecallMessage": {
-            "type": "string",
-            "nullable": true
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "cyclesWithPedRequests": {
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "readOnly": true
           },
-          "uniquePedDetections": {
-            "type": "integer",
-            "format": "int32"
+          "attributes": {
+            "$ref": "#/components/schemas/MethodAttributes"
           },
-          "pedPresses": {
-            "type": "integer",
-            "format": "int32"
+          "methodImplementationFlags": {
+            "$ref": "#/components/schemas/MethodImplAttributes"
           },
-          "averageDelaySeconds": {
-            "type": "number",
-            "format": "double"
+          "callingConvention": {
+            "$ref": "#/components/schemas/CallingConventions"
           },
-          "averageCycleLengthSeconds": {
-            "type": "number",
-            "format": "double"
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructor": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFinal": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isHideBySig": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isStatic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamily": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyAndAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyOrAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrivate": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructedGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethodDefinition": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "methodHandle": {
+            "$ref": "#/components/schemas/RuntimeMethodHandle"
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
           }
         },
         "additionalProperties": false
       },
-      "PedDelayResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "phaseDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "pedPresses": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cyclesWithPedRequests": {
-            "type": "number",
-            "format": "double"
-          },
-          "timeBuffered": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "uniquePedestrianDetections": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "minDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "averageDelay": {
-            "type": "number",
-            "format": "double"
-          },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PedDelayPlan"
-            },
-            "nullable": true
-          },
-          "cycleLengths": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "pedestrianDelay": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "startOfWalk": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "percentDelayByCycleLength": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
+      "MethodImplAttributes": {
+        "enum": [0, 1, 2, 3, 4, 8, 16, 32, 64, 128, 256, 512, 4096, 65535],
+        "type": "integer",
+        "format": "int32"
       },
-      "PerdueCoordinationPlanViewModel": {
+      "MethodInfo": {
         "type": "object",
         "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
+          "name": {
             "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "percentGreenTime": {
-            "type": "number",
-            "format": "double"
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "percentArrivalOnGreen": {
-            "type": "number",
-            "format": "double"
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "platoonRatio": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Phase": {
-        "type": "object",
-        "properties": {
-          "phaseNumber": {
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "readOnly": true
           },
-          "gapOuts": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
+          "attributes": {
+            "$ref": "#/components/schemas/MethodAttributes"
           },
-          "maxOuts": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
+          "methodImplementationFlags": {
+            "$ref": "#/components/schemas/MethodImplAttributes"
           },
-          "forceOffs": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
+          "callingConvention": {
+            "$ref": "#/components/schemas/CallingConventions"
           },
-          "pedWalkBegins": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "unknownTerminations": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "nullable": true
+          "isConstructor": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFinal": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isHideBySig": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isStatic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamily": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyAndAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyOrAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrivate": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructedGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethodDefinition": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "methodHandle": {
+            "$ref": "#/components/schemas/RuntimeMethodHandle"
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
+          },
+          "returnParameter": {
+            "$ref": "#/components/schemas/ParameterInfo"
+          },
+          "returnType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "returnTypeCustomAttributes": {
+            "$ref": "#/components/schemas/ICustomAttributeProvider"
           }
         },
         "additionalProperties": false
       },
-      "PhaseTerminationResult": {
+      "Module": {
         "type": "object",
         "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
+          "assembly": {
+            "$ref": "#/components/schemas/Assembly"
           },
-          "end": {
+          "fullyQualifiedName": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true,
+            "readOnly": true
           },
-          "locationIdentifier": {
+          "name": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "consecutiveCount": {
+          "mdStreamVersion": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "readOnly": true
           },
-          "plans": {
+          "moduleVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "scopeName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "moduleHandle": {
+            "$ref": "#/components/schemas/ModuleHandle"
+          },
+          "customAttributes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Plan"
-            },
-            "nullable": true
-          },
-          "phases": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Phase"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Plan": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlanSplitFail": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "totalCycles": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "failsInPlan": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "percentFails": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlanSplitMonitorDTO": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "percentSkips": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentGapOuts": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentMaxOuts": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentForceOffs": {
-            "type": "number",
-            "format": "double"
-          },
-          "averageSplit": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentileSplit": {
-            "type": "number",
-            "format": "double"
-          },
-          "minTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "programmedSplit": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentileSplit85th": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentileSplit50th": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlanSplitMonitorData": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "splits": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
-          },
-          "cycleLength": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "offsetLength": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "highCycleCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "percentSkips": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentGapOuts": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentMaxOuts": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentForceOffs": {
-            "type": "number",
-            "format": "double"
-          },
-          "averageSplit": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentileSplit": {
-            "type": "number",
-            "format": "double"
-          },
-          "minTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "programmedSplit": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentileSplit85th": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentileSplit50th": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlanWaitTime": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "planDescription": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "averageWaitTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxWaitTime": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PreemptCycleResult": {
-        "type": "object",
-        "properties": {
-          "inputOff": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "inputOn": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "gateDown": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "callMaxOut": {
-            "type": "number",
-            "format": "double"
-          },
-          "delay": {
-            "type": "number",
-            "format": "double"
-          },
-          "timeToService": {
-            "type": "number",
-            "format": "double"
-          },
-          "dwellTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "trackClear": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PreemptDetail": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "preemptionNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cycles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PreemptCycleResult"
+              "$ref": "#/components/schemas/CustomAttributeData"
             },
             "nullable": true,
             "readOnly": true
+          },
+          "metadataToken": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
           }
         },
         "additionalProperties": false
       },
-      "PreemptDetailOptions": {
+      "ModuleHandle": {
+        "type": "object",
+        "properties": {
+          "mdStreamVersion": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ParameterAttributes": {
+        "enum": [0, 1, 2, 4, 8, 16, 4096, 8192, 16384, 32768, 61440],
+        "type": "integer",
+        "format": "int32"
+      },
+      "ParameterInfo": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -6871,64 +5407,38 @@
             },
             "nullable": true
           },
-          "summary": {
-            "$ref": "#/components/schemas/PreemptRequestAndServices"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PreemptPlan": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
+          "isLcid": {
+            "type": "boolean",
             "readOnly": true
           },
-          "end": {
-            "type": "string",
-            "format": "date-time",
+          "isOptional": {
+            "type": "boolean",
             "readOnly": true
           },
-          "planDescription": {
-            "type": "string",
+          "isOut": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isRetval": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "defaultValue": {
             "nullable": true,
             "readOnly": true
           },
-          "preemptCount": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PreemptRequestAndServices": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
+          "rawDefaultValue": {
+            "nullable": true,
+            "readOnly": true
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "hasDefaultValue": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "requestAndServices": {
+          "customAttributes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/RequestAndServices"
+              "$ref": "#/components/schemas/CustomAttributeData"
             },
             "nullable": true
           }
@@ -6974,14 +5484,6 @@
       "PreemptServiceRequestResult": {
         "type": "object",
         "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
           "locationIdentifier": {
             "type": "string",
             "nullable": true
@@ -7352,8 +5854,7 @@
           },
           "status": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "detail": {
             "type": "string",
@@ -7384,17 +5885,11 @@
           "binSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "getVolume": {
-            "type": "boolean"
-          },
-          "showPlanStatistics": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
       },
-      "PurdueCoordinationDiagramResult": {
+      "PhaseCycleAggregation": {
         "type": "object",
         "properties": {
           "start": {
@@ -7409,84 +5904,42 @@
             "type": "string",
             "nullable": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
+          "greenTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phaseBeginCount": {
+            "type": "integer",
+            "format": "int32"
           },
           "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "phaseDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "totalOnGreenEvents": {
+          "redTime": {
             "type": "integer",
             "format": "int32"
           },
-          "totalDetectorHits": {
+          "totalGreenToGreenCycles": {
             "type": "integer",
             "format": "int32"
           },
-          "percentArrivalOnGreen": {
-            "type": "number",
-            "format": "double"
+          "totalRedToRedCycles": {
+            "type": "integer",
+            "format": "int32"
           },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PerdueCoordinationPlanViewModel"
-            },
-            "nullable": true
-          },
-          "volumePerHour": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "redSeries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "yellowSeries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "greenSeries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "detectorEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
+          "yellowTime": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
       },
-      "PurduePhaseTerminationOptions": {
+      "PhaseLeftTurnGapAggregation": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -7505,7 +5958,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "selectedPhaseNumber": {
+          "gapCount1": {
             "type": "integer",
             "format": "int32"
           }
@@ -7686,20 +6139,17 @@
           },
           "averageSpeed": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
-          "standardDeviation": {
+          "gapCount3": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
-          "eightyFifthPercentile": {
+          "gapCount4": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
-          "fifteenthPercentile": {
+          "gapCount5": {
             "type": "integer",
             "format": "int32",
             "nullable": true
@@ -7726,122 +6176,42 @@
             "type": "integer",
             "format": "int32"
           },
-          "metricTypeId": {
+          "gapCount7": {
             "type": "integer",
             "format": "int32"
           },
-          "getPermissivePhase": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SplitFailsResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
+          "gapCount8": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
+          "gapCount9": {
+            "type": "integer",
+            "format": "int32"
           },
           "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "phaseType": {
-            "type": "string",
-            "nullable": true
+          "sumGapDuration1": {
+            "type": "number",
+            "format": "double"
           },
-          "totalSplitFails": {
-            "type": "integer",
-            "format": "int32"
+          "sumGapDuration2": {
+            "type": "number",
+            "format": "double"
           },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlanSplitFail"
-            },
-            "nullable": true
+          "sumGapDuration3": {
+            "type": "number",
+            "format": "double"
           },
-          "failLines": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointBase"
-            },
-            "nullable": true
-          },
-          "gapOutGreenOccupancies": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "gapOutRedOccupancies": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "forceOffGreenOccupancies": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "forceOffRedOccupancies": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "averageGor": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "averageRor": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "percentFails": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
+          "sumGreenTime": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
       },
-      "SplitMonitorOptions": {
+      "PhasePedAggregation": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -7859,34 +6229,12 @@
           "percentileSplit": {
             "type": "integer",
             "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SplitMonitorResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
+          "pedBeginWalkCount": {
             "type": "integer",
             "format": "int32"
           },
-          "percentileSplit": {
+          "pedCallsRegisteredCount": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
@@ -8015,66 +6363,38 @@
             "type": "integer",
             "format": "int32"
           },
-          "peakHourFactor": {
-            "type": "number",
-            "format": "double"
-          },
-          "totalVolume": {
+          "pedCycles": {
             "type": "integer",
             "format": "int32"
           },
-          "primaryPeakHour": {
-            "type": "string",
-            "nullable": true
-          },
-          "primaryKFactor": {
+          "pedDelay": {
             "type": "number",
             "format": "double"
           },
-          "primaryPeakHourVolume": {
+          "pedRequests": {
             "type": "integer",
             "format": "int32"
           },
-          "primaryPeakHourFactor": {
-            "type": "number",
-            "format": "double"
-          },
-          "primaryTotalVolume": {
+          "imputedPedCallsRegistered": {
             "type": "integer",
             "format": "int32"
           },
-          "primaryDFactor": {
+          "maxPedDelay": {
             "type": "number",
             "format": "double"
           },
-          "opposingPeakHour": {
-            "type": "string",
-            "nullable": true
-          },
-          "opposingKFactor": {
+          "minPedDelay": {
             "type": "number",
             "format": "double"
           },
-          "opposingPeakHourVolume": {
+          "uniquePedDetections": {
             "type": "integer",
             "format": "int32"
-          },
-          "opposingPeakHourFactor": {
-            "type": "number",
-            "format": "double"
-          },
-          "opposingTotalVolume": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "opposingDFactor": {
-            "type": "number",
-            "format": "double"
           }
         },
         "additionalProperties": false
       },
-      "TimeOptions": {
+      "PhaseSplitMonitorAggregation": {
         "type": "object",
         "properties": {
           "start": {
@@ -8085,12 +6405,11 @@
             "type": "string",
             "format": "date-time"
           },
-          "timeOfDayStartHour": {
-            "type": "integer",
-            "format": "int32",
+          "locationIdentifier": {
+            "type": "string",
             "nullable": true
           },
-          "timeOfDayStartMinute": {
+          "eightyFifthPercentileSplit": {
             "type": "integer",
             "format": "int32",
             "nullable": true
@@ -8218,7 +6537,7 @@
         },
         "additionalProperties": false
       },
-      "TimeSpaceDiagramAverageResult": {
+      "PhaseTerminationAggregation": {
         "type": "object",
         "properties": {
           "start": {
@@ -8233,43 +6552,23 @@
             "type": "string",
             "nullable": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
+          "forceOffs": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
+          "gapOuts": {
+            "type": "integer",
+            "format": "int32"
           },
-          "coordinatedPhases": {
-            "type": "boolean"
+          "maxOuts": {
+            "type": "integer",
+            "format": "int32"
           },
           "phaseNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "speed": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "offset": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "programmedSplit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "phaseType": {
-            "type": "string",
-            "nullable": true
-          },
-          "cycleLength": {
+          "unknown": {
             "type": "integer",
             "format": "int32"
           },
@@ -8306,7 +6605,7 @@
         },
         "additionalProperties": false
       },
-      "TimeSpaceDiagramOptions": {
+      "PreemptionAggregation": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -8325,17 +6624,13 @@
             "type": "integer",
             "format": "int32"
           },
-          "speedLimit": {
+          "preemptRequests": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
-          "extendStartStopSearch": {
-            "type": "number",
-            "format": "double"
-          },
-          "showAllLanesInfo": {
-            "type": "boolean"
+          "preemptServices": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -8372,23 +6667,15 @@
             "type": "string",
             "nullable": true
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
+          "priorityNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
+          "priorityRequests": {
             "type": "integer",
             "format": "int32"
           },
-          "speed": {
+          "priorityServiceEarlyGreen": {
             "type": "integer",
             "format": "int32"
           },
@@ -8563,130 +6850,103 @@
         },
         "additionalProperties": false
       },
-      "TimeSpaceEventBase": {
+      "ProblemDetails": {
         "type": "object",
         "properties": {
-          "initialX": {
+          "type": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
-          "finalX": {
+          "title": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
-          "isDetectorOn": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "PropertyAttributes": {
+        "enum": [0, 512, 1024, 4096, 8192, 16384, 32768, 62464],
+        "type": "integer",
+        "format": "int32"
+      },
+      "PropertyInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
             "type": "boolean",
-            "nullable": true
+            "readOnly": true
+          },
+          "metadataToken": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
+          },
+          "propertyType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/PropertyAttributes"
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "canRead": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "canWrite": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "getMethod": {
+            "$ref": "#/components/schemas/MethodInfo"
+          },
+          "setMethod": {
+            "$ref": "#/components/schemas/MethodInfo"
           }
         },
         "additionalProperties": false
       },
-      "TimingAndActuationsForPhaseResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isPhaseOverLap": {
-            "type": "boolean"
-          },
-          "phaseNumberSort": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseType": {
-            "type": "string",
-            "nullable": true
-          },
-          "pedestrianIntervals": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CycleEventsDto"
-            },
-            "nullable": true
-          },
-          "pedestrianEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DetectorEventDto"
-            },
-            "nullable": true
-          },
-          "cycleAllEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CycleEventsDto"
-            },
-            "nullable": true
-          },
-          "advanceCountDetectors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DetectorEventDto"
-            },
-            "nullable": true
-          },
-          "advancePresenceDetectors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DetectorEventDto"
-            },
-            "nullable": true
-          },
-          "stopBarDetectors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DetectorEventDto"
-            },
-            "nullable": true
-          },
-          "laneByLanesDetectors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DetectorEventDto"
-            },
-            "nullable": true
-          },
-          "phaseCustomEvents": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/DataPointForInt"
-              },
-              "nullable": true
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "TimingAndActuationsOptions": {
+      "PropertyMeta": {
         "type": "object",
         "properties": {
           "locationIdentifier": {
@@ -8709,21 +6969,20 @@
             },
             "nullable": true
           },
-          "globalEventParamsList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
+          "description": {
+            "type": "string",
+            "description": "The XML documentation summary associated with the property, if available.",
             "nullable": true
-          },
-          "phaseEventCodesList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents metadata describing a single property within a data type.\r\nUsed to expose property names and their associated XML documentation\r\nwhen generating API metadata."
+      },
+      "RuntimeFieldHandle": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/IntPtr"
           }
         },
         "additionalProperties": false
@@ -8898,14 +7157,8 @@
               "format": "date-time"
             },
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "TransitSignalPriorityPlan": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
+          },
+          "eventCount": {
             "type": "integer",
             "format": "int32"
           },
@@ -8923,61 +7176,9 @@
         },
         "additionalProperties": false
       },
-      "TransitSignalPriorityResult": {
+      "SignalPlanAggregation": {
         "type": "object",
         "properties": {
-          "locationPhases": {
-            "$ref": "#/components/schemas/LocationPhases"
-          },
-          "transitSignalPlans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TransitSignalPriorityPlan"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "TurningMovementCountData": {
-        "type": "object",
-        "properties": {
-          "direction": {
-            "type": "string",
-            "nullable": true
-          },
-          "movementType": {
-            "type": "string",
-            "nullable": true
-          },
-          "laneType": {
-            "type": "string",
-            "nullable": true
-          },
-          "volumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "peakHourVolume": {
-            "$ref": "#/components/schemas/DataPointForInt"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TurningMovementCountsLanesResult": {
-        "type": "object",
-        "properties": {
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
           "start": {
             "type": "string",
             "format": "date-time"
@@ -8986,63 +7187,105 @@
             "type": "string",
             "format": "date-time"
           },
-          "direction": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "laneType": {
+          "planNumber": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SpeedEvent": {
+        "type": "object",
+        "properties": {
+          "locationIdentifier": {
             "type": "string",
             "nullable": true
           },
-          "movementType": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "detectorId": {
             "type": "string",
             "nullable": true
           },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Plan"
-            },
-            "nullable": true
-          },
-          "lanes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Lane"
-            },
-            "nullable": true
-          },
-          "totalHourlyVolumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "totalVolumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "totalVolume": {
+          "mph": {
             "type": "integer",
             "format": "int32"
           },
-          "peakHour": {
+          "kph": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StructLayoutAttribute": {
+        "type": "object",
+        "properties": {
+          "typeId": {
+            "nullable": true,
+            "readOnly": true
+          },
+          "value": {
+            "$ref": "#/components/schemas/LayoutKind"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Type": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "peakHourVolume": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
           },
-          "peakHourFactor": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "isInterface": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
+          },
+          "namespace": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "assemblyQualifiedName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "assembly": {
+            "$ref": "#/components/schemas/Assembly"
           },
           "laneUtilizationFactor": {
             "type": "number",
@@ -9063,17 +7306,15 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "declaringMethod": {
+            "$ref": "#/components/schemas/MethodBase"
           },
           "binSize": {
             "type": "integer",
             "format": "int32"
           },
-          "metricTypeId": {
-            "type": "integer",
-            "format": "int32",
+          "isTypeDefinition": {
+            "type": "boolean",
             "readOnly": true
           }
         },
@@ -9089,12 +7330,13 @@
             },
             "nullable": true
           },
-          "table": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TurningMovementCountData"
-            },
-            "nullable": true
+          "isConstructedGenericType": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericParameter": {
+            "type": "boolean",
+            "readOnly": true
           },
           "peakHour": {
             "$ref": "#/components/schemas/KeyValuePair2"
@@ -9118,86 +7360,75 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "isGenericTypeDefinition": {
+            "type": "boolean",
+            "readOnly": true
           },
           "approachId": {
             "type": "integer",
             "format": "int32"
           },
-          "startHour": {
-            "type": "integer",
-            "format": "int32"
+          "isByRefLike": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "startMinute": {
-            "type": "integer",
-            "format": "int32"
+          "isFunctionPointer": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "endHour": {
-            "type": "integer",
-            "format": "int32"
+          "isUnmanagedFunctionPointer": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "endMinute": {
-            "type": "integer",
-            "format": "int32"
+          "hasElementType": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "daysOfWeek": {
+          "genericTypeArguments": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "format": "int32"
+              "$ref": "#/components/schemas/Type"
             },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "VolumeResult": {
-        "type": "object",
-        "properties": {
-          "opposingLanes": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "crossProductReview": {
-            "type": "boolean"
-          },
-          "decisionBoundariesReview": {
-            "type": "boolean"
-          },
-          "leftTurnVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "opposingThroughVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "crossProductValue": {
-            "type": "number",
-            "format": "double"
-          },
-          "calculatedVolumeBoundary": {
-            "type": "number",
-            "format": "double"
-          },
-          "demandList": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "direction": {
-            "type": "string",
             "nullable": true,
             "readOnly": true
           },
-          "opposingDirection": {
-            "type": "string",
-            "nullable": true,
+          "genericParameterPosition": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "genericParameterAttributes": {
+            "$ref": "#/components/schemas/GenericParameterAttributes"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/TypeAttributes"
+          },
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isImport": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSealed": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isClass": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isNestedAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isNestedFamANDAssem": {
+            "type": "boolean",
             "readOnly": true
           }
         },
@@ -9214,9 +7445,9 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "isNestedPrivate": {
+            "type": "boolean",
+            "readOnly": true
           },
           "binSize": {
             "type": "integer",
@@ -9232,89 +7463,94 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
+          "isExplicitLayout": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isLayoutSequential": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAnsiClass": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAutoClass": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isUnicodeClass": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isCOMObject": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isContextful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isEnum": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isMarshalByRef": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrimitive": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isValueType": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSignatureType": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "structLayoutAttribute": {
+            "$ref": "#/components/schemas/StructLayoutAttribute"
+          },
+          "typeInitializer": {
+            "$ref": "#/components/schemas/ConstructorInfo"
+          },
+          "typeHandle": {
+            "$ref": "#/components/schemas/RuntimeTypeHandle"
+          },
+          "guid": {
             "type": "string",
-            "format": "date-time"
+            "format": "uuid",
+            "readOnly": true
           },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
+          "baseType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
+          "isSerializable": {
+            "type": "boolean",
+            "readOnly": true,
+            "deprecated": true
           },
-          "approachId": {
-            "type": "integer",
-            "format": "int32"
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "detectionTypes": {
-            "type": "string",
-            "nullable": true
-          },
-          "plans": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlanWaitTime"
-            },
-            "nullable": true
-          },
-          "gapOuts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "maxOuts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "forceOffs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "unknowns": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "average": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true
-          },
-          "volumes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForInt"
-            },
-            "nullable": true
-          },
-          "planSplits": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
-            },
-            "nullable": true,
+          "isVisible": {
+            "type": "boolean",
             "readOnly": true
           }
         },
@@ -9328,28 +7564,27 @@
         ],
         "type": "string"
       },
-      "WatchDogDashboardOptions": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "WatchDogFirmwareCount": {
+      "TypeInfo": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "counts": {
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
             "type": "integer",
             "format": "int32"
           }
@@ -9362,12 +7597,12 @@
           "issueType": {
             "$ref": "#/components/schemas/WatchDogIssueTypes"
           },
-          "products": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/WatchDogProductInfo"
-            },
-            "nullable": true
+          "isNested": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
           },
           "name": {
             "type": "string",
@@ -9397,54 +7632,53 @@
             "type": "integer",
             "format": "int32"
           },
-          "locationId": {
-            "type": "integer",
-            "format": "int32"
+          "isArray": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
+          "isByRef": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
+          "isPointer": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "componentType": {
-            "$ref": "#/components/schemas/WatchDogComponentTypes"
+          "isConstructedGenericType": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "componentId": {
-            "type": "integer",
-            "format": "int32"
+          "isGenericParameter": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "issueType": {
-            "$ref": "#/components/schemas/WatchDogIssueTypes"
+          "isGenericTypeParameter": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "details": {
-            "type": "string",
-            "nullable": true
+          "isGenericMethodParameter": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "phase": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+          "isGenericType": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "regionId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+          "isGenericTypeDefinition": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "regionDescription": {
-            "type": "string",
-            "nullable": true
+          "isSZArray": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "jurisdictionId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+          "isVariableBoundArray": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "jurisdictionName": {
-            "type": "string",
-            "nullable": true
+          "isByRefLike": {
+            "type": "boolean",
+            "readOnly": true
           },
           "areas": {
             "type": "array",
@@ -9486,40 +7720,36 @@
             "format": "int32",
             "nullable": true
           },
-          "jurisdictionId": {
+          "genericParameterPosition": {
             "type": "integer",
             "format": "int32",
-            "nullable": true
+            "readOnly": true
           },
-          "issueType": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+          "genericParameterAttributes": {
+            "$ref": "#/components/schemas/GenericParameterAttributes"
           },
-          "start": {
-            "type": "string",
-            "format": "date-time"
+          "attributes": {
+            "$ref": "#/components/schemas/TypeAttributes"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
+          "isImport": {
+            "type": "boolean",
+            "readOnly": true
           },
-          "isFilteredEvents": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "WatchDogProductInfo": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
+          "isSealed": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isClass": {
+            "type": "boolean",
+            "readOnly": true
           },
           "model": {
             "type": "array",
@@ -9538,9 +7768,9 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "isNestedPrivate": {
+            "type": "boolean",
+            "readOnly": true
           },
           "logEvents": {
             "type": "array",
@@ -9574,163 +7804,159 @@
             "type": "string",
             "format": "date-time"
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
+          "isLayoutSequential": {
+            "type": "boolean",
+            "readOnly": true
           },
           "severeLevelSeconds": {
             "type": "number",
             "format": "double"
           },
-          "metricTypeId": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "YellowRedActivationsPlan": {
-        "type": "object",
-        "properties": {
-          "planNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "start": {
-            "type": "string",
-            "format": "date-time",
+          "isUnicodeClass": {
+            "type": "boolean",
             "readOnly": true
           },
-          "end": {
-            "type": "string",
-            "format": "date-time",
+          "isCOMObject": {
+            "type": "boolean",
             "readOnly": true
           },
-          "planDescription": {
+          "isContextful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isEnum": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isMarshalByRef": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrimitive": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isValueType": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSignatureType": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "structLayoutAttribute": {
+            "$ref": "#/components/schemas/StructLayoutAttribute"
+          },
+          "typeInitializer": {
+            "$ref": "#/components/schemas/ConstructorInfo"
+          },
+          "typeHandle": {
+            "$ref": "#/components/schemas/RuntimeTypeHandle"
+          },
+          "guid": {
             "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "baseType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "isSerializable": {
+            "type": "boolean",
+            "readOnly": true,
+            "deprecated": true
+          },
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "genericTypeParameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Type"
+            },
             "nullable": true,
             "readOnly": true
           },
-          "totalViolations": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "severeViolations": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "percentViolations": {
-            "type": "number",
-            "format": "double"
-          },
-          "percentSevereViolations": {
-            "type": "number",
-            "format": "double"
-          },
-          "averageTimeViolations": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "YellowRedActivationsResult": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "locationIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "locationDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "approachId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "approachDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "direction": {
-            "type": "string",
-            "nullable": true
-          },
-          "movementType": {
-            "type": "string",
-            "nullable": true
-          },
-          "protectedPhaseNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "permissivePhaseNumber": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "isPermissivePhase": {
-            "type": "boolean"
-          },
-          "phaseType": {
-            "type": "string",
-            "nullable": true
-          },
-          "totalViolations": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "severeViolations": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "yellowLightOccurences": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "plans": {
+          "declaredConstructors": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/YellowRedActivationsPlan"
+              "$ref": "#/components/schemas/ConstructorInfo"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "redEvents": {
+          "declaredEvents": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
+              "$ref": "#/components/schemas/EventInfo"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "yellowEvents": {
+          "declaredFields": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
+              "$ref": "#/components/schemas/FieldInfo"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "redClearanceEvents": {
+          "declaredMembers": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
+              "$ref": "#/components/schemas/MemberInfo"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "detectorEvents": {
+          "declaredMethods": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DataPointForDouble"
+              "$ref": "#/components/schemas/MethodInfo"
             },
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
+          },
+          "declaredNestedTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TypeInfo"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "declaredProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PropertyInfo"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "implementedInterfaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Type"
+            },
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false

@@ -16,6 +16,7 @@ import {
 } from '@/features/identity/pagesCheck'
 import CreateRouteModal from '@/features/routes/components/CreateRouteModal'
 import { useNotificationStore } from '@/stores/notifications'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const RoutesAdmin = () => {
@@ -95,22 +96,24 @@ const RoutesAdmin = () => {
     return <div>Error returning data</div>
   }
 
-  const filteredData = routes.map((obj: any) => {
+  const filteredData = routes.map((obj) => {
     return {
       id: obj.id,
       name: obj.name,
+      createdBy: obj.createdBy,
+      created: obj.created ? toUTCDateStamp(obj.created) : '',
+      modifiedBy: obj.modifiedBy,
+      modified: obj.modified ? toUTCDateStamp(obj.modified) : '',
     }
   })
 
-  const headers = ['Name']
-  const headerKeys = ['name']
+  const cells = [{ key: 'name', label: 'Name' }]
 
   return (
     <ResponsivePageLayout title="Manage Routes" noBottomMargin>
       <AdminTable
         pageName="Route"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
         hasEditPrivileges={hasLocationsEditClaim}
         hasDeletePrivileges={hasLocationsDeleteClaim}

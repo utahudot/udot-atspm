@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm/AtspmMath.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using System.Numerics;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -155,5 +156,93 @@ namespace Utah.Udot.Atspm
                 .All(a => a.EventCode == w.EventCode))
                 .ToList();
         }
+
+        /// <summary>
+        /// Calculates the specified percentile value from a numeric sequence.
+        /// </summary>
+        /// <typeparam name="T">
+        /// A numeric type that implements <see cref="INumber{T}"/>.
+        /// </typeparam>
+        /// <param name="sequence">
+        /// The input sequence of numeric values.  
+        /// The sequence is materialized internally to avoid multiple enumeration.
+        /// </param>
+        /// <param name="percentile">
+        /// The percentile to compute, expressed as a value between 0 and 100.
+        /// </param>
+        /// <returns>
+        /// The computed percentile value.  
+        /// Returns <c>0</c> if the sequence contains no elements.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when <paramref name="sequence"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="percentile"/> is outside the range 0–100.
+        /// </exception>
+        /// <remarks>
+        /// This method materializes the input sequence into a list to ensure stable,
+        /// single-pass evaluation. Percentile calculation uses linear interpolation
+        /// between the two nearest ranked values.
+        /// </remarks>
+        public static double Percentile<T>(IEnumerable<T> sequence, double percentile)
+            where T : INumber<T>
+        {
+            if (sequence == null)
+                throw new InvalidOperationException("The sequence must not be null.");
+
+            var list = sequence.ToList();
+
+            if (list.Count == 0)
+                return 0;
+
+            if (percentile < 0 || percentile > 100)
+                throw new ArgumentOutOfRangeException(nameof(percentile),
+                    "Percentile must be between 0 and 100.");
+
+            var sorted = list
+                .Select(x => Convert.ToDouble(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            if (sorted.Count == 1)
+                return sorted[0];
+
+            double rank = (percentile / 100.0) * (sorted.Count - 1);
+            int lowerIndex = (int)Math.Floor(rank);
+            int upperIndex = (int)Math.Ceiling(rank);
+
+            if (lowerIndex == upperIndex)
+                return sorted[lowerIndex];
+
+            double lowerValue = sorted[lowerIndex];
+            double upperValue = sorted[upperIndex];
+
+            return lowerValue + (upperValue - lowerValue) * (rank - lowerIndex);
+        }
+
+        public static double Mean<T>(IEnumerable<T> sequence) where T : INumber<T>
+        => sequence?.Select(x => Convert.ToDouble(x)).Average()
+           ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double Min<T>(IEnumerable<T> sequence) where T : INumber<T>
+            => sequence?.Select(x => Convert.ToDouble(x)).Min()
+               ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double Max<T>(IEnumerable<T> sequence) where T : INumber<T>
+            => sequence?.Select(x => Convert.ToDouble(x)).Max()
+               ?? throw new InvalidOperationException("The sequence must not be empty.");
+
+        public static double SampleStandardDeviation<T>(IEnumerable<T> sequence) where T : INumber<T>
+        {
+            if (sequence == null || sequence.Count() < 2)
+                return 0;
+
+            double mean = Mean(sequence);
+            double sumOfSquares = sequence.Sum(x => Math.Pow(Convert.ToDouble(x) - mean, 2));
+
+            return Math.Sqrt(sumOfSquares / (sequence.Count() - 1));
+        }
+
     }
 }

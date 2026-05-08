@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Identity.Controllers/TokenController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers

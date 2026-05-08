@@ -17,6 +17,7 @@ import {
 
 import JurisdictionEditorModal from '@/features/jurisdictions/components/JurisdictionEditorModal'
 import { useNotificationStore } from '@/stores/notifications'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const JurisdictionsAdmin = () => {
@@ -113,24 +114,26 @@ const JurisdictionsAdmin = () => {
   }
 
   const filteredData = jurisdictions.map((obj: Jurisdiction) => {
+    const { created, createdBy, modified, modifiedBy } = obj
     return {
-      id: obj.id,
-      name: obj.name,
-      mpo: obj.mpo,
-      countyParish: obj.countyParish,
-      otherPartners: obj.otherPartners,
+      ...obj,
+      created: created ? toUTCDateStamp(created) : '',
+      modified: modified ? toUTCDateStamp(modified) : '',
     }
   })
 
-  const headers = ['Name', 'Mpo', 'County/Parish', 'Other Partners']
-  const headerKeys = ['name', 'mpo', 'countyParish', 'otherPartners']
+  const cells = [
+    { key: 'name', label: 'Name' },
+    { key: 'mpo', label: 'MPO' },
+    { key: 'countyParish', label: 'County/Parish' },
+    { key: 'otherPartners', label: 'Other Partners' },
+  ]
 
   return (
     <ResponsivePageLayout title="Manage Jurisdictions" noBottomMargin>
       <AdminTable
         pageName="Jurisdiction"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
         hasEditPrivileges={hasLocationsEditClaim}
         hasDeletePrivileges={hasLocationsDeleteClaim}

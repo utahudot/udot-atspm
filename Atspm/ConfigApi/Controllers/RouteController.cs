@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/RouteController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,6 +89,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="includeLocationDetail"></param>
+        /// <returns></returns>
         [HttpGet("api/v1/GetRouteView/{id}")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
@@ -108,7 +114,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 return StatusCode(Status500InternalServerError, ex.Message);
             }
         }
-
 
         #endregion
     }

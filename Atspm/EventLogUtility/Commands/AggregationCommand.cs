@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for EventLogUtility - Utah.Udot.Atspm.EventLogUtility.Commands/AggregationCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
             AggregationTypeArgument.FromAmong(values);
 
-            DateOption.SetDefaultValue(new List<DateTime>() { DateTime.Now.Date.AddDays(-1) });
+            DateOption.SetDefaultValue(new List<DateTime>() { new(DateTime.Today.AddDays(-1).Ticks, DateTimeKind.Unspecified) });
 
             AddArgument(AggregationTypeArgument);
             AddOption(DateOption);

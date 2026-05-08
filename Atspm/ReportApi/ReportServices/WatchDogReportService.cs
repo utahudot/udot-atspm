@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/WatchDogReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             else
             {
                 query = watchDogLogEventRepository.GetList()
-                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp < parameter.End).ToList();
+                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp <= parameter.End).ToList();
             }
 
 
@@ -123,6 +123,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
                 result.LogEvents.Add(
                     new WatchDogLogEventDTO(
+                        e.Id,
                         e.LocationId,
                         e.LocationIdentifier,
                         e.Timestamp,
@@ -130,6 +131,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         e.ComponentId,
                         e.IssueType,
                         e.Details,
+                        e.Key,
                         e.Phase,
                         location.RegionId,
                         regionDescription,

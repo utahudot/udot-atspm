@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/RouteLocationController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,16 +24,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <summary>
     /// Route Location controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class RouteLocationController : GeneralPolicyControllerBase<RouteLocation, int>
+    public class RouteLocationController(IRouteLocationsRepository repository) : GeneralPolicyControllerBase<RouteLocation, int>(repository)
     {
-        private readonly IRouteLocationsRepository _repository;
-
-        /// <inheritdoc/>
-        public RouteLocationController(IRouteLocationsRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IRouteLocationsRepository _repository = repository;
 
         #region NavigationProperties
 

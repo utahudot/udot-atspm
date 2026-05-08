@@ -1,3 +1,19 @@
+// #region license
+// Copyright 2026 Utah Departement of Transportation
+// for WebUI - locationStore.ts
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//http://www.apache.org/licenses/LICENSE-2.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// #endregion
 import {
   Approach,
   deleteApproachFromKey,
@@ -205,6 +221,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
           ...rest,
           id: Math.round(Math.random() * 10000),
           isNew: true,
+          detectorChannel: null,
         })),
       }
       set({ approaches: [...approaches, newApproach] })
@@ -221,7 +238,15 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
           console.error(err)
         }
       }
-      set({ approaches: filtered })
+
+      const approachDetectors = approach.detectors.map((d) => d.id)
+      const { channelMap } = get()
+      approachDetectors.forEach((id) => channelMap.delete(id))
+      set({
+        approaches: filtered,
+        savedApproaches: toBaseline(filtered),
+        channelMap: new Map(channelMap),
+      })
     },
 
     resetStore: () => {
@@ -320,10 +345,19 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         }
       }
 
-      set({ approaches: updatedApproaches })
+      set({
+        approaches: updatedApproaches,
+        savedApproaches: toBaseline(updatedApproaches),
+        channelMap: new Map(channelMap),
+      })
     },
   }))
 )
+
+const deepClone = <T>(v: T): T => JSON.parse(JSON.stringify(v))
+
+const toBaseline = (approaches: ConfigApproach[]) =>
+  deepClone(approaches.map(stripUIFlags))
 
 const normalize = (v: any): any => {
   if (Array.isArray(v)) return v.map(normalize)

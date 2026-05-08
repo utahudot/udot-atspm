@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for SqlLiteDatabaseProvider - Utah.Udot.Atspm.SqlLiteDatabaseProvider/SqlLiteProvider.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");

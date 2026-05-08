@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models/WatchDogIgnoreEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,5 +65,9 @@ namespace Utah.Udot.Atspm.Data.Models
         /// </summary>
         public int? Phase { get; set; }
 
+        /// <summary>
+        /// Key
+        /// </summary>
+        public string Key { get; set; }
     }
 }

@@ -2,6 +2,7 @@ import NextImage from '@/components/NextImage'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
 import { setSecureCookie } from '@/features/identity/utils'
+import { buildApiUrl } from '@/lib/axios'
 import { getEnv } from '@/utils/getEnv'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Button, Divider } from '@mui/material'
@@ -21,7 +22,6 @@ export default function Signin() {
   const [errors, setErrors] = useState<string | null>(null)
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
-  const [identityUrl, setIdentityUrl] = useState<string | null>(null)
   const {
     refetch,
     data: queryData,
@@ -35,14 +35,6 @@ export default function Signin() {
       setData(queryData as IdentityDto)
     }
   }, [data, queryData])
-
-  useEffect(() => {
-    const fetchEnv = async () => {
-      const env = await getEnv()
-      setIdentityUrl(env?.IDENTITY_URL as string)
-    }
-    fetchEnv()
-  }, [])
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -97,7 +89,10 @@ export default function Signin() {
 
   const redirectUser = async () => {
     const env = await getEnv()
-    const externalLoginUrl = `${identityUrl}/api/v1/Account/external-login`
+    const externalLoginUrl = buildApiUrl(
+      env?.IDENTITY_URL,
+      '/api/v1/Account/external-login'
+    )
 
     // Open the external login endpoint in a new tab
     window.open(externalLoginUrl, '_self')

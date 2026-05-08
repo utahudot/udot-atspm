@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getLTGRVolume.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ import { reportsAxios } from '@/lib/axios'
 export const getLTGRVolume = async (approachIds: number[], body: any) => {
   const results = await Promise.all(
     approachIds.map(async (approachId) => {
-      return await reportsAxios.post(`LeftTurnVolume/getReportData`, {
+      return await reportsAxios.post(`/api/v1/LeftTurnVolume/getReportData`, {
         ...body,
         approachId: approachId,
       })

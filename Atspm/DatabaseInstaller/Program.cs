@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for DatabaseInstaller - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

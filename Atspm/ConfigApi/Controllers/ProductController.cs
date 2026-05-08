@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/ProductController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,16 +28,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <summary>
     /// Product controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class ProductController : LocationPolicyControllerBase<Product, int>
+    public class ProductController(IProductRepository repository) : DevicePolicyControllerBase<Product, int>(repository)
     {
-        private readonly IProductRepository _repository;
-
-        /// <inheritdoc/>
-        public ProductController(IProductRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IProductRepository _repository = repository;
 
         #region NavigationProperties
 

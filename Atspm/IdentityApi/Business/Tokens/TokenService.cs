@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Identity.Business.Tokens/TokenService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Identity.Business.Tokens
 {

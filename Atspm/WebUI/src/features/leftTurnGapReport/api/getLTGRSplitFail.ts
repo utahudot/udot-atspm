@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getLTGRSplitFail.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,10 +27,13 @@ export const getLTGRSplitFail = async (
 ) => {
   const results = await Promise.all(
     approachIds.map(async (approachId) => {
-      return await reportsAxios.post(`LeftTurnSplitFail/getReportData`, {
-        ...body,
-        approachId: approachId,
-      })
+      return await reportsAxios.post(
+        `/api/v1/LeftTurnSplitFail/getReportData`,
+        {
+          ...body,
+          approachId: approachId,
+        }
+      )
     })
   )
   return results

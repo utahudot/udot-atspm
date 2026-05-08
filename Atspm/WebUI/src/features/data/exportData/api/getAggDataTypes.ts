@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getAggDataTypes.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ import { AxiosHeaders } from 'axios'
 import Cookies from 'js-cookie'
 import { useQuery } from 'react-query'
 
-const route = `/Aggregation/GetDataTypes`
+const route = `/api/v1/Aggregation/GetDataTypes`
 const token = Cookies.get('token')
 const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',

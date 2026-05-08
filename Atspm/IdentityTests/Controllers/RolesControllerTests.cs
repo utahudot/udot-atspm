@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityTests - %Namespace%/RolesControllerTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@
 //                new IdentityRole("User")
 //            };
 
-//            _roleManagerMock.Setup(rm => rm.Roles).Returns(roles.AsQueryable());
+//            _roleManagerMock.Setup(rm => rm.Claims).Returns(roles.AsQueryable());
 
 //            // Act
 //            var result = _rolesController.GetRolesAsync();

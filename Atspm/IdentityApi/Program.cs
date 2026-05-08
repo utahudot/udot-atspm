@@ -1,5 +1,5 @@
 #region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,10 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
+
+//git 2
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +51,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
+            o.AddAtspmSecurityDefinitions();
         });
         s.AddConfiguredCors(builder.Configuration);
         s.AddHttpLogging(l =>
@@ -61,7 +64,7 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
         s.AddAtspmDbContext(h);
-        s.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
+        s.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<IdentityContext>()
         .AddDefaultTokenProviders();
         s.AddEmailServices(h);
@@ -77,13 +80,18 @@ builder.Host
         s.AddAtspmAuthorization();
         s.AddHealthChecks();
 
-        s.AddDataProtection()
-        .SetApplicationName("TestResetFlow");
+        s.AddDataProtection().SetApplicationName("TestResetFlow");
 
         s.Configure<IdentityConfiguration>(h.Configuration.GetSection(nameof(IdentityConfiguration)));
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<IdentityContext>(async (services) =>
+{
+    await services.SeedIdentityData();
+    await services.SeedAdminUser();
+});
 
 #region Middleware Pipeline
 

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WatchDog - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
@@ -45,6 +46,12 @@ cmdBuilder.UseHost(hostBuilder =>
     {
         l.AddGoogle(h);
     })
+    .ConfigureAppConfiguration((h, c) =>
+    {
+        c.AddUserSecrets<Program>(optional: true); // Load secrets first
+        //c.AddCommandLine(args);                    // Override with command-line args
+
+    })
     .ConfigureServices((h, s) =>
     {
         s.AddEmailServices(h);
@@ -53,7 +60,9 @@ cmdBuilder.UseHost(hostBuilder =>
         s.AddAtspmEFEventLogRepositories();
         s.AddAtspmEFAggregationRepositories();
         s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();
-        s.AddScoped<WatchDogLogService>();
+        s.AddScoped<WatchDogRampLogService>();
+        s.AddScoped<WatchDogAmLogService>();
+        s.AddScoped<WatchDogPmLogService>();
         s.AddScoped<ScanService>();
         s.AddScoped<PlanService>();
         s.AddScoped<AnalysisPhaseCollectionService>();

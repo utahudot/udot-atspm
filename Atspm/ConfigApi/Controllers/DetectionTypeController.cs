@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/DetectionTypeController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,15 +30,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Detection type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectionTypeController : LocationPolicyControllerBase<DetectionType, DetectionTypes>
+    public class DetectionTypeController(IDetectionTypeRepository repository) : LocationPolicyControllerBase<DetectionType, DetectionTypes>(repository)
     {
-        private readonly IDetectionTypeRepository _repository;
-
-        /// <inheritdoc/>
-        public DetectionTypeController(IDetectionTypeRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IDetectionTypeRepository _repository = repository;
 
         #region NavigationProperties
 

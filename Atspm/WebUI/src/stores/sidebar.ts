@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - sidebar.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,16 +21,24 @@ interface SidebarStore {
   toggleSidebar: () => void
   closeSideBar: () => void
   openSideBar: () => void
+
+  isRightSidebarOpen: boolean
+  openRightSidebar: () => void
+  closeRightSidebar: () => void
+  toggleRightSidebar: () => void
 }
 export const useSidebarStore = create<SidebarStore>((set) => ({
   isSidebarOpen: false,
-
   toggleSidebar: () =>
     set((state) => {
       return { isSidebarOpen: !state.isSidebarOpen }
     }),
-
   closeSideBar: () => set({ isSidebarOpen: false }),
-
   openSideBar: () => set({ isSidebarOpen: true }),
+
+  isRightSidebarOpen: false,
+  openRightSidebar: () => set({ isRightSidebarOpen: true }),
+  closeRightSidebar: () => set({ isRightSidebarOpen: false }),
+  toggleRightSidebar: () =>
+    set((s) => ({ isRightSidebarOpen: !s.isRightSidebarOpen })),
 }))

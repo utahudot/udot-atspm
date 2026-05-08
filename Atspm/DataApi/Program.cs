@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for DataApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,11 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
-using Utah.Udot.NetStandardToolkit.Configuration;
+using Utah.Udot.Atspm.Infrastructure.Common;
+
+//git 2
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -52,8 +55,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-            o.AddJwtAuthorization();
-
+            o.AddAtspmSecurityDefinitions();
             //o.OperationFilter<TimestampFormatHeader>();
             o.OperationFilter<DataTypeEnumOperationFilter>();
             o.DocumentFilter<GenerateAggregationSchemas>();
@@ -79,6 +81,9 @@ builder.Host
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<EventLogContext>();
+await app.ApplyMigrations<AggregationContext>();
 
 #region Middleware Pipeline
 
@@ -119,56 +124,7 @@ app.MapJsonHealthChecks();
 
 app.Run();
 
-public static class TempCorsExtension
-{
-    public static IServiceCollection AddConfiguredCors( this IServiceCollection services, IConfiguration config)
-    {
-        var corsPolicies = config.GetSection("CorsPolicies").Get<Dictionary<string, CorsPolicyConfiguration>>();
 
-        services.AddCors(options =>
-        {
-            if (corsPolicies == null || corsPolicies.Count == 0)
-            {
-                options.AddPolicy("Default", builder =>
-                {
-                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-                });
-
-                return;
-            }
-
-            foreach (var kvp in corsPolicies)
-            {
-                options.AddPolicy(kvp.Key, policy =>
-                {
-                    var cfg = kvp.Value;
-
-                    if (cfg.Origins.Length == 1 && cfg.Origins[0] == "*")
-                        policy.AllowAnyOrigin();
-                    else
-                        policy.WithOrigins(cfg.Origins);
-
-                    if (cfg.Methods.Length == 1 && cfg.Methods[0] == "*")
-                        policy.AllowAnyMethod();
-                    else
-                        policy.WithMethods(cfg.Methods);
-
-                    if (cfg.Headers.Length == 1 && cfg.Headers[0] == "*")
-                        policy.AllowAnyHeader();
-                    else
-                        policy.WithHeaders(cfg.Headers);
-
-                    if (cfg.AllowCredentials)
-                        policy.AllowCredentials();
-                    else
-                        policy.DisallowCredentials();
-                });
-            }
-        });
-
-        return services;
-    }
-}
 
 
 //builder.Services.Configure<RateLimitingOptions>(

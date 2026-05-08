@@ -1,5 +1,5 @@
 #region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ReportApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
-using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -47,10 +46,15 @@ using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Business.WaitTime;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Infrastructure.Common;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
+using Utah.Udot.ATSPM.ReportApi.DataAggregation;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
+
+//git 2
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -66,10 +70,7 @@ builder.Host
             o.ReturnHttpNotAcceptable = true;
             o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
             o.Filters.Add(new ProducesAttribute("application/json"));
-        }).AddJsonOptions(o =>
-         {
-             o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-         });
+        });
         s.AddProblemDetails();
         s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
         s.AddConfiguredSwagger(builder.Configuration, o =>
@@ -78,19 +79,10 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-            o.AddJwtAuthorization();
+            o.AddAtspmSecurityDefinitions();
 
         });
         s.AddConfiguredCors(builder.Configuration);
-        s.AddCors(options =>
-        {
-            options.AddPolicy("Default", policy =>
-                policy
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-            );
-        });
         s.AddHttpLogging(l =>
         {
             l.LoggingFields = HttpLoggingFields.All;
@@ -109,6 +101,7 @@ builder.Host
         //report services
         s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
         s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
+        s.AddScoped<IReportService<PedatLocationDataQuery, IEnumerable<PedatLocationData>>, PedestrianAggregationService>();
         s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
         s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
         s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
@@ -146,6 +139,7 @@ builder.Host
 
         //AggregationResult Services
         s.AddScoped<AggregationReportService>();
+        s.AddScoped<PedestrianAggregationService>();
         s.AddScoped<ApproachDelayService>();
         s.AddScoped<ApproachSpeedService>();
         s.AddScoped<ApproachVolumeService>();
@@ -220,11 +214,25 @@ builder.Host
 
         s.AddPathBaseFilter(h);
 
+        s.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            );
+        });
+
         s.AddAtspmIdentity(h);
         s.AddHealthChecks();
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<ConfigContext>();
+await app.ApplyMigrations<EventLogContext>();
+await app.ApplyMigrations<AggregationContext>();
 
 #region Middleware Pipeline
 
@@ -241,7 +249,7 @@ else
 
 //Security
 app.UseHttpsRedirection();
-app.UseCors("Default");
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 

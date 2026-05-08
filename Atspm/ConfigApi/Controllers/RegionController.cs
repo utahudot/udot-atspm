@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/RegionController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,16 +28,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <summary>
     /// Region controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class RegionController : LocationPolicyControllerBase<Region, int>
+    public class RegionController(IRegionsRepository repository) : LocationPolicyControllerBase<Region, int>(repository)
     {
-        private readonly IRegionsRepository _repository;
-
-        /// <inheritdoc/>
-        public RegionController(IRegionsRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IRegionsRepository _repository = repository;
 
         #region NavigationProperties
 

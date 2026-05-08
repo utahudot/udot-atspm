@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Watchdog/WatchDogLogEventWithCountAndDate.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,15 @@ namespace Utah.Udot.Atspm.Business.Watchdog
 {
     public class WatchDogLogEventWithCountAndDate : WatchDogLogEvent
     {
-        public WatchDogLogEventWithCountAndDate(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, int? phase) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, phase)
+        public WatchDogLogEventWithCountAndDate(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, string key, int? phase) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, key, phase)
         {
         }
 
         public int EventCount { get; set; }
         public DateTime DateOfFirstInstance { get; set; }
         public int ConsecutiveOccurenceCount { get; set; }
+
+        protected override bool CanEqual(object other) =>
+        other is WatchDogLogEventWithCountAndDate;
     }
 }

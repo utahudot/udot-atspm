@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Identity.Business.Accounts/IAccountService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Identity;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Identity.Business.Accounts
 {

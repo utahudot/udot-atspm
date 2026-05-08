@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getAggregateData.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@ import { usePostRequest } from '@/hooks/usePostRequest'
 import { reportsAxios } from '@/lib/axios'
 import { AxiosHeaders } from 'axios'
 
-const route = '/Aggregation/getReportData'
+const route = '/api/v1/Aggregation/getReportData'
 const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
 })

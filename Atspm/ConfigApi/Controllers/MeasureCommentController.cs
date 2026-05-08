@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/MeasureCommentController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,15 +29,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure comments controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureCommentController : GeneralPolicyControllerBase<MeasureComment, int>
+    public class MeasureCommentController(IMeasureCommentRepository repository) : GeneralPolicyControllerBase<MeasureComment, int>(repository)
     {
-        private readonly IMeasureCommentRepository _repository;
-
-        /// <inheritdoc/>
-        public MeasureCommentController(IMeasureCommentRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IMeasureCommentRepository _repository = repository;
 
         #region NavigationProperties
 

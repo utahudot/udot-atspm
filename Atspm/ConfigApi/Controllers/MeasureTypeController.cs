@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/MeasureTypeController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,15 +29,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureTypeController : GeneralPolicyControllerBase<MeasureType, int>
+    public class MeasureTypeController(IMeasureTypeRepository repository) : GeneralPolicyControllerBase<MeasureType, int>(repository)
     {
-        private readonly IMeasureTypeRepository _repository;
-
-        /// <inheritdoc/>
-        public MeasureTypeController(IMeasureTypeRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IMeasureTypeRepository _repository = repository;
 
         #region NavigationProperties
 

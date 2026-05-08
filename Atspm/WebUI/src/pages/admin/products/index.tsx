@@ -14,6 +14,7 @@ import {
   useGetProducts,
 } from '@/features/products/api/index'
 import ProductEditorModal from '@/features/products/components/ProductEditorModal'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const ProductsAdmin = () => {
@@ -98,23 +99,24 @@ const ProductsAdmin = () => {
 
   const filteredData = products.map((obj: Product) => {
     return {
-      id: obj.id,
-      manufacturer: obj.manufacturer,
-      model: obj.model,
-      webPage: obj.webPage,
-      notes: obj.notes,
+      ...obj,
+      created: obj.created ? toUTCDateStamp(obj.created) : '',
+      modified: obj.modified ? toUTCDateStamp(obj.modified) : '',
     }
   })
 
-  const headers = ['Manufacturer', 'Model', 'Web Page', 'Notes']
-  const headerKeys = ['manufacturer', 'model', 'webPage', 'notes']
+  const cells = [
+    { key: 'manufacturer', label: 'Manufacturer' },
+    { key: 'model', label: 'Model' },
+    { key: 'webPage', label: 'Web Page' },
+    { key: 'notes', label: 'Notes' },
+  ]
 
   return (
     <ResponsivePageLayout title="Manage Products" noBottomMargin>
       <AdminTable
         pageName="Product"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
         hasEditPrivileges={hasLocationsEditClaim}
         hasDeletePrivileges={hasLocationsDeleteClaim}

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for DataApi - Utah.Udot.ATSPM.DataApi.Controllers/DataControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,9 +20,12 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Dtos;
+using Utah.Udot.NetStandardToolkit.Common;
 
 namespace Utah.Udot.ATSPM.DataApi.Controllers
 {
@@ -35,6 +38,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
     /// and date ranges across multiple endpoints.
     /// </remarks>
     [ApiController]
+    [AuthorizePermission(AtspmAuthorization.Permissions.DataView)]
     [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class DataControllerBase<T1, T2>(ICompressedDataRepository<T1> repository, ILocationRepository locations, ILogger log) : ControllerBase where T1 : CompressedDataBase where T2 : class
     {
@@ -70,6 +74,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(IReadOnlyList<DataTypeMeta>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<IReadOnlyList<DataTypeMeta>> GetDataTypes()
         {
             try
@@ -78,32 +84,31 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
                 var types = typeof(T2).ToDictionary();
 
                 var result = types.Where(t => !t.Value.IsAbstract)
-                    .Select(t => 
-                    { 
-                        var type = t.Value; 
-                        var typeComment = xml.GetTypeComment(type); 
+                    .Select(t =>
+                    {
+                        var type = t.Value;
+                        var typeComment = xml.GetTypeComment(type);
                         var props = GetCachedProperties(type)
                         .Select(p => new PropertyMeta { Name = p.Name, Description = xml.GetPropertyComment(p) })
-                        .ToList(); 
-                        
-                        return new DataTypeMeta 
+                        .ToList();
+
+                        return new DataTypeMeta
                         {
-                            Name = t.Key, 
-                            Description = typeComment, 
-                            Properties = props 
-                        }; 
+                            Name = t.Key,
+                            Description = typeComment,
+                            Properties = props
+                        };
                     }).ToList();
 
                 return Ok(result);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
-                {
-                    Title = "Unexpected error",
-                    Detail = "An error occurred while retrieving data types.",
-                    Status = StatusCodes.Status500InternalServerError
-                });
+                return Problem(
+                    title: "Unexpected error",
+                    detail: "An error occurred while retrieving data types.",
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
             }
         }
 
@@ -149,6 +154,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
             [FromRoute] string locationIdentifier,
             [FromQuery] DateTime start,
@@ -207,6 +214,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<T1>>> GetData(
             [FromRoute] string locationIdentifier,
             [FromQuery] DateTime start,
@@ -258,6 +267,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
         [FromRoute] string locationIdentifier,
         [FromRoute] string dataType,
@@ -320,6 +331,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<CompressedDataBase>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<T1>>> GetData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
@@ -369,6 +382,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<DateOnly>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
@@ -436,12 +451,11 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         {
             if (!typeof(T2).ToDictionary().TryGetValue(dataType, out type))
             {
-                return BadRequest(new ProblemDetails
-                {
-                    Title = "Invalid data type",
-                    Detail = $"The specified data type '{dataType}' is not recognized.",
-                    Status = StatusCodes.Status400BadRequest
-                });
+                return Problem(
+                    title: "Invalid data type",
+                    detail: $"The specified data type '{dataType}' is not recognized.",
+                    statusCode: StatusCodes.Status400BadRequest
+                );
             }
 
             return null; // success

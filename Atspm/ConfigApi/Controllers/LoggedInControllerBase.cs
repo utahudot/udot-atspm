@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/LoggedInControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,28 +51,28 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
-        [Authorize()]
+        [Authorize]
         public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
 
         /// <inheritdoc/>
-        [Authorize()]
+        [Authorize]
         public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
         }
 
         /// <inheritdoc/>
-        [Authorize()]
+        [Authorize]
         public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
         }
 
         /// <inheritdoc/>
-        [Authorize()]
+        [Authorize]
         public override Task<IActionResult> Delete(TKey key)
         {
             return base.Delete(key);

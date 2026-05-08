@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Extensions/ApplicationUserExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 #endregion
 
 using System.Net.Mail;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Extensions
 {

@@ -1,5 +1,3 @@
-import { Region } from '@/features/regions/types/index'
-
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -16,6 +14,7 @@ import {
   useEditRegion,
 } from '@/features/region/api/regionApi'
 import RegionEditorModal from '@/features/regions/components/RegionEditorModal'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const RegionsAdmin = () => {
@@ -39,7 +38,7 @@ const RegionsAdmin = () => {
   if (pageAccess.isLoading) {
     return null
   }
-  const HandleCreateRegion = async (regionData: Region) => {
+  const HandleCreateRegion = async (regionData) => {
     const { id, description } = regionData
     try {
       await createMutation({ id, description })
@@ -58,7 +57,7 @@ const RegionsAdmin = () => {
     }
   }
 
-  const HandleEditRegion = async (regionData: Region) => {
+  const HandleEditRegion = async (regionData) => {
     const { id, description } = regionData
     try {
       await editMutation({
@@ -101,22 +100,26 @@ const RegionsAdmin = () => {
     return <div>Error returning data</div>
   }
 
-  const filteredData = regions.map((obj: Region) => {
+  const filteredData = regions.map((region) => {
     return {
-      id: obj.id,
-      description: obj.description,
+      ...region,
+      created: region.created ? toUTCDateStamp(region.created) : '',
+      modified: region.modified ? toUTCDateStamp(region.modified) : '',
     }
   })
 
-  const headers = ['Description']
-  const headerKeys = ['description']
+  const cells = [
+    {
+      key: 'description',
+      label: 'Description',
+    },
+  ]
 
   return (
     <ResponsivePageLayout title="Manage Regions" noBottomMargin>
       <AdminTable
         pageName="Region"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
         hasEditPrivileges={hasLocationsEditClaim}
         hasDeletePrivileges={hasLocationsDeleteClaim}

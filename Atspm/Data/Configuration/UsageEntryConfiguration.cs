@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Configuration/AreaConfiguration.cs
+// Copyright 2026 Utah Departement of Transportation
+// for Data - Utah.Udot.Atspm.Data.Configuration/UsageEntryConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasMaxLength(100);
 
             builder.Property(x => x.RemoteIp)
-                .HasMaxLength(45); // IPv6 max length
+                .HasMaxLength(45);
 
             builder.Property(x => x.UserAgent)
                 .HasMaxLength(1024);

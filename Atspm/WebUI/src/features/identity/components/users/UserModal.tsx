@@ -1,14 +1,10 @@
+import ATSPMDialog from '@/components/ATSPMDialog/ATSPMDialog'
 import { useGetRoles } from '@/features/identity/api/getRoles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
-  Button,
   Checkbox,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -84,137 +80,129 @@ const UserModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
   if (isLoading) return <div>content is loading...</div>
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle sx={{ fontSize: '1.3rem' }} id="role-permissions-label">
-        User Details
-      </DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Controller
-            name="firstName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                autoFocus
-                margin="dense"
-                label="First Name"
-                type="text"
-                fullWidth
-                error={!!errors.firstName}
-                helperText={errors.firstName?.message}
-              />
-            )}
+    <ATSPMDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="User Details"
+      auditInfo={data}
+      onSubmit={handleSubmit(onSubmit)}
+      dialogProps={{ sx: { width: 500, pt: 0 } }}
+    >
+      <Controller
+        name="firstName"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            autoFocus
+            margin="dense"
+            label="First Name"
+            type="text"
+            fullWidth
+            error={!!errors.firstName}
+            helperText={errors.firstName?.message}
           />
+        )}
+      />
 
-          <Controller
-            name="lastName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                margin="dense"
-                label="Last Name"
-                type="text"
-                fullWidth
-                error={!!errors.lastName}
-                helperText={errors.lastName?.message}
-              />
-            )}
+      <Controller
+        name="lastName"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            margin="dense"
+            label="Last Name"
+            type="text"
+            fullWidth
+            error={!!errors.lastName}
+            helperText={errors.lastName?.message}
           />
+        )}
+      />
 
-          <Controller
-            name="userName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                margin="dense"
-                label="Username"
-                type="text"
-                fullWidth
-                error={!!errors.userName}
-                helperText={errors.userName?.message}
-              />
-            )}
+      <Controller
+        name="userName"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            margin="dense"
+            label="Username"
+            type="text"
+            fullWidth
+            error={!!errors.userName}
+            helperText={errors.userName?.message}
           />
+        )}
+      />
 
-          <Controller
-            name="agency"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                margin="dense"
-                label="Agency"
-                type="text"
-                fullWidth
-                error={!!errors.agency}
-                helperText={errors.agency?.message}
-              />
-            )}
+      <Controller
+        name="agency"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            margin="dense"
+            label="Agency"
+            type="text"
+            fullWidth
+            error={!!errors.agency}
+            helperText={errors.agency?.message}
           />
+        )}
+      />
 
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                margin="dense"
-                label="Email"
-                type="email"
-                fullWidth
-                error={!!errors.email}
-                helperText={errors.email?.message}
-              />
-            )}
+      <Controller
+        name="email"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+            error={!!errors.email}
+            helperText={errors.email?.message}
           />
+        )}
+      />
 
-          <Controller
-            name="roles"
-            control={control}
-            render={({ field }) => (
-              <FormControl fullWidth margin="dense">
-                <InputLabel>Roles</InputLabel>
-                <Select
-                  {...field}
-                  multiple
-                  label="Roles"
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip
-                          key={value}
-                          label={value.replace(/([A-Z])/g, ' $1').trim()}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                >
-                  {roles
-                    ?.sort((a, b) => a.role.localeCompare(b.role))
-                    .map((role) => (
-                      <MenuItem key={role.role} value={role.role}>
-                        <Checkbox checked={field.value.includes(role.role)} />
-                        {role.role.replace(/([A-Z])/g, ' $1').trim()}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            )}
-          />
-        </form>
-      </DialogContent>
-      <DialogActions>
-        <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-            Update User
-          </Button>
-        </Box>
-      </DialogActions>
-    </Dialog>
+      <Controller
+        name="roles"
+        control={control}
+        render={({ field }) => (
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Roles</InputLabel>
+            <Select
+              {...field}
+              multiple
+              label="Roles"
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={value.replace(/([A-Z])/g, ' $1').trim()}
+                    />
+                  ))}
+                </Box>
+              )}
+            >
+              {roles
+                ?.sort((a, b) => a.role.localeCompare(b.role))
+                .map((role) => (
+                  <MenuItem key={role.role} value={role.role}>
+                    <Checkbox checked={field.value.includes(role.role)} />
+                    {role.role.replace(/([A-Z])/g, ' $1').trim()}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+        )}
+      />
+    </ATSPMDialog>
   )
 }
 

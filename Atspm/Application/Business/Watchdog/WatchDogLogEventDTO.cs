@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Watchdog/WatchDogLogEventDTO.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Business.Watchdog
     public class WatchDogLogEventDTO : WatchDogLogEvent
     {
         public WatchDogLogEventDTO(
+            int id,
             int locationId,
             string locationIdentifier,
             DateTime timestamp,
@@ -29,13 +30,15 @@ namespace Utah.Udot.Atspm.Business.Watchdog
             int componentId,
             WatchDogIssueTypes issueType,
             string details,
+            string key,
             int? phase,
             int? regionId,
             string regionDescription,
             int? jurisdictionId,
             string jurisdictionName,
-            IEnumerable<AreaDTO> areas) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, phase)
+            IEnumerable<AreaDTO> areas) : base(locationId, locationIdentifier, timestamp, componentType, componentId, issueType, details, key, phase)
         {
+            Id = id;
             RegionId = regionId;
             RegionDescription = regionDescription;
             JurisdictionId = jurisdictionId;

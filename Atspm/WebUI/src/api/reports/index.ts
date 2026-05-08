@@ -1,5 +1,21 @@
+// #region license
+// Copyright 2026 Utah Departement of Transportation
+// for WebUI - index.ts
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//http://www.apache.org/licenses/LICENSE-2.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// #endregion
 export * from './aggregation/aggregation';
-export * from './report-api.schemas';
+export * from './aTSPMReportDataApi.schemas';
 export * from './approach-delay/approach-delay';
 export * from './approach-speed/approach-speed';
 export * from './approach-volume/approach-volume';
@@ -15,11 +31,10 @@ export * from './left-turn-split-fail/left-turn-split-fail';
 export * from './left-turn-volume/left-turn-volume';
 export * from './link-pivot/link-pivot';
 export * from './ped-delay/ped-delay';
+export * from './pedestrian-aggregation/pedestrian-aggregation';
 export * from './preempt-detail/preempt-detail';
 export * from './preempt-service/preempt-service';
 export * from './preempt-service-request/preempt-service-request';
-export * from './priority-details/priority-details';
-export * from './priority-summary/priority-summary';
 export * from './purdue-coordination-diagram/purdue-coordination-diagram';
 export * from './purdue-phase-termination/purdue-phase-termination';
 export * from './ramp-metering/ramp-metering';
@@ -34,3 +49,4 @@ export * from './wait-time/wait-time';
 export * from './watchdog/watchdog';
 export * from './watch-dog-dashboard/watch-dog-dashboard';
 export * from './yellow-red-activations/yellow-red-activations';
+export * from './report-api.schemas';

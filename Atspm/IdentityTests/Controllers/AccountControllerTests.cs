@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for IdentityTests - Utah.Udot.Atspm.IdentityTests.Controllers/AccountControllerTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Security.Claims;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Xunit;
 

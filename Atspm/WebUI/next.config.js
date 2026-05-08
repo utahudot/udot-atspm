@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - next.config.js
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,10 +53,10 @@ module.exports = withBundleAnalyzer({
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  experimental: {
-    instrumentationHook: true,
-  },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
+  // experimental: {
+  //   instrumentationHook: true,
+  // },
 })

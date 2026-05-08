@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getWatchdogLogs.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,7 @@ export interface LogEvent {
   jurisdictionName: string
   areas: Area[]
   id: number
+  key?: string | number | null
   locationId: number
   locationIdentifier: string | null
   timestamp: string
@@ -60,7 +61,7 @@ export interface LogEventsData {
 // React Query GET request for issue types
 export const useGetIssueTypes = () => {
   return useQuery<WatchDogIssueTypeDTO[]>('issueTypes', async () => {
-    const response = await reportsAxios.get('/Watchdog/GetIssueTypes')
+    const response = await reportsAxios.get('/api/v1/Watchdog/GetIssueTypes')
     return response
   })
 }
@@ -70,7 +71,7 @@ export const useGetWatchdogLogs = () => {
   return useMutation<LogEventsData, unknown, WatchdogReportDataRequestBody>(
     async (requestBody) => {
       const response = await reportsAxios.post(
-        '/Watchdog/getReportData',
+        '/api/v1/Watchdog/getReportData',
         requestBody,
         {
           headers: new AxiosHeaders({

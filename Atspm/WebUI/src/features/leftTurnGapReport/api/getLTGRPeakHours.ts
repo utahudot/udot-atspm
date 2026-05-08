@@ -1,5 +1,5 @@
 // #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for WebUI - getLTGRPeakHours.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ import { peakHours } from '../types'
 
 export const getLTGRPeakHours = async (body: peakHours): Promise<any> => {
   const result: ApiResponse<any> = await reportsAxios.post(
-    `LeftTurnPeakHours/getReportData`,
+    `/api/v1/LeftTurnPeakHours/getReportData`,
     body
   )
   return result
