@@ -28,6 +28,8 @@ namespace Utah.Udot.ATSPM.ConfigApi.Configuration
         /// <inheritdoc cref="IModelConfiguration.Apply"/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
+            builder.ComplexType<GitHubReleaseDto>();
+
             builder.Function("GetCurrentVersion").Returns<GitHubReleaseDto>();
             builder.Function("GetVersionHistory").ReturnsCollection<GitHubReleaseDto>().Parameter<bool>("PreRelease");
             builder.Function("GetLatestVersion").Returns<GitHubReleaseDto>().Parameter<bool>("PreRelease");

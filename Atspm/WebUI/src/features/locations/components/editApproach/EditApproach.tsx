@@ -6,6 +6,7 @@ import {
   MovementTypes,
 } from '@/api/config'
 import AuditInfo from '@/components/AuditInfo'
+import { Color } from '@/features/charts/utils'
 import { useEditApproach } from '@/features/locations/api/approach'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'

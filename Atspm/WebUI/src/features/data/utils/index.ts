@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { CompressedDataBase } from '@/api/data/aTSPMLogDataApi.schemas'
+import { CompressedDataBase } from '@/api/data/data-api.schemas'
 import { ResponseFormat } from '@/features/data/api/getEventLogs'
 import { DataTypeOption } from '@/features/data/components/dataTypeSelector'
 import { dateToTimestamp } from '@/utils/dateTime'

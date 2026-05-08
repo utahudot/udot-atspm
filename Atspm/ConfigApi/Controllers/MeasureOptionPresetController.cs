@@ -30,15 +30,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure option presets Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureOptionPresetController : LoggedInControllerBase<MeasureOptionPreset, int>
+    public class MeasureOptionPresetController(IMeasureOptionPresetRepository repository) : LoggedInControllerBase<MeasureOptionPreset, int>(repository)
     {
-        private readonly IMeasureOptionPresetRepository _repository;
-
-        /// <inheritdoc/>
-        public MeasureOptionPresetController(IMeasureOptionPresetRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IMeasureOptionPresetRepository _repository = repository;
 
         #region NavigationProperties
 

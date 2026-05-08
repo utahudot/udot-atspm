@@ -28,16 +28,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <summary>
     /// RouteDistance controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class RouteDistanceController : GeneralPolicyControllerBase<RouteDistance, int>
+    public class RouteDistanceController(IRouteDistanceRepository repository) : GeneralPolicyControllerBase<RouteDistance, int>(repository)
     {
-        private readonly IRouteDistanceRepository _repository;
-
-        /// <inheritdoc/>
-        public RouteDistanceController(IRouteDistanceRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IRouteDistanceRepository _repository = repository;
 
         #region NavigationProperties
 

@@ -63262,7 +63262,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/UsageEntry"
+                    "$ref": "#/components/schemas/VersionHistory"
                   }
                 }
               }
@@ -63507,7 +63507,7 @@
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsageEntry"
+                  "$ref": "#/components/schemas/VersionHistory"
                 }
               }
             }
@@ -63744,7 +63744,7 @@
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UsageEntry"
+                "$ref": "#/components/schemas/VersionHistory"
               }
             }
           }
@@ -63991,7 +63991,7 @@
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UsageEntry"
+                "$ref": "#/components/schemas/VersionHistory"
               }
             }
           }
@@ -68096,6 +68096,7 @@
         "properties": {
           "locationIdentifier": {
             "type": "string",
+            "format": "date-time",
             "nullable": true
           },
           "start": {
@@ -68118,6 +68119,7 @@
         "properties": {
           "locationIdentifier": {
             "type": "string",
+            "format": "date-time",
             "nullable": true
           },
           "start": {
@@ -68144,19 +68146,17 @@
           },
           "created": {
             "type": "string",
-            "format": "date-time",
             "nullable": true
           },
-          "modified": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "createdBy": {
+          "model": {
             "type": "string",
             "nullable": true
           },
-          "modifiedBy": {
+          "webPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
             "type": "string",
             "nullable": true
           },

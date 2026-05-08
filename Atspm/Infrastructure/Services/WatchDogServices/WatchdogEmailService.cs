@@ -20,6 +20,7 @@ using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {

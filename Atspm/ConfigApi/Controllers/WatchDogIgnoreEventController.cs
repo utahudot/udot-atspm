@@ -24,16 +24,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <summary>
     /// WatchDogIgnoreEvent Controller
     /// </summary>
+    /// <inheritdoc/>
     [ApiVersion(1.0)]
-    public class WatchDogIgnoreEventController : WatchdogPolicyControllerBase<WatchDogIgnoreEvent, int>
+    public class WatchDogIgnoreEventController(IWatchDogIgnoreEventRepository repository) : WatchdogPolicyControllerBase<WatchDogIgnoreEvent, int>(repository)
     {
-        private readonly IWatchDogIgnoreEventRepository _repository;
-
-        /// <inheritdoc/>
-        public WatchDogIgnoreEventController(IWatchDogIgnoreEventRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IWatchDogIgnoreEventRepository _repository = repository;
 
         #region NavigationProperties
 

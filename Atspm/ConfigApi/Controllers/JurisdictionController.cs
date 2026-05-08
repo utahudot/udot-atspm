@@ -29,15 +29,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Jurisdiction Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class JurisdictionController : LocationPolicyControllerBase<Jurisdiction, int>
+    public class JurisdictionController(IJurisdictionRepository repository) : LocationPolicyControllerBase<Jurisdiction, int>(repository)
     {
-        private readonly IJurisdictionRepository _repository;
-
-        /// <inheritdoc/>
-        public JurisdictionController(IJurisdictionRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IJurisdictionRepository _repository = repository;
 
         #region NavigationProperties
 

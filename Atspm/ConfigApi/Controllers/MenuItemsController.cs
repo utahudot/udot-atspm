@@ -25,15 +25,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Menu items controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MenuItemsController : GeneralPolicyControllerBase<MenuItem, int>
+    public class MenuItemsController(IMenuItemReposiotry repository) : GeneralPolicyControllerBase<MenuItem, int>(repository)
     {
-        private readonly IMenuItemReposiotry _repository;
-
-        /// <inheritdoc/>
-        public MenuItemsController(IMenuItemReposiotry repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IMenuItemReposiotry _repository = repository;
 
         #region NavigationProperties
 

@@ -89,6 +89,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="includeLocationDetail"></param>
+        /// <returns></returns>
         [HttpGet("api/v1/GetRouteView/{id}")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
@@ -108,7 +114,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 return StatusCode(Status500InternalServerError, ex.Message);
             }
         }
-
 
         #endregion
     }

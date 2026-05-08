@@ -67,11 +67,11 @@ function buildLocationPhaseLabelOption(): EChartsOption {
 function buildSrmOption(): EChartsOption {
   return {
     legend: {
-      data: ['Cycles EB', 'SRM Entity Continuous EB', 'SRM Entity Gap EB'],
+      data: ['Cycles EB', 'SRM Collection EB', 'SRM Estimated Trajectory EB'],
       selected: {
         'Cycles EB': true,
-        'SRM Entity Continuous EB': true,
-        'SRM Entity Gap EB': true,
+        'SRM Collection EB': true,
+        'SRM Estimated Trajectory EB': true,
       },
     },
   }
@@ -318,14 +318,14 @@ describe('TimeSpaceSidebar directional controls', () => {
     ).toBeNull()
   })
 
-  it('explains that SRM Entity Continuous requires uploaded SRM data with an info tooltip', async () => {
+  it('explains that SRM Collection requires uploaded SRM data with an info tooltip', async () => {
     render(
       <TimeSpaceSidebar
         option={buildSrmOption()}
         selectedSeries={{
           'Cycles EB': true,
-          'SRM Entity Continuous EB': true,
-          'SRM Entity Gap EB': true,
+          'SRM Collection EB': true,
+          'SRM Estimated Trajectory EB': true,
         }}
         suppressedDirections={{}}
         onSetSeriesVisibility={jest.fn()}
@@ -334,18 +334,18 @@ describe('TimeSpaceSidebar directional controls', () => {
       />
     )
 
-    const infoIcon = screen.getByLabelText('SRM Entity Continuous info')
+    const infoIcon = screen.getByLabelText('SRM Collection info')
 
     expect(infoIcon).not.toBeNull()
     expect(screen.queryByRole('alert')).toBeNull()
     expect(
-      screen.queryByLabelText('SRM Entity Continuous unavailable')
+      screen.queryByLabelText('SRM Collection unavailable')
     ).toBeNull()
     expect(window.getComputedStyle(infoIcon).color).toBe('rgb(148, 163, 184)')
     expect(
       window.getComputedStyle(
         screen
-          .getByText('SRM Entity Continuous')
+          .getByText('SRM Collection')
           .closest('.MuiPaper-root') as HTMLElement
       ).opacity
     ).toBe('0.6')
@@ -655,6 +655,41 @@ describe('TimeSpaceSidebar directional controls', () => {
     expect(screen.getByText('Transit Priority')).not.toBeNull()
     expect(screen.getByText('TSP Request')).not.toBeNull()
     expect(screen.getByText('TSP Service')).not.toBeNull()
+  })
+
+  it('renders the TSP Service legend preview as a hollow interval', () => {
+    const appearanceSettings = createDefaultTimeSpaceAppearanceSettings()
+    appearanceSettings.tspService.color = '#123456'
+    appearanceSettings.tspService.opacity = 0.42
+
+    render(
+      <TimeSpaceSidebar
+        option={buildTransitNoDataOption()}
+        selectedSeries={{
+          'Cycles EB': true,
+          'Early Green (113)': false,
+          'Extend Green (114)': false,
+          'TSP Request (112-115)': false,
+          'TSP Service (118-119)': false,
+        }}
+        suppressedDirections={{}}
+        onSetSeriesVisibility={jest.fn()}
+        onToggleDirectionVisibility={jest.fn()}
+        appearanceSettings={appearanceSettings}
+        showTabs={false}
+      />
+    )
+
+    const tspServiceCard = screen
+      .getByText('TSP Service')
+      .closest('.MuiPaper-root') as HTMLElement
+    const tspServicePreview = tspServiceCard.querySelector(
+      'rect[x="12"][y="25"]'
+    )
+
+    expect(tspServicePreview?.getAttribute('fill')).toBe('transparent')
+    expect(tspServicePreview?.getAttribute('stroke')).toBe('#123456')
+    expect(tspServicePreview?.getAttribute('stroke-opacity')).toBe('0.42')
   })
 
   it('updates turn appearance settings from the styles tab controls', () => {

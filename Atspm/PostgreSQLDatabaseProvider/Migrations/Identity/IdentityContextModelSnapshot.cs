@@ -34,7 +34,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -176,7 +176,71 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyHash")
+                        .IsUnique();
+
+                    b.ToTable("ApiKeys");
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKeyClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApiKeyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApiKeyId");
+
+                    b.ToTable("ApiKeyClaims");
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -260,7 +324,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -269,7 +333,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -278,7 +342,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany("Roles")
                         .HasForeignKey("ApplicationUserId");
 
@@ -288,7 +352,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,14 +361,28 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.ApplicationUser", null)
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKeyClaim", b =>
+                {
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKey", null)
+                        .WithMany("Claims")
+                        .HasForeignKey("ApiKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKey", b =>
+                {
+                    b.Navigation("Claims");
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", b =>
                 {
                     b.Navigation("Roles");
                 });

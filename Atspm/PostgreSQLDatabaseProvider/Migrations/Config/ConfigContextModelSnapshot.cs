@@ -2470,6 +2470,119 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<long>("DurationMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Method")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<string>("QueryString")
+                        .HasMaxLength(2000)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("RemoteIp")
+                        .HasMaxLength(45)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<int?>("ResultCount")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("ResultSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Route")
+                        .HasMaxLength(2000)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("StatusCode")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("TraceId")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(1024)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Route");
+
+                    b.HasIndex("StatusCode");
+
+                    b.HasIndex("Timestamp");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UsageEntries");
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UsageEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ApiName")
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("ConnectionId")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Controller")
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp");
 

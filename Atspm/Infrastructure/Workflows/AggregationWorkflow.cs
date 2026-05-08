@@ -16,6 +16,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.Workflows;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -54,6 +55,30 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         public ArchiveAggregationsProcess ArchiveAggregationsProcess { get; private set; }
 
         public SaveArchivedAggregationsProcess SaveArchivedAggregationsProcess { get; private set; }
+
+        public override async Task Initialize()
+        {
+
+            Steps = new();
+            Input = new(null, blockOptions);
+            Output = new(blockOptions);
+
+
+            InstantiateSteps();
+
+
+            await Task.WhenAll(
+                AggregateDetectorEventCountWorkflow.WhenInitialized(),
+                AggregatePedestrianPhasesWorkflow.WhenInitialized(),
+                AggregatePhaseCyclesWorkflow.WhenInitialized(),
+                AggregatePhaseSplitMonitorWorkflow.WhenInitialized()
+            );
+
+
+            Steps.Add(Input);
+            AddStepsToTracker();
+            LinkSteps();
+        }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
@@ -120,6 +145,33 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
             ArchiveAggregationsProcess.LinkTo(SaveArchivedAggregationsProcess, new DataflowLinkOptions() { PropagateCompletion = true });
             SaveArchivedAggregationsProcess.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
+
+    public static class TempHelpers
+    {
+        public static Task WhenInitialized(this ISupportInitializeNotification service)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            if (service.IsInitialized) return Task.CompletedTask;
+
+            EventHandler handler = null;
+            handler = (s, e) =>
+            {
+                service.Initialized -= handler;
+                tcs.TrySetResult(true);
+            };
+
+            service.Initialized += handler;
+
+            if (service.IsInitialized)
+            {
+                service.Initialized -= handler;
+                tcs.TrySetResult(true);
+            }
+
+            return tcs.Task;
         }
     }
 }

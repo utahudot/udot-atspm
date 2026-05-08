@@ -505,28 +505,30 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
       : []
 
     const continuousSeries = series.filter(
-      (entry) => String(entry.name) === 'SRM Entity Continuous NBT ph2'
-    )
-    const firstContinuousSeries = continuousSeries.find((entry) =>
-      String(entry.id).includes('segment-0')
-    )
-    const secondContinuousSeries = continuousSeries.find((entry) =>
-      String(entry.id).includes('segment-1')
+      (entry) => String(entry.name) === 'SRM Collection NBT ph2'
     )
     const gapSeries = series.find(
-      (entry) => String(entry.name) === 'SRM Entity Gap NBT ph2'
+      (entry) => String(entry.name) === 'SRM Estimated Trajectory NBT ph2'
     )
+    const collectionData = continuousSeries[0]?.data as unknown[]
 
-    expect(continuousSeries).toHaveLength(2)
+    expect(continuousSeries).toHaveLength(1)
+    expect(collectionData).toEqual([
+      ['2026-04-07T08:00:00Z', expect.any(Number)],
+      ['2026-04-07T08:01:00Z', expect.any(Number)],
+      null,
+      ['2026-04-07T08:02:00Z', expect.any(Number)],
+      ['2026-04-07T08:03:00Z', expect.any(Number)],
+    ])
     expect(gapSeries?.lineStyle).toMatchObject({ type: 'dotted' })
     expect(gapSeries?.data).toEqual([
-      (firstContinuousSeries?.data as unknown[][])?.[1],
-      (secondContinuousSeries?.data as unknown[][])?.[0],
+      collectionData?.[1],
+      collectionData?.[3],
     ])
     expect(chart.legend).toMatchObject({
       selected: {
-        'SRM Entity Continuous NBT ph2': true,
-        'SRM Entity Gap NBT ph2': true,
+        'SRM Collection NBT ph2': true,
+        'SRM Estimated Trajectory NBT ph2': true,
       },
     })
   })
@@ -609,11 +611,13 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
 
     expect(
       series.filter(
-        (entry) => String(entry.name) === 'SRM Entity Continuous NBT ph2'
+        (entry) => String(entry.name) === 'SRM Collection NBT ph2'
       )
     ).toHaveLength(2)
     expect(
-      series.some((entry) => String(entry.name) === 'SRM Entity Gap NBT ph2')
+      series.some(
+        (entry) => String(entry.name) === 'SRM Estimated Trajectory NBT ph2'
+      )
     ).toBe(false)
   })
 
@@ -664,14 +668,66 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
       : []
 
     const continuousSeries = series.filter(
-      (entry) => String(entry.name) === 'SRM Entity Continuous NBT ph2'
+      (entry) => String(entry.name) === 'SRM Collection NBT ph2'
     )
 
     expect(continuousSeries).toHaveLength(1)
     expect(continuousSeries[0]?.data).toHaveLength(2)
     expect(
-      series.some((entry) => String(entry.name) === 'SRM Entity Gap NBT ph2')
+      series.some(
+        (entry) => String(entry.name) === 'SRM Estimated Trajectory NBT ph2'
+      )
     ).toBe(false)
+  })
+
+  it('draws opposing SRM tracks in the opposing distance direction', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary'),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing', {
+            srmEntityTracks: [
+              {
+                entityId: 'bus-42',
+                points: [
+                  {
+                    time: '2026-04-07T08:00:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:00:00Z'),
+                    distance: 0,
+                    intersectionId: 'opposing-location',
+                  },
+                  {
+                    time: '2026-04-07T08:01:00Z',
+                    timestampMs: Date.parse('2026-04-07T08:01:00Z'),
+                    distance: 20,
+                    intersectionId: 'opposing-location',
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+    const srmCollection = series.find(
+      (entry) => String(entry.name) === 'SRM Collection SBT ph6'
+    )
+    const data = srmCollection?.data as [string, number][]
+
+    expect(data[1][1]).toBeLessThan(data[0][1])
   })
 
   it('renders stop-bar-presence continuations in striped grey', () => {

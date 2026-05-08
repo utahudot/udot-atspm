@@ -15,7 +15,7 @@
 // limitations under the License.
 // #endregion
 
-import { PrioritySummaryResult } from '@/api/reports'
+import { DataPointForInt, PrioritySummaryResult } from '@/api/reports'
 import {
   createDataZoom,
   createDisplayProps,
@@ -45,19 +45,31 @@ import {
 import { EChartsOption } from 'echarts'
 
 const SYMBOL_SIZE = 8
+const UNASSOCIATED_SYMBOL_SIZE = 8
+const UNASSOCIATED_MARKER_STYLE = {
+  color: Color.White,
+  borderColor: Color.Black,
+  borderWidth: 1,
+  opacity: 1,
+}
 
 export default function transformPrioritySummaryData(
   response: RawPrioritySummaryResponse | PrioritySummaryResult
 ): TransformedPrioritySummaryResponse {
-  const data =
-    (response as RawPrioritySummaryResponse)?.data ?? (response as any)
+  const data = isRawPrioritySummaryResponse(response) ? response.data : response
 
-  const chart = transformLocation(data)
+  const charts = transformLocation(data)
 
   return {
     type: ChartType.PrioritySummary,
-    data: { charts: [{ chart }] },
+    data: { charts: charts.map((chart) => ({ chart })) },
   }
+}
+
+function isRawPrioritySummaryResponse(
+  response: RawPrioritySummaryResponse | PrioritySummaryResult
+): response is RawPrioritySummaryResponse {
+  return 'data' in response
 }
 
 function durationToSeconds(duration: string): string {
@@ -68,6 +80,30 @@ function durationToSeconds(duration: string): string {
 }
 
 function transformLocation(data: PrioritySummaryResult) {
+  const cycles = data.cycles || []
+  const tspNumbers = getTspNumbers(data, cycles)
+
+  const combinedChart = transformTspChart(data, cycles)
+
+  if (!tspNumbers.length) return [combinedChart]
+
+  return [
+    combinedChart,
+    ...tspNumbers.map((tspNumber) =>
+      transformTspChart(
+        data,
+        cycles.filter((c) => c.tspNumber === tspNumber),
+        tspNumber
+      )
+    ),
+  ]
+}
+
+function transformTspChart(
+  data: PrioritySummaryResult,
+  cycles: NonNullable<PrioritySummaryResult['cycles']>,
+  tspNumber?: number
+) {
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
   const info = createInfoString(
@@ -79,7 +115,10 @@ function transformLocation(data: PrioritySummaryResult) {
   )
 
   const title = createTitle({
-    title: 'Priority Summary',
+    title:
+      tspNumber == null
+        ? 'Priority Summary'
+        : `Priority Summary - TSP ${tspNumber}`,
     location: data.locationDescription,
     dateRange,
     info,
@@ -88,7 +127,7 @@ function transformLocation(data: PrioritySummaryResult) {
   const xAxis = createXAxis(data.start, data.end)
   const yAxis = createYAxis(true, { name: 'Seconds Since Check-In' })
 
-  const grid = createGrid({ top: 140, left: 70, right: 210 })
+  const grid = createGrid({ top: 140, left: 70, right: 260 })
 
   const legend = createLegend({
     top: grid.top,
@@ -110,15 +149,6 @@ function transformLocation(data: PrioritySummaryResult) {
   )
 
   const tooltip = createTooltip({ trigger: 'item' })
-
-  const cycles = data.cycles || []
-
-  const slowServiceTicks = cycles
-    .filter((c) => c.serviceStartOffsetSec != null)
-    .map((c) => ({
-      x: c.checkIn,
-      sec: c.serviceStartOffsetSec,
-    }))
 
   const series = createSeries()
 
@@ -277,6 +307,14 @@ function transformLocation(data: PrioritySummaryResult) {
   const extendGreenPts = toIconPoints(cycles, 114)
   const preemptForceOffPts = toIconPoints(cycles, 116)
   const tspEarlyForceOffPts = toIconPoints(cycles, 117)
+  const unassignedEarlyGreenPts = toUnassignedPoints(
+    data.unassigned?.earlyGreen,
+    tspNumber
+  )
+  const unassignedExtendGreenPts = toUnassignedPoints(
+    data.unassigned?.extendGreen,
+    tspNumber
+  )
 
   if (earlyGreenPts.length > 0) {
     series.push({
@@ -326,6 +364,34 @@ function transformLocation(data: PrioritySummaryResult) {
     })
   }
 
+  if (unassignedEarlyGreenPts.length > 0) {
+    series.push({
+      name: 'Unassociated Early Green (113)',
+      type: 'scatter',
+      data: unassignedEarlyGreenPts,
+      symbolSize: UNASSOCIATED_SYMBOL_SIZE,
+      symbol: 'circle',
+      itemStyle: UNASSOCIATED_MARKER_STYLE,
+      clip: false,
+      z: 100000,
+      zlevel: 1,
+    })
+  }
+
+  if (unassignedExtendGreenPts.length > 0) {
+    series.push({
+      name: 'Unassociated Extend Green (114)',
+      type: 'scatter',
+      data: unassignedExtendGreenPts,
+      symbolSize: UNASSOCIATED_SYMBOL_SIZE,
+      symbol: triangleSvgSymbol,
+      itemStyle: UNASSOCIATED_MARKER_STYLE,
+      clip: false,
+      z: 100000,
+      zlevel: 1,
+    })
+  }
+
   const hintGraphic = buildLegendWidthHintGraphic(
     'Click a cycle to see more details'
   )
@@ -350,6 +416,42 @@ function transformLocation(data: PrioritySummaryResult) {
   }
 
   return chartOptions
+}
+
+function getTspNumbers(
+  data: PrioritySummaryResult,
+  cycles: NonNullable<PrioritySummaryResult['cycles']>
+) {
+  const tspNumbers = new Set<number>()
+
+  cycles.forEach((cycle) => {
+    if (cycle.tspNumber != null) tspNumbers.add(cycle.tspNumber)
+  })
+
+  data.unassigned?.earlyGreen?.forEach((point) => {
+    if (point.value != null) tspNumbers.add(point.value)
+  })
+
+  data.unassigned?.extendGreen?.forEach((point) => {
+    if (point.value != null) tspNumbers.add(point.value)
+  })
+
+  return Array.from(tspNumbers).sort((a, b) => a - b)
+}
+
+function toUnassignedPoints(
+  points?: DataPointForInt[] | null,
+  tspNumber?: number
+): Array<[string, number, number]> {
+  return (points ?? [])
+    .filter(
+      (point): point is DataPointForInt & { timestamp: string; value: number } =>
+        point.timestamp != null &&
+        Number.isFinite(Date.parse(point.timestamp)) &&
+        point.value != null &&
+        (tspNumber == null || point.value === tspNumber)
+    )
+    .map((point) => [point.timestamp, 0, point.value])
 }
 
 function buildLegendWidthHintGraphic(text: string) {

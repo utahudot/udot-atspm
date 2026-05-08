@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
-using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -47,6 +46,7 @@ using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Business.WaitTime;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Infrastructure.Common;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
@@ -70,10 +70,7 @@ builder.Host
             o.ReturnHttpNotAcceptable = true;
             o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
             o.Filters.Add(new ProducesAttribute("application/json"));
-        }).AddJsonOptions(o =>
-         {
-             o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-         });
+        });
         s.AddProblemDetails();
         s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
         s.AddConfiguredSwagger(builder.Configuration, o =>
@@ -82,19 +79,10 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.CustomSchemaIds(type => type.Name);
             o.EnableAnnotations();
-            o.AddJwtAuthorization();
+            o.AddAtspmSecurityDefinitions();
 
         });
         s.AddConfiguredCors(builder.Configuration);
-        s.AddCors(options =>
-        {
-            options.AddPolicy("Default", policy =>
-                policy
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-            );
-        });
         s.AddHttpLogging(l =>
         {
             l.LoggingFields = HttpLoggingFields.All;
@@ -241,6 +229,10 @@ builder.Host
     });
 
 var app = builder.Build();
+
+await app.ApplyMigrations<ConfigContext>();
+await app.ApplyMigrations<EventLogContext>();
+await app.ApplyMigrations<AggregationContext>();
 
 #region Middleware Pipeline
 

@@ -15,7 +15,7 @@
 // limitations under the License.
 // #endregion
 import { PrioritySummaryResult } from '@/api/reports'
-import { PrioritySummaryOptions } from '@/api/reports/atspmReportsApi.schemas'
+import { PrioritySummaryOptions } from '@/api/reports/report-api.schemas'
 import {
   ApproachDelayChartOptions,
   RawApproachDelayReponse,

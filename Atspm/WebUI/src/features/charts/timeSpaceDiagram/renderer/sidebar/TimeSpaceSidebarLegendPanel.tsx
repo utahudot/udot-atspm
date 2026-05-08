@@ -145,7 +145,16 @@ function PreviewCard({
           <rect x="10" y="17" width="54" height="4" fill={appearanceSettings.tspRequest.color} opacity={appearanceSettings.tspRequest.opacity} />
         )}
         {kind === 'tsp-service' && (
-          <rect x="12" y="25" width="54" height="8" fill={appearanceSettings.tspService.color} opacity={appearanceSettings.tspService.opacity} />
+          <rect
+            x="12"
+            y="25"
+            width="54"
+            height="8"
+            fill="transparent"
+            stroke={appearanceSettings.tspService.color}
+            strokeWidth="2"
+            strokeOpacity={appearanceSettings.tspService.opacity}
+          />
         )}
       </Box>
     </Box>

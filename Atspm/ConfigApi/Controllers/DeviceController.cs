@@ -31,15 +31,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Device controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DeviceController : LocationPolicyControllerBase<Device, int>
+    public class DeviceController(IDeviceRepository repository) : DevicePolicyControllerBase<Device, int>(repository)
     {
-        private readonly IDeviceRepository _repository;
-
-        /// <inheritdoc/>
-        public DeviceController(IDeviceRepository repository) : base(repository)
-        {
-            _repository = repository;
-        }
+        private readonly IDeviceRepository _repository = repository;
 
         #region NavigationProperties
 
@@ -79,6 +73,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 Model = d.DeviceConfiguration.Product.Model,
                 Firmware = d.DeviceConfiguration.Description
             })
+                //HACK: This is a dto not a model
                 .Select(g => new ATSPM.ConfigApi.Models.DeviceGroup
                 {
                     Manufacturer = g.Key.Manufacturer,

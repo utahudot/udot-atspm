@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasMaxLength(100);
 
             builder.Property(x => x.RemoteIp)
-                .HasMaxLength(45); // IPv6 max length
+                .HasMaxLength(45);
 
             builder.Property(x => x.UserAgent)
                 .HasMaxLength(1024);

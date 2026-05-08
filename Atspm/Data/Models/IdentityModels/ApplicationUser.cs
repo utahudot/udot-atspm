@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Models/ApplicationUser.cs
+// for Data - Utah.Udot.Atspm.Data.Models.IdentityModels/ApplicationUser.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Utah.Udot.Atspm.Data.Models
+namespace Utah.Udot.Atspm.Data.Models.IdentityModels
 {
     /// <summary>
     /// Application user

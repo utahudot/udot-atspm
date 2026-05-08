@@ -37,23 +37,17 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Because this controller inherits from <see cref="ODataController"/>, it supports standard OData query syntax ($filter, $select, $top, etc.) 
     /// on collection-based endpoints, allowing clients to precisely query the project's release history.
     /// </remarks>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="VersionController"/> class using dependency injection.
+    /// </remarks>
+    /// <param name="github">The service responsible for communicating with the GitHub API to fetch release data.</param>
+    /// <param name="mapper">The AutoMapper instance used to transform domain models into API-friendly Data Transfer Objects.</param>
     [ApiVersion(1.0)]
     [Produces("application/json")]
-    public class VersionController : ODataController
+    public class VersionController(IGitHubReleaseService github, IMapper mapper) : ODataController
     {
-        private readonly IGitHubReleaseService _github;
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VersionController"/> class using dependency injection.
-        /// </summary>
-        /// <param name="github">The service responsible for communicating with the GitHub API to fetch release data.</param>
-        /// <param name="mapper">The AutoMapper instance used to transform domain models into API-friendly Data Transfer Objects.</param>
-        public VersionController(IGitHubReleaseService github, IMapper mapper)
-        {
-            _github = github;
-            _mapper = mapper;
-        }
+        private readonly IGitHubReleaseService _github = github;
+        private readonly IMapper _mapper = mapper;
 
         /// <summary>
         /// Retrieves the specific release details for the version currently running in this environment.

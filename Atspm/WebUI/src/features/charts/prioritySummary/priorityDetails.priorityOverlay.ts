@@ -106,7 +106,7 @@ export function buildPriorityOverlay(rows: PriorityDetailsResult[]) {
 
   const REQUEST_OFFSET_PX = -3
   const SERVICE_OFFSET_PX = 3
-  const SYMBOL_Y_OFFSET_PX = -6
+  const SYMBOL_Y_OFFSET_PX = -2
 
   if (requestRects.length) {
     series.push(
