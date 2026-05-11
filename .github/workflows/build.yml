@@ -3,7 +3,7 @@ name: Build Containers
 on:
   push:
     branches:
-      - Staging
+      - main
 
 permissions:
   id-token: write
@@ -14,7 +14,7 @@ jobs:
     name: Find Containers to build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4     
+      - uses: actions/checkout@v4
       # Check which Containers have changed files
       - uses: dorny/paths-filter@v3
         id: changes
@@ -26,7 +26,7 @@ jobs:
   build:
     name: Build Job
     needs: changes
-    if: ${{ needs.changes.outputs.changes != '[]' && github.repository == 'avenueconsultants/udot-atspm-development' }}
+    if: ${{ needs.changes.outputs.changes != '[]' && github.repository == 'utahudot/udot-atspm' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -58,7 +58,7 @@ jobs:
       - name: 🗝️ Authenticate Docker to Google Cloud
         uses: docker/login-action@v3
         with:
-          registry: us-docker.pkg.dev
+          registry: us-west3-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
@@ -96,21 +96,3 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: 🚀 Set Service Name from JSON
-        id: service_and_region
-        run: |
-          service_name=$(jq -r --arg matrix_name "${{ matrix.name }}" '.[$matrix_name]' .github/service-names.json)
-          echo "SERVICE_NAME=$service_name" >> $GITHUB_ENV
-
-      - name: 🚀 Deploy to Cloud Run
-        if: ${{ success() }}
-        run: |
-          IMAGE=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-          echo "Deploying $IMAGE to Cloud Run service $SERVICE_NAME"
-          gcloud run deploy "$SERVICE_NAME" \
-            --image "$IMAGE" \
-            --region "${{ secrets.GCP_REGION }}" \
-            --platform managed
-        env:
-          SERVICE_NAME: ${{ env.SERVICE_NAME }}
