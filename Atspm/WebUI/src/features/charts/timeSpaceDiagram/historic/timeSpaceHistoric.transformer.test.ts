@@ -266,6 +266,79 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(rightTurn?.tooltip).toMatchObject({ show: false })
   })
 
+  it('renders and legends turn series for both primary and opposing directions', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            tmcForPhase: {
+              leftTurnEvents: [{ start: '2026-04-07T08:25:00Z' }] as never[],
+              rightTurnEvents: [{ start: '2026-04-07T08:26:00Z' }] as never[],
+            },
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing', {
+            tmcForPhase: {
+              leftTurnEvents: [{ start: '2026-04-07T08:27:00Z' }] as never[],
+              rightTurnEvents: [{ start: '2026-04-07T08:28:00Z' }] as never[],
+            },
+          }),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+    const legend = Array.isArray(chart.legend) ? chart.legend[0] : chart.legend
+    const legendData =
+      legend && 'data' in legend && Array.isArray(legend.data)
+        ? legend.data
+        : []
+    const selected =
+      legend && 'selected' in legend && legend.selected ? legend.selected : {}
+
+    const primaryLeftTurn = series.find(
+      (entry) => String(entry.name) === 'Left Turn NBT ph2'
+    )
+    const opposingLeftTurn = series.find(
+      (entry) => String(entry.name) === 'Left Turn SBT ph6'
+    )
+    const opposingLeftTurnData = opposingLeftTurn?.data as
+      | Array<[string, number] | null>
+      | undefined
+
+    expect(primaryLeftTurn).toBeDefined()
+    expect(opposingLeftTurn).toBeDefined()
+    expect(
+      legendData.some(
+        (entry) => typeof entry === 'object' && entry.name === 'Left Turn NBT ph2'
+      )
+    ).toBe(true)
+    expect(
+      legendData.some(
+        (entry) => typeof entry === 'object' && entry.name === 'Left Turn SBT ph6'
+      )
+    ).toBe(true)
+    expect(selected).toMatchObject({
+      'Left Turn NBT ph2': false,
+      'Right Turn NBT ph2': false,
+      'Left Turn SBT ph6': false,
+      'Right Turn SBT ph6': false,
+    })
+    expect(opposingLeftTurnData?.[1]?.[1]).toBeLessThan(
+      opposingLeftTurnData?.[0]?.[1] ?? 0
+    )
+  })
+
   it('does not synthesize TSP series when no TSP events are present', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,

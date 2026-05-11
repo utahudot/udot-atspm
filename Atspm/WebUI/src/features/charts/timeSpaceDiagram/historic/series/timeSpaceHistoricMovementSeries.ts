@@ -42,9 +42,13 @@ export function generateTMCEvent(
   idScope = 'default'
 ) {
   const seriesOptions: SeriesOption[] = []
+  const directionMultiplier = idScope === 'opposing' ? -1 : 1
 
   data.forEach((location, i) => {
     if (!location.tmcForPhase) return
+
+    const displayDistanceToNext =
+      directionMultiplier * location.calculatedDistanceToNext * distanceScale
 
     const leftTurnEvents = location.tmcForPhase.leftTurnEvents.flatMap(
       (leftTurnEvent) => {
@@ -57,10 +61,7 @@ export function generateTMCEvent(
 
         return [
           [initialX, distanceData[i]],
-          [
-            finalX,
-            distanceData[i] + location.calculatedDistanceToNext * distanceScale,
-          ],
+          [finalX, distanceData[i] + displayDistanceToNext],
           null,
         ]
       }
@@ -90,10 +91,7 @@ export function generateTMCEvent(
 
         return [
           [initialX, distanceData[i]],
-          [
-            finalX,
-            distanceData[i] + location.calculatedDistanceToNext * distanceScale,
-          ],
+          [finalX, distanceData[i] + displayDistanceToNext],
           null,
         ]
       }

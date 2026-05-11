@@ -322,6 +322,16 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   )
 
   series.push(
+    ...generateTMCEvent(
+      opposingPhaseData,
+      opposingDistanceData,
+      opposingDirection,
+      distanceScale,
+      'opposing'
+    )
+  )
+
+  series.push(
     ...buildCycleEventMarkersOnCyclesSeries(
       opposingPhaseData,
       opposingDistanceData,
@@ -505,6 +515,14 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
         itemStyle: { color: 'black' },
       },
       {
+        name: `Left Turn ${opposingDirection}`,
+        itemStyle: { color: 'black' },
+      },
+      {
+        name: `Right Turn ${opposingDirection}`,
+        itemStyle: { color: 'black' },
+      },
+      {
         name: `Early Green (113)`,
         icon: 'circle',
         itemStyle: {
@@ -554,6 +572,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       [`${SRM_GAP_LEGEND_PREFIX} ${opposingDirection}`]: true,
       [`Left Turn ${primaryDirection}`]: false,
       [`Right Turn ${primaryDirection}`]: false,
+      [`Left Turn ${opposingDirection}`]: false,
+      [`Right Turn ${opposingDirection}`]: false,
       [`Early Green (113)`]: false,
       [`Extend Green (114)`]: false,
       [`TSP Request (112-115)`]: false,
