@@ -35,8 +35,6 @@ using Utah.Udot.NetStandardToolkit.Services.GitHubReleaseService;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host

@@ -17,7 +17,7 @@ export const getTimeSpaceSrmData = async (
   }
 
   return reportsRequest<TimeSpaceSrmPhaseOverlay[]>({
-    url: '/TimeSpaceDiagram/getSrmData',
+    url: 'api/v1/TimeSpaceDiagram/getSrmData',
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: payload,

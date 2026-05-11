@@ -34,7 +34,7 @@ import {
 
 import type {
   MeasureOptionPreset
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 
 export const getGetMeasureOptionPresetMeasureOptionPresetTypesResponseMock = (): string[] => (Array.from({length: faker.number.int({min: 1,max: 10})}, () => faker.word.sample()))

@@ -20,12 +20,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Retry;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.Infrastructure.Common;
+using Utah.Udot.ATSPM.DataApi.Services;
 
 //git 2
 
@@ -71,6 +74,11 @@ builder.Host
             l.RequestBodyLogLimit = 4096;
             l.ResponseBodyLogLimit = 4096;
         });
+        s.AddScoped<AsyncRetryPolicy>(sp =>
+            Policy.Handle<Exception>()
+                  .WaitAndRetryAsync(3, retry => TimeSpan.FromSeconds(2))
+        );
+        s.AddScoped<EventLogImporterService, EventLogImporterService>();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();

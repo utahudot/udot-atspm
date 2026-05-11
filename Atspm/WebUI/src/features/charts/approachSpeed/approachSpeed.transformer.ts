@@ -79,7 +79,7 @@ function transformData(data: RawApproachSpeedData) {
     ]
   )
 
-  const titleHeader = `Approach Speed\n${data.locationDescription} - ${data.phaseDescription}`
+  const titleHeader = 'Approach Speed'
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
   const title = createTitle({

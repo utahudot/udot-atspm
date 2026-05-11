@@ -58,6 +58,7 @@ namespace Utah.Udot.Atspm.Business.PriorityDetails
                 options.Start,
                 options.End,
                 phaseDetail.PhaseNumber,
+                phaseDetail.Approach.TransitSignalPriorityNumber,
                 phaseDetail.UseOverlap,
                 phaseNumberSort,
                 usePermissivePhase ? "Permissive" : "Protected",

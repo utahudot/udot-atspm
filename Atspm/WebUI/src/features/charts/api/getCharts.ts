@@ -44,6 +44,8 @@ export const TypeApiMap: Record<ChartType, string> = {
   [ChartType.PurdueSplitFailure]: '/api/v1/SplitFail/GetReportData',
   [ChartType.SplitMonitor]: '/api/v1/SplitMonitor/GetReportData',
   [ChartType.TimingAndActuation]: '/api/v1/TimingAndActuation/GetReportData',
+  [ChartType.PrioritySummary]: '/api/v1/PrioritySummary/GetReportData',
+  [ChartType.PriorityDetails]: '/api/v1/PriorityDetail/GetReportData',
   [ChartType.TurningMovementCounts]:
     '/api/v1/TurningMovementCounts/GetReportData',
   [ChartType.WaitTime]: '/api/v1/WaitTime/GetReportData',

@@ -346,6 +346,7 @@ function transformTspChart(
   )
 
   const displayProps = createDisplayProps({
+    height: 600,
     description: 'Summary',
   })
 
@@ -393,7 +394,9 @@ function toUnassignedPoints(
 ): Array<[string, number, number]> {
   return (points ?? [])
     .filter(
-      (point): point is DataPointForInt & { timestamp: string; value: number } =>
+      (
+        point
+      ): point is DataPointForInt & { timestamp: string; value: number } =>
         point.timestamp != null &&
         Number.isFinite(Date.parse(point.timestamp)) &&
         point.value != null &&

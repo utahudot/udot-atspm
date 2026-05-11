@@ -207,8 +207,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     b.ToTable("Areas", t =>
                         {
-                            t.ExcludeFromMigrations();
-
                             t.HasComment("Areas");
                         });
                 });
