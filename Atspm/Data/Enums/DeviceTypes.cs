@@ -56,10 +56,5 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// Speed sensor
         /// </summary>
         SpeedSensor,
-
-        /// <summary>
-        /// Edge device
-        /// </summary>
-        EdgeProcessor
     }
 }

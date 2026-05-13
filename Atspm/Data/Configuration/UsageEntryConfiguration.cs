@@ -21,77 +21,78 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
-/// Entity Framework configuration for the <see cref="UsageEntry"/> entity.
-/// Defines table mapping, property constraints, and indexes.
-/// </summary>
-public class UsageEntryConfiguration : IEntityTypeConfiguration<UsageEntry>
-{
-    /// <inheritdoc/>
-    public void Configure(EntityTypeBuilder<UsageEntry> builder)
+    /// Entity Framework configuration for the <see cref="UsageEntry"/> entity.
+    /// Defines table mapping, property constraints, and indexes.
+    /// </summary>
+    public class UsageEntryConfiguration : IEntityTypeConfiguration<UsageEntry>
     {
-        builder.HasKey(x => x.Id);
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<UsageEntry> builder)
+        {
+            builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Timestamp)
-            .HasColumnType("timestamp with time zone")
-            .IsRequired();
+            builder.Property(x => x.Timestamp)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
-        builder.Property(x => x.StatusCode)
-            .IsRequired();
+            builder.Property(x => x.StatusCode)
+                .IsRequired();
 
-        builder.Property(x => x.DurationMs)
-            .IsRequired();
+            builder.Property(x => x.DurationMs)
+                .IsRequired();
 
-        builder.Property(x => x.Success)
-            .IsRequired();
+            builder.Property(x => x.Success)
+                .IsRequired();
 
-        builder.Property(x => x.ApiName)
-           .HasMaxLength(32);
+            builder.Property(x => x.ApiName)
+               .HasMaxLength(32);
 
-        builder.Property(x => x.TraceId)
-            .HasMaxLength(100);
+            builder.Property(x => x.TraceId)
+                .HasMaxLength(100);
 
-        builder.Property(x => x.ConnectionId)
-            .HasMaxLength(100);
+            builder.Property(x => x.ConnectionId)
+                .HasMaxLength(100);
 
-        builder.Property(x => x.RemoteIp)
-            .HasMaxLength(45);
+            builder.Property(x => x.RemoteIp)
+                .HasMaxLength(45);
 
-        builder.Property(x => x.UserAgent)
-            .HasMaxLength(1024);
+            builder.Property(x => x.UserAgent)
+                .HasMaxLength(1024);
 
-        builder.Property(x => x.UserId)
-            .HasMaxLength(200);
+            builder.Property(x => x.UserId)
+                .HasMaxLength(200);
 
-        builder.Property(x => x.Route)
-            .HasMaxLength(2000);
+            builder.Property(x => x.Route)
+                .HasMaxLength(2000);
 
-        builder.Property(x => x.QueryString)
-            .HasMaxLength(2000);
+            builder.Property(x => x.QueryString)
+                .HasMaxLength(2000);
 
-        builder.Property(x => x.Method)
-            .HasMaxLength(20);
+            builder.Property(x => x.Method)
+                .HasMaxLength(20);
 
-        builder.Property(x => x.Controller)
-            .HasMaxLength(200);
+            builder.Property(x => x.Controller)
+                .HasMaxLength(200);
 
-        builder.Property(x => x.Action)
-            .HasMaxLength(200);
+            builder.Property(x => x.Action)
+                .HasMaxLength(200);
 
-        builder.Property(x => x.ErrorMessage)
-            .HasMaxLength(2000);
+            builder.Property(x => x.ErrorMessage)
+                .HasMaxLength(2000);
 
-        builder.Property(x => x.ResultCount)
-            .IsRequired(false);
+            builder.Property(x => x.ResultCount)
+                .IsRequired(false);
 
-        builder.Property(x => x.ResultSizeBytes)
-            .IsRequired(false);
+            builder.Property(x => x.ResultSizeBytes)
+                .IsRequired(false);
 
-        builder.Property(x => x.ErrorMessage)
-            .IsRequired(false);
+            builder.Property(x => x.ErrorMessage)
+                .IsRequired(false);
 
-        builder.HasIndex(x => x.Timestamp);
-        builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => x.Route);
-        builder.HasIndex(x => x.StatusCode);
+            builder.HasIndex(x => x.Timestamp);
+            builder.HasIndex(x => x.UserId);
+            builder.HasIndex(x => x.Route);
+            builder.HasIndex(x => x.StatusCode);
+        }
     }
 }
