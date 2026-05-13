@@ -25,6 +25,7 @@ export interface ApacheEChartsProps {
   loading?: boolean
   theme?: 'light' | 'dark'
   hideInteractionMessage?: boolean
+  resetKey?: boolean
 }
 
 export default function ApacheEChart({

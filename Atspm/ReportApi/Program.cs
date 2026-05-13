@@ -32,6 +32,8 @@ using Utah.Udot.Atspm.Business.PhaseTermination;
 using Utah.Udot.Atspm.Business.PreempDetail;
 using Utah.Udot.Atspm.Business.PreemptService;
 using Utah.Udot.Atspm.Business.PreemptServiceRequest;
+using Utah.Udot.Atspm.Business.PriorityDetails;
+using Utah.Udot.Atspm.Business.PrioritySummary;
 using Utah.Udot.Atspm.Business.PurdueCoordinationDiagram;
 using Utah.Udot.Atspm.Business.RampMetering;
 using Utah.Udot.Atspm.Business.SplitFail;
@@ -118,13 +120,15 @@ builder.Host
         s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
         s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
         s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
+        s.AddScoped<IReportService<PrioritySummaryOptions, PrioritySummaryResult>, PrioritySummaryReportService>();
+        s.AddScoped<IReportService<PriorityDetailsOptions, IEnumerable<PriorityDetailsResult>>, PriorityDetailsReportService>();
         s.AddScoped<IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>, PurdueCoordinationDiagramReportService>();
         s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
         s.AddScoped<IReportService<RampMeteringOptions, RampMeteringResult>, RampMeteringReportService>();
         s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
         s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-        s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
-        s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
+        s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramPhaseResult>>, TimeSpaceDiagramReportService>();
+        s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAveragePhaseResult>>, TimeSpaceDiagramAverageReportService>();
         s.AddScoped<IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>, TransitSignalPriorityReportService>();
         s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
         s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
@@ -154,12 +158,18 @@ builder.Host
         s.AddScoped<LeftTurnPeakHourService>();
         s.AddScoped<PreemptServiceService>();
         s.AddScoped<PreemptServiceRequestService>();
+        s.AddScoped<PrioritySummaryService>();
+        s.AddScoped<PriorityDetailsService>();
         s.AddScoped<PurdueCoordinationDiagramService>();
         s.AddScoped<SplitFailPhaseService>();
         s.AddScoped<SplitMonitorService>();
         s.AddScoped<TimeSpaceDiagramForPhaseService>();
+        s.AddScoped<ITimeSpaceDiagramSrmSource, TimeSpaceDiagramSrmCsvSource>();
+        s.AddScoped<TimeSpaceDiagramSrmService>();
         s.AddScoped<TimeSpaceAverageService>();
         s.AddScoped<TimingAndActuationsForPhaseService>();
+        s.AddScoped<PriorityDetailsReportService>();
+        s.AddScoped<TimeSpaceDiagramReportService>();
         s.AddScoped<TransitSignalPriorityService>();
         s.AddScoped<TurningMovementCountsService>();
         s.AddScoped<WaitTimeService>();
@@ -200,6 +210,7 @@ builder.Host
         s.AddScoped<LinkPivotPcdService>();
         s.AddScoped<WatchDogIgnoreEventService>();
         s.AddScoped<RampMeteringService>();
+        s.AddScoped<DetectionService>();
 
         s.AddPathBaseFilter(h);
 

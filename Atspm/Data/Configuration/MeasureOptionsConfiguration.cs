@@ -92,7 +92,9 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 new MeasureOption() { Id = 118, Option = "yAxisDefault", Value = "180", MeasureTypeId = 3 },
                 new MeasureOption() { Id = 119, Option = "yAxisDefault", Value = "20", MeasureTypeId = 11 },
                 new MeasureOption() { Id = 120, Option = "yAxisDefault", Value = "300", MeasureTypeId = 5 },
-                new MeasureOption() { Id = 121, Option = "combineThruRight", Value = "FALSE", MeasureTypeId = 5 }
+                new MeasureOption() { Id = 121, Option = "combineThruRight", Value = "FALSE", MeasureTypeId = 5 },
+                new MeasureOption() { Id = 122, Option = "binSize", Value = "15", MeasureTypeId = 39 },
+                new MeasureOption() { Id = 123, Option = "binSize", Value = "15", MeasureTypeId = 40 }
                 );
         }
     }

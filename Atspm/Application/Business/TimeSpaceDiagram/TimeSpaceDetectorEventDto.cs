@@ -24,14 +24,14 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public TimeSpaceDetectorEventDto(
             DateTime start,
             DateTime stop,
-            double speedLimit,
+            //double speedLimit,
             double distanceToStopBar) : base(start, stop)
         {
-            SpeedLimit = speedLimit;
+            //SpeedLimit = speedLimit;
             DistanceToStopBar = distanceToStopBar;
         }
 
-        public double SpeedLimit { get; set; }
+        //public double SpeedLimit { get; set; }
         public double DistanceToStopBar { get; set; }
     }
 }

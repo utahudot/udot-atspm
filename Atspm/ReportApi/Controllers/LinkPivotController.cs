@@ -52,5 +52,23 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("getLinkPivotForTsd")]
+        //[Produces("application/json", "application/xml")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<LinkPivotForTsd>>> GetLinkPivotForTSD(TimeSpaceDiagramOptions options)
+        {
+            try
+            {
+                var result = await linkPivotReportService.GetLinkPivotForTSD(options);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

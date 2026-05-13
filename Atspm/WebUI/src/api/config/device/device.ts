@@ -47,7 +47,7 @@ import type {
   PatchDeviceFromKeyParams,
   PostDeviceParams,
   PutDeviceFromKeyParams
-} from '../aTSPMConfigurationApi.schemas';
+} from '../config-api.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

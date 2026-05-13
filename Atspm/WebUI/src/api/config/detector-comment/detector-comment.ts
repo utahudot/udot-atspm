@@ -44,7 +44,7 @@ import type {
   PatchDetectorCommentFromKeyParams,
   PostDetectorCommentParams,
   PutDetectorCommentFromKeyParams
-} from '../aTSPMConfigurationApi.schemas';
+} from '../config-api.schemas';
 
 import { configRequest } from '../../../lib/axios';
 
