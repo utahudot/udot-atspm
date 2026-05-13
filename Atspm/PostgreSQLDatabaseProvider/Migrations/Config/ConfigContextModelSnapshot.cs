@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for PostgreSQLDatabaseProvider - Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations/ConfigContextModelSnapshot.cs
 // 
@@ -156,9 +156,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ProtectedPhaseNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TransitSignalPriorityNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -337,13 +334,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Abbreviation = "EQ",
                             Description = "Excessive Queue",
                             DisplayOrder = 11
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Abbreviation = "PP",
-                            Description = "Priority and Preemption",
-                            DisplayOrder = 12
                         });
                 });
 
@@ -1667,20 +1657,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             MeasureTypeId = 5,
                             Option = "yAxisDefault",
                             Value = "300"
-                        },
-                        new
-                        {
-                            Id = 121,
-                            MeasureTypeId = 39,
-                            Option = "binSize",
-                            Value = "15"
-                        },
-                        new
-                        {
-                            Id = 122,
-                            MeasureTypeId = 40,
-                            Option = "binSize",
-                            Value = "15"
                         });
                 });
 
@@ -2103,24 +2079,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Name = "Transit Signal Priority",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = false
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Abbreviation = "TSPS",
-                            DisplayOrder = 133,
-                            Name = "Transit Signal Priority Summary",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = true
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Abbreviation = "TSPD",
-                            DisplayOrder = 134,
-                            Name = "Transit Signal Priority Details",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = true
                         });
                 });
 
@@ -2439,119 +2397,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         {
                             t.HasComment("Route Locations");
                         });
-                });
-
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UsageEntry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .HasMaxLength(200)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ApiName")
-                        .HasMaxLength(32)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<string>("ConnectionId")
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Controller")
-                        .HasMaxLength(200)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp");
-
-                    b.Property<string>("CreatedBy")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<long>("DurationMs")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(2000)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("Method")
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<string>("QueryString")
-                        .HasMaxLength(2000)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("RemoteIp")
-                        .HasMaxLength(45)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(45)");
-
-                    b.Property<int?>("ResultCount")
-                        .HasColumnType("integer");
-
-                    b.Property<long?>("ResultSizeBytes")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Route")
-                        .HasMaxLength(2000)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int>("StatusCode")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Success")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp");
-
-                    b.Property<string>("TraceId")
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("UserAgent")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(1024)");
-
-                    b.Property<string>("UserId")
-                        .HasMaxLength(200)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Route");
-
-                    b.HasIndex("StatusCode");
-
-                    b.HasIndex("Timestamp");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsageEntries");
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UsageEntry", b =>
