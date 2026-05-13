@@ -55,6 +55,6 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// <summary>
         /// Speed sensor
         /// </summary>
-        SpeedSensor
+        SpeedSensor,
     }
 }

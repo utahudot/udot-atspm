@@ -129,7 +129,7 @@ const LinkPivot = () => {
               <LinkPivotApproachLinkComponent
                 data={data.approachLinks}
                 corridorSummary={data}
-                lpHandler={handler}
+                pcdTimeWindow={handler}
               />
             </Paper>
           </Box>

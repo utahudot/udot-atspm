@@ -57,13 +57,14 @@ export interface AdjustmentDto {
   locationIdentifier: string
   location: string
   delta: number
+  existingOffset: number
   adjustment: number
 }
 
 export interface TransformedAdjustmentDto extends AdjustmentDto {
   editLinkData: number
-  existingOffset: number
   newOffset: number
+  index: number
 }
 
 export interface ApproachLinksDto {
@@ -137,6 +138,11 @@ export interface CorridorSummary {
 export interface RawLinkPivotData extends CorridorSummary {
   adjustments: AdjustmentDto[]
   approachLinks: ApproachLinksDto[]
+}
+
+export interface RawLinkPivotForTsdData {
+  direction: 'Primary' | 'Opposing'
+  data: RawLinkPivotData
 }
 
 export interface RawLinkPivotPcdData

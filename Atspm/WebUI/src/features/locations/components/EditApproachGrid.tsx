@@ -40,7 +40,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
   )
 
   const rowCount = approach.detectors?.length + 1 || 1
-  const colCount = pedsAre1to1 ? 8 : 10
+  const colCount = pedsAre1to1 ? 9 : 11
 
   let columnCount = 0
   const getColumnCount = () => columnCount++
@@ -84,6 +84,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
                 </Typography>
               </Divider>
             </TableCell>
+            <TableCell sx={{ borderBottom: 'none', pb: 0, pt: 1 }} />
           </TableRow>
           <TableRow>
             {[
@@ -97,6 +98,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               'Protected',
               'Permissive',
               'Pedestrian',
+              'TSP Number',
             ].map((header, i) => (
               <TableCell
                 key={i}
@@ -232,6 +234,16 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               colCount={colCount}
               value={approach.isPedestrianPhaseOverlap}
               onUpdate={(v) => handleUpdate('isPedestrianPhaseOverlap', v)}
+            />
+
+            <TextCell
+              approachId={approach.id}
+              row={0}
+              col={getColumnCount()}
+              rowCount={rowCount}
+              colCount={getColumnCount()}
+              value={approach.transitSignalPriorityNumber || ''}
+              onUpdate={(v) => handleUpdate('transitSignalPriorityNumber', v)}
             />
           </TableRow>
         </TableBody>

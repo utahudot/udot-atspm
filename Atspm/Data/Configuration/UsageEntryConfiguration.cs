@@ -95,5 +95,4 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.HasIndex(x => x.StatusCode);
         }
     }
-
 }

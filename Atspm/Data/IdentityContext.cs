@@ -59,20 +59,37 @@ namespace Utah.Udot.Atspm.Data
 
             builder.Entity<ApiKey>(entity =>
             {
-                // Primary Key & Indexing
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.KeyHash).IsUnique();
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("timestamp with time zone")
-                    .HasConversion(utcConverter)
-                    .IsRequired();
+                var createdAt = entity.Property(e => e.CreatedAt)
+                .HasConversion(utcConverter)
+                .IsRequired();
 
-                entity.Property(e => e.ExpiresAt)
-                    .HasColumnType("timestamp with time zone")
-                    .HasConversion(utcConverter);
+                var expiresAt = entity.Property(e => e.ExpiresAt)
+                .HasConversion(utcConverter);
 
-                // Relationships
+                switch (Database.ProviderName)
+                {
+                    case "Npgsql.EntityFrameworkCore.PostgreSQL":
+                        createdAt.HasColumnType("timestamp with time zone");
+                        expiresAt.HasColumnType("timestamp with time zone");
+                        break;
+
+                    case "Oracle.EntityFrameworkCore":
+                        createdAt.HasPrecision(6);
+                        expiresAt.HasPrecision(6);
+                        break;
+
+                    case "Microsoft.EntityFrameworkCore.SqlServer":
+                        createdAt.HasColumnType("datetime2");
+                        expiresAt.HasColumnType("datetime2");
+                        break;
+
+                    default:
+                        break;
+                }
+
                 entity.HasMany(e => e.Claims)
                       .WithOne()
                       .HasForeignKey(c => c.ApiKeyId)

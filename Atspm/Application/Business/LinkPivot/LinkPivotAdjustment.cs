@@ -19,12 +19,13 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 {
     public class LinkPivotAdjustment
     {
-        public LinkPivotAdjustment(int linkNumber, string locationIdentifier, string location, int delta, int adjustment)
+        public LinkPivotAdjustment(int linkNumber, string locationIdentifier, string location, int delta, int existingOffset, int adjustment)
         {
             LinkNumber = linkNumber;
             LocationIdentifier = locationIdentifier;
             Location = location;
             Delta = delta;
+            ExistingOffset = existingOffset;
             Adjustment = adjustment;
         }
 
@@ -32,6 +33,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         public string LocationIdentifier { get; set; }
         public string Location { get; set; }
         public int Delta { get; set; }
+        public int ExistingOffset { get; set; }
         public int Adjustment { get; set; }
     }
 }

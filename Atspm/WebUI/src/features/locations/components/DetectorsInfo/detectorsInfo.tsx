@@ -67,7 +67,7 @@ function DetectorsInfo({ location }: DetectorsInfoProps) {
     const all = detectionRes.data.value as any[]
     if (locationType.name === 'Intersection') {
       return all.filter((d) =>
-        ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP'].includes(d.abbreviation)
+        ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP', 'PP'].includes(d.abbreviation)
       )
     }
     if (locationType.name === 'Ramp') {

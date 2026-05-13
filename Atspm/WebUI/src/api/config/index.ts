@@ -15,7 +15,7 @@
 // limitations under the License.
 // #endregion
 export * from './approach/approach';
-export * from './aTSPMConfigurationApi.schemas';
+export * from './config-api.schemas';
 export * from './area/area';
 export * from './detection-type/detection-type';
 export * from './detector/detector';

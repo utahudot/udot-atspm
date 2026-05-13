@@ -17,10 +17,12 @@
 
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.PreemptService;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.Atspm.Business.Common
 {
@@ -719,6 +721,189 @@ namespace Utah.Udot.Atspm.Business.Common
             }
             return sortedEvents;
         }
+
+        public string GetPhaseSort(PhaseDetail phaseDetail)
+        {
+            return phaseDetail.IsPermissivePhase ?  // Check if the 'PhaseType' property of 'options' is true
+                phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
+                    $"zOverlap - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1"  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    : $"Phase - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1" // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                :  // If 'PhaseType' is false
+                phaseDetail.Approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
+                    $"zOverlap - {phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")}-2"  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    : $"Phase - {phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")}-2";  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
+        }
+
+        public List<CycleEventsDto> GetCycleEvents(
+            PhaseDetail phaseDetail,
+            List<IndianaEvent> controllerEventLogs,
+            DateTime start,
+            DateTime end)
+        {
+
+            List<short> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
+            string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
+            var events = new List<CycleEventsDto>();
+            if (controllerEventLogs.Any())
+            {
+                var tempEvents = controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber)
+                    .Select(e => new CycleEventsDto(e.Timestamp, (int)e.EventCode)).ToList();
+                events.AddRange(tempEvents.Where(e => e.Start >= start
+                                                        && e.Start <= end));
+                var firstEvent = tempEvents.Where(e => e.Start < start).OrderByDescending(e => e.Start).FirstOrDefault();
+                if (firstEvent != null)
+                {
+                    firstEvent.Start = start;
+                    events.Insert(0, firstEvent);
+                }
+            }
+            return events;
+        }
+
+        public List<short> GetCycleCodes(bool getOverlapCodes)
+        {
+            var phaseEventCodesForCycles = new List<short>
+            {
+                1,
+                3,
+                8,
+                9,
+                11
+            };
+            if (getOverlapCodes)
+            {
+                phaseEventCodesForCycles = new List<short>
+                {
+                    61,
+                    62,
+                    63,
+                    64,
+                    65
+                };
+            }
+
+            return phaseEventCodesForCycles;
+        }
+
+
+        public Dictionary<string, List<DataPointForInt>> GetPhaseCustomEvents(
+            string locationIdentifier,
+            int phaseNumber,
+            DateTime start,
+            DateTime end,
+            List<short>? phaseEventCodesList,
+            List<IndianaEvent> controllerEventLogs)
+        {
+            var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
+            if (phaseEventCodesList != null && phaseEventCodesList.Any())
+            {
+                foreach (var phaseEventCode in phaseEventCodesList)
+                {
+
+                    var phaseEvents = controllerEventLogs.Where(c => c.EventCode == phaseEventCode
+                                                                        && c.Timestamp >= start
+                                                                        && c.Timestamp <= end).ToList();
+                    if (phaseEvents.Count > 0)
+                    {
+                        phaseCustomEvents.Add(
+                            "Phase Events: " + phaseEventCode, phaseEvents.Select(s => new DataPointForInt(s.Timestamp, (int)s.EventCode)).ToList());
+                    }
+
+                    if (phaseCustomEvents.Count == 0)
+                    {
+                        var forceEventsForAllLanes = new List<IndianaEvent>();
+                        var tempEvent1 = new IndianaEvent()
+                        {
+                            LocationIdentifier = locationIdentifier,
+                            EventCode = phaseEventCode,
+                            EventParam = Convert.ToByte(phaseNumber),
+                            Timestamp = start.AddSeconds(-10)
+                        };
+                        forceEventsForAllLanes.Add(tempEvent1);
+                        var tempEvent2 = new IndianaEvent()
+                        {
+                            LocationIdentifier = locationIdentifier,
+                            EventCode = phaseEventCode,
+                            EventParam = Convert.ToByte(phaseNumber),
+                            Timestamp = start.AddSeconds(-9)
+                        };
+                        forceEventsForAllLanes.Add(tempEvent2);
+                        phaseCustomEvents.Add(
+                            "Phase Events: " + phaseEventCode, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, (int)s.EventCode))
+
+                            .ToList());
+                    }
+                }
+            }
+            return phaseCustomEvents;
+        }
+
+        public List<DetectorEventDto> GetPedestrianEventsNew(
+            Approach approach,
+            DateTime start,
+            DateTime end,
+            List<IndianaEvent> controllerEventLogs)
+        {
+            var pedestrianEvents = new List<DetectorEventDto>();
+            if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.PedsAre1to1 && approach.IsProtectedPhaseOverlap
+                || !approach.Location.PedsAre1to1 && approach.PedestrianPhaseNumber.HasValue)
+                return pedestrianEvents;
+            var pedEventCodes = new List<short> { 90 };
+            var pedDedectors = approach.GetPedDetectorsFromApproach();
+            var pedEvents = controllerEventLogs.GetPedEvents(start, end, approach).ToList();
+            foreach (var pedDetector in pedDedectors)
+            {
+                var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector} ";
+                var pedEventsForDetector = pedEvents.Where(c => pedEventCodes.Contains(c.EventCode)
+                                                                && c.EventParam == pedDetector
+                                                                && c.Timestamp >= start
+                                                                && c.Timestamp <= end)
+                                                   .ToList();
+                if (pedEventsForDetector.Count > 0)
+                {
+                    var detectorEvents = new List<DetectorEventBase>();
+                    for (var i = 0; i < pedEventsForDetector.Count; i++)
+                    {
+                        detectorEvents.Add(new DetectorEventBase(pedEvents[i].Timestamp, pedEvents[i].Timestamp));
+                    }
+                    pedestrianEvents.Add(new DetectorEventDto(lableName, detectorEvents));
+                }
+            }
+            return pedestrianEvents;
+        }
+
+        public List<CycleEventsDto> GetPedestrianIntervals(
+            Approach approach,
+            List<IndianaEvent> controllerEventLogs,
+            DateTime start,
+            DateTime end)
+        {
+            List<short> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
+            var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
+            return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode)
+                                                    && c.EventParam == pedPhase
+                                                    && c.Timestamp >= start
+                                                    && c.Timestamp <= end).Select(s => new CycleEventsDto(s.Timestamp, (int)s.EventCode)).ToList();
+        }
+
+        public List<short> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
+        {
+            var overlapCodes = new List<short>
+            {
+                21,
+                22,
+                23
+            };
+            if (isPhaseOrOverlap)
+            {
+                overlapCodes = new List<short> { 67, 68, 69 };
+            }
+
+            return overlapCodes;
+        }
+
+
     }
 }
 

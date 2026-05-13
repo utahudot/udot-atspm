@@ -47,7 +47,7 @@ import type {
   PatchLocationTypeFromKeyParams,
   PostLocationTypeParams,
   PutLocationTypeFromKeyParams
-} from '../aTSPMConfigurationApi.schemas';
+} from '../config-api.schemas';
 
 import { configRequest } from '../../../lib/axios';
 
