@@ -89,7 +89,7 @@ const EditDetectors = ({
       detectionTypes
         .filter((d) => {
           if (locationType?.name === 'Intersection')
-            return ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP'].includes(
+            return ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP', 'PP'].includes(
               d.abbreviation
             )
           if (locationType?.name === 'Ramp')

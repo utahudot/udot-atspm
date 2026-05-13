@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for SqlLiteDatabaseProvider - Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations/ConfigContextModelSnapshot.cs
 // 

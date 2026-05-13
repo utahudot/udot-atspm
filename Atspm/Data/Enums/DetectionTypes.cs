@@ -95,5 +95,12 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// </summary>
         [Display(Name = "Excessive Queue", Order = 11)]
         EQ = 11,
+
+
+        /// <summary>
+        /// Priority and Preemption
+        /// </summary>
+        [Display(Name = "Priority and Preemption", Order = 12)]
+        PP = 12,
     }
 }

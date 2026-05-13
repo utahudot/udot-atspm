@@ -33,4 +33,16 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public DateTime FinalX { get; set; }
         public bool? IsDetectorOn { get; set; }
     }
+
+    public class DataPointWithDetectorCheckBase
+    {
+        public DataPointWithDetectorCheckBase(DateTime initialX, bool? isDetectorOn)
+        {
+            InitialX = initialX;
+            IsDetectorOn = isDetectorOn;
+        }
+
+        public DateTime InitialX { get; set; }
+        public bool? IsDetectorOn { get; set; }
+    }
 }

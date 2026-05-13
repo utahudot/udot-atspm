@@ -53,6 +53,7 @@ const LocationMap = ({
 }: LocationMapProps) => {
   const theme = useTheme()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
+  const [googleSession, setGoogleSession] = useState<string | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [hasFocusedRoute, setHasFocusedRoute] = useState(false)
   const filtersButtonRef = useRef(null)
@@ -83,21 +84,23 @@ const LocationMap = ({
   }, [])
 
   useEffect(() => {
-    if (location && mapRef) {
-      const markerLocation = locations.find((loc) => loc.id === location.id)
-      if (markerLocation) {
-        const { latitude, longitude } = markerLocation
-        mapRef.setView([latitude, longitude], 16)
-      }
+    const run = async () => {
+      try {
+        const r = await fetch('/api/google/tiles/session', { method: 'POST' })
+        if (!r.ok) return
+        const data = (await r.json()) as { session: string }
+        setGoogleSession(data.session)
+      } catch {}
     }
-  }, [location, mapRef, locations])
+    run()
+  }, [])
 
   useEffect(() => {
     if (location && mapRef) {
       const markerLocation = locations.find((loc) => loc.id === location.id)
       if (markerLocation) {
         const { latitude, longitude } = markerLocation
-        mapRef.setView([latitude, longitude], 16)
+        mapRef.setView([latitude + 0.002, longitude], 16)
       }
     } else if (route && mapRef && !hasFocusedRoute) {
       const bounds = L.latLngBounds(route.map((coord) => [coord[0], coord[1]]))
@@ -234,7 +237,18 @@ const LocationMap = ({
         </Box>
       </ClickAwayListener>
 
-      <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
+      {googleSession ? (
+        <TileLayer
+          attribution={
+            mapInfo.attribution /* or hardcode Google attribution string */
+          }
+          url={`/api/google/tiles/{z}/{x}/{y}?session=${encodeURIComponent(googleSession)}`}
+          crossOrigin
+        />
+      ) : (
+        // optional: keep your old layer as fallback or show skeleton
+        <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
+      )}
       <Markers locations={filteredLocations} setLocation={setLocation} />
       {route && route.length > 0 && (
         <Polyline

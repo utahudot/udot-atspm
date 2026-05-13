@@ -45,14 +45,14 @@ export const LinkPivotPcdCharts = ({ existingPcd, predictedPcd }: props) => {
         {existingData.data.charts.map((chartWrapper, index) => (
           <Box
             component={Paper}
-            padding={theme.spacing(1)}
+            padding={1}
             key={index}
             ref={existingRefs.current[index]}
             sx={{
               overflow: 'hidden',
               minWidth: '300px',
-              marginBottom: theme.spacing(2),
-              marginRight: theme.spacing(2),
+              marginBottom: 2,
+              marginRight: 2,
             }}
           >
             <ApacheEChart
@@ -72,13 +72,13 @@ export const LinkPivotPcdCharts = ({ existingPcd, predictedPcd }: props) => {
         {predictedData.data.charts.map((chartWrapper, index) => (
           <Box
             component={Paper}
-            padding={theme.spacing(1)}
+            padding={1}
             key={index}
             ref={predictedRefs.current[index]}
             sx={{
               overflow: 'hidden',
               minWidth: '300px',
-              marginBottom: theme.spacing(2),
+              marginBottom: 2,
             }}
           >
             <ApacheEChart

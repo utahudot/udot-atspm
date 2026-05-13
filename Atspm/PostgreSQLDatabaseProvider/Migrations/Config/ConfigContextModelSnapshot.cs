@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for PostgreSQLDatabaseProvider - Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations/ConfigContextModelSnapshot.cs
 // 

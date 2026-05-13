@@ -3,17 +3,20 @@ import ApproachVolumeChartResults from '@/features/charts/approachVolume/compone
 import { ChartOptions, ChartType } from '@/features/charts/common/types'
 import ChartsToolbox from '@/features/charts/components/chartsToolbox'
 import DefaultChartResults from '@/features/charts/components/defaultChartResults'
+import PrioritySummaryDetailsChart from '@/features/charts/prioritySummary/components/PrioritySummaryChart'
 import PhaseTable from '@/features/charts/splitMonitor/components/PhaseTable'
 import TimingAndActuationChartsResults from '@/features/charts/timingAndActuation/components/timingAndActuationChartsResults/TimingAndActuationChartsResults'
 import TimingAndActuationChartsToolbox from '@/features/charts/timingAndActuation/components/timingAndActuationChartsToolbox/TimingAndActuationChartsToolbox'
 import TurningMovementCountsTable from '@/features/charts/turningMovementCounts/components/TurningMovementCountsTable'
 import { TransformedApproachVolumeResponse } from '@/features/charts/types'
 import LocationsConfigContainer from '@/features/locations/components/locationConfigContainer'
+import { dateToTimestamp } from '@/utils/dateTime'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box } from '@mui/material'
 import { AxiosError } from 'axios'
 import { differenceInMinutes } from 'date-fns'
+import { usePathname, useRouter } from 'next/navigation'
 import { RefObject, createRef, useEffect, useRef, useState } from 'react'
 
 interface ChartsContainerProps {
@@ -31,6 +34,9 @@ export default function ChartsContainer({
   endDateTime,
   options,
 }: ChartsContainerProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+
   const [showConfig, setShowConfig] = useState(false)
   const [scrollPositionForCharts, setScrollPositionForCharts] = useState(0)
   const [scrollPositionForConfig, setScrollPositionForConfig] = useState(0)
@@ -72,7 +78,15 @@ export default function ChartsContainer({
     ) {
       setAlert('')
     }
-  }, [location, chartType, alert, options?.binSize, startDateTime, endDateTime])
+  }, [
+    location,
+    chartType,
+    alert,
+    options?.binSize,
+    startDateTime,
+    endDateTime,
+    options,
+  ])
 
   useEffect(() => {
     showConfig
@@ -88,14 +102,38 @@ export default function ChartsContainer({
 
   useEffect(() => {
     setAreRefsReady(false)
-    if (!chartData) {
-      return
-    }
+    if (!chartData) return
     const dataLength = chartData.data.charts.length
     chartRefs.current = new Array(dataLength).fill(null).map(() => createRef())
-
     setAreRefsReady(chartRefs.current.length === dataLength)
   }, [chartData])
+
+  const pushToUrl = () => {
+    const params = new URLSearchParams()
+
+    params.set('location', location)
+    params.set('chartType', String(chartType))
+    params.set('start', dateToTimestamp(startDateTime))
+    params.set('end', dateToTimestamp(endDateTime))
+
+    if (options) {
+      Object.entries(options).forEach(([k, v]) => {
+        if (v == null || v === '') return
+
+        if (Array.isArray(v)) {
+          v.forEach((item) => {
+            if (item == null || item === '') return
+            params.append(k, String(item))
+          })
+        } else {
+          params.set(k, String(v))
+        }
+      })
+    }
+
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }
 
   const handleGenerateCharts = () => {
     if (!location) {
@@ -115,25 +153,21 @@ export default function ChartsContainer({
       setAlert('Bin size cannot be greater than the selected time span.')
       return
     }
+
+    pushToUrl()
     setAlert('')
     refetch()
   }
 
-  if (chartData && chartData.data.charts.length > 0) {
-    if ('displayProps' in chartData.data.charts[0].chart) {
-      useChartsController =
-        chartData.data.charts[0].chart.displayProps !== undefined
-    }
-  }
+  useChartsController =
+    chartData?.data?.charts && chartData.data.charts.length > 1 ? true : false
 
   const displayStyle = (shouldShow: boolean) => ({
     display: shouldShow ? 'block' : 'none',
   })
 
   const displayCharts = () => {
-    if (!chartData) {
-      return null
-    }
+    if (!chartData) return null
 
     if (showConfig) {
       return <LocationsConfigContainer locationIdentifier={location} />
@@ -174,6 +208,14 @@ export default function ChartsContainer({
             <PhaseTable phases={chartData.data.charts} />
           </>
         )
+      case ChartType.PrioritySummary:
+        return (
+          <DefaultChartResults
+            refs={chartRefs.current}
+            chartData={chartData}
+            chartComponent={PrioritySummaryDetailsChart}
+          />
+        )
       default:
         return (
           <DefaultChartResults refs={chartRefs.current} chartData={chartData} />
@@ -194,6 +236,7 @@ export default function ChartsContainer({
         >
           Generate Charts
         </LoadingButton>
+
         {isError && (
           <Alert severity="error" sx={{ marginLeft: 1 }}>
             {error instanceof AxiosError
@@ -201,17 +244,20 @@ export default function ChartsContainer({
               : (error as Error).message}
           </Alert>
         )}
+
         {alert && (
           <Alert severity="error" sx={{ marginLeft: 1 }}>
             {alert}
           </Alert>
         )}
+
         {chartData && chartData.data.charts.length == 0 && (
           <Alert severity="warning" sx={{ marginLeft: 1 }}>
             No Data Avaliable
           </Alert>
         )}
       </Box>
+
       {useChartsController &&
         areRefsReady &&
         (chartType === ChartType.TimingAndActuation ? (
@@ -229,9 +275,11 @@ export default function ChartsContainer({
             toggleConfigLabel={showConfig ? 'Charts' : 'Config'}
           />
         ))}
+
       <Box display={displayStyle(!showConfig)}>
         {chartData && displayCharts()}
       </Box>
+
       {location && showConfig && (
         <Box display={displayStyle(showConfig)}>
           <LocationsConfigContainer locationIdentifier={location} />

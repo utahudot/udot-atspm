@@ -47,7 +47,7 @@ import type {
   PatchAreaFromKeyParams,
   PostAreaParams,
   PutAreaFromKeyParams
-} from '../aTSPMConfigurationApi.schemas';
+} from '../config-api.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

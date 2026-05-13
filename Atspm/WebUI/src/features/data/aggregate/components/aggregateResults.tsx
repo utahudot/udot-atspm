@@ -17,7 +17,6 @@ export default function AggregateResults({ chartData, refs }: props) {
           key={index}
           ref={refs[index]}
           sx={{
-            overflow: 'hidden',
             minWidth: '600px',
           }}
         >
@@ -25,7 +24,7 @@ export default function AggregateResults({ chartData, refs }: props) {
             sx={{
               p: 4,
               my: 3,
-              width: '99%',
+              width: '100%',
               marginLeft: '2px',
               backgroundColor: 'white',
             }}

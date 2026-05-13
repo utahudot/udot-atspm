@@ -19,8 +19,9 @@ import {
   createTitle,
 } from '@/features/charts/common/transformers'
 import { ToolType } from '@/features/charts/common/types'
-import { transformPcdData } from '@/features/charts/purdueCoordinationDiagram/transformers'
+import { transformPcdData } from '@/features/charts/purdueCoordinationDiagram/purdueCoordinationDiagram.transformer'
 import { StandardChart, TransformedToolResponse } from '@/features/charts/types'
+import { formatChartDateTimeRange } from '@/features/charts/utils'
 import { RawLpPcdData } from '../types'
 
 export default function transformlpPcdData(
@@ -31,7 +32,7 @@ export default function transformlpPcdData(
   return {
     type: ToolType.LpPcd,
     data: {
-      charts: charts,
+      charts,
     },
   }
 }
@@ -41,14 +42,13 @@ function transformData(
   pcdChartType: string
 ): StandardChart[] {
   const pcdDatas = data.pcd.map((pcd, i: number) =>
-    transformPcdData(pcd, i !== 0 ? 80 : 90)
+    transformPcdData(pcd, i !== 0 ? 80 : 120)
   )
-  // const chartOptions =
 
   return pcdDatas.map((pcdData, index) => {
     const info = createInfoString([
-      `${data.pcd[index].phaseDescription}   `,
-      `Arrivals on Green:  ${data.pcd[index].percentArrivalOnGreen}%`,
+      'Arrivals on Green:',
+      `${data.pcd[index].percentArrivalOnGreen}%`,
     ])
     pcdData.dataZoom = [
       {
@@ -84,23 +84,28 @@ function transformData(
         top: 400,
       })
     } else {
+      const dateRange = formatChartDateTimeRange(
+        data.pcd[index].start,
+        data.pcd[index].end
+      )
       const title = createTitle({
-        title: `${pcdChartType} \nTotal AOG - ${data.totalAog} | ${data.totalPAog}%`,
-        dateRange: '',
+        title: `${data.pcd[index].phaseDescription} - ${pcdChartType}`,
+        location: `Total AOG - ${data.totalAog} | ${data.totalPAog}%`,
+        dateRange,
         info,
       })
       pcdData.title = title
       pcdData.grid = {
         ...pcdData.grid,
-        top: 150,
-        bottom: 150,
+        top: 180,
+        bottom: 100,
+        right: 240,
       }
       pcdData.dataZoom.push({
         type: 'slider',
         filterMode: 'none',
         show: true,
         height: 25,
-        top: 400,
       })
     }
     return {

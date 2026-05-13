@@ -6,7 +6,7 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint ",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write .",
     "prepare": "cd ../.. && husky install ATSPM/WebUI/.husky",
     "analyze": "cross-env ANALYZE=true next build",
@@ -33,7 +33,7 @@
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.4.0",
     "date-fns": "^3.2.0",
-    "echarts": "^5.5.1",
+    "echarts": "^6.0.0",
     "eslint-config-next": "^14.2.4",
     "esri-leaflet": "^3.0.14",
     "esri-leaflet-renderers": "^3.0.1",
@@ -94,7 +94,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.3",
     "jest": "^30.0.0-alpha.6",
-    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-jsdom": "^30.3.0",
     "lint-staged": "^13.2.3",
     "msw": "^2.4.9",
     "prettier-plugin-organize-imports": "^3.2.2",
@@ -125,7 +125,59 @@
         }
       ],
       "@typescript-eslint/no-explicit-any": "warn"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/features/charts/timeSpaceDiagram/core/**/*.ts",
+          "src/features/charts/timeSpaceDiagram/core/**/*.tsx"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                "next/*",
+                "react-query",
+                "axios",
+                "@/lib/axios",
+                "@/features/routes/*",
+                "@/features/tools/link-pivot/*",
+                "@/pages/*",
+                "@/features/charts/api/*",
+                "@/features/charts/timeSpaceDiagram/api/*",
+                "@/features/charts/timeSpaceDiagram/app/*"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/features/charts/timeSpaceDiagram/renderer/**/*.ts",
+          "src/features/charts/timeSpaceDiagram/renderer/**/*.tsx"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                "next/*",
+                "react-query",
+                "axios",
+                "@/lib/axios",
+                "@/features/routes/*",
+                "@/features/tools/link-pivot/*",
+                "@/pages/*",
+                "@/features/charts/api/*",
+                "@/features/charts/timeSpaceDiagram/api/*",
+                "@/features/charts/timeSpaceDiagram/app/*"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
   "prettier": {
     "plugins": [

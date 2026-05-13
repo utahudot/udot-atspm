@@ -13,24 +13,39 @@ import {
 } from '@mui/material'
 import { Fragment, useState } from 'react'
 import { PieChart } from '../../helpers/pieChart'
-import { LinkPivotHandler } from '../handlers/linkPivotHandlers'
+import { LinkPivotPcdTimeWindow } from '../linkPivotPcdTimeWindow'
 import { ApproachLinksDto, CorridorSummary } from '../types'
 import { LinkPivotPcdComponent } from './LinkPivotPcdComponent'
 
 interface props {
   data: ApproachLinksDto[]
   corridorSummary: CorridorSummary
-  lpHandler: LinkPivotHandler
+  pcdTimeWindow: LinkPivotPcdTimeWindow
 }
+
+const LocationCell = ({
+  identifier,
+  location,
+}: {
+  identifier: string
+  location: string
+}) => (
+  <TableCell>
+    <Box component="span" sx={{ fontWeight: 700 }}>
+      {identifier}
+    </Box>
+    {' - '}
+    {location}
+  </TableCell>
+)
 
 export const LinkPivotApproachLinkComponent = ({
   data,
   corridorSummary,
-  lpHandler,
+  pcdTimeWindow,
 }: props) => {
   const theme = useTheme()
-  const [rows, setRows] = useState(data)
-  const [expanded, setExpanded] = useState(rows.map(() => false))
+  const [expanded, setExpanded] = useState(data.map(() => false))
   const handleIconClick = (
     event: { stopPropagation: () => void },
     index: number
@@ -123,7 +138,7 @@ export const LinkPivotApproachLinkComponent = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
+            {data.map((row, index) => (
               <Fragment key={index}>
                 <TableRow
                   key={index}
@@ -155,8 +170,14 @@ export const LinkPivotApproachLinkComponent = ({
                     </Box>
                   </TableCell>
                   <TableCell>{row.linkNumber}</TableCell>
-                  <TableCell>{row.location}</TableCell>
-                  <TableCell>{row.downstreamLocation}</TableCell>
+                  <LocationCell
+                    identifier={row.locationIdentifier}
+                    location={row.location}
+                  />
+                  <LocationCell
+                    identifier={row.downstreamLocationIdentifier}
+                    location={row.downstreamLocation}
+                  />
                   {createCells(
                     row.aogUpstreamBefore,
                     row.paogUpstreamBefore,
@@ -199,7 +220,7 @@ export const LinkPivotApproachLinkComponent = ({
                     >
                       <LinkPivotPcdComponent
                         pcdDto={row}
-                        lpHandler={lpHandler}
+                        pcdTimeWindow={pcdTimeWindow}
                       />
                     </TableCell>
                   </TableRow>
