@@ -354,23 +354,23 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int? SpeedLimit { get; set; }
     }
 
-    public class LocationWithSequence
+    public class LocationWithSequence : AtspmOptionsBase
     {
         public string LocationIdentifier { get; set; }
         public int[][] Sequence { get; set; }
     }
 
-    public class LocationWithCoordPhases
+    public class LocationWithCoordPhases : AtspmOptionsBase
     {
         public string LocationIdentifier { get; set; }
         public int[] CoordinatedPhases { get; set; }
     }
 
-    public class LinkPivotOptions
+    public class LinkPivotOptions : AtspmOptionsBase
     {
         public int RouteId { get; set; }
         public int CycleLength { get; set; }
-        public string Direction { get; set; } // Primary and Opposing instead of Upstream and DownStream; Primary = DownStream & Opposing = Upstream; Default Primary
+        public string Direction { get; set; }
         public double Bias { get; set; }
         public string? BiasDirection { get; set; }
         public int[] DaysOfWeek { get; set; }
