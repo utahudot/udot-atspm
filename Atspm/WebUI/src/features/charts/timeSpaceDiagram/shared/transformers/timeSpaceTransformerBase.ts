@@ -32,21 +32,9 @@ import type {
 } from 'echarts'
 
 export {
-  TIME_SPACE_CYCLE_CENTER_OFFSET,
-  TIME_SPACE_Y_AXIS_PADDING,
-  getChartTimespanMs,
-  getDisplayDistanceScale,
-  getTimeLikeMs,
-  getTimeSpaceChartHeight,
-  getTimeSpacePhaseRowDistances,
-} from '@/features/charts/timeSpaceDiagram/core/math/timeSpaceLayout'
-export {
-  formatSignedOffsetSeconds,
-  getOffsetDeltaVisuals,
-  hasModifiedOffset,
-  normalizeOffsetToCycleLengthSeconds,
-  offsetsMatch,
-} from '@/features/charts/timeSpaceDiagram/core/offsets/timeSpaceOffsets'
+  CYCLE_LABEL_SERIES_ID_PREFIX,
+  generateCycleLabels,
+} from '@/features/charts/timeSpaceDiagram/core/labels/timeSpaceCycleLabels'
 export {
   buildIdentifierAndNameTitle,
   getDistancesLabelOption,
@@ -67,9 +55,21 @@ export {
   TIME_SPACE_PHASE_CONNECTOR_MIN_LENGTH,
 } from '@/features/charts/timeSpaceDiagram/core/labels/timeSpaceLocationCards'
 export {
-  CYCLE_LABEL_SERIES_ID_PREFIX,
-  generateCycleLabels,
-} from '@/features/charts/timeSpaceDiagram/core/labels/timeSpaceCycleLabels'
+  getChartTimespanMs,
+  getDisplayDistanceScale,
+  getTimeLikeMs,
+  getTimeSpaceChartHeight,
+  getTimeSpacePhaseRowDistances,
+  TIME_SPACE_CYCLE_CENTER_OFFSET,
+  TIME_SPACE_Y_AXIS_PADDING,
+} from '@/features/charts/timeSpaceDiagram/core/math/timeSpaceLayout'
+export {
+  formatSignedOffsetSeconds,
+  getOffsetDeltaVisuals,
+  hasModifiedOffset,
+  normalizeOffsetToCycleLengthSeconds,
+  offsetsMatch,
+} from '@/features/charts/timeSpaceDiagram/core/offsets/timeSpaceOffsets'
 
 type CycleIndication = {
   name: string
@@ -122,6 +122,8 @@ export const TIME_SPACE_CYCLE_LABEL_SERIES_Z = 6
 const TIME_SPACE_CYCLE_CONTINUATION_SERIES_Z = 4
 const TIME_SPACE_MOVEMENT_ELEMENT_Z2 = 1
 const TIME_SPACE_CYCLE_ELEMENT_Z2 = 5
+const PROGRAMMED_SPLIT_GREEN_CODES = new Set([1, 61])
+const CLEARANCE_CODES_TO_COMBINE_WITH_GREEN = new Set([8, 9, 63, 64])
 
 function getCycleColor(value: number): string {
   const found = CYCLE_INDICATIONS.find((entry) => entry.codes.includes(value))
@@ -290,19 +292,30 @@ function renderCycleSegment(
   )
 }
 
-function getCycleDurationLabel(startTime: unknown, endTime: unknown): string {
-  const startMs = Date.parse(String(startTime))
-  const endMs = Date.parse(String(endTime))
+function getCycleSegmentDurationMs(
+  cycleEvents: Array<[string, number, number]>,
+  index: number
+): number | null {
+  if (index >= cycleEvents.length - 1) return null
+
+  const startMs = getTimeLikeMs(cycleEvents[index][0])
+  const endMs = getTimeLikeMs(cycleEvents[index + 1][0])
 
   if (
+    startMs == null ||
+    endMs == null ||
     !Number.isFinite(startMs) ||
     !Number.isFinite(endMs) ||
     endMs <= startMs
   ) {
-    return ''
+    return null
   }
 
-  const durationSeconds = Math.round((endMs - startMs) / 1000)
+  return endMs - startMs
+}
+
+function formatCycleDurationLabel(durationMs: number): string {
+  const durationSeconds = Math.round(durationMs / 1000)
   return durationSeconds > 0 ? durationSeconds.toString() : ''
 }
 
@@ -312,13 +325,42 @@ function getCycleDurationLabelData(
   return cycleEvents.flatMap((event, index) => {
     if (index >= cycleEvents.length - 1) return []
 
-    const [startTime, y] = event
-    const [endTime] = cycleEvents[index + 1]
-    const startMs = Date.parse(String(startTime))
-    const endMs = Date.parse(String(endTime))
-    const label = getCycleDurationLabel(startTime, endTime)
+    const [startTime, y, value] = event
+    const startMs = getTimeLikeMs(startTime)
+    const endMs = getTimeLikeMs(cycleEvents[index + 1][0])
+    let durationMs = getCycleSegmentDurationMs(cycleEvents, index)
 
-    if (!label || !Number.isFinite(startMs) || !Number.isFinite(endMs)) {
+    if (CLEARANCE_CODES_TO_COMBINE_WITH_GREEN.has(value)) {
+      return []
+    }
+
+    if (PROGRAMMED_SPLIT_GREEN_CODES.has(value)) {
+      for (
+        let nextIndex = index + 1;
+        nextIndex < cycleEvents.length - 1 &&
+        CLEARANCE_CODES_TO_COMBINE_WITH_GREEN.has(cycleEvents[nextIndex][2]);
+        nextIndex += 1
+      ) {
+        const clearanceDurationMs = getCycleSegmentDurationMs(
+          cycleEvents,
+          nextIndex
+        )
+
+        if (clearanceDurationMs != null) {
+          durationMs = (durationMs ?? 0) + clearanceDurationMs
+        }
+      }
+    }
+
+    const label = durationMs == null ? '' : formatCycleDurationLabel(durationMs)
+
+    if (
+      !label ||
+      startMs == null ||
+      endMs == null ||
+      !Number.isFinite(startMs) ||
+      !Number.isFinite(endMs)
+    ) {
       return []
     }
 
@@ -351,7 +393,11 @@ function renderCycleRailBand(
   }
 
   const coordSys = param.coordSys as { x?: number; width?: number } | undefined
-  if (!coordSys || !Number.isFinite(coordSys.x) || !Number.isFinite(coordSys.width)) {
+  if (
+    !coordSys ||
+    !Number.isFinite(coordSys.x) ||
+    !Number.isFinite(coordSys.width)
+  ) {
     return
   }
 
@@ -508,7 +554,11 @@ export function generateGreenEventLines(
       z: TIME_SPACE_MOVEMENT_SERIES_Z,
       renderItem: (params, api) => {
         const pointIndex = params.dataIndex
-        if (!dataPoints || pointIndex >= dataPoints.length - 1 || pointIndex % 2 !== 0) {
+        if (
+          !dataPoints ||
+          pointIndex >= dataPoints.length - 1 ||
+          pointIndex % 2 !== 0
+        ) {
           return
         }
 
@@ -641,13 +691,19 @@ function getGreenEventsDataPoints(
     const nextPoint = greenEvents[i + 1]
 
     if (i === 0 && currentPoint.isDetectorOn === false) {
-      result.push([start, currentDistance], [currentPoint.initialX, currentDistance])
+      result.push(
+        [start, currentDistance],
+        [currentPoint.initialX, currentDistance]
+      )
       i++
     } else if (
       i === greenEvents.length - 1 &&
       currentPoint.isDetectorOn === true
     ) {
-      result.push([currentPoint.initialX, currentDistance], [end, currentDistance])
+      result.push(
+        [currentPoint.initialX, currentDistance],
+        [end, currentDistance]
+      )
       i++
     } else if (currentPoint.isDetectorOn === false) {
       i++
@@ -672,9 +728,7 @@ function getArrivalTime(
   const speedInFeetPerSecond = getSpeedInFeetPerSecond(speed)
   const timeToTravelSeconds = distanceToNextLocation / speedInFeetPerSecond
 
-  return dateToTimestamp(
-    new Date(start.getTime() + timeToTravelSeconds * 1000)
-  )
+  return dateToTimestamp(new Date(start.getTime() + timeToTravelSeconds * 1000))
 }
 
 function getSpeedInFeetPerSecond(speed: number): number {

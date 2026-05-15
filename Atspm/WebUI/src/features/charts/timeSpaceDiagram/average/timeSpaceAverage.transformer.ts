@@ -214,9 +214,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryDirection,
       undefined,
       primaryPhaseData.map((p) => p.approachDescription),
-      primaryPhaseData.map((p) => [
-        `Split: ${formatSecondsDetail(p.programmedSplit)}`,
-      ]),
+      undefined,
       'left',
       primaryPhaseData.map((p) => Boolean(p.isIgnoredLocation))
     )
@@ -248,9 +246,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       opposingDirection,
       undefined,
       [...opposingPhaseData].reverse().map((p) => p.approachDescription),
-      [...opposingPhaseData]
-        .reverse()
-        .map((p) => [`Split: ${formatSecondsDetail(p.programmedSplit)}`]),
+      undefined,
       'right',
       [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
     )
@@ -286,12 +282,4 @@ function buildAverageHeaderRange(rawStart: Date, rawEnd: Date, chartEnd: Date) {
       )}`
 
   return `${dateRange} - ${format(rawStart, 'HH:mm')}-${format(chartEnd, 'HH:mm')}`
-}
-
-function formatSecondsDetail(value: number | null | undefined) {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    return 'unknown'
-  }
-
-  return `${value}s`
 }
