@@ -97,12 +97,12 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   {
     name: 'Phase End Yellow Clearance (9)\nOverlap Begin Red Clearance (64)',
     codes: [9, 64],
-    color: '#FB6962',
+    color: '#B34747',
   },
   {
     name: 'Phase End Red Clearance (11)\nOverlap Off (Inactive with Red Indication) (65)',
     codes: [11, 65],
-    color: '#B34747',
+    color: '#FB6962',
   },
 ] as const
 

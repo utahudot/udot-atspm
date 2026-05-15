@@ -15,11 +15,15 @@
 // limitations under the License.
 // #endregion
 import { Color } from '@/features/charts/utils'
+import type {
+  CustomSeriesRenderItemReturn,
+  EChartsOption,
+  SeriesOption,
+} from 'echarts'
 import {
   CYCLE_INDICATIONS,
   TIME_SPACE_CONTINUATION_NODE_NAME,
 } from './transformers/timeSpaceTransformerBase'
-import type { CustomSeriesRenderItemReturn, EChartsOption, SeriesOption } from 'echarts'
 
 export type TimeSpaceAppearanceDirectionRole = 'primary' | 'opposing'
 
@@ -39,7 +43,10 @@ export type TimeSpaceAppearanceSettings = {
       redIndication: string
     }
   }
-  greenBands: Record<TimeSpaceAppearanceDirectionRole, TimeSpaceDirectionalAppearance>
+  greenBands: Record<
+    TimeSpaceAppearanceDirectionRole,
+    TimeSpaceDirectionalAppearance
+  >
   turns: {
     leftTurn: TimeSpaceDirectionalAppearance
     rightTurn: TimeSpaceDirectionalAppearance
@@ -80,8 +87,8 @@ export const TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS: TimeSpaceAppearanceSettings
         beginGreen: CYCLE_INDICATIONS[0]?.color ?? Color.Green,
         trailingGreen: CYCLE_INDICATIONS[1]?.color ?? '#79DE79',
         yellowClearance: CYCLE_INDICATIONS[2]?.color ?? Color.Yellow,
-        redClearance: CYCLE_INDICATIONS[3]?.color ?? '#FB6962',
-        redIndication: CYCLE_INDICATIONS[4]?.color ?? '#B34747',
+        redClearance: CYCLE_INDICATIONS[3]?.color ?? '#B34747',
+        redIndication: CYCLE_INDICATIONS[4]?.color ?? '#FB6962',
       },
     },
     greenBands: {
@@ -212,11 +219,15 @@ function mapGraphicNode(
 
 function wrapCustomRenderItem(
   series: SeriesOption,
-  mapResult: (value: CustomSeriesRenderItemReturn) => CustomSeriesRenderItemReturn
+  mapResult: (
+    value: CustomSeriesRenderItemReturn
+  ) => CustomSeriesRenderItemReturn
 ) {
-  const renderItem = (series as SeriesOption & {
-    renderItem?: (...args: unknown[]) => CustomSeriesRenderItemReturn
-  }).renderItem
+  const renderItem = (
+    series as SeriesOption & {
+      renderItem?: (...args: unknown[]) => CustomSeriesRenderItemReturn
+    }
+  ).renderItem
 
   if (typeof renderItem !== 'function') {
     return series
@@ -255,8 +266,10 @@ function applyCyclesAppearance(
 ) {
   const cycleColorMap = new Map<string, string>([
     [
-      normalizeColorToken(TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS.cycles.indicationColors.beginGreen) ??
-        '',
+      normalizeColorToken(
+        TIME_SPACE_DEFAULT_APPEARANCE_SETTINGS.cycles.indicationColors
+          .beginGreen
+      ) ?? '',
       appearance.indicationColors.beginGreen,
     ],
     [
@@ -289,24 +302,26 @@ function applyCyclesAppearance(
     ],
   ])
 
-  return wrapCustomRenderItem(series, (result) =>
-    mapGraphicNode(result, (node) => {
-      const fill = normalizeColorToken(node?.style?.fill)
-      const nextFill = fill ? cycleColorMap.get(fill) : undefined
+  return wrapCustomRenderItem(
+    series,
+    (result) =>
+      mapGraphicNode(result, (node) => {
+        const fill = normalizeColorToken(node?.style?.fill)
+        const nextFill = fill ? cycleColorMap.get(fill) : undefined
 
-      if (!nextFill) {
-        return node
-      }
+        if (!nextFill) {
+          return node
+        }
 
-      return {
-        ...node,
-        style: {
-          ...(node.style as Record<string, unknown> | undefined),
-          fill: nextFill,
-          opacity: appearance.opacity,
-        },
-      }
-    }) as CustomSeriesRenderItemReturn
+        return {
+          ...node,
+          style: {
+            ...(node.style as Record<string, unknown> | undefined),
+            fill: nextFill,
+            opacity: appearance.opacity,
+          },
+        }
+      }) as CustomSeriesRenderItemReturn
   )
 }
 
@@ -318,28 +333,30 @@ function applyGraphicFillAppearance(
     forceOpacity?: number
   }
 ) {
-  return wrapCustomRenderItem(series, (result) =>
-    mapGraphicNode(result, (node) => {
-      if (!node?.style) {
-        return node
-      }
+  return wrapCustomRenderItem(
+    series,
+    (result) =>
+      mapGraphicNode(result, (node) => {
+        if (!node?.style) {
+          return node
+        }
 
-      if (node.name === TIME_SPACE_CONTINUATION_NODE_NAME) {
-        return node
-      }
+        if (node.name === TIME_SPACE_CONTINUATION_NODE_NAME) {
+          return node
+        }
 
-      return {
-        ...node,
-        style: {
-          ...(node.style as Record<string, unknown> | undefined),
-          fill: appearance.color,
-          ...(options?.includeFillOpacity
-            ? { fillOpacity: appearance.opacity }
-            : null),
-          opacity: options?.forceOpacity ?? appearance.opacity,
-        },
-      }
-    }) as CustomSeriesRenderItemReturn
+        return {
+          ...node,
+          style: {
+            ...(node.style as Record<string, unknown> | undefined),
+            fill: appearance.color,
+            ...(options?.includeFillOpacity
+              ? { fillOpacity: appearance.opacity }
+              : null),
+            opacity: options?.forceOpacity ?? appearance.opacity,
+          },
+        }
+      }) as CustomSeriesRenderItemReturn
   )
 }
 
@@ -347,27 +364,29 @@ function applyGraphicStrokeAppearance(
   series: SeriesOption,
   appearance: TimeSpaceDirectionalAppearance
 ) {
-  return wrapCustomRenderItem(series, (result) =>
-    mapGraphicNode(result, (node) => {
-      if (!node?.style) {
-        return node
-      }
+  return wrapCustomRenderItem(
+    series,
+    (result) =>
+      mapGraphicNode(result, (node) => {
+        if (!node?.style) {
+          return node
+        }
 
-      if (node.name === TIME_SPACE_CONTINUATION_NODE_NAME) {
-        return node
-      }
+        if (node.name === TIME_SPACE_CONTINUATION_NODE_NAME) {
+          return node
+        }
 
-      return {
-        ...node,
-        style: {
-          ...(node.style as Record<string, unknown> | undefined),
-          fill: 'transparent',
-          stroke: appearance.color,
-          strokeOpacity: appearance.opacity,
-          opacity: 1,
-        },
-      }
-    }) as CustomSeriesRenderItemReturn
+        return {
+          ...node,
+          style: {
+            ...(node.style as Record<string, unknown> | undefined),
+            fill: 'transparent',
+            stroke: appearance.color,
+            strokeOpacity: appearance.opacity,
+            opacity: 1,
+          },
+        }
+      }) as CustomSeriesRenderItemReturn
   )
 }
 
@@ -400,7 +419,10 @@ export function applyTimeSpaceAppearanceToOption(
     if (name.startsWith('Lane by Lane Count ')) {
       const role = directionRoleBySeriesName.get(name)
       return role
-        ? applyLineAppearance(series, appearance.detection.laneByLaneCount[role])
+        ? applyLineAppearance(
+            series,
+            appearance.detection.laneByLaneCount[role]
+          )
         : series
     }
 
@@ -422,10 +444,14 @@ export function applyTimeSpaceAppearanceToOption(
     if (name.startsWith('Stop Bar Presence ')) {
       const role = directionRoleBySeriesName.get(name)
       return role
-        ? applyGraphicFillAppearance(series, appearance.detection.stopBarPresence[role], {
-            includeFillOpacity: true,
-            forceOpacity: 1,
-          })
+        ? applyGraphicFillAppearance(
+            series,
+            appearance.detection.stopBarPresence[role],
+            {
+              includeFillOpacity: true,
+              forceOpacity: 1,
+            }
+          )
         : series
     }
 
