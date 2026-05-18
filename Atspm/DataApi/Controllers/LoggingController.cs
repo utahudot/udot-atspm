@@ -18,6 +18,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
@@ -38,6 +39,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     {
         private readonly IDeviceRepository _repository;
         private readonly ILogger _log;
+        private const string DownloadWindowDateTimeFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
 
         /// <inheritdoc/>
         public LoggingController(IDeviceRepository deviceRepository, ILogger<EventLogController> log)
@@ -92,7 +94,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                         using (var scope = host.Services.CreateScope())
                         {
                             var downloadWindow = GetDownloadWindow(device);
-                            device.DownloadWindow = downloadWindow;
+                            var runtimeDevice = CreateRuntimeDeviceForDownloadWindow(device, downloadWindow);
 
                             var eventLogRepository = scope.ServiceProvider.GetRequiredService<IEventLogRepository>();
 
@@ -106,7 +108,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
                             await Task.Delay(TimeSpan.FromSeconds(2));
 
-                            await workflow.Input.SendAsync(device);
+                            await workflow.Input.SendAsync(runtimeDevice);
                             workflow.Input.Complete();
                             await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
@@ -157,11 +159,48 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             return devicesEventDownload;
         }
 
-        private static DownloadWindow GetDownloadWindow(Device device)
+        private static (DateTime Start, DateTime End) GetDownloadWindow(Device device)
         {
             var end = RoundToMinute(DateTime.Now).AddMinutes(-(device.DeviceConfiguration?.LoggingOffset ?? 0));
 
-            return new DownloadWindow(end.AddHours(-12), end);
+            return (end.AddHours(-12), end);
+        }
+
+        private static Device CreateRuntimeDeviceForDownloadWindow(Device device, (DateTime Start, DateTime End) downloadWindow)
+        {
+            var runtimeDevice = (Device)device.Clone();
+            runtimeDevice.DeviceConfiguration = CreateRuntimeDeviceConfiguration(device.DeviceConfiguration, downloadWindow);
+
+            return runtimeDevice;
+        }
+
+        private static DeviceConfiguration? CreateRuntimeDeviceConfiguration(DeviceConfiguration? deviceConfiguration, (DateTime Start, DateTime End) downloadWindow)
+        {
+            if (deviceConfiguration == null)
+                return null;
+
+            var runtimeDeviceConfiguration = (DeviceConfiguration)deviceConfiguration.Clone();
+            runtimeDeviceConfiguration.Path = RenderDownloadWindowTokens(deviceConfiguration.Path, downloadWindow);
+            runtimeDeviceConfiguration.Query = deviceConfiguration.Query?
+                .Select(query => RenderDownloadWindowTokens(query, downloadWindow))
+                .ToArray();
+
+            return runtimeDeviceConfiguration;
+        }
+
+        private static string RenderDownloadWindowTokens(string value, (DateTime Start, DateTime End) downloadWindow)
+        {
+            if (string.IsNullOrEmpty(value))
+                return value;
+
+            return Regex.Replace(value, @"\[(StartTime|EndTime)[^\]]*\]", match =>
+            {
+                var tokenTime = string.Equals(match.Groups[1].Value, "StartTime", StringComparison.Ordinal)
+                    ? downloadWindow.Start
+                    : downloadWindow.End;
+
+                return new DateTimeOffset(tokenTime).ToString(DownloadWindowDateTimeFormat);
+            });
         }
 
         private static DateTime RoundToMinute(DateTime value)
