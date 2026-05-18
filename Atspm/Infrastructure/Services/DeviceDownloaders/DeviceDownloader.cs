@@ -273,6 +273,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
     /// </summary>
     public class ObjectPropertyParser
     {
+        private const string DownloadWindowDateTimeFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
+
         private readonly object _obj;
         private readonly string _value;
 
@@ -294,29 +296,19 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
             foreach (var i in _value.Split('[', ']').ToArray())
             {
-                if (i.StartsWith("EndDateTime"))
+                if (i.StartsWith("StartTime"))
                 {
-                    if (_obj is Device d && d.DeviceConfiguration != null)
-                    {
-                        DateTime nowToMinute = DateTime.Now
-                            .AddSeconds(-DateTime.Now.Second)
-                            .AddMilliseconds(-DateTime.Now.Millisecond)
-                            .AddMinutes(-d.DeviceConfiguration.LoggingOffset);
+                    builder.Append(FormatDownloadWindowDateTime(GetStartTime()));
+                }
 
-                        DateTimeOffset dto = new DateTimeOffset(nowToMinute);
-                        builder.AppendFormat("{0" + i.Replace("EndDateTime", "") + "}", dto.ToString("yyyy-MM-dd'T'HH:mm:sszzz"));
-                    }
+                else if (i.StartsWith("EndTime"))
+                {
+                    builder.Append(FormatDownloadWindowDateTime(GetEndTime()));
                 }
 
                 else if (i.StartsWith("DateTime"))
                 {
-                    DateTime nowToMinute = DateTime.Now
-                    .AddSeconds(-DateTime.Now.Second)
-                    .AddMilliseconds(-DateTime.Now.Millisecond)
-                    .AddMinutes(-30);
-
-                    DateTimeOffset dto = new DateTimeOffset(nowToMinute);
-                    builder.AppendFormat("{0" + i.Replace("DateTime", "") + "}", dto.ToString("yyyy-MM-dd'T'HH:mm:sszzz"));
+                    builder.AppendFormat("{0" + i.Replace("DateTime", "") + "}", DateTime.Now);
                 }
 
                 else if (i.StartsWith("LogStartTime"))
@@ -346,6 +338,37 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             }
 
             return builder.ToString();
+        }
+
+        private DateTime GetStartTime()
+        {
+            if (_obj is Device d && d.DownloadWindow.HasValue)
+            {
+                return d.DownloadWindow.Value.Start;
+            }
+
+            return RoundToMinute(DateTime.Now).AddMinutes(-30);
+        }
+
+        private DateTime GetEndTime()
+        {
+            if (_obj is Device d)
+            {
+                return d.DownloadWindow?.End
+                    ?? RoundToMinute(DateTime.Now).AddMinutes(-(d.DeviceConfiguration?.LoggingOffset ?? 0));
+            }
+
+            return RoundToMinute(DateTime.Now);
+        }
+
+        private static DateTime RoundToMinute(DateTime value)
+        {
+            return value.AddTicks(-(value.Ticks % TimeSpan.TicksPerMinute));
+        }
+
+        private static string FormatDownloadWindowDateTime(DateTime value)
+        {
+            return new DateTimeOffset(value).ToString(DownloadWindowDateTimeFormat);
         }
     }
 }
