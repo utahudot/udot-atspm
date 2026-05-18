@@ -343,20 +343,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
         private DateTime GetStartTime()
         {
-            if (_obj is Device d && d.DownloadWindow.HasValue)
-            {
-                return d.DownloadWindow.Value.Start;
-            }
-
-            return RoundToMinute(DateTime.Now).AddMinutes(-30);
+            return GetEndTime().AddMinutes(-15);
         }
 
         private DateTime GetEndTime()
         {
             if (_obj is Device d)
             {
-                return d.DownloadWindow?.End
-                    ?? RoundToMinute(DateTime.Now).AddMinutes(-(d.DeviceConfiguration?.LoggingOffset ?? 0));
+                return RoundToMinute(DateTime.Now).AddMinutes(-(d.DeviceConfiguration?.LoggingOffset ?? 0));
             }
 
             return RoundToMinute(DateTime.Now);
