@@ -72,8 +72,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
             var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
             var devices = _repository.GetList().Where(device => device.LoggingEnabled == true && deviceIdList.Contains(device.Id)).ToList();
-            DateTime end = DateTime.Now.AddHours(1); // Set end time to one hour in the future to ensure we capture all events up to now
-            DateTime start = end.Date.AddDays(-1);
 
             List<DeviceEventDownload> devicesEventDownload = new List<DeviceEventDownload>();
 
@@ -93,15 +91,18 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                     {
                         using (var scope = host.Services.CreateScope())
                         {
-                            var eventLogRepository = scope.ServiceProvider.GetService<IEventLogRepository>();
+                            var downloadWindow = GetDownloadWindow(device);
+                            device.DownloadWindow = downloadWindow;
+
+                            var eventLogRepository = scope.ServiceProvider.GetRequiredService<IEventLogRepository>();
 
                             List<CompressedEventLogBase> eventsPreWorkflowInitial = await eventLogRepository
-                                .GetData(device.Location.LocationIdentifier, start, end, device.Id).ToListAsync();
+                                .GetData(device.Location.LocationIdentifier, downloadWindow.Start, downloadWindow.End, device.Id).ToListAsync();
                             var eventsPreWorkflow = eventsPreWorkflowInitial
                                 .SelectMany(s => s.Data)
                                 .ToList();
 
-                            var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), 50000, 1);
+                            var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>(), 50000, 1);
 
                             await Task.Delay(TimeSpan.FromSeconds(2));
 
@@ -110,7 +111,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                             await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
                             List<CompressedEventLogBase> eventsPostWorkflowInitial = await eventLogRepository
-                                .GetData(device.Location.LocationIdentifier, start, end, device.Id).ToListAsync();
+                                .GetData(device.Location.LocationIdentifier, downloadWindow.Start, downloadWindow.End, device.Id).ToListAsync();
 
                             var eventsPostWorkflow = eventsPostWorkflowInitial
                                 .SelectMany(s => s.Data)
@@ -154,6 +155,18 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
             //devicesEventDownload.AddRange(results);
             return devicesEventDownload;
+        }
+
+        private static DownloadWindow GetDownloadWindow(Device device)
+        {
+            var end = RoundToMinute(DateTime.Now).AddMinutes(-(device.DeviceConfiguration?.LoggingOffset ?? 0));
+
+            return new DownloadWindow(end.AddHours(-12), end);
+        }
+
+        private static DateTime RoundToMinute(DateTime value)
+        {
+            return value.AddTicks(-(value.Ticks % TimeSpan.TicksPerMinute));
         }
 
 
