@@ -6,7 +6,6 @@ import {
   createGrid,
   createLegend,
   createSeries,
-  createTitle,
   createTooltip,
   createYAxis,
   transformSeriesData,
@@ -14,6 +13,7 @@ import {
 import { DataPoint } from '../../common/types'
 import { ExtendedEChartsOption } from '../../types'
 import { Color, SolidLineSeriesSymbol, formatChartDateRange } from '../../utils'
+import { createSpeedManagementTitle } from '../createSpeedManagementTitle'
 
 export default function transformSpeedVariabilityData(
   response: SpeedVariabilityDto
@@ -32,7 +32,7 @@ function transformData(response: SpeedVariabilityDto) {
     'date'
   )
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: `Speed Variability - ${response.segmentName}`,
     dateRange,
   })

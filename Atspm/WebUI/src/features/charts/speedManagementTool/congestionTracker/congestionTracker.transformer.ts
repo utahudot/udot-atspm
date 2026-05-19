@@ -4,10 +4,10 @@ import {
 } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import {
   createLegend,
-  createTitle,
   createTooltip,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 import {
   Color,
   DashedLineSeriesSymbol,
@@ -361,13 +361,14 @@ export const transformData = (
     'en-US',
     dateOptions
   )} - ${latestDate.toLocaleDateString('en-US', dateOptions)}`
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: `Congestion Tracker - ${response.segmentName}`,
     dateRange: dateRangeLabel,
+    speedLimit: response.speedLimit,
   })
 
   return {
-    title: [...titles, title],
+    title: [...titles, ...title],
     grid: grids,
     legend,
     tooltip,

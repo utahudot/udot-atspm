@@ -6,10 +6,9 @@ import {
   usePostApiV1SegmentSegmentIdEntitiesReplace,
   usePutApiV1SegmentUpdateSegmentSegmentId,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi'
-import { modalButtonLocation } from '@/components/GenericAdminChart'
+import { modalButtonLocation, modalStyle } from '@/components/GenericAdminChart'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
-import { modalStyle } from '@/features/locations/components/editDetector/EditDetectors'
 import { useTransformedSegments } from '@/features/speedManagementTool/api/getSegments'
 import DataSources from '@/features/speedManagementTool/components/SegmentEditor/DataSources'
 import SegmentEditorMapWrapper from '@/features/speedManagementTool/components/SegmentEditor/SegmentEditorMap/SegmentEditorMapWrapper'

@@ -4,11 +4,11 @@ import {
   createGrid,
   createLegend,
   createPlans,
-  createTitle,
   createTooltip,
   createYAxis,
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 import {
   Color,
   DashedLineSeriesSymbol,
@@ -38,9 +38,9 @@ export default function transformSpeedOverDistanceData(
     response[0].endDate
   )
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: 'Speed Over Distance',
-    dateRange: dateRange,
+    dateRange,
   })
 
   const xAxis = {

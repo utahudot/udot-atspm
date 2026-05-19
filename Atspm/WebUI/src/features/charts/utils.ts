@@ -109,7 +109,27 @@ export const dateTimeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 }
 
-export function formatChartDateTimeRange(startDate: string, endDate: string) {
+const chartDateFormat: Intl.DateTimeFormatOptions = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+}
+
+const chartMonthFormat: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+}
+
+type ChartDateRangeGranularity = 'date' | 'month'
+
+export function formatChartDateTimeRange(
+  startDate: string,
+  endDate: string,
+  granularity?: ChartDateRangeGranularity
+) {
+  if (granularity) return formatChartDateRange(startDate, endDate, granularity)
+
   const start = new Date(startDate)
   const end = new Date(endDate)
 
@@ -158,6 +178,26 @@ export function formatChartDateTimeRange(startDate: string, endDate: string) {
   })
 
   return `${startFull} - ${endFull}`
+}
+
+export function formatChartDateRange(
+  startDate: string,
+  endDate: string,
+  granularity: ChartDateRangeGranularity = 'date'
+) {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return `${startDate} - ${endDate}`
+  }
+
+  const format = granularity === 'month' ? chartMonthFormat : chartDateFormat
+
+  return `${start.toLocaleString('en-US', format)} - ${end.toLocaleString(
+    'en-US',
+    format
+  )}`
 }
 
 export function adjustPlanPositions(chart: ECharts) {

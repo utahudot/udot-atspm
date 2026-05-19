@@ -1,6 +1,5 @@
 import { TimePeriodFilter } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
-import { createUtcTime } from '@/utils/dateTime'
 import {
   Box,
   FormControl,

@@ -7,11 +7,11 @@ import {
   createDataZoom,
   createGrid,
   createLegend,
-  createTitle,
   createTooltip,
   createYAxis,
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 import {
   Color,
   DashedLineSeriesSymbol,
@@ -68,9 +68,10 @@ function transformData(
     ].endDate
   )
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: 'Effectiveness of Strategies',
-    dateRange: dateRange,
+    dateRange,
+    speedLimit: customSpeedLimit ?? segmentData[0].speedLimit,
   })
 
   const yAxis = createYAxis(

@@ -4,11 +4,11 @@ import {
   createGrid,
   createLegend,
   createPlans,
-  createTitle,
   createTooltip,
   createYAxis,
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 import {
   Color,
   DashedLineSeriesSymbol,
@@ -40,9 +40,9 @@ export default function transformSpeedComplianceData(
     response[0].endDate
   )
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: 'Speed Compliance',
-    dateRange: dateRange,
+    dateRange,
   })
 
   const xAxis = {
@@ -171,7 +171,6 @@ function mergeSeriesData(
       average,
       eightyFifth,
       speedLimit,
-      avgVsBaseSpeed,
     } = segment
     const finalSpeedLimit = customSpeedLimit ?? speedLimit
 

@@ -4,7 +4,6 @@ import {
   createGrid,
   createLegend,
   createSeries,
-  createTitle,
   createToolbox,
   createTooltip,
   createXAxis,
@@ -13,6 +12,7 @@ import {
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 import {
   Color,
   formatChartDateRange,
@@ -101,7 +101,7 @@ function transformSingleSegmentAcrossSources(
     response[0].endDate
   )
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: `Data Quality - ${segmentsWithData[0].segmentName} (All Sources)`,
     dateRange,
   })
@@ -207,7 +207,7 @@ function transformData(
 
   const titleHeader = `Data Quality - ${source.name}`
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: titleHeader,
     dateRange,
   })

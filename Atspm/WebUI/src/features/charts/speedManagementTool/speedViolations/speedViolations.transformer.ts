@@ -5,7 +5,6 @@ import {
   createInfoString,
   createLegend,
   createSeries,
-  createTitle,
   createToolbox,
   createTooltip,
   createYAxis,
@@ -13,6 +12,7 @@ import {
 import { ExtendedEChartsOption } from '@/features/charts/types'
 import { Color, formatChartDateTimeRange } from '@/features/charts/utils'
 import { SM_ChartType } from '@/features/speedManagementTool/api/getSMCharts'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 
 type DailySpeedViolationDto = {
   date: string
@@ -71,13 +71,12 @@ function transformSegmentData(
     '',
   ])
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: `Speed Violations - ${segment.segmentName}`,
-    dateRange: `${dateRange}  •  Speed Limit: ${segment.speedLimit} mph`,
+    dateRange,
+    speedLimit: segment.speedLimit,
     info,
   })
-
-  title.subtextStyle.lineHeight = 16
 
   const dateList = dataPoints.map((dp) => dp.date.split('T')[0])
 

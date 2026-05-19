@@ -7,7 +7,6 @@ import {
   createGrid,
   createLegend,
   createSeries,
-  createTitle,
   createTooltip,
   createXAxis,
   createYAxis,
@@ -15,6 +14,7 @@ import {
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
 import { Color, SolidLineSeriesSymbol } from '@/features/charts/utils'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
 import { SM_ChartType } from '@/features/speedManagementTool/api/getSMCharts'
 import { SeriesOption } from 'echarts'
 
@@ -45,7 +45,7 @@ function transformData(
     ' - ' +
     new Date(response?.endDate).toLocaleDateString('en-US', dateFormat)
 
-  const title = createTitle({
+  const title = createSpeedManagementTitle({
     title: `Speed Over Time - ${response.segmentName}`,
     dateRange,
   })

@@ -21,6 +21,7 @@ const PageClaimsCard = ({
   claimsData,
   isNewRole,
 }: PageClaimsCardProps) => {
+  const flags = useFlags()
   const claims = useMemo(
     () => claimsData?.filter((claim) => claim !== 'Admin') || [],
     [claimsData]
