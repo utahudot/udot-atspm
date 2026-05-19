@@ -26,23 +26,24 @@ import type { ReactElement } from 'react'
 import React, { cloneElement, useMemo, useState } from 'react'
 
 interface BaseObj {
-  id: number
+  [key: string]: unknown
+  id: string | number
   name: string
-  created: string
-  createdBy: string
-  modified: string
-  modifiedBy: string
+  created?: string | null
+  createdBy?: string | null
+  modified?: string | null
+  modifiedBy?: string | null
 }
 
 interface DeleteModalProps<T> {
-  id: number
+  id: string | number
   name: string
-  selectedRow: T
+  selectedRow?: T
   open: boolean
   onClose?: () => void
 }
 interface EditModalProps<T> {
-  id: number
+  id: string | number
   data: T | null
   open: boolean
   onClose?: () => void
@@ -57,7 +58,7 @@ interface Cell<T> {
   key: string
   label: string
   align?: 'right' | 'left' | 'center'
-  component?: (value: T[keyof T], row: T) => React.ReactNode
+  component?: React.ElementType
   customSortFunction?: (a: T, b: T) => number
 }
 

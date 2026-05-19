@@ -60,9 +60,9 @@ const ImpactTypeAdmin = () => {
     }
   }
 
-  const handleDeleteImpactType = async (id: number) => {
+  const handleDeleteImpactType = async (id: string | number) => {
     try {
-      await deleteImpactType({ id })
+      await deleteImpactType({ id: String(id) })
       await refetchImpactTypes()
       addNotification({ title: 'Impact Type Deleted', type: 'success' })
     } catch {
@@ -87,20 +87,21 @@ const ImpactTypeAdmin = () => {
   }
 
   const filteredData = impactTypesData.map((obj: ImpactType) => ({
-    id: obj.id,
+    id: obj.id ?? '',
     name: obj.name,
     description: obj.description,
   }))
 
-  const headers = ['Name', 'Description']
-  const headerKeys = ['name', 'description']
+  const cells = [
+    { key: 'name', label: 'Name' },
+    { key: 'description', label: 'Description' },
+  ]
 
   return (
     <ResponsivePageLayout title="Impact Types" noBottomMargin>
       <AdminTable
         pageName="Impact Type"
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredData}
         hasEditPrivileges={hasEditClaim}
         hasDeletePrivileges={hasDeleteClaim}
@@ -124,7 +125,7 @@ const ImpactTypeAdmin = () => {
             name={''}
             objectType="Impact Type"
             open={false}
-            onClose={() => {}}
+            onClose={() => undefined}
             onConfirm={handleDeleteImpactType}
           />
         }

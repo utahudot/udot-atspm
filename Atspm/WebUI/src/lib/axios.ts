@@ -79,7 +79,7 @@ export const initializeAxiosInstances = async () => {
     dataAxios = createAxiosInstance(buildApiBaseUrl(env.DATA_URL))
   }
   if (env.SPEED_URL) {
-    speedAxios = createAxiosInstance(buildApiBaseUrl(env.SPEED_URL, true))
+    speedAxios = createAxiosInstance(buildApiBaseUrl(env.SPEED_URL))
   }
 }
 

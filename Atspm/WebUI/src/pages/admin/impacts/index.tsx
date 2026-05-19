@@ -69,7 +69,7 @@ const ImpactAdmin = () => {
           impactTypeIds,
           impactTypes,
           segmentIds,
-        },
+        } as Impact,
       })
       await refetchImpacts()
       setDataVersion((prev) => prev + 1)
@@ -86,10 +86,11 @@ const ImpactAdmin = () => {
     }
   }
 
-  const handleDeleteImpact = async (id: string) => {
-    if (!id) return
+  const handleDeleteImpact = async (id: string | number) => {
+    const impactId = String(id)
+    if (!impactId) return
     try {
-      await deleteImpact({ id })
+      await deleteImpact({ id: impactId })
       await refetchImpacts()
       setDataVersion((prev) => prev + 1)
       addNotification({
@@ -118,6 +119,8 @@ const ImpactAdmin = () => {
       segmentIds,
     } = impactData
     try {
+      if (!id) return
+
       await editImpact({
         data: {
           description,
@@ -128,7 +131,7 @@ const ImpactAdmin = () => {
           impactTypeIds,
           impactTypes,
           segmentIds,
-        },
+        } as Impact,
         id,
       })
       await refetchImpacts()
@@ -167,28 +170,20 @@ const ImpactAdmin = () => {
 
     return {
       ...impact,
-      name: impact.description,
+      id: impact.id ?? '',
+      name: impact.description ?? '',
       impactTypes: impact.impactTypes || [],
       impactTypesNames: impactTypeNames,
     }
   })
 
-  const headers = [
-    'Description',
-    'Start',
-    'End',
-    'Start Mile',
-    'End Mile',
-    'Impact Types',
-  ]
-
-  const headerKeys = [
-    'description',
-    'start',
-    'end',
-    'startMile',
-    'endMile',
-    'impactTypesNames',
+  const cells = [
+    { key: 'description', label: 'Description' },
+    { key: 'start', label: 'Start' },
+    { key: 'end', label: 'End' },
+    { key: 'startMile', label: 'Start Mile', align: 'right' as const },
+    { key: 'endMile', label: 'End Mile', align: 'right' as const },
+    { key: 'impactTypesNames', label: 'Impact Types' },
   ]
 
   return (
@@ -196,26 +191,26 @@ const ImpactAdmin = () => {
       <AdminTable
         key={dataVersion}
         pageName={'Impacts'}
-        headers={headers}
-        headerKeys={headerKeys}
+        cells={cells}
         data={filteredImpacts}
-        onDelete={handleDeleteImpact}
-        onEdit={handleEditImpact}
-        onCreate={handleCreateImpact}
         hasEditPrivileges={hasEditClaim}
         hasDeletePrivileges={hasDeleteClaim}
         editModal={
           <ImpactEditorModal
+            onSave={() => undefined}
+            onClose={() => undefined}
+            onCreate={handleCreateImpact}
             onEdit={handleEditImpact}
-            onDelete={handleDeleteImpact}
             segments={segments}
             isSegmentsLoading={isSegmentsLoading}
           />
         }
         createModal={
           <ImpactEditorModal
+            onSave={() => undefined}
+            onClose={() => undefined}
             onCreate={handleCreateImpact}
-            onDelete={handleDeleteImpact}
+            onEdit={handleEditImpact}
             segments={segments}
             isSegmentsLoading={isSegmentsLoading}
           />
@@ -226,7 +221,7 @@ const ImpactAdmin = () => {
             name={''}
             objectType="Impact"
             open={false}
-            onClose={() => {}}
+            onClose={() => undefined}
             onConfirm={handleDeleteImpact}
           />
         }

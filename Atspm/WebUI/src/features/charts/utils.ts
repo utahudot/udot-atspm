@@ -109,13 +109,6 @@ export const dateTimeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 }
 
-export const dateFormat: Intl.DateTimeFormatOptions = {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'long',
-  day: '2-digit',
-}
-
 export function formatChartDateTimeRange(startDate: string, endDate: string) {
   const start = new Date(startDate)
   const end = new Date(endDate)
