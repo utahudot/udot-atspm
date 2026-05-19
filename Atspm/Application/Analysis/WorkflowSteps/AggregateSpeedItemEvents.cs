@@ -44,7 +44,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IEnumerable<ApproachSpeedAggregation>> Process(Tuple<Location, Tuple<IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>> input, CancellationToken cancelToken = default)
         {
-            return (Task<IEnumerable<ApproachSpeedAggregation>>)SpeedAgg(input);
+            return Task.FromResult(SpeedAgg(input));
         }
 
         private IEnumerable<ApproachSpeedAggregation> SpeedAgg(Tuple<Location, Tuple<IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>> input)
@@ -200,9 +200,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 ApproachId = input.Item1.Approach.Id,
                 SummedSpeed = averageSpeeds.Sum(),
                 SpeedVolume = averageSpeeds.Count,
-                AverageSpeed = averageSpeeds.Average(),
-                Speed85th = eightyFifthSpeeds.Average(),
-                Speed15th = fifteenthSpeeds.Average()
+                Speed85th = (int)Math.Round(eightyFifthSpeeds.DefaultIfEmpty().Average(), MidpointRounding.AwayFromZero),
+                Speed15th = (int)Math.Round(fifteenthSpeeds.DefaultIfEmpty().Average(), MidpointRounding.AwayFromZero)
             };
 
             return aggregatedSpeed;
