@@ -34,9 +34,11 @@ namespace Utah.Udot.Atspm.Specifications
     {
         public SpeedLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= DateOnly.FromDateTime(startDate) && c.ArchiveDate <= DateOnly.FromDateTime(endDate);
+            Criteria = c => c.LocationIdentifier == locationId &&
+                            c.End > startDate &&
+                            c.Start < endDate;
 
-            ApplyOrderBy(o => o.ArchiveDate);
+            ApplyOrderBy(o => o.Start);
         }
     }
 

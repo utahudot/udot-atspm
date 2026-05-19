@@ -186,7 +186,6 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             var aggregation = new ApproachSplitFailAggregation
             {
                 LocationIdentifier = input.Item1,
-                BinStartTime = input.Item4,
                 Start = input.Item4,
                 End = input.Item5,
                 PhaseNumber = phaseDetail.PhaseNumber,

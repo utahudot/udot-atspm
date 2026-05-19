@@ -24,7 +24,6 @@ using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using System.Diagnostics;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -58,19 +57,6 @@ cmdBuilder.UseHost(hostBuilder =>
 
         Console.WriteLine($"gcp container? {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("K_SERVICE"))}");
         Console.WriteLine($"gcp job container? {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CLOUD_RUN_JOB"))}");
-
-        var config = h.Configuration.GetSection("Logging:GoogleDiagnostics").Get<GoogleDiagnosticsConfiguration>();
-
-        if (config != null && config.Enabled)
-        {
-            l.AddGoogle(new LoggingServiceOptions
-            {
-                ProjectId = config.ProjectId,
-                ServiceName = config.ServiceName,
-                Version = config.Version,
-                Options = LoggingOptions.Create(config.MinimumLogLevel, config.ServiceName)
-            });
-        }
     })
     .ConfigureServices((h, s) =>
     {

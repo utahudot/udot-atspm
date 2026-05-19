@@ -1,6 +1,6 @@
 #region license
-// Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilteredPlanData.cs
+// Copyright 2026 Utah Departement of Transportation
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilterEventCodeLocationBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,31 +23,26 @@ using Utah.Udot.NetStandardToolkit.Extensions;
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
-    /// <list type="bullet">
-    /// <item><see cref="131"/></item>
-    /// </list>
+    /// Base workflow filter for Indiana event-code filters that are also constrained to the input location.
     /// </summary>
-    public class FilterIndianaAndSpeedEventsData : ProcessStepBase<Tuple<Location, Tuple<IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>>, Tuple<Location, Tuple<IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>>>
+    public abstract class FilterEventCodeLocationBase : ProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Location, IEnumerable<IndianaEvent>>>
     {
         /// <summary>
-        /// List of filtered event codes
+        /// Indiana event codes accepted by this filter.
         /// </summary>
         protected List<int> filteredList = new();
 
         /// <inheritdoc/>
-        public FilterIndianaAndSpeedEventsData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        protected FilterEventCodeLocationBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            workflowProcess = new BroadcastBlock<Tuple<Location, Tuple<IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>>>(f =>
+            workflowProcess = new BroadcastBlock<Tuple<Location, IEnumerable<IndianaEvent>>>(f =>
             {
-                var tuple = Tuple.Create(
-                    f.Item2.Item1
+                return Tuple.Create(
+                    f.Item1,
+                    f.Item2
                         .FromSpecification(new EventLogSpecification(f.Item1))
                         .Cast<IndianaEvent>()
-                        .Where(w => filteredList.Contains(w.EventCode)),
-                    f.Item2.Item2.FromSpecification(new SpeedLogLocationFilterSpecification(f.Item1)));
-
-                return Tuple.Create(f.Item1, tuple);
+                        .Where(w => filteredList.Contains(w.EventCode)));
             }, options);
 
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));

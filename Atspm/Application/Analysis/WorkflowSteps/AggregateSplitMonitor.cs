@@ -42,7 +42,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IEnumerable<PhaseSplitMonitorAggregation>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
-            return (Task<IEnumerable<PhaseSplitMonitorAggregation>>)SplitMonitorAgg(input);
+            return Task.FromResult(SplitMonitorAgg(input));
         }
 
         private IEnumerable<PhaseSplitMonitorAggregation> SplitMonitorAgg(Tuple<Location, IEnumerable<IndianaEvent>> input)
@@ -175,7 +175,6 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             var aggregatedPhaseSplitMonitor = new PhaseSplitMonitorAggregation();
             aggregatedPhaseSplitMonitor.LocationIdentifier = input.Item1.LocationIdentifier;
-            aggregatedPhaseSplitMonitor.BinStartTime = input.Item3;
             aggregatedPhaseSplitMonitor.PhaseNumber = phase.PhaseNumber;
             aggregatedPhaseSplitMonitor.Start = input.Item3;
             aggregatedPhaseSplitMonitor.End = input.Item4;
