@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { getEnv } from '@/utils/getEnv'
+import { getEnv, type EnvVariables } from '@/utils/getEnv'
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
 
@@ -52,12 +52,8 @@ export function buildApiUrl(
   return `${normalizeApiRoot(baseURL)}${normalizedPath}`
 }
 
-export const initializeAxiosInstances = async () => {
-  const env = await getEnv()
-
-  if (!env) {
-    return
-  }
+export const initializeAxiosInstances = async (envVariables?: EnvVariables) => {
+  const env = envVariables ?? (await getEnv())
 
   if (env.CONFIG_URL) {
     configAxios = createAxiosInstance(buildApiBaseUrl(env.CONFIG_URL, true))

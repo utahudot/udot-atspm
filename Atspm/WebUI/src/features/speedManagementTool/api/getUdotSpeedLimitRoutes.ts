@@ -3,12 +3,18 @@ import axios from 'axios'
 import { useQuery } from 'react-query'
 
 export function useUdotSpeedLimitRoutes() {
-  const { data: env } = useEnv()
-  const route = env?.SPEED_LIMIT_MAP_LAYER
+  const env = useEnv()
+  const route = env.SPEED_LIMIT_MAP_LAYER
 
   return useQuery(
     ['udot-speed-limit', route],
-    () => axios.get(route).then((res) => res.data as UdotSpeedLimitRoute),
+    () => {
+      if (!route) {
+        throw new Error('SPEED_LIMIT_MAP_LAYER is not configured.')
+      }
+
+      return axios.get(route).then((res) => res.data as UdotSpeedLimitRoute)
+    },
     { enabled: !!route }
   )
 }

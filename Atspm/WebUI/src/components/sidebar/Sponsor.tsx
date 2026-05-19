@@ -2,9 +2,9 @@ import { useEnv } from '@/hooks/useEnv'
 import { Box, Typography } from '@mui/material'
 
 export default function Sponsor() {
-  const { data: env } = useEnv()
+  const env = useEnv()
 
-  const imagePath = env?.POWERED_BY_IMAGE_URL || ''
+  const imagePath = env.POWERED_BY_IMAGE_URL || ''
 
   if (!imagePath) return null
 

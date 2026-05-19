@@ -30,14 +30,33 @@ export interface EnvVariables {
   SPEED_LIMIT_MAP_LAYER: string | undefined
 }
 let cachedEnv: EnvVariables | null = null
-export const getEnv = async (): Promise<EnvVariables | null> => {
+let envRequest: Promise<EnvVariables> | null = null
+
+export const getEnv = async (): Promise<EnvVariables> => {
   if (cachedEnv) {
     return cachedEnv
   }
+
+  if (envRequest) {
+    return envRequest
+  }
+
   try {
-    const response = await axios.get('/api/get-env')
-    cachedEnv = response.data
-    return cachedEnv
+    envRequest = axios
+      .get<EnvVariables>('/api/get-env')
+      .then((response) => {
+        if (!response.data) {
+          throw new Error('Environment variables were not loaded.')
+        }
+
+        cachedEnv = response.data
+        return cachedEnv
+      })
+      .finally(() => {
+        envRequest = null
+      })
+
+    return await envRequest
   } catch (error) {
     console.error('Failed to load environment variables:', error)
     throw error

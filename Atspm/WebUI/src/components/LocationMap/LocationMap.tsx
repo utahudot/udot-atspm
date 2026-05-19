@@ -52,7 +52,7 @@ const LocationMap = ({
   updateFilters,
 }: LocationMapProps) => {
   const theme = useTheme()
-  const { data: env } = useEnv()
+  const env = useEnv()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [googleSession, setGoogleSession] = useState<string | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
@@ -71,11 +71,11 @@ const LocationMap = ({
 
   useEffect(() => {
     setMapInfo({
-      tile_layer: env.MAP_TILE_LAYER,
-      attribution: env.MAP_TILE_ATTRIBUTION,
+      tile_layer: env.MAP_TILE_LAYER ?? undefined,
+      attribution: env.MAP_TILE_ATTRIBUTION ?? undefined,
       initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE ?? '0'),
       initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE ?? '0'),
-      zoomLevel: parseInt(env.MAP_DEFAULT_ZOOM ?? '0'),
+      zoomLevel: parseInt(env.MAP_DEFAULT_ZOOM ?? '6', 10),
     })
   }, [env])
 
