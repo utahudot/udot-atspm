@@ -98,6 +98,24 @@ export const DottedLineSeriesSymbol =
 export const SolidLineSeriesSymbol =
   'path://M180 1000 l0 -20 200 0 200 0 0 20 0 20 -200 0 -200 0 0 -20z'
 
+export const dateTimeFormat: Intl.DateTimeFormatOptions = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+}
+
+export const dateFormat: Intl.DateTimeFormatOptions = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+}
+
 export function formatChartDateTimeRange(startDate: string, endDate: string) {
   const start = new Date(startDate)
   const end = new Date(endDate)

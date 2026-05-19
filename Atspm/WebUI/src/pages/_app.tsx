@@ -1,4 +1,5 @@
 import Layout from '@/components/layout'
+import { FeatureFlagProvider } from '@/feature-flags/FeatureFlagContext'
 import { initializeAxiosInstances } from '@/lib/axios'
 import '@/styles/globals.css'
 import { ColorModeContext, useMode } from '@/theme'
@@ -38,23 +39,25 @@ export default function App({ Component, pageProps }: AppProps) {
       <Hydrate state={pageProps.dehydratedState}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <NuqsAdapter>
-            <ColorModeContext.Provider value={colorMode}>
-              <ThemeProvider theme={theme}>
-                <Layout>
-                  <CssBaseline />
-                  <Head>
-                    <meta
-                      name="viewport"
-                      content="width=device-width, minimum-scale=1, maximum-scale=5"
-                    />
-                  </Head>
-                  <Component {...pageProps} />
-                  {process.env.NODE_ENV === 'development' && (
-                    <ReactQueryDevtools initialIsOpen={false} />
-                  )}
-                </Layout>
-              </ThemeProvider>
-            </ColorModeContext.Provider>
+            <FeatureFlagProvider>
+              <ColorModeContext.Provider value={colorMode}>
+                <ThemeProvider theme={theme}>
+                  <Layout>
+                    <CssBaseline />
+                    <Head>
+                      <meta
+                        name="viewport"
+                        content="width=device-width, minimum-scale=1, maximum-scale=5"
+                      />
+                    </Head>
+                    <Component {...pageProps} />
+                    {process.env.NODE_ENV === 'development' && (
+                      <ReactQueryDevtools initialIsOpen={false} />
+                    )}
+                  </Layout>
+                </ThemeProvider>
+              </ColorModeContext.Provider>
+            </FeatureFlagProvider>
           </NuqsAdapter>
         </LocalizationProvider>
       </Hydrate>

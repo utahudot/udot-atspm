@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -352,6 +353,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             return services;
         }
+
+        private static AuthorizationPolicyBuilder RequireRoleOrAdmin(
+           this AuthorizationPolicyBuilder builder, string role)
+        { 
+           return builder.RequireAssertion(ctx =>
+               ctx.User.HasClaim(ClaimTypes.Role, "Admin") ||
+               ctx.User.HasClaim(ClaimTypes.Role, role));
+            }
 
         /// <summary>
         /// Configures the ATSPM authorization system by dynamically generating policies based on defined permissions.

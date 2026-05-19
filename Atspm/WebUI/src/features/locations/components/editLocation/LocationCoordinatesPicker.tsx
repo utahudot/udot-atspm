@@ -31,6 +31,9 @@ const DynamicLocationCoordinateMap = dynamic(
 )
 
 export default function LocationCoordinatePicker({
+  latitude,
+  longitude,
+  locationTypeId,
   onChange,
 }: LocationCoordinatePickerProps) {
   const { location } = useLocationStore()
@@ -63,7 +66,7 @@ export default function LocationCoordinatePicker({
 
       if (Number.isFinite(defaultZoom)) {
         setZoom(defaultZoom)
-      }
+    }
 
       if (
         Number.isFinite(defaultLatitude) &&
@@ -124,9 +127,9 @@ export default function LocationCoordinatePicker({
       })
       queryClient.invalidateQueries()
 
-      addNotification({
+    addNotification({
         type: 'success',
-        title: `Coordinates updated`,
+      title: `Coordinates updated`,
       })
     } catch (error) {
       console.error('Failed to save coordinates:', error)
@@ -134,7 +137,7 @@ export default function LocationCoordinatePicker({
         type: 'error',
         title: 'Failed to save coordinates',
         message: String(error),
-      })
+    })
     }
 
     const [lat, lng] = pendingCoords

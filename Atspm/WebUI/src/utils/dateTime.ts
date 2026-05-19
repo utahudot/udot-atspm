@@ -18,7 +18,7 @@
 /**
  * Converts a Date or date string into a timezone-free timestamp string.
  * Output format: "YYYY-MM-DDTHH:mm:ss"
- * - Strips any timezone info (Z, ±HH:mm) if input is a string.
+ * - Strips any timezone info (Z, �HH:mm) if input is a string.
  * - Uses local date/time parts if input is a Date.
  *
  * @param {Date|string} value The input date object or date string

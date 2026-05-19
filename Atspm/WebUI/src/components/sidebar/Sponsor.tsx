@@ -1,21 +1,12 @@
-import { getEnv } from '@/utils/getEnv'
+import { useEnv } from '@/hooks/useEnv'
 import { Box, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
 
 export default function Sponsor() {
-  const [imagePath, setImagePath] = useState('')
+  const { data: env } = useEnv()
 
-  useEffect(() => {
-    const fetchEnv = async () => {
-      const env = await getEnv()
-      if (!env?.SPONSOR_IMAGE_URL) {
-        return
-      }
-      setImagePath(env.SPONSOR_IMAGE_URL)
-    }
+  const imagePath = env?.POWERED_BY_IMAGE_URL || ''
 
-    fetchEnv()
-  }, [])
+  if (!imagePath) return null
 
   return (
     <Box sx={{ width: '200px' }}>
