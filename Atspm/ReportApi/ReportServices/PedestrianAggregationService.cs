@@ -94,7 +94,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 var pedCallsRegisered = phasePedAggEvent.Sum(i => i.ImputedPedCallsRegistered);
                 bool recall = pedWalk >= pedCallsRegisered;
 
-                var cycleLength = 0; //Verify this is what we want to do in the case where the cycles dont exist
+                double cycleLength = 0; //Verify this is what we want to do in the case where the cycles dont exist
                 if (!phaseCycleAggEvent.IsNullOrEmpty())
                 {
                     int allCycles = phaseCycleAggEvent.Sum(i => i.PhaseBeginCount);
@@ -103,7 +103,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         allCycles = 1;
                     }
                     var totalMinutes = (int)(phaseCycleAggEvent.Max(p => p.End) - phaseCycleAggEvent.Min(p => p.Start)).TotalMinutes;
-                    cycleLength = totalMinutes / allCycles;
+                    cycleLength = totalMinutes / (double)allCycles;
                 }
                 var totalDays = 1;
                 if (!phasePedAggEvent.IsNullOrEmpty())
@@ -113,7 +113,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         totalDays = 1;
                 }
 
-                var activity = phasePedAggEvent.Sum(i => i.ImputedPedCallsRegistered) / totalDays;
+                var activity = phasePedAggEvent.Sum(i => i.ImputedPedCallsRegistered) / (double)totalDays;
 
                 var combinedHourly = phasePedAggEvent
                     .GroupBy(p => new { Hour = new DateTime(p.Start.Year, p.Start.Month, p.Start.Day, p.Start.Hour, 0, 0), p.PhaseNumber })
@@ -141,7 +141,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     .ToList();
 
                 List<RawDataPoint> rawData = RawDataSwap(parameter, combinedHourly);
-                var pedStats = CalculateStatistics(rawData, parameter.StartDate, parameter.EndDate, GetInterval(parameter.TimeUnit));
+                var pedStats = CalculateStatistics(rawData, parameter.StartDate, parameter.EndDate, parameter.TimeUnit);
 
                 var averageVolumeByHourOfDay = AverageVolumeByHour(combinedHourly);
                 var averageVolumeByDayOfWeek = AverageVolumeByDayOfWeek(combinedHourly);
@@ -173,6 +173,16 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
         public StatisticsDataPoint CalculateStatistics(List<RawDataPoint> rawData, DateTime start, DateTime end, TimeSpan interval)
         {
+            return CalculateStatistics(rawData, GetExpectedTimesByFixedInterval(start, end, interval));
+        }
+
+        public StatisticsDataPoint CalculateStatistics(List<RawDataPoint> rawData, DateTime start, DateTime end, PedestrianTimeUnit timeUnit)
+        {
+            return CalculateStatistics(rawData, GetExpectedTimesByTimeUnit(start, end, timeUnit));
+        }
+
+        private StatisticsDataPoint CalculateStatistics(List<RawDataPoint> rawData, HashSet<DateTime> expectedTimes)
+        {
             if (rawData == null || rawData.Count == 0)
                 return new StatisticsDataPoint(); // all nulls
 
@@ -182,15 +192,11 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 .OrderBy(v => v)
                 .ToList();
 
-            var expectedTimes = new HashSet<DateTime>();
-            for (var t = start; t <= end; t = t.Add(interval))
-                expectedTimes.Add(t);
-
             // Actual timestamps that have data
             var actualTimes = new HashSet<DateTime>(rawData.Select(r => r.Timestamp));
 
             // Missing timestamps
-            int missingCount = expectedTimes.Count - actualTimes.Count;
+            int missingCount = expectedTimes.Except(actualTimes).Count();
 
             double count = values.Sum(i => i);
 
@@ -206,7 +212,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 Events = rawData.Count(),
                 Count = count,
-                MissingCount = 0,
+                MissingCount = missingCount,
                 Mean = mean,
                 Std = std,
                 Min = min,
@@ -215,6 +221,70 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 FiftiethPercentile = fiftiethPercentile,
                 SeventyFifthPercentile = seventyFifthPercentile
             };
+        }
+
+        private HashSet<DateTime> GetExpectedTimesByFixedInterval(DateTime start, DateTime end, TimeSpan interval)
+        {
+            var expectedTimes = new HashSet<DateTime>();
+            if (end <= start || interval <= TimeSpan.Zero)
+                return expectedTimes;
+
+            for (var t = start; t < end; t = t.Add(interval))
+                expectedTimes.Add(t);
+
+            return expectedTimes;
+        }
+
+        private HashSet<DateTime> GetExpectedTimesByTimeUnit(DateTime start, DateTime end, PedestrianTimeUnit timeUnit)
+        {
+            var expectedTimes = new HashSet<DateTime>();
+            if (end <= start)
+                return expectedTimes;
+
+            switch (timeUnit)
+            {
+                case PedestrianTimeUnit.Hour:
+                    for (var t = StartOfHour(start); t.AddHours(1) <= end; t = t.AddHours(1))
+                    {
+                        if (t >= start)
+                            expectedTimes.Add(t);
+                    }
+                    break;
+
+                case PedestrianTimeUnit.Day:
+                    for (var t = start.Date; t < end; t = t.AddDays(1))
+                        expectedTimes.Add(t);
+                    break;
+
+                case PedestrianTimeUnit.Week:
+                    for (var t = StartOfWeek(start); t < end; t = t.AddDays(7))
+                        expectedTimes.Add(t);
+                    break;
+
+                case PedestrianTimeUnit.Month:
+                    for (var t = new DateTime(start.Year, start.Month, 1); t < end; t = t.AddMonths(1))
+                        expectedTimes.Add(t);
+                    break;
+
+                case PedestrianTimeUnit.Year:
+                    for (var t = new DateTime(start.Year, 1, 1); t < end; t = t.AddYears(1))
+                        expectedTimes.Add(t);
+                    break;
+            }
+
+            return expectedTimes;
+        }
+
+        private DateTime StartOfHour(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0);
+        }
+
+        private DateTime StartOfWeek(DateTime dateTime)
+        {
+            var diff = (int)dateTime.DayOfWeek - (int)DayOfWeek.Monday;
+            if (diff < 0) diff += 7;
+            return dateTime.AddDays(-diff).Date;
         }
 
         private List<RawDataPoint> RawDataSwap(PedatLocationDataQuery parameter, List<CombinedHourlyAggregation> combinedHourly)
@@ -297,7 +367,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             };
         }
 
-        private double EquationCalculation(bool recall, int cycleLength, int activity, int FortyFiveB, int NintyC)
+        private double EquationCalculation(bool recall, double cycleLength, double activity, int FortyFiveB, int NintyC)
         {
             if (recall)
             {
