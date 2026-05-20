@@ -41,17 +41,20 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <summary>
         /// Gets or sets the network address or hostname of the database server.
         /// </summary>
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Database Host is required.")]
         public string Host { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the port number used to connect to the database server. 
         /// If null, a provider-specific default port is used.
         /// </summary>
+        [Range(1, 65535, ErrorMessage = "Port must be a valid network port between 1 and 65535.")]
         public int? Port { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the specific database or the file path for file-based databases like SQLite.
         /// </summary>
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Database Name is required.")]
         public string Database { get; set; } = string.Empty;
 
         /// <summary>
