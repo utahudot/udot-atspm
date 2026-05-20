@@ -99,6 +99,12 @@ export function createAverageChart(
       interval: 20,
       max: 100,
     },
+    grid: {
+      left: '50px',
+      right: '50px',
+      bottom: '40px',
+      top: '80px',
+    },
     series: seriesData,
   }
 
@@ -125,7 +131,7 @@ function getValueKeyAndTitle(routeRenderOption: RouteRenderOption) {
 
 function generateLegend(seriesData: SeriesOption[]) {
   return {
-    y: 30,
+    y: 50,
     data: seriesData.map((series) => {
       return {
         name: series.name,

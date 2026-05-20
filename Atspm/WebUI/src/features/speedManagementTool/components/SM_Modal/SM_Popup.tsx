@@ -273,7 +273,7 @@ const SM_Popup = ({ routes, open, onClose }: SM_PopupProps) => {
           <TabPanel value="1" sx={{ p: 0 }}>
             <Box
               width="100%"
-              my={2}
+              mt={2}
               display="flex"
               flexDirection="column"
               justifyContent="center"
