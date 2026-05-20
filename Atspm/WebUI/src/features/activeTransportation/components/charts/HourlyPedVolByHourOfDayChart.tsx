@@ -9,15 +9,17 @@ const HourlyPedVolByHourOfDayChart = ({
   data,
   printMode,
 }: PedatChartsContainerProps) => {
-  const combinedData = [...Array(23)].map((_, hour) => {
-    const averageVolume = data
-      ?.map((loc) => {
-        return loc.averageVolumeByHourOfDay?.[hour]?.volume || 0
-      })
-      .reduce((a, b) => a + b, 0)
+  const combinedData = Array.from({ length: 24 }, (_, hour) => {
+    const averageVolume =
+      data?.reduce(
+        (sum, loc) =>
+          sum +
+          (loc.averageVolumeByHourOfDay?.find((d) => d.index === hour)
+            ?.volume ?? 0),
+        0
+      ) ?? 0
 
-    const hourOfDay = hour + 1
-    return { hour: hourOfDay, averageVolume: averageVolume || 0 }
+    return { hour, averageVolume }
   })
 
   const base = transformHourlyPedVolByHourOfDay(combinedData || [])
