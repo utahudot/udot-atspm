@@ -13,21 +13,27 @@ import {
 const ControlsPanel = ({
   aggregation,
   setAggregation,
+  aggregationOptions,
   dateMin,
   dateMax,
+  dateMarks,
   dateRange,
   setDateRange,
   hourRange,
   setHourRange,
+  timeUnit,
 }: {
   aggregation: Aggregation
   setAggregation: (v: Aggregation) => void
+  aggregationOptions: Aggregation[]
   dateMin: number
   dateMax: number
+  dateMarks: number[]
   dateRange: [number, number]
   setDateRange: (v: [number, number]) => void
   hourRange: [number, number]
   setHourRange: (v: [number, number]) => void
+  timeUnit?: string
 }) => {
   const iso = (t: number) => {
     const d = new Date(t)
@@ -39,6 +45,11 @@ const ControlsPanel = ({
   const fmtHour = (h: number) => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`
 
   const ONE_DAY = 24 * 60 * 60 * 1000
+  const showHourFilter = timeUnit === 'Hour'
+  const useDateMarks = dateMarks.length > 0
+  const dateSliderMarks = useDateMarks
+    ? dateMarks.map((value) => ({ value }))
+    : [{ value: dateMin }, { value: dateMax }]
 
   return (
     <Paper
@@ -54,24 +65,30 @@ const ControlsPanel = ({
     >
       <Typography variant="h6">Filters</Typography>
 
-      <div>
-        <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-          Aggregation method:
-        </Typography>
-        <FormControl size="small" fullWidth>
-          <Select
-            value={aggregation}
-            onChange={(e) => setAggregation(e.target.value as Aggregation)}
-          >
-            <MenuItem value="Average Hour">Average Hour</MenuItem>
-            <MenuItem value="Average Daily">Average Daily</MenuItem>
-            <MenuItem value="Total">Total</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
+      {aggregationOptions.length > 1 && (
+        <div>
+          <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+            Aggregation method:
+          </Typography>
+          <FormControl size="small" fullWidth>
+            <Select
+              value={aggregation}
+              onChange={(e) => setAggregation(e.target.value as Aggregation)}
+            >
+              {aggregationOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+      )}
 
       <div>
-        <Typography variant="subtitle2">Select Date Range</Typography>
+        <Typography variant="subtitle2">
+          {useDateMarks ? 'Select Period Range' : 'Select Date Range'}
+        </Typography>
         <Box sx={{ px: 2 }}>
           <Box
             sx={{
@@ -94,54 +111,56 @@ const ControlsPanel = ({
             }}
             min={dateMin}
             max={dateMax}
-            step={ONE_DAY}
+            step={useDateMarks ? null : ONE_DAY}
             disableSwap
             size="small"
-            marks={[{ value: dateMin }, { value: dateMax }]}
+            marks={dateSliderMarks}
             sx={{ mt: 1, '& .MuiSlider-markLabel': { display: 'none' } }}
           />
         </Box>
       </div>
 
-      <div>
-        <Typography variant="subtitle2">Select Hour Range</Typography>
-        <Box sx={{ px: 2 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: 12,
-              color: 'text.secondary',
-              mt: 0.5,
-              '& span': { whiteSpace: 'nowrap' },
-            }}
-          >
-            <span>{fmtHour(hourRange[0])}</span>
-            <span>{fmtHour(hourRange[1])}</span>
+      {showHourFilter && (
+        <div>
+          <Typography variant="subtitle2">Select Hour Range</Typography>
+          <Box sx={{ px: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                fontSize: 12,
+                color: 'text.secondary',
+                mt: 0.5,
+                '& span': { whiteSpace: 'nowrap' },
+              }}
+            >
+              <span>{fmtHour(hourRange[0])}</span>
+              <span>{fmtHour(hourRange[1])}</span>
+            </Box>
+            <Slider
+              value={hourRange}
+              onChange={(_, v) => {
+                const nv = v as number[]
+                setHourRange([nv[0], nv[1]]) // clone for new ref
+              }}
+              min={0}
+              max={23}
+              step={1}
+              disableSwap
+              size="small"
+              marks={[{ value: 0 }, { value: 23 }]}
+              sx={{ mt: 1, '& .MuiSlider-markLabel': { display: 'none' } }}
+            />
           </Box>
-          <Slider
-            value={hourRange}
-            onChange={(_, v) => {
-              const nv = v as number[]
-              setHourRange([nv[0], nv[1]]) // clone for new ref
-            }}
-            min={0}
-            max={23}
-            step={1}
-            disableSwap
-            size="small"
-            marks={[{ value: 0 }, { value: 23 }]}
-            sx={{ mt: 1, '& .MuiSlider-markLabel': { display: 'none' } }}
-          />
-        </Box>
-      </div>
+        </div>
+      )}
 
       <Box sx={{ mt: 'auto' }}>
         <Button
           variant="outlined"
           size="small"
           onClick={() => {
-            setAggregation('Average Hour')
+            setAggregation(aggregationOptions[0])
             setDateRange([dateMin, dateMax])
             setHourRange([0, 23])
           }}
