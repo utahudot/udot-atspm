@@ -168,13 +168,11 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations.Identity
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasPrecision(6)
-                        .HasColumnType("TIMESTAMP(6)");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasPrecision(6)
-                        .HasColumnType("TIMESTAMP(6)");
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<bool>("IsRevoked")
                         .HasColumnType("BOOLEAN");
@@ -197,7 +195,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations.Identity
                     b.HasIndex("KeyHash")
                         .IsUnique();
 
-                    b.ToTable("ApiKeys");
+                    b.ToTable("ApiKeys", t =>
+                        {
+                            t.HasComment("API keys used for authentication and authorization.");
+                        });
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKeyClaim", b =>
@@ -223,7 +224,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations.Identity
 
                     b.HasIndex("ApiKeyId");
 
-                    b.ToTable("ApiKeyClaims");
+                    b.ToTable("ApiKeyClaims", t =>
+                        {
+                            t.HasComment("Specific permissions or claims associated with an API key.");
+                        });
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", b =>
