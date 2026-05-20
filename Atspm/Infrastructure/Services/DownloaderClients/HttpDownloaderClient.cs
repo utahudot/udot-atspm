@@ -16,6 +16,7 @@
 #endregion
 
 using System.Net;
+using System.Net.Sockets;
 using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
@@ -49,7 +50,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         public override bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
 
         ///<inheritdoc/>
-        protected override Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
+        protected override async Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
             _client ??= new HttpClient();
             _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
@@ -79,7 +80,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 }
             }
 
-            return Task.CompletedTask;
+            using var tcpClient = new TcpClient();
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeout.CancelAfter(TimeSpan.FromMilliseconds(connectionTimeout));
+
+            await tcpClient.ConnectAsync(connection.Address, connection.Port, timeout.Token);
         }
 
         ///<inheritdoc/>
