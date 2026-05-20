@@ -372,12 +372,96 @@ export interface ILocationLayer {
   locationIdentifier?: string | null;
 }
 
+export type DeviceTypes = typeof DeviceTypes[keyof typeof DeviceTypes];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceTypes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_6: 6,
+} as const;
+
+export interface DeviceEventDownload {
+  deviceId?: number;
+  /** @nullable */
+  ipaddress?: string | null;
+  deviceType?: DeviceTypes;
+  beforeWorkflowEventCount?: number;
+  afterWorkflowEventCount?: number;
+  changeInEventCount?: number;
+}
+
+export type TransportProtocols = typeof TransportProtocols[keyof typeof TransportProtocols];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TransportProtocols = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+} as const;
+
+export type DeviceStatus = typeof DeviceStatus[keyof typeof DeviceStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceStatus = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+} as const;
+
+export interface DeviceEventLoggingQueryOptions {
+  /** @nullable */
+  includedDevices?: string[] | null;
+  /** @nullable */
+  includeConfigurations?: number[] | null;
+  deviceType?: DeviceTypes;
+  transportProtocol?: TransportProtocols;
+  deviceStatus?: DeviceStatus;
+  /** @nullable */
+  includedLocations?: string[] | null;
+  /** @nullable */
+  excludedLocations?: string[] | null;
+  /** @nullable */
+  includedLocationTypes?: string[] | null;
+  /** @nullable */
+  includedAreas?: string[] | null;
+  /** @nullable */
+  includedJurisdictions?: string[] | null;
+  /** @nullable */
+  includedRegions?: string[] | null;
+}
+
+export interface DeviceEventLoggingConfiguration {
+  /** @nullable */
+  path?: string | null;
+  batchSize?: number;
+  parallelProcesses?: number;
+  deviceEventLoggingQueryOptions?: DeviceEventLoggingQueryOptions;
+}
+
 export interface IndianaEvent {
   /** @nullable */
   locationIdentifier?: string | null;
   timestamp?: string;
   eventCode?: number;
   eventParam?: number;
+}
+
+export interface SyncDeviceEventsRequest {
+  /** @nullable */
+  deviceIds?: number[] | null;
 }
 
 export interface IntPtr { [key: string]: unknown }

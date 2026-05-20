@@ -16,13 +16,16 @@
 #endregion
 
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Services;
 using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
@@ -38,41 +41,38 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     public class LoggingController : ControllerBase
     {
         private readonly IDeviceRepository _repository;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger _log;
         private const string DownloadWindowDateTimeFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
 
         /// <inheritdoc/>
-        public LoggingController(IDeviceRepository deviceRepository, ILogger<EventLogController> log)
+        public LoggingController(IDeviceRepository deviceRepository, IServiceScopeFactory serviceScopeFactory, ILogger<LoggingController> log)
         {
             _repository = deviceRepository;
+            _serviceScopeFactory = serviceScopeFactory;
             _log = log;
         }
 
         /// <summary>
-        /// This will kick off the workflow to pull events.
+        /// Synchronizes event logs for the requested devices.
         /// </summary>
-        [HttpGet("log")]
+        [HttpPost("SyncDeviceEvents")]
+        [Authorize(Policy = "CanEditLocationConfigurations")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<DeviceEventDownload>> SyncNewLocationEventsAsync(string deviceIds)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<DeviceEventDownload>>> SyncDeviceEventsAsync([FromBody] SyncDeviceEventsRequest request, CancellationToken cancellationToken)
         {
-            var host = Host.CreateDefaultBuilder().ConfigureAppConfiguration((h, c) =>
+            var (deviceIdList, validationError) = ValidateDeviceIds(request);
+            if (validationError != null)
             {
-                c.AddUserSecrets<Program>(optional: true);
-            })
-                .ApplyVolumeConfiguration()
-                .ConfigureServices((h, s) =>
+                return BadRequest(new ProblemDetails
                 {
-                    s.AddAtspmDbContext(h);
-                    s.AddAtspmEFConfigRepositories();
-                    s.AddAtspmEFEventLogRepositories();
-                    s.AddAtspmEFAggregationRepositories();
-                    s.AddDownloaderClients();
-                    s.AddDeviceDownloaders(h);
-                    s.AddEventLogDecoders();
-                    s.AddEventLogImporters(h);
-                }).Build();
+                    Title = "Invalid deviceIds",
+                    Detail = validationError,
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
 
-            var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
             var devices = _repository.GetList().Where(device => device.LoggingEnabled == true && deviceIdList.Contains(device.Id)).ToList();
 
             List<DeviceEventDownload> devicesEventDownload = new List<DeviceEventDownload>();
@@ -85,16 +85,17 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
             foreach (var device in devices)
             {
-                await semaphore.WaitAsync();
+                await semaphore.WaitAsync(cancellationToken);
 
                 var task = Task.Run(async () =>
                 {
                     try
                     {
-                        using (var scope = host.Services.CreateScope())
+                        using (var scope = _serviceScopeFactory.CreateScope())
                         {
                             var downloadWindow = GetDownloadWindow(device);
                             var runtimeDevice = CreateRuntimeDeviceForDownloadWindow(device, downloadWindow);
+                            await VerifyDeviceConnectionAsync(scope.ServiceProvider, runtimeDevice, cancellationToken);
 
                             var eventLogRepository = scope.ServiceProvider.GetRequiredService<IEventLogRepository>();
 
@@ -104,11 +105,11 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                                 .SelectMany(s => s.Data)
                                 .ToList();
 
-                            var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>(), 50000, 1);
+                            var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>(), 50000, 1, cancellationToken);
 
-                            await Task.Delay(TimeSpan.FromSeconds(2));
+                            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
 
-                            await workflow.Input.SendAsync(runtimeDevice);
+                            await workflow.Input.SendAsync(runtimeDevice, cancellationToken);
                             workflow.Input.Complete();
                             await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
@@ -157,6 +158,48 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
             //devicesEventDownload.AddRange(results);
             return devicesEventDownload;
+        }
+
+        private static (HashSet<int> DeviceIds, string? Error) ValidateDeviceIds(SyncDeviceEventsRequest? request)
+        {
+            if (request?.DeviceIds == null)
+                return (new HashSet<int>(), "deviceIds is required.");
+
+            var deviceIds = request.DeviceIds.Distinct().ToHashSet();
+            if (!deviceIds.Any())
+                return (deviceIds, "At least one device id is required.");
+
+            var invalidDeviceIds = deviceIds.Where(w => w <= 0).ToList();
+            if (invalidDeviceIds.Any())
+                return (deviceIds, $"Device ids must be positive integers. Invalid values: {string.Join(", ", invalidDeviceIds)}.");
+
+            return (deviceIds, null);
+        }
+
+        private static async Task VerifyDeviceConnectionAsync(IServiceProvider services, Device device, CancellationToken cancellationToken)
+        {
+            var deviceConfiguration = device.DeviceConfiguration
+                ?? throw new InvalidOperationException($"Device {device.Id} does not have a device configuration.");
+
+            var client = services.GetServices<IDownloaderClient>()
+                .FirstOrDefault(w => w.Protocol == deviceConfiguration.Protocol)
+                ?? throw new InvalidOperationException($"No downloader client is registered for {deviceConfiguration.Protocol}.");
+
+            if (!IPAddress.TryParse(device.Ipaddress, out var ipaddress) || ipaddress == null)
+                throw new InvalidOperationException($"Device {device.Id} has an invalid IP address: {device.Ipaddress}");
+
+            var connection = new IPEndPoint(ipaddress, deviceConfiguration.Port);
+            var credentials = new NetworkCredential(deviceConfiguration.UserName, deviceConfiguration.Password, ipaddress.ToString());
+            var connectionTimeout = deviceConfiguration.ConnectionTimeout;
+            var operationTimeout = deviceConfiguration.OperationTimeout;
+            var props = deviceConfiguration.ConnectionProperties?.ToDictionary(k => k.Key, k => k.Value.ToString());
+
+            await client.ConnectAsync(connection, credentials, connectionTimeout, operationTimeout, props, cancellationToken);
+
+            if (!client.IsConnected)
+                throw new InvalidOperationException($"Device {device.Id} at {device.Ipaddress} did not connect.");
+
+            await client.DisconnectAsync(cancellationToken);
         }
 
         private static (DateTime Start, DateTime End) GetDownloadWindow(Device device)
@@ -221,5 +264,10 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             await eventloggingservice.StopAsync(ts.Token);
             return Ok("hello world");
         }
+    }
+
+    public class SyncDeviceEventsRequest
+    {
+        public IEnumerable<int>? DeviceIds { get; set; }
     }
 }
