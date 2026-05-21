@@ -1535,58 +1535,6 @@
           }
         }
       }
-    },
-    "/api/v1/Logging/deviceEventLoggin": {
-      "post": {
-        "tags": [
-          "Logging"
-        ],
-        "operationId": "GetLoggingDeviceEventLogging",
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceEventLoggingConfiguration"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceEventLoggingConfiguration"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceEventLoggingConfiguration"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceEventLoggingConfiguration"
-              }
-            }
-          }
-        },
-        "responses": {
-          "406": {
-            "description": "Not Acceptable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1966,6 +1914,48 @@
           }
         },
         "additionalProperties": false
+      },
+      "DeviceEventDownload": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ipaddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "deviceType": {
+            "$ref": "#/components/schemas/DeviceTypes"
+          },
+          "beforeWorkflowEventCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "afterWorkflowEventCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "changeInEventCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeviceTypes": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "ConstructorInfo": {
         "type": "object",
@@ -3521,17 +3511,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "TransportProtocols": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ],
-        "type": "integer",
-        "format": "int32"
       },
       "Type": {
         "type": "object",

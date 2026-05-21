@@ -18,12 +18,9 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Infrastructure.Configuration;
-using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.Atspm.ValueObjects;
@@ -249,20 +246,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         private static DateTime RoundToMinute(DateTime value)
         {
             return value.AddTicks(-(value.Ticks % TimeSpan.TicksPerMinute));
-        }
-
-
-
-        [HttpPost("deviceEventLoggin")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeviceEventLogging([FromServices] IServiceScopeFactory serviceScopeFactory, [FromServices] ILogger<DeviceEventLogHostedService> logger, DeviceEventLoggingConfiguration deviceIds)
-        {
-            var options = Options.Create(deviceIds);
-            var eventloggingservice = new DeviceEventLogHostedService(logger, serviceScopeFactory, options);
-            var ts = new CancellationTokenSource();
-            await eventloggingservice.StartAsync(ts.Token);
-            await eventloggingservice.StopAsync(ts.Token);
-            return Ok("hello world");
         }
     }
 

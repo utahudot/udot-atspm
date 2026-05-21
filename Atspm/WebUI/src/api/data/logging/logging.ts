@@ -5,6 +5,7 @@
  * Download Atspm Event Logs and Aggregations
  * OpenAPI spec version: 1.0
  */
+import type { AxiosRequestConfig } from 'axios';
 import {
   useMutation
 } from 'react-query';
@@ -16,15 +17,11 @@ import type {
 
 import type {
   DeviceEventDownload,
-  DeviceEventLoggingConfiguration,
   ProblemDetails,
   SyncDeviceEventsRequest
 } from '../data-api.schemas';
 
 import { dataRequest } from '../../../lib/axios';
-
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
@@ -78,22 +75,20 @@ export const getGetLoggingSyncDeviceEventsUrl = () => {
 /**
  * @summary Synchronizes event logs for the requested devices.
  */
-export const getLoggingSyncDeviceEvents = async (syncDeviceEventsRequest?: SyncDeviceEventsRequest, options?: RequestInit): Promise<getLoggingSyncDeviceEventsResponse> => {
+export const getLoggingSyncDeviceEvents = async (syncDeviceEventsRequest?: SyncDeviceEventsRequest, options?: AxiosRequestConfig): Promise<DeviceEventDownload[]> => {
 
-  return dataRequest<getLoggingSyncDeviceEventsResponse>(getGetLoggingSyncDeviceEventsUrl(),
-  {
+  return dataRequest<DeviceEventDownload[]>({
     ...options,
+    url: getGetLoggingSyncDeviceEventsUrl(),
     method: 'POST',
-    headers: { 'Content-Type': 'application/json-patch+json', ...options?.headers },
-    body: JSON.stringify(syncDeviceEventsRequest)
-  }
-);}
+    data: syncDeviceEventsRequest
+  });}
 
 
 
 
 export const getGetLoggingSyncDeviceEventsMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLoggingSyncDeviceEvents>>, TError,{data?: SyncDeviceEventsRequest}, TContext>, request?: SecondParameter<typeof dataRequest>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLoggingSyncDeviceEvents>>, TError,{data?: SyncDeviceEventsRequest}, TContext>, request?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof getLoggingSyncDeviceEvents>>, TError,{data?: SyncDeviceEventsRequest}, TContext> => {
 
 const mutationKey = ['getLoggingSyncDeviceEvents'];
@@ -127,7 +122,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Synchronizes event logs for the requested devices.
  */
 export const useGetLoggingSyncDeviceEvents = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLoggingSyncDeviceEvents>>, TError,{data?: SyncDeviceEventsRequest}, TContext>, request?: SecondParameter<typeof dataRequest>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLoggingSyncDeviceEvents>>, TError,{data?: SyncDeviceEventsRequest}, TContext>, request?: AxiosRequestConfig}
  ): UseMutationResult<
         Awaited<ReturnType<typeof getLoggingSyncDeviceEvents>>,
         TError,
@@ -135,91 +130,4 @@ export const useGetLoggingSyncDeviceEvents = <TError = ProblemDetails,
         TContext
       > => {
       return useMutation(getGetLoggingSyncDeviceEventsMutationOptions(options));
-    }
-    export type getLoggingDeviceEventLoggingResponse200 = {
-  data: void
-  status: 200
-}
-
-export type getLoggingDeviceEventLoggingResponse406ApplicationJson = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLoggingDeviceEventLoggingResponse406TextJson = {
-  data: ProblemDetails
-  status: 406
-}
-
-export type getLoggingDeviceEventLoggingResponseSuccess = (getLoggingDeviceEventLoggingResponse200) & {
-  headers: Headers;
-};
-export type getLoggingDeviceEventLoggingResponseError = (getLoggingDeviceEventLoggingResponse406ApplicationJson | getLoggingDeviceEventLoggingResponse406TextJson) & {
-  headers: Headers;
-};
-
-export type getLoggingDeviceEventLoggingResponse = (getLoggingDeviceEventLoggingResponseSuccess | getLoggingDeviceEventLoggingResponseError)
-
-export const getGetLoggingDeviceEventLoggingUrl = () => {
-
-
-
-
-  return `/api/v1/Logging/deviceEventLoggin`
-}
-
-export const getLoggingDeviceEventLogging = async (deviceEventLoggingConfiguration?: DeviceEventLoggingConfiguration, options?: RequestInit): Promise<getLoggingDeviceEventLoggingResponse> => {
-
-  return dataRequest<getLoggingDeviceEventLoggingResponse>(getGetLoggingDeviceEventLoggingUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json-patch+json', ...options?.headers },
-    body: JSON.stringify(deviceEventLoggingConfiguration)
-  }
-);}
-
-
-
-
-export const getGetLoggingDeviceEventLoggingMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>, TError,{data?: DeviceEventLoggingConfiguration}, TContext>, request?: SecondParameter<typeof dataRequest>}
-): UseMutationOptions<Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>, TError,{data?: DeviceEventLoggingConfiguration}, TContext> => {
-
-const mutationKey = ['getLoggingDeviceEventLogging'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>, {data?: DeviceEventLoggingConfiguration}> = (props) => {
-          const {data} = props ?? {};
-
-          return  getLoggingDeviceEventLogging(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type GetLoggingDeviceEventLoggingMutationResult = NonNullable<Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>>
-    export type GetLoggingDeviceEventLoggingMutationBody = DeviceEventLoggingConfiguration | undefined
-    export type GetLoggingDeviceEventLoggingMutationError = ProblemDetails
-
-    export const useGetLoggingDeviceEventLogging = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>, TError,{data?: DeviceEventLoggingConfiguration}, TContext>, request?: SecondParameter<typeof dataRequest>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>,
-        TError,
-        {data?: DeviceEventLoggingConfiguration},
-        TContext
-      > => {
-      return useMutation(getGetLoggingDeviceEventLoggingMutationOptions(options));
     }

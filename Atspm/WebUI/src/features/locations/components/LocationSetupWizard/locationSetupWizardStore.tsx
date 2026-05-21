@@ -11,7 +11,7 @@ interface LocationWizardStore {
   setDeviceVerificationStatus: (status: Status) => void
   approachVerificationStatus: Status
   setApproachVerificationStatus: (status: Status) => void
-  badApproaches: string[]
+  badApproaches: number[]
   badDetectors: string[]
   setBadApproaches: (approaches: number[]) => void
   setBadDetectors: (detectors: string[]) => void
