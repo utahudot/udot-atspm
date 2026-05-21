@@ -135,15 +135,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                     catch (DownloaderClientConnectionException e)
                     {
                         logMessages.ConnectingToHostException(deviceIdentifier, ipaddress, e);
-                        throw;
                     }
                     catch (OperationCanceledException e)
                     {
                         logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                     }
-
-                    if (!client.IsConnected)
-                        throw new DownloaderClientConnectionException(ipaddress.ToString(), client, "Client not connected");
 
                     if (client.IsConnected)
                     {
@@ -160,12 +156,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                         catch (DownloaderClientListResourcesException e)
                         {
                             logMessages.ResourceListingException(deviceIdentifier, ipaddress, path, e);
-                            throw;
                         }
                         catch (DownloaderClientConnectionException e)
                         {
                             logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress, e);
-                            throw;
                         }
 
                         if (resources == null) yield break;
@@ -189,12 +183,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             catch (DownloaderClientDownloadResourceException e)
                             {
                                 logMessages.DownloadResourceException(resource, deviceIdentifier, ipaddress, e);
-                                throw;
                             }
                             catch (DownloaderClientConnectionException e)
                             {
                                 logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress, e);
-                                throw;
                             }
                             catch (OperationCanceledException e)
                             {
@@ -255,7 +247,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                     }
                     else
                     {
-                        yield break;
+                        logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress);
                     }
                 }
             }
