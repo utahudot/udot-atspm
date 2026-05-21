@@ -37,16 +37,6 @@ export const getGetLoggingSyncDeviceEventsMockHandler = (overrideResponse?: Devi
   }, options)
 }
 
-export const getGetLoggingDeviceEventLoggingMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/api/v1/Logging/deviceEventLoggin', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-
-    return new HttpResponse(null,
-      { status: 200
-      })
-  }, options)
-}
 export const getLoggingMock = () => [
-  getGetLoggingSyncDeviceEventsMockHandler(),
-  getGetLoggingDeviceEventLoggingMockHandler()
+  getGetLoggingSyncDeviceEventsMockHandler()
 ]
