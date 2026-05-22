@@ -1,4 +1,4 @@
-import { toDateStamp } from '@/utils/dateTime'
+import { formatInstantAsLocalDate } from '@/utils/dateTime'
 import HistoryIcon from '@mui/icons-material/History'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Chip, Tooltip, Typography } from '@mui/material'
@@ -7,8 +7,7 @@ type DS = Date | string | null | undefined
 
 const fmt = (d: DS) => {
   if (!d) return 'Unknown'
-  const date = d instanceof Date ? d : new Date(d)
-  return isNaN(date.getTime()) ? '' : toDateStamp(date)
+  return formatInstantAsLocalDate(d)
 }
 
 export default function AuditBadge({
