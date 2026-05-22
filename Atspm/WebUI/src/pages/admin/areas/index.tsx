@@ -17,7 +17,7 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { useNotificationStore } from '@/stores/notifications'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { formatInstantAsLocalDate, formatInstantAsLocalDateTime } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 const AreasAdmin = () => {
   const pageAccess = useViewPage(PageNames.Areas)
@@ -108,9 +108,9 @@ const AreasAdmin = () => {
     return {
       id: area.id,
       name: area.name,
-      modified: modified ? toUTCDateStamp(modified) : '',
+      modified: formatInstantAsLocalDate(modified),
       modifiedBy,
-      created: created ? toUTCDateStamp(created) : '',
+      created: formatInstantAsLocalDate(created),
       createdBy,
     }
   })
@@ -145,7 +145,7 @@ const AreasAdmin = () => {
             name={''}
             objectType="Area"
             open={false}
-            onClose={() => {}}
+            onClose={onModalClose}
             onConfirm={handleDeleteArea}
             associatedObjects={locations}
             associatedObjectsLabel="locations"

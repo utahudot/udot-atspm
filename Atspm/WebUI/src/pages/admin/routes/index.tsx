@@ -16,7 +16,7 @@ import {
 } from '@/features/identity/pagesCheck'
 import CreateRouteModal from '@/features/routes/components/CreateRouteModal'
 import { useNotificationStore } from '@/stores/notifications'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { formatInstantAsLocalDate } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const RoutesAdmin = () => {
@@ -101,9 +101,9 @@ const RoutesAdmin = () => {
       id: obj.id,
       name: obj.name,
       createdBy: obj.createdBy,
-      created: obj.created ? toUTCDateStamp(obj.created) : '',
+      created: formatInstantAsLocalDate(obj.created),
       modifiedBy: obj.modifiedBy,
-      modified: obj.modified ? toUTCDateStamp(obj.modified) : '',
+      modified: formatInstantAsLocalDate(obj.modified),
     }
   })
 
