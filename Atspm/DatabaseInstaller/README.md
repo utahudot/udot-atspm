@@ -232,6 +232,7 @@ Copies rows from the source SQL Server `CompressedEvents` table into the Postgre
 - `--locations`
 - `--device`
 - `--batch-size`
+- `--resume`
 - `MaxConcurrency` from `TransferCommandConfiguration`
 
 ### Notes
@@ -240,6 +241,7 @@ Copies rows from the source SQL Server `CompressedEvents` table into the Postgre
 - That makes it much faster than rebuilding each hourly record from expanded events.
 - `MaxConcurrency` controls how many locations are processed in parallel. The default is `2`. Start there and increase carefully.
 - `--batch-size` controls how many rows are sent in each insert batch. The default is `250`.
+- `--resume` builds a batched resume plan for the requested locations and date range, then skips location-days where every SQL Server source key already exists in PostgreSQL. Partial days are replayed safely because inserts use `ON CONFLICT DO NOTHING`.
 - Each location worker keeps one SQL Server connection and one PostgreSQL connection open for all of its batches.
 - The command reads `TransferCommandConfiguration:MaxConcurrency` and `TransferCommandConfiguration:CopyBatchSize` from `appsettings.json` or user secrets, so you can tune both without changing the command line.
 - This assumes the source SQL Server database is already using the same `CompressedEvents` schema and payload format as the target PostgreSQL database.
@@ -253,6 +255,7 @@ dotnet run --project DatabaseInstaller -- copy-sql \
   --start "2024-01-01" \
   --end "2024-01-31" \
   --batch-size 500 \
+  --resume \
   --locations "LOC1,LOC2"
 ```
 
