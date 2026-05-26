@@ -17,7 +17,7 @@ export const useUdotRoutes = () => {
     setIsLoadingUdotRoutes(true)
     try {
       const queryUrl =
-        'https://roads.udot.utah.gov/server/rest/services/Public/UDOT_Routes/MapServer/0/query'
+        'https://roads.udot.utah.gov/server/rest/services/Public/UDOT_Routes/FeatureServer/0/query'
       const response = await fetch(queryUrl, {
         method: 'POST',
         headers: {

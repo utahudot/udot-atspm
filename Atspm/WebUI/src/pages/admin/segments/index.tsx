@@ -110,6 +110,7 @@ const SegmentsAdmin = () => {
             gap: 2,
             flexWrap: 'wrap',
             mb: 2,
+            mt: 2,
           }}
         >
           <Autocomplete
@@ -122,7 +123,7 @@ const SegmentsAdmin = () => {
             renderInput={(params) => (
               <TextField {...params} placeholder="Select segment" />
             )}
-            sx={{ width: { xs: '100%', sm: 360 } }}
+            sx={{ width: { xs: '100%', sm: 360} }}
           />
           <AddButton
             label="New Segment"

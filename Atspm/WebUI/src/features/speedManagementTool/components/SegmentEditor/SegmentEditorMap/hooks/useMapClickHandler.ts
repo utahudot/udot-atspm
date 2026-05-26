@@ -32,7 +32,7 @@ const useFetchRoute = () =>
     async (pt: [number, number]): Promise<FeatureCollection | null> => {
       try {
         const res = await fetch(
-          'https://roads.udot.utah.gov/server/rest/services/Public/UDOT_Routes/MapServer/0/query',
+          'https://roads.udot.utah.gov/server/rest/services/Public/UDOT_Routes/FeatureServer/0/query',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
