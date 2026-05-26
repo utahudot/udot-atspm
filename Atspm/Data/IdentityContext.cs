@@ -17,7 +17,9 @@
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Data.Configuration.IdentityConfiguration;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Data.Utility;
 
 namespace Utah.Udot.Atspm.Data
 {
@@ -27,13 +29,11 @@ namespace Utah.Udot.Atspm.Data
     /// </summary>
     public class IdentityContext : IdentityDbContext<ApplicationUser>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IdentityContext"/> class.
-        /// </summary>
-        /// <param name="options">The options to be used by this <see cref="DbContext"/>.</param>
-        public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
-        {
-        }
+        /// <inheritdoc/>
+        public IdentityContext() { }
+
+        /// <inheritdoc/>
+        public IdentityContext(DbContextOptions<IdentityContext> options) : base(options) { }
 
         /// <summary>
         /// Gets or sets the <see cref="DbSet{TEntity}"/> for managing API keys.
@@ -45,66 +45,21 @@ namespace Utah.Udot.Atspm.Data
         /// </summary>
         public DbSet<ApiKeyClaim> ApiKeyClaims { get; set; }
 
-        /// <summary>
-        /// Configures the schema needed for the identity framework and the API key models.
-        /// </summary>
-        /// <param name="builder">The builder being used to construct the model for this context.</param>
-        protected override void OnModelCreating(ModelBuilder builder)
+        /// <inheritdoc/>
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
-            base.OnModelCreating(builder);
+            configurationBuilder.ApplyDateTimeOffsetConverters();
+            configurationBuilder.ApplyProviderDateTimeTypes(Database.ProviderName);
+        }
 
-            var utcConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
-                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        /// <inheritdoc/>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ApiKeyConfiguration());
+            modelBuilder.ApplyConfiguration(new ApiKeyClaimConfiguration());
+            //TODO: Add ApplicationUser configuration
 
-            builder.Entity<ApiKey>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.KeyHash).IsUnique();
-
-                var createdAt = entity.Property(e => e.CreatedAt)
-                .HasConversion(utcConverter)
-                .IsRequired();
-
-                var expiresAt = entity.Property(e => e.ExpiresAt)
-                .HasConversion(utcConverter);
-
-                switch (Database.ProviderName)
-                {
-                    case "Npgsql.EntityFrameworkCore.PostgreSQL":
-                        createdAt.HasColumnType("timestamp with time zone");
-                        expiresAt.HasColumnType("timestamp with time zone");
-                        break;
-
-                    case "Oracle.EntityFrameworkCore":
-                        createdAt.HasPrecision(6);
-                        expiresAt.HasPrecision(6);
-                        break;
-
-                    case "Microsoft.EntityFrameworkCore.SqlServer":
-                        createdAt.HasColumnType("datetime2");
-                        expiresAt.HasColumnType("datetime2");
-                        break;
-
-                    default:
-                        break;
-                }
-
-                entity.HasMany(e => e.Claims)
-                      .WithOne()
-                      .HasForeignKey(c => c.ApiKeyId)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.OwnerId).IsRequired();
-            });
-
-            builder.Entity<ApiKeyClaim>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Type).IsRequired();
-                entity.Property(e => e.Value).IsRequired();
-            });
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

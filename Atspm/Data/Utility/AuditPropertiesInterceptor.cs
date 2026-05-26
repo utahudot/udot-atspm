@@ -53,33 +53,64 @@ namespace Utah.Udot.Atspm.Data.Utility
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
+        //private void BeforeSaveTriggers(DbContext context)
+        //{
+        //    foreach (var entry in context.ChangeTracker.Entries())
+        //    {
+        //        if (entry.Entity is IAuditProperties auditProperties)
+        //        {
+        //            if (entry.State == EntityState.Added)
+        //            {
+        //                var now = new Lazy<DateTime>(() => DateTime.UtcNow);
+        //                var user = _currentUserService.GetCurrentUser();
+
+        //                var name = ($"{user.FirstName} {user.LastName}") ?? "System";
+
+        //                auditProperties.Created = now.Value;
+        //                auditProperties.Modified = now.Value;
+
+        //                auditProperties.CreatedBy = name;
+        //                auditProperties.ModifiedBy = name;
+        //            }
+        //            else if (entry.State == EntityState.Modified)
+        //            {
+        //                auditProperties.Modified = DateTime.Now;
+
+        //                var user = _currentUserService.GetCurrentUser();
+
+        //                auditProperties.ModifiedBy = ($"{user.FirstName} {user.LastName}") ?? "System";
+        //            }
+        //        }
+        //    }
+        //}
+
         private void BeforeSaveTriggers(DbContext context)
         {
-            foreach (var entry in context.ChangeTracker.Entries())
+            var entries = context.ChangeTracker.Entries()
+                .Where(e => e.Entity is IAuditProperties && (e.State == EntityState.Added || e.State == EntityState.Modified))
+                .ToList();
+
+            if (entries.Count == 0) return;
+
+            var now = DateTimeOffset.UtcNow;
+            var user = _currentUserService.GetCurrentUser();
+
+            var name = !string.IsNullOrWhiteSpace(user?.FirstName) || !string.IsNullOrWhiteSpace(user?.LastName)
+                ? $"{user.FirstName} {user.LastName}".Trim()
+                : "System";
+
+            foreach (var entry in entries)
             {
                 if (entry.Entity is IAuditProperties auditProperties)
                 {
                     if (entry.State == EntityState.Added)
                     {
-                        var now = new Lazy<DateTime>(() => DateTime.UtcNow);
-                        var user = _currentUserService.GetCurrentUser();
-
-                        var name = ($"{user.FirstName} {user.LastName}") ?? "System";
-
-                        auditProperties.Created = now.Value;
-                        auditProperties.Modified = now.Value;
-
+                        auditProperties.Created = now;
                         auditProperties.CreatedBy = name;
-                        auditProperties.ModifiedBy = name;
                     }
-                    else if (entry.State == EntityState.Modified)
-                    {
-                        auditProperties.Modified = DateTime.Now;
 
-                        var user = _currentUserService.GetCurrentUser();
-
-                        auditProperties.ModifiedBy = ($"{user.FirstName} {user.LastName}") ?? "System";
-                    }
+                    auditProperties.Modified = now;
+                    auditProperties.ModifiedBy = name;
                 }
             }
         }

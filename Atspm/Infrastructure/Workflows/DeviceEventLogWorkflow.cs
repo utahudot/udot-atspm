@@ -18,7 +18,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Workflows
@@ -104,7 +103,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
             ArchiveEventLogsWorkflow.Output.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
-    } 
+    }
 }
 
 

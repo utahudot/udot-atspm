@@ -34,6 +34,7 @@ namespace DatabaseInstaller.Commands
             AddOption(LocationsOption);
             AddOption(DeviceOption);
             AddOption(BatchSizeOption);
+            AddOption(ResumeOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
@@ -42,6 +43,7 @@ namespace DatabaseInstaller.Commands
         public Option<string> LocationsOption { get; set; } = new("--locations", "Comma seperated list of location identifiers") { IsRequired = false };
         public Option<int?> DeviceOption { get; set; } = new("--device", "Id of Device Type used to import events for just that device type") { IsRequired = false };
         public Option<int?> BatchSizeOption { get; set; } = new("--batch-size", "Size of insert batches for copy-sql") { IsRequired = false };
+        public Option<bool> ResumeOption { get; set; } = new("--resume", "Skip location-days that already have all source rows in the destination") { IsRequired = false };
 
         public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
@@ -53,6 +55,7 @@ namespace DatabaseInstaller.Commands
             binder.BindMemberFromValue(b => b.Locations, LocationsOption);
             binder.BindMemberFromValue(b => b.Device, DeviceOption);
             binder.BindMemberFromValue(b => b.CopyBatchSize, BatchSizeOption);
+            binder.BindMemberFromValue(b => b.Resume, ResumeOption);
 
             return binder;
         }

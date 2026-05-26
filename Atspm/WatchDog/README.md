@@ -86,7 +86,7 @@ Each database entry must use this shape:
 {
   "DatabaseConfiguration": {
     "ConfigContext": {
-      "DBType": "PostgreSQL",
+      "DBType": "PostgreSql",
       "Host": "your-postgres-host",
       "Port": 5432,
       "Database": "ATSPM-Config",
@@ -100,7 +100,7 @@ Each database entry must use this shape:
       }
     },
     "AggregationContext": {
-      "DBType": "PostgreSQL",
+      "DBType": "PostgreSql",
       "Host": "your-postgres-host",
       "Port": 5432,
       "Database": "ATSPM-Aggregation",
@@ -114,7 +114,7 @@ Each database entry must use this shape:
       }
     },
     "EventLogContext": {
-      "DBType": "PostgreSQL",
+      "DBType": "PostgreSql",
       "Host": "your-postgres-host",
       "Port": 5432,
       "Database": "ATSPM-EventLogs",
@@ -128,7 +128,7 @@ Each database entry must use this shape:
       }
     },
     "IdentityContext": {
-      "DBType": "PostgreSQL",
+      "DBType": "PostgreSql",
       "Host": "your-postgres-host",
       "Port": 5432,
       "Database": "ATSPM-Identity",

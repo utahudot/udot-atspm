@@ -104,7 +104,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 Name = dto.Name,
                 KeyHash = hash,
                 OwnerId = userId,
-                ExpiresAt = dto.ExpiresAt?.ToUniversalTime(),
+                ExpiresAt = dto.ExpiresAt,
                 IsRevoked = false,
                 Claims = dto.Claims.Select(r => new ApiKeyClaim
                 {

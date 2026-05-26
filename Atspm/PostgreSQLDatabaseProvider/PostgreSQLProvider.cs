@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for PostgreSQLDatabaseProvider - Utah.Udot.Atspm.PostgreSQLDatabaseProvider/PostgreSQLProvider.cs
+// for PostgreSQLDatabaseProvider - Utah.Udot.Atspm.PostgreSQLDatabaseProvider/PostgreSqlProvider.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 
 namespace Utah.Udot.Atspm.PostgreSQLDatabaseProvider
 {
-    public class PostgreSQLProvider
+    public class PostgreSqlProvider
     {
         public const string ProviderName = "PostgreSQL";
 
-        public static string Migration => typeof(PostgreSQLProvider).Assembly.FullName;
+        public static string Migration => typeof(PostgreSqlProvider).Assembly.FullName;
     }
 }
