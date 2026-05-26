@@ -15,7 +15,8 @@
 // limitations under the License.
 // #endregion
 import { ChartType } from '@/features/charts/common/types'
-import transformTurningMovementCountsData from './transformers'
+import type { TransformedTurningMovementCountsResponse } from '../types'
+import transformTurningMovementCountsData from './turningMovementCounts.transformer'
 import {
   RawTurningMovementCountsData,
   RawTurningMovementCountsResponse,
@@ -90,7 +91,9 @@ describe('transformTurningMovementCountsData', () => {
       },
     }
 
-    const result = transformTurningMovementCountsData(response)
+    const result = transformTurningMovementCountsData(
+      response
+    ) as TransformedTurningMovementCountsResponse
     const chartDescriptions = result.data.charts.map(
       (chart) => (chart.chart as ChartWithDisplayProps).displayProps.description
     )
@@ -114,5 +117,8 @@ describe('transformTurningMovementCountsData', () => {
       peakHourFactor: 0.92,
       peakHourData: [['08:00 - 09:00', 10, 20, 30, 60, 60]],
     })
+    expect(result.data.displayProps?.exportFileName).toBe(
+      'Turning_Movement_Counts_1001_2026-04-01_08-00_to_2026-04-01_09-00'
+    )
   })
 })
