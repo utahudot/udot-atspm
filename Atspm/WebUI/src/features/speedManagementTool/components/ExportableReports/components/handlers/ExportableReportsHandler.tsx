@@ -27,8 +27,8 @@ export interface ERBaseHandler
   reportData: ExportableReportResult[]
   routeSpeeds: RoutesResponse | null
   options: ExportableReportOptions | null
-  sourceId: DataSource
-  updateSourceId(sourceId: DataSource): void
+  sourceId: DataSource[]
+  updateSourceId(sourceId: DataSource[]): void
   speedDataType: SpeedDataType
   updateSpeedDataType(dataType: SpeedDataType): void
   managementType: ReportManagementType

@@ -1,14 +1,14 @@
-import { Segment } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
+import type { AllSegmentsSegment } from '@/features/speedManagementTool/api/getSegments'
 import { ROUTE_COLORS } from '@/features/speedManagementTool/components/SegmentEditor/SegmentEditorMap/utils/colors'
 import { Fragment, memo } from 'react'
 import { Polyline } from 'react-leaflet'
 
 interface SegmentPolylinesProps {
-  segments: Segment[]
+  segments: AllSegmentsSegment[]
   selectedSegmentIds: string[]
-  onSegmentSelect: (segment: Segment) => void
+  onSegmentSelect?: (segment: AllSegmentsSegment) => void
   zoomLevel: number
-  setHoveredSegment: (segment: Segment | null) => void
+  setHoveredSegment: (segment: AllSegmentsSegment | null) => void
 }
 
 const getPolylineWeight = (zoom: number) => {
@@ -52,7 +52,7 @@ const SegmentPolylines = memo<SegmentPolylinesProps>(
                 smoothFactor={0}
                 positions={segment.geometry.coordinates}
                 eventHandlers={{
-                  click: () => onSegmentSelect(segment),
+                  click: () => onSegmentSelect?.(segment),
                   mouseover: (e) => {
                     setHoveredSegment(segment)
                     e.target.bringToFront()

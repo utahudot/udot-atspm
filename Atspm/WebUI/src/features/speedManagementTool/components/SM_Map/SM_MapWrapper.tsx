@@ -8,7 +8,10 @@ import {
   RouteRenderOption,
 } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
-import { RoutesResponse } from '@/features/speedManagementTool/types/routes'
+import {
+  type RoutesResponse,
+  type SpeedManagementRoute,
+} from '@/features/speedManagementTool/types/routes'
 import CloseIcon from '@mui/icons-material/Close'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import {
@@ -162,6 +165,22 @@ const SM_MapWrapper = () => {
     }
   }
 
+  const handleRouteDropdownSelect = (route: SpeedManagementRoute) => {
+    const routeId = route.properties.route_id
+    if (!routeId) return
+
+    if (multiselect) {
+      setSelectedRouteIds((prevSelectedRouteIds) =>
+        prevSelectedRouteIds.includes(routeId)
+          ? prevSelectedRouteIds
+          : [...prevSelectedRouteIds, routeId]
+      )
+    } else {
+      setSelectedRouteIds([routeId])
+      setShowPopup(false)
+    }
+  }
+
   const handleViewCharts = () => {
     setShowPopup(true)
   }
@@ -194,6 +213,7 @@ const SM_MapWrapper = () => {
             handleOptionClick={handleOptionClick}
             isLoading={isLoading}
             isRequestChanged={isRequestChanged}
+            onRouteSelect={handleRouteDropdownSelect}
             routes={routes}
           />
           <Box sx={{ display: 'flex', flex: 1 }}>

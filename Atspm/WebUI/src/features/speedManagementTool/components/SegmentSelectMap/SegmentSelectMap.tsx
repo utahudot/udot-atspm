@@ -1,4 +1,4 @@
-import { Segment } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
+import type { AllSegmentsSegment } from '@/features/speedManagementTool/api/getSegments'
 import { useSegmentEditorStore } from '@/features/speedManagementTool/components/SegmentEditor/segmentEditorStore'
 import { SegmentSelectMapProps } from '@/features/speedManagementTool/components/SegmentSelectMap'
 import SegmentPolylines from '@/features/speedManagementTool/components/SegmentSelectMap/SegmentPolylines'
@@ -19,6 +19,7 @@ import { memo, useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 
 const SegmentSelectMap = ({
+  focusedSegmentId,
   segments,
   onSegmentSelect,
   selectedSegmentIds,
@@ -33,7 +34,8 @@ const SegmentSelectMap = ({
 
   const allSegments = segments ?? storedSegments
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
-  const [hoveredSegment, setHoveredSegment] = useState<Segment | null>(null)
+  const [hoveredSegment, setHoveredSegment] =
+    useState<AllSegmentsSegment | null>(null)
 
   // Invalidate map size on mount and resize
   useEffect(() => {
@@ -114,13 +116,34 @@ const SegmentSelectMap = ({
     initializeMap()
   }, [])
 
+  useEffect(() => {
+    if (!focusedSegmentId || !mapRef || !allSegments?.length) return
+
+    const segment = allSegments.find(
+      (segment) => segment.id === focusedSegmentId
+    )
+    const coordinates = segment?.geometry?.coordinates
+    if (!coordinates?.length) return
+
+    const bounds = L.latLngBounds(coordinates as L.LatLngExpression[])
+    if (!bounds.isValid()) return
+
+    mapRef.fitBounds(bounds, { padding: [100, 100], maxZoom: 15 })
+    const center = bounds.getCenter()
+    setMapCenter({
+      lat: center.lat,
+      lng: center.lng,
+      zoom: mapRef.getZoom(),
+    })
+  }, [allSegments, focusedSegmentId, mapRef, setMapCenter])
+
   const memoizedSegmentPolylines = useMemo(
     () => (
       <SegmentPolylines
         segments={allSegments || []}
         onSegmentSelect={onSegmentSelect}
         selectedSegmentIds={selectedSegmentIds}
-        zoomLevel={mapCenter?.zoom}
+        zoomLevel={mapCenter?.zoom ?? 10}
         setHoveredSegment={setHoveredSegment}
       />
     ),

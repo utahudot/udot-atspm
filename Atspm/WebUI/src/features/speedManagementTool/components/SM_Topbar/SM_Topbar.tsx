@@ -2,10 +2,12 @@ import AnalysisPeriodOptionsPopup from '@/features/speedManagementTool/component
 import DateRangeOptionsPopup from '@/features/speedManagementTool/components/SM_Topbar/DateRangeOptionsPopup'
 import FiltersButton from '@/features/speedManagementTool/components/SM_Topbar/Filters'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
+import type { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { LoadingButton } from '@mui/lab'
 import { Autocomplete, Box, Divider, TextField, Tooltip } from '@mui/material'
+import { type SyntheticEvent, useMemo } from 'react'
 import DaysOfWeekOptionsPopup from './DaysOfWeekOptionsPopup'
 import GeneralOptionsPopup from './GeneralOptionsPopup'
 
@@ -13,26 +15,35 @@ interface TopBarProps {
   handleOptionClick: () => void
   isLoading: boolean
   isRequestChanged: boolean
-  routes: any
+  routes: SpeedManagementRoute[]
+  onRouteSelect: (route: SpeedManagementRoute) => void
 }
 
 export default function SM_TopBar({
   handleOptionClick,
   isLoading,
   isRequestChanged,
+  onRouteSelect,
   routes,
 }: TopBarProps) {
   const { zoomToHotspot } = useSpeedManagementStore()
 
-  const handleHotspotClick = (event: any, newValue: any) => {
-    const route = routes.find(
-      (route: any) => route.properties.name === newValue
-    )
+  const handleHotspotClick = (
+    _: SyntheticEvent,
+    route: SpeedManagementRoute | null
+  ) => {
     if (!route) return
     zoomToHotspot(route.geometry.coordinates, 13)
+    onRouteSelect(route)
   }
 
-  const sortedNames = routes.map((route: any) => route.properties.name).sort()
+  const sortedRoutes = useMemo(
+    () =>
+      [...routes].sort((a, b) =>
+        a.properties.name.localeCompare(b.properties.name)
+      ),
+    [routes]
+  )
 
   return (
     <Box
@@ -49,7 +60,13 @@ export default function SM_TopBar({
     >
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
         <Autocomplete
-          options={sortedNames}
+          options={sortedRoutes}
+          getOptionLabel={(route) =>
+            route.properties.name || route.properties.route_id
+          }
+          isOptionEqualToValue={(option, value) =>
+            option.properties.route_id === value.properties.route_id
+          }
           onChange={handleHotspotClick}
           size="small"
           renderInput={(params) => (

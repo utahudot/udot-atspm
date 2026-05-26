@@ -1,4 +1,4 @@
-import { Segment } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
+import type { AllSegmentsSegment } from '@/features/speedManagementTool/api/getSegments'
 import { Box } from '@mui/material'
 import 'leaflet/dist/leaflet.css'
 import dynamic from 'next/dynamic'
@@ -9,12 +9,14 @@ const SegmentSelectMap = dynamic(() => import('./SegmentSelectMap'), {
 })
 
 export interface SegmentSelectMapProps {
-  segments?: Segment[]
+  segments?: AllSegmentsSegment[]
+  focusedSegmentId?: string | null
   selectedSegmentIds?: string[]
-  onSegmentSelect?: (segment: Segment) => void
+  onSegmentSelect?: (segment: AllSegmentsSegment) => void
 }
 
 const SegmentSelectMapWrapper = ({
+  focusedSegmentId,
   segments,
   selectedSegmentIds,
   onSegmentSelect,
@@ -22,6 +24,7 @@ const SegmentSelectMapWrapper = ({
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <SegmentSelectMap
+        focusedSegmentId={focusedSegmentId}
         segments={segments}
         selectedSegmentIds={selectedSegmentIds}
         onSegmentSelect={onSegmentSelect}

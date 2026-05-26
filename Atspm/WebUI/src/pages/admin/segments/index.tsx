@@ -1,17 +1,39 @@
-import { Segment } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
-import { useTransformedSegments } from '@/features/speedManagementTool/api/getSegments'
+import {
+  type AllSegmentsSegment,
+  useTransformedSegments,
+} from '@/features/speedManagementTool/api/getSegments'
 import { useSegmentEditorStore } from '@/features/speedManagementTool/components/SegmentEditor/segmentEditorStore'
 import SegmentSelectMapWrapper from '@/features/speedManagementTool/components/SegmentSelectMap'
-import { Box, Paper } from '@mui/material'
+import { Autocomplete, Box, Paper, TextField } from '@mui/material'
 import { useRouter } from 'next/router'
-import { memo, useCallback, useEffect } from 'react'
+import {
+  memo,
+  type SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
+type SegmentLabelProperties = {
+  name?: string | null
+  Name?: string | null
+}
+
+const getSegmentLabel = (segment: AllSegmentsSegment) => {
+  const properties = segment.properties as SegmentLabelProperties | undefined
+  const name = properties?.name ?? properties?.Name
+
+  return name || segment.id
+}
 
 const SegmentsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Segments)
   const router = useRouter()
+  const [focusedSegmentId, setFocusedSegmentId] = useState<string | null>(null)
   const { data: fetchedSegments, isLoading: isSegmentsLoading } =
     useTransformedSegments()
   const {
@@ -33,7 +55,7 @@ const SegmentsAdmin = () => {
   }, [fetchedSegments, setAllSegments])
 
   const handleSegmentSelect = useCallback(
-    (segment: Segment | null) => {
+    (segment: AllSegmentsSegment | null) => {
       reset() // Clear other state, preserving allSegments
       if (segment == null) {
         router.push(`/admin/segments/new`)
@@ -45,6 +67,27 @@ const SegmentsAdmin = () => {
       }
     },
     [router, setAssociatedEntityIds, reset]
+  )
+
+  const segmentOptions = useMemo(
+    () =>
+      [...(fetchedSegments ?? [])].sort((a, b) =>
+        getSegmentLabel(a).localeCompare(getSegmentLabel(b))
+      ),
+    [fetchedSegments]
+  )
+
+  const focusedSegment = useMemo(
+    () =>
+      segmentOptions.find((segment) => segment.id === focusedSegmentId) ?? null,
+    [focusedSegmentId, segmentOptions]
+  )
+
+  const handleSegmentFocus = useCallback(
+    (_: SyntheticEvent, segment: AllSegmentsSegment | null) => {
+      setFocusedSegmentId(segment?.id ?? null)
+    },
+    []
   )
 
   if (pageAccess.isLoading) {
@@ -60,11 +103,31 @@ const SegmentsAdmin = () => {
           height: '83vh',
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 2,
+            flexWrap: 'wrap',
+            mb: 2,
+          }}
+        >
+          <Autocomplete
+            options={segmentOptions}
+            value={focusedSegment}
+            getOptionLabel={getSegmentLabel}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            onChange={handleSegmentFocus}
+            size="small"
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select segment" />
+            )}
+            sx={{ width: { xs: '100%', sm: 360 } }}
+          />
           <AddButton
             label="New Segment"
             onClick={() => handleSegmentSelect(null)}
-            sx={{ mb: 2, width: '160px' }}
+            sx={{ width: '160px' }}
           />
         </Box>
         <Paper
@@ -77,8 +140,9 @@ const SegmentsAdmin = () => {
           }}
         >
           <SegmentSelectMapWrapper
+            focusedSegmentId={focusedSegmentId}
             segments={fetchedSegments}
-            selectedSegmentIds={[]}
+            selectedSegmentIds={focusedSegmentId ? [focusedSegmentId] : []}
             onSegmentSelect={handleSegmentSelect}
           />
         </Paper>

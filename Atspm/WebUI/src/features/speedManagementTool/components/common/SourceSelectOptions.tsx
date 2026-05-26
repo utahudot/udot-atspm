@@ -20,6 +20,10 @@ interface Props {
 export default function SourceSelectOptions(props: Props) {
   const { handler } = props
   const theme = useTheme()
+  const selectedSourceId = handler.sourceId[0]
+  const isLeadershipManagement =
+    handler.managementType === ReportManagementType.Leadership
+
   return (
     <>
       <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
@@ -28,11 +32,17 @@ export default function SourceSelectOptions(props: Props) {
           <Select
             label="Management Type"
             value={handler.managementType}
-            onChange={(event) =>
-              handler.updateManagementType(
-                event.target.value as ReportManagementType
-              )
-            }
+            onChange={(event) => {
+              const managementType = event.target.value as ReportManagementType
+              handler.updateManagementType(managementType)
+
+              if (
+                managementType === ReportManagementType.Leadership &&
+                selectedSourceId === DataSource.ClearGuide
+              ) {
+                handler.updateSourceId([DataSource.ATSPM])
+              }
+            }}
           >
             <MenuItem value={ReportManagementType.Engineer}>Engineer</MenuItem>
             <MenuItem value={ReportManagementType.Leadership}>
@@ -66,17 +76,24 @@ export default function SourceSelectOptions(props: Props) {
         <Box display="flex">
           <ToggleButtonGroup
             sx={{ width: '100%' }}
-            value={handler.sourceId[0]}
+            value={selectedSourceId}
             size="small"
             exclusive
             onChange={(_, value: DataSource) => {
-              if (value !== null) {
+              if (
+                value !== null &&
+                !(
+                  isLeadershipManagement &&
+                  value === DataSource.ClearGuide
+                )
+              ) {
                 handler.updateSourceId([value])
               }
             }}
           >
             <ToggleButton
               value={DataSource.ClearGuide}
+              disabled={isLeadershipManagement}
               sx={{ textTransform: 'none', flex: 1 }}
             >
               ClearGuide
