@@ -351,19 +351,23 @@ namespace Utah.Udot.Atspm.Business.Common
             if (speeds.IsNullOrEmpty())
                 return null;
             var sortedSpeeds = speeds.OrderBy(x => x).ToList();
+            if (sortedSpeeds.Count == 1)
+                return sortedSpeeds[0];
+
             var tempPercentileIndex = sortedSpeeds.Count * percentile - 1;
             var percentileIndex = 0;
             var percentileValue = 0;
             if (sortedSpeeds.Count > 3)
             {
                 percentileIndex = Convert.ToInt32(Math.Round(tempPercentileIndex + 0.5));
-                percentileValue = sortedSpeeds[percentileIndex];
+                percentileValue = sortedSpeeds[Math.Clamp(percentileIndex, 0, sortedSpeeds.Count - 1)];
             }
             else
             {
-                percentileIndex = Convert.ToInt32(tempPercentileIndex);
-                var speed1 = (double)speeds[percentileIndex];
-                var speed2 = (double)speeds[percentileIndex + 1];
+                percentileIndex = Math.Clamp(Convert.ToInt32(tempPercentileIndex), 0, sortedSpeeds.Count - 1);
+                var nextPercentileIndex = Math.Clamp(percentileIndex + 1, 0, sortedSpeeds.Count - 1);
+                var speed1 = (double)sortedSpeeds[percentileIndex];
+                var speed2 = (double)sortedSpeeds[nextPercentileIndex];
                 double rawPercentile = (speed1 + speed2) / 2;
                 percentileValue = Convert.ToInt32(Math.Round(rawPercentile));
 
