@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import { format } from 'date-fns'
-import { useState } from 'react'
+import { type ChangeEvent, useState } from 'react'
 import transformEffectivenessOfStrategiesData from './effectivenessOfStrategies.transformer'
 
 const EffectivenessOfStrategiesChartsContainer = ({
@@ -28,9 +28,7 @@ const EffectivenessOfStrategiesChartsContainer = ({
   const [transformedChartData, setTransformedChartData] =
     useState<ChartData>(chartData)
 
-  const handleSpeedLimitChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSpeedLimitChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value ? parseInt(event.target.value) : null
     setCustomSpeedLimit(value)
   }
@@ -41,6 +39,7 @@ const EffectivenessOfStrategiesChartsContainer = ({
       customSpeedLimit
     )
     setTransformedChartData(newChartData.charts[0])
+    setAppliedSpeedLimit(customSpeedLimit)
   }
 
   const handleResetSpeedLimit = () => {
@@ -76,43 +75,64 @@ const EffectivenessOfStrategiesChartsContainer = ({
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'flex-end',
-          flexDirection: 'row',
-          gap: 1,
-          mr: 2,
+          justifyContent: 'center',
         }}
       >
-        <TextField
-          label="Custom Speed Limit"
-          type="number"
-          value={customSpeedLimit !== null ? customSpeedLimit : ''}
-          onChange={handleSpeedLimitChange}
-          InputProps={{ inputProps: { min: 0 } }} // Optional: Prevent negative numbers
-          variant="outlined"
-          sx={{ width: 200 }}
-          size="small"
-        />
-        <Button
-          size="small"
-          variant="contained"
-          onClick={handleApplySpeedLimit}
-          disabled={
-            customSpeedLimit === null || customSpeedLimit === appliedSpeedLimit
-          }
+        <Box
+          sx={{
+            position: 'relative',
+            width: '1100px',
+            height: '500px',
+          }}
         >
-          Apply
-        </Button>
-        <Button size="small" variant="outlined" onClick={handleResetSpeedLimit}>
-          Reset
-        </Button>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-        <ApacheEChart
-          id="speed-over-time-chart"
-          option={transformedChartData}
-          style={{ width: '1100px', height: '500px' }}
-          hideInteractionMessage
-        />
+          <ApacheEChart
+            id="speed-over-time-chart"
+            option={transformedChartData}
+            style={{ width: '100%', height: '100%' }}
+            hideInteractionMessage
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              zIndex: 10,
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+              alignItems: 'center',
+            }}
+          >
+            <TextField
+              label="Custom Speed Limit"
+              type="number"
+              value={customSpeedLimit !== null ? customSpeedLimit : ''}
+              onChange={handleSpeedLimitChange}
+              InputProps={{ inputProps: { min: 0 } }}
+              variant="outlined"
+              sx={{ width: 200, bgcolor: 'background.paper' }}
+              size="small"
+            />
+            <Button
+              size="small"
+              variant="contained"
+              onClick={handleApplySpeedLimit}
+              disabled={
+                customSpeedLimit === null ||
+                customSpeedLimit === appliedSpeedLimit
+              }
+            >
+              Apply
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={handleResetSpeedLimit}
+            >
+              Reset
+            </Button>
+          </Box>
+        </Box>
       </Box>
 
       <TableContainer
