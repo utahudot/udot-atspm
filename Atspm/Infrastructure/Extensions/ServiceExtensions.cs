@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Utility;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
@@ -51,7 +52,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <param name="host">The host builder context providing access to the configuration system.</param>
         /// <returns>
         /// The <see cref="DbContextOptionsBuilder"/> configured with the selected database provider. 
-        /// If the provider type is unrecognized, it falls back to an in-memory database using the connection string as the identifier.
+        /// If the provider type is unrecognized or set to InMemory, it falls back to an in-memory database using the connection string as the identifier.
         /// </returns>
         /// <exception cref="InvalidOperationException">Thrown if the required configuration section for the context type is missing.</exception>
         internal static DbContextOptionsBuilder GetDbProviderInfo<T>(this DbContextOptionsBuilder builder, HostBuilderContext host) where T : DbContext
@@ -62,24 +63,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             var connectionString = settings.BuildConnectionString();
 
-            return settings.DBType.ToLower() switch
+            return settings.DBType switch
             {
-                "sqlserver" => builder.UseSqlServer(connectionString,
+                DatabaseProvider.SqlServer => builder.UseSqlServer(connectionString,
                     o => o.MigrationsAssembly(SqlServerProvider.Migration)),
 
-                "postgresql" => builder.UseNpgsql(connectionString,
-                    o => o.MigrationsAssembly(PostgreSQLProvider.Migration)),
+                DatabaseProvider.PostgreSql => builder.UseNpgsql(connectionString,
+                    o => o.MigrationsAssembly(PostgreSqlProvider.Migration)),
 
-                "mysql" => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                DatabaseProvider.MySql => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
                     o => o.MigrationsAssembly(MySqlProvider.Migration)),
 
-                "oracle" => builder.UseOracle(connectionString,
+                DatabaseProvider.Oracle => builder.UseOracle(connectionString,
                     o => o.MigrationsAssembly(OracleProvider.Migration)),
 
-                "sqlite" => builder.UseSqlite(connectionString,
-                    o => o.MigrationsAssembly(SqlLiteProvider.Migration)),
+                DatabaseProvider.Sqlite => builder.UseSqlite(connectionString,
+                    o => o.MigrationsAssembly(SqliteProvider.Migration)),
 
-                _ => builder.UseInMemoryDatabase(connectionString)
+                DatabaseProvider.InMemory or _ => builder.UseInMemoryDatabase(connectionString)
             };
         }
 

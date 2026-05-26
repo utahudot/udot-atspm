@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for ApplicationTests - %Namespace%/PurdueCoordinationPlanTests.cs
+// for ApplicationTests - ApplicationCoreTests.Analysis.Plans/PurdueCoordinationPlanTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,23 +17,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Utah.Udot.Atspm.Analysis.Common;
-using Utah.Udot.Atspm.Analysis.Plans;
-using Utah.Udot.Atspm.Analysis.PurdueCoordination;
-using Utah.Udot.Atspm.Analysis.WorkflowSteps;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Enums;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
-using Utah.Udot.Atspm.Extensions;
-using System.Threading.Tasks;
 
 namespace ApplicationCoreTests.Analysis.Plans
 {
@@ -68,18 +59,18 @@ namespace ApplicationCoreTests.Analysis.Plans
                 .GroupBy(e => e.LocationIdentifier)
                 .SelectMany(group =>
                 {
-                     var unique = group.KeepFirstSequentialParam().ToList();
+                    var unique = group.KeepFirstSequentialParam().ToList();
 
-                     if (unique.Count == 0) return Enumerable.Empty<SignalTimingPlan>();
+                    if (unique.Count == 0) return Enumerable.Empty<SignalTimingPlan>();
 
-                     return unique.Zip(unique.Skip(1).Append(null), (current, next) => new SignalTimingPlan
-                     {
-                         LocationIdentifier = current.LocationIdentifier,
-                         PlanNumber = current.EventParam,
-                         Start = current.Timestamp,
-                         End = next?.Timestamp ?? DateTime.MinValue
-                     });
-                 })
+                    return unique.Zip(unique.Skip(1).Append(null), (current, next) => new SignalTimingPlan
+                    {
+                        LocationIdentifier = current.LocationIdentifier,
+                        PlanNumber = current.EventParam,
+                        Start = current.Timestamp,
+                        End = next?.Timestamp ?? DateTime.MinValue
+                    });
+                })
                  .ToList();
 
             foreach (var p in planIntervals)

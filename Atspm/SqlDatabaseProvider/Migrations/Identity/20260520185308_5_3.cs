@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region license
+// Copyright 2026 Utah Departement of Transportation
+// for SqlDatabaseProvider - Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.Identity/20260520185308_5_3.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -20,14 +36,15 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.Identity
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     KeyHash = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     IsRevoked = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApiKeys", x => x.Id);
-                });
+                },
+                comment: "API keys used for authentication and authorization.");
 
             migrationBuilder.CreateTable(
                 name: "ApiKeyClaims",
@@ -48,7 +65,8 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.Identity
                         principalTable: "ApiKeys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                },
+                comment: "Specific permissions or claims associated with an API key.");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiKeyClaims_ApiKeyId",

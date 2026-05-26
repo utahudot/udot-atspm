@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for SqlLiteDatabaseProvider - Utah.Udot.Atspm.SqlLiteDatabaseProvider/SqlLiteProvider.cs
+// for SqlLiteDatabaseProvider - Utah.Udot.Atspm.SqlLiteDatabaseProvider/SqliteProvider.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 
 namespace Utah.Udot.Atspm.SqlLiteDatabaseProvider
 {
-    public class SqlLiteProvider
+    public class SqliteProvider
     {
         public const string ProviderName = "SqlLite";
 
-        public static string Migration => typeof(SqlLiteProvider).Assembly.FullName;
+        public static string Migration => typeof(SqliteProvider).Assembly.FullName;
     }
 }
