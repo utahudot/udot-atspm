@@ -78,7 +78,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 logMessage.ApplyngMigrations(contextName);
 
-                 await context.Database.MigrateAsync();
+                await context.Database.MigrateAsync();
 
                 if (seedAction != null)
                 {
