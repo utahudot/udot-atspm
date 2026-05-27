@@ -18,7 +18,7 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { useNotificationStore } from '@/stores/notifications'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { formatInstantAsLocalDate } from '@/utils/dateTime'
 import { removeAuditFields } from '@/utils/removeAuditFields'
 import { Backdrop, CircularProgress } from '@mui/material'
 
@@ -153,8 +153,8 @@ const DevicesAdmin = () => {
       ...obj,
       name: obj.product?.manufacturer + ' ' + obj.product?.model || '',
       productName: productName,
-      created: obj.created ? toUTCDateStamp(obj.created) : '',
-      modified: obj.modified ? toUTCDateStamp(obj.modified) : '',
+      created: formatInstantAsLocalDate(obj.created),
+      modified: formatInstantAsLocalDate(obj.modified),
     }
   })
 
@@ -205,7 +205,7 @@ const DevicesAdmin = () => {
             }
             objectType="Device Configuration"
             open={false}
-            onClose={() => {}}
+            onClose={onModalClose}
             onConfirm={HandleDeleteDevice}
             associatedObjects={devices}
             associatedObjectsLabel="devices and locations"

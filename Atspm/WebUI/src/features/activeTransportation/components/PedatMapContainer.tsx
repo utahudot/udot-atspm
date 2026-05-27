@@ -2,7 +2,7 @@ import { PedatChartsContainerProps } from '@/features/activeTransportation/compo
 import PedatMapWrapper from '@/features/activeTransportation/components/pedatMap/PedatMapWrapper'
 import { Box, Paper } from '@mui/material'
 
-const PedatMapContainer = ({ data }: PedatChartsContainerProps) => {
+const PedatMapContainer = ({ data, timeUnit }: PedatChartsContainerProps) => {
   return (
     <Box
       sx={{
@@ -20,7 +20,7 @@ const PedatMapContainer = ({ data }: PedatChartsContainerProps) => {
           height: 'auto',
         }}
       >
-        <PedatMapWrapper data={data} />
+        <PedatMapWrapper data={data} timeUnit={timeUnit} />
       </Paper>
     </Box>
   )

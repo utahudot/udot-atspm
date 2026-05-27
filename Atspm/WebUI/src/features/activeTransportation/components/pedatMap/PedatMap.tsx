@@ -56,6 +56,17 @@ function computeDateBounds(data: PedatChartsContainerProps['data']) {
   return { min: floorMidnightLocal(min), max: floorMidnightLocal(max) }
 }
 
+function computeDateMarks(data: PedatChartsContainerProps['data']) {
+  const marks = new Set<number>()
+  for (const loc of (data ?? []) as Loc[]) {
+    for (const r of loc.rawData ?? []) {
+      const tt = Date.parse(r.timestamp ?? r.timeStamp ?? '')
+      if (Number.isFinite(tt)) marks.add(floorMidnightLocal(tt))
+    }
+  }
+  return Array.from(marks).sort((a, b) => a - b)
+}
+
 function ymd(t: number) {
   const d = new Date(t)
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -67,7 +78,8 @@ function getMetric(
   row: Loc,
   aggregation: Aggregation,
   dateRange: [number, number],
-  hourRange: [number, number]
+  hourRange: [number, number],
+  filterByHour: boolean
 ) {
   const [startMid, endMid] = dateRange
   const endOfEndDay = endMid + (ONE_DAY - 1)
@@ -79,7 +91,7 @@ function getMetric(
       if (!Number.isFinite(t)) return null
       const h = new Date(t).getHours()
       const inDate = t >= startMid && t <= endOfEndDay
-      const inHour = h >= hStart && h <= hEnd
+      const inHour = !filterByHour || (h >= hStart && h <= hEnd)
       return inDate && inHour ? { t, h, c: r.pedestrianCount ?? 0 } : null
     })
     .filter(Boolean) as { t: number; h: number; c: number }[]
@@ -142,7 +154,27 @@ function colorFor(v: number, vMin: number, vMax: number) {
   return lerpColor(STOPS[seg], STOPS[seg + 1], localT)
 }
 
-function Legend({ vMin, vMax }: { vMin: number; vMax: number }) {
+function mapMetricLabel(aggregation: Aggregation) {
+  switch (aggregation) {
+    case 'Average Hour':
+      return 'Average Hourly Pedestrian Volume'
+    case 'Average Daily':
+      return 'Average Daily Pedestrian Volume'
+    case 'Total':
+    default:
+      return 'Total Pedestrian Volume'
+  }
+}
+
+function Legend({
+  vMin,
+  vMax,
+  title,
+}: {
+  vMin: number
+  vMax: number
+  title: string
+}) {
   const map = useMap()
   useEffect(() => {
     const control = L.control({ position: 'topright' })
@@ -158,7 +190,7 @@ function Legend({ vMin, vMax }: { vMin: number; vMax: number }) {
       const gradient = `linear-gradient(90deg, ${STOPS.join(',')})`
       const mid = vMin + (vMax - vMin) / 2
       div.innerHTML = `
-        <div style="font-weight:600;margin-bottom:4px">Pedestrian Count</div>
+        <div style="font-weight:600;margin-bottom:4px">${title}</div>
         <div style="position:relative;height:12px;border-radius:4px;background:${gradient}"></div>
         <div style="display:flex;justify-content:space-between;margin-top:2px">
           <span>${vMin.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
@@ -173,7 +205,7 @@ function Legend({ vMin, vMax }: { vMin: number; vMax: number }) {
     }
     control.addTo(map)
     return () => control.remove()
-  }, [map, vMin, vMax])
+  }, [map, title, vMin, vMax])
   return null
 }
 
@@ -182,11 +214,13 @@ function PedatLeafletMap({
   aggregation,
   dateRange,
   hourRange,
+  timeUnit,
 }: {
   data: PedatChartsContainerProps['data']
   aggregation: Aggregation
   dateRange: [number, number]
   hourRange: [number, number]
+  timeUnit?: string
 }) {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [mapCoords, setMapCoords] = useState({
@@ -230,21 +264,23 @@ function PedatLeafletMap({
 
   const metrics = useMemo(() => {
     const rows = (data ?? []) as Loc[]
+    const filterByHour = timeUnit === 'Hour'
     const res = rows.map((row) =>
-      getMetric(row, aggregation, dateRange, hourRange)
+      getMetric(row, aggregation, dateRange, hourRange, filterByHour)
     )
     return res
-  }, [data, aggregation, dateRange, hourRange])
+  }, [data, aggregation, dateRange, hourRange, timeUnit])
 
   const vMin = useMemo(() => Math.min(...metrics), [metrics])
   const vMax = useMemo(() => Math.max(...metrics), [metrics])
   const radius = useMemo(() => makeRadiusScale(metrics, 6, 30), [metrics])
+  const metricLabel = useMemo(() => mapMetricLabel(aggregation), [aggregation])
 
   // force a clean redraw when controls change
   const layerKey = useMemo(
     () =>
-      `${aggregation}|${dateRange[0]}|${dateRange[1]}|${hourRange[0]}|${hourRange[1]}`,
-    [aggregation, dateRange, hourRange]
+      `${aggregation}|${dateRange[0]}|${dateRange[1]}|${hourRange[0]}|${hourRange[1]}|${timeUnit}`,
+    [aggregation, dateRange, hourRange, timeUnit]
   )
 
   return (
@@ -266,6 +302,7 @@ function PedatLeafletMap({
       <Legend
         vMin={isFinite(vMin) ? vMin : 0}
         vMax={isFinite(vMax) ? vMax : 0}
+        title={metricLabel}
       />
 
       {/* force remount when ranges change */}
@@ -309,19 +346,44 @@ function PedatLeafletMap({
   )
 }
 
-function PedatMapWithSidePanel({ data }: PedatChartsContainerProps) {
+function PedatMapWithSidePanel({ data, timeUnit }: PedatChartsContainerProps) {
   const [aggregation, setAggregation] = useState<Aggregation>('Average Hour')
+  const aggregationOptions = useMemo<Aggregation[]>(() => {
+    switch (timeUnit) {
+      case 'Hour':
+        return ['Average Hour', 'Average Daily', 'Total']
+      case 'Day':
+        return ['Average Daily', 'Total']
+      default:
+        return ['Total']
+    }
+  }, [timeUnit])
+
+  useEffect(() => {
+    if (!aggregationOptions.includes(aggregation)) {
+      setAggregation(aggregationOptions[0])
+    }
+  }, [aggregation, aggregationOptions])
+
   const { min: dateMin, max: dateMax } = useMemo(
     () => computeDateBounds(data),
     [data]
   )
+  const dateMarks = useMemo(() => computeDateMarks(data), [data])
+  const usePeriodDateMarks = ['Week', 'Month', 'Year'].includes(timeUnit ?? '')
+  const dateSliderMarks = usePeriodDateMarks ? dateMarks : []
+  const dateSliderMin = dateSliderMarks[0] ?? dateMin
+  const dateSliderMax = dateSliderMarks[dateSliderMarks.length - 1] ?? dateMax
 
   // slider values = midnight timestamps
   const [dateRange, setDateRange] = useState<[number, number]>([
-    dateMin,
-    dateMax,
+    dateSliderMin,
+    dateSliderMax,
   ])
-  useEffect(() => setDateRange([dateMin, dateMax]), [dateMin, dateMax])
+  useEffect(
+    () => setDateRange([dateSliderMin, dateSliderMax]),
+    [dateSliderMin, dateSliderMax]
+  )
 
   const [hourRange, setHourRange] = useState<[number, number]>([0, 23])
 
@@ -350,18 +412,22 @@ function PedatMapWithSidePanel({ data }: PedatChartsContainerProps) {
           aggregation={aggregation}
           dateRange={dateRange}
           hourRange={hourRange}
+          timeUnit={timeUnit}
         />
       </Box>
 
       <ControlsPanel
         aggregation={aggregation}
         setAggregation={setAggregation}
-        dateMin={dateMin}
-        dateMax={dateMax}
+        aggregationOptions={aggregationOptions}
+        dateMin={dateSliderMin}
+        dateMax={dateSliderMax}
+        dateMarks={dateSliderMarks}
         dateRange={dateRange}
         setDateRange={setDates}
         hourRange={hourRange}
         setHourRange={setHours}
+        timeUnit={timeUnit}
       />
     </Box>
   )

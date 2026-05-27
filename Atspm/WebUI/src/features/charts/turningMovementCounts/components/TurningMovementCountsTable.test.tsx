@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import TurningMovementCountsTable from './TurningMovementCountsTable'
+import TurningMovementCountsTable, {
+  buildTurningMovementCountsCsvFilename,
+} from './TurningMovementCountsTable'
 
 const filtersMock = jest.fn(() => <div>Filters</div>)
 
@@ -22,6 +24,19 @@ jest.mock('./TurningMovementCountsTableToolbar', () => ({
 describe('TurningMovementCountsTable', () => {
   beforeEach(() => {
     filtersMock.mockClear()
+  })
+
+  it('builds CSV export names with chart-style location and date context', () => {
+    expect(
+      buildTurningMovementCountsCsvFilename(
+        'Turning_Movement_Counts_1001_2026-04-01_08-00_to_2026-04-01_09-00',
+        'Vehicle',
+        'split',
+        'combine'
+      )
+    ).toBe(
+      'Turning_Movement_Counts_1001_2026-04-01_08-00_to_2026-04-01_09-00_Vehicle_split_combine.csv'
+    )
   })
 
   it('orders combined movements between thru and thru-right in the filters', () => {
