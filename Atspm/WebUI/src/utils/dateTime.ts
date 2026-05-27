@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-
 const pad2 = (n: number) => String(n).padStart(2, '0')
 
 type WallClockParts = {
