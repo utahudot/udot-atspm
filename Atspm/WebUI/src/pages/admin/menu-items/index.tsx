@@ -15,7 +15,7 @@ import {
 } from '@/features/identity/pagesCheck'
 import MenuItemsModal from '@/features/menuItems/components/MenuItemModal'
 import { useNotificationStore } from '@/stores/notifications'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { formatInstantAsLocalDate } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const MenuItemsAdmin = () => {
@@ -133,8 +133,8 @@ const MenuItemsAdmin = () => {
   const filteredItems = menuItems.map((item) => ({
     ...item,
     parentIdName: item.parent?.name || 'N/A',
-    modified: item.modified ? toUTCDateStamp(item.modified) : '',
-    created: item.created ? toUTCDateStamp(item.created) : '',
+    modified: formatInstantAsLocalDate(item.modified),
+    created: formatInstantAsLocalDate(item.created),
   }))
 
   const cells = [
@@ -172,7 +172,7 @@ const MenuItemsAdmin = () => {
             name={''}
             objectType="Menu Item"
             open={false}
-            onClose={() => {}}
+            onClose={onModalClose}
             onConfirm={HandleDeleteMenuItem}
           />
         }

@@ -1,291 +1,506 @@
+import type { GitHubReleaseDto } from '@/api/config'
+import {
+  useGetVersionCurrentVersion,
+  useGetVersionLatestVersionFromPreRelease,
+} from '@/api/config'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { Box, Button, Grid, Paper, Typography } from '@mui/material'
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const GridItem = ({ item }: { item: { path: string; title: string } }) => (
-  <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
-    <Paper
+type Partner = {
+  path: string
+  title: string
+}
+
+type PartnerSection = {
+  title: string
+  partners: Partner[]
+}
+
+const udotLogo: Partner = {
+  path: '/images/udot.png',
+  title: 'UDOT logo',
+}
+
+const agencyPartners: Partner[] = [
+  {
+    path: '/images/partners/gdot.png',
+    title: 'GDOT logo',
+  },
+  {
+    path: '/images/partners/vdot.png',
+    title: 'VDOT logo',
+  },
+  {
+    path: '/images/partners/indot.png',
+    title: 'INDOT logo',
+  },
+  {
+    path: '/images/partners/fdot.png',
+    title: 'FDOT logo',
+  },
+  {
+    path: '/images/partners/minnesota-dot.png',
+    title: 'Minnesota DOT logo',
+  },
+  {
+    path: '/images/partners/north-carolina-dot.png',
+    title: 'North Carolina DOT logo',
+  },
+  {
+    path: '/images/partners/pennsylvania-dot.png',
+    title: 'Pennsylvania DOT logo',
+  },
+  {
+    path: '/images/partners/portland-oregon.svg',
+    title: 'Portland Oregon logo',
+  },
+  {
+    path: '/images/partners/vtrans.png',
+    title: 'Vermont Trans logo',
+  },
+  {
+    path: '/images/partners/maricopa-county.png',
+    title: 'Maricopa County logo',
+  },
+  {
+    path: '/images/partners/gilbert.png',
+    title: 'Gilbert logo',
+  },
+  {
+    path: '/images/partners/frisco.png',
+    title: 'Frisco logo',
+  },
+]
+
+const academicPartners: Partner[] = [
+  {
+    path: '/images/partners/purdue-university.png',
+    title: 'Purdue University logo',
+  },
+  {
+    path: '/images/partners/byu.svg',
+    title: 'BYU logo',
+  },
+  {
+    path: '/images/partners/university-of-utah.png',
+    title: 'University of Utah logo',
+  },
+  {
+    path: '/images/partners/university-of-texas-at-arlington.png',
+    title: 'University of Texas at Arlington logo',
+  },
+  {
+    path: '/images/partners/iowa-state-university.png',
+    title: 'Iowa State University logo',
+  },
+  {
+    path: '/images/partners/university-of-alabama.png',
+    title: 'University of Alabama logo',
+  },
+  {
+    path: '/images/partners/utah-state-university.png',
+    title: 'Utah State University logo',
+  },
+]
+
+const consultantPartners: Partner[] = [
+  {
+    path: '/images/partners/econolite.png',
+    title: 'Econolite logo',
+  },
+  {
+    path: '/images/partners/avenue-consultants.png',
+    title: 'Avenue Consultants logo',
+  },
+  {
+    path: '/images/partners/kittleson-and-associates.png',
+    title: 'Kittleson and Associates logo',
+  },
+  {
+    path: '/images/partners/atkins.png',
+    title: 'Atkins logo',
+  },
+  {
+    path: '/images/partners/kimley-horn.svg',
+    title: 'Kimley Horn logo',
+  },
+  {
+    path: '/images/partners/pinetop-engineering.jpg',
+    title: 'Pinetop Engineering logo',
+  },
+  {
+    path: '/images/partners/qfree.png',
+    title: 'Q-Free logo',
+  },
+  {
+    path: '/images/partners/miovision.png',
+    title: 'Miovision logo',
+  },
+  {
+    path: '/images/partners/lee-engineering.png',
+    title: 'Lee Engineering logo',
+  },
+  {
+    path: '/images/partners/traffop.png',
+    title: 'Traffop logo',
+  },
+]
+
+const partnerSections: PartnerSection[] = [
+  {
+    title: 'Agencies',
+    partners: agencyPartners,
+  },
+  {
+    title: 'Academics',
+    partners: academicPartners,
+  },
+  {
+    title: 'Consultants',
+    partners: consultantPartners,
+  },
+]
+
+const getReleaseLabel = (release?: GitHubReleaseDto) =>
+  release?.tagName || release?.name || 'Unknown'
+
+const normalizeReleaseLabel = (release?: GitHubReleaseDto) =>
+  getReleaseLabel(release).trim().replace(/^v/i, '').toLowerCase()
+
+const VersionMetric = ({ label, value }: { label: string; value: string }) => (
+  <Box>
+    <Typography variant="caption" color="text.secondary">
+      {label}
+    </Typography>
+    <Typography
+      variant="body2"
+      sx={{ fontFamily: 'monospace', fontWeight: 700 }}
+    >
+      {value}
+    </Typography>
+  </Box>
+)
+
+const VersionStatus = ({
+  currentVersionLabel,
+  latestVersionLabel,
+  hasNewerVersion,
+  isVersionLoading,
+  isVersionUnavailable,
+  releaseUrl,
+}: {
+  currentVersionLabel: string
+  latestVersionLabel: string
+  hasNewerVersion: boolean
+  isVersionLoading: boolean
+  isVersionUnavailable: boolean
+  releaseUrl?: string | null
+}) => {
+  const versionSeverity = isVersionLoading
+    ? 'info'
+    : isVersionUnavailable
+      ? 'error'
+      : hasNewerVersion
+        ? 'warning'
+        : 'success'
+  const versionTitle = isVersionLoading
+    ? 'Checking version status'
+    : isVersionUnavailable
+      ? 'Version status unavailable'
+      : hasNewerVersion
+        ? 'Update available'
+        : 'ATSPM is up to date'
+  const versionMessage = isVersionLoading
+    ? 'Retrieving current and latest ATSPM release information.'
+    : isVersionUnavailable
+      ? 'One or more version endpoints could not be loaded.'
+      : hasNewerVersion
+        ? 'A newer ATSPM release is ready to review.'
+        : 'This installation is using the latest release.'
+
+  return (
+    <Box
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
+        borderColor: 'divider',
+        borderLeft: { xs: 0, md: 1 },
+        borderTop: { xs: 1, md: 0 },
+        height: '100%',
+        mt: { xs: 1, md: 0 },
+        pl: { xs: 0, md: 4 },
+        pt: { xs: 3, md: 0 },
+      }}
+    >
+      <Typography
+        variant="overline"
+        color="text.secondary"
+        sx={{ display: 'block', letterSpacing: 0, mb: 1 }}
+      >
+        Version status
+      </Typography>
+
+      <Alert
+        severity={versionSeverity}
+        variant="outlined"
+        sx={{ mb: 2, textAlign: 'left' }}
+      >
+        <AlertTitle sx={{ mb: 0.25 }}>{versionTitle}</AlertTitle>
+        {versionMessage}
+      </Alert>
+
+      <Stack
+        direction={{ xs: 'row', sm: 'row', md: 'column' }}
+        divider={<Divider flexItem orientation="vertical" />}
+        spacing={2}
+        sx={{ mb: 2 }}
+      >
+        <VersionMetric label="Current" value={currentVersionLabel} />
+        <VersionMetric label="Latest" value={latestVersionLabel} />
+      </Stack>
+
+      {hasNewerVersion && releaseUrl && (
+        <Button
+          color="warning"
+          component={Link}
+          endIcon={<OpenInNewIcon />}
+          href={releaseUrl}
+          variant="contained"
+        >
+          View release
+        </Button>
+      )}
+    </Box>
+  )
+}
+
+const PartnerLogoCard = ({ partner }: { partner: Partner }) => (
+  <Grid item xs={6} sm={4} md={3} lg={2}>
+    <Paper
+      variant="outlined"
+      sx={{
         alignItems: 'center',
-        height: '200px',
+        bgcolor: 'background.paper',
+        display: 'flex',
+        height: { xs: 112, sm: 132 },
+        justifyContent: 'center',
         position: 'relative',
       }}
     >
       <Image
-        src={item.path}
-        alt={item.title}
-        style={{ objectFit: 'contain', padding: '15px' }}
-        sizes="(max-width: 1200px) 15vw"
+        src={partner.path}
+        alt={partner.title}
+        style={{ objectFit: 'contain', padding: '18px' }}
+        sizes="(max-width: 600px) 45vw, (max-width: 900px) 30vw, 170px"
         fill
       />
     </Paper>
   </Grid>
 )
 
+const ContributorSection = ({ title, partners }: PartnerSection) => (
+  <Box component="section">
+    <Stack sx={{ mb: 2 }}>
+      <Typography variant="h5" fontWeight={700}>
+        {title}
+      </Typography>
+    </Stack>
+    <Grid container spacing={2.5}>
+      {partners.map((partner) => (
+        <PartnerLogoCard key={partner.title} partner={partner} />
+      ))}
+    </Grid>
+  </Box>
+)
+
 const About = () => {
-  const academimcPartners = [
-    {
-      path: '/images/partners/purdue-university.png',
-      title: 'Purdue University logo',
+  const {
+    data: currentVersion,
+    isLoading: isCurrentVersionLoading,
+    isError: isCurrentVersionError,
+  } = useGetVersionCurrentVersion(undefined, {
+    query: {
+      staleTime: 5 * 60 * 1000,
+      retry: 1,
     },
+  })
+  const {
+    data: latestVersion,
+    isLoading: isLatestVersionLoading,
+    isError: isLatestVersionError,
+  } = useGetVersionLatestVersionFromPreRelease(
+    false,
+    undefined,
     {
-      path: '/images/partners/byu.svg',
-      title: 'BYU logo',
-    },
-    {
-      path: '/images/partners/university-of-utah.png',
-      title: 'University of Utah logo',
-    },
-    {
-      path: '/images/partners/university-of-texas-at-arlington.png',
-      title: 'University of Texas at Arlington',
-    },
-    {
-      path: '/images/partners/iowa-state-university.png',
-      title: 'Iowa State',
-    },
-    {
-      path: '/images/partners/university-of-alabama.png',
-      title: 'University of Alabama',
-    },
-    {
-      path: '/images/partners/utah-state-university.png',
-      title: 'USU logo',
-    },
-  ]
+      query: {
+        enabled: true,
+        staleTime: 5 * 60 * 1000,
+        retry: 1,
+      },
+    }
+  )
 
-  const agencyPartners = [
-    {
-      path: '/images/partners/gdot.png',
-      title: 'GDOT logo',
-    },
-    {
-      path: '/images/partners/vdot.png',
-      title: 'VDOT logo',
-    },
-    {
-      path: '/images/partners/indot.png',
-      title: 'INDOT logo',
-    },
-    {
-      path: '/images/partners/fdot.png',
-      title: 'FDOT logo',
-    },
-    {
-      path: '/images/partners/minnesota-dot.png',
-      title: 'Minnesota DOT logo',
-    },
-    {
-      path: '/images/partners/north-carolina-dot.png',
-      title: 'North Carolina DOT logo',
-    },
-    {
-      path: '/images/partners/pennsylvania-dot.png',
-      title: 'Pennsylvania DOT logo',
-    },
-    {
-      path: '/images/partners/portland-oregon.svg',
-      title: 'Portland Oregon logo',
-    },
-    {
-      path: '/images/partners/vtrans.png',
-      title: 'Vermont Trans logo',
-    },
-    {
-      path: '/images/partners/maricopa-county.png',
-      title: 'Maricopa County logo',
-    },
-    {
-      path: '/images/partners/gilbert.png',
-      title: 'Gilbert logo',
-    },
-    {
-      path: '/images/partners/frisco.png',
-      title: 'Frisco logo',
-    },
-  ]
+  const isVersionLoading = isCurrentVersionLoading || isLatestVersionLoading
+  const isVersionUnavailable = isCurrentVersionError || isLatestVersionError
+  const currentVersionLabel = isCurrentVersionLoading
+    ? 'Loading...'
+    : isCurrentVersionError
+      ? 'Unavailable'
+      : getReleaseLabel(currentVersion)
+  const latestVersionLabel = isLatestVersionLoading
+    ? 'Loading...'
+    : isLatestVersionError
+      ? 'Unavailable'
+      : getReleaseLabel(latestVersion)
 
-  const udotLogo = {
-    path: '/images/udot.png',
-    title: 'UDOT logo',
-  }
-
-  const consultantPartners = [
-    {
-      path: '/images/partners/econolite.png',
-      title: 'Econolite logo',
-    },
-    {
-      path: '/images/partners/avenue-consultants.png',
-      title: 'Avenue Consultants logo',
-    },
-    {
-      path: '/images/partners/kittleson-and-associates.png',
-      title: 'Kittleson and Associates logo',
-    },
-    {
-      path: '/images/partners/atkins.png',
-      title: 'Atkins logo',
-    },
-    {
-      path: '/images/partners/kimley-horn.svg',
-      title: 'Kimley Horn logo',
-    },
-    {
-      path: '/images/partners/pinetop-engineering.jpg',
-      title: 'Pintetop Engineering logo',
-    },
-    {
-      path: '/images/partners/qfree.png',
-      title: 'Q Free logo',
-    },
-    {
-      path: '/images/partners/miovision.png',
-      title: 'Miovision logo',
-    },
-    {
-      path: '/images/partners/lee-engineering.png',
-      title: 'Lee Engineering logo',
-    },
-    {
-      path: '/images/partners/traffop.png',
-      title: 'Traffop logo',
-    },
-  ]
+  const hasNewerVersion = Boolean(
+    !isVersionLoading &&
+      !isVersionUnavailable &&
+      currentVersion &&
+      latestVersion &&
+      normalizeReleaseLabel(currentVersion) !==
+        normalizeReleaseLabel(latestVersion)
+  )
 
   return (
-    <ResponsivePageLayout title={'About'} hideTitle>
-      <Paper
-        sx={{
-          padding: 4,
-          marginBottom: 4,
-          maxWidth: '740px',
-          marginX: 'auto',
-          textAlign: 'center',
-          position: 'relative',
-        }}
-      >
-        {/* Version block in corner */}
-        <Paper
-          variant="outlined"
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            color: 'text.secondary',
-            backgroundColor: 'background.default',
-            px: 2,
-            py: 1,
-          }}
-        >
-          <span>ATSPM version: {process.env.version}</span>
-        </Paper>
-
-        {/* Main content */}
-        <Typography variant="h2" sx={{ mt: 4 }} gutterBottom>
-          About ATSPM
-        </Typography>
-        <Typography variant="subtitle1" paragraph>
-          Automated Traffic Signal Performance Measures show real-time and
-          historical functionality at signalized intersections. This allows
-          traffic engineers to directly measure what previously could only be
-          estimated and modeled.
-        </Typography>
-
-        {/* FAQ and Changelog buttons */}
-        <Box display="flex" justifyContent="center" gap={2} mt={2}>
-          <Button
-            variant="contained"
-            href="/faq"
-            component={Link}
-            endIcon={<KeyboardDoubleArrowRightIcon />}
-          >
-            View FAQs
-          </Button>
-          <Button
-            variant="outlined"
-            href="https://github.com/OpenSourceTransportation/Atspm/blob/main/CHANGELOG.md"
-            component={Link}
-            endIcon={<OpenInNewIcon />}
-          >
-            View Changelog
-          </Button>
-        </Box>
-      </Paper>
-
-      <Box marginBottom={2} textAlign={'center'}>
-        <Typography variant="h3" fontStyle="italic">
-          Presented by
-        </Typography>
-      </Box>
+    <ResponsivePageLayout title="About" hideTitle>
       <Box
         sx={{
-          height: '10vw',
-          minHeight: '160px',
+          maxWidth: 1120,
+          mx: 'auto',
+          pb: 5,
+          px: { xs: 2, sm: 3 },
+          width: '100%',
         }}
-        position="relative"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        marginBottom={4}
       >
-        <Image
-          src={udotLogo.path}
-          alt={udotLogo.title}
-          style={{
-            objectFit: 'contain',
-            padding: '40px',
-            paddingTop: '0px',
+        <Paper
+          component="section"
+          variant="outlined"
+          sx={{
+            mb: 6,
+            p: { xs: 3, md: 4 },
           }}
-          sizes="(max-width: 1200px) 100vw"
-          fill
-        />
+        >
+          <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
+            <Grid item xs={12} md={7}>
+              <Stack spacing={2.5}>
+                <Box>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ display: 'block', letterSpacing: 0, mb: 0.5 }}
+                  >
+                    Automated Traffic Signal Performance Measures
+                  </Typography>
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontSize: { xs: '2rem', md: '2.75rem' },
+                      lineHeight: 1.12,
+                    }}
+                  >
+                    About ATSPM
+                  </Typography>
+                </Box>
+
+                <Typography
+                  variant="subtitle1"
+                  color="text.secondary"
+                  sx={{ maxWidth: 680 }}
+                >
+                  Automated Traffic Signal Performance Measures show real-time
+                  and historical functionality at signalized intersections. This
+                  allows traffic engineers to directly measure what previously
+                  could only be estimated and modeled.
+                </Typography>
+
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+                  <Button
+                    variant="contained"
+                    href="/faq"
+                    component={Link}
+                    endIcon={<KeyboardDoubleArrowRightIcon />}
+                  >
+                    View FAQs
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    href="https://github.com/OpenSourceTransportation/Atspm/blob/main/CHANGELOG.md"
+                    component={Link}
+                    endIcon={<OpenInNewIcon />}
+                  >
+                    View changelog
+                  </Button>
+                </Stack>
+              </Stack>
+            </Grid>
+
+            <Grid item xs={12} md={5}>
+              <VersionStatus
+                currentVersionLabel={currentVersionLabel}
+                latestVersionLabel={latestVersionLabel}
+                hasNewerVersion={hasNewerVersion}
+                isVersionLoading={isVersionLoading}
+                isVersionUnavailable={isVersionUnavailable}
+                releaseUrl={latestVersion?.htmlUrl}
+              />
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Box component="section" sx={{ mb: 6, textAlign: 'center' }}>
+          <Typography
+            variant="overline"
+            color="text.secondary"
+            sx={{ display: 'block', letterSpacing: 0, mb: 1 }}
+          >
+            Presented by
+          </Typography>
+          <Box
+            sx={{
+              height: { xs: 116, sm: 150 },
+              maxWidth: 620,
+              mx: 'auto',
+              position: 'relative',
+            }}
+          >
+            <Image
+              src={udotLogo.path}
+              alt={udotLogo.title}
+              style={{ objectFit: 'contain' }}
+              sizes="(max-width: 900px) 90vw, 620px"
+              fill
+            />
+          </Box>
+        </Box>
+
+        <Stack spacing={4}>
+          <Box textAlign="center">
+            <Typography variant="h4" sx={{ mb: 1 }}>
+              Contributors
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Organizations that have contributed to ATSPM.
+            </Typography>
+          </Box>
+
+          {partnerSections.map((section) => (
+            <ContributorSection key={section.title} {...section} />
+          ))}
+        </Stack>
       </Box>
-      <Box marginBottom={4} textAlign="center">
-        <Typography variant="h5" component="p">
-          The following are those who have contributed to ATSPM
-        </Typography>
-      </Box>
-      <Box marginBottom={2} textAlign={'center'}>
-        <Typography variant="h6" fontWeight="bold">
-          Agencies
-        </Typography>
-      </Box>
-      <Grid container spacing={3}>
-        {agencyPartners.map((item) => (
-          <GridItem key={item.title} item={item} />
-        ))}
-      </Grid>
-      <Box marginBottom={2} textAlign={'center'} marginTop={4}>
-        <Typography variant="h6" fontWeight="bold">
-          Academics
-        </Typography>
-      </Box>
-      <Grid container spacing={3}>
-        {academimcPartners.map((item) => (
-          <GridItem key={item.title} item={item} />
-        ))}
-      </Grid>
-      <Box marginBottom={2} textAlign={'center'} marginTop={4}>
-        <Typography variant="h6" fontWeight="bold">
-          Consultants
-        </Typography>
-      </Box>
-      <Grid container spacing={3}>
-        {consultantPartners.map((item) => (
-          <GridItem key={item.title} item={item} />
-        ))}
-      </Grid>
     </ResponsivePageLayout>
   )
 }
