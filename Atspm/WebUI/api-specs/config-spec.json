@@ -9,8 +9,8 @@
       "email": "udotdevelopment@gmail.com"
     },
     "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
+      "name": "Apache",
+      "url": "http://www.apache.org/licenses/LICENSE-2."
     },
     "version": "1.0"
   },
@@ -22,7 +22,9 @@
   "paths": {
     "/Approach/{key}/detectors": {
       "get": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
         "operationId": "GetApproachDetectorsFromKey",
         "parameters": [
@@ -421,7 +423,9 @@
     },
     "/Approach/{key}/detectors/$count": {
       "get": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
         "operationId": "GetApproachDetectorsCountFromKey",
         "parameters": [
@@ -820,7 +824,9 @@
     },
     "/UpsertApproach": {
       "post": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "UpsertApproachApproach",
         "parameters": [
           {
@@ -1064,7 +1070,9 @@
     },
     "/GetApproachDto/{id}": {
       "get": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "GetApproachApproachDtoFromId",
         "parameters": [
           {
@@ -1113,7 +1121,9 @@
     },
     "/Approach": {
       "get": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "GetApproach",
         "parameters": [
           {
@@ -1503,7 +1513,9 @@
         }
       },
       "post": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "PostApproach",
         "parameters": [
           {
@@ -1740,7 +1752,9 @@
     },
     "/Approach/$count": {
       "get": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "GetApproachCount",
         "parameters": [
           {
@@ -2132,7 +2146,9 @@
     },
     "/Approach/{key}": {
       "get": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "GetApproachFromKey",
         "parameters": [
           {
@@ -2374,7 +2390,9 @@
         }
       },
       "put": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "PutApproachFromKey",
         "parameters": [
           {
@@ -2621,7 +2639,9 @@
         }
       },
       "patch": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "PatchApproachFromKey",
         "parameters": [
           {
@@ -2868,7 +2888,9 @@
         }
       },
       "delete": {
-        "tags": ["Approach"],
+        "tags": [
+          "Approach"
+        ],
         "operationId": "DeleteApproachFromKey",
         "parameters": [
           {
@@ -2899,7 +2921,9 @@
     },
     "/Area/{key}/locations": {
       "get": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetAreaLocationsFromKey",
         "parameters": [
@@ -3298,7 +3322,9 @@
     },
     "/Area/{key}/locations/$count": {
       "get": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetAreaLocationsCountFromKey",
         "parameters": [
@@ -3697,7 +3723,9 @@
     },
     "/Area": {
       "get": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "GetArea",
         "parameters": [
           {
@@ -4087,7 +4115,9 @@
         }
       },
       "post": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "PostArea",
         "parameters": [
           {
@@ -4324,7 +4354,9 @@
     },
     "/Area/$count": {
       "get": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "GetAreaCount",
         "parameters": [
           {
@@ -4716,7 +4748,9 @@
     },
     "/Area/{key}": {
       "get": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "GetAreaFromKey",
         "parameters": [
           {
@@ -4958,7 +4992,9 @@
         }
       },
       "put": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "PutAreaFromKey",
         "parameters": [
           {
@@ -5205,7 +5241,9 @@
         }
       },
       "patch": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "PatchAreaFromKey",
         "parameters": [
           {
@@ -5452,7 +5490,9 @@
         }
       },
       "delete": {
-        "tags": ["Area"],
+        "tags": [
+          "Area"
+        ],
         "operationId": "DeleteAreaFromKey",
         "parameters": [
           {
@@ -5483,7 +5523,9 @@
     },
     "/DetectionType/{key}/detectors": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
         "operationId": "GetDetectionTypeDetectorsFromKey",
         "parameters": [
@@ -5881,7 +5923,9 @@
     },
     "/DetectionType/{key}/detectors/$count": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
         "operationId": "GetDetectionTypeDetectorsCountFromKey",
         "parameters": [
@@ -6279,7 +6323,9 @@
     },
     "/DetectionType/{key}/measureTypes": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
         "operationId": "GetDetectionTypeMeasureTypesFromKey",
         "parameters": [
@@ -6677,7 +6723,9 @@
     },
     "/DetectionType/{key}/measureTypes/$count": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
         "operationId": "GetDetectionTypeMeasureTypesCountFromKey",
         "parameters": [
@@ -7075,7 +7123,9 @@
     },
     "/DetectionType": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "GetDetectionType",
         "parameters": [
           {
@@ -7465,7 +7515,9 @@
         }
       },
       "post": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "PostDetectionType",
         "parameters": [
           {
@@ -7702,7 +7754,9 @@
     },
     "/DetectionType/$count": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "GetDetectionTypeCount",
         "parameters": [
           {
@@ -8094,7 +8148,9 @@
     },
     "/DetectionType/{key}": {
       "get": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "GetDetectionTypeFromKey",
         "parameters": [
           {
@@ -8335,7 +8391,9 @@
         }
       },
       "put": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "PutDetectionTypeFromKey",
         "parameters": [
           {
@@ -8581,7 +8639,9 @@
         }
       },
       "patch": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "PatchDetectionTypeFromKey",
         "parameters": [
           {
@@ -8827,7 +8887,9 @@
         }
       },
       "delete": {
-        "tags": ["DetectionType"],
+        "tags": [
+          "DetectionType"
+        ],
         "operationId": "DeleteDetectionTypeFromKey",
         "parameters": [
           {
@@ -8857,7 +8919,9 @@
     },
     "/Detector/{key}/detectorComments": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action",
         "operationId": "GetDetectorDetectorCommentsFromKey",
         "parameters": [
@@ -9256,7 +9320,9 @@
     },
     "/Detector/{key}/detectorComments/$count": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action",
         "operationId": "GetDetectorDetectorCommentsCountFromKey",
         "parameters": [
@@ -9655,7 +9721,9 @@
     },
     "/Detector/{key}/detectionTypes": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
         "operationId": "GetDetectorDetectionTypesFromKey",
         "parameters": [
@@ -10054,7 +10122,9 @@
     },
     "/Detector/{key}/detectionTypes/$count": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
         "operationId": "GetDetectorDetectionTypesCountFromKey",
         "parameters": [
@@ -10453,7 +10523,9 @@
     },
     "/Detector": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "GetDetector",
         "parameters": [
           {
@@ -10843,7 +10915,9 @@
         }
       },
       "post": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "PostDetector",
         "parameters": [
           {
@@ -11080,7 +11154,9 @@
     },
     "/Detector/$count": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "GetDetectorCount",
         "parameters": [
           {
@@ -11472,7 +11548,9 @@
     },
     "/Detector/{key}": {
       "get": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "GetDetectorFromKey",
         "parameters": [
           {
@@ -11714,7 +11792,9 @@
         }
       },
       "put": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "PutDetectorFromKey",
         "parameters": [
           {
@@ -11961,7 +12041,9 @@
         }
       },
       "patch": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "PatchDetectorFromKey",
         "parameters": [
           {
@@ -12208,7 +12290,9 @@
         }
       },
       "delete": {
-        "tags": ["Detector"],
+        "tags": [
+          "Detector"
+        ],
         "operationId": "DeleteDetectorFromKey",
         "parameters": [
           {
@@ -12239,7 +12323,9 @@
     },
     "/DetectorComment": {
       "get": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "GetDetectorComment",
         "parameters": [
           {
@@ -12629,7 +12715,9 @@
         }
       },
       "post": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "PostDetectorComment",
         "parameters": [
           {
@@ -12866,7 +12954,9 @@
     },
     "/DetectorComment/$count": {
       "get": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "GetDetectorCommentCount",
         "parameters": [
           {
@@ -13258,7 +13348,9 @@
     },
     "/DetectorComment/{key}": {
       "get": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "GetDetectorCommentFromKey",
         "parameters": [
           {
@@ -13500,7 +13592,9 @@
         }
       },
       "put": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "PutDetectorCommentFromKey",
         "parameters": [
           {
@@ -13747,7 +13841,9 @@
         }
       },
       "patch": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "PatchDetectorCommentFromKey",
         "parameters": [
           {
@@ -13994,7 +14090,9 @@
         }
       },
       "delete": {
-        "tags": ["DetectorComment"],
+        "tags": [
+          "DetectorComment"
+        ],
         "operationId": "DeleteDetectorCommentFromKey",
         "parameters": [
           {
@@ -14025,7 +14123,9 @@
     },
     "/Device/GetActiveDevicesByLocation(locationId={locationId})": {
       "get": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "summary": "Gets all Utah.Udot.Atspm.Data.Models.Device from locationId where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active",
         "operationId": "GetDeviceActiveDevicesByLocationFromLocationId",
         "parameters": [
@@ -14417,7 +14517,9 @@
     },
     "/Device/GetActiveDevicesCount": {
       "get": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "summary": "Gets a count of device type for all active devices Utah.Udot.Atspm.Data.Models.Device where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active",
         "operationId": "GetDeviceActiveDevicesCount",
         "parameters": [
@@ -14800,7 +14902,9 @@
     },
     "/Device": {
       "get": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "GetDevice",
         "parameters": [
           {
@@ -15190,7 +15294,9 @@
         }
       },
       "post": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "PostDevice",
         "parameters": [
           {
@@ -15427,7 +15533,9 @@
     },
     "/Device/$count": {
       "get": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "GetDeviceCount",
         "parameters": [
           {
@@ -15819,7 +15927,9 @@
     },
     "/Device/{key}": {
       "get": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "GetDeviceFromKey",
         "parameters": [
           {
@@ -16061,7 +16171,9 @@
         }
       },
       "put": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "PutDeviceFromKey",
         "parameters": [
           {
@@ -16308,7 +16420,9 @@
         }
       },
       "patch": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "PatchDeviceFromKey",
         "parameters": [
           {
@@ -16555,7 +16669,9 @@
         }
       },
       "delete": {
-        "tags": ["Device"],
+        "tags": [
+          "Device"
+        ],
         "operationId": "DeleteDeviceFromKey",
         "parameters": [
           {
@@ -16586,7 +16702,9 @@
     },
     "/DeviceConfiguration/{key}/devices": {
       "get": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
         "operationId": "GetDeviceConfigurationDevicesFromKey",
         "parameters": [
@@ -16985,7 +17103,9 @@
     },
     "/DeviceConfiguration/{key}/devices/$count": {
       "get": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
         "operationId": "GetDeviceConfigurationDevicesCountFromKey",
         "parameters": [
@@ -17384,7 +17504,9 @@
     },
     "/DeviceConfiguration/GetEventLogDecoders": {
       "get": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "summary": "Gets all implementations of Utah.Udot.Atspm.Services.IEventLogDecoder\r\nthat can be assigned to Utah.Udot.Atspm.Data.Models.DeviceConfiguration for decoding Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase derived types.",
         "operationId": "GetDeviceConfigurationEventLogDecoders",
         "parameters": [
@@ -17767,7 +17889,9 @@
     },
     "/DeviceConfiguration": {
       "get": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "GetDeviceConfiguration",
         "parameters": [
           {
@@ -18157,7 +18281,9 @@
         }
       },
       "post": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "PostDeviceConfiguration",
         "parameters": [
           {
@@ -18394,7 +18520,9 @@
     },
     "/DeviceConfiguration/$count": {
       "get": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "GetDeviceConfigurationCount",
         "parameters": [
           {
@@ -18786,7 +18914,9 @@
     },
     "/DeviceConfiguration/{key}": {
       "get": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "GetDeviceConfigurationFromKey",
         "parameters": [
           {
@@ -19028,7 +19158,9 @@
         }
       },
       "put": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "PutDeviceConfigurationFromKey",
         "parameters": [
           {
@@ -19275,7 +19407,9 @@
         }
       },
       "patch": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "PatchDeviceConfigurationFromKey",
         "parameters": [
           {
@@ -19522,7 +19656,9 @@
         }
       },
       "delete": {
-        "tags": ["DeviceConfiguration"],
+        "tags": [
+          "DeviceConfiguration"
+        ],
         "operationId": "DeleteDeviceConfigurationFromKey",
         "parameters": [
           {
@@ -19553,7 +19689,9 @@
     },
     "/DirectionType/{key}/approaches": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
         "operationId": "GetDirectionTypeApproachesFromKey",
         "parameters": [
@@ -19951,7 +20089,9 @@
     },
     "/DirectionType/{key}/approaches/$count": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
         "operationId": "GetDirectionTypeApproachesCountFromKey",
         "parameters": [
@@ -20349,7 +20489,9 @@
     },
     "/DirectionType/{key}/primaryDirections": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetDirectionTypePrimaryDirectionsFromKey",
         "parameters": [
@@ -20747,7 +20889,9 @@
     },
     "/DirectionType/{key}/primaryDirections/$count": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetDirectionTypePrimaryDirectionsCountFromKey",
         "parameters": [
@@ -21145,7 +21289,9 @@
     },
     "/DirectionType/{key}/opposingDirections": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetDirectionTypeOpposingDirectionsFromKey",
         "parameters": [
@@ -21543,7 +21689,9 @@
     },
     "/DirectionType/{key}/opposingDirections/$count": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetDirectionTypeOpposingDirectionsCountFromKey",
         "parameters": [
@@ -21941,7 +22089,9 @@
     },
     "/DirectionType": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "GetDirectionType",
         "parameters": [
           {
@@ -22331,7 +22481,9 @@
         }
       },
       "post": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "PostDirectionType",
         "parameters": [
           {
@@ -22568,7 +22720,9 @@
     },
     "/DirectionType/$count": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "GetDirectionTypeCount",
         "parameters": [
           {
@@ -22960,7 +23114,9 @@
     },
     "/DirectionType/{key}": {
       "get": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "GetDirectionTypeFromKey",
         "parameters": [
           {
@@ -23201,7 +23357,9 @@
         }
       },
       "put": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "PutDirectionTypeFromKey",
         "parameters": [
           {
@@ -23447,7 +23605,9 @@
         }
       },
       "patch": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "PatchDirectionTypeFromKey",
         "parameters": [
           {
@@ -23693,7 +23853,9 @@
         }
       },
       "delete": {
-        "tags": ["DirectionType"],
+        "tags": [
+          "DirectionType"
+        ],
         "operationId": "DeleteDirectionTypeFromKey",
         "parameters": [
           {
@@ -23723,7 +23885,9 @@
     },
     "/Faq": {
       "get": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "GetFaq",
         "parameters": [
           {
@@ -24113,7 +24277,9 @@
         }
       },
       "post": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "PostFaq",
         "parameters": [
           {
@@ -24350,7 +24516,9 @@
     },
     "/Faq/$count": {
       "get": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "GetFaqCount",
         "parameters": [
           {
@@ -24742,7 +24910,9 @@
     },
     "/Faq/{key}": {
       "get": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "GetFaqFromKey",
         "parameters": [
           {
@@ -24984,7 +25154,9 @@
         }
       },
       "put": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "PutFaqFromKey",
         "parameters": [
           {
@@ -25231,7 +25403,9 @@
         }
       },
       "patch": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "PatchFaqFromKey",
         "parameters": [
           {
@@ -25478,7 +25652,9 @@
         }
       },
       "delete": {
-        "tags": ["Faq"],
+        "tags": [
+          "Faq"
+        ],
         "operationId": "DeleteFaqFromKey",
         "parameters": [
           {
@@ -25509,7 +25685,9 @@
     },
     "/Jurisdiction/{key}/locations": {
       "get": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetJurisdictionLocationsFromKey",
         "parameters": [
@@ -25908,7 +26086,9 @@
     },
     "/Jurisdiction/{key}/locations/$count": {
       "get": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetJurisdictionLocationsCountFromKey",
         "parameters": [
@@ -26307,7 +26487,9 @@
     },
     "/Jurisdiction": {
       "get": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "GetJurisdiction",
         "parameters": [
           {
@@ -26697,7 +26879,9 @@
         }
       },
       "post": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "PostJurisdiction",
         "parameters": [
           {
@@ -26934,7 +27118,9 @@
     },
     "/Jurisdiction/$count": {
       "get": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "GetJurisdictionCount",
         "parameters": [
           {
@@ -27326,7 +27512,9 @@
     },
     "/Jurisdiction/{key}": {
       "get": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "GetJurisdictionFromKey",
         "parameters": [
           {
@@ -27568,7 +27756,9 @@
         }
       },
       "put": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "PutJurisdictionFromKey",
         "parameters": [
           {
@@ -27815,7 +28005,9 @@
         }
       },
       "patch": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "PatchJurisdictionFromKey",
         "parameters": [
           {
@@ -28062,7 +28254,9 @@
         }
       },
       "delete": {
-        "tags": ["Jurisdiction"],
+        "tags": [
+          "Jurisdiction"
+        ],
         "operationId": "DeleteJurisdictionFromKey",
         "parameters": [
           {
@@ -28093,7 +28287,9 @@
     },
     "/Location/{key}/approaches": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
         "operationId": "GetLocationApproachesFromKey",
         "parameters": [
@@ -28499,7 +28695,9 @@
     },
     "/Location/{key}/approaches/$count": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
         "operationId": "GetLocationApproachesCountFromKey",
         "parameters": [
@@ -28905,7 +29103,9 @@
     },
     "/Location/{key}/areas": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Area navigation property action",
         "operationId": "GetLocationAreasFromKey",
         "parameters": [
@@ -29311,7 +29511,9 @@
     },
     "/Location/{key}/areas/$count": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Area navigation property action",
         "operationId": "GetLocationAreasCountFromKey",
         "parameters": [
@@ -29717,7 +29919,9 @@
     },
     "/Location/{key}/devices": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
         "operationId": "GetLocationDevicesFromKey",
         "parameters": [
@@ -30123,7 +30327,9 @@
     },
     "/Location/{key}/devices/$count": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
         "operationId": "GetLocationDevicesCountFromKey",
         "parameters": [
@@ -30529,7 +30735,9 @@
     },
     "/Location/{key}/CopyLocationToNewVersion": {
       "post": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version",
         "operationId": "GetLocationCopyLocationToNewVersionFromKey",
         "parameters": [
@@ -30783,7 +30991,9 @@
     },
     "/Location/{key}/SetLocationToDeleted": {
       "post": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Marks Utah.Udot.Atspm.Data.Models.Location to deleted",
         "operationId": "DeleteLocationSetLocationTodFromKey",
         "parameters": [
@@ -30827,7 +31037,9 @@
     },
     "/Location/{key}/DeleteAllVersions": {
       "post": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Marks Utah.Udot.Atspm.Data.Models.Location to deleted",
         "operationId": "DeleteLocationAllVersionsFromKey",
         "parameters": [
@@ -30877,7 +31089,9 @@
     },
     "/Location/GetLatestVersionOfLocation(identifier={identifier})": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Get latest version of Utah.Udot.Atspm.Data.Models.Location and related entities that match identifier",
         "operationId": "GetLocationLatestVersionOfLocationFromIdentifier",
         "parameters": [
@@ -31122,7 +31336,9 @@
     },
     "/Location/GetAllVersionsOfLocation(identifier={identifier})": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Get all active Utah.Udot.Atspm.Data.Models.Location that match identifier",
         "operationId": "GetLocationAllVersionsOfLocationFromIdentifier",
         "parameters": [
@@ -31517,7 +31733,9 @@
     },
     "/Location/GetLatestVersionOfAllLocations": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Get latest version of all Utah.Udot.Atspm.Data.Models.Location",
         "operationId": "GetLocationLatestVersionOfAllLocations",
         "parameters": [
@@ -31900,7 +32118,9 @@
     },
     "/Location/GetDetectionTypeCount": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Get count of Device Types using correct version of all Utah.Udot.Atspm.Data.Models.Location",
         "operationId": "GetLocationDetectionTypeCount",
         "parameters": [
@@ -32291,7 +32511,9 @@
     },
     "/Location/GetLocationsForSearch": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "summary": "Gets an optimized list of Utah.Udot.Atspm.ConfigApi.Models.SearchLocation to use for Location selection",
         "operationId": "GetLocationLocationsForSearch",
         "parameters": [
@@ -32713,7 +32935,9 @@
     },
     "/Location": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "GetLocation",
         "parameters": [
           {
@@ -33103,7 +33327,9 @@
         }
       },
       "post": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "PostLocation",
         "parameters": [
           {
@@ -33340,7 +33566,9 @@
     },
     "/Location/$count": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "GetLocationCount",
         "parameters": [
           {
@@ -33732,7 +33960,9 @@
     },
     "/Location/{key}": {
       "get": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "GetLocationFromKey",
         "parameters": [
           {
@@ -33974,7 +34204,9 @@
         }
       },
       "put": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "PutLocationFromKey",
         "parameters": [
           {
@@ -34221,7 +34453,9 @@
         }
       },
       "patch": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "PatchLocationFromKey",
         "parameters": [
           {
@@ -34468,7 +34702,9 @@
         }
       },
       "delete": {
-        "tags": ["Location"],
+        "tags": [
+          "Location"
+        ],
         "operationId": "DeleteLocationFromKey",
         "parameters": [
           {
@@ -34499,7 +34735,9 @@
     },
     "/LocationType/{key}/locations": {
       "get": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetLocationTypeLocationsFromKey",
         "parameters": [
@@ -34898,7 +35136,9 @@
     },
     "/LocationType/{key}/locations/$count": {
       "get": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetLocationTypeLocationsCountFromKey",
         "parameters": [
@@ -35297,7 +35537,9 @@
     },
     "/LocationType": {
       "get": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "GetLocationType",
         "parameters": [
           {
@@ -35687,7 +35929,9 @@
         }
       },
       "post": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "PostLocationType",
         "parameters": [
           {
@@ -35924,7 +36168,9 @@
     },
     "/LocationType/$count": {
       "get": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "GetLocationTypeCount",
         "parameters": [
           {
@@ -36316,7 +36562,9 @@
     },
     "/LocationType/{key}": {
       "get": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "GetLocationTypeFromKey",
         "parameters": [
           {
@@ -36558,7 +36806,9 @@
         }
       },
       "put": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "PutLocationTypeFromKey",
         "parameters": [
           {
@@ -36805,7 +37055,9 @@
         }
       },
       "patch": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "PatchLocationTypeFromKey",
         "parameters": [
           {
@@ -37052,7 +37304,9 @@
         }
       },
       "delete": {
-        "tags": ["LocationType"],
+        "tags": [
+          "LocationType"
+        ],
         "operationId": "DeleteLocationTypeFromKey",
         "parameters": [
           {
@@ -37083,7 +37337,9 @@
     },
     "/MeasureComment/{key}/measureTypes": {
       "get": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
         "operationId": "GetMeasureCommentMeasureTypesFromKey",
         "parameters": [
@@ -37482,7 +37738,9 @@
     },
     "/MeasureComment/{key}/measureTypes/$count": {
       "get": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
         "operationId": "GetMeasureCommentMeasureTypesCountFromKey",
         "parameters": [
@@ -37881,7 +38139,9 @@
     },
     "/MeasureComment": {
       "get": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "GetMeasureComment",
         "parameters": [
           {
@@ -38271,7 +38531,9 @@
         }
       },
       "post": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "PostMeasureComment",
         "parameters": [
           {
@@ -38508,7 +38770,9 @@
     },
     "/MeasureComment/$count": {
       "get": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "GetMeasureCommentCount",
         "parameters": [
           {
@@ -38900,7 +39164,9 @@
     },
     "/MeasureComment/{key}": {
       "get": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "GetMeasureCommentFromKey",
         "parameters": [
           {
@@ -39142,7 +39408,9 @@
         }
       },
       "put": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "PutMeasureCommentFromKey",
         "parameters": [
           {
@@ -39389,7 +39657,9 @@
         }
       },
       "patch": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "PatchMeasureCommentFromKey",
         "parameters": [
           {
@@ -39636,7 +39906,9 @@
         }
       },
       "delete": {
-        "tags": ["MeasureComment"],
+        "tags": [
+          "MeasureComment"
+        ],
         "operationId": "DeleteMeasureCommentFromKey",
         "parameters": [
           {
@@ -39667,7 +39939,9 @@
     },
     "/MeasureOption": {
       "get": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "GetMeasureOption",
         "parameters": [
           {
@@ -40057,7 +40331,9 @@
         }
       },
       "post": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "PostMeasureOption",
         "parameters": [
           {
@@ -40294,7 +40570,9 @@
     },
     "/MeasureOption/$count": {
       "get": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "GetMeasureOptionCount",
         "parameters": [
           {
@@ -40686,7 +40964,9 @@
     },
     "/MeasureOption/{key}": {
       "get": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "GetMeasureOptionFromKey",
         "parameters": [
           {
@@ -40928,7 +41208,9 @@
         }
       },
       "put": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "PutMeasureOptionFromKey",
         "parameters": [
           {
@@ -41175,7 +41457,9 @@
         }
       },
       "patch": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "PatchMeasureOptionFromKey",
         "parameters": [
           {
@@ -41422,7 +41706,9 @@
         }
       },
       "delete": {
-        "tags": ["MeasureOption"],
+        "tags": [
+          "MeasureOption"
+        ],
         "operationId": "DeleteMeasureOptionFromKey",
         "parameters": [
           {
@@ -41453,7 +41739,9 @@
     },
     "/MeasureOptionPreset/GetMeasureOptionPresetTypes": {
       "get": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "summary": "Retrieves a list of measure option preset types.",
         "operationId": "GetMeasureOptionPresetMeasureOptionPresetTypes",
         "parameters": [
@@ -41836,7 +42124,9 @@
     },
     "/MeasureOptionPreset": {
       "get": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "GetMeasureOptionPreset",
         "parameters": [
           {
@@ -42226,7 +42516,9 @@
         }
       },
       "post": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "PostMeasureOptionPreset",
         "parameters": [
           {
@@ -42463,7 +42755,9 @@
     },
     "/MeasureOptionPreset/$count": {
       "get": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "GetMeasureOptionPresetCount",
         "parameters": [
           {
@@ -42855,7 +43149,9 @@
     },
     "/MeasureOptionPreset/{key}": {
       "get": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "GetMeasureOptionPresetFromKey",
         "parameters": [
           {
@@ -43097,7 +43393,9 @@
         }
       },
       "put": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "PutMeasureOptionPresetFromKey",
         "parameters": [
           {
@@ -43344,7 +43642,9 @@
         }
       },
       "patch": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "PatchMeasureOptionPresetFromKey",
         "parameters": [
           {
@@ -43591,7 +43891,9 @@
         }
       },
       "delete": {
-        "tags": ["MeasureOptionPreset"],
+        "tags": [
+          "MeasureOptionPreset"
+        ],
         "operationId": "DeleteMeasureOptionPresetFromKey",
         "parameters": [
           {
@@ -43622,7 +43924,9 @@
     },
     "/MeasureType/{key}/detectionTypes": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
         "operationId": "GetMeasureTypeDetectionTypesFromKey",
         "parameters": [
@@ -44021,7 +44325,9 @@
     },
     "/MeasureType/{key}/detectionTypes/$count": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
         "operationId": "GetMeasureTypeDetectionTypesCountFromKey",
         "parameters": [
@@ -44420,7 +44726,9 @@
     },
     "/MeasureType/{key}/measureComments": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action",
         "operationId": "GetMeasureTypeMeasureCommentsFromKey",
         "parameters": [
@@ -44819,7 +45127,9 @@
     },
     "/MeasureType/{key}/measureComments/$count": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action",
         "operationId": "GetMeasureTypeMeasureCommentsCountFromKey",
         "parameters": [
@@ -45218,7 +45528,9 @@
     },
     "/MeasureType/{key}/measureOptionPresets": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action",
         "operationId": "GetMeasureTypeMeasureOptionPresetsFromKey",
         "parameters": [
@@ -45617,7 +45929,9 @@
     },
     "/MeasureType/{key}/measureOptionPresets/$count": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action",
         "operationId": "GetMeasureTypeMeasureOptionPresetsCountFromKey",
         "parameters": [
@@ -46016,7 +46330,9 @@
     },
     "/MeasureType": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "GetMeasureType",
         "parameters": [
           {
@@ -46406,7 +46722,9 @@
         }
       },
       "post": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "PostMeasureType",
         "parameters": [
           {
@@ -46643,7 +46961,9 @@
     },
     "/MeasureType/$count": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "GetMeasureTypeCount",
         "parameters": [
           {
@@ -47035,7 +47355,9 @@
     },
     "/MeasureType/{key}": {
       "get": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "GetMeasureTypeFromKey",
         "parameters": [
           {
@@ -47277,7 +47599,9 @@
         }
       },
       "put": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "PutMeasureTypeFromKey",
         "parameters": [
           {
@@ -47524,7 +47848,9 @@
         }
       },
       "patch": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "PatchMeasureTypeFromKey",
         "parameters": [
           {
@@ -47771,7 +48097,9 @@
         }
       },
       "delete": {
-        "tags": ["MeasureType"],
+        "tags": [
+          "MeasureType"
+        ],
         "operationId": "DeleteMeasureTypeFromKey",
         "parameters": [
           {
@@ -47802,7 +48130,9 @@
     },
     "/MenuItems": {
       "get": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "GetMenuItems",
         "parameters": [
           {
@@ -48192,7 +48522,9 @@
         }
       },
       "post": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "PostMenuItems",
         "parameters": [
           {
@@ -48429,7 +48761,9 @@
     },
     "/MenuItems/$count": {
       "get": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "GetMenuItemsCount",
         "parameters": [
           {
@@ -48821,7 +49155,9 @@
     },
     "/MenuItems/{key}": {
       "get": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "GetMenuItemsFromKey",
         "parameters": [
           {
@@ -49063,7 +49399,9 @@
         }
       },
       "put": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "PutMenuItemsFromKey",
         "parameters": [
           {
@@ -49310,7 +49648,9 @@
         }
       },
       "patch": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "PatchMenuItemsFromKey",
         "parameters": [
           {
@@ -49557,7 +49897,9 @@
         }
       },
       "delete": {
-        "tags": ["MenuItems"],
+        "tags": [
+          "MenuItems"
+        ],
         "operationId": "DeleteMenuItemsFromKey",
         "parameters": [
           {
@@ -49588,7 +49930,9 @@
     },
     "/Product": {
       "get": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "GetProduct",
         "parameters": [
           {
@@ -49978,7 +50322,9 @@
         }
       },
       "post": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "PostProduct",
         "parameters": [
           {
@@ -50215,7 +50561,9 @@
     },
     "/Product/$count": {
       "get": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "GetProductCount",
         "parameters": [
           {
@@ -50607,7 +50955,9 @@
     },
     "/Product/{key}": {
       "get": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "GetProductFromKey",
         "parameters": [
           {
@@ -50849,7 +51199,9 @@
         }
       },
       "put": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "PutProductFromKey",
         "parameters": [
           {
@@ -51096,7 +51448,9 @@
         }
       },
       "patch": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "PatchProductFromKey",
         "parameters": [
           {
@@ -51343,7 +51697,9 @@
         }
       },
       "delete": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "operationId": "DeleteProductFromKey",
         "parameters": [
           {
@@ -51374,7 +51730,9 @@
     },
     "/Region/{key}/locations": {
       "get": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetRegionLocationsFromKey",
         "parameters": [
@@ -51773,7 +52131,9 @@
     },
     "/Region/{key}/locations/$count": {
       "get": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
         "operationId": "GetRegionLocationsCountFromKey",
         "parameters": [
@@ -52172,7 +52532,9 @@
     },
     "/Region": {
       "get": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "GetRegion",
         "parameters": [
           {
@@ -52562,7 +52924,9 @@
         }
       },
       "post": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "PostRegion",
         "parameters": [
           {
@@ -52799,7 +53163,9 @@
     },
     "/Region/$count": {
       "get": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "GetRegionCount",
         "parameters": [
           {
@@ -53191,7 +53557,9 @@
     },
     "/Region/{key}": {
       "get": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "GetRegionFromKey",
         "parameters": [
           {
@@ -53433,7 +53801,9 @@
         }
       },
       "put": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "PutRegionFromKey",
         "parameters": [
           {
@@ -53680,7 +54050,9 @@
         }
       },
       "patch": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "PatchRegionFromKey",
         "parameters": [
           {
@@ -53927,7 +54299,9 @@
         }
       },
       "delete": {
-        "tags": ["Region"],
+        "tags": [
+          "Region"
+        ],
         "operationId": "DeleteRegionFromKey",
         "parameters": [
           {
@@ -53958,7 +54332,9 @@
     },
     "/Route/{key}/routeLocations": {
       "get": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetRouteRouteLocationsFromKey",
         "parameters": [
@@ -54357,7 +54733,9 @@
     },
     "/Route/{key}/routeLocations/$count": {
       "get": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetRouteRouteLocationsCountFromKey",
         "parameters": [
@@ -54756,7 +55134,9 @@
     },
     "/UpsertRoute": {
       "post": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "summary": "Creates a route with its associated route locations",
         "operationId": "UpsertRouteRoute",
         "parameters": [
@@ -55002,12 +55382,16 @@
     },
     "/GetRouteView/{id}": {
       "get": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
+        "summary": "",
         "operationId": "GetRouteRouteViewFromId",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "",
             "required": true,
             "schema": {
               "type": "integer",
@@ -55017,6 +55401,7 @@
           {
             "name": "includeLocationDetail",
             "in": "query",
+            "description": "",
             "schema": {
               "type": "boolean"
             }
@@ -55058,7 +55443,9 @@
     },
     "/Route": {
       "get": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "GetRoute",
         "parameters": [
           {
@@ -55448,7 +55835,9 @@
         }
       },
       "post": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "PostRoute",
         "parameters": [
           {
@@ -55685,7 +56074,9 @@
     },
     "/Route/$count": {
       "get": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "GetRouteCount",
         "parameters": [
           {
@@ -56077,7 +56468,9 @@
     },
     "/Route/{key}": {
       "get": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "GetRouteFromKey",
         "parameters": [
           {
@@ -56319,7 +56712,9 @@
         }
       },
       "put": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "PutRouteFromKey",
         "parameters": [
           {
@@ -56566,7 +56961,9 @@
         }
       },
       "patch": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "PatchRouteFromKey",
         "parameters": [
           {
@@ -56813,7 +57210,9 @@
         }
       },
       "delete": {
-        "tags": ["Route"],
+        "tags": [
+          "Route"
+        ],
         "operationId": "DeleteRouteFromKey",
         "parameters": [
           {
@@ -56844,7 +57243,9 @@
     },
     "/RouteDistance/{key}/previousLocations": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetRouteDistancePreviousLocationsFromKey",
         "parameters": [
@@ -57243,7 +57644,9 @@
     },
     "/RouteDistance/{key}/previousLocations/$count": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetRouteDistancePreviousLocationsCountFromKey",
         "parameters": [
@@ -57642,7 +58045,9 @@
     },
     "/RouteDistance/{key}/nextLocations": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetRouteDistanceNextLocationsFromKey",
         "parameters": [
@@ -58041,7 +58446,9 @@
     },
     "/RouteDistance/{key}/nextLocations/$count": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
         "operationId": "GetRouteDistanceNextLocationsCountFromKey",
         "parameters": [
@@ -58440,7 +58847,9 @@
     },
     "/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA={locationA},locationB={locationB})": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "summary": "Gets the Utah.Udot.Atspm.Data.Models.RouteDistance that contains locationA and locationB",
         "operationId": "GetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationB",
         "parameters": [
@@ -58685,7 +59094,9 @@
     },
     "/RouteDistance": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "GetRouteDistance",
         "parameters": [
           {
@@ -59075,7 +59486,9 @@
         }
       },
       "post": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "PostRouteDistance",
         "parameters": [
           {
@@ -59312,7 +59725,9 @@
     },
     "/RouteDistance/$count": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "GetRouteDistanceCount",
         "parameters": [
           {
@@ -59704,7 +60119,9 @@
     },
     "/RouteDistance/{key}": {
       "get": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "GetRouteDistanceFromKey",
         "parameters": [
           {
@@ -59946,7 +60363,9 @@
         }
       },
       "put": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "PutRouteDistanceFromKey",
         "parameters": [
           {
@@ -60193,7 +60612,9 @@
         }
       },
       "patch": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "PatchRouteDistanceFromKey",
         "parameters": [
           {
@@ -60440,7 +60861,9 @@
         }
       },
       "delete": {
-        "tags": ["RouteDistance"],
+        "tags": [
+          "RouteDistance"
+        ],
         "operationId": "DeleteRouteDistanceFromKey",
         "parameters": [
           {
@@ -60471,7 +60894,9 @@
     },
     "/RouteLocation": {
       "get": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "GetRouteLocation",
         "parameters": [
           {
@@ -60861,7 +61286,9 @@
         }
       },
       "post": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "PostRouteLocation",
         "parameters": [
           {
@@ -61098,7 +61525,9 @@
     },
     "/RouteLocation/$count": {
       "get": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "GetRouteLocationCount",
         "parameters": [
           {
@@ -61490,7 +61919,9 @@
     },
     "/RouteLocation/{key}": {
       "get": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "GetRouteLocationFromKey",
         "parameters": [
           {
@@ -61732,7 +62163,9 @@
         }
       },
       "put": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "PutRouteLocationFromKey",
         "parameters": [
           {
@@ -61979,7 +62412,9 @@
         }
       },
       "patch": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "PatchRouteLocationFromKey",
         "parameters": [
           {
@@ -62226,7 +62661,9 @@
         }
       },
       "delete": {
-        "tags": ["RouteLocation"],
+        "tags": [
+          "RouteLocation"
+        ],
         "operationId": "DeleteRouteLocationFromKey",
         "parameters": [
           {
@@ -62257,7 +62694,9 @@
     },
     "/UsageEntry": {
       "get": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "GetUsageEntry",
         "parameters": [
           {
@@ -62647,7 +63086,9 @@
         }
       },
       "post": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "PostUsageEntry",
         "parameters": [
           {
@@ -62884,7 +63325,9 @@
     },
     "/UsageEntry/$count": {
       "get": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "GetUsageEntryCount",
         "parameters": [
           {
@@ -63262,7 +63705,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VersionHistory"
+                    "$ref": "#/components/schemas/UsageEntry"
                   }
                 }
               }
@@ -63276,7 +63719,9 @@
     },
     "/UsageEntry/{key}": {
       "get": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "GetUsageEntryFromKey",
         "parameters": [
           {
@@ -63507,7 +63952,7 @@
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionHistory"
+                  "$ref": "#/components/schemas/UsageEntry"
                 }
               }
             }
@@ -63518,7 +63963,9 @@
         }
       },
       "put": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "PutUsageEntryFromKey",
         "parameters": [
           {
@@ -63744,7 +64191,7 @@
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             }
           }
@@ -63765,7 +64212,9 @@
         }
       },
       "patch": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "PatchUsageEntryFromKey",
         "parameters": [
           {
@@ -63991,7 +64440,7 @@
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionHistory"
+                "$ref": "#/components/schemas/UsageEntry"
               }
             }
           }
@@ -64012,7 +64461,9 @@
         }
       },
       "delete": {
-        "tags": ["UsageEntry"],
+        "tags": [
+          "UsageEntry"
+        ],
         "operationId": "DeleteUsageEntryFromKey",
         "parameters": [
           {
@@ -64041,9 +64492,209 @@
         }
       }
     },
+    "/GetCurrentVersion": {
+      "get": {
+        "tags": [
+          "Version"
+        ],
+        "summary": "Retrieves the specific release details for the version currently running in this environment.",
+        "description": "This method identifies the current version by inspecting the assembly's Informational Version attribute. \r\nIt then queries GitHub for the corresponding tag. If the assembly version cannot be determined or \r\nthe tag does not exist on GitHub, an error is returned.",
+        "operationId": "GetVersionCurrentVersion",
+        "parameters": [
+          {
+            "name": "select",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable"
+          },
+          "200": {
+            "description": "Returns the release details matching the current assembly version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubReleaseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Returned if the assembly version metadata is missing or malformed."
+          },
+          "404": {
+            "description": "Returned if no matching release tag was found in the GitHub repository."
+          },
+          "502": {
+            "description": "Returned if there was a communication failure or rate-limit issue with the GitHub API."
+          }
+        }
+      }
+    },
+    "/GetLatestVersion(PreRelease={PreRelease})": {
+      "get": {
+        "tags": [
+          "Version"
+        ],
+        "summary": "Retrieves the most recent release published to the GitHub repository.",
+        "description": "Use this endpoint to check for updates. By default, this only returns stable releases. \r\nSet the PreRelease parameter to true if you wish to include beta or release candidate versions.",
+        "operationId": "GetVersionLatestVersionFromPreRelease",
+        "parameters": [
+          {
+            "name": "PreRelease",
+            "in": "path",
+            "description": "A boolean flag indicating whether to include versions marked as 'Pre-release' on GitHub. Defaults to false.",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable"
+          },
+          "200": {
+            "description": "Returns the latest release matching the specified criteria.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubReleaseDto"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Returned if the upstream GitHub API is unavailable or returns an error."
+          }
+        }
+      }
+    },
+    "/GetVersionHistory(PreRelease={PreRelease})": {
+      "get": {
+        "tags": [
+          "Version"
+        ],
+        "summary": "Retrieves a complete historical list of all releases associated with this project.",
+        "description": "This endpoint supports standard OData query options such as $filter, $orderby, and $top. \r\nIt provides a chronological history of all versions, including their respective release notes and assets.",
+        "operationId": "GetVersionVersionHistoryFromPreRelease",
+        "parameters": [
+          {
+            "name": "PreRelease",
+            "in": "path",
+            "description": "A boolean flag; if true, the history will include pre-release versions (RC, Beta, etc.). Defaults to false.",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "top",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable"
+          },
+          "200": {
+            "description": "Returns the requested list of releases.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GitHubReleaseDto"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Returned if the project's release history cannot be retrieved from GitHub."
+          }
+        }
+      }
+    },
     "/WatchDogIgnoreEvent": {
       "get": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "GetWatchDogIgnoreEvent",
         "parameters": [
           {
@@ -64433,7 +65084,9 @@
         }
       },
       "post": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "PostWatchDogIgnoreEvent",
         "parameters": [
           {
@@ -64670,7 +65323,9 @@
     },
     "/WatchDogIgnoreEvent/$count": {
       "get": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "GetWatchDogIgnoreEventCount",
         "parameters": [
           {
@@ -65062,7 +65717,9 @@
     },
     "/WatchDogIgnoreEvent/{key}": {
       "get": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "GetWatchDogIgnoreEventFromKey",
         "parameters": [
           {
@@ -65304,7 +65961,9 @@
         }
       },
       "put": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "PutWatchDogIgnoreEventFromKey",
         "parameters": [
           {
@@ -65551,7 +66210,9 @@
         }
       },
       "patch": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "PatchWatchDogIgnoreEventFromKey",
         "parameters": [
           {
@@ -65798,7 +66459,9 @@
         }
       },
       "delete": {
-        "tags": ["WatchDogIgnoreEvent"],
+        "tags": [
+          "WatchDogIgnoreEvent"
+        ],
         "operationId": "DeleteWatchDogIgnoreEventFromKey",
         "parameters": [
           {
@@ -65955,6 +66618,24 @@
             "format": "int32",
             "nullable": true
           },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
           "description": {
             "type": "string",
             "nullable": true
@@ -65989,6 +66670,11 @@
           },
           "pedestrianDetectors": {
             "type": "string",
+            "nullable": true
+          },
+          "transitSignalPriorityNumber": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "locationId": {
@@ -66156,7 +66842,16 @@
         "additionalProperties": false
       },
       "DetectionHardwareTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -66256,7 +66951,21 @@
         "additionalProperties": false
       },
       "DetectionTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -66413,6 +67122,24 @@
           "id": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
             "nullable": true
           },
           "dectectorIdentifier": {
@@ -66668,12 +67395,27 @@
         "additionalProperties": false
       },
       "DeviceStatus": {
-        "enum": [0, 1, 2, 3, 4, 5],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
         "type": "integer",
         "format": "int32"
       },
       "DeviceTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -66737,8 +67479,36 @@
         },
         "additionalProperties": false
       },
+      "DirectionTypeDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "DirectionTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -66827,6 +67597,130 @@
           }
         },
         "additionalProperties": false
+      },
+      "GitHubAssetDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The file name of the asset.",
+            "nullable": true
+          },
+          "browserDownloadUrl": {
+            "type": "string",
+            "description": "The public URL for downloading the asset.",
+            "nullable": true
+          },
+          "size": {
+            "type": "integer",
+            "description": "The size of the asset in bytes.",
+            "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "The timestamp when the asset was created.",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "The timestamp when the asset was last updated.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a downloadable asset attached to a GitHub release,\r\nsimplified for API responses."
+      },
+      "GitHubAuthorDto": {
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "description": "The GitHub username.",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "description": "The numeric GitHub user identifier.",
+            "format": "int64"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "The URL of the user's avatar image.",
+            "nullable": true
+          },
+          "htmlUrl": {
+            "type": "string",
+            "description": "The public HTML URL for the user's GitHub profile.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a simplified view of a GitHub user who authored a release\r\nor uploaded an associated asset."
+      },
+      "GitHubReleaseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The unique numeric identifier for the release.",
+            "format": "int64"
+          },
+          "tagName": {
+            "type": "string",
+            "description": "The tag name associated with the release (e.g., `v5.2.0-rc2`).",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the release.",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "description": "The release notes or description text.",
+            "nullable": true
+          },
+          "htmlUrl": {
+            "type": "string",
+            "description": "The public HTML URL for viewing the release on GitHub.",
+            "nullable": true
+          },
+          "draft": {
+            "type": "boolean",
+            "description": "Indicates whether the release is a draft."
+          },
+          "prerelease": {
+            "type": "boolean",
+            "description": "Indicates whether the release is marked as a prerelease."
+          },
+          "isLatest": {
+            "type": "boolean",
+            "description": "Indicates whether this release is the newest release\r\naccording to the server's versioning logic."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "The timestamp when the release was created.",
+            "format": "date-time"
+          },
+          "publishedAt": {
+            "type": "string",
+            "description": "The timestamp when the release was published.",
+            "format": "date-time"
+          },
+          "author": {
+            "$ref": "#/components/schemas/GitHubAuthorDto"
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GitHubAssetDto"
+            },
+            "description": "A collection of assets attached to the release.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a simplified, API‑friendly view of a GitHub release,\r\nsuitable for returning to clients without exposing internal GitHub URLs."
       },
       "GreenTimeUtilizationOptions": {
         "type": "object",
@@ -66917,7 +67811,16 @@
         "additionalProperties": false
       },
       "LaneTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -67498,7 +68401,14 @@
         "additionalProperties": false
       },
       "LocationVersionActions": {
-        "enum": [0, 1, 2, 3, 4, 10],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          10
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -67919,7 +68829,16 @@
         "additionalProperties": false
       },
       "MovementTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -68096,7 +69015,6 @@
         "properties": {
           "locationIdentifier": {
             "type": "string",
-            "format": "date-time",
             "nullable": true
           },
           "start": {
@@ -68106,10 +69024,6 @@
           "end": {
             "type": "string",
             "format": "date-time"
-          },
-          "binSize": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -68119,7 +69033,6 @@
         "properties": {
           "locationIdentifier": {
             "type": "string",
-            "format": "date-time",
             "nullable": true
           },
           "start": {
@@ -68129,10 +69042,6 @@
           "end": {
             "type": "string",
             "format": "date-time"
-          },
-          "binSize": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -68146,17 +69055,19 @@
           },
           "created": {
             "type": "string",
+            "format": "date-time",
             "nullable": true
           },
-          "model": {
+          "modified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
             "type": "string",
             "nullable": true
           },
-          "webPage": {
-            "type": "string",
-            "nullable": true
-          },
-          "notes": {
+          "modifiedBy": {
             "type": "string",
             "nullable": true
           },
@@ -68386,6 +69297,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "directionTypeId": {
+            "$ref": "#/components/schemas/DirectionTypes"
+          },
+          "directionType": {
+            "$ref": "#/components/schemas/DirectionTypeDto"
+          },
           "detectors": {
             "type": "array",
             "items": {
@@ -68547,6 +69464,24 @@
           "id": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
             "nullable": true
           },
           "name": {
@@ -68953,6 +69888,28 @@
         },
         "additionalProperties": false
       },
+      "TimeSpaceDiagramSrmOptions": {
+        "type": "object",
+        "properties": {
+          "routeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "srmCsvContentBase64": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "TimingAndActuationsOptions": {
         "type": "object",
         "properties": {
@@ -69017,7 +69974,14 @@
         "additionalProperties": false
       },
       "TransportProtocols": {
-        "enum": [0, 1, 2, 3, 4],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -69039,6 +70003,9 @@
           "binSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "combineThruRight": {
+            "type": "boolean"
           },
           "metricTypeId": {
             "type": "integer",
@@ -69269,7 +70236,11 @@
         "additionalProperties": false
       },
       "WatchDogComponentTypes": {
-        "enum": [0, 1, 2],
+        "enum": [
+          0,
+          1,
+          2
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -69308,6 +70279,10 @@
             "format": "int32",
             "nullable": true
           },
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
           "id": {
             "type": "integer",
             "format": "int32"
@@ -69337,7 +70312,19 @@
         "additionalProperties": false
       },
       "WatchDogIssueTypes": {
-        "enum": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -69374,12 +70361,19 @@
         "description": "Put **_ONLY_** your JWT Bearer token on textbox below!",
         "scheme": "Bearer",
         "bearerFormat": "JWT"
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "description": "Enter your API Key directly (no 'Bearer' prefix needed)",
+        "name": "X-API-KEY",
+        "in": "header"
       }
     }
   },
   "security": [
     {
-      "Bearer": []
+      "Bearer": [ ],
+      "ApiKey": [ ]
     }
   ]
 }

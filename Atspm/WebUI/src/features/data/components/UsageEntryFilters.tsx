@@ -1,5 +1,8 @@
 import { UserDTO } from '@/api/identity/atspmAuthenticationApi.schemas'
-import { dateToTimestamp } from '@/utils/dateTime'
+import {
+  parseWallClockDateTimeLiteral,
+  toWallClockDateTimeLiteral,
+} from '@/utils/dateTime'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import {
@@ -17,13 +20,12 @@ import * as React from 'react'
 
 function toTimestampOrUndefined(d: Date | null): string | undefined {
   if (!d) return undefined
-  return dateToTimestamp(d)
+  return toWallClockDateTimeLiteral(d)
 }
 
 function toDateOrNull(iso?: string): Date | null {
   if (!iso) return null
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? null : d
+  return parseWallClockDateTimeLiteral(iso)
 }
 
 export type UsageEntryFiltersState = {

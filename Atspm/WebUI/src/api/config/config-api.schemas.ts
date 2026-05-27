@@ -70,6 +70,22 @@ export interface ApproachDto {
   /** @nullable */
   id?: number | null;
   /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
+  /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
+  /** @nullable */
   description?: string | null;
   /** @nullable */
   mph?: number | null;
@@ -83,6 +99,10 @@ export interface ApproachDto {
   isPedestrianPhaseOverlap?: boolean;
   /** @nullable */
   pedestrianDetectors?: string | null;
+  /** @nullable */
+  transitSignalPriorityNumber?: number | null;
+  /** @nullable */
+  transitSignalPriorityNumber?: number | null;
   locationId?: number;
   directionTypeId?: DirectionTypes;
   /** @nullable */
@@ -274,6 +294,22 @@ export interface DetectorDto {
   /** @nullable */
   id?: number | null;
   /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
+  /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
+  /** @nullable */
   dectectorIdentifier?: string | null;
   detectorChannel?: number;
   /** @nullable */
@@ -421,6 +457,22 @@ export interface DirectionType {
   approaches?: Approach[] | null;
 }
 
+export interface DirectionTypeDto {
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  abbreviation?: string | null;
+  displayOrder?: number;
+}
+
+export interface DirectionTypeDto {
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  abbreviation?: string | null;
+  displayOrder?: number;
+}
+
 export type DirectionTypes = typeof DirectionTypes[keyof typeof DirectionTypes];
 
 
@@ -466,6 +518,192 @@ export interface GapDurationOptions {
   endMinute?: number;
   /** @nullable */
   daysOfWeek?: number[] | null;
+}
+
+/**
+ * Represents a downloadable asset attached to a GitHub release,
+simplified for API responses.
+ */
+export interface GitHubAssetDto {
+  /**
+   * The file name of the asset.
+   * @nullable
+   */
+  name?: string | null;
+  /**
+   * The public URL for downloading the asset.
+   * @nullable
+   */
+  browserDownloadUrl?: string | null;
+  /** The size of the asset in bytes. */
+  size?: number;
+  /** The timestamp when the asset was created. */
+  createdAt?: string;
+  /** The timestamp when the asset was last updated. */
+  updatedAt?: string;
+}
+
+/**
+ * Represents a simplified view of a GitHub user who authored a release
+or uploaded an associated asset.
+ */
+export interface GitHubAuthorDto {
+  /**
+   * The GitHub username.
+   * @nullable
+   */
+  login?: string | null;
+  /** The numeric GitHub user identifier. */
+  id?: number;
+  /**
+   * The URL of the user's avatar image.
+   * @nullable
+   */
+  avatarUrl?: string | null;
+  /**
+   * The public HTML URL for the user's GitHub profile.
+   * @nullable
+   */
+  htmlUrl?: string | null;
+}
+
+/**
+ * Represents a simplified, API‑friendly view of a GitHub release,
+suitable for returning to clients without exposing internal GitHub URLs.
+ */
+export interface GitHubReleaseDto {
+  /** The unique numeric identifier for the release. */
+  id?: number;
+  /**
+   * The tag name associated with the release (e.g., `v5.2.0-rc2`).
+   * @nullable
+   */
+  tagName?: string | null;
+  /**
+   * The display name of the release.
+   * @nullable
+   */
+  name?: string | null;
+  /**
+   * The release notes or description text.
+   * @nullable
+   */
+  body?: string | null;
+  /**
+   * The public HTML URL for viewing the release on GitHub.
+   * @nullable
+   */
+  htmlUrl?: string | null;
+  /** Indicates whether the release is a draft. */
+  draft?: boolean;
+  /** Indicates whether the release is marked as a prerelease. */
+  prerelease?: boolean;
+  /** Indicates whether this release is the newest release
+according to the server's versioning logic. */
+  isLatest?: boolean;
+  /** The timestamp when the release was created. */
+  createdAt?: string;
+  /** The timestamp when the release was published. */
+  publishedAt?: string;
+  author?: GitHubAuthorDto;
+  /**
+   * A collection of assets attached to the release.
+   * @nullable
+   */
+  assets?: GitHubAssetDto[] | null;
+}
+
+/**
+ * Represents a downloadable asset attached to a GitHub release,
+simplified for API responses.
+ */
+export interface GitHubAssetDto {
+  /**
+   * The file name of the asset.
+   * @nullable
+   */
+  name?: string | null;
+  /**
+   * The public URL for downloading the asset.
+   * @nullable
+   */
+  browserDownloadUrl?: string | null;
+  /** The size of the asset in bytes. */
+  size?: number;
+  /** The timestamp when the asset was created. */
+  createdAt?: string;
+  /** The timestamp when the asset was last updated. */
+  updatedAt?: string;
+}
+
+/**
+ * Represents a simplified view of a GitHub user who authored a release
+or uploaded an associated asset.
+ */
+export interface GitHubAuthorDto {
+  /**
+   * The GitHub username.
+   * @nullable
+   */
+  login?: string | null;
+  /** The numeric GitHub user identifier. */
+  id?: number;
+  /**
+   * The URL of the user's avatar image.
+   * @nullable
+   */
+  avatarUrl?: string | null;
+  /**
+   * The public HTML URL for the user's GitHub profile.
+   * @nullable
+   */
+  htmlUrl?: string | null;
+}
+
+/**
+ * Represents a simplified, API‑friendly view of a GitHub release,
+suitable for returning to clients without exposing internal GitHub URLs.
+ */
+export interface GitHubReleaseDto {
+  /** The unique numeric identifier for the release. */
+  id?: number;
+  /**
+   * The tag name associated with the release (e.g., `v5.2.0-rc2`).
+   * @nullable
+   */
+  tagName?: string | null;
+  /**
+   * The display name of the release.
+   * @nullable
+   */
+  name?: string | null;
+  /**
+   * The release notes or description text.
+   * @nullable
+   */
+  body?: string | null;
+  /**
+   * The public HTML URL for viewing the release on GitHub.
+   * @nullable
+   */
+  htmlUrl?: string | null;
+  /** Indicates whether the release is a draft. */
+  draft?: boolean;
+  /** Indicates whether the release is marked as a prerelease. */
+  prerelease?: boolean;
+  /** Indicates whether this release is the newest release
+according to the server's versioning logic. */
+  isLatest?: boolean;
+  /** The timestamp when the release was created. */
+  createdAt?: string;
+  /** The timestamp when the release was published. */
+  publishedAt?: string;
+  author?: GitHubAuthorDto;
+  /**
+   * A collection of assets attached to the release.
+   * @nullable
+   */
+  assets?: GitHubAssetDto[] | null;
 }
 
 export interface GreenTimeUtilizationOptions {
@@ -976,7 +1214,6 @@ export interface PriorityDetailsOptions {
   locationIdentifier?: string | null;
   start?: string;
   end?: string;
-  binSize?: number;
 }
 
 export interface PrioritySummaryOptions {
@@ -984,7 +1221,6 @@ export interface PrioritySummaryOptions {
   locationIdentifier?: string | null;
   start?: string;
   end?: string;
-  binSize?: number;
 }
 
 export interface Product {
@@ -1085,6 +1321,10 @@ export interface RouteApproachDto {
   /** @nullable */
   pedestrianDetectors?: string | null;
   locationId?: number;
+  directionTypeId?: DirectionTypes;
+  directionType?: DirectionTypeDto;
+  directionTypeId?: DirectionTypes;
+  directionType?: DirectionTypeDto;
   /** @nullable */
   detectors?: RouteDetectorDto[] | null;
 }
@@ -1147,6 +1387,22 @@ export interface RouteDistanceDto {
 export interface RouteDto {
   /** @nullable */
   id?: number | null;
+  /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
+  /** @nullable */
+  created?: string | null;
+  /** @nullable */
+  modified?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  modifiedBy?: string | null;
   /** @nullable */
   name?: string | null;
   /** @nullable */
@@ -1289,6 +1545,22 @@ export interface TimeSpaceDiagramOptions {
   showAllLanesInfo?: boolean;
 }
 
+export interface TimeSpaceDiagramSrmOptions {
+  routeId?: number;
+  start?: string;
+  end?: string;
+  /** @nullable */
+  srmCsvContentBase64?: string | null;
+}
+
+export interface TimeSpaceDiagramSrmOptions {
+  routeId?: number;
+  start?: string;
+  end?: string;
+  /** @nullable */
+  srmCsvContentBase64?: string | null;
+}
+
 export interface TimingAndActuationsOptions {
   /** @nullable */
   locationIdentifier?: string | null;
@@ -1319,6 +1591,8 @@ export const TransportProtocols = {
   NUMBER_2: 2,
   NUMBER_3: 3,
   NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_5: 5,
 } as const;
 
 export interface TurningMovementCountsOptions {
@@ -1327,6 +1601,8 @@ export interface TurningMovementCountsOptions {
   start?: string;
   end?: string;
   binSize?: number;
+  combineThruRight?: boolean;
+  combineThruRight?: boolean;
   readonly metricTypeId?: number;
 }
 
@@ -1439,6 +1715,10 @@ export interface WatchDogIgnoreEvent {
   issueType?: WatchDogIssueTypes;
   /** @nullable */
   phase?: number | null;
+  /** @nullable */
+  key?: string | null;
+  /** @nullable */
+  key?: string | null;
   id?: number;
   /** @nullable */
   created?: string | null;
@@ -1465,6 +1745,10 @@ export const WatchDogIssueTypes = {
   NUMBER_7: 7,
   NUMBER_8: 8,
   NUMBER_9: 9,
+  NUMBER_10: 10,
+  NUMBER_11: 11,
+  NUMBER_10: 10,
+  NUMBER_11: 11,
 } as const;
 
 export interface YellowRedActivationsOptions {
@@ -2957,6 +3241,46 @@ expand?: string;
 export type PatchUsageEntryFromKeyParams = {
 select?: string;
 expand?: string;
+};
+
+export type GetVersionCurrentVersionParams = {
+select?: string;
+expand?: string;
+};
+
+export type GetVersionLatestVersionFromPreReleaseParams = {
+select?: string;
+expand?: string;
+};
+
+export type GetVersionVersionHistoryFromPreReleaseParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type GetVersionCurrentVersionParams = {
+select?: string;
+expand?: string;
+};
+
+export type GetVersionLatestVersionFromPreReleaseParams = {
+select?: string;
+expand?: string;
+};
+
+export type GetVersionVersionHistoryFromPreReleaseParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
 export type GetWatchDogIgnoreEventParams = {
