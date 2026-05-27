@@ -1,4 +1,4 @@
-#region license
+﻿#region license
 // Copyright 2026 Utah Departement of Transportation
 // for SqlLiteDatabaseProvider - Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations/ConfigContextModelSnapshot.cs
 // 
@@ -100,7 +100,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -128,7 +128,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -151,6 +151,9 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("ProtectedPhaseNumber")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("TransitSignalPriorityNumber")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DirectionTypeId");
@@ -169,7 +172,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -178,7 +181,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -209,7 +212,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -227,7 +230,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -325,6 +328,13 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             Abbreviation = "EQ",
                             Description = "Excessive Queue",
                             DisplayOrder = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Abbreviation = "PP",
+                            Description = "Priority and Preemption",
+                            DisplayOrder = 12
                         });
                 });
 
@@ -337,7 +347,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("ApproachId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -382,7 +392,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int?>("MinSpeedFilter")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -417,7 +427,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -429,7 +439,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("DetectorId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -455,7 +465,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -505,7 +515,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<bool>("LoggingEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -544,7 +554,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValueSql("((2000))");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -568,7 +578,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("LoggingOffset")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -641,7 +651,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -658,7 +668,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -750,7 +760,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -768,7 +778,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -943,7 +953,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -952,7 +962,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -992,7 +1002,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -1021,7 +1031,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -1083,7 +1093,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -1096,7 +1106,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(true)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -1150,7 +1160,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -1165,7 +1175,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -1191,7 +1201,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -1203,7 +1213,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -1628,6 +1638,27 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             MeasureTypeId = 5,
                             Option = "yAxisDefault",
                             Value = "300"
+                        },
+                        new
+                        {
+                            Id = 121,
+                            MeasureTypeId = 5,
+                            Option = "combineThruRight",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 122,
+                            MeasureTypeId = 39,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 123,
+                            MeasureTypeId = 40,
+                            Option = "binSize",
+                            Value = "15"
                         });
                 });
 
@@ -1637,7 +1668,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -1649,7 +1680,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -1685,7 +1716,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -1697,7 +1728,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2046,6 +2077,24 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             Name = "Transit Signal Priority",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = false
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Abbreviation = "TSPS",
+                            DisplayOrder = 133,
+                            Name = "Transit Signal Priority Summary",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Abbreviation = "TSPD",
+                            DisplayOrder = 134,
+                            Name = "Transit Signal Priority Details",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
                         });
                 });
 
@@ -2055,7 +2104,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2079,7 +2128,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2111,7 +2160,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2132,7 +2181,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2162,7 +2211,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2177,7 +2226,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2198,7 +2247,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2207,7 +2256,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2233,7 +2282,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2257,7 +2306,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2281,7 +2330,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2302,7 +2351,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2380,7 +2429,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2402,7 +2451,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")
@@ -2436,8 +2485,8 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<bool>("Success")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("TraceId")
                         .HasMaxLength(100)
@@ -2530,7 +2579,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Property<int?>("ComponentType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -2558,7 +2607,7 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Modified")
+                    b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")

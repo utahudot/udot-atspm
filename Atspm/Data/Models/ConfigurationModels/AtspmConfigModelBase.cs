@@ -34,10 +34,10 @@ namespace Utah.Udot.Atspm.Data.Models.ConfigurationModels
         #region IAuditProperties
 
         /// <inheritdoc/>
-        public DateTime? Created { get; set; }
+        public DateTimeOffset? Created { get; set; }
 
         /// <inheritdoc/>
-        public DateTime? Modified { get; set; }
+        public DateTimeOffset? Modified { get; set; }
 
         /// <inheritdoc/>
         public string? CreatedBy { get; set; }

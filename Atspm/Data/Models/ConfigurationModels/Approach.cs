@@ -38,8 +38,6 @@ namespace Utah.Udot.Atspm.Data.Models
         /// </summary>
         public int? Mph { get; set; }
 
-        //TODO: name these better
-
         /// <summary>
         /// ProtectedPhaseNumber
         /// </summary>

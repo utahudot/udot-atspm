@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2026 Utah Departement of Transportation
-// for PostgreSQLDatabaseProvider - Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity/20260416165052_ApiKey.cs
+// for PostgreSQLDatabaseProvider - Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity/20260520183629_5_3.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 {
     /// <inheritdoc />
-    public partial class ApiKey : Migration
+    public partial class _5_3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,14 +37,15 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     KeyHash = table.Column<string>(type: "text", nullable: false),
                     OwnerId = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     IsRevoked = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApiKeys", x => x.Id);
-                });
+                },
+                comment: "API keys used for authentication and authorization.");
 
             migrationBuilder.CreateTable(
                 name: "ApiKeyClaims",
@@ -65,7 +66,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                         principalTable: "ApiKeys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                },
+                comment: "Specific permissions or claims associated with an API key.");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiKeyClaims_ApiKeyId",

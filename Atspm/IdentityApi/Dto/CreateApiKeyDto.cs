@@ -32,7 +32,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Dto
         /// Gets or sets the optional expiration date and time for the API key. 
         /// If null, the key may be treated as having no expiration, depending on system policy.
         /// </summary>
-        public DateTime? ExpiresAt { get; set; }
+        public DateTimeOffset? ExpiresAt { get; set; }
 
         /// <summary>
         /// Gets or sets the list of permissions assigned to this API key.

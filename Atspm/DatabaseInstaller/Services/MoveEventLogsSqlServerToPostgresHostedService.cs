@@ -18,7 +18,6 @@
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -518,11 +517,11 @@ namespace DatabaseInstaller.Services
                 throw new InvalidOperationException("DatabaseConfiguration:EventLogContext is not configured.");
             }
 
-            if (!string.Equals(settings.DBType, "PostgreSQL", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException(
-                    $"DatabaseConfiguration:EventLogContext must be PostgreSQL for copy-sql, but was '{settings.DBType}'.");
-            }
+            //if (!string.Equals(settings.DBType, "PostgreSQL", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    throw new InvalidOperationException(
+            //        $"DatabaseConfiguration:EventLogContext must be PostgreSQL for copy-sql, but was '{settings.DBType}'.");
+            //}
 
             return settings.BuildConnectionString();
         }
