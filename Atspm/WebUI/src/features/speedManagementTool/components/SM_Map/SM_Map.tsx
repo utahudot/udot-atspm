@@ -24,12 +24,27 @@ import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 import HotspotMarker from './HotspotMarker'
 import SpeedLegend from './SM_Legend'
 
+type HotspotCoordinate = [number, number]
+
+type MapHotspot = {
+  id?: string
+  geometry?: {
+    coordinates?: HotspotCoordinate[]
+    geometries?: Array<{
+      coordinates?: HotspotCoordinate[]
+    }>
+  }
+  properties?: {
+    route_id?: string
+  }
+}
+
 type SM_MapProps = {
   fullScreenRef?: React.RefObject<HTMLDivElement> | null
   routes: SpeedManagementRoute[]
   setSelectedRouteId: (routeId: string) => void
   selectedRouteIds: string[]
-  hotspots?: any
+  hotspots?: MapHotspot[]
 }
 
 const SM_Map = ({
@@ -130,6 +145,9 @@ const SM_Map = ({
     return coordinates[midpointIndex]
   }
 
+  const getHotspotMarkerId = (hotspot: MapHotspot) =>
+    hotspot?.properties?.route_id ?? hotspot?.id ?? null
+
   return (
     <Box
       sx={{
@@ -182,13 +200,15 @@ const SM_Map = ({
           </Tooltip>
         </Box>
         <RouteDisplayToggle />
-        {hotspotRoutes?.map((hotspot, index) => {
-          if (hotspot.geometry.geometries) {
+        {hotspotRoutes?.map((hotspot: MapHotspot, index) => {
+          const hotspotMarkerId = getHotspotMarkerId(hotspot)
+
+          if (hotspot.geometry?.geometries) {
             return hotspot.geometry.geometries.map(
               (geometry, geometryIndex) => {
                 return (
                   <Polyline
-                    key={`${hotspot.properties.route_id}-i${index}-g${geometryIndex}`}
+                    key={`${hotspotMarkerId || 'hotspot'}-i${index}-g${geometryIndex}`}
                     pathOptions={{
                       weight: getPolylineWeight(zoomLevel) + 8,
                     }}
@@ -211,18 +231,21 @@ const SM_Map = ({
           setSelectedRouteId={setSelectedRouteId}
           setHoveredSegment={setHoveredSegment}
         />
-        {hotspotRoutes?.map((hotspot, index) => {
+        {hotspotRoutes?.map((hotspot: MapHotspot, index) => {
           if (!hotspot?.geometry) return null
+          const hotspotMarkerId = getHotspotMarkerId(hotspot)
+          if (!hotspotMarkerId) return null
+
           // If hotspot has multiple geometries, get the midpoint of the middle one.
           let midpoint
           if (hotspot.geometry.geometries) {
             midpoint = getMidpoint(
               hotspot.geometry.geometries[
                 Math.floor(hotspot.geometry.geometries.length / 2)
-              ].coordinates
+              ].coordinates || []
             )
           } else {
-            midpoint = getMidpoint(hotspot.geometry.coordinates)
+            midpoint = getMidpoint(hotspot.geometry.coordinates || [])
           }
           if (!midpoint) return null
           return (
@@ -230,8 +253,13 @@ const SM_Map = ({
               <HotspotMarker
                 position={midpoint}
                 rank={index + 1}
-                segmentId={hotspot.properties.route_id}
-                onClick={setSelectedRouteId}
+                segmentId={hotspotMarkerId}
+                onClick={() => {
+                  const routeId = hotspot.properties?.route_id
+                  if (routeId) {
+                    setSelectedRouteId(routeId)
+                  }
+                }}
               />
             </React.Fragment>
           )

@@ -12,6 +12,7 @@ import {
   useTheme,
 } from '@mui/material'
 import React, { Fragment, ReactNode } from 'react'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 
 interface Column {
   key: string
@@ -25,9 +26,20 @@ interface VariableGroup {
   change?: string
 }
 
+type HotspotCoordinate = [number, number]
+
 interface Hotspot {
   id?: string
-  [key: string]: any
+  geometry?: {
+    coordinates?: HotspotCoordinate[]
+    geometries?: Array<{
+      coordinates?: HotspotCoordinate[]
+    }>
+  }
+  properties?: Record<string, unknown> & {
+    route_id?: string
+  }
+  [key: string]: unknown
 }
 
 interface ImpactHotspotTableProps {
@@ -43,6 +55,8 @@ const alwaysColumns: Column[] = [
   { key: 'endMile', label: 'End Mile' },
   { key: 'speedLimit', label: 'Speed Limit' },
 ]
+
+const baseColumns: Column[] = [{ key: 'rank', label: 'Rank' }, ...alwaysColumns]
 
 const variableGroups: VariableGroup[] = [
   {
@@ -92,11 +106,24 @@ const variableGroups: VariableGroup[] = [
   },
 ]
 
-const formatValue = (value: any): string => {
+const formatValue = (value: unknown): string => {
   if (typeof value === 'number') {
     return value.toLocaleString()
   }
-  return value || 'N/A'
+  return value ? String(value) : 'N/A'
+}
+
+const getHotspotRouteId = (hotspot: Hotspot): string | null =>
+  hotspot.properties?.route_id ?? hotspot.id ?? null
+
+const getHotspotCoordinates = (hotspot: Hotspot) => {
+  if (hotspot.geometry?.geometries) {
+    return hotspot.geometry.geometries.flatMap((geometry) =>
+      Array.isArray(geometry.coordinates) ? geometry.coordinates : []
+    )
+  }
+
+  return hotspot.geometry?.coordinates || null
 }
 
 function renderText(
@@ -192,6 +219,8 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
   showBeforeAfter,
   isLoading,
 }) => {
+  const { zoomToHotspot, mapRef } = useSpeedManagementStore()
+
   if (!hotspots || hotspots.length === 0) {
     return (
       <Box>
@@ -199,8 +228,6 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
       </Box>
     )
   }
-
-  const displayedColumns: Array<Column> = [...alwaysColumns]
 
   const groupsToRender = variableGroups.map((group) => {
     if (showBeforeAfter) {
@@ -218,12 +245,6 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
     }
   })
 
-  groupsToRender.forEach((group) => {
-    group.columns.forEach((colKey) => {
-      displayedColumns.push({ key: colKey, label: group.label })
-    })
-  })
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box>
@@ -234,7 +255,7 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
           <TableHead>
             {showBeforeAfter && (
               <TableRow>
-                {alwaysColumns.map((col) => (
+                {baseColumns.map((col) => (
                   <StyledHeaderCell
                     key={col.key}
                     align="center"
@@ -264,7 +285,7 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
             )}
 
             <TableRow>
-              {alwaysColumns.map((col) => (
+              {baseColumns.map((col) => (
                 <StyledHeaderCell key={col.key} colSpan={1}>
                   {renderText(col.label)}
                 </StyledHeaderCell>
@@ -313,8 +334,8 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
             {isLoading
               ? Array.from({ length: 15 }).map((_, rowIndex) => (
                   <TableRow key={rowIndex}>
-                    {alwaysColumns.map((col, colIndex) => (
-                      <StyledBodyCell key={colIndex} colSpan={1} isLoading>
+                    {baseColumns.map((col) => (
+                      <StyledBodyCell key={col.key} colSpan={1} isLoading>
                         <Skeleton variant="text" width={10} />
                       </StyledBodyCell>
                     ))}
@@ -341,18 +362,38 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                     key={hotspot.id || index}
                     hover
                     sx={{ cursor: 'pointer', height: 50 }}
-                    // onClick={() => handleRouteSelection(hotspot.id || '')}
-                    onMouseEnter={() => setHoveredHotspot(hotspot.id || null)}
+                    onClick={() => {
+                      const coordinates = getHotspotCoordinates(hotspot)
+                      if (coordinates?.length) {
+                        zoomToHotspot(coordinates, mapRef?.getZoom())
+                      }
+                    }}
+                    onDoubleClick={() => {
+                      const routeId = getHotspotRouteId(hotspot)
+                      if (routeId) {
+                        handleRouteSelection(routeId)
+                      }
+                    }}
+                    onMouseEnter={() =>
+                      setHoveredHotspot(getHotspotRouteId(hotspot))
+                    }
                     onMouseLeave={() => setHoveredHotspot(null)}
                   >
+                    <StyledBodyCell colSpan={1} isLoading={false}>
+                      {index + 1}
+                    </StyledBodyCell>
                     {alwaysColumns.map((col) => (
-                      <StyledBodyCell key={col.key} colSpan={1}>
-                        {formatValue(hotspot.properties[col.key])}
+                      <StyledBodyCell
+                        key={col.key}
+                        colSpan={1}
+                        isLoading={false}
+                      >
+                        {formatValue(hotspot.properties?.[col.key])}
                       </StyledBodyCell>
                     ))}
 
                     {groupsToRender.map((group, gidx) => {
-                      const { properties } = hotspot
+                      const properties = hotspot.properties || {}
                       if (group.columns.length === 0) return null
                       if (showBeforeAfter && group.columns.length > 1) {
                         const beforeCol = group.before
@@ -362,17 +403,21 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                         return (
                           <Fragment key={gidx}>
                             {beforeCol && (
-                              <StyledBodyCell colSpan={1}>
+                              <StyledBodyCell colSpan={1} isLoading={false}>
                                 {formatValue(properties[beforeCol])}
                               </StyledBodyCell>
                             )}
                             {afterCol && (
-                              <StyledBodyCell colSpan={1}>
+                              <StyledBodyCell colSpan={1} isLoading={false}>
                                 {formatValue(properties[afterCol])}
                               </StyledBodyCell>
                             )}
                             {changeCol && (
-                              <StyledBodyCell colSpan={1} highlight>
+                              <StyledBodyCell
+                                colSpan={1}
+                                highlight
+                                isLoading={false}
+                              >
                                 {formatValue(properties[changeCol])}
                               </StyledBodyCell>
                             )}
@@ -380,7 +425,11 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                         )
                       } else {
                         return group.columns.map((colKey) => (
-                          <StyledBodyCell key={colKey} colSpan={1}>
+                          <StyledBodyCell
+                            key={colKey}
+                            colSpan={1}
+                            isLoading={false}
+                          >
                             {formatValue(properties[colKey])}
                           </StyledBodyCell>
                         ))
