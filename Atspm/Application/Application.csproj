@@ -47,7 +47,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Data\Data.csproj" />
+		<ProjectReference Include="..\Data\Data.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -79,22 +81,32 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Using Include="Utah.Udot.Atspm.Analysis.WorkflowSteps" />
-	  <Using Include="Utah.Udot.Atspm.Analysis.Common" />
-	  <Using Include="Utah.Udot.Atspm.Analysis.WorkflowFilters" />
-	  <Using Include="Utah.Udot.Atspm.Data.Models" />
-	  <Using Include="Utah.Udot.Atspm.Enums" />
-	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
-	  <Using Include="Utah.Udot.NetStandardToolkit.Interfaces" />
-	  <Using Include="Utah.Udot.NetStandardToolkit.Workflows" />
-	  <Using Include="Utah.Udot.Atspm.Data.Models.MeasureOptions" />
+		<Using Include="Utah.Udot.Atspm.Analysis.WorkflowSteps" />
+		<Using Include="Utah.Udot.Atspm.Analysis.Common" />
+		<Using Include="Utah.Udot.Atspm.Analysis.WorkflowFilters" />
+		<Using Include="Utah.Udot.Atspm.Data.Models" />
+		<Using Include="Utah.Udot.Atspm.Enums" />
+		<Using Include="Utah.Udot.NetStandardToolkit.Common" />
+		<Using Include="Utah.Udot.NetStandardToolkit.Interfaces" />
+		<Using Include="Utah.Udot.NetStandardToolkit.Workflows" />
+		<Using Include="Utah.Udot.Atspm.Data.Models.MeasureOptions" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
+		<None Update="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
+
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
 
 </Project>
