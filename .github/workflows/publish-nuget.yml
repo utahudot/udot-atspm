@@ -56,13 +56,24 @@ jobs:
         run: dotnet restore ${{ env.TARGET_SLN }}
 
       - name: Build Entire Solution
+        # This still compiles all 22 projects so dependencies are completely satisfied on disk
         run: dotnet build ${{ env.TARGET_SLN }} --configuration Release --verbosity detailed
 
-      - name: Pack All Deliverables
-        # FIXED: Added MSBuild bypass parameter to ignore unpackable projects (docker-compose & frontend)
+      - name: Pack Core Libraries Only
+        # FIXED: Explicitly targets and packs only your Data, Application, Infrastructure, and Provider projects
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          dotnet pack ${{ env.TARGET_SLN }} --configuration Release --no-build -p:PackageVersion=$VERSION -p:ContinueOnError=WarnAndContinue -o ./nupkgs
+          
+          echo "📦 Packing core architecture components..."
+          dotnet pack Atspm/Data/Data.csproj --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          dotnet pack Atspm/Application/Atspm.csproj --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          dotnet pack Atspm/Infrastructure/Infrastructure.csproj --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          echo "📦 Packing database providers..."
+          for provider in Atspm/*DatabaseProvider/*.csproj; do
+            echo "Packing $provider..."
+            dotnet pack "$provider" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          done
 
       - name: Push to NuGet
         run: |
