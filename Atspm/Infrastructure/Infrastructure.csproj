@@ -71,12 +71,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Application\Application.csproj" />
-		<ProjectReference Include="..\MySqlDatabaseProvider\MySqlDatabaseProvider.csproj" />
-		<ProjectReference Include="..\OracleDatabaseProvider\OracleDatabaseProvider.csproj" />
-		<ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj" />
-		<ProjectReference Include="..\SqlDatabaseProvider\SqlDatabaseProvider.csproj" />
-		<ProjectReference Include="..\SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj" />
+		<ProjectReference Include="..\Application\Application.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\MySqlDatabaseProvider\MySqlDatabaseProvider.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\OracleDatabaseProvider\OracleDatabaseProvider.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\SqlDatabaseProvider\SqlDatabaseProvider.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj">
+			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+		</ProjectReference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -121,5 +133,15 @@
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
+
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
 
 </Project>
