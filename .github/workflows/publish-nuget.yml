@@ -42,18 +42,18 @@ jobs:
           fi
 
       - name: Restore dependencies
-        # FIXED: Explicit case-sensitive folder and filename matching your exact directory list
-        run: dotnet restore Atspm/ATSPM.sln
+        # FIXED: Executing from the workspace root where ATSPM.sln lives
+        run: dotnet restore ATSPM.sln
 
       - name: Build Entire Solution
-        # FIXED: Explicit case-sensitive folder and filename matching your exact directory list
-        run: dotnet build Atspm/ATSPM.sln --configuration Release --verbosity detailed
+        # FIXED: Executing from the workspace root where ATSPM.sln lives
+        run: dotnet build ATSPM.sln --configuration Release --verbosity detailed
 
       - name: Pack All Deliverables
-        # FIXED: Explicit case-sensitive folder and filename matching your exact directory list
+        # FIXED: Executing from the workspace root where ATSPM.sln lives
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          dotnet pack Atspm/ATSPM.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          dotnet pack ATSPM.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
 
       - name: Push to NuGet
         run: |
