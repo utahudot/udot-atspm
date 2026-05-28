@@ -56,22 +56,33 @@ jobs:
         run: dotnet restore ${{ env.TARGET_SLN }}
 
       - name: Build Entire Solution
-        # This still compiles all 22 projects so dependencies are completely satisfied on disk
         run: dotnet build ${{ env.TARGET_SLN }} --configuration Release --verbosity detailed
 
       - name: Pack Core Libraries Only
-        # FIXED: Explicitly targets and packs only your Data, Application, Infrastructure, and Provider projects
+        # FIXED: Uses wildcard discovery to find the exact .csproj names regardless of folder casing
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
           
-          echo "📦 Packing core architecture components..."
-          dotnet pack Atspm/Data/Data.csproj --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
-          dotnet pack Atspm/Application/Atspm.csproj --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
-          dotnet pack Atspm/Infrastructure/Infrastructure.csproj --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          echo "📦 Finding and packing specific target libraries..."
           
-          echo "📦 Packing database providers..."
-          for provider in Atspm/*DatabaseProvider/*.csproj; do
-            echo "Packing $provider..."
+          # Find and pack Data project
+          DATA_PATH=$(find . -name "Data.csproj")
+          echo "Packing Data: $DATA_PATH"
+          dotnet pack "$DATA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          # Find and pack Application project (Atspm.csproj)
+          APP_PATH=$(find . -name "Atspm.csproj")
+          echo "Packing Application: $APP_PATH"
+          dotnet pack "$APP_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          # Find and pack Infrastructure project
+          INFRA_PATH=$(find . -name "Infrastructure.csproj")
+          echo "Packing Infrastructure: $INFRA_PATH"
+          dotnet pack "$INFRA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          echo "📦 Finding and packing database providers..."
+          find . -name "*DatabaseProvider.csproj" | while read -r provider; do
+            echo "Packing Provider: $provider"
             dotnet pack "$provider" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
           done
 
