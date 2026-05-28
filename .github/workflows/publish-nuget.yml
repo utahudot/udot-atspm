@@ -41,19 +41,37 @@ jobs:
             exit 1
           fi
 
+      - name: 🔍 DIAGNOSTIC TRACE (Find Solution File)
+        id: find_sln
+        # This completely unmasks the file path layout on the GitHub runner
+        run: |
+          echo "=== CURRENT RUNNER WORKING DIRECTORY ==="
+          pwd
+          echo "========================================="
+          echo "=== SEARCHING FOR ATSPM.sln POSITION ==="
+          find . -name "*ATSPM.sln" -o -name "*Atspm.sln"
+          echo "========================================="
+          
+          # Dynamically lock onto the exact path found on disk
+          SLN_PATH=$(find . -name "*ATSPM.sln" -o -name "*Atspm.sln" | head -n 1)
+          if [ -z "$SLN_PATH" ]; then
+            echo "❌ CRITICAL ERROR: Could not find any .sln file anywhere in the workspace!"
+            exit 1
+          fi
+          
+          echo "TARGET_SLN=$SLN_PATH" >> $GITHUB_ENV
+          echo "🎯 Selected path for build execution: $SLN_PATH"
+
       - name: Restore dependencies
-        # FIXED: Executing from the workspace root where ATSPM.sln lives
-        run: dotnet restore ATSPM.sln
+        run: dotnet restore ${{ env.TARGET_SLN }}
 
       - name: Build Entire Solution
-        # FIXED: Executing from the workspace root where ATSPM.sln lives
-        run: dotnet build ATSPM.sln --configuration Release --verbosity detailed
+        run: dotnet build ${{ env.TARGET_SLN }} --configuration Release --verbosity detailed
 
       - name: Pack All Deliverables
-        # FIXED: Executing from the workspace root where ATSPM.sln lives
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          dotnet pack ATSPM.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          dotnet pack ${{ env.TARGET_SLN }} --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
 
       - name: Push to NuGet
         run: |
