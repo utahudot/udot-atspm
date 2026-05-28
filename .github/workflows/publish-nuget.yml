@@ -42,18 +42,18 @@ jobs:
           fi
 
       - name: Restore dependencies
-        # FIXED: Exact case-sensitive path to match ATSPM.sln
-        run: dotnet restore Atspm/ATSPM.sln
+        # FIXED: Removed Atspm/ prefix entirely. File is at root.
+        run: dotnet restore ATSPM.sln
 
       - name: Build Entire Solution
-        # FIXED: Exact case-sensitive path to match ATSPM.sln
-        run: dotnet build Atspm/ATSPM.sln --configuration Release --verbosity detailed
+        # FIXED: Removed Atspm/ prefix entirely. File is at root.
+        run: dotnet build ATSPM.sln --configuration Release --verbosity detailed
 
       - name: Pack All Deliverables
-        # FIXED: Exact case-sensitive path to match ATSPM.sln
+        # FIXED: Removed Atspm/ prefix entirely. File is at root.
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          dotnet pack Atspm/ATSPM.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          dotnet pack ATSPM.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
 
       - name: Push to NuGet
         run: |
