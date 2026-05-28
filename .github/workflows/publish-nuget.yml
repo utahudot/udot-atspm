@@ -12,11 +12,6 @@ jobs:
   publish-nuget:
     if: ${{ github.repository == 'utahudot/udot-atspm' }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project:
-          - Atspm/Application/Application.csproj
-          - Atspm/Infrastructure/Infrastructure.csproj
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,7 +25,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
@@ -47,29 +42,22 @@ jobs:
           fi
 
       - name: Restore dependencies
-        run: dotnet restore ${{ matrix.project }}
+        run: dotnet restore Atspm/Atspm.sln
 
-      - name: Build project
-        run: dotnet build ${{ matrix.project }} --configuration Release --verbosity detailed
+      - name: Build Entire Solution
+        # Compiles every single project in the repository in order, so everything is ready on disk
+        run: dotnet build Atspm/Atspm.sln --configuration Release --verbosity detailed
 
-      - name: Pack NuGet package
+      - name: Pack All Deliverables
+        # Packs all projects in the solution. This automatically generates .nupkg files 
+        # for Data, Application, Infrastructure, and the Providers cleanly.
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          echo "📦 Cleaned version for packaging: $VERSION"
-          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=$VERSION -o ./nupkgs
-
-      - name: Pack NuGet package with release notes
-        run: |
-          VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          echo "📦 Cleaned version for packaging: $VERSION"
-          RELEASE_NOTES="${{ github.event.release.body }}"
-          dotnet pack ${{ matrix.project }} \
-          --configuration Release \
-          -p:PackageVersion=$VERSION \
-          -p:PackageReleaseNotes="$RELEASE_NOTES" \
-          -o ./nupkgs
+          dotnet pack Atspm/Atspm.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
 
       - name: Push to NuGet
+        # Pushes your packages to the feed. --skip-duplicate ensures that if any provider 
+        # hasn't changed versions, it skips cleanly without failing your pipeline.
         run: |
           for pkg in ./nupkgs/*.nupkg; do
             echo "Pushing $pkg to NuGet..."
