@@ -1,12 +1,12 @@
 #region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.TimeSpaceDiagram/TimeSpaceDiagramSrmService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram

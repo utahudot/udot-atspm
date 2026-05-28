@@ -1,6 +1,6 @@
 // #region license
 // Copyright 2026 Utah Departement of Transportation
-// for WebUI - transformers.ts
+// for WebUI - turningMovementCounts.transformer.ts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -97,10 +97,12 @@ export default function transformTurningMovementCountsData(
     directions,
     movementTypes
   )
+  const displayProps = createTableDisplayProps(response.data.charts)
 
   return {
     type: ChartType.TurningMovementCounts,
     data: {
+      displayProps,
       labels,
       table: response.data.table,
       charts,
@@ -113,6 +115,22 @@ export default function transformTurningMovementCountsData(
           : null,
     },
   }
+}
+
+function createTableDisplayProps(charts: RawTurningMovementCountsData[]) {
+  const firstChart = charts[0]
+
+  if (!firstChart) {
+    return createDisplayProps({ exportFileName: 'Turning_Movement_Counts' })
+  }
+
+  return createDisplayProps({
+    exportFileName: formatExportFileName(
+      `Turning Movement Counts ${firstChart.locationDescription}`,
+      firstChart.start,
+      firstChart.end
+    ),
+  })
 }
 
 function transformData(data: RawTurningMovementCountsData): EChartsOption {
@@ -194,7 +212,7 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   const tooltip = createTooltip()
 
   const colorValues = Object.values(Color)
-  
+
   const series: SeriesOption[] = []
 
   if (lanes.length > 1) {

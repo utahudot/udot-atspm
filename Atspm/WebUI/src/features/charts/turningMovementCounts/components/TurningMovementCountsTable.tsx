@@ -1,4 +1,7 @@
-import { Labels } from '@/features/charts/types'
+import type {
+  Labels,
+  TurningMovementCountsTableDisplayProps,
+} from '@/features/charts/types'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Accordion,
@@ -32,18 +35,23 @@ type NewLaneSeries = {
   volumes: NewVolumePoint[]
 }
 
-interface TurningMovementCountsTableProps {
-  chartData: {
-    data: {
-      labels: Labels
-      table: NewLaneSeries[]
-      peakHour?: {
-        peakHourFactor: number | null
-        peakHourData: TableRowT[]
-      } | null
-    }
+export interface TurningMovementCountsTableChartData {
+  data: {
+    displayProps?: TurningMovementCountsTableDisplayProps
+    labels: Labels
+    table: NewLaneSeries[]
+    peakHour?: {
+      peakHourFactor: number | null
+      peakHourData: TableRowT[]
+    } | null
   }
 }
+
+interface TurningMovementCountsTableProps {
+  chartData: TurningMovementCountsTableChartData
+}
+
+type SelectionMode = 'combine' | 'split'
 
 function formatTime(ts: string) {
   return format(new Date(ts), 'HH:mm')
@@ -102,7 +110,7 @@ function syncSelectedValues(selected: string[], available: string[]) {
 export default function TurningMovementCountsTable({
   chartData,
 }: TurningMovementCountsTableProps) {
-  const { labels, table } = chartData.data
+  const { displayProps, labels, table } = chartData.data
 
   const laneOptById = useMemo(() => {
     const map = new Map<string, (typeof laneTypeOptions)[number]>()
@@ -121,10 +129,8 @@ export default function TurningMovementCountsTable({
     []
   )
   const [selectedDirections, setSelectedDirections] = useState<string[]>([])
-  const [directionMode, setDirectionMode] = useState<'combine' | 'split'>(
-    'split'
-  )
-  const [movementMode, setMovementMode] = useState<'combine' | 'split'>('split')
+  const [directionMode, setDirectionMode] = useState<SelectionMode>('split')
+  const [movementMode, setMovementMode] = useState<SelectionMode>('split')
 
   const availableLaneTypes = useMemo(() => {
     const set = new Set<string>()
@@ -518,10 +524,7 @@ export default function TurningMovementCountsTable({
 
   const handleDownloadCsv = () => {
     const csv = buildCsv()
-    const filename =
-      `turning-movement-counts_${resolvedActiveLaneType}_${directionMode}-${movementMode}.csv`
-        .replace(/\s+/g, '_')
-        .toLowerCase()
+    const filename = `${displayProps?.exportFileName}.csv`
 
     downloadTextFile(filename, csv)
   }

@@ -57,13 +57,6 @@ export const initializeAxiosInstances = async (envVariables?: EnvVariables) => {
 
   if (env.CONFIG_URL) {
     configAxios = createAxiosInstance(buildApiBaseUrl(env.CONFIG_URL, true))
-    configAxios.interceptors.response.use(
-      (responseData) => {
-        stripZFromDates(responseData)
-        return responseData
-      },
-      (error) => Promise.reject(error)
-    )
   }
   if (env.REPORTS_URL) {
     reportsAxios = createAxiosInstance(buildApiBaseUrl(env.REPORTS_URL))

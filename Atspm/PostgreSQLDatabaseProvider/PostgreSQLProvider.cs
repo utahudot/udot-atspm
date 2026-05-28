@@ -17,10 +17,10 @@
 
 namespace Utah.Udot.Atspm.PostgreSQLDatabaseProvider
 {
-    public class PostgreSQLProvider
+    public class PostgreSqlProvider
     {
         public const string ProviderName = "PostgreSQL";
 
-        public static string Migration => typeof(PostgreSQLProvider).Assembly.FullName;
+        public static string Migration => typeof(PostgreSqlProvider).Assembly.FullName;
     }
 }

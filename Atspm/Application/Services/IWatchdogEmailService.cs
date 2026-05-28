@@ -16,7 +16,6 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Watchdog;
-using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Services
 {

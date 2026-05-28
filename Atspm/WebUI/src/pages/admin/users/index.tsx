@@ -14,7 +14,7 @@ import {
 import UserDto from '@/features/identity/types/userDto'
 import { identityRequest } from '@/lib/axios'
 import { useNotificationStore } from '@/stores/notifications'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { formatInstantAsLocalDate } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const UsersAdmin = () => {
@@ -110,8 +110,8 @@ const UsersAdmin = () => {
     return {
       ...user,
       roles: user.roles?.sort(),
-      created: user.created ? toUTCDateStamp(user.created) : '',
-      modified: user.modified ? toUTCDateStamp(user.modified) : '',
+      created: formatInstantAsLocalDate(user.created),
+      modified: formatInstantAsLocalDate(user.modified),
     }
   })
 
