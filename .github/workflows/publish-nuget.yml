@@ -59,7 +59,6 @@ jobs:
         run: dotnet build ${{ env.TARGET_SLN }} --configuration Release --verbosity detailed
 
       - name: Pack Core Libraries Only
-        # FIXED: Uses wildcard discovery to find the exact .csproj names regardless of folder casing
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
           
@@ -70,8 +69,8 @@ jobs:
           echo "Packing Data: $DATA_PATH"
           dotnet pack "$DATA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
           
-          # Find and pack Application project (Atspm.csproj)
-          APP_PATH=$(find . -name "Atspm.csproj")
+          # FIXED: Searching for Application.csproj directly
+          APP_PATH=$(find . -name "Application.csproj")
           echo "Packing Application: $APP_PATH"
           dotnet pack "$APP_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
           
