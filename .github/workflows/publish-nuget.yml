@@ -42,15 +42,15 @@ jobs:
           fi
 
       - name: Restore dependencies
-        # FIXED: Matched exact case-sensitive folder path and filename
+        # FIXED: Exact case-sensitive path to match ATSPM.sln
         run: dotnet restore Atspm/ATSPM.sln
 
       - name: Build Entire Solution
-        # FIXED: Matched exact case-sensitive folder path and filename
+        # FIXED: Exact case-sensitive path to match ATSPM.sln
         run: dotnet build Atspm/ATSPM.sln --configuration Release --verbosity detailed
 
       - name: Pack All Deliverables
-        # FIXED: Matched exact case-sensitive folder path and filename
+        # FIXED: Exact case-sensitive path to match ATSPM.sln
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
           dotnet pack Atspm/ATSPM.sln --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
