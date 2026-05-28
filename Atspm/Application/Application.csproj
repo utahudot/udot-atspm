@@ -21,7 +21,7 @@
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<Version>5.3.0-rc4</Version>
+		<Version>5.3.0-rc1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -44,12 +44,19 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
+		<PackageReference Include="Utah.Udot.NetStandardToolkit" Version="1.6.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Data\Data.csproj">
-			<PrivateAssets>compile;runtime;build;native;contentfiles;analyzers;buildtransitive</PrivateAssets>
+			<PrivateAssets>all</PrivateAssets>
 		</ProjectReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\Data\bin\$(Configuration)\net8.0\Utah.Udot.Atspm.Data.dll" Pack="true" PackagePath="lib\net8.0\" Visible="false" />
+		<Content Include="..\Data\bin\$(Configuration)\net8.0\Utah.Udot.Atspm.Data.pdb" Pack="true" PackagePath="lib\net8.0\" Visible="false" />
+		<Content Include="..\Data\bin\$(Configuration)\net8.0\Utah.Udot.Atspm.Data.xml" Pack="true" PackagePath="lib\net8.0\" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -98,15 +105,5 @@
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
-
-	<PropertyGroup>
-		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-	</PropertyGroup>
-
-	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
-		<ItemGroup>
-			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-		</ItemGroup>
-	</Target>
 
 </Project>
