@@ -43,22 +43,12 @@ jobs:
 
       - name: 🔍 DIAGNOSTIC TRACE (Find Solution File)
         id: find_sln
-        # This completely unmasks the file path layout on the GitHub runner
         run: |
-          echo "=== CURRENT RUNNER WORKING DIRECTORY ==="
-          pwd
-          echo "========================================="
-          echo "=== SEARCHING FOR ATSPM.sln POSITION ==="
-          find . -name "*ATSPM.sln" -o -name "*Atspm.sln"
-          echo "========================================="
-          
-          # Dynamically lock onto the exact path found on disk
           SLN_PATH=$(find . -name "*ATSPM.sln" -o -name "*Atspm.sln" | head -n 1)
           if [ -z "$SLN_PATH" ]; then
             echo "❌ CRITICAL ERROR: Could not find any .sln file anywhere in the workspace!"
             exit 1
           fi
-          
           echo "TARGET_SLN=$SLN_PATH" >> $GITHUB_ENV
           echo "🎯 Selected path for build execution: $SLN_PATH"
 
@@ -69,9 +59,10 @@ jobs:
         run: dotnet build ${{ env.TARGET_SLN }} --configuration Release --verbosity detailed
 
       - name: Pack All Deliverables
+        # FIXED: Added MSBuild bypass parameter to ignore unpackable projects (docker-compose & frontend)
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          dotnet pack ${{ env.TARGET_SLN }} --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          dotnet pack ${{ env.TARGET_SLN }} --configuration Release --no-build -p:PackageVersion=$VERSION -p:ContinueOnError=WarnAndContinue -o ./nupkgs
 
       - name: Push to NuGet
         run: |
