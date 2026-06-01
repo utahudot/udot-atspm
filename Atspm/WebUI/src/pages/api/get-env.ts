@@ -30,7 +30,8 @@ export default function handler(
     MAP_DEFAULT_LONGITUDE: process.env.MAP_DEFAULT_LONGITUDE,
     MAP_TILE_LAYER: process.env.MAP_TILE_LAYER,
     MAP_TILE_ATTRIBUTION: process.env.MAP_TILE_ATTRIBUTION,
-    SPONSOR_IMAGE_URL: process.env.POWERED_BY_IMAGE_URL,
+    POWERED_BY_IMAGE_URL: process.env.POWERED_BY_IMAGE_URL,
     MAP_DEFAULT_ZOOM: process.env.MAP_DEFAULT_ZOOM,
+    SPEED_LIMIT_MAP_LAYER: process.env.SPEED_LIMIT_MAP_LAYER,
   })
 }
