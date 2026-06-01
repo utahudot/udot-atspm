@@ -18,8 +18,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Moq;
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Repositories.AggregationRepositories;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
@@ -283,6 +288,211 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
             Assert.NotEmpty(result);
             Assert.Equal(startDate, result.First().Start);
             Assert.Equal(endDate, result.First().End);
+        }
+    }
+
+    public class PlanServiceSignalTimingPlanTests
+    {
+        private const string LocationIdentifier = "1001";
+        private readonly PlanService _planService = new PlanService();
+
+        [Fact]
+        public void GetPlans_NoRows_ReturnsUnknownPlanForWindow()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+
+            var result = _planService.GetPlans(LocationIdentifier, start, end, Enumerable.Empty<SignalTimingPlan>());
+
+            var plan = Assert.Single(result);
+            Assert.Equal("0", plan.PlanNumber);
+            Assert.Equal("Unknown", plan.PlanDescription);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
+        public void GetPlans_FiltersByLocationIdentifierAndClipsToRequestedWindow()
+        {
+            var start = new DateTime(2026, 1, 1, 9, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    PlanNumber = 1,
+                    Start = new DateTime(2026, 1, 1, 8, 0, 0),
+                    End = new DateTime(2026, 1, 1, 10, 0, 0)
+                },
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = "2002",
+                    PlanNumber = 9,
+                    Start = new DateTime(2026, 1, 1, 9, 0, 0),
+                    End = new DateTime(2026, 1, 1, 11, 0, 0)
+                }
+            };
+
+            var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("1", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public void GetPlans_OpenEndedPlan_ClipsToRequestedEnd()
+        {
+            var start = new DateTime(2026, 1, 1, 9, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    PlanNumber = 254,
+                    Start = new DateTime(2026, 1, 1, 8, 0, 0),
+                    End = DateTime.MinValue
+                }
+            };
+
+            var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
+
+            var plan = Assert.Single(result);
+            Assert.Equal("254", plan.PlanNumber);
+            Assert.Equal("Free", plan.PlanDescription);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
+        public void GetPlans_LeadingInternalAndTrailingGaps_ReturnUnknownPlans()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 12, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    PlanNumber = 1,
+                    Start = new DateTime(2026, 1, 1, 9, 0, 0),
+                    End = new DateTime(2026, 1, 1, 10, 0, 0)
+                },
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    PlanNumber = 2,
+                    Start = new DateTime(2026, 1, 1, 10, 30, 0),
+                    End = new DateTime(2026, 1, 1, 11, 0, 0)
+                }
+            };
+
+            var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 9, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("1", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 9, 0, 0), plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 30, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("2", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 30, 0), plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 11, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 11, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_QueriesRepositoryByLocationIdentifierAndDelegatesToReusableMethod()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    PlanNumber = 3,
+                    Start = start,
+                    End = end
+                }
+            };
+            Expression<Func<SignalTimingPlan, bool>> capturedCriteria = null;
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .Callback<Expression<Func<SignalTimingPlan, bool>>>(criteria => capturedCriteria = criteria)
+                .ReturnsAsync(rows);
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end);
+
+            var plan = Assert.Single(result);
+            Assert.Equal("3", plan.PlanNumber);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+            Assert.NotNull(capturedCriteria);
+
+            var matches = capturedCriteria.Compile();
+            Assert.True(matches(new SignalTimingPlan
+            {
+                LocationIdentifier = LocationIdentifier,
+                PlanNumber = 1,
+                Start = start.AddMinutes(15),
+                End = end
+            }));
+            Assert.False(matches(new SignalTimingPlan
+            {
+                LocationIdentifier = "2002",
+                PlanNumber = 1,
+                Start = start.AddMinutes(15),
+                End = end
+            }));
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithoutRepository_ThrowsInvalidOperationException()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _planService.GetPlansAsync(LocationIdentifier, start, end));
         }
     }
 }
