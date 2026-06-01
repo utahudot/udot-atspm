@@ -50,13 +50,7 @@ cmdBuilder.UseHost(hostBuilder =>
     {
         c.AddUserSecrets<Program>(optional: true); // Load secrets first
         //c.AddCommandLine(args);                    // Override with command-line args
-
-        Console.WriteLine($"OsVersion: {Environment.OSVersion} - {Environment.OSVersion.Platform}:{Environment.OSVersion.Version}");
-
-        Console.WriteLine($"container? {Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")}");
-
-        Console.WriteLine($"gcp container? {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("K_SERVICE"))}");
-        Console.WriteLine($"gcp job container? {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CLOUD_RUN_JOB"))}");
+        
     })
     .ConfigureServices((h, s) =>
     {
