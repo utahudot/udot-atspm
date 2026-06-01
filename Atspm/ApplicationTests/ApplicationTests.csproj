@@ -49,7 +49,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
-	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Data\Data.csproj" />
 	</ItemGroup>
 
 </Project>

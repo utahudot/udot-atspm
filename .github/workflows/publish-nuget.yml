@@ -12,11 +12,6 @@ jobs:
   publish-nuget:
     if: ${{ github.repository == 'utahudot/udot-atspm' }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project:
-          - Atspm/Application/Application.csproj
-          - Atspm/Infrastructure/Infrastructure.csproj
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,7 +25,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
@@ -46,28 +41,49 @@ jobs:
             exit 1
           fi
 
+      - name: 🔍 DIAGNOSTIC TRACE (Find Solution File)
+        id: find_sln
+        run: |
+          SLN_PATH=$(find . -name "*ATSPM.sln" -o -name "*Atspm.sln" | head -n 1)
+          if [ -z "$SLN_PATH" ]; then
+            echo "❌ CRITICAL ERROR: Could not find any .sln file anywhere in the workspace!"
+            exit 1
+          fi
+          echo "TARGET_SLN=$SLN_PATH" >> $GITHUB_ENV
+          echo "🎯 Selected path for build execution: $SLN_PATH"
+
       - name: Restore dependencies
-        run: dotnet restore ${{ matrix.project }}
+        run: dotnet restore ${{ env.TARGET_SLN }}
 
-      - name: Build project
-        run: dotnet build ${{ matrix.project }} --configuration Release --verbosity detailed
+      - name: Build Entire Solution
+        run: dotnet build ${{ env.TARGET_SLN }} --configuration Release --verbosity detailed
 
-      - name: Pack NuGet package
+      - name: Pack Core Libraries Only
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          echo "📦 Cleaned version for packaging: $VERSION"
-          dotnet pack ${{ matrix.project }} --configuration Release -p:PackageVersion=$VERSION -o ./nupkgs
-
-      - name: Pack NuGet package with release notes
-        run: |
-          VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          echo "📦 Cleaned version for packaging: $VERSION"
-          RELEASE_NOTES="${{ github.event.release.body }}"
-          dotnet pack ${{ matrix.project }} \
-          --configuration Release \
-          -p:PackageVersion=$VERSION \
-          -p:PackageReleaseNotes="$RELEASE_NOTES" \
-          -o ./nupkgs
+          
+          echo "📦 Finding and packing specific target libraries..."
+          
+          # Find and pack Data project
+          DATA_PATH=$(find . -name "Data.csproj")
+          echo "Packing Data: $DATA_PATH"
+          dotnet pack "$DATA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          # FIXED: Searching for Application.csproj directly
+          APP_PATH=$(find . -name "Application.csproj")
+          echo "Packing Application: $APP_PATH"
+          dotnet pack "$APP_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          # Find and pack Infrastructure project
+          INFRA_PATH=$(find . -name "Infrastructure.csproj")
+          echo "Packing Infrastructure: $INFRA_PATH"
+          dotnet pack "$INFRA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          
+          echo "📦 Finding and packing database providers..."
+          find . -name "*DatabaseProvider.csproj" | while read -r provider; do
+            echo "Packing Provider: $provider"
+            dotnet pack "$provider" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
+          done
 
       - name: Push to NuGet
         run: |
