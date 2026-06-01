@@ -52,7 +52,7 @@ namespace Utah.Udot.Atspm.Business.SplitFail
         public SplitFailPhaseData GetSplitFailPhaseData(
             SplitFailOptions options,
             IReadOnlyList<IndianaEvent> cycleEvents,
-            IReadOnlyList<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> planData,
             IReadOnlyList<IndianaEvent> terminationEvents,
             IReadOnlyList<IndianaEvent> detectorEvents,
             Approach approach,
@@ -72,7 +72,7 @@ namespace Utah.Udot.Atspm.Business.SplitFail
                 splitFailPhaseData.Cycles,
                 options,
                 splitFailPhaseData.Approach,
-                planEvents);
+                planData);
             splitFailPhaseData.TotalFails = splitFailPhaseData.Cycles.Count(c => c.IsSplitFail);
             splitFailPhaseData.Statistics = new Dictionary<string, string>();
             splitFailPhaseData.Statistics.Add("Total Split Failures", splitFailPhaseData.TotalFails.ToString());

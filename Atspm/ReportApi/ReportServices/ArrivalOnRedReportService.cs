@@ -30,6 +30,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
+        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public ArrivalOnRedReportService(
@@ -37,7 +38,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             LocationPhaseService LocationPhaseService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService
+            PhaseService phaseService,
+            PlanService planService
             )
         {
             this.arrivalOnRedService = arrivalOnRedService;
@@ -45,6 +47,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
+            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -65,9 +68,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<ArrivalOnRedResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(
-            parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, cancelToken);
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<ArrivalOnRedResult>>();
             foreach (var phase in phaseDetails)
@@ -75,7 +76,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 if (phase.IsPermissivePhase && parameter.GetPermissivePhase || !phase.IsPermissivePhase)
                 {
                     tasks.Add(
-                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
+                   GetChartDataByApproach(parameter, phase, controllerEventLogs, plans, Location.LocationDescription()));
                 }
 
             }
@@ -97,7 +98,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             ArrivalOnRedOptions options,
             PhaseDetail phaseDetail,
             List<IndianaEvent> controllerEventLogs,
-            List<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> plans,
             string LocationDescription)
         {
             var LocationPhase = await LocationPhaseService.GetLocationPhaseData(
@@ -107,7 +108,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 options.BinSize,
                 null,
                 controllerEventLogs,
-                planEvents,
+                plans,
                 false
                 );
             if (LocationPhase == null)

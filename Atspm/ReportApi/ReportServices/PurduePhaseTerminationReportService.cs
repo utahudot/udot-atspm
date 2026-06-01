@@ -27,16 +27,19 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
+        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public PurduePhaseTerminationReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             IIndianaEventLogRepository controllerEventLogRepository,
-            ILocationRepository LocationRepository)
+            ILocationRepository LocationRepository,
+            PlanService planService)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
+            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -55,9 +58,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(
-                parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, cancelToken);
             var terminationEvents = controllerEventLogs.Where(e =>
                 new List<short>
                 {
@@ -98,7 +99,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 parameter.LocationIdentifier,
                 parameter.Start,
                 parameter.End,
-                planEvents,
+                plans,
                 cycleEvents,
                 splitsEvents,
                 pedEvents,
@@ -118,13 +119,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     ));
             }
 
-            var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.Start, p.End)).ToList();
+            var resultPlans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.Start, p.End)).ToList();
             var result = new PhaseTerminationResult(
                 phaseCollectionData.locationId,
                 parameter.Start,
                 parameter.End,
                 parameter.SelectedConsecutiveCount,
-                plans,
+                resultPlans,
                 phases
                 );
             result.LocationDescription = Location.LocationDescription();

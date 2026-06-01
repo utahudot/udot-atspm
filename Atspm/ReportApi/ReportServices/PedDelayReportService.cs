@@ -31,6 +31,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
+        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public PedDelayReportService(
@@ -39,7 +40,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             CycleService cycleService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService)
+            PhaseService phaseService,
+            PlanService planService)
         {
             this.pedDelayService = pedDelayService;
             this.pedPhaseService = pedPhaseService;
@@ -47,6 +49,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
+            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -65,14 +68,12 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(
-            parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, cancelToken);
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<PedDelayResult>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, planEvents, controllerEventLogs));
+                tasks.Add(GetChartDataForApproach(parameter, phase, plans, controllerEventLogs));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -91,8 +92,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private async Task<PedDelayResult> GetChartDataForApproach(
             PedDelayOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<IndianaEvent>
-            planEvents,
+            IReadOnlyList<Plan> plans,
             IReadOnlyList<IndianaEvent> events)
         {
             var cycleEvents = events.GetCycleEventsWithTimeExtension(phaseDetail.PhaseNumber, phaseDetail.UseOverlap, options.Start, options.End);
@@ -102,7 +102,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
                 options,
                 phaseDetail.Approach,
-                planEvents.ToList(),
+                plans.ToList(),
                 pedEvents.ToList());
 
             var cycles = cycleService.GetRedToRedCycles(

@@ -30,6 +30,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly LocationPhaseService LocationPhaseService;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
+        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public PurdueCoordinationDiagramReportService(
@@ -37,13 +38,15 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             IIndianaEventLogRepository controllerEventLogRepository,
             LocationPhaseService LocationPhaseService,
             ILocationRepository LocationRepository,
-            PhaseService phaseService)
+            PhaseService phaseService,
+            PlanService planService)
         {
             this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationPhaseService = LocationPhaseService;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
+            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -62,14 +65,12 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(
-            parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, cancelToken);
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<PurdueCoordinationDiagramResult>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents));
+                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, plans));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -89,7 +90,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             PurdueCoordinationDiagramOptions options,
             PhaseDetail phaseDetail,
             IReadOnlyList<IndianaEvent> controllerEventLogs,
-            IReadOnlyList<IndianaEvent> planEvents)
+            IReadOnlyList<Plan> plans)
         {
             var LocationPhase = await LocationPhaseService.GetLocationPhaseData(
                 phaseDetail,
@@ -98,7 +99,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 options.BinSize,
                 null,
                 controllerEventLogs.ToList(),
-                planEvents.ToList(),
+                plans,
                 options.GetVolume);
             if (LocationPhase == null)
             {

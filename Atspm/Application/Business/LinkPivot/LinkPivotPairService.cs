@@ -28,11 +28,13 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
     {
         private readonly LocationPhaseService locationPhaseService;
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
+        private readonly PlanService planService;
 
-        public LinkPivotPairService(LocationPhaseService locationPhaseService, IIndianaEventLogRepository controllerEventLogRepository)
+        public LinkPivotPairService(LocationPhaseService locationPhaseService, IIndianaEventLogRepository controllerEventLogRepository, PlanService planService)
         {
             this.locationPhaseService = locationPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.planService = planService;
         }
 
         public async Task<LinkPivotPair> GetLinkPivotPairAsync(Approach signalApproach,
@@ -423,7 +425,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             {
                 throw new Exception($"No Controller Event Logs found for the dates provided for location {approach.Location.LocationIdentifier}");
             }
-            var plans = logs.GetPlanEvents(start, end).ToList();
+            var plans = await planService.GetPlansAsync(approach.Location.LocationIdentifier, tempStartDate, tempEndDate);
             var pcd = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, tempStartDate, tempEndDate, 15, 13, logs, plans, true, null, cycleTime);
             return pcd;
         }

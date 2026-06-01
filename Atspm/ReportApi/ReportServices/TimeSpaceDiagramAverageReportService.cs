@@ -76,7 +76,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 }
             }
 
-            var averageParamsBase = ProcessRouteLocations(routeLocations, parameter);
+            var averageParamsBase = await ProcessRouteLocations(routeLocations, parameter, cancelToken);
 
             var results = await Task.WhenAll(GetChartData(parameter, routeLocations, averageParamsBase, eventCodes));
             return results;
@@ -205,8 +205,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return results;
         }
 
-        private TimeSpaceAverageBase ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations,
-            TimeSpaceDiagramAverageOptions parameter)
+        private async Task<TimeSpaceAverageBase> ProcessRouteLocations(
+            IEnumerable<RouteLocation> routeLocations,
+            TimeSpaceDiagramAverageOptions parameter,
+            CancellationToken cancelToken)
         {
             var controllerEventLogsList = new List<List<IndianaEvent>>();
             var primaryPhaseDetails = new List<PhaseDetail>();
@@ -265,10 +267,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     {
                         throw new NullReferenceException("No Controller Event Logs found for Location");
                     }
-                    var planEvents = logs.GetPlanEvents(start.AddHours(-12), end.AddHours(12));
-                    var plan = planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
-
-
+                    var plan = (await planService.GetPlansAsync(routeLocation.LocationIdentifier, start, end, cancelToken)).FirstOrDefault();
 
                     if (currentProgrammedCycleLength == 0)
                     {

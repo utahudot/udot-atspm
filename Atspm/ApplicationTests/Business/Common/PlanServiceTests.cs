@@ -437,6 +437,69 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
         }
 
         [Fact]
+        public void GetPlans_FromPlanData_ClipsAndFillsGaps()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var planData = new List<Plan>
+            {
+                new Plan("4", new DateTime(2026, 1, 1, 7, 0, 0), new DateTime(2026, 1, 1, 9, 0, 0)),
+                new Plan("5", new DateTime(2026, 1, 1, 10, 0, 0), new DateTime(2026, 1, 1, 12, 0, 0))
+            };
+
+            var result = _planService.GetPlans(start, end, planData);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("4", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 9, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 9, 0, 0), plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("5", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public void GetSplitMonitorPlans_FromPlanData_ReturnsSpecializedPlanWindows()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var planData = new List<Plan>
+            {
+                new Plan("7", start, new DateTime(2026, 1, 1, 9, 0, 0))
+            };
+
+            var result = _planService.GetSplitMonitorPlans(start, end, LocationIdentifier, planData);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("7", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 9, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 9, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
         public async Task GetPlansAsync_QueriesRepositoryByLocationIdentifierAndDelegatesToReusableMethod()
         {
             var start = new DateTime(2026, 1, 1, 8, 0, 0);
