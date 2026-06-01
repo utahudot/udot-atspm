@@ -3,57 +3,69 @@
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
 	</PropertyGroup>
-	
+
 	<PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>Utah.Udot.Atspm.Data</RootNamespace>
-    <AssemblyName>Utah.Udot.Atspm.Data</AssemblyName>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-  </PropertyGroup>
-	
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Utah.Udot.Atspm.Data</RootNamespace>
+		<AssemblyName>Utah.Udot.Atspm.Data</AssemblyName>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>$(AssemblyName)</PackageId>
+		<Title>Udot Automated Traffic Performance Measure Data Layer</Title>
+		<Authors>utah.udot.gov</Authors>
+		<Description>Library that defines data models and database contexts for the Automated Traffic Performance Measures platform</Description>
+		<Copyright>Copyright $(Authors)</Copyright>
+		<PackageProjectUrl>https://github.com/OpenSourceTransportation/Atspm</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/OpenSourceTransportation/Atspm</RepositoryUrl>
+		<PackageTags>C#; .net standard; .net core; efcore</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+
+		<Version>5.3.0-rc5</Version>
+	</PropertyGroup>
+
 	<ItemGroup>
-	  <Compile Remove="Configuration\SpeedEventConfiguration.cs" />
-	  <Compile Remove="LegacyEventLogContext.cs" />
-	  <Compile Remove="SpeedContext.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <None Include="Configuration\SpeedEventConfiguration.cs" />
-	  <None Include="LegacyEventLogContext.cs" />
-	  <None Include="SpeedContext.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.0" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	  <PackageReference Include="Npgsql" Version="8.0.6" />
-	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-	  <PackageReference Include="Utah.Udot.NetStandardToolkit" Version="1.6.0" />
+		<Compile Remove="Configuration\SpeedEventConfiguration.cs" />
+		<Compile Remove="LegacyEventLogContext.cs" />
+		<Compile Remove="SpeedContext.cs" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Utah.Udot.Atspm.Data" />
-    <Using Include="Utah.Udot.Atspm.Data.Configuration" />
-    <Using Include="Utah.Udot.Atspm.Data.Models" />
-    <Using Include="Utah.Udot.Atspm.Data.Models" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="Configuration\SpeedEventConfiguration.cs" />
+		<None Include="LegacyEventLogContext.cs" />
+		<None Include="SpeedContext.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configuration\Aggregation\" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Npgsql" Version="8.0.6" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+		<PackageReference Include="Utah.Udot.NetStandardToolkit" Version="1.6.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Utah.Udot.Atspm.Data" />
+		<Using Include="Utah.Udot.Atspm.Data.Configuration" />
+		<Using Include="Utah.Udot.Atspm.Data.Models" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Configuration\Aggregation\" />
+	</ItemGroup>
 
 </Project>
