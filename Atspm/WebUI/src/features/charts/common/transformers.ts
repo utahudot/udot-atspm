@@ -21,7 +21,6 @@ import {
   MarkAreaData,
   PlanData,
   PlanOptions,
-  ToolType,
 } from '@/features/charts/common/types'
 import { Color } from '@/features/charts/utils'
 import { format } from 'date-fns'
@@ -394,9 +393,9 @@ export function formatExportFileName(
 }
 
 export function createToolbox(
-  { title, dateRange }: titleProps,
-  locationIdentifier: string,
-  type: ChartType | ToolType
+  { title }: titleProps
+  // locationIdentifier?: string,
+  // type?: ChartType | ToolType
 ) {
   const toolbox: ToolboxComponentOption = {
     feature: {
