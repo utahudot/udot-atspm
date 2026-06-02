@@ -158,6 +158,48 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
         [Fact]
         [Trait(nameof(MergeExistingSignalPlansStep), "Process")]
+        public async Task Process_MergesDifferentPlanNumbersWithinLocationWindow()
+        {
+            // Arrange
+            var startTime = new DateTime(2026, 1, 1, 10, 0, 0);
+
+            _context.SignalTimingPlans.Add(new SignalTimingPlan
+            {
+                LocationIdentifier = "L1",
+                PlanNumber = 2,
+                Start = startTime.AddHours(1)
+            });
+            await _context.SaveChangesAsync();
+
+            var inputPlans = new List<SignalTimingPlan>
+            {
+                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime }
+            };
+
+            _mockRepo.Setup(r => r.GetList()).Returns(_context.SignalTimingPlans.AsNoTracking());
+
+            var sut = new MergeExistingSignalPlansStep(_mockScopeFactory.Object, new ExecutionDataflowBlockOptions());
+
+            // Act
+            sut.Post(inputPlans);
+            sut.Complete();
+
+            var results = new List<IEnumerable<SignalTimingPlan>>();
+            while (await sut.OutputAvailableAsync())
+            {
+                if (sut.TryReceive(out var chunk)) results.Add(chunk);
+            }
+
+            // Assert
+            var flatResults = results.SelectMany(x => x).ToList();
+
+            Assert.Equal(2, flatResults.Count);
+            Assert.Contains(flatResults, p => p.PlanNumber == 1 && p.Start == startTime);
+            Assert.Contains(flatResults, p => p.PlanNumber == 2 && p.Start == startTime.AddHours(1));
+        }
+
+        [Fact]
+        [Trait(nameof(MergeExistingSignalPlansStep), "Process")]
         public async Task Process_HandlesMultipleLocations_DoesNotMixData()
         {
             // Arrange
@@ -188,7 +230,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             }
 
             // Assert
-            Assert.Equal(2, results.Count); // Two groups: (L1, P1) and (L2, P1)
+            Assert.Equal(2, results.Count); // Two location groups: L1 and L2
 
             var l1Group = results.First(g => g.Any(p => p.LocationIdentifier == "L1")).ToList();
             var l2Group = results.First(g => g.Any(p => p.LocationIdentifier == "L2")).ToList();

@@ -107,7 +107,43 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
         [Fact]
         [Trait(nameof(ReconcileSignalPlansStep), "Process")]
-        public async Task Process_IsolatesTimelines_ByLocationAndPlan()
+        public async Task Process_SetsEndTime_BasedOnNextPlanChange()
+        {
+            // Arrange
+            var sut = new ReconcileSignalPlansStep(new ExecutionDataflowBlockOptions());
+            var startTime = DateTime.Now.Date;
+
+            var input = new List<SignalTimingPlan>
+            {
+                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime },
+                new() { LocationIdentifier = "L1", PlanNumber = 2, Start = startTime.AddHours(1) },
+                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime.AddHours(2) }
+            };
+
+            // Act
+            sut.Post(input);
+            sut.Complete();
+
+            var results = new List<SignalTimingPlan>();
+            while (await sut.OutputAvailableAsync())
+            {
+                while (sut.TryReceive(out IEnumerable<SignalTimingPlan> chunk))
+                {
+                    results.AddRange(chunk);
+                }
+            }
+
+            // Assert
+            var ordered = results.OrderBy(p => p.Start).ToList();
+
+            Assert.Equal(ordered[1].Start, ordered[0].End);
+            Assert.Equal(ordered[2].Start, ordered[1].End);
+            Assert.Equal(DateTime.MinValue, ordered[2].End);
+        }
+
+        [Fact]
+        [Trait(nameof(ReconcileSignalPlansStep), "Process")]
+        public async Task Process_IsolatesTimelines_ByLocation()
         {
             // Arrange
             var sut = new ReconcileSignalPlansStep(new ExecutionDataflowBlockOptions());
