@@ -127,7 +127,7 @@ const initialSegmentProperties: SegmentProperties = {
   county: null,
   alternateIdentifier: null,
   accessCategory: null,
-  offset: 0,
+  offset: null,
   shape: null,
   shapeWKT: null,
   entities: [],
