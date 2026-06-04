@@ -38,7 +38,11 @@ interface Hotspot {
   }
   properties?: Record<string, unknown> & {
     route_id?: string
+    segmentId?: string
+    segmentIds?: string[] | null
   }
+  segmentId?: string
+  segmentIds?: string[] | null
   [key: string]: unknown
 }
 
@@ -113,8 +117,19 @@ const formatValue = (value: unknown): string => {
   return value ? String(value) : 'N/A'
 }
 
-const getHotspotRouteId = (hotspot: Hotspot): string | null =>
-  hotspot.properties?.route_id ?? hotspot.id ?? null
+const getHotspotRouteId = (hotspot: Hotspot): string | null => {
+  const segmentIds = hotspot.properties?.segmentIds ?? hotspot.segmentIds
+  if (hotspot.properties?.route_id) return hotspot.properties.route_id
+  if (hotspot.properties?.segmentId) return hotspot.properties.segmentId
+  if (hotspot.segmentId) return hotspot.segmentId
+  if (segmentIds?.length) {
+    return segmentIds[Math.floor(segmentIds.length / 2)]
+  }
+  return null
+}
+
+const getHotspotHoverId = (hotspot: Hotspot): string | null =>
+  getHotspotRouteId(hotspot) ?? hotspot.id ?? null
 
 const getHotspotCoordinates = (hotspot: Hotspot) => {
   if (hotspot.geometry?.geometries) {
@@ -375,7 +390,7 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                       }
                     }}
                     onMouseEnter={() =>
-                      setHoveredHotspot(getHotspotRouteId(hotspot))
+                      setHoveredHotspot(getHotspotHoverId(hotspot))
                     }
                     onMouseLeave={() => setHoveredHotspot(null)}
                   >
