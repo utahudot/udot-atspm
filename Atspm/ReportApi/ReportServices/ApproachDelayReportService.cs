@@ -62,8 +62,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             }
 
             var controllerEventLogs = _controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier,
-                parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
+                parameter.Start,
+                parameter.End).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -71,7 +71,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 await Task.FromException<IEnumerable<Analysis.ApproachDelay.ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await _planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, cancelToken);
+            var plans = await _planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
             var phaseDetails = _phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachDelayResult>>();
 

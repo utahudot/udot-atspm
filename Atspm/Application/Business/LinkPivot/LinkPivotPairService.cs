@@ -425,7 +425,10 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             {
                 throw new Exception($"No Controller Event Logs found for the dates provided for location {approach.Location.LocationIdentifier}");
             }
-            var plans = await planService.GetPlansAsync(approach.Location.LocationIdentifier, tempStartDate, tempEndDate);
+            var planFallbackLogs = logs
+                .Where(e => e.Timestamp >= tempStartDate && e.Timestamp < tempEndDate)
+                .ToList();
+            var plans = await planService.GetPlansAsync(approach.Location.LocationIdentifier, tempStartDate, tempEndDate, planFallbackLogs);
             var pcd = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, tempStartDate, tempEndDate, 15, 13, logs, plans, true, null, cycleTime);
             return pcd;
         }

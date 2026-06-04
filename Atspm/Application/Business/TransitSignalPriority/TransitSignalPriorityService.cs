@@ -516,7 +516,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var splitsEvents = eventGroups["splitsEvents"];
             var firstDate = inputParameters.Dates.OrderBy(d => d).First();
             var endDate = inputParameters.Dates.OrderBy(d => d).Last().AddDays(1);
-            var planData = await _planService.GetPlansAsync(inputParameters.LocationPhases.LocationIdentifier, firstDate, endDate);
+            var planData = await _planService.GetPlansAsync(inputParameters.LocationPhases.LocationIdentifier, firstDate, endDate, splitsEvents);
 
             var plans = GetTransitSignalPriorityPlans(
                 firstDate,

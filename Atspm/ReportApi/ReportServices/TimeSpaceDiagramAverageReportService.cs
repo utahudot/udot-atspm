@@ -267,7 +267,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     {
                         throw new NullReferenceException("No Controller Event Logs found for Location");
                     }
-                    var plan = (await planService.GetPlansAsync(routeLocation.LocationIdentifier, start, end, cancelToken)).FirstOrDefault();
+                    var planFallbackEvents = logs
+                        .Where(e => e.Timestamp >= start && e.Timestamp < end)
+                        .ToList();
+                    var plan = (await planService.GetPlansAsync(routeLocation.LocationIdentifier, start, end, planFallbackEvents, cancelToken)).FirstOrDefault();
 
                     if (currentProgrammedCycleLength == 0)
                     {

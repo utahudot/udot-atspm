@@ -292,10 +292,15 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                                 parameter.End.AddHours(12))
                             .ToList();
 
+                    var planFallbackEvents = controllerEventLogs
+                        .Where(e => e.Timestamp >= parameter.Start && e.Timestamp < parameter.End)
+                        .ToList();
+
                     processedRouteLocation.Plans = await planService.GetPlansAsync(
                         location.LocationIdentifier,
                         parameter.Start,
                         parameter.End,
+                        planFallbackEvents,
                         cancelToken);
 
                     int? currentProgrammedCycleLength = null;

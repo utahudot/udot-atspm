@@ -80,7 +80,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             if (!string.IsNullOrEmpty(approach.DirectionType.Description))
             {
                 var logs = controllerEventLogRepository.GetEventsBetweenDates(approach.Location.LocationIdentifier, startDate, endDate).ToList();
-                var plans = await planService.GetPlansAsync(approach.Location.LocationIdentifier, startDate, endDate);
+                var plans = await planService.GetPlansAsync(approach.Location.LocationIdentifier, startDate, endDate, logs);
                 var lp = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, startDate, endDate, 15, 13, logs, plans, true, null, 90);
                 var pcdOptions = new PurdueCoordinationDiagramOptions()
                 {

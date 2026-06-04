@@ -296,6 +296,28 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
         private const string LocationIdentifier = "1001";
         private readonly PlanService _planService = new PlanService();
 
+        private static SignalTimingPlan CreateSignalTimingPlan(
+            string locationIdentifier,
+            short planNumber,
+            DateTime start,
+            DateTime end,
+            bool valid = true)
+        {
+            var signalTimingPlan = new SignalTimingPlan
+            {
+                LocationIdentifier = locationIdentifier,
+                PlanNumber = planNumber,
+                Start = start,
+                End = end
+            };
+
+            typeof(SignalTimingPlan)
+                .GetProperty(nameof(SignalTimingPlan.Valid))
+                .SetValue(signalTimingPlan, valid);
+
+            return signalTimingPlan;
+        }
+
         [Fact]
         public void GetPlans_NoRows_ReturnsUnknownPlanForWindow()
         {
@@ -318,20 +340,16 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
             var end = new DateTime(2026, 1, 1, 11, 0, 0);
             var rows = new List<SignalTimingPlan>
             {
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = LocationIdentifier,
-                    PlanNumber = 1,
-                    Start = new DateTime(2026, 1, 1, 8, 0, 0),
-                    End = new DateTime(2026, 1, 1, 10, 0, 0)
-                },
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = "2002",
-                    PlanNumber = 9,
-                    Start = new DateTime(2026, 1, 1, 9, 0, 0),
-                    End = new DateTime(2026, 1, 1, 11, 0, 0)
-                }
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    1,
+                    new DateTime(2026, 1, 1, 8, 0, 0),
+                    new DateTime(2026, 1, 1, 10, 0, 0)),
+                CreateSignalTimingPlan(
+                    "2002",
+                    9,
+                    new DateTime(2026, 1, 1, 9, 0, 0),
+                    new DateTime(2026, 1, 1, 11, 0, 0))
             };
 
             var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
@@ -353,19 +371,41 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
         }
 
         [Fact]
+        public void GetPlans_IgnoresInvalidRows()
+        {
+            var start = new DateTime(2026, 1, 1, 9, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    1,
+                    start,
+                    end,
+                    valid: false)
+            };
+
+            var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
+
+            var plan = Assert.Single(result);
+            Assert.Equal("0", plan.PlanNumber);
+            Assert.Equal("Unknown", plan.PlanDescription);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
         public void GetPlans_OpenEndedPlan_ClipsToRequestedEnd()
         {
             var start = new DateTime(2026, 1, 1, 9, 0, 0);
             var end = new DateTime(2026, 1, 1, 11, 0, 0);
             var rows = new List<SignalTimingPlan>
             {
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = LocationIdentifier,
-                    PlanNumber = 254,
-                    Start = new DateTime(2026, 1, 1, 8, 0, 0),
-                    End = DateTime.MinValue
-                }
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    254,
+                    new DateTime(2026, 1, 1, 8, 0, 0),
+                    DateTime.MinValue)
             };
 
             var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
@@ -378,26 +418,64 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
         }
 
         [Fact]
+        public void GetPlans_AdjacentRowsWithSamePlanNumber_AreCombined()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    7,
+                    start,
+                    new DateTime(2026, 1, 1, 9, 0, 0)),
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    7,
+                    new DateTime(2026, 1, 1, 9, 0, 0),
+                    new DateTime(2026, 1, 1, 10, 0, 0)),
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    8,
+                    new DateTime(2026, 1, 1, 10, 0, 0),
+                    end)
+            };
+
+            var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("7", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("8", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
         public void GetPlans_LeadingInternalAndTrailingGaps_ReturnUnknownPlans()
         {
             var start = new DateTime(2026, 1, 1, 8, 0, 0);
             var end = new DateTime(2026, 1, 1, 12, 0, 0);
             var rows = new List<SignalTimingPlan>
             {
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = LocationIdentifier,
-                    PlanNumber = 1,
-                    Start = new DateTime(2026, 1, 1, 9, 0, 0),
-                    End = new DateTime(2026, 1, 1, 10, 0, 0)
-                },
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = LocationIdentifier,
-                    PlanNumber = 2,
-                    Start = new DateTime(2026, 1, 1, 10, 30, 0),
-                    End = new DateTime(2026, 1, 1, 11, 0, 0)
-                }
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    1,
+                    new DateTime(2026, 1, 1, 9, 0, 0),
+                    new DateTime(2026, 1, 1, 10, 0, 0)),
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    2,
+                    new DateTime(2026, 1, 1, 10, 30, 0),
+                    new DateTime(2026, 1, 1, 11, 0, 0))
             };
 
             var result = _planService.GetPlans(LocationIdentifier, start, end, rows);
@@ -472,6 +550,84 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
         }
 
         [Fact]
+        public void GetPlans_FromPlanData_AdjacentSamePlanNumbersAreCombined()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var planData = new List<Plan>
+            {
+                new Plan("4", start, new DateTime(2026, 1, 1, 9, 0, 0)),
+                new Plan("4", new DateTime(2026, 1, 1, 9, 0, 0), new DateTime(2026, 1, 1, 10, 0, 0)),
+                new Plan("5", new DateTime(2026, 1, 1, 10, 0, 0), end)
+            };
+
+            var result = _planService.GetPlans(start, end, planData);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("4", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("5", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public void GetBasicPlans_AdjacentEventsWithSamePlanNumber_AreCombined()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 11, 0, 0);
+            var events = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 4,
+                    Timestamp = start
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 4,
+                    Timestamp = new DateTime(2026, 1, 1, 9, 0, 0)
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 5,
+                    Timestamp = new DateTime(2026, 1, 1, 10, 0, 0)
+                }
+            };
+
+            var result = _planService.GetBasicPlans(start, end, LocationIdentifier, events);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("4", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("5", plan.PlanNumber);
+                    Assert.Equal(new DateTime(2026, 1, 1, 10, 0, 0), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
         public void GetSplitMonitorPlans_FromPlanData_ReturnsSpecializedPlanWindows()
         {
             var start = new DateTime(2026, 1, 1, 8, 0, 0);
@@ -506,13 +662,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
             var end = new DateTime(2026, 1, 1, 10, 0, 0);
             var rows = new List<SignalTimingPlan>
             {
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = LocationIdentifier,
-                    PlanNumber = 3,
-                    Start = start,
-                    End = end
-                }
+                CreateSignalTimingPlan(LocationIdentifier, 3, start, end)
             };
             Expression<Func<SignalTimingPlan, bool>> capturedCriteria = null;
             var repository = new Mock<ISignalTimingPlanRepository>();
@@ -532,20 +682,370 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
             Assert.NotNull(capturedCriteria);
 
             var matches = capturedCriteria.Compile();
-            Assert.True(matches(new SignalTimingPlan
+            Assert.True(matches(CreateSignalTimingPlan(
+                LocationIdentifier,
+                1,
+                start.AddMinutes(15),
+                end)));
+            Assert.False(matches(CreateSignalTimingPlan(
+                "2002",
+                1,
+                start.AddMinutes(15),
+                end)));
+            Assert.False(matches(CreateSignalTimingPlan(
+                LocationIdentifier,
+                1,
+                start.AddMinutes(15),
+                end,
+                valid: false)));
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_QueryMatchesOpenEndedPlanBeforeWindowAndClipsToWindowStart()
+        {
+            var start = new DateTime(2026, 1, 3, 8, 0, 0);
+            var end = new DateTime(2026, 1, 3, 10, 0, 0);
+            var planStart = start.AddDays(-2);
+            var openEndedPlan = CreateSignalTimingPlan(LocationIdentifier, 7, planStart, DateTime.MinValue);
+            Expression<Func<SignalTimingPlan, bool>> capturedCriteria = null;
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .Callback<Expression<Func<SignalTimingPlan, bool>>>(criteria => capturedCriteria = criteria)
+                .ReturnsAsync(new List<SignalTimingPlan> { openEndedPlan });
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end);
+
+            Assert.NotNull(capturedCriteria);
+            var matches = capturedCriteria.Compile();
+            Assert.True(matches(openEndedPlan));
+            Assert.False(matches(CreateSignalTimingPlan(
+                LocationIdentifier,
+                7,
+                planStart,
+                start.AddDays(-1))));
+
+            var plan = Assert.Single(result);
+            Assert.Equal("7", plan.PlanNumber);
+            Assert.Equal("Plan 7", plan.PlanDescription);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_UsesTableRowsWhenPresent()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                CreateSignalTimingPlan(LocationIdentifier, 3, start, end)
+            };
+            var fallbackEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 7,
+                    Timestamp = start
+                }
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(rows);
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, fallbackEvents);
+
+            var plan = Assert.Single(result);
+            Assert.Equal("3", plan.PlanNumber);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_UsesFallbackWhenOnlyTableRowsAreInvalid()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                CreateSignalTimingPlan(
+                    LocationIdentifier,
+                    3,
+                    start,
+                    end,
+                    valid: false)
+            };
+            var fallbackEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 7,
+                    Timestamp = start.AddHours(1)
+                }
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(rows);
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, fallbackEvents);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("0", plan.PlanNumber);
+                    Assert.Equal("Unknown", plan.PlanDescription);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(start.AddHours(1), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("7", plan.PlanNumber);
+                    Assert.Equal("Plan 7", plan.PlanDescription);
+                    Assert.Equal(start.AddHours(1), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_UsesFallbackWhenSingleOpenEndedTablePlanIsStaleAndEventsChangePlan()
+        {
+            var start = new DateTime(2026, 1, 3, 8, 0, 0);
+            var end = new DateTime(2026, 1, 3, 10, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                CreateSignalTimingPlan(LocationIdentifier, 7, start.AddDays(-2), DateTime.MinValue)
+            };
+            var fallbackEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 7,
+                    Timestamp = start.AddMinutes(-5)
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 8,
+                    Timestamp = start.AddHours(1)
+                }
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(rows);
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, fallbackEvents);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("7", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(start.AddHours(1), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("8", plan.PlanNumber);
+                    Assert.Equal(start.AddHours(1), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_KeepsSingleOpenEndedTablePlanWhenEventsDoNotChangePlan()
+        {
+            var start = new DateTime(2026, 1, 3, 8, 0, 0);
+            var end = new DateTime(2026, 1, 3, 10, 0, 0);
+            var rows = new List<SignalTimingPlan>
+            {
+                CreateSignalTimingPlan(LocationIdentifier, 7, start.AddDays(-2), DateTime.MinValue)
+            };
+            var fallbackEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 7,
+                    Timestamp = start.AddHours(1)
+                }
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(rows);
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, fallbackEvents);
+
+            var plan = Assert.Single(result);
+            Assert.Equal("7", plan.PlanNumber);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_UsesProvidedPlanEventsWhenNoTableRows()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var fallbackEvents = new List<IndianaEvent>
+            {
+                new IndianaEvent
+                {
+                    LocationIdentifier = "2002",
+                    EventCode = 131,
+                    EventParam = 9,
+                    Timestamp = start
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 1,
+                    EventParam = 8,
+                    Timestamp = start
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 4,
+                    Timestamp = start
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 5,
+                    Timestamp = start.AddHours(1)
+                }
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(new List<SignalTimingPlan>());
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, fallbackEvents);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("4", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(start.AddHours(1), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("5", plan.PlanNumber);
+                    Assert.Equal(start.AddHours(1), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_DoesNotMutateProvidedEvents()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var originalTimestamp = start.AddMinutes(-15);
+            var fallbackEvent = new IndianaEvent
             {
                 LocationIdentifier = LocationIdentifier,
-                PlanNumber = 1,
-                Start = start.AddMinutes(15),
-                End = end
-            }));
-            Assert.False(matches(new SignalTimingPlan
+                EventCode = 131,
+                EventParam = 7,
+                Timestamp = originalTimestamp
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(new List<SignalTimingPlan>());
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, new List<IndianaEvent> { fallbackEvent });
+
+            Assert.Equal(originalTimestamp, fallbackEvent.Timestamp);
+            var plan = Assert.Single(result);
+            Assert.Equal("7", plan.PlanNumber);
+            Assert.Equal(start, plan.Start);
+            Assert.Equal(end, plan.End);
+        }
+
+        [Fact]
+        public async Task GetPlansAsync_WithFallbackEvents_UsesSuppliedPreWindowEventForStartingPlan()
+        {
+            var start = new DateTime(2026, 1, 1, 8, 0, 0);
+            var end = new DateTime(2026, 1, 1, 10, 0, 0);
+            var fallbackEvents = new List<IndianaEvent>
             {
-                LocationIdentifier = "2002",
-                PlanNumber = 1,
-                Start = start.AddMinutes(15),
-                End = end
-            }));
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 7,
+                    Timestamp = start.AddMinutes(-1)
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 8,
+                    Timestamp = start.AddHours(1)
+                },
+                new IndianaEvent
+                {
+                    LocationIdentifier = LocationIdentifier,
+                    EventCode = 131,
+                    EventParam = 9,
+                    Timestamp = end
+                }
+            };
+            var repository = new Mock<ISignalTimingPlanRepository>();
+            repository
+                .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<SignalTimingPlan, bool>>>()))
+                .ReturnsAsync(new List<SignalTimingPlan>());
+
+            var service = new PlanService(repository.Object);
+
+            var result = await service.GetPlansAsync(LocationIdentifier, start, end, fallbackEvents);
+
+            Assert.Collection(
+                result,
+                plan =>
+                {
+                    Assert.Equal("7", plan.PlanNumber);
+                    Assert.Equal(start, plan.Start);
+                    Assert.Equal(start.AddHours(1), plan.End);
+                },
+                plan =>
+                {
+                    Assert.Equal("8", plan.PlanNumber);
+                    Assert.Equal(start.AddHours(1), plan.Start);
+                    Assert.Equal(end, plan.End);
+                });
         }
 
         [Fact]

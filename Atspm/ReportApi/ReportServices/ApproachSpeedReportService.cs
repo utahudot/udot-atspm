@@ -59,7 +59,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         public override async Task<IEnumerable<ApproachSpeedResult>> ExecuteAsync(ApproachSpeedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -67,7 +67,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("No Controller Event Logs found for this signal on this date"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, cancelToken);
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
 
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachSpeedResult>>();
