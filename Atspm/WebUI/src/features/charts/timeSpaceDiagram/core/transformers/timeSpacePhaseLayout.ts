@@ -15,18 +15,25 @@
 // limitations under the License.
 // #endregion
 import {
+  getDistanceAtDisplayCoordinate,
   getDisplayDistanceScale,
+  getHybridDistanceData,
+  getSequenceDistanceData,
   getTimeSpaceChartHeight,
   getTimeSpacePhaseRowDistances,
 } from '../math/timeSpaceLayout'
 import type {
+  TimeSpaceDistanceSpacingMode,
   TimeSpaceCoreRow,
   TimeSpacePhaseLayout,
 } from '../types/timeSpaceCore.types'
 
 export function buildTimeSpacePhaseLayout<T extends TimeSpaceCoreRow>(
   data: T[],
-  options?: { sortByOrder?: boolean }
+  options?: {
+    distanceSpacingMode?: TimeSpaceDistanceSpacingMode
+    sortByOrder?: boolean
+  }
 ): TimeSpacePhaseLayout<T> {
   const byOrder = (a: T, b: T) =>
     (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
@@ -46,9 +53,35 @@ export function buildTimeSpacePhaseLayout<T extends TimeSpaceCoreRow>(
   })
 
   const distanceScale = getDisplayDistanceScale(rawDistanceData)
-  const locationCenterDistanceData = rawDistanceData.map(
-    (distance) => distance * distanceScale
+  const distanceSpacingMode = options?.distanceSpacingMode ?? 'distance'
+  const locationCenterDistanceData = getLocationCenterDistanceData(
+    rawDistanceData,
+    distanceScale,
+    distanceSpacingMode
   )
+  const getDisplayDistanceOffset = (
+    index: number,
+    rawDistanceOffset: number
+  ) => {
+    const rawDistance = rawDistanceData[index]
+    const displayDistance = locationCenterDistanceData[index]
+
+    if (
+      rawDistance == null ||
+      displayDistance == null ||
+      !Number.isFinite(rawDistanceOffset)
+    ) {
+      return rawDistanceOffset * distanceScale
+    }
+
+    return (
+      getDistanceAtDisplayCoordinate(
+        rawDistanceData,
+        locationCenterDistanceData,
+        rawDistance + rawDistanceOffset
+      ) - displayDistance
+    )
+  }
   const { primaryDistanceData, opposingDistanceData } =
     getTimeSpacePhaseRowDistances(locationCenterDistanceData)
   const minDisplayDistance = Math.min(
@@ -70,6 +103,7 @@ export function buildTimeSpacePhaseLayout<T extends TimeSpaceCoreRow>(
     locationCenterDistanceData,
     primaryDistanceData,
     opposingDistanceData,
+    getDisplayDistanceOffset,
     minDisplayDistance,
     maxDisplayDistance,
     chartHeight: getTimeSpaceChartHeight(
@@ -77,5 +111,21 @@ export function buildTimeSpacePhaseLayout<T extends TimeSpaceCoreRow>(
       maxDisplayDistance,
       primaryPhaseData.length
     ),
+  }
+}
+
+function getLocationCenterDistanceData(
+  rawDistanceData: number[],
+  distanceScale: number,
+  distanceSpacingMode: TimeSpaceDistanceSpacingMode
+) {
+  switch (distanceSpacingMode) {
+    case 'sequence':
+      return getSequenceDistanceData(rawDistanceData.length)
+    case 'hybrid':
+      return getHybridDistanceData(rawDistanceData)
+    case 'distance':
+    default:
+      return rawDistanceData.map((distance) => distance * distanceScale)
   }
 }

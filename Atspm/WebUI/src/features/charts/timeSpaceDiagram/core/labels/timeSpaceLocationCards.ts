@@ -26,6 +26,7 @@ import type {
   RawTimeSpaceAverageData,
   TimeSpaceUnwrappedData,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
+import type { TimeSpaceDisplayDistanceOffset } from '@/features/charts/timeSpaceDiagram/core/types/timeSpaceCore.types'
 import { Color } from '@/features/charts/utils'
 import type {
   CustomSeriesRenderItemParams,
@@ -41,8 +42,8 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   cardWidth: 200,
   cardRadius: 4,
   verticalOffsetY: 15,
-  headerHeight: 44,
-  bodyHeight: 60,
+  headerHeight: 40,
+  bodyHeight: 52,
   bodyPaddingLeft: 8,
   bodyPaddingRight: 8,
   headerActionSize: 12,
@@ -142,12 +143,22 @@ export function splitIdentifierAndDescription(text: string | undefined) {
 
 export function buildIdentifierAndNameTitle(
   identifier: string | undefined,
-  description: string | undefined
+  description: string | undefined,
+  maxCharacters?: number
 ) {
   const ident = (identifier ?? '').trim()
   const { primary, secondary } = splitPrimarySecondary(description)
-  const name =
+  let name =
     primary && secondary ? `${primary} & ${secondary}` : primary || secondary
+  const reservedIdentifierLength = ident ? ident.length + 3 : 0
+  const maxNameCharacters =
+    maxCharacters == null
+      ? undefined
+      : Math.max(0, maxCharacters - reservedIdentifierLength)
+
+  if (maxNameCharacters != null && name.length > maxNameCharacters) {
+    name = truncateWithEllipsis(name, maxNameCharacters)
+  }
 
   if (ident && name) {
     return `{ident|${ident}}{name| - ${name}}`
@@ -162,6 +173,18 @@ export function buildIdentifierAndNameTitle(
   }
 
   return ''
+}
+
+function truncateWithEllipsis(text: string, maxCharacters: number) {
+  if (text.length <= maxCharacters) {
+    return text
+  }
+
+  if (maxCharacters <= 3) {
+    return '.'.repeat(Math.max(0, maxCharacters))
+  }
+
+  return `${text.slice(0, maxCharacters - 3).trimEnd()}...`
 }
 
 function getTimeSpaceLocationCardGeometry(
@@ -195,9 +218,9 @@ function getTimeSpaceLocationCardGeometry(
   const leftMetricWidth = Math.round(topMetricContentWidth * 0.45)
   const rightMetricWidth = topMetricContentWidth - leftMetricWidth
   const offsetMetricX = textX + leftMetricWidth + TIME_SPACE_LOCATION_METRIC_GAP
-  const topMetricRowY = bodyTop + 10
+  const topMetricRowY = bodyTop + 8
   const middleMetricRowY = bodyTop + bodyHeight / 2
-  const bottomMetricRowY = bodyTop + bodyHeight - 10
+  const bottomMetricRowY = bodyTop + bodyHeight - 8
 
   return {
     bodyContentWidth,
@@ -414,9 +437,11 @@ export function getLocationsLabelOption(
       })
 
       const ident = String(api.value(2) ?? '')
+      const maxTitleCharacters = Math.max(0, Math.floor(titleWidth / 6) * 2)
       const titleText = buildIdentifierAndNameTitle(
         ident,
-        String(api.value(3) ?? '')
+        String(api.value(3) ?? ''),
+        maxTitleCharacters
       )
       const cycleLengthValue = api.value(4)
       const currentOffsetValue = api.value(5)
@@ -636,10 +661,12 @@ export function getLocationsLabelOption(
             z2: 20,
             style: {
               x: textX,
-              y: cardTop + 8,
+              y: cardTop + 6,
               text: titleText,
               width: titleWidth,
+              height: 28,
               overflow: 'break',
+              lineOverflow: 'truncate',
               lineHeight: 14,
               textAlign: 'left',
               textVerticalAlign: 'top',
@@ -664,9 +691,9 @@ export function getLocationsLabelOption(
             z2: 20,
             shape: {
               x1: dividerX,
-              y1: cardTop + 7,
+              y1: cardTop + 6,
               x2: dividerX,
-              y2: cardTop + headerHeight - 7,
+              y2: cardTop + headerHeight - 6,
             },
             style: {
               stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
@@ -756,26 +783,30 @@ export function getDistancesLabelOption(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
   gridLeft: number,
-  distanceScale = 1
+  distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
 ): SeriesOption {
   const { gridGap, dotOffset, cardGapToDot, verticalOffsetY } =
     TIME_SPACE_LOCATION_CARD_LAYOUT
   const dataPoints = distanceData.map((distance, index) => {
     const distanceToNext =
       index !== distanceData.length - 1 ? data[index].distanceToNextLocation : 0
+    const displayDistanceToNext =
+      displayDistanceOffset?.(index, distanceToNext) ??
+      distanceToNext * distanceScale
 
     return [
       data[index].end,
       distance,
       distanceToNext,
       index !== distanceData.length - 1 ? data[index].speed : '',
-      distanceToNext * distanceScale,
+      displayDistanceToNext,
     ]
   })
   return {
     name: 'Labels distance',
     type: 'custom',
-    z: 4,
+    z: 30,
     silent: true,
     selectedMode: false,
     tooltip: { show: false },
@@ -807,6 +838,7 @@ export function getDistancesLabelOption(
         children: [
           {
             type: 'line',
+            z2: 30,
             shape: {
               x1: xLine,
               y1: y,
@@ -820,6 +852,7 @@ export function getDistancesLabelOption(
           },
           {
             type: 'rect',
+            z2: 31,
             shape: {
               x: valueCardLeft,
               y: y - valueCardHeight / 2,
@@ -828,13 +861,14 @@ export function getDistancesLabelOption(
               r: 4,
             },
             style: {
-              fill: 'rgba(86, 180, 233, 0.14)',
+              fill: '#e7f4fc',
               stroke: 'rgba(86, 180, 233, 0.38)',
               lineWidth: 1,
             },
           },
           {
             type: 'line',
+            z2: 32,
             shape: {
               x1: dividerX,
               y1: y - 8,
@@ -848,6 +882,7 @@ export function getDistancesLabelOption(
           },
           {
             type: 'text',
+            z2: 33,
             style: {
               x: valueCardLeft + valueCardWidth / 4,
               y,
@@ -861,6 +896,7 @@ export function getDistancesLabelOption(
           },
           {
             type: 'text',
+            z2: 33,
             style: {
               x: valueCardLeft + (valueCardWidth * 3) / 4,
               y,

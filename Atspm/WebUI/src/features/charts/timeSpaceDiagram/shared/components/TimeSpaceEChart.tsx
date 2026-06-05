@@ -123,6 +123,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     gpxEntries,
     ignoredLocations = [],
     onToggleIgnoredLocation,
+    distanceSpacingMode = 'distance',
+    onToggleDistanceSpacingMode,
     sidebarUploadContent,
     isVisible = true,
   } = prop
@@ -971,7 +973,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           onSidebarTabChange={setSidebarTab}
           onToggleFullscreen={handleToggleFullscreen}
           onToggleGuide={handleToggleGuide}
+          onToggleDistanceSpacingMode={onToggleDistanceSpacingMode}
           onTogglePhaseInfo={handleTogglePhaseInfo}
+          distanceSpacingMode={distanceSpacingMode}
           rangeText={rangeText}
           showPhaseInfo={showPhaseInfo}
           sidebarTab={sidebarTab}

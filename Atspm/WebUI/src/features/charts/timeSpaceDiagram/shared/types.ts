@@ -196,6 +196,12 @@ export type TimeSpaceOptions =
   | TimeSpaceHistoricOptions
   | TimeSpaceAverageOptions
 
+export type TimeSpaceDistanceSpacingMode = 'distance' | 'sequence' | 'hybrid'
+
+export interface TimeSpaceTransformOptions {
+  distanceSpacingMode?: TimeSpaceDistanceSpacingMode
+}
+
 export interface RawTimeSpaceDiagramResponse {
   type: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage
   data: TimeSpaceResponseData

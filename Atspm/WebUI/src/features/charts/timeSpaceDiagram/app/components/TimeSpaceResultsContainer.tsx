@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react'
 import type {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
+  TimeSpaceDistanceSpacingMode,
   TimeSpaceDiagramPhaseResult,
   TimeSpaceHistoricOptions,
   TimeSpaceOptions,
@@ -74,6 +75,8 @@ export default function TimeSpaceResultsContainer({
     createEmptyTimeSpaceEntry(locations),
   ])
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
+  const [distanceSpacingMode, setDistanceSpacingMode] =
+    useState<TimeSpaceDistanceSpacingMode>('distance')
   const supportsLinkPivot = supportsLinkPivotForTimeSpace(
     baseTimeSpaceData.type
   )
@@ -135,6 +138,7 @@ export default function TimeSpaceResultsContainer({
     setActiveTab(0)
     setBaseTimeSpaceData(nextBaseData)
     setIgnoredLocation([])
+    setDistanceSpacingMode('distance')
     setGpxEntries([createEmptyTimeSpaceEntry(nextLocations)])
     setSrmError(null)
     setHasAppliedSrm(false)
@@ -155,7 +159,9 @@ export default function TimeSpaceResultsContainer({
     }
 
     try {
-      const result = transformTimeSpaceData(updatedResponse)
+      const result = transformTimeSpaceData(updatedResponse, {
+        distanceSpacingMode,
+      })
       setTransformedData(result)
       if ('errors' in result && result.errors) {
         setTransformErrors(result.errors)
@@ -172,7 +178,7 @@ export default function TimeSpaceResultsContainer({
         data: { chart: {} },
       })
     }
-  }, [ignoredLocations, baseTimeSpaceData])
+  }, [ignoredLocations, baseTimeSpaceData, distanceSpacingMode])
 
   const chartHeight = transformedData.data.chart.displayProps?.height ?? 500
   const pcdTimeWindow =
@@ -268,6 +274,8 @@ export default function TimeSpaceResultsContainer({
               gpxEntries={gpxEntries}
               ignoredLocations={ignoredLocations}
               onToggleIgnoredLocation={toggleIgnoredLocation}
+              distanceSpacingMode={distanceSpacingMode}
+              onToggleDistanceSpacingMode={setDistanceSpacingMode}
               sidebarUploadContent={sidebarUploadContent}
             />
           </Box>

@@ -17,11 +17,13 @@
 import {
   getChartTimespanMs,
   getTimeLikeMs,
+  TIME_SPACE_CYCLE_SEGMENT_HEIGHT_PX,
 } from '@/features/charts/timeSpaceDiagram/core/math/timeSpaceLayout'
 import type {
   TimeSpaceDetectorEvent,
   TimeSpaceUnwrappedData,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
+import type { TimeSpaceDisplayDistanceOffset } from '@/features/charts/timeSpaceDiagram/core/types/timeSpaceCore.types'
 import { Cycle } from '@/features/charts/timingAndActuation/types'
 import { dateToTimestamp } from '@/utils/dateTime'
 import type {
@@ -106,7 +108,7 @@ export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   },
 ] as const
 
-const CYCLE_SEGMENT_HEIGHT = 17
+const CYCLE_SEGMENT_HEIGHT = TIME_SPACE_CYCLE_SEGMENT_HEIGHT_PX
 const CYCLE_BORDER_HEIGHT = 0.5
 const CYCLE_DURATION_LABEL_FONT_SIZE = 10
 const CYCLE_DURATION_LABEL_FILL = 'white'
@@ -124,6 +126,18 @@ const TIME_SPACE_MOVEMENT_ELEMENT_Z2 = 1
 const TIME_SPACE_CYCLE_ELEMENT_Z2 = 5
 const PROGRAMMED_SPLIT_GREEN_CODES = new Set([1, 61])
 const CLEARANCE_CODES_TO_COMBINE_WITH_GREEN = new Set([8, 9, 63, 64])
+
+function getDisplayDistanceOffset(
+  index: number,
+  rawDistanceOffset: number,
+  distanceScale: number,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
+) {
+  return (
+    displayDistanceOffset?.(index, rawDistanceOffset) ??
+    rawDistanceOffset * distanceScale
+  )
+}
 
 function getCycleColor(value: number): string {
   const found = CYCLE_INDICATIONS.find((entry) => entry.codes.includes(value))
@@ -524,9 +538,18 @@ export function generateGreenEventLines(
   phaseType?: string,
   isPrimary?: boolean,
   distanceScale = 1,
+  displayDistanceOffsetOrIdScope?: TimeSpaceDisplayDistanceOffset | string,
   idScope = 'default'
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
+  const displayDistanceOffset =
+    typeof displayDistanceOffsetOrIdScope === 'function'
+      ? displayDistanceOffsetOrIdScope
+      : undefined
+  const resolvedIdScope =
+    typeof displayDistanceOffsetOrIdScope === 'string'
+      ? displayDistanceOffsetOrIdScope
+      : idScope
 
   for (let i = 0; i < data.length; i++) {
     const location = data[i]
@@ -543,7 +566,7 @@ export function generateGreenEventLines(
       name: `Green Bands ${phaseType?.length ? phaseType : ''}`,
       id: `Green Bands ${data[i].locationIdentifier} ${
         phaseType?.length ? phaseType : ''
-      } row-${i} ${idScope}`,
+      } row-${i} ${resolvedIdScope}`,
       type: 'custom',
       data: dataPoints,
       clip: true,
@@ -565,7 +588,15 @@ export function generateGreenEventLines(
         const travelDistanceToNext = isPrimary
           ? location.calculatedDistanceToNext
           : -location.calculatedDistanceToNext
-        const displayDistanceToNext = travelDistanceToNext * distanceScale
+        const displayTravelDistanceToNext = isPrimary
+          ? location.distanceToNextLocation
+          : -location.distanceToNextLocation
+        const displayDistanceToNext = getDisplayDistanceOffset(
+          i,
+          displayTravelDistanceToNext,
+          distanceScale,
+          displayDistanceOffset
+        )
         const nextIndex = pointIndex + 1
 
         const [x1, y1] = [api.value(0), api.value(1)]
