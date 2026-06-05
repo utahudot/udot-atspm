@@ -638,6 +638,65 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     expect(series?.tooltip).toMatchObject({ show: false })
   })
 
+  it('uses row-to-row distance, not calculated travel distance, for green-band display offsets', () => {
+    const displayDistanceOffset = jest.fn(() => 42)
+    const location = buildLocation({
+      calculatedDistanceToNext: 250,
+      distanceToNextLocation: 100,
+      greenTimeEvents: [
+        {
+          initialX: '2026-03-20T00:00:10Z',
+          isDetectorOn: true,
+        },
+        {
+          initialX: '2026-03-20T00:00:20Z',
+          isDetectorOn: false,
+        },
+      ],
+    })
+    const series = generateGreenEventLines(
+      [location],
+      [0],
+      'NB',
+      true,
+      1,
+      displayDistanceOffset,
+      'test'
+    )[0] as {
+      data?: unknown[]
+      renderItem?: (
+        params: {
+          dataIndex: number
+        },
+        api: {
+          coord: (value: unknown[]) => [number, number]
+          value: (index: number, dataIndex?: number) => unknown
+        }
+      ) => unknown
+    }
+    const dataPoints = Array.isArray(series.data)
+      ? (series.data as unknown[][])
+      : []
+
+    series.renderItem?.(
+      {
+        dataIndex: 0,
+      },
+      {
+        coord: (value) => [
+          typeof value[0] === 'number'
+            ? value[0]
+            : Date.parse(String(value[0] ?? '')),
+          Number(value[1] ?? 0),
+        ],
+        value: (index, renderDataIndex) =>
+          dataPoints[renderDataIndex ?? 0]?.[index],
+      }
+    )
+
+    expect(displayDistanceOffset).toHaveBeenCalledWith(0, 100)
+  })
+
   it('keeps a full-cycle user adjustment visible even when the displayed offset matches the base value', () => {
     const locationCardNode = renderLocationCardNode(buildLocation(), {
       mutateDataPoint: (dataPoint) => {
