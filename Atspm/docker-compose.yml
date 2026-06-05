@@ -9,17 +9,47 @@ x-environment: &default-environment
   # Allowed Hosts
   AllowedHosts: "${ALLOWED_HOSTS}"
 
-  # Database Connection Strings (Using Double Underscore Format)
-  ConnectionStrings__ConfigContext__ConnectionString: "${CONFIG_CONNECTION}"
-  ConnectionStrings__AggregationContext__ConnectionString: "${AGGREGATION_CONNECTION}"
-  ConnectionStrings__EventLogContext__ConnectionString: "${EVENTLOG_CONNECTION}"
-  ConnectionStrings__IdentityContext__ConnectionString: "${IDENTITY_CONNECTION}"
-
-  # Database Providers
-  ConnectionStrings__ConfigContext__Provider: "${ConfigContext_Provider}"
-  ConnectionStrings__AggregationContext__Provider: "${AggregationContext_Provider}"
-  ConnectionStrings__EventLogContext__Provider: "${EventLogContext_Provider}"
-  ConnectionStrings__IdentityContext__Provider: "${IdentityContext_Provider}"
+  # Database Configuration
+  DatabaseConfiguration__ConfigContext__DBType: "${DatabaseConfiguration__ConfigContext__DBType}"
+  DatabaseConfiguration__ConfigContext__Host: "${DatabaseConfiguration__ConfigContext__Host}"
+  DatabaseConfiguration__ConfigContext__Port: "${DatabaseConfiguration__ConfigContext__Port}"
+  DatabaseConfiguration__ConfigContext__Database: "${DatabaseConfiguration__ConfigContext__Database}"
+  DatabaseConfiguration__ConfigContext__User: "${DatabaseConfiguration__ConfigContext__User}"
+  DatabaseConfiguration__ConfigContext__Password: "${DatabaseConfiguration__ConfigContext__Password}"
+  DatabaseConfiguration__ConfigContext__Options__CommandTimeout: "${DatabaseConfiguration__ConfigContext__Options__CommandTimeout}"
+  DatabaseConfiguration__ConfigContext__Options__Keepalive: "${DatabaseConfiguration__ConfigContext__Options__Keepalive}"
+  DatabaseConfiguration__ConfigContext__Options__Pooling: "${DatabaseConfiguration__ConfigContext__Options__Pooling}"
+  DatabaseConfiguration__ConfigContext__Options__Timeout: "${DatabaseConfiguration__ConfigContext__Options__Timeout}"
+  DatabaseConfiguration__AggregationContext__DBType: "${DatabaseConfiguration__AggregationContext__DBType}"
+  DatabaseConfiguration__AggregationContext__Host: "${DatabaseConfiguration__AggregationContext__Host}"
+  DatabaseConfiguration__AggregationContext__Port: "${DatabaseConfiguration__AggregationContext__Port}"
+  DatabaseConfiguration__AggregationContext__Database: "${DatabaseConfiguration__AggregationContext__Database}"
+  DatabaseConfiguration__AggregationContext__User: "${DatabaseConfiguration__AggregationContext__User}"
+  DatabaseConfiguration__AggregationContext__Password: "${DatabaseConfiguration__AggregationContext__Password}"
+  DatabaseConfiguration__AggregationContext__Options__CommandTimeout: "${DatabaseConfiguration__AggregationContext__Options__CommandTimeout}"
+  DatabaseConfiguration__AggregationContext__Options__Keepalive: "${DatabaseConfiguration__AggregationContext__Options__Keepalive}"
+  DatabaseConfiguration__AggregationContext__Options__Pooling: "${DatabaseConfiguration__AggregationContext__Options__Pooling}"
+  DatabaseConfiguration__AggregationContext__Options__Timeout: "${DatabaseConfiguration__AggregationContext__Options__Timeout}"
+  DatabaseConfiguration__EventLogContext__DBType: "${DatabaseConfiguration__EventLogContext__DBType}"
+  DatabaseConfiguration__EventLogContext__Host: "${DatabaseConfiguration__EventLogContext__Host}"
+  DatabaseConfiguration__EventLogContext__Port: "${DatabaseConfiguration__EventLogContext__Port}"
+  DatabaseConfiguration__EventLogContext__Database: "${DatabaseConfiguration__EventLogContext__Database}"
+  DatabaseConfiguration__EventLogContext__User: "${DatabaseConfiguration__EventLogContext__User}"
+  DatabaseConfiguration__EventLogContext__Password: "${DatabaseConfiguration__EventLogContext__Password}"
+  DatabaseConfiguration__EventLogContext__Options__CommandTimeout: "${DatabaseConfiguration__EventLogContext__Options__CommandTimeout}"
+  DatabaseConfiguration__EventLogContext__Options__Keepalive: "${DatabaseConfiguration__EventLogContext__Options__Keepalive}"
+  DatabaseConfiguration__EventLogContext__Options__Pooling: "${DatabaseConfiguration__EventLogContext__Options__Pooling}"
+  DatabaseConfiguration__EventLogContext__Options__Timeout: "${DatabaseConfiguration__EventLogContext__Options__Timeout}"
+  DatabaseConfiguration__IdentityContext__DBType: "${DatabaseConfiguration__IdentityContext__DBType}"
+  DatabaseConfiguration__IdentityContext__Host: "${DatabaseConfiguration__IdentityContext__Host}"
+  DatabaseConfiguration__IdentityContext__Port: "${DatabaseConfiguration__IdentityContext__Port}"
+  DatabaseConfiguration__IdentityContext__Database: "${DatabaseConfiguration__IdentityContext__Database}"
+  DatabaseConfiguration__IdentityContext__User: "${DatabaseConfiguration__IdentityContext__User}"
+  DatabaseConfiguration__IdentityContext__Password: "${DatabaseConfiguration__IdentityContext__Password}"
+  DatabaseConfiguration__IdentityContext__Options__CommandTimeout: "${DatabaseConfiguration__IdentityContext__Options__CommandTimeout}"
+  DatabaseConfiguration__IdentityContext__Options__Keepalive: "${DatabaseConfiguration__IdentityContext__Options__Keepalive}"
+  DatabaseConfiguration__IdentityContext__Options__Pooling: "${DatabaseConfiguration__IdentityContext__Options__Pooling}"
+  DatabaseConfiguration__IdentityContext__Options__Timeout: "${DatabaseConfiguration__IdentityContext__Options__Timeout}"
 
   # JWT Configuration
   Jwt__ExpireDays: "${JWT_EXPIRE_DAYS}"
@@ -136,8 +166,6 @@ services:
       context: ./WebUI
       dockerfile: Dockerfile
     container_name: webui
-    ports:
-      - "3000:3000"
     volumes:
       - ./frontend-env.txt:/app/Configuration/frontend-env/frontend-env.txt:ro
     depends_on:
@@ -153,9 +181,10 @@ services:
   nginx:
     image: nginx:alpine
     ports:
+      - "3000:80"
       - "3443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./default.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       webui:

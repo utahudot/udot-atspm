@@ -53,7 +53,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
         [Fact]
         [Trait(nameof(GenerateSignalPlansStep), "Process")]
-        public async Task Process_GroupsByLocationAndParam_ProducesMultipleChunks()
+        public async Task Process_GroupsByLocation_PreservesReturningPlanNumbers()
         {
             // Arrange
             var sut = new GenerateSignalPlansStep();
@@ -61,11 +61,9 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
             var inputEvents = new List<IndianaEvent>
             {
-                // Location 1, Plan 1
                 new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
-                // Location 1, Plan 2
                 new() { LocationIdentifier = "L1", EventParam = 2, EventCode = 131, Timestamp = startTime.AddHours(1) },
-                // Location 2, Plan 1
+                new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime.AddHours(2) },
                 new() { LocationIdentifier = "L2", EventParam = 1, EventCode = 131, Timestamp = startTime }
             };
 
@@ -84,11 +82,14 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 }
             }
 
-            // Assert
-            // Based on GroupBy(Location, Param): (L1, 1), (L1, 2), (L2, 1) = 3 distinct groups
-            Assert.Equal(3, results.Count);
+            Assert.Equal(2, results.Count);
 
-            // Verify one specific plan mapping
+            var l1Plans = results.SelectMany(c => c)
+                .Where(p => p.LocationIdentifier == "L1")
+                .OrderBy(p => p.Start)
+                .ToList();
+            Assert.Equal(new short[] { 1, 2, 1 }, l1Plans.Select(p => p.PlanNumber).ToArray());
+
             var l2Plan = results.SelectMany(c => c).First(p => p.LocationIdentifier == "L2");
             Assert.Equal(1, l2Plan.PlanNumber);
             Assert.Equal(startTime, l2Plan.Start);
@@ -132,7 +133,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             var sut = new GenerateSignalPlansStep();
             var startTime = DateTime.Now.Date;
 
-            // These events share a GroupBy key (Location, Param)
+            // These events share a location and plan number.
             var inputEvents = new List<IndianaEvent>
             {
                 new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },

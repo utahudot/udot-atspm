@@ -19,16 +19,292 @@ using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Repositories.AggregationRepositories;
 
 namespace Utah.Udot.Atspm.Business.Common
 {
     public class PlanService
     {
+        private const string UnknownPlanNumber = "0";
+        private readonly ISignalTimingPlanRepository signalTimingPlanRepository;
 
         public PlanService()
         {
+        }
+
+        public PlanService(ISignalTimingPlanRepository signalTimingPlanRepository)
+        {
+            this.signalTimingPlanRepository = signalTimingPlanRepository;
+        }
+
+        public async Task<IReadOnlyList<Plan>> GetPlansAsync(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            CancellationToken cancellationToken = default)
+        {
+            var plans = await GetSignalTimingPlansAsync(locationIdentifier, start, end, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return GetPlans(locationIdentifier, start, end, plans);
+        }
+
+        public async Task<IReadOnlyList<Plan>> GetPlansAsync(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            IReadOnlyList<IndianaEvent> fallbackControllerEvents,
+            CancellationToken cancellationToken = default)
+        {
+            if (fallbackControllerEvents == null)
+                throw new ArgumentNullException(nameof(fallbackControllerEvents));
+
+            var plans = await GetSignalTimingPlansAsync(locationIdentifier, start, end, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var fallbackPlanEvents = GetFallbackPlanEvents(locationIdentifier, fallbackControllerEvents);
+
+            if (ShouldUseFallbackForStaleOpenEndedPlan(plans, locationIdentifier, start, end, fallbackPlanEvents))
+                return GetFallbackPlans(start, end, locationIdentifier, fallbackPlanEvents);
+
+            if (plans.Any())
+                return GetPlans(locationIdentifier, start, end, plans);
+
+            return GetFallbackPlans(start, end, locationIdentifier, fallbackPlanEvents);
+        }
+
+        private IReadOnlyList<Plan> GetFallbackPlans(
+            DateTime start,
+            DateTime end,
+            string locationIdentifier,
+            IReadOnlyList<IndianaEvent> fallbackPlanEvents)
+        {
+            var eventPlans = GetBasicPlans(start, end, locationIdentifier, fallbackPlanEvents);
+
+            return GetPlans(start, end, eventPlans);
+        }
+
+        private static IReadOnlyList<IndianaEvent> GetFallbackPlanEvents(
+            string locationIdentifier,
+            IReadOnlyList<IndianaEvent> fallbackControllerEvents)
+        {
+            return fallbackControllerEvents
+                .Where(e => e != null
+                    && e.LocationIdentifier == locationIdentifier
+                    && e.EventCode == (short)IndianaEnumerations.CoordPatternChange)
+                .Select(e => new IndianaEvent
+                {
+                    LocationIdentifier = e.LocationIdentifier,
+                    EventCode = e.EventCode,
+                    EventParam = e.EventParam,
+                    Timestamp = e.Timestamp
+                })
+                .OrderBy(e => e.Timestamp)
+                .ToList();
+        }
+
+        private static bool ShouldUseFallbackForStaleOpenEndedPlan(
+            IReadOnlyList<SignalTimingPlan> signalTimingPlans,
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            IReadOnlyList<IndianaEvent> fallbackPlanEvents)
+        {
+            var matchingPlans = signalTimingPlans
+                .Where(p => IsUsableSignalTimingPlan(p, locationIdentifier, start, end))
+                .ToList();
+
+            if (matchingPlans.Count != 1)
+                return false;
+
+            var singlePlan = matchingPlans[0];
+
+            if (singlePlan.End != DateTime.MinValue || singlePlan.Start >= start)
+                return false;
+
+            if (matchingPlans.Any(p => p.Start >= start && p.Start < end))
+                return false;
+
+            return fallbackPlanEvents.Any(e =>
+                e.Timestamp >= start &&
+                e.Timestamp < end &&
+                e.EventParam != singlePlan.PlanNumber);
+        }
+
+        private async Task<IReadOnlyList<SignalTimingPlan>> GetSignalTimingPlansAsync(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            CancellationToken cancellationToken = default)
+        {
+            ValidatePlanRequest(locationIdentifier, start, end);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (signalTimingPlanRepository == null)
+                throw new InvalidOperationException($"{nameof(ISignalTimingPlanRepository)} is required to retrieve plans.");
+
+            var plans = await signalTimingPlanRepository.GetListAsync(p =>
+                p.LocationIdentifier == locationIdentifier &&
+                p.Valid &&
+                p.Start < end &&
+                (p.End == DateTime.MinValue || p.End > start));
+
+            return plans?
+                .Where(p => IsUsableSignalTimingPlan(p, locationIdentifier, start, end))
+                .ToList() ?? new List<SignalTimingPlan>();
+        }
+
+        public IReadOnlyList<Plan> GetPlans(
+            string locationIdentifier,
+            DateTime start,
+            DateTime end,
+            IEnumerable<SignalTimingPlan> signalTimingPlans)
+        {
+            ValidatePlanRequest(locationIdentifier, start, end);
+
+            if (signalTimingPlans == null)
+                throw new ArgumentNullException(nameof(signalTimingPlans));
+
+            start = DateTime.SpecifyKind(start, DateTimeKind.Unspecified);
+            end = DateTime.SpecifyKind(end, DateTimeKind.Unspecified);
+
+            var timeline = signalTimingPlans
+                .Where(p => IsUsableSignalTimingPlan(p, locationIdentifier, start, end))
+                .OrderBy(p => p.Start)
+                .ThenByDescending(p => p.End == DateTime.MinValue ? DateTime.MaxValue : p.End)
+                .ThenBy(p => p.PlanNumber)
+                .ToList();
+
+            var plans = new List<Plan>();
+            var cursor = start;
+
+            foreach (var signalTimingPlan in timeline)
+            {
+                var clippedStart = signalTimingPlan.Start > start ? signalTimingPlan.Start : start;
+                var planEnd = signalTimingPlan.End == DateTime.MinValue ? end : signalTimingPlan.End;
+                var clippedEnd = planEnd < end ? planEnd : end;
+
+                if (clippedEnd <= cursor)
+                    continue;
+
+                if (clippedStart > cursor)
+                {
+                    AddPlanWindow(plans, UnknownPlanNumber, cursor, clippedStart);
+                    cursor = clippedStart;
+                }
+
+                var planStart = clippedStart > cursor ? clippedStart : cursor;
+                AddPlanWindow(plans, signalTimingPlan.PlanNumber.ToString(), planStart, clippedEnd);
+                cursor = clippedEnd;
+
+                if (cursor >= end)
+                    break;
+            }
+
+            if (cursor < end)
+                AddPlanWindow(plans, UnknownPlanNumber, cursor, end);
+
+            return plans;
+        }
+
+        public IReadOnlyList<Plan> GetPlans(
+            DateTime start,
+            DateTime end,
+            IEnumerable<Plan> plans)
+        {
+            if (start >= end)
+                throw new ArgumentException("start must be earlier than end.", nameof(start));
+
+            if (plans == null)
+                throw new ArgumentNullException(nameof(plans));
+
+            start = DateTime.SpecifyKind(start, DateTimeKind.Unspecified);
+            end = DateTime.SpecifyKind(end, DateTimeKind.Unspecified);
+
+            var timeline = plans
+                .Where(p => p != null && p.Start < end && p.End > start && p.End > p.Start)
+                .OrderBy(p => p.Start)
+                .ThenByDescending(p => p.End)
+                .ThenBy(p => p.PlanNumber)
+                .ToList();
+
+            var normalizedPlans = new List<Plan>();
+            var cursor = start;
+
+            foreach (var plan in timeline)
+            {
+                var clippedStart = plan.Start > start ? plan.Start : start;
+                var clippedEnd = plan.End < end ? plan.End : end;
+
+                if (clippedEnd <= cursor)
+                    continue;
+
+                if (clippedStart > cursor)
+                {
+                    AddPlanWindow(normalizedPlans, UnknownPlanNumber, cursor, clippedStart);
+                    cursor = clippedStart;
+                }
+
+                var planStart = clippedStart > cursor ? clippedStart : cursor;
+                AddPlanWindow(normalizedPlans, plan.PlanNumber, planStart, clippedEnd);
+                cursor = clippedEnd;
+
+                if (cursor >= end)
+                    break;
+            }
+
+            if (cursor < end)
+                AddPlanWindow(normalizedPlans, UnknownPlanNumber, cursor, end);
+
+            return normalizedPlans;
+        }
+
+        private static void AddPlanWindow(
+            List<Plan> plans,
+            string planNumber,
+            DateTime start,
+            DateTime end)
+        {
+            if (end <= start)
+                return;
+
+            var previousPlan = plans.LastOrDefault();
+
+            if (previousPlan != null && previousPlan.PlanNumber == planNumber && previousPlan.End == start)
+            {
+                previousPlan.End = end;
+                return;
+            }
+
+            plans.Add(new Plan(planNumber, start, end));
+        }
+
+        private static void ValidatePlanRequest(string locationIdentifier, DateTime start, DateTime end)
+        {
+            if (start >= end)
+                throw new ArgumentException("start must be earlier than end.", nameof(start));
+
+            if (string.IsNullOrWhiteSpace(locationIdentifier))
+                throw new ArgumentException("locationIdentifier cannot be null or empty.", nameof(locationIdentifier));
+        }
+
+        private static bool IsUsableSignalTimingPlan(
+            SignalTimingPlan signalTimingPlan,
+            string locationIdentifier,
+            DateTime start,
+            DateTime end)
+        {
+            return signalTimingPlan != null
+                && signalTimingPlan.Valid
+                && signalTimingPlan.LocationIdentifier == locationIdentifier
+                && signalTimingPlan.Start < end
+                && (signalTimingPlan.End == DateTime.MinValue || signalTimingPlan.End > start)
+                && (signalTimingPlan.End == DateTime.MinValue || signalTimingPlan.End > signalTimingPlan.Start);
         }
 
         public List<PurdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
@@ -58,6 +334,22 @@ namespace Utah.Udot.Atspm.Business.Common
                     }
                 }
             return plans;
+        }
+
+        public List<PurdueCoordinationPlan> GetPcdPlans(
+            List<CyclePcd> cycles,
+            DateTime startDate,
+            DateTime endDate,
+            Approach approach,
+            IReadOnlyList<Plan> plans)
+        {
+            return GetPlans(startDate, endDate, plans)
+                .Select(plan => new PurdueCoordinationPlan(
+                    plan.Start,
+                    plan.End,
+                    plan.PlanNumber,
+                    cycles.Where(c => c.StartTime >= plan.Start && c.StartTime < plan.End).ToList()))
+                .ToList();
         }
 
         public List<IndianaEvent> SetFirstAndLastPlan(
@@ -147,7 +439,15 @@ namespace Utah.Udot.Atspm.Business.Common
                                         ? new Plan(x.EventParam.ToString(), x.Timestamp, endDate)
                                         : new Plan(x.EventParam.ToString(), x.Timestamp, planEvents[i + 1].Timestamp))
                                   .ToList();
-            return plans;
+            return GetPlans(startDate, endDate, plans);
+        }
+
+        public IReadOnlyList<Plan> GetBasicPlans(
+            DateTime startDate,
+            DateTime endDate,
+            IReadOnlyList<Plan> plans)
+        {
+            return GetPlans(startDate, endDate, plans);
         }
 
         public List<TransitSignalPriorityBasicPlan> GetTransitSignalPriorityBasicPlans(
@@ -161,9 +461,32 @@ namespace Utah.Udot.Atspm.Business.Common
                 throw new ArgumentException("startDate must be earlier than endDate.", nameof(startDate));
             if (string.IsNullOrWhiteSpace(locationId))
                 throw new ArgumentException("locationId cannot be null or empty.", nameof(locationId));
+            if (planEvents.IsNullOrEmpty())
+                return new List<TransitSignalPriorityBasicPlan>
+                {
+                    new TransitSignalPriorityBasicPlan(UnknownPlanNumber, startDate, endDate)
+                };
+
             var plans = CreatePlansFromEvents(planEvents.ToList(), startDate, endDate);
             return plans.Select(p => new TransitSignalPriorityBasicPlan(p.PlanNumber, p.Start, p.End)).ToList();
         }
+
+        public List<TransitSignalPriorityBasicPlan> GetTransitSignalPriorityBasicPlans(
+            DateTime startDate,
+            DateTime endDate,
+            string locationId,
+            IReadOnlyList<Plan> plans)
+        {
+            if (startDate >= endDate)
+                throw new ArgumentException("startDate must be earlier than endDate.", nameof(startDate));
+            if (string.IsNullOrWhiteSpace(locationId))
+                throw new ArgumentException("locationId cannot be null or empty.", nameof(locationId));
+
+            return GetPlans(startDate, endDate, plans)
+                .Select(p => new TransitSignalPriorityBasicPlan(p.PlanNumber, p.Start, p.End))
+                .ToList();
+        }
+
         /// <summary>
         /// Creates plan objects based on cleaned events and the given time range.
         /// </summary>
@@ -212,6 +535,24 @@ namespace Utah.Udot.Atspm.Business.Common
                 severeRedLightViolationSeconds)).ToList();
         }
 
+        public IReadOnlyList<YellowRedActivationPlan> GetYellowRedActivationPlans(
+            DateTime startDate,
+            DateTime endDate,
+            List<YellowRedActivationsCycle> cycles,
+            string locationIdentifier,
+            double severeRedLightViolationSeconds,
+            IReadOnlyList<Plan> plans)
+        {
+            return GetPlans(startDate, endDate, plans)
+                .Select(plan => new YellowRedActivationPlan(
+                    plan.Start,
+                    plan.End,
+                    plan.PlanNumber,
+                    cycles.Where(c => c.StartTime >= plan.Start && c.StartTime < plan.End).ToList(),
+                    severeRedLightViolationSeconds))
+                .ToList();
+        }
+
         public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(
             DateTime startDate,
             DateTime endDate,
@@ -233,6 +574,17 @@ namespace Utah.Udot.Atspm.Business.Common
                             planEvents[i].EventParam.ToString()));
                 }
             return plans;
+        }
+
+        public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(
+            DateTime startDate,
+            DateTime endDate,
+            string locationId,
+            IReadOnlyList<Plan> plans)
+        {
+            return GetPlans(startDate, endDate, plans)
+                .Select(plan => new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber))
+                .ToList();
         }
 
         /// <summary>
@@ -324,6 +676,41 @@ namespace Utah.Udot.Atspm.Business.Common
             return plans;
         }
 
+        public List<SpeedPlan> GetSpeedPlans(
+            List<CycleSpeed> cycles,
+            DateTime startDate,
+            DateTime endDate,
+            Approach approach,
+            IReadOnlyList<Plan> plans)
+        {
+            return GetPlans(startDate, endDate, plans)
+                .Select(plan =>
+                {
+                    var speeds = cycles
+                        .SelectMany(c => c.SpeedEvents)
+                        .Where(c => c.Timestamp >= plan.Start && c.Timestamp < plan.End)
+                        .Select(c => c.Mph)
+                        .ToList();
+
+                    SetSpeedStatistics(
+                        speeds,
+                        out var averageSpeed,
+                        out var standardDeviation,
+                        out var eightyFifthPercentile,
+                        out var fifteenthPercentile);
+
+                    return new SpeedPlan(
+                        plan.Start,
+                        plan.End,
+                        plan.PlanNumber,
+                        averageSpeed,
+                        standardDeviation,
+                        eightyFifthPercentile,
+                        fifteenthPercentile);
+                })
+                .ToList();
+        }
+
         public void SetSpeedStatistics(
             List<int> speeds,
             out int? avgSpeed,
@@ -389,6 +776,17 @@ namespace Utah.Udot.Atspm.Business.Common
             })
                 .ToList();
             return plans;
+        }
+
+        public List<PlanSplitFail> GetSplitFailPlans(
+            List<CycleSplitFail> cycles,
+            SplitFailOptions options,
+            Approach approach,
+            IReadOnlyList<Plan> plans)
+        {
+            return GetPlans(options.Start, options.End, plans)
+                .Select(plan => new PlanSplitFail(plan.Start, plan.End, plan.PlanNumber, cycles))
+                .ToList();
         }
     }
 }
