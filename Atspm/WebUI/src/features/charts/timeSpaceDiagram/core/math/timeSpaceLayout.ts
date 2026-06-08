@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-export const TIME_SPACE_MIN_SEGMENT = 2200
+export const TIME_SPACE_MIN_SEGMENT = 2000
 export const TIME_SPACE_DISPLAY_DISTANCE_UNITS_PER_PIXEL = 18
 export const TIME_SPACE_Y_AXIS_EDGE_BUFFER_PX = 25
 export const TIME_SPACE_Y_AXIS_PADDING =
