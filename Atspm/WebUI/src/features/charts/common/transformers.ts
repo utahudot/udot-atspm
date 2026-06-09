@@ -16,13 +16,11 @@
 // #endregion
 import {
   BasePlan,
-  ChartType,
   DataPoint,
   MarkAreaData,
   PlanData,
   PlanOptions,
 } from '@/features/charts/common/types'
-import { supportsBinStepLineToggle } from '@/features/charts/common/chartFeatureFlags'
 import { Color } from '@/features/charts/utils'
 import { format } from 'date-fns'
 import {
@@ -403,11 +401,12 @@ interface ToolboxProps {
 }
 
 export function createToolbox(
-  { title }: ToolboxProps,
-  _locationIdentifier?: string | null,
-  chartType?: ChartType | string
-) {
-  const toolbox: ToolboxComponentOption = {
+  props: ToolboxProps,
+  locationIdentifier?: string | null,
+  chartType?: string
+): ToolboxComponentOption
+export function createToolbox({ title }: ToolboxProps): ToolboxComponentOption {
+  return {
     feature: {
       saveAsImage: { name: title },
       dataView: {
@@ -415,17 +414,6 @@ export function createToolbox(
       },
     },
   }
-
-  if (supportsBinStepLineToggle(chartType)) {
-    toolbox.feature = {
-      ...toolbox.feature,
-      magicType: {
-        type: ['line', 'bar'],
-      },
-    }
-  }
-
-  return toolbox
 }
 
 // function generateDataView(
