@@ -171,6 +171,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             if (!string.IsNullOrEmpty(apiKey.OwnerId))
             {
                 claimsList.Add(new Claim(ClaimTypes.NameIdentifier, apiKey.OwnerId));
+                claimsList.Add(new Claim(ClaimTypes.GivenName, apiKey.OwnerId));
+            }
+
+            if (!string.IsNullOrEmpty(apiKey.Name))
+            {
+                claimsList.Add(new Claim(ClaimTypes.Surname, apiKey.Name));
             }
 
             claimsList.Add(new Claim("AuthenticationMethod", "ApiKey"));
