@@ -127,6 +127,7 @@ function transformData(data: RawApproachDelayData) {
       name: approachDelaySecond,
       data: transformSeriesData(approachDelayPerVehicleDataPoints),
       type: 'line',
+      binStepLineToggle: true,
       color: Color.Blue,
       tooltip: {
         valueFormatter: (value) =>
@@ -137,6 +138,7 @@ function transformData(data: RawApproachDelayData) {
       name: approachDelayHour,
       data: transformSeriesData(approachDelayDataPoints),
       type: 'line',
+      binStepLineToggle: true,
       color: Color.Red,
       yAxisIndex: 1,
       tooltip: {

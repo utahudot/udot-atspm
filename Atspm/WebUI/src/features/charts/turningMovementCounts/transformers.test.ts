@@ -118,7 +118,7 @@ describe('transformTurningMovementCountsData', () => {
       peakHourData: [['08:00 - 09:00', 10, 20, 30, 60, 60]],
     })
     expect(result.data.displayProps?.exportFileName).toBe(
-      'Turning_Movement_Counts_1001_2026-04-01_08-00_to_2026-04-01_09-00'
+      'Turning_Movement_Counts_Main_St_100_S_2026-04-01_08-00_to_2026-04-01_09-00'
     )
   })
 })

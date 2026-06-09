@@ -221,6 +221,7 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
         name: `Total Volume`,
         data: transformSeriesData(totalHourlyVolumes),
         type: 'line',
+        binStepLineToggle: true,
         color: Color.Red,
         tooltip: {
           valueFormatter: (val) => `${Math.round(val as number)} vph`,
@@ -235,6 +236,7 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
         name: `Lane ${lane.laneNumber}`,
         data: transformSeriesData(lane.volume),
         type: 'line',
+        binStepLineToggle: true,
         color: colorValues[i % colorValues.length],
         tooltip: {
           valueFormatter: (val) => `${Math.round(val as number)} vph`,

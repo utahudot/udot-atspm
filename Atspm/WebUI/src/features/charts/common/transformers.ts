@@ -22,6 +22,7 @@ import {
   PlanData,
   PlanOptions,
 } from '@/features/charts/common/types'
+import { supportsBinStepLineToggle } from '@/features/charts/common/chartFeatureFlags'
 import { Color } from '@/features/charts/utils'
 import { format } from 'date-fns'
 import {
@@ -38,6 +39,10 @@ import {
   YAXisComponentOption,
 } from 'echarts'
 
+export type ChartSeriesOption = SeriesOption & {
+  binStepLineToggle?: boolean
+}
+
 export function transformSeriesData(
   dataPoints: DataPoint[]
 ): (string | number)[][] {
@@ -52,7 +57,7 @@ export function transformSeriesData(
   return series
 }
 
-export function createSeries(...seriesInputs: SeriesOption[]) {
+export function createSeries(...seriesInputs: ChartSeriesOption[]) {
   const defaultProperties: SeriesOption = {}
 
   seriesInputs.map((seriesInput) => {
@@ -65,7 +70,7 @@ export function createSeries(...seriesInputs: SeriesOption[]) {
   return seriesInputs.map((seriesInput) => ({
     ...defaultProperties,
     ...seriesInput,
-  })) as SeriesOption[]
+  })) as ChartSeriesOption[]
 }
 
 function getMidpointTimestamp(start: string, end: string): string {
@@ -392,10 +397,15 @@ export function formatExportFileName(
   )
 }
 
+interface ToolboxProps {
+  title: string
+  dateRange?: string
+}
+
 export function createToolbox(
-  { title }: titleProps
-  // locationIdentifier?: string,
-  // type?: ChartType | ToolType
+  { title }: ToolboxProps,
+  _locationIdentifier?: string | null,
+  chartType?: ChartType | string
 ) {
   const toolbox: ToolboxComponentOption = {
     feature: {
@@ -405,6 +415,16 @@ export function createToolbox(
       },
     },
   }
+
+  if (supportsBinStepLineToggle(chartType)) {
+    toolbox.feature = {
+      ...toolbox.feature,
+      magicType: {
+        type: ['line', 'bar'],
+      },
+    }
+  }
+
   return toolbox
 }
 

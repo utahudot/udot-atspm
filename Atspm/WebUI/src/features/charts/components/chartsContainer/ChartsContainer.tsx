@@ -1,5 +1,6 @@
 import { useCharts } from '@/features/charts/api'
 import ApproachVolumeChartResults from '@/features/charts/approachVolume/components/ApproachVolumeChartResults'
+import { supportsBinStepLineToggle } from '@/features/charts/common/chartFeatureFlags'
 import { ChartOptions, ChartType } from '@/features/charts/common/types'
 import ChartsToolbox from '@/features/charts/components/chartsToolbox'
 import DefaultChartResults from '@/features/charts/components/defaultChartResults'
@@ -159,8 +160,11 @@ export default function ChartsContainer({
     refetch()
   }
 
-  useChartsController =
-    chartData?.data?.charts && chartData.data.charts.length > 1 ? true : false
+  useChartsController = Boolean(
+    chartData?.data?.charts &&
+      chartData.data.charts.length > 0 &&
+      (chartData.data.charts.length > 1 || supportsBinStepLineToggle(chartType))
+  )
 
   const displayStyle = (shouldShow: boolean) => ({
     display: shouldShow ? 'block' : 'none',
@@ -271,6 +275,7 @@ export default function ChartsContainer({
           <ChartsToolbox
             chartRefs={chartRefs.current}
             chartData={chartData}
+            chartType={chartType}
             toggleConfig={() => setShowConfig(!showConfig)}
             toggleConfigLabel={showConfig ? 'Charts' : 'Config'}
           />
