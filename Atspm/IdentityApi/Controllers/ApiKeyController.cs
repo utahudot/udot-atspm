@@ -147,6 +147,28 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         }
 
         /// <summary>
+        /// Retrieves all active, non-revoked API keys in the system.
+        /// </summary>
+        /// <returns>A list of all API key metadata.</returns>
+        /// <response code="200">Returns the complete list of system keys.</response>
+        /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
+        /// <response code="403">Forbidden if the user lacks global view permissions.</response>
+        [AuthorizePermission(AtspmAuthorization.Permissions.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("all-keys")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetAllKeys()
+        {
+            var keys = await _context.ApiKeys
+                .Where(k => !k.IsRevoked)
+                .Select(k => new { k.Id, k.Name, k.OwnerId, k.CreatedAt, k.ExpiresAt })
+                .ToListAsync();
+
+            return Ok(keys);
+        }
+
+        /// <summary>
         /// Marks a specific API key as revoked to prevent further use.
         /// </summary>
         /// <param name="id">The unique identifier of the API key to revoke.</param>
