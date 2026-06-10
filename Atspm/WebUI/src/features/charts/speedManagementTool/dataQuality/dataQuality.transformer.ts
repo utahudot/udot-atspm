@@ -136,6 +136,7 @@ function transformSingleSegmentAcrossSources(
   })
 
   const legend = createLegend({
+    top: grid.top,
     data: response.map((source) => source.name),
   })
 
@@ -238,10 +239,11 @@ function transformData(
   const grid = createGrid({
     top: 70,
     left: 80,
-    right: 150,
+    right: 240,
   })
 
   const legend = createLegend({
+    top: grid.top,
     data: segmentsWithData.map((segment) => segment.segmentName),
   })
 

@@ -115,7 +115,7 @@ export const transformData = (
   // For vertical spacing, etc. (in “month” view, we do a grid of small multiples)
   const calendarDayBuffer = 40
   const daysOfTheWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  const cellWidth = 74
+  const cellWidth = 76
   const paddingLeft = 5
   const paddingTop = 90
   const cellHeight = 100
@@ -352,10 +352,11 @@ export const transformData = (
         textStyle: { fontSize: 10 },
       })
     }
-    legend = createLegend({ data: legendData })
+    legend = createLegend({ top: paddingTop, data: legendData })
   } else {
     // Month/multi-month grid: simple legend
     legend = createLegend({
+      top: paddingTop,
       data: [
         { name: 'Speed Limit', icon: DashedLineSeriesSymbol },
         { name: 'Average', icon: SolidLineSeriesSymbol },

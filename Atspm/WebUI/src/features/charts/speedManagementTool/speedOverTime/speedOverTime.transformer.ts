@@ -208,7 +208,7 @@ function transformData(
       icon: SolidLineSeriesSymbol,
     })
   }
-  const legend = createLegend({ data: seriesWithData })
+  const legend = createLegend({ top: grid.top, data: seriesWithData })
 
   const impactSeries = impactResponse
     ? transformImpactData(impactResponse)

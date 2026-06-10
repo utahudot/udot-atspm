@@ -83,6 +83,7 @@ export default function transformSpeedComplianceData(
   })
 
   const legend = createLegend({
+    top: grid.top,
     data: [
       { name: 'Average Speed', icon: SolidLineSeriesSymbol },
       { name: '85th Percentile Speed', icon: SolidLineSeriesSymbol },
