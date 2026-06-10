@@ -171,7 +171,7 @@ function transformData(
   const grid = createGrid({
     top: 80,
     left: 60,
-    right: 210,
+    right: 240,
   })
 
   const dataZoom = createDataZoom()
