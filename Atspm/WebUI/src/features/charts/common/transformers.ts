@@ -333,10 +333,16 @@ export function createDataZoom(
     minSpan: 0.2,
   } as const
 
-  // our two “built-in” defaults
   const base: DataZoomComponentOption[] = [
-    { type: 'slider', ...commonDefaults }, // horizontal
-    { type: 'inside', ...commonDefaults }, // drag/scroll
+    {
+      type: 'slider',
+      ...commonDefaults,
+      xAxisIndex: 0,
+      bottom: 15,
+      height: 30,
+      showDataShadow: false,
+    },
+    { type: 'inside', ...commonDefaults },
   ]
 
   if (!overrides || overrides.length === 0) {
