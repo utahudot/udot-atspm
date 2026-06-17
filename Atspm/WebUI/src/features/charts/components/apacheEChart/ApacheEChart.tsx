@@ -228,6 +228,15 @@ export default function ApacheEChart({
     () => applyBinStepLinePreference(option, chartType, showBinStepLines),
     [option, chartType, showBinStepLines]
   )
+  const hasDataZoom =
+    (asArray(
+      effectiveOption.dataZoom as
+        | DataZoomComponentOption
+        | DataZoomComponentOption[]
+        | undefined
+    )?.length ?? 0) > 0
+  const shouldSyncZoom =
+    hasDataZoom && (syncZoom || chartType === ChartType.TimingAndActuation)
   const setOptionSettings = useMemo(
     () => getSetOptionSettings(settings, shouldReplaceSeries),
     [settings, shouldReplaceSeries]
@@ -235,26 +244,27 @@ export default function ApacheEChart({
 
   const initChart = useCallback(() => {
     if (chartRef.current !== null) {
-      chartInstance.current = init(chartRef.current, theme, {
+      const currentChart = init(chartRef.current, theme, {
         useDirtyRect: true,
       })
+      chartInstance.current = currentChart
 
-      if (syncZoom || chartType === ChartType.TimingAndActuation) {
-        chartInstance.current.group = 'group1'
+      if (shouldSyncZoom) {
+        currentChart.group = 'group1'
         connect('group1')
       }
 
-      if (chartType === ChartType.GreenTimeUtilization) {
-        chartInstance.current.on('datazoom', () =>
-          handleGreenTimeUtilizationDataZoom(chartInstance.current!)
-        )
-      } else {
-        chartInstance.current.on('datazoom', () =>
-          adjustPlanPositions(chartInstance.current!)
-        )
+      if (hasDataZoom) {
+        if (chartType === ChartType.GreenTimeUtilization) {
+          currentChart.on('datazoom', () =>
+            handleGreenTimeUtilizationDataZoom(currentChart)
+          )
+        } else {
+          currentChart.on('datazoom', () => adjustPlanPositions(currentChart))
+        }
       }
     }
-  }, [theme, chartType, syncZoom])
+  }, [theme, chartType, hasDataZoom, shouldSyncZoom])
 
   useEffect(() => {
     initChart()
@@ -272,6 +282,7 @@ export default function ApacheEChart({
 
   useEffect(() => {
     if (chartInstance.current) {
+      const shouldLockDataZoom = !isActive && !shouldSyncZoom
       const adjustedDataZoom = asArray(
         effectiveOption.dataZoom as
           | DataZoomComponentOption
@@ -280,8 +291,8 @@ export default function ApacheEChart({
       )?.map((zoom) => ({
         ...zoom,
         endValue: yAxisMaxStore != null ? yAxisMaxStore : zoom.endValue,
-        disabled: !isActive,
-        zoomLock: !isActive,
+        disabled: shouldLockDataZoom,
+        zoomLock: shouldLockDataZoom,
       }))
 
       // Use adjusted dataZoom in the chart options
@@ -307,6 +318,7 @@ export default function ApacheEChart({
     syncZoom,
     isActive,
     yAxisMaxStore,
+    shouldSyncZoom,
   ])
 
   useEffect(() => {
