@@ -21,10 +21,10 @@ import {
   Tooltip,
 } from '@mui/material'
 import L from 'leaflet'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 import HotspotMarker from './HotspotMarker'
-import SpeedLegend from './SM_Legend'
+import SpeedLegend, { routeHasData } from './SM_Legend'
 
 type HotspotCoordinate = [number, number]
 
@@ -67,6 +67,7 @@ const SM_Map = ({
   const [zoomLevel, setZoomLevel] = useState(7)
   const [hoveredSegment, setHoveredSegment] =
     useState<SpeedManagementRoute | null>(null)
+  const [includeNoDataSegments, setIncludeNoDataSegments] = useState(true)
 
   const {
     routeRenderOption,
@@ -77,6 +78,14 @@ const SM_Map = ({
     setMapRef, // from Zustand store
     mapRef, // from Zustand store
   } = useSpeedManagementStore()
+
+  const visibleRoutes = useMemo(
+    () =>
+      includeNoDataSegments
+        ? routes
+        : routes.filter((route) => routeHasData(route.properties)),
+    [includeNoDataSegments, routes]
+  )
 
   useEffect(() => {
     const fetchEnv = async () => {
@@ -91,13 +100,19 @@ const SM_Map = ({
 
   useEffect(() => {
     // when routeRenderOption changes, set map extent to show all routes
-    if (mapRef && routes.length) {
+    if (mapRef && visibleRoutes.length) {
       const bounds = L.latLngBounds(
-        routes.map((route) => route.geometry.coordinates).flat()
+        visibleRoutes.map((route) => route.geometry.coordinates).flat()
       )
       mapRef.fitBounds(bounds)
     }
-  }, [routeRenderOption, mapRef, routes])
+  }, [routeRenderOption, mapRef, visibleRoutes])
+
+  useEffect(() => {
+    if (!includeNoDataSegments && !routeHasData(hoveredSegment?.properties)) {
+      setHoveredSegment(null)
+    }
+  }, [includeNoDataSegments, hoveredSegment])
 
   useEffect(() => {
     if (mapRef) {
@@ -306,9 +321,12 @@ const SM_Map = ({
             </Button>
           </Tooltip>
         </Box>
-        <RouteDisplayToggle />
+        <RouteDisplayToggle
+          includeNoDataSegments={includeNoDataSegments}
+          setIncludeNoDataSegments={setIncludeNoDataSegments}
+        />
         <VectorRoutesSlicerLayer
-          routes={routes}
+          routes={visibleRoutes}
           selectedRouteIds={selectedRouteIds}
           setSelectedRouteId={setSelectedRouteId}
           setHoveredSegment={setHoveredSegment}

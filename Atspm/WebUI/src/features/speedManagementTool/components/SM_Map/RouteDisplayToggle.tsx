@@ -1,10 +1,26 @@
 import RoutesToggle from '@/features/speedManagementTool/components/RoutesToggle'
 import ViolationRangeSlider from '@/features/speedManagementTool/components/RoutesToggle/ViolationRangeSlider'
 import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined'
-import { Box, Button, Paper, Popper, Tooltip } from '@mui/material'
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  Paper,
+  Popper,
+  Switch,
+  Tooltip,
+} from '@mui/material'
 import { useState } from 'react'
 
-const RouteDisplayToggle = () => {
+type RouteDisplayToggleProps = {
+  includeNoDataSegments: boolean
+  setIncludeNoDataSegments: (include: boolean) => void
+}
+
+const RouteDisplayToggle = ({
+  includeNoDataSegments,
+  setIncludeNoDataSegments,
+}: RouteDisplayToggleProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -45,6 +61,27 @@ const RouteDisplayToggle = () => {
       >
         <Paper sx={{ width: '300px' }}>
           <RoutesToggle setAnchorEl={setAnchorEl} />
+          <Box
+            sx={{
+              px: 2,
+              py: 1,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={includeNoDataSegments}
+                  onChange={(event) =>
+                    setIncludeNoDataSegments(event.target.checked)
+                  }
+                  size="small"
+                />
+              }
+              label="Include no-data segments"
+            />
+          </Box>
           <ViolationRangeSlider />
         </Paper>
       </Popper>

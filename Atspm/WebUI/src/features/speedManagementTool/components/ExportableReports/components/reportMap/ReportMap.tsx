@@ -4,7 +4,15 @@ import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import React, { memo, useEffect, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
-import SM_Legend, { getRouteColor } from '../../../SM_Map/SM_Legend'
+import SM_Legend, {
+  NO_DATA_ROUTE_COLOR,
+  NO_DATA_ROUTE_DASH_ARRAY,
+  NO_DATA_ROUTE_OPACITY,
+  getNoDataRouteWeight,
+  getRouteColor,
+  routeHasData,
+  routeHasNoData,
+} from '../../../SM_Map/SM_Legend'
 import { HotSpotForReportMap, ImpactHotspotForReportMap } from '../../types'
 import MarkerForReportMap from './MarkerForReportMap'
 
@@ -81,11 +89,13 @@ function ReportMap(props: Props) {
   }, [mapRef, routes])
 
   const getColor = (route: SpeedManagementRoute) => {
+    if (!routeHasData(route.properties)) return NO_DATA_ROUTE_COLOR
+
     const field = 'averageSpeed'
     const val = route.properties[
       field as keyof SpeedManagementRoute['properties']
-    ] as number
-    if (val === null) return '#000'
+    ] as number | null | undefined
+    if (val === null || val === undefined) return NO_DATA_ROUTE_COLOR
     return getRouteColor(val)
   }
 
@@ -139,18 +149,26 @@ function ReportMap(props: Props) {
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
         />
-        {routes.map((route, i) => (
-          <Polyline
-            key={`${route.properties.route_id}i${i}`}
-            pathOptions={{
-              color: getColor(route),
-              weight: getPolylineWeight(zoomLevel),
-            }}
-            smoothFactor={0}
-            positions={route.geometry.coordinates}
-            interactive={true}
-          />
-        ))}
+        {routes.map((route, i) => {
+          const weight = getPolylineWeight(zoomLevel)
+          const hasNoData = routeHasNoData(route.properties)
+
+          return (
+            <Polyline
+              key={`${route.properties.route_id}i${i}`}
+              pathOptions={{
+                color: getColor(route),
+                weight: hasNoData ? getNoDataRouteWeight(weight) : weight,
+                opacity: hasNoData ? NO_DATA_ROUTE_OPACITY : 1,
+                dashArray: hasNoData ? NO_DATA_ROUTE_DASH_ARRAY : undefined,
+                lineCap: hasNoData ? 'round' : undefined,
+              }}
+              smoothFactor={0}
+              positions={route.geometry.coordinates}
+              interactive={true}
+            />
+          )
+        })}
         {hotspots?.map((hotspot, index) => {
           if (!hotspot?.coordinates) return null
           const midpoint = getMidpoint(hotspot.coordinates)
