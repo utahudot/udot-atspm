@@ -147,9 +147,9 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   const info = createInfoString(
     ['Total Volume: ', `${data.totalVolume.toLocaleString()}`],
     ['Peak Hour: ', peakHour ?? 'N/A'],
-    ['Peak Hour Volume: ', peakHourVolume.toLocaleString() ?? 'N/A'],
-    ['Peak Hour Factor: ', peakHourFactor?.toFixed(2) ?? 'N/A'],
-    ['fLU: ', laneUtilizationFactor.toFixed(2)]
+    ['Peak Hour Volume: ', formatNullableNumber(peakHourVolume)],
+    ['Peak Hour Factor: ', formatNullableNumber(peakHourFactor, 2)],
+    ['fLU: ', formatNullableNumber(laneUtilizationFactor, 2)]
   )
 
   const titleHeader = `Turning Movement Counts\n${data.locationDescription} - ${data.direction} ${data.movementType} - ${data.laneType}`
@@ -265,6 +265,14 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   }
 
   return chartOptions
+}
+
+function formatNullableNumber(value: number | null | undefined, decimals?: number) {
+  if (value == null) {
+    return 'N/A'
+  }
+
+  return decimals == null ? value.toLocaleString() : value.toFixed(decimals)
 }
 
 function formatTime(timestamp: string | Date) {
