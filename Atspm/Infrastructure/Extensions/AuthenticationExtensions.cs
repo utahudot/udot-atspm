@@ -394,7 +394,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                         policy.RequireAssertion(context =>
                         {
                             var hasPermission = context.User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == permission);
-                            var isAdmin = context.User.IsInRole(AtspmAuthorization.Roles.Admin);
+                            var isAdmin = !IsApiKeyPrincipal(context.User) && context.User.IsInRole(AtspmAuthorization.Roles.Admin);
 
                             return hasPermission || isAdmin;
                         });
@@ -404,11 +404,21 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.AddPolicy(AtspmAuthorization.Roles.Admin, policy =>
                 {
                     policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
+                    policy.RequireAssertion(context =>
+                    {
+                        return !IsApiKeyPrincipal(context.User)
+                            && context.User.HasClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
+                    });
                 });
             });
 
             return services;
+        }
+
+        private static bool IsApiKeyPrincipal(ClaimsPrincipal user)
+        {
+            return user.Identities.Any(i => string.Equals(i.AuthenticationType, "ApiKey", StringComparison.OrdinalIgnoreCase))
+                || user.HasClaim(c => c.Type == "AuthenticationMethod" && c.Value == "ApiKey");
         }
     }
 }

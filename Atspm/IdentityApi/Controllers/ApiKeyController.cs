@@ -15,11 +15,13 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Security.Claims;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
@@ -34,10 +36,27 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
     /// <summary>
     /// Provides endpoints for managing API keys, including creation, retrieval, and revocation.
     /// </summary>
+    [ApiController]
     [Authorize]
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class ApiKeyController : ControllerBase
     {
+        private static readonly HashSet<string> AllPermissions = typeof(AtspmAuthorization.Permissions)
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Where(f => f.IsLiteral && !f.IsInitOnly)
+            .Select(f => f.GetRawConstantValue()?.ToString())
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .Select(v => v!)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly HashSet<string> ForbiddenApiKeyClaims = new(StringComparer.OrdinalIgnoreCase)
+        {
+            AtspmAuthorization.Permissions.Admin,
+            AtspmAuthorization.Permissions.ApiKeysCreate
+        };
+
         private readonly IdentityContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -77,16 +96,24 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 );
             }
 
+            var validationResult = ValidateCreateRequest(dto);
+            if (validationResult != null) return validationResult;
+
             var userId = _userManager.GetUserId(User);
             if (userId == null) return Unauthorized();
 
-            var isGlobalAdmin = User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            var requestedClaims = dto.Claims
+                .Select(c => c.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var isGlobalAdmin = IsGlobalAdmin(User);
 
             if (!isGlobalAdmin)
             {
-                foreach (var requestedClaim in dto.Claims)
+                foreach (var requestedClaim in requestedClaims)
                 {
-                    if (!User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == requestedClaim))
+                    if (!User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && string.Equals(c.Value, requestedClaim, StringComparison.OrdinalIgnoreCase)))
                     {
                         return Problem(
                             detail: $"You cannot grant the permission '{requestedClaim}' because you do not possess it.",
@@ -101,14 +128,14 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
 
             var apiKey = new ApiKey
             {
-                Name = dto.Name,
+                Name = dto.Name.Trim(),
                 KeyHash = hash,
                 OwnerId = userId,
                 ExpiresAt = dto.ExpiresAt,
                 IsRevoked = false,
-                Claims = dto.Claims.Select(r => new ApiKeyClaim
+                Claims = requestedClaims.Select(r => new ApiKeyClaim
                 {
-                    Type = ClaimTypes.Role,
+                    Type = AtspmAuthorization.RoleClaimType,
                     Value = r
                 }).ToList()
             };
@@ -124,7 +151,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves all active, non-revoked API keys belonging to the authenticated user.
+        /// Retrieves API keys visible to the authenticated user.
         /// </summary>
         /// <returns>A list of API key metadata.</returns>
         /// <response code="200">Returns the list of keys associated with the user.</response>
@@ -138,12 +165,63 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         public async Task<IActionResult> GetMyKeys()
         {
             var userId = _userManager.GetUserId(User);
-            var keys = await _context.ApiKeys
-                .Where(k => k.OwnerId == userId && !k.IsRevoked)
-                .Select(k => new { k.Id, k.Name, k.CreatedAt, k.ExpiresAt })
+            if (userId == null) return Unauthorized();
+
+            var isGlobalAdmin = IsGlobalAdmin(User);
+
+            var query = _context.ApiKeys
+                .Include(k => k.Claims)
+                .AsNoTracking();
+
+            if (!isGlobalAdmin)
+            {
+                query = query.Where(k => k.OwnerId == userId);
+            }
+
+            var keys = await query
+                .OrderByDescending(k => k.CreatedAt)
                 .ToListAsync();
 
-            return Ok(keys);
+            var ownerIds = keys
+                .Select(k => k.OwnerId)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct()
+                .ToList();
+
+            var owners = await _context.Users
+                .Where(u => ownerIds.Contains(u.Id))
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Email,
+                    u.FirstName,
+                    u.LastName
+                })
+                .ToListAsync();
+
+            var ownerById = owners.ToDictionary(u => u.Id);
+
+            var result = keys.Select(k =>
+            {
+                ownerById.TryGetValue(k.OwnerId, out var owner);
+                var ownerName = string.Join(" ", new[] { owner?.FirstName, owner?.LastName }
+                    .Where(part => !string.IsNullOrWhiteSpace(part)));
+
+                return new ApiKeyMetadataDto
+                {
+                    Id = k.Id,
+                    Name = k.Name,
+                    OwnerId = k.OwnerId,
+                    OwnerEmail = owner?.Email ?? string.Empty,
+                    OwnerName = ownerName,
+                    CreatedAt = k.CreatedAt,
+                    ExpiresAt = k.ExpiresAt,
+                    IsRevoked = k.IsRevoked,
+                    Claims = k.Claims.Select(c => c.Value).OrderBy(c => c).ToList()
+                };
+            }).ToList();
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -168,8 +246,13 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             var userId = _userManager.GetUserId(User);
             if (userId == null) return Unauthorized();
 
-            var apiKey = await _context.ApiKeys
-                .FirstOrDefaultAsync(k => k.Id == id && k.OwnerId == userId);
+            var query = _context.ApiKeys.AsQueryable();
+            if (!IsGlobalAdmin(User))
+            {
+                query = query.Where(k => k.OwnerId == userId);
+            }
+
+            var apiKey = await query.FirstOrDefaultAsync(k => k.Id == id);
 
             if (apiKey == null)
             {
@@ -200,6 +283,74 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             }
 
             return Ok(new { Message = $"API Key '{apiKey.Name}' has been revoked." });
+        }
+
+        private static bool IsGlobalAdmin(ClaimsPrincipal user)
+        {
+            return user.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == AtspmAuthorization.Roles.Admin);
+        }
+
+        private IActionResult? ValidateCreateRequest(CreateApiKeyDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Name))
+            {
+                return Problem(
+                    detail: "API key name is required.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Invalid API Key Name"
+                );
+            }
+
+            if (dto.Name.Length > 200)
+            {
+                return Problem(
+                    detail: "API key name must be 200 characters or fewer.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Invalid API Key Name"
+                );
+            }
+
+            if (dto.Claims == null || dto.Claims.Count == 0 || dto.Claims.Any(string.IsNullOrWhiteSpace))
+            {
+                return Problem(
+                    detail: "At least one non-empty permission is required.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Invalid API Key Claims"
+                );
+            }
+
+            var requestedClaims = dto.Claims
+                .Select(c => c.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var forbiddenClaims = requestedClaims
+                .Where(ForbiddenApiKeyClaims.Contains)
+                .ToList();
+
+            if (forbiddenClaims.Any())
+            {
+                return Problem(
+                    detail: $"API keys cannot be granted these permissions: {string.Join(", ", forbiddenClaims)}.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Forbidden API Key Claims"
+                );
+            }
+
+            var unknownClaims = requestedClaims
+                .Where(c => !AllPermissions.Contains(c))
+                .ToList();
+
+            if (unknownClaims.Any())
+            {
+                return Problem(
+                    detail: $"Unknown API key permissions: {string.Join(", ", unknownClaims)}.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Invalid API Key Claims"
+                );
+            }
+
+            return null;
         }
     }
 }
