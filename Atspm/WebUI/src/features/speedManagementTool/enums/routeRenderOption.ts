@@ -19,6 +19,18 @@ export enum RouteRenderOption {
   Posted_Speed = 'Posted Speed',
   Average_Speed = 'Average Speed',
   Percentile_85th = '85th Percentile',
+  Percent_Violations = '% Violations',
+  Percent_Extreme_Violations = '% Extreme Violations',
   Percentile_95th = '95th Percentile',
   Percentile_99th = '99th Percentile',
 }
+
+const violationRenderOptions = [
+  RouteRenderOption.Violations,
+  RouteRenderOption.Percent_Violations,
+  RouteRenderOption.Percent_Extreme_Violations,
+]
+
+export const isViolationRenderOption = (
+  option: RouteRenderOption | null | undefined
+) => violationRenderOptions.includes(option as RouteRenderOption)

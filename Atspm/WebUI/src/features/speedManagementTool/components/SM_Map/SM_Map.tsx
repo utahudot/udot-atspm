@@ -271,6 +271,11 @@ const SM_Map = ({
     return null
   }
 
+  const formatPercent = (value: number | null | undefined) =>
+    typeof value === 'number' && Number.isFinite(value)
+      ? `${value.toFixed(1)}%`
+      : null
+
   return (
     <Box
       sx={{
@@ -505,6 +510,39 @@ const SM_Map = ({
                         hoveredSegment.properties.averageEightyFifthSpeed
                       )}{' '}
                       mph
+                    </TableCell>
+                  </TableRow>
+                )}
+                {formatPercent(hoveredSegment.properties.percentViolations) && (
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 'bold', fontSize: '12px' }}>
+                      % Violations:
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontSize: '12px' }}>
+                      {formatPercent(hoveredSegment.properties.percentViolations)}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {formatPercent(
+                  hoveredSegment.properties.percentExtremeViolations
+                ) && (
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: 'bold',
+                        fontSize: '12px',
+                        borderBottom: 'none',
+                      }}
+                    >
+                      % Extreme Violations:
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      sx={{ fontSize: '12px', borderBottom: 'none' }}
+                    >
+                      {formatPercent(
+                        hoveredSegment.properties.percentExtremeViolations
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

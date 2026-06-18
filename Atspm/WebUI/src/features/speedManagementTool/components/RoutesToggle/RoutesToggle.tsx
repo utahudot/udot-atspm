@@ -2,11 +2,13 @@ import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponen
 import {
   DataSource,
   RouteRenderOption,
+  isViolationRenderOption,
 } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   Box,
+  Divider,
   FormControlLabel,
   Grid,
   Radio,
@@ -14,6 +16,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import ViolationRangeSlider from './ViolationRangeSlider'
 
 const TooltipContent = ({
   label,
@@ -47,7 +50,9 @@ function RenderOptionSelector({
 
   const handleOptionClick = (option: RouteRenderOption) => {
     setRouteRenderOption(option)
-    setTimeout(() => setAnchorEl(null), 700)
+    if (!isViolationRenderOption(option)) {
+      setTimeout(() => setAnchorEl(null), 700)
+    }
   }
 
   return (
@@ -88,6 +93,28 @@ function RenderOptionSelector({
                   submittedRouteSpeedRequest.sourceId === DataSource.ClearGuide
                 }
               />
+              <Divider sx={{ my: 1 }} />
+              <FormControlLabel
+                value={RouteRenderOption.Percent_Violations}
+                control={<Radio size="small" />}
+                label={
+                  <TooltipContent
+                    label="% Violations"
+                    tooltip="Percent of volume traveling 2 mph or more over the speed limit"
+                  />
+                }
+              />
+              <FormControlLabel
+                value={RouteRenderOption.Percent_Extreme_Violations}
+                control={<Radio size="small" />}
+                label={
+                  <TooltipContent
+                    label="% Extreme Violations"
+                    tooltip="Percent of volume traveling 10 mph or more over the speed limit"
+                  />
+                }
+              />
+              <ViolationRangeSlider />
               {/* <FormControlLabel
                 value={RouteRenderOption.Percentile_95th}
                 control={<Radio size="small" />}

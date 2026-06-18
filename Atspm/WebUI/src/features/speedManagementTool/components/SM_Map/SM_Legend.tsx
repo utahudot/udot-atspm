@@ -1,4 +1,4 @@
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import { isViolationRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
 import L from 'leaflet'
@@ -117,7 +117,7 @@ const SM_Legend = () => {
       const div = L.DomUtil.create('div', 'map legend')
       const labels = []
 
-      labels.push('<strong>Violations</strong> <br>')
+      labels.push(`<strong>${routeRenderOption.toString()}</strong> <br>`)
       labels.push(
         `<i style="width: 30px; height: 18px; margin-right: 18px; float: left; background:${ViolationColors.Low}"></i> Low`
       )
@@ -145,7 +145,7 @@ const SM_Legend = () => {
     return () => {
       legend.remove()
     }
-  }, [map])
+  }, [map, routeRenderOption])
 
   const createSpeedLegend = useCallback(() => {
     const legend = new L.Control({ position: 'bottomright' })
@@ -194,7 +194,7 @@ const SM_Legend = () => {
   useEffect(() => {
     if (!map) return
 
-    return routeRenderOption === RouteRenderOption.Violations
+    return isViolationRenderOption(routeRenderOption)
       ? createViolationsLegend()
       : createSpeedLegend()
   }, [

@@ -7,7 +7,10 @@ import {
   routeHasData,
   routeHasNoData,
 } from '@/features/speedManagementTool/components/SM_Map/SM_Legend'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import {
+  RouteRenderOption,
+  isViolationRenderOption,
+} from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
@@ -50,6 +53,12 @@ export const getColor = (
     case RouteRenderOption.Violations:
       field = 'violations'
       break
+    case RouteRenderOption.Percent_Violations:
+      field = 'percentViolations'
+      break
+    case RouteRenderOption.Percent_Extreme_Violations:
+      field = 'percentExtremeViolations'
+      break
     case RouteRenderOption.Posted_Speed:
       field = 'Speed_Limit'
       break
@@ -68,7 +77,7 @@ export const getColor = (
     field as keyof SpeedManagementRoute['properties']
   ] as number | null | undefined
 
-  if (routeRenderOption === RouteRenderOption.Violations) {
+  if (isViolationRenderOption(routeRenderOption)) {
     if (val === null || val === undefined) return NO_DATA_ROUTE_COLOR
     if (val <= mediumMin) return ViolationColors.Low
     if (val < mediumMax) return ViolationColors.Medium

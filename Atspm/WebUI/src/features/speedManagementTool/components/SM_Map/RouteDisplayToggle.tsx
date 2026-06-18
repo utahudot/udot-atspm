@@ -1,5 +1,5 @@
 import RoutesToggle from '@/features/speedManagementTool/components/RoutesToggle'
-import ViolationRangeSlider from '@/features/speedManagementTool/components/RoutesToggle/ViolationRangeSlider'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined'
 import {
   Box,
@@ -10,7 +10,7 @@ import {
   Switch,
   Tooltip,
 } from '@mui/material'
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 type RouteDisplayToggleProps = {
   includeNoDataSegments: boolean
@@ -22,12 +22,67 @@ const RouteDisplayToggle = ({
   setIncludeNoDataSegments,
 }: RouteDisplayToggleProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const { mapRef } = useSpeedManagementStore()
+  const pointerInsideOptionsRef = useRef(false)
+  const pointerDownInOptionsRef = useRef(false)
   const open = Boolean(anchorEl)
 
   const handleDisplaySettingsClick = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     setAnchorEl(anchorEl ? null : event.currentTarget)
+  }
+
+  const disableMapDragging = useCallback(() => {
+    mapRef?.dragging?.disable()
+  }, [mapRef])
+
+  const enableMapDragging = useCallback(() => {
+    mapRef?.dragging?.enable()
+  }, [mapRef])
+
+  useEffect(() => {
+    const handlePointerUp = () => {
+      pointerDownInOptionsRef.current = false
+      if (!pointerInsideOptionsRef.current) {
+        enableMapDragging()
+      }
+    }
+
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('mouseup', handlePointerUp)
+    window.addEventListener('touchend', handlePointerUp)
+    return () => {
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('mouseup', handlePointerUp)
+      window.removeEventListener('touchend', handlePointerUp)
+      enableMapDragging()
+    }
+  }, [enableMapDragging])
+
+  useEffect(() => {
+    if (!open) {
+      pointerInsideOptionsRef.current = false
+      pointerDownInOptionsRef.current = false
+      enableMapDragging()
+    }
+  }, [enableMapDragging, open])
+
+  const handleOptionsPointerEnter = () => {
+    pointerInsideOptionsRef.current = true
+    disableMapDragging()
+  }
+
+  const handleOptionsPointerLeave = () => {
+    pointerInsideOptionsRef.current = false
+    if (!pointerDownInOptionsRef.current) {
+      enableMapDragging()
+    }
+  }
+
+  const handleOptionsPointerDown = () => {
+    pointerDownInOptionsRef.current = true
+    disableMapDragging()
   }
 
   return (
@@ -59,7 +114,14 @@ const RouteDisplayToggle = ({
         placement="bottom-start"
         disablePortal
       >
-        <Paper sx={{ width: '300px' }}>
+        <Paper
+          sx={{ width: '300px' }}
+          onPointerEnter={handleOptionsPointerEnter}
+          onPointerLeave={handleOptionsPointerLeave}
+          onPointerDownCapture={handleOptionsPointerDown}
+          onMouseDownCapture={disableMapDragging}
+          onTouchStartCapture={disableMapDragging}
+        >
           <RoutesToggle setAnchorEl={setAnchorEl} />
           <Box
             sx={{
@@ -79,10 +141,9 @@ const RouteDisplayToggle = ({
                   size="small"
                 />
               }
-              label="Include no-data segments"
+              label="Include segments without data"
             />
           </Box>
-          <ViolationRangeSlider />
         </Paper>
       </Popper>
     </Box>

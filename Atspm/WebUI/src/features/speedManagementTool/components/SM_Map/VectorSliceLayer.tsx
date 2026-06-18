@@ -7,7 +7,10 @@ import {
   routeHasData,
   routeHasNoData,
 } from '@/features/speedManagementTool/components/SM_Map/SM_Legend'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import {
+  RouteRenderOption,
+  isViolationRenderOption,
+} from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import type { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
@@ -42,8 +45,13 @@ function colorFromProps(
 ) {
   if (!routeHasData(p)) return NO_DATA_ROUTE_COLOR
 
-  if (opt === RouteRenderOption.Violations) {
-    const v = p?.violations ?? null
+  if (isViolationRenderOption(opt)) {
+    const v =
+      opt === RouteRenderOption.Percent_Violations
+        ? (p?.percentViolations ?? null)
+        : opt === RouteRenderOption.Percent_Extreme_Violations
+          ? (p?.percentExtremeViolations ?? null)
+          : (p?.violations ?? null)
     if (v === null) return NO_DATA_ROUTE_COLOR
     if (v <= mediumMin) return ViolationColors.Low
     if (v < mediumMax) return ViolationColors.Medium
@@ -264,6 +272,9 @@ export default function VectorRoutesSlicerLayer({
           averageSpeed: p.averageSpeed,
           averageEightyFifthSpeed: p.averageEightyFifthSpeed,
           violations: p.violations,
+          extremeViolations: p.extremeViolations,
+          percentViolations: p.percentViolations,
+          percentExtremeViolations: p.percentExtremeViolations,
         },
       } as unknown as SpeedManagementRoute)
       const id = p.route_id
