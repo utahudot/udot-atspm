@@ -11,13 +11,17 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
+import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 
 interface Props {
   handler: TSBaseHandler
+  paperSx?: SxProps<Theme>
+  renderRouteDetails?: (rows: TimeSpaceRouteRow[]) => ReactNode
 }
 
-interface RouteRow {
+export interface TimeSpaceRouteRow {
   locationIdentifier: string
   primaryPhaseDescription: string | null
   primaryMph: number | null
@@ -75,7 +79,11 @@ const validateDirectionConfig = (
   return null
 }
 
-export const TimeSpaceRouteSelect = ({ handler }: Props) => {
+export const TimeSpaceRouteSelect = ({
+  handler,
+  paperSx,
+  renderRouteDetails,
+}: Props) => {
   const { data: routeData, refetch } = useGetRouteWithExpandedLocations({
     routeId: handler.routeId,
     includeLocationDetail: true,
@@ -87,7 +95,7 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
 
   if (routeData && routeData.routeLocations === undefined) return null
 
-  const routeValuesToCheck: RouteRow[] =
+  const routeValuesToCheck: TimeSpaceRouteRow[] =
     routeData?.routeLocations
       .map((loc) => {
         const primary = loc.approaches.find(
@@ -209,12 +217,15 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
 
   return (
     <Paper
-      sx={{
-        p: 3,
-        display: 'flex',
-        minWidth: 600,
-        flexDirection: 'column',
-      }}
+      sx={[
+        {
+          p: 3,
+          display: 'flex',
+          minWidth: 600,
+          flexDirection: 'column',
+        },
+        ...(Array.isArray(paperSx) ? paperSx : paperSx ? [paperSx] : []),
+      ]}
     >
       <FormControl sx={{ mb: 2 }}>
         <Autocomplete
@@ -243,7 +254,11 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
               flexGrow: 1,
             }}
           >
-            <RouteChecker data={routeValuesToCheck} />
+            {renderRouteDetails ? (
+              renderRouteDetails(routeValuesToCheck)
+            ) : (
+              <RouteChecker data={routeValuesToCheck} />
+            )}
           </Box>
           {renderContent()}
         </>

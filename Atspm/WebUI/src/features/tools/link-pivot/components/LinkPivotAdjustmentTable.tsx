@@ -25,7 +25,7 @@ const HeaderCell = ({
 
 interface LinkPivotAdjustmentTableProps {
   data: AdjustmentDto[]
-  cycleLength: number
+  cycleLength: number | null
 }
 
 const getTransformedData = (
@@ -82,7 +82,11 @@ const LinkPivotAdjustmentTable = ({
       cumulativeChange += rows[i].editLinkData
     }
     const newOffset = cumulativeChange + existingOffset
-    if (!Number.isFinite(cycleLength) || cycleLength <= 0) {
+    if (
+      typeof cycleLength !== 'number' ||
+      !Number.isFinite(cycleLength) ||
+      cycleLength <= 0
+    ) {
       return newOffset
     }
 

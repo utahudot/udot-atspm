@@ -29,7 +29,7 @@ export function unwrapTimeSpaceTransformResults<T extends TimeSpaceBaseData>(
     .filter((item) => !item.isSuccess && item.error)
     .map((item) => item.error as string)
   const successfulData = wrappedData
-    .filter((item) => item.isSuccess && item.result)
+    .filter((item) => item.result)
     .map((item) => item.result as T)
 
   return {

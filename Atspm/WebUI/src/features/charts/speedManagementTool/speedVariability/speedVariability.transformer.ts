@@ -73,10 +73,11 @@ function transformData(response: SpeedVariabilityDto) {
   const grid = createGrid({
     top: 80,
     left: 60,
-    right: 210,
+    right: 170,
   })
 
   const legend = createLegend({
+    top: grid.top,
     data: [
       { name: speedVariability, icon: SolidLineSeriesSymbol },
       { name: maxSpeed, icon: SolidLineSeriesSymbol },

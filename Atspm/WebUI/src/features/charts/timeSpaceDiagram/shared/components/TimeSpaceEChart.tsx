@@ -123,6 +123,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     gpxEntries,
     ignoredLocations = [],
     onToggleIgnoredLocation,
+    distanceSpacingMode = 'distance',
+    onToggleDistanceSpacingMode,
     sidebarUploadContent,
     isVisible = true,
   } = prop
@@ -330,7 +332,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     ? `calc(${fullscreenViewportHeight} - ${headerHeight}px - ${FULLSCREEN_PADDING_BOTTOM}px)`
     : `calc(100vh - ${headerHeight}px)`
 
-  useTimeSpaceHandler(chart, timeSpaceHandlerSyncVersion)
+  useTimeSpaceHandler(chart, timeSpaceHandlerSyncVersion, {
+    enableCycleDragging: false,
+  })
 
   const { play: playGpxAnimations } = useGpxAnimationHandler(
     chart,
@@ -971,7 +975,9 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           onSidebarTabChange={setSidebarTab}
           onToggleFullscreen={handleToggleFullscreen}
           onToggleGuide={handleToggleGuide}
+          onToggleDistanceSpacingMode={onToggleDistanceSpacingMode}
           onTogglePhaseInfo={handleTogglePhaseInfo}
+          distanceSpacingMode={distanceSpacingMode}
           rangeText={rangeText}
           showPhaseInfo={showPhaseInfo}
           sidebarTab={sidebarTab}

@@ -1,9 +1,8 @@
 import SelectDateTime from '@/components/selectTimeSpan'
 import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
 import { TSAverageHandler } from '@/features/charts/timeSpaceDiagram/average/TimeSpaceAverageOptions/timeSpaceAverageOptions.handler'
-import TimeSpaceRouteSelect from '@/features/charts/timeSpaceDiagram/shared/components/TimeSpaceRouteSelect/TimeSpaceRouteSelect'
 import { Box, Paper } from '@mui/material'
-import SequenceAndCoordinationComponent from './SequenceAndCoordinationSelector'
+import TimeSpaceAverageRouteSelect from './TimeSpaceAverageRouteSelect'
 
 interface Props {
   handler: TSAverageHandler
@@ -25,7 +24,7 @@ export const AverageOptionsComponent = (props: Props) => {
   return (
     <Box>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-        <TimeSpaceRouteSelect handler={handler} />
+        <TimeSpaceAverageRouteSelect handler={handler} />
         <Paper sx={{ p: 3, width: '380px' }}>
           <SelectDateTime
             dateFormat={'MMM dd, yyyy'}
@@ -49,17 +48,9 @@ export const AverageOptionsComponent = (props: Props) => {
               selectedItems={handler.selectedDays}
               setSelectedItems={handler.updateDaysOfWeek}
               header="Days To Include"
-              direction="horizontal"
+              direction="vertical"
             />
           </Paper>
-          <SequenceAndCoordinationComponent
-            locationWithSequence={handler.routeLocationWithSequence}
-            locationWithCoordPhases={handler.routeLocationWithCoordPhases}
-            updateLocationWithCoordPhases={
-              handler.updateLocationWithCoordPhases
-            }
-            updateLocationWithSequence={handler.updateLocationWithSequence}
-          />
         </Box>
       </Box>
     </Box>

@@ -1,4 +1,4 @@
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import { isViolationRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
 import L from 'leaflet'
@@ -80,12 +80,30 @@ export const routeSpeeds = [
   }, // dark red
 ] as const
 
-export const getRouteColor = (speed: number) => {
+export const NO_DATA_ROUTE_COLOR = '#000000'
+export const NO_DATA_ROUTE_OPACITY = 0.5
+export const NO_DATA_ROUTE_WEIGHT_FACTOR = 0.6
+export const NO_DATA_ROUTE_DASH_ARRAY = '1 3'
+
+export const routeHasData = (properties?: { hasData?: boolean } | null) =>
+  properties?.hasData !== false
+
+export const routeHasNoData = (properties?: { hasData?: boolean } | null) =>
+  properties?.hasData === false
+
+export const getNoDataRouteWeight = (weight: number) =>
+  Math.max(1, weight * NO_DATA_ROUTE_WEIGHT_FACTOR)
+
+export const getRouteColor = (speed: number | null | undefined) => {
+  if (typeof speed !== 'number' || !Number.isFinite(speed)) {
+    return NO_DATA_ROUTE_COLOR
+  }
+
   const rounded = Math.floor(speed)
   const range = routeSpeeds.find(
     (range) => rounded >= range.min && rounded <= range.max
   )
-  return range && rounded !== 0 ? range.color : '#000'
+  return range && rounded !== 0 ? range.color : NO_DATA_ROUTE_COLOR
 }
 
 const SM_Legend = () => {
@@ -99,7 +117,7 @@ const SM_Legend = () => {
       const div = L.DomUtil.create('div', 'map legend')
       const labels = []
 
-      labels.push('<strong>Violations</strong> <br>')
+      labels.push(`<strong>${routeRenderOption.toString()}</strong> <br>`)
       labels.push(
         `<i style="width: 30px; height: 18px; margin-right: 18px; float: left; background:${ViolationColors.Low}"></i> Low`
       )
@@ -127,7 +145,7 @@ const SM_Legend = () => {
     return () => {
       legend.remove()
     }
-  }, [map])
+  }, [map, routeRenderOption])
 
   const createSpeedLegend = useCallback(() => {
     const legend = new L.Control({ position: 'bottomright' })
@@ -145,8 +163,9 @@ const SM_Legend = () => {
         )
       })
 
+      const noDataLineStyle = `display: inline-block; width: 30px; height: 9px; margin-top: 5px; margin-right: 18px; float: left; opacity:${NO_DATA_ROUTE_OPACITY}`
       labels.push(
-        `<div style="margin-top: 10px"><i style="width: 30px; height: 18px; margin-right: 18px; float: left; background:#000"></i> No Data</div>`
+        `<div style="margin-top: 10px"><i style="${noDataLineStyle}; background: radial-gradient(circle, ${NO_DATA_ROUTE_COLOR} 1.5px, transparent 1.75px) left center / 5px 3px repeat-x"></i> No data</div>`
       )
 
       div.innerHTML = labels.join('<br>')
@@ -175,7 +194,7 @@ const SM_Legend = () => {
   useEffect(() => {
     if (!map) return
 
-    return routeRenderOption === RouteRenderOption.Violations
+    return isViolationRenderOption(routeRenderOption)
       ? createViolationsLegend()
       : createSpeedLegend()
   }, [

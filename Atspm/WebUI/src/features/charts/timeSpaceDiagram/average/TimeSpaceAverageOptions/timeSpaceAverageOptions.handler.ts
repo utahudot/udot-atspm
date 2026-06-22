@@ -36,6 +36,7 @@ const defaultSequence: number[][] = [
   [1, 2, 3, 4],
   [5, 6, 7, 8],
 ]
+const defaultCoordinatedPhases = [2, 6]
 
 const SEQUENCE_PARAM = 'sequence'
 const COORD_PARAM = 'coordinatedPhases'
@@ -131,10 +132,7 @@ export const useAverageOptionsHandler = ({
       })
       locationWithCoordPhases.push({
         locationIdentifier: rl.locationIdentifier,
-        coordinatedPhases: [
-          Number.parseInt(rl.primaryPhase),
-          Number.parseInt(rl.opposingPhase),
-        ],
+        coordinatedPhases: [...defaultCoordinatedPhases],
       })
     })
 
@@ -281,20 +279,35 @@ export const useAverageOptionsHandler = ({
     updateLocationWithSequence: (
       locationWithSequence: LocationWithSequence
     ) => {
-      setRouteLocationWithSequence((prev) =>
-        prev.map((item) =>
+      setRouteLocationWithSequence((prev) => {
+        const existingLocation = prev.some(
+          (item) =>
+            item.locationIdentifier === locationWithSequence.locationIdentifier
+        )
+
+        if (!existingLocation) return [...prev, locationWithSequence]
+
+        return prev.map((item) =>
           item.locationIdentifier === locationWithSequence.locationIdentifier
             ? { ...item, sequence: locationWithSequence.sequence }
             : item
         )
-      )
+      })
     },
 
     updateLocationWithCoordPhases: (
       locationWithCoordPhases: LocationWithCoordPhases
     ) => {
-      setRouteLocationWithCoordPhases((prev) =>
-        prev.map((item) =>
+      setRouteLocationWithCoordPhases((prev) => {
+        const existingLocation = prev.some(
+          (item) =>
+            item.locationIdentifier ===
+            locationWithCoordPhases.locationIdentifier
+        )
+
+        if (!existingLocation) return [...prev, locationWithCoordPhases]
+
+        return prev.map((item) =>
           item.locationIdentifier === locationWithCoordPhases.locationIdentifier
             ? {
                 ...item,
@@ -302,7 +315,7 @@ export const useAverageOptionsHandler = ({
               }
             : item
         )
-      )
+      })
     },
 
     toOptions,

@@ -245,6 +245,59 @@ describe('timeSpaceResultData', () => {
     })
   })
 
+  it('recomputes failed wrapped data when it includes result metadata', () => {
+    const wrappedData: RawTimeSpaceDiagramResponse['data'] = [
+      {
+        error: null,
+        isSuccess: true,
+        result: buildHistoricLocation('P1', 'Primary', 1, {
+          distanceToNextLocation: 100,
+        }),
+      },
+      {
+        error: 'No controller event logs found',
+        isSuccess: false,
+        result: buildHistoricLocation('P2', 'Primary', 2, {
+          distanceToNextLocation: 200,
+        }),
+      },
+      {
+        error: null,
+        isSuccess: true,
+        result: buildHistoricLocation('P3', 'Primary', 3, {
+          distanceToNextLocation: 300,
+        }),
+      },
+    ]
+
+    const recomputed = recomputeWrappedTimeSpaceData(wrappedData, ['P2'])
+
+    expect(recomputed[0]).toMatchObject({
+      isSuccess: true,
+      result: expect.objectContaining({
+        locationIdentifier: 'P1',
+        calculatedDistanceToNext: 300,
+      }),
+    })
+    expect(recomputed[1]).toMatchObject({
+      error: 'No controller event logs found',
+      isSuccess: false,
+      result: expect.objectContaining({
+        locationIdentifier: 'P2',
+        calculatedDistanceToNext: 0,
+        calculatedDistanceToPrevious: 0,
+        isIgnoredLocation: true,
+      }),
+    })
+    expect(recomputed[2]).toMatchObject({
+      isSuccess: true,
+      result: expect.objectContaining({
+        locationIdentifier: 'P3',
+        calculatedDistanceToPrevious: 300,
+      }),
+    })
+  })
+
   it('merges SRM overlays by location, phase type, and order only', () => {
     const wrappedData: TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[] = [
       {
@@ -299,7 +352,7 @@ describe('timeSpaceResultData', () => {
     expect(merged[2]).toEqual(wrappedData[2])
   })
 
-  it('adds default calculated distances and ignored flags to successful results only', () => {
+  it('adds default calculated distances and ignored flags to every result row', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,
       data: [
@@ -317,6 +370,17 @@ describe('timeSpaceResultData', () => {
         {
           error: 'failed',
           isSuccess: false,
+          result: buildHistoricLocation('P2', 'Primary', 2, {
+            calculatedDistanceToNext: 0,
+            calculatedDistanceToPrevious: 0,
+            isIgnoredLocation: true,
+            distanceToNextLocation: 175,
+            distanceToPreviousLocation: 150,
+          }),
+        },
+        {
+          error: 'failed without metadata',
+          isSuccess: false,
           result: null,
         },
       ],
@@ -332,10 +396,19 @@ describe('timeSpaceResultData', () => {
         isIgnoredLocation: false,
       }),
     })
-    expect(nextResponse.data[1]).toEqual(response.data[1])
+    expect(nextResponse.data[1]).toMatchObject({
+      error: 'failed',
+      isSuccess: false,
+      result: expect.objectContaining({
+        calculatedDistanceToNext: 175,
+        calculatedDistanceToPrevious: 150,
+        isIgnoredLocation: false,
+      }),
+    })
+    expect(nextResponse.data[2]).toEqual(response.data[2])
   })
 
-  it('returns only successful primary location identifiers', () => {
+  it('returns primary location identifiers for every result row', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,
       data: [
@@ -350,6 +423,11 @@ describe('timeSpaceResultData', () => {
           result: buildHistoricLocation('O1', 'Opposing', 1),
         },
         {
+          error: 'No controller event logs found',
+          isSuccess: false,
+          result: buildHistoricLocation('P2', 'Primary', 2),
+        },
+        {
           error: 'failed',
           isSuccess: false,
           result: null,
@@ -357,6 +435,6 @@ describe('timeSpaceResultData', () => {
       ],
     }
 
-    expect(getPrimaryTimeSpaceLocations(response)).toEqual(['P1'])
+    expect(getPrimaryTimeSpaceLocations(response)).toEqual(['P1', 'P2'])
   })
 })

@@ -19,6 +19,18 @@ import {
 import { add, isSameDay, startOfToday, startOfYesterday } from 'date-fns'
 import { useEffect, useState } from 'react'
 
+export interface CalendarDayLocationAvailability {
+  locationIdentifier: string
+  hasData: boolean
+}
+
+export interface CalendarDayAvailability {
+  date: Date
+  availableLocationCount: number
+  totalLocationCount: number
+  locations: CalendarDayLocationAvailability[]
+}
+
 export interface SelectDateTimeProps {
   startDateTime: Date | null
   endDateTime: Date | null
@@ -35,6 +47,7 @@ export interface SelectDateTimeProps {
   changeStartTimePeriod?(date: Date): void
   changeEndTimePeriod?(date: Date): void
   markDays?: Date[]
+  dayAvailability?: CalendarDayAvailability[]
   onMonthChange?(date: Date): void
   onChange?(date: Date): void
   warning?: string | null
@@ -56,6 +69,7 @@ export default function SelectDateTime({
   changeStartTimePeriod,
   changeEndTimePeriod,
   markDays = [],
+  dayAvailability = [],
   onMonthChange,
   onChange,
   warning = null,
@@ -124,7 +138,7 @@ export default function SelectDateTime({
         }}
         slotProps={{
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          day: { highlightedDays: markDays } as any,
+          day: { highlightedDays: markDays, dayAvailability } as any,
         }}
         shouldDisableDate={(date) => {
           if (!markDays) return false
@@ -239,13 +253,27 @@ export default function SelectDateTime({
 
 interface MarkedDayProps extends PickersDayProps<Date> {
   highlightedDays?: Date[] | undefined
+  dayAvailability?: CalendarDayAvailability[] | undefined
 }
 
 function MarkedDay(props: MarkedDayProps) {
-  const { highlightedDays, day, outsideCurrentMonth, ...other } = props
+  const {
+    highlightedDays,
+    dayAvailability,
+    day,
+    outsideCurrentMonth,
+    ...other
+  } = props
 
-  // If there are no highlighted days, render normally.
-  if (highlightedDays === undefined) {
+  const availability = dayAvailability?.find((candidate) =>
+    isSameDay(candidate.date, day)
+  )
+  const isMissing = highlightedDays?.some((missing: Date) =>
+    isSameDay(missing, day)
+  )
+
+  // If there are no highlighted days or availability details, render normally.
+  if (!isMissing && !availability) {
     return (
       <PickersDay
         {...other}
@@ -255,24 +283,68 @@ function MarkedDay(props: MarkedDayProps) {
     )
   }
 
-  // Determine if the day is marked as missing.
-  const isMissing = highlightedDays.some((missing: Date) =>
-    isSameDay(missing, day)
+  const missingLocationCount = availability
+    ? availability.totalLocationCount - availability.availableLocationCount
+    : 0
+  const isFullRouteMissing =
+    !!availability && availability.availableLocationCount === 0
+  const badgeContent =
+    isMissing || isFullRouteMissing ? (
+      <span
+        style={{
+          color: 'red',
+          fontSize: '0.65rem',
+          transform: 'translate(-50%, 50%)',
+        }}
+      >
+        ✖
+      </span>
+    ) : availability && missingLocationCount > 0 ? (
+      <span
+        style={{
+          color: '#ed6c02',
+          fontSize: '0.65rem',
+          transform: 'translate(-50%, 50%)',
+        }}
+      >
+        ◐
+      </span>
+    ) : null
+  const hasPartialRouteAvailability =
+    !!availability &&
+    availability.availableLocationCount > 0 &&
+    missingLocationCount > 0
+  const tooltipTitle = isMissing ? (
+    'No data available'
+  ) : hasPartialRouteAvailability ? (
+    <DayAvailabilityTooltip availability={availability} />
+  ) : (
+    ''
   )
-  const badgeContent = isMissing ? (
-    <span
-      style={{
-        color: 'red',
-        fontSize: '0.6rem',
-        transform: 'translate(-50%, 50%)',
-      }}
-    >
-      ✖
-    </span>
-  ) : null
 
   return (
-    <Tooltip title={isMissing ? 'No data available' : ''} enterDelay={500}>
+    <Tooltip
+      title={tooltipTitle}
+      enterDelay={500}
+      arrow
+      disableInteractive
+      componentsProps={{
+        tooltip: {
+          sx: {
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 3,
+            color: 'text.primary',
+          },
+        },
+        arrow: {
+          sx: {
+            color: 'background.paper',
+          },
+        },
+      }}
+    >
       <Badge overlap="circular" badgeContent={badgeContent}>
         <PickersDay
           {...other}
@@ -281,5 +353,43 @@ function MarkedDay(props: MarkedDayProps) {
         />
       </Badge>
     </Tooltip>
+  )
+}
+
+function DayAvailabilityTooltip({
+  availability,
+}: {
+  availability: CalendarDayAvailability
+}) {
+  return (
+    <Box sx={{ py: 0.25 }}>
+      <Typography variant="caption" sx={{ display: 'block', fontWeight: 700 }}>
+        {availability.availableLocationCount} of{' '}
+        {availability.totalLocationCount} locations have data
+      </Typography>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, mt: 0.5 }}
+      >
+        {availability.locations.map((location) => (
+          <Box key={location.locationIdentifier}>
+            <Typography
+              variant="caption"
+              component="span"
+              sx={{
+                alignItems: 'center',
+                color: location.hasData ? 'success.dark' : 'error.dark',
+                display: 'inline-flex',
+                gap: 0.75,
+              }}
+            >
+              <Box component="span" sx={{ width: '1em' }}>
+                {location.hasData ? '✓' : '✖'}
+              </Box>
+              {location.locationIdentifier}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
   )
 }

@@ -17,11 +17,11 @@
 import { ToolType } from '@/features/charts/common/types'
 import { triangleSvgSymbol } from '@/features/charts/utils'
 import type { EChartsOption, SeriesOption } from 'echarts'
+import { getCycleContinuationPatternFill } from '../shared/transformers/timeSpaceTransformerBase'
 import type {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
 } from '../shared/types'
-import { getCycleContinuationPatternFill } from '../shared/transformers/timeSpaceTransformerBase'
 import transformTimeSpaceHistoricData from './timeSpaceHistoric.transformer'
 
 let originalCanvasGetContext: typeof HTMLCanvasElement.prototype.getContext
@@ -241,6 +241,62 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(distanceLabels?.tooltip).toMatchObject({ show: false })
   })
 
+  it('omits programmed split from phase labels', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceHistoric,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Primary', {
+            programmedSplit: 47,
+          }),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildHistoricLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceHistoricData(response)
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+    const primaryLabelSeries = series.find(
+      (entry) =>
+        String(entry.id).startsWith('Cycle Labels ') &&
+        String(entry.id).endsWith(' left')
+    ) as
+      | (SeriesOption & {
+          renderItem?: (
+            params: {
+              dataIndex: number
+              coordSys: { x: number; width: number }
+            },
+            api: {
+              coord: (value: unknown[]) => [number, number]
+            }
+          ) => unknown
+        })
+      | undefined
+
+    const node = primaryLabelSeries?.renderItem?.(
+      { dataIndex: 0, coordSys: { x: 0, width: 400 } },
+      {
+        coord: (value) => [Number(value[0] ?? 0), Number(value[1] ?? 0)],
+      }
+    )
+
+    const texts = collectRenderTexts(node)
+
+    expect(texts).toEqual(expect.arrayContaining(['AOG', '50%']))
+    expect(texts).not.toContain('Split')
+    expect(texts).not.toContain('47s')
+  })
+
   it('marks turn series as non-interactable', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceHistoric,
@@ -336,12 +392,14 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     expect(opposingLeftTurn).toBeDefined()
     expect(
       legendData.some(
-        (entry) => typeof entry === 'object' && entry.name === 'Left Turn NBT ph2'
+        (entry) =>
+          typeof entry === 'object' && entry.name === 'Left Turn NBT ph2'
       )
     ).toBe(true)
     expect(
       legendData.some(
-        (entry) => typeof entry === 'object' && entry.name === 'Left Turn SBT ph6'
+        (entry) =>
+          typeof entry === 'object' && entry.name === 'Left Turn SBT ph6'
       )
     ).toBe(true)
     expect(selected).toMatchObject({
@@ -524,7 +582,8 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
       (entry) => typeof entry === 'object' && entry.name === 'Early Green (113)'
     )
     const extendLegend = legendData.find(
-      (entry) => typeof entry === 'object' && entry.name === 'Extend Green (114)'
+      (entry) =>
+        typeof entry === 'object' && entry.name === 'Extend Green (114)'
     )
 
     expect(earlySeries?.symbol).toBe('circle')
@@ -610,10 +669,7 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
       ['2026-04-07T08:03:00Z', expect.any(Number)],
     ])
     expect(gapSeries?.lineStyle).toMatchObject({ type: 'dotted' })
-    expect(gapSeries?.data).toEqual([
-      collectionData?.[1],
-      collectionData?.[3],
-    ])
+    expect(gapSeries?.data).toEqual([collectionData?.[1], collectionData?.[3]])
     expect(chart.legend).toMatchObject({
       selected: {
         'SRM Collection NBT ph2': true,
@@ -699,9 +755,7 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
       : []
 
     expect(
-      series.filter(
-        (entry) => String(entry.name) === 'SRM Collection NBT ph2'
-      )
+      series.filter((entry) => String(entry.name) === 'SRM Collection NBT ph2')
     ).toHaveLength(2)
     expect(
       series.some(

@@ -27,6 +27,13 @@ type GraphicNode = {
 }
 
 describe('applyTimeSpaceAppearanceToOption', () => {
+  it('uses swapped red clearance and red indication defaults', () => {
+    const appearance = createDefaultTimeSpaceAppearanceSettings()
+
+    expect(appearance.cycles.indicationColors.redClearance).toBe('#B34747')
+    expect(appearance.cycles.indicationColors.redIndication).toBe('#FB6962')
+  })
+
   it('applies overrides to supported line and custom series', () => {
     const appearance = createDefaultTimeSpaceAppearanceSettings()
     appearance.cycles.indicationColors.beginGreen = '#123456'
@@ -165,21 +172,21 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     )
     const series = nextOption.series as SeriesOption[]
 
-    expect((series[0].lineStyle as { color?: string; opacity?: number }).color).toBe(
-      '#345678'
-    )
+    expect(
+      (series[0].lineStyle as { color?: string; opacity?: number }).color
+    ).toBe('#345678')
     expect(
       (series[0].lineStyle as { color?: string; opacity?: number }).opacity
     ).toBe(0.65)
-    expect((series[1].lineStyle as { color?: string; opacity?: number }).color).toBe(
-      '#2a2a2a'
-    )
+    expect(
+      (series[1].lineStyle as { color?: string; opacity?: number }).color
+    ).toBe('#2a2a2a')
     expect(
       (series[1].lineStyle as { color?: string; opacity?: number }).opacity
     ).toBe(0.6)
-    expect((series[2].lineStyle as { color?: string; opacity?: number }).color).toBe(
-      '#3b3b3b'
-    )
+    expect(
+      (series[2].lineStyle as { color?: string; opacity?: number }).color
+    ).toBe('#3b3b3b')
     expect(
       (series[2].lineStyle as { color?: string; opacity?: number }).opacity
     ).toBe(0.75)

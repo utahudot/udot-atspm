@@ -171,7 +171,7 @@ function transformData(
   const grid = createGrid({
     top: 80,
     left: 60,
-    right: 210,
+    right: 240,
   })
 
   const dataZoom = createDataZoom()
@@ -208,7 +208,7 @@ function transformData(
       icon: SolidLineSeriesSymbol,
     })
   }
-  const legend = createLegend({ data: seriesWithData })
+  const legend = createLegend({ top: grid.top, data: seriesWithData })
 
   const impactSeries = impactResponse
     ? transformImpactData(impactResponse)

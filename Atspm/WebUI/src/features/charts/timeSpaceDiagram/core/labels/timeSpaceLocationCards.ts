@@ -16,18 +16,17 @@
 // #endregion
 import {
   formatOffsetSeconds,
-  formatSignedOffsetSeconds,
-  getEquivalentCycleOffsetVisuals,
   getOffsetDeltaVisuals,
   getOffsetSecondsValue,
   hasModifiedOffset,
+  normalizeOffsetSeconds,
   normalizeOffsetToCycleLengthSeconds,
-  offsetsMatch,
 } from '@/features/charts/timeSpaceDiagram/core/offsets/timeSpaceOffsets'
 import type {
   RawTimeSpaceAverageData,
   TimeSpaceUnwrappedData,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
+import type { TimeSpaceDisplayDistanceOffset } from '@/features/charts/timeSpaceDiagram/core/types/timeSpaceCore.types'
 import { Color } from '@/features/charts/utils'
 import type {
   CustomSeriesRenderItemParams,
@@ -43,8 +42,8 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
   cardWidth: 200,
   cardRadius: 4,
   verticalOffsetY: 15,
-  headerHeight: 44,
-  bodyHeight: 46,
+  headerHeight: 36,
+  bodyHeight: 48,
   bodyPaddingLeft: 8,
   bodyPaddingRight: 8,
   headerActionSize: 12,
@@ -55,11 +54,6 @@ export const TIME_SPACE_LOCATION_CARD_LAYOUT = {
 
 const TIME_SPACE_LOCATION_METRIC_GAP = 8
 const TIME_SPACE_LOCATION_OFFSET_LABEL_WIDTH = 115
-const TIME_SPACE_LOCATION_OFFSET_VALUE_GAP = 0
-const TIME_SPACE_LOCATION_OFFSET_VALUE_EDGE_PADDING =
-  TIME_SPACE_LOCATION_CARD_LAYOUT.bodyPaddingRight
-const TIME_SPACE_LOCATION_VALUE_FONT =
-  '700 11px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial'
 
 type TimeSpaceLocationCardGeometry = {
   bodyContentWidth: number
@@ -71,6 +65,7 @@ type TimeSpaceLocationCardGeometry = {
   cardTop: number
   bottomMetricRowY: number
   leftMetricWidth: number
+  middleMetricRowY: number
   offsetMetricX: number
   rightMetricWidth: number
   textX: number
@@ -148,12 +143,22 @@ export function splitIdentifierAndDescription(text: string | undefined) {
 
 export function buildIdentifierAndNameTitle(
   identifier: string | undefined,
-  description: string | undefined
+  description: string | undefined,
+  maxCharacters?: number
 ) {
   const ident = (identifier ?? '').trim()
   const { primary, secondary } = splitPrimarySecondary(description)
-  const name =
+  let name =
     primary && secondary ? `${primary} & ${secondary}` : primary || secondary
+  const reservedIdentifierLength = ident ? ident.length + 3 : 0
+  const maxNameCharacters =
+    maxCharacters == null
+      ? undefined
+      : Math.max(0, maxCharacters - reservedIdentifierLength)
+
+  if (maxNameCharacters != null && name.length > maxNameCharacters) {
+    name = truncateWithEllipsis(name, maxNameCharacters)
+  }
 
   if (ident && name) {
     return `{ident|${ident}}{name| - ${name}}`
@@ -170,31 +175,16 @@ export function buildIdentifierAndNameTitle(
   return ''
 }
 
-function measureTextWidth(text: string, font: string) {
-  if (!text) return 0
-
-  if (typeof document === 'undefined') {
-    return Math.min(500, text.length * 7)
+function truncateWithEllipsis(text: string, maxCharacters: number) {
+  if (text.length <= maxCharacters) {
+    return text
   }
 
-  const cachedMeasureTextWidth = measureTextWidth as typeof measureTextWidth & {
-    _canvas?: HTMLCanvasElement
-  }
-  const canvas =
-    cachedMeasureTextWidth._canvas ||
-    (cachedMeasureTextWidth._canvas = document.createElement('canvas'))
-  let ctx: CanvasRenderingContext2D | null = null
-
-  try {
-    ctx = canvas.getContext('2d')
-  } catch {
-    return Math.min(500, text.length * 7)
+  if (maxCharacters <= 3) {
+    return '.'.repeat(Math.max(0, maxCharacters))
   }
 
-  if (!ctx) return Math.min(500, text.length * 7)
-
-  ctx.font = font
-  return ctx.measureText(text).width
+  return `${text.slice(0, maxCharacters - 3).trimEnd()}...`
 }
 
 function getTimeSpaceLocationCardGeometry(
@@ -228,8 +218,9 @@ function getTimeSpaceLocationCardGeometry(
   const leftMetricWidth = Math.round(topMetricContentWidth * 0.45)
   const rightMetricWidth = topMetricContentWidth - leftMetricWidth
   const offsetMetricX = textX + leftMetricWidth + TIME_SPACE_LOCATION_METRIC_GAP
-  const topMetricRowY = bodyTop + 11
-  const bottomMetricRowY = bodyTop + bodyHeight - 11
+  const topMetricRowY = bodyTop + 8
+  const middleMetricRowY = bodyTop + bodyHeight / 2
+  const bottomMetricRowY = bodyTop + bodyHeight - 8
 
   return {
     bodyContentWidth,
@@ -241,6 +232,7 @@ function getTimeSpaceLocationCardGeometry(
     cardTop,
     bottomMetricRowY,
     leftMetricWidth,
+    middleMetricRowY,
     offsetMetricX,
     rightMetricWidth,
     textX,
@@ -258,10 +250,10 @@ export function getTimeSpaceLocationOffsetBadgeLayout(
 ): TimeSpaceLocationOffsetBadgeLayout {
   const {
     bodyRightX,
-    bodyTop,
     bottomMetricRowY,
     cardLeft,
     cardRight,
+    middleMetricRowY,
     textX,
     topMetricRowY,
   } = getTimeSpaceLocationCardGeometry(gridLeft, y)
@@ -271,11 +263,12 @@ export function getTimeSpaceLocationOffsetBadgeLayout(
   const iconContainerX = Math.round(bodyRightX)
   const textRightX = bodyRightX
   const overlayX = cardLeft
-  const overlayY = bodyTop
-  const overlayHeight = (topMetricRowY + bottomMetricRowY) / 2 - bodyTop
+  const overlayY = (topMetricRowY + middleMetricRowY) / 2
+  const overlayBottomY = (middleMetricRowY + bottomMetricRowY) / 2
+  const overlayHeight = Math.max(0, overlayBottomY - overlayY)
   const overlayWidth = Math.max(0, cardRight - cardLeft)
   const highlightX = textX + TIME_SPACE_LOCATION_OFFSET_LABEL_WIDTH
-  const highlightY = bodyTop
+  const highlightY = overlayY
   const highlightHeight = overlayHeight
   const highlightWidth = Math.max(0, cardRight - highlightX)
   const iconSize = 0
@@ -305,6 +298,14 @@ export function getTimeSpaceLocationOffsetBadgeLayout(
   }
 }
 
+function formatCycleLengthSummaryValue(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    return `${value}s`
+  }
+
+  return 'unknown'
+}
+
 function formatCycleLengthValue(value: unknown) {
   if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
     return `${value}s`
@@ -313,12 +314,26 @@ function formatCycleLengthValue(value: unknown) {
   return 'unknown'
 }
 
-function formatCycleLengthSummaryValue(value: unknown) {
-  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
-    return `${value}s`
+function formatOffsetTotalSeconds(
+  offsetValue: unknown,
+  cycleLengthValue: unknown
+) {
+  const offsetSeconds = getOffsetSecondsValue(offsetValue)
+
+  if (offsetSeconds == null) {
+    return 'unknown'
   }
 
-  return 'unknown'
+  const cycleLengthSeconds = getOffsetSecondsValue(cycleLengthValue)
+  if (cycleLengthSeconds == null || cycleLengthSeconds <= 0) {
+    return formatOffsetSeconds(Math.abs(offsetSeconds))
+  }
+
+  const wrappedOffsetSeconds =
+    ((offsetSeconds % cycleLengthSeconds) + cycleLengthSeconds) %
+    cycleLengthSeconds
+
+  return formatOffsetSeconds(normalizeOffsetSeconds(wrappedOffsetSeconds))
 }
 
 function getLocationInitialOffsetSeconds(
@@ -370,6 +385,7 @@ export function getLocationsLabelOption(
         cardTop,
         bottomMetricRowY,
         textX,
+        middleMetricRowY,
         topMetricRowY,
         xLine,
       } = getTimeSpaceLocationCardGeometry(gridLeft, y)
@@ -421,9 +437,11 @@ export function getLocationsLabelOption(
       })
 
       const ident = String(api.value(2) ?? '')
+      const maxTitleCharacters = Math.max(0, Math.floor(titleWidth / 6) * 2)
       const titleText = buildIdentifierAndNameTitle(
         ident,
-        String(api.value(3) ?? '')
+        String(api.value(3) ?? ''),
+        maxTitleCharacters
       )
       const cycleLengthValue = api.value(4)
       const currentOffsetValue = api.value(5)
@@ -451,105 +469,34 @@ export function getLocationsLabelOption(
         actualOffsetSeconds,
         userAdjustmentValue
       )
-      const isEquivalentCycleShift =
-        isDeltaOffsetModified &&
-        currentOffsetSeconds != null &&
-        actualOffsetSeconds != null &&
-        offsetsMatch(currentOffsetSeconds, actualOffsetSeconds)
-      const deltaOffsetVisuals = isEquivalentCycleShift
-        ? getEquivalentCycleOffsetVisuals()
-        : getOffsetDeltaVisuals(currentOffsetSeconds ?? 0)
+      const userAdjustmentSeconds =
+        getOffsetSecondsValue(userAdjustmentValue) ?? 0
+      const offsetDirectionSeconds =
+        Math.abs(userAdjustmentSeconds) >= 0.0001
+          ? userAdjustmentSeconds
+          : currentOffsetSeconds != null && actualOffsetSeconds != null
+            ? currentOffsetSeconds - actualOffsetSeconds
+            : 0
+      const deltaOffsetVisuals = getOffsetDeltaVisuals(offsetDirectionSeconds)
       const offsetLabelWidth = TIME_SPACE_LOCATION_OFFSET_LABEL_WIDTH
       const offsetValueWidth = Math.max(0, bodyContentWidth - offsetLabelWidth)
       const cycleLabelWidth = 120
       const cycleValueWidth = Math.max(0, bodyContentWidth - cycleLabelWidth)
       const cycleText = formatCycleLengthValue(cycleLengthValue)
-      const actualOffsetText = formatOffsetSeconds(
-        actualOffsetSeconds ?? currentOffsetSeconds
+      const programmedOffsetText = formatOffsetTotalSeconds(
+        actualOffsetSeconds,
+        cycleLengthValue
       )
-      const modifiedOffsetText =
-        isDeltaOffsetModified && currentOffsetSeconds != null
-          ? formatSignedOffsetSeconds(currentOffsetSeconds)
-          : null
-      const modifiedOffsetDisplayText = modifiedOffsetText
-        ? `(${modifiedOffsetText})`
-        : null
-      const modifiedOffsetWidth = modifiedOffsetDisplayText
-        ? measureTextWidth(
-            modifiedOffsetDisplayText,
-            TIME_SPACE_LOCATION_VALUE_FONT
-          )
-        : 0
-      const offsetValueLeftX =
-        textX + offsetLabelWidth + TIME_SPACE_LOCATION_OFFSET_VALUE_EDGE_PADDING
-      const offsetBaseValueWidth = Math.max(
-        0,
-        offsetValueWidth -
-          TIME_SPACE_LOCATION_OFFSET_VALUE_EDGE_PADDING -
-          (modifiedOffsetText
-            ? modifiedOffsetWidth + TIME_SPACE_LOCATION_OFFSET_VALUE_GAP
-            : 0)
+      const userAdjustedOffsetText = formatOffsetTotalSeconds(
+        currentOffsetSeconds,
+        cycleLengthValue
       )
       const deltaOffsetBadgeLayout = getTimeSpaceLocationOffsetBadgeLayout(
         gridLeft,
         y,
-        modifiedOffsetDisplayText == null
-          ? actualOffsetText
-          : `${actualOffsetText}${modifiedOffsetDisplayText}`,
+        userAdjustedOffsetText,
         false
       )
-      const offsetValueChildren = modifiedOffsetDisplayText
-        ? [
-            {
-              type: 'text' as const,
-              z2: 20,
-              style: {
-                x: offsetValueLeftX,
-                y: topMetricRowY,
-                text: actualOffsetText,
-                width: offsetBaseValueWidth,
-                overflow: 'truncate',
-                textAlign: 'left',
-                textVerticalAlign: 'middle',
-                fill: '#111827',
-                fontSize: 11,
-                fontWeight: 700,
-              },
-            },
-            {
-              type: 'text' as const,
-              z2: 20,
-              style: {
-                x: bodyRightX,
-                y: topMetricRowY,
-                text: modifiedOffsetDisplayText,
-                width: modifiedOffsetWidth,
-                textAlign: 'right',
-                textVerticalAlign: 'middle',
-                fill: deltaOffsetVisuals.valueColor,
-                fontSize: 11,
-                fontWeight: 700,
-              },
-            },
-          ]
-        : [
-            {
-              type: 'text' as const,
-              z2: 20,
-              style: {
-                x: bodyRightX,
-                y: topMetricRowY,
-                text: actualOffsetText,
-                width: offsetValueWidth,
-                overflow: 'truncate',
-                textAlign: 'right',
-                textVerticalAlign: 'middle',
-                fill: '#111827',
-                fontSize: 11,
-                fontWeight: 700,
-              },
-            },
-          ]
       const bodyChildren = isIgnored
         ? []
         : [
@@ -579,7 +526,7 @@ export function getLocationsLabelOption(
               style: {
                 x: textX,
                 y: topMetricRowY,
-                text: 'Offset (User-Adjusted)',
+                text: 'Programmed Offset',
                 width: offsetLabelWidth,
                 overflow: 'truncate',
                 textAlign: 'left',
@@ -589,7 +536,56 @@ export function getLocationsLabelOption(
                 fontWeight: 500,
               },
             },
-            ...offsetValueChildren,
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: bodyRightX,
+                y: topMetricRowY,
+                text: programmedOffsetText,
+                width: offsetValueWidth,
+                overflow: 'truncate',
+                textAlign: 'right',
+                textVerticalAlign: 'middle',
+                fill: '#111827',
+                fontSize: 11,
+                fontWeight: 700,
+              },
+            },
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: textX,
+                y: middleMetricRowY,
+                text: 'User-Adjusted Offset',
+                width: offsetLabelWidth,
+                overflow: 'truncate',
+                textAlign: 'left',
+                textVerticalAlign: 'middle',
+                fill: '#64748B',
+                fontSize: 11,
+                fontWeight: 500,
+              },
+            },
+            {
+              type: 'text' as const,
+              z2: 20,
+              style: {
+                x: bodyRightX,
+                y: middleMetricRowY,
+                text: userAdjustedOffsetText,
+                width: offsetValueWidth,
+                overflow: 'truncate',
+                textAlign: 'right',
+                textVerticalAlign: 'middle',
+                fill: isDeltaOffsetModified
+                  ? deltaOffsetVisuals.valueColor
+                  : '#111827',
+                fontSize: 11,
+                fontWeight: 700,
+              },
+            },
             {
               type: 'text' as const,
               z2: 20,
@@ -665,10 +661,12 @@ export function getLocationsLabelOption(
             z2: 20,
             style: {
               x: textX,
-              y: cardTop + 8,
+              y: cardTop + 3,
               text: titleText,
               width: titleWidth,
+              height: 28,
               overflow: 'break',
+              lineOverflow: 'truncate',
               lineHeight: 14,
               textAlign: 'left',
               textVerticalAlign: 'top',
@@ -693,9 +691,9 @@ export function getLocationsLabelOption(
             z2: 20,
             shape: {
               x1: dividerX,
-              y1: cardTop + 7,
+              y1: cardTop + 6,
               x2: dividerX,
-              y2: cardTop + headerHeight - 7,
+              y2: cardTop + headerHeight - 6,
             },
             style: {
               stroke: isIgnored ? '#D8E0E8' : '#CBD5E1',
@@ -785,26 +783,30 @@ export function getDistancesLabelOption(
   data: TimeSpaceUnwrappedData,
   distanceData: number[],
   gridLeft: number,
-  distanceScale = 1
+  distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
 ): SeriesOption {
   const { gridGap, dotOffset, cardGapToDot, verticalOffsetY } =
     TIME_SPACE_LOCATION_CARD_LAYOUT
   const dataPoints = distanceData.map((distance, index) => {
     const distanceToNext =
       index !== distanceData.length - 1 ? data[index].distanceToNextLocation : 0
+    const displayDistanceToNext =
+      displayDistanceOffset?.(index, distanceToNext) ??
+      distanceToNext * distanceScale
 
     return [
       data[index].end,
       distance,
       distanceToNext,
       index !== distanceData.length - 1 ? data[index].speed : '',
-      distanceToNext * distanceScale,
+      displayDistanceToNext,
     ]
   })
   return {
     name: 'Labels distance',
     type: 'custom',
-    z: 4,
+    z: 30,
     silent: true,
     selectedMode: false,
     tooltip: { show: false },
@@ -836,6 +838,7 @@ export function getDistancesLabelOption(
         children: [
           {
             type: 'line',
+            z2: 30,
             shape: {
               x1: xLine,
               y1: y,
@@ -849,6 +852,7 @@ export function getDistancesLabelOption(
           },
           {
             type: 'rect',
+            z2: 31,
             shape: {
               x: valueCardLeft,
               y: y - valueCardHeight / 2,
@@ -857,13 +861,14 @@ export function getDistancesLabelOption(
               r: 4,
             },
             style: {
-              fill: 'rgba(86, 180, 233, 0.14)',
+              fill: '#e7f4fc',
               stroke: 'rgba(86, 180, 233, 0.38)',
               lineWidth: 1,
             },
           },
           {
             type: 'line',
+            z2: 32,
             shape: {
               x1: dividerX,
               y1: y - 8,
@@ -877,6 +882,7 @@ export function getDistancesLabelOption(
           },
           {
             type: 'text',
+            z2: 33,
             style: {
               x: valueCardLeft + valueCardWidth / 4,
               y,
@@ -890,6 +896,7 @@ export function getDistancesLabelOption(
           },
           {
             type: 'text',
+            z2: 33,
             style: {
               x: valueCardLeft + (valueCardWidth * 3) / 4,
               y,

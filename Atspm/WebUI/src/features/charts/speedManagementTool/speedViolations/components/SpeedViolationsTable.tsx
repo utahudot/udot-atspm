@@ -10,6 +10,7 @@ import {
 
 const DailySpeedViolationsTable = ({ response }) => {
   const { dailySpeedViolationsDto } = response
+  const formattedPercent = (value: number) => `${(value * 100).toFixed(2)}%`
   const formattedDate = (date: string | undefined) => {
     if (!date) return ''
 
@@ -67,13 +68,13 @@ const DailySpeedViolationsTable = ({ response }) => {
                 {response.totalViolationsCount.toLocaleString()}
               </TableCell>
               <TableCell sx={{ border: '1px solid lightgrey' }}>
-                {response.percentViolations.toFixed(2)}%
+                {formattedPercent(response.percentViolations)}
               </TableCell>
               <TableCell sx={{ border: '1px solid lightgrey' }}>
                 {response.totalExtremeViolationsCount.toLocaleString()}
               </TableCell>
               <TableCell sx={{ border: '1px solid lightgrey' }}>
-                {response.percentExtremeViolations.toFixed(2)}%
+                {formattedPercent(response.percentExtremeViolations)}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -136,13 +137,13 @@ const DailySpeedViolationsTable = ({ response }) => {
                   {dailyData.dailyViolationsCount.toLocaleString()}
                 </TableCell>
                 <TableCell sx={{ border: '1px solid lightgrey' }}>
-                  {(dailyData.dailyPercentViolations * 100).toFixed(2)}%
+                  {formattedPercent(dailyData.dailyPercentViolations)}
                 </TableCell>
                 <TableCell sx={{ border: '1px solid lightgrey' }}>
                   {dailyData.dailyExtremeViolationsCount.toLocaleString()}
                 </TableCell>
                 <TableCell sx={{ border: '1px solid lightgrey' }}>
-                  {(dailyData.dailyPercentExtremeViolations * 100).toFixed(2)}%
+                  {formattedPercent(dailyData.dailyPercentExtremeViolations)}
                 </TableCell>
               </TableRow>
             ))}

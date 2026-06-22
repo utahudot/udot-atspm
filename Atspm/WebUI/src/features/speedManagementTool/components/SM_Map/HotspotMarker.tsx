@@ -10,7 +10,7 @@ type RankMarkerProps = {
   position: [number, number]
   rank: number
   segmentId: string
-  onClick: (segmentId: string) => void
+  onClick?: (segmentId: string) => void
 }
 
 const RankMarker = ({
@@ -189,14 +189,22 @@ const RankMarker = ({
   useEffect(() => {
     if (pinMarkerRef.current) {
       pinMarkerRef.current.setIcon(pinIcon)
+      const pinElement = pinMarkerRef.current.getElement()
+      if (pinElement) {
+        pinElement.style.pointerEvents = onClick ? '' : 'none'
+      }
       // Bring the pin marker to the front when hovered.
       pinMarkerRef.current.setZIndexOffset(isHovered ? 1000 : 0)
     }
-  }, [pinIcon, isHovered])
+  }, [pinIcon, isHovered, onClick])
 
   useEffect(() => {
     if (arrowNeeded && arrowMarkerRef.current) {
       arrowMarkerRef.current.setIcon(arrowIcon)
+      const arrowElement = arrowMarkerRef.current.getElement()
+      if (arrowElement) {
+        arrowElement.style.pointerEvents = 'none'
+      }
       arrowMarkerRef.current.setZIndexOffset(999)
     }
   }, [arrowIcon, arrowNeeded])
@@ -208,9 +216,14 @@ const RankMarker = ({
         ref={pinMarkerRef}
         position={position}
         icon={pinIcon}
-        eventHandlers={{
-          click: () => onClick(segmentId),
-        }}
+        interactive={Boolean(onClick)}
+        eventHandlers={
+          onClick
+            ? {
+                click: () => onClick(segmentId),
+              }
+            : undefined
+        }
       />
       {/* Render arrow marker */}
       {isHovered && arrowNeeded && (

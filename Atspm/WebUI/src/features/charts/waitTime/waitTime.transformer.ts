@@ -144,6 +144,7 @@ function transformData(data: RawWaitTimeData) {
       name: volumePerHourText,
       data: transformSeriesData(volumes),
       type: 'line',
+      binStepLineToggle: true,
       color: Color.Blue,
       yAxisIndex: 1,
     },
@@ -179,6 +180,7 @@ function transformData(data: RawWaitTimeData) {
       name: averageWaitText,
       data: transformSeriesData(average),
       type: 'line',
+      binStepLineToggle: true,
       color: Color.Pink,
     },
     {

@@ -48,8 +48,8 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
            int[][] sequence,
            int[] coordPhases,
            List<IndianaEvent> programSplits,
-           int offset,
-           int cycleLength,
+           int? offset,
+           int? cycleLength,
            double distanceToNextLocation,
            double distanceToPreviousLocation,
            bool isLastElement,
@@ -67,20 +67,35 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                 topSequenceIndex,
                 bottomSequenceIndex,
                 phaseDetail);
-            int programmedSplit = programSplits.Find(s => s.EventCode == phaseToProgramPhases[selectedPhase]).EventParam;
+            var programmedSplitEvent = programSplits.Find(s => s.EventCode == phaseToProgramPhases[selectedPhase]);
+            if (programmedSplitEvent == null)
+            {
+                throw new NullReferenceException($"Error grabbing program split for phase {selectedPhase}");
+            }
+            int programmedSplit = programmedSplitEvent.EventParam;
 
             GreenToGreenCycle percentileSplitCycle = GetPercentileSplitCycle(options, controllerEventLogs, selectedPhase, phaseDetail.UseOverlap);
-            double startOfRefPoint = 0;
+            if (offset == null)
+            {
+                throw new NullReferenceException("Error grabbing Offset");
+            }
+
+            if (cycleLength == null)
+            {
+                throw new NullReferenceException("Error grabbing CycleLength");
+            }
+
+            double startOfRefPoint;
 
             if (isCoordPhasesMatchRoutePhases)
             {
-                startOfRefPoint = CalculateStartOfRefPointForCoordPhases(offset, programmedSplit, percentileSplitCycle);
+                startOfRefPoint = CalculateStartOfRefPointForCoordPhases(offset.Value, programmedSplit, percentileSplitCycle);
             }
             else
             {
-                startOfRefPoint = CalculateStartOfRefPointForNonCoordPhases(options, offset, selectedPhase, selectedSequence, programSplits, controllerEventLogs, phaseDetail);
+                startOfRefPoint = CalculateStartOfRefPointForNonCoordPhases(options, offset.Value, selectedPhase, selectedSequence, programSplits, controllerEventLogs, phaseDetail);
             }
-            var cycleEvents = CreateCyclesEvents(startOfRefPoint, options.StartDate.ToDateTime(options.EndTime), options.StartDate.ToDateTime(options.StartTime), cycleLength, percentileSplitCycle);
+            var cycleEvents = CreateCyclesEvents(startOfRefPoint, options.StartDate.ToDateTime(options.EndTime), options.StartDate.ToDateTime(options.StartTime), cycleLength.Value, percentileSplitCycle);
 
             var greenTimeEventsResult = new List<DataPointWithDetectorCheckBase>();
             var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
@@ -234,8 +249,15 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             var timeBeforePhase = 0;
             for (var i = 0; i < phaseIndex; i++)
             {
-                var programPhase = phaseToProgramPhases[sequence[i]];
-                timeBeforePhase += programSplits.Find(s => s.EventCode == programPhase)?.EventParam ?? 0;
+                var phase = sequence[i];
+                var programPhase = phaseToProgramPhases[phase];
+                var programSplitEvent = programSplits.Find(s => s.EventCode == programPhase);
+                if (programSplitEvent == null)
+                {
+                    throw new NullReferenceException($"Error grabbing program split for phase {phase}");
+                }
+
+                timeBeforePhase += programSplitEvent.EventParam;
             }
             return timeBeforePhase;
         }

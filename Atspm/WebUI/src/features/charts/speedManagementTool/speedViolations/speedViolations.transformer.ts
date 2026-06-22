@@ -129,7 +129,7 @@ function transformSegmentData(
     right: 250,
   })
 
-  const legend = createLegend()
+  const legend = createLegend({ top: grid.top })
 
   const dataZoom = createDataZoom()
 

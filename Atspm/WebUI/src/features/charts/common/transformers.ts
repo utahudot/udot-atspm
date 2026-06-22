@@ -16,7 +16,6 @@
 // #endregion
 import {
   BasePlan,
-  ChartType,
   DataPoint,
   MarkAreaData,
   PlanData,
@@ -38,6 +37,10 @@ import {
   YAXisComponentOption,
 } from 'echarts'
 
+export type ChartSeriesOption = SeriesOption & {
+  binStepLineToggle?: boolean
+}
+
 export function transformSeriesData(
   dataPoints: DataPoint[]
 ): (string | number)[][] {
@@ -52,7 +55,7 @@ export function transformSeriesData(
   return series
 }
 
-export function createSeries(...seriesInputs: SeriesOption[]) {
+export function createSeries(...seriesInputs: ChartSeriesOption[]) {
   const defaultProperties: SeriesOption = {}
 
   seriesInputs.map((seriesInput) => {
@@ -65,7 +68,7 @@ export function createSeries(...seriesInputs: SeriesOption[]) {
   return seriesInputs.map((seriesInput) => ({
     ...defaultProperties,
     ...seriesInput,
-  })) as SeriesOption[]
+  })) as ChartSeriesOption[]
 }
 
 function getMidpointTimestamp(start: string, end: string): string {
@@ -330,10 +333,16 @@ export function createDataZoom(
     minSpan: 0.2,
   } as const
 
-  // our two “built-in” defaults
   const base: DataZoomComponentOption[] = [
-    { type: 'slider', ...commonDefaults }, // horizontal
-    { type: 'inside', ...commonDefaults }, // drag/scroll
+    {
+      type: 'slider',
+      ...commonDefaults,
+      xAxisIndex: 0,
+      bottom: 15,
+      height: 30,
+      showDataShadow: false,
+    },
+    { type: 'inside', ...commonDefaults },
   ]
 
   if (!overrides || overrides.length === 0) {
@@ -392,12 +401,18 @@ export function formatExportFileName(
   )
 }
 
+interface ToolboxProps {
+  title: string
+  dateRange?: string
+}
+
 export function createToolbox(
-  { title }: titleProps
-  // locationIdentifier?: string,
-  // type?: ChartType | ToolType
-) {
-  const toolbox: ToolboxComponentOption = {
+  props: ToolboxProps,
+  locationIdentifier?: string | null,
+  chartType?: string
+): ToolboxComponentOption
+export function createToolbox({ title }: ToolboxProps): ToolboxComponentOption {
+  return {
     feature: {
       saveAsImage: { name: title },
       dataView: {
@@ -405,7 +420,6 @@ export function createToolbox(
       },
     },
   }
-  return toolbox
 }
 
 // function generateDataView(
