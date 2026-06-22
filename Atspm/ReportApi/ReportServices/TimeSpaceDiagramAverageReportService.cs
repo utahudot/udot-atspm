@@ -94,8 +94,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             List<IndianaEvent> currentControllerEventLogs,
             PhaseDetail primaryPhase,
             List<IndianaEvent> programSplits,
-            int offset,
-            int cycleLength,
+            int? offset,
+            int? cycleLength,
             List<short> eventCodes,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
@@ -211,8 +211,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var controllerEventLogsList = new List<List<IndianaEvent>>();
             var primaryPhaseDetails = new List<PhaseDetail>();
             var opposingPhaseDetails = new List<PhaseDetail>();
-            var programmedCycleLength = new List<int>();
-            var offset = new List<int>();
+            var programmedCycleLength = new List<int?>();
+            var offset = new List<int?>();
             var programmedSplitsForTimePeriod = new List<List<IndianaEvent>>();
             var daysToProcess = GetDaysToProcess(parameter.StartDate, parameter.EndDate, parameter.DaysOfWeek);
 
@@ -232,8 +232,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 }
 
                 var controllerEventLogs = new List<IndianaEvent>();
-                int currentProgrammedCycleLength = 0;
-                int currentOffset = 0;
+                int? currentProgrammedCycleLength = null;
+                int? currentOffset = null;
                 var currentProgrammedSplitsForTimePeriod = new List<IndianaEvent>();
 
                 var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
@@ -270,7 +270,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
 
 
-                    if (currentProgrammedCycleLength == 0)
+                    if (currentProgrammedCycleLength == null)
                     {
                         var programmedCycleForPlan = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<short>() { 132 });
                         var cycleEvent = GetEventOverallapingTime(start, programmedCycleForPlan, "CycleLength").FirstOrDefault();
@@ -282,7 +282,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         currentProgrammedCycleLength = cycleEvent.EventParam;
                     }
 
-                    if (currentOffset == 0)
+                    if (currentOffset == null)
                     {
                         var offsets = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<short>() { 133 });
                         var offsetEvent = GetEventOverallapingTime(start, offsets, "Offset").FirstOrDefault();

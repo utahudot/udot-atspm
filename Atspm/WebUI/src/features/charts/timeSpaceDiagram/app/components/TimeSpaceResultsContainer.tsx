@@ -302,8 +302,8 @@ export default function TimeSpaceResultsContainer({
                 data={pivot.data.adjustments}
                 cycleLength={
                   baseTimeSpaceData.data.find(
-                    (entry) => entry.isSuccess && entry.result
-                  )?.result?.cycleLength || 0
+                    (entry) => entry.result
+                  )?.result?.cycleLength ?? null
                 }
               />
             </Paper>
