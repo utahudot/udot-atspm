@@ -75,7 +75,13 @@ describe('ApiKeyManagement', () => {
       refetch: jest.fn(),
     })
     mockUseIdentityClaims.mockReturnValue({
-      data: ['Admin', 'ApiKey:Create', 'ApiKey:Revoke', 'Data:View'],
+      data: [
+        'Admin',
+        'ApiKey:Create',
+        'ApiKey:View',
+        'ApiKey:Revoke',
+        'Data:View',
+      ],
       isLoading: false,
     })
     mockUseCreateApiKey.mockReturnValue({
@@ -110,16 +116,17 @@ describe('ApiKeyManagement', () => {
     expect(revokeButtons[1]).toBeDisabled()
   })
 
-  it('filters forbidden claims from the create dialog', async () => {
+  it('filters API key management claims from the create dialog', async () => {
     const user = userEvent.setup()
     render(<ApiKeyManagement />)
 
     await user.click(screen.getByRole('button', { name: /new api key/i }))
 
     expect(screen.getByLabelText('Data:View')).toBeInTheDocument()
-    expect(screen.getByLabelText('ApiKey:Revoke')).toBeInTheDocument()
     expect(screen.queryByLabelText('Admin')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('ApiKey:Create')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('ApiKey:View')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('ApiKey:Revoke')).not.toBeInTheDocument()
   })
 
   it('shows the one-time raw key after creation', async () => {

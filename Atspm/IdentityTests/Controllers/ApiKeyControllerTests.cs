@@ -41,6 +41,8 @@ namespace Utah.Udot.Atspm.IdentityTests.Controllers
         [Theory]
         [InlineData(AtspmAuthorization.Permissions.Admin)]
         [InlineData(AtspmAuthorization.Permissions.ApiKeysCreate)]
+        [InlineData(AtspmAuthorization.Permissions.ApiKeysView)]
+        [InlineData(AtspmAuthorization.Permissions.ApiKeysRevoke)]
         public async Task Create_WithForbiddenClaim_ReturnsBadRequest(string claim)
         {
             using var context = CreateContext();
@@ -198,6 +200,34 @@ namespace Utah.Udot.Atspm.IdentityTests.Controllers
             var jwtPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Role, AtspmAuthorization.Roles.Admin)
+            }, JwtBearerDefaults.AuthenticationScheme));
+
+            var apiKeyResult = await authorizationService.AuthorizeAsync(apiKeyPrincipal, null, policyName);
+            var jwtResult = await authorizationService.AuthorizeAsync(jwtPrincipal, null, policyName);
+
+            Assert.False(apiKeyResult.Succeeded);
+            Assert.True(jwtResult.Succeeded);
+        }
+
+        [Fact]
+        public async Task Authorization_WithApiKeyManagementClaim_DoesNotAuthorizeApiKeyManagement()
+        {
+            using var serviceProvider = new ServiceCollection()
+                .AddLogging()
+                .AddOptions()
+                .AddAtspmAuthorization()
+                .BuildServiceProvider();
+            var authorizationService = serviceProvider.GetRequiredService<IAuthorizationService>();
+            var policyName = AtspmAuthorization.GetPolicyName(AtspmAuthorization.Permissions.ApiKeysView);
+
+            var apiKeyPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Role, AtspmAuthorization.Permissions.ApiKeysView),
+                new Claim("AuthenticationMethod", "ApiKey")
+            }, "ApiKey"));
+            var jwtPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Role, AtspmAuthorization.Permissions.ApiKeysView)
             }, JwtBearerDefaults.AuthenticationScheme));
 
             var apiKeyResult = await authorizationService.AuthorizeAsync(apiKeyPrincipal, null, policyName);

@@ -164,6 +164,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             {
                 foreach (var c in apiKey.Claims)
                 {
+                    if (AtspmAuthorization.IsApiKeyPermission(c.Value)) continue;
+
                     claimsList.Add(new Claim(c.Type ?? ClaimTypes.Role, c.Value ?? ""));
                 }
             }
@@ -393,8 +395,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                         policy.RequireAssertion(context =>
                         {
+                            var isApiKeyPrincipal = IsApiKeyPrincipal(context.User);
+                            if (isApiKeyPrincipal && AtspmAuthorization.IsApiKeyPermission(permission))
+                            {
+                                return false;
+                            }
+
                             var hasPermission = context.User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == permission);
-                            var isAdmin = !IsApiKeyPrincipal(context.User) && context.User.IsInRole(AtspmAuthorization.Roles.Admin);
+                            var isAdmin = !isApiKeyPrincipal && context.User.IsInRole(AtspmAuthorization.Roles.Admin);
 
                             return hasPermission || isAdmin;
                         });

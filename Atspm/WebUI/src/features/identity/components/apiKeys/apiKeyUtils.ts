@@ -2,8 +2,6 @@ import { ApiKeyMetadata } from '@/features/identity/api/apiKeys'
 import Cookies from 'js-cookie'
 
 const assignableApiKeyClaims = new Set([
-  'ApiKey:View',
-  'ApiKey:Revoke',
   'Data:View',
   'Data:Edit',
   'Device:View',
@@ -30,7 +28,10 @@ const assignableApiKeyClaims = new Set([
   'SpeedConfigurations:Delete',
 ])
 
-const forbiddenApiKeyClaims = new Set(['Admin', 'ApiKey:Create'])
+const forbiddenApiKeyClaims = new Set(['Admin'])
+
+const isForbiddenApiKeyClaim = (claim: string) =>
+  forbiddenApiKeyClaims.has(claim) || claim.toLowerCase().startsWith('apikey:')
 
 export const getCookieClaims = () =>
   Cookies.get('claims')
@@ -40,7 +41,7 @@ export const getCookieClaims = () =>
 
 export const getAssignableApiKeyClaims = (claims: string[]) => {
   return Array.from(new Set(claims))
-    .filter((claim) => !forbiddenApiKeyClaims.has(claim))
+    .filter((claim) => !isForbiddenApiKeyClaim(claim))
     .filter((claim) => assignableApiKeyClaims.has(claim))
     .sort()
 }

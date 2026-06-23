@@ -51,12 +51,6 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             .Select(v => v!)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        private static readonly HashSet<string> ForbiddenApiKeyClaims = new(StringComparer.OrdinalIgnoreCase)
-        {
-            AtspmAuthorization.Permissions.Admin,
-            AtspmAuthorization.Permissions.ApiKeysCreate
-        };
-
         private readonly IdentityContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -325,7 +319,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 .ToList();
 
             var forbiddenClaims = requestedClaims
-                .Where(ForbiddenApiKeyClaims.Contains)
+                .Where(IsForbiddenApiKeyClaim)
                 .ToList();
 
             if (forbiddenClaims.Any())
@@ -351,6 +345,12 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             }
 
             return null;
+        }
+
+        private static bool IsForbiddenApiKeyClaim(string claim)
+        {
+            return string.Equals(claim, AtspmAuthorization.Permissions.Admin, StringComparison.OrdinalIgnoreCase)
+                || AtspmAuthorization.IsApiKeyPermission(claim);
         }
     }
 }
