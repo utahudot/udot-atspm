@@ -1,5 +1,16 @@
-import { getRouteColor } from '@/features/speedManagementTool/components/SM_Map/SM_Legend'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import {
+  NO_DATA_ROUTE_COLOR,
+  NO_DATA_ROUTE_DASH_ARRAY,
+  NO_DATA_ROUTE_OPACITY,
+  getNoDataRouteWeight,
+  getRouteColor,
+  routeHasData,
+  routeHasNoData,
+} from '@/features/speedManagementTool/components/SM_Map/SM_Legend'
+import {
+  RouteRenderOption,
+  isViolationRenderOption,
+} from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
@@ -35,10 +46,18 @@ export const getColor = (
   mediumMin: number,
   mediumMax: number
 ) => {
+  if (!routeHasData(route.properties)) return NO_DATA_ROUTE_COLOR
+
   let field
   switch (routeRenderOption) {
     case RouteRenderOption.Violations:
       field = 'violations'
+      break
+    case RouteRenderOption.Percent_Violations:
+      field = 'percentViolations'
+      break
+    case RouteRenderOption.Percent_Extreme_Violations:
+      field = 'percentExtremeViolations'
       break
     case RouteRenderOption.Posted_Speed:
       field = 'Speed_Limit'
@@ -56,15 +75,16 @@ export const getColor = (
 
   const val = route.properties[
     field as keyof SpeedManagementRoute['properties']
-  ] as number
+  ] as number | null | undefined
 
-  if (routeRenderOption === RouteRenderOption.Violations) {
+  if (isViolationRenderOption(routeRenderOption)) {
+    if (val === null || val === undefined) return NO_DATA_ROUTE_COLOR
     if (val <= mediumMin) return ViolationColors.Low
     if (val < mediumMax) return ViolationColors.Medium
     return ViolationColors.High
   }
 
-  if (val === null) return '#000'
+  if (val === null || val === undefined) return NO_DATA_ROUTE_COLOR
 
   return getRouteColor(val)
 }
@@ -86,14 +106,17 @@ const RoutePolyline: React.FC<RoutePolylineProps> = ({
     [routeRenderOption]
   )
 
+  const isSelected = selectedRouteIds.includes(route.properties.route_id)
+  const isNoData = routeHasNoData(route.properties)
+  const isEmphasized = isHovered || isSelected
+
   const polylineColor = useMemo(
     () =>
-      isHovered || selectedRouteIds.includes(route.properties.route_id)
+      isEmphasized
         ? 'blue'
         : getColor(route, routeRenderOption, mediumMin, mediumMax),
     [
-      isHovered,
-      selectedRouteIds,
+      isEmphasized,
       route,
       routeRenderOption,
       mediumMin,
@@ -103,6 +126,9 @@ const RoutePolyline: React.FC<RoutePolylineProps> = ({
 
   const baseWeight = getPolylineWeight(zoomLevel)
   const hoverWeight = baseWeight + 3
+  const routeWeight =
+    isNoData && !isEmphasized ? getNoDataRouteWeight(baseWeight) : baseWeight
+  const routeOpacity = isNoData && !isEmphasized ? NO_DATA_ROUTE_OPACITY : 1
   const borderWeight = getBorderWeight(
     isHovered ? hoverWeight : baseWeight,
     zoomLevel
@@ -110,12 +136,12 @@ const RoutePolyline: React.FC<RoutePolylineProps> = ({
 
   useEffect(() => {
     if (borderRef.current && mainRef.current) {
-      if (isHovered || selectedRouteIds.includes(route.properties.route_id)) {
+      if (isEmphasized) {
         borderRef.current.bringToFront()
         mainRef.current.bringToFront()
       }
     }
-  }, [isHovered, selectedRouteIds, route.properties.route_id])
+  }, [isEmphasized])
 
   return (
     <>
@@ -125,9 +151,10 @@ const RoutePolyline: React.FC<RoutePolylineProps> = ({
         ref={mainRef}
         pathOptions={{
           color: polylineColor,
-          weight: isHovered ? hoverWeight : baseWeight,
+          weight: isHovered ? hoverWeight : routeWeight,
           lineCap: 'round',
-          opacity: 1,
+          opacity: routeOpacity,
+          dashArray: isNoData ? NO_DATA_ROUTE_DASH_ARRAY : undefined,
         }}
         smoothFactor={0}
         positions={route.geometry.coordinates}

@@ -1,6 +1,9 @@
 import { ClearGuideSpiderLayer } from '@/features/speedManagementTool/components/SegmentEditor/SegmentEditorMap/mapFeatures/ClearGuideSpiderLayer'
 import { Entity } from '@/features/speedManagementTool/components/SegmentEditor/segmentEditorStore'
-import { DataSource } from '@/features/speedManagementTool/enums'
+import {
+  DataSource,
+  getDataSourceName,
+} from '@/features/speedManagementTool/enums'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
@@ -99,7 +102,7 @@ export default function EntityClusterGroup({
             ${d.name ? `${d.name} - ` : ''}${d.entityId} (${d.direction})
           </div>
           <div style="font-size:0.85em;color:rgba(0,0,0,0.6);">
-            ${d.entityType} • ${d.startDate}
+            ${getDataSourceName(d.sourceId)} • ${d.entityType} • ${d.startDate}
           </div>
         </div>
       </li>`

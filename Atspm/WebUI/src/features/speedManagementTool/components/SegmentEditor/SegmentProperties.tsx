@@ -25,6 +25,17 @@ import { z } from 'zod'
 // schema
 // ---------------------------
 
+const emptyNumberToNull = (value: unknown) => {
+  if (value === '' || value == null) return null
+  if (typeof value === 'number' && Number.isNaN(value)) return null
+  return value
+}
+
+const emptyStringToNull = (value: unknown) => {
+  if (value === '' || value == null) return null
+  return value
+}
+
 const segmentPropertiesSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   udotRouteNumber: z.string().min(1, 'Route Number is required'),
@@ -33,8 +44,8 @@ const segmentPropertiesSchema = z.object({
   startMilePoint: z.number({ required_error: 'Start Mile Point is required' }),
   endMilePoint: z.number({ required_error: 'End Mile Point is required' }),
   speedLimit: z.number().min(1, 'Speed Limit must be positive'),
-  offset: z.number(),
-  region: z.string().min(1, 'Region is required'),
+  offset: z.preprocess(emptyNumberToNull, z.number().nullable()),
+  region: z.preprocess(emptyStringToNull, z.string().nullable()),
   direction: z.enum(['NB', 'EB', 'SB', 'WB'], {
     message: 'Direction is required',
   }),
@@ -93,8 +104,8 @@ const SegmentProperties = forwardRef((_, ref) => {
       startMilePoint: '',
       endMilePoint: '',
       speedLimit: '',
-      offset: '',
-      region: '',
+      offset: null,
+      region: null,
       direction: '',
       polarity: 'PM',
       accessCategory: '',
@@ -113,8 +124,8 @@ const SegmentProperties = forwardRef((_, ref) => {
       startMilePoint: segmentProperties.startMilePoint ?? '',
       endMilePoint: segmentProperties.endMilePoint ?? '',
       speedLimit: segmentProperties.speedLimit ?? '',
-      offset: segmentProperties.offset ?? '',
-      region: segmentProperties.region ?? '',
+      offset: segmentProperties.offset ?? null,
+      region: segmentProperties.region ?? null,
       direction: segmentProperties.direction ?? '',
       polarity: 'PM',
       accessCategory: segmentProperties.accessCategory ?? '',
@@ -134,7 +145,11 @@ const SegmentProperties = forwardRef((_, ref) => {
 
   // when user hits save inside this form (not the parent)
   const onSubmit = (data: SegmentPropertiesForm) => {
-    updateSegmentProperties({ ...data, offset: data.offset ?? 0 })
+    updateSegmentProperties({
+      ...data,
+      offset: data.offset ?? null,
+      region: data.region ?? null,
+    })
   }
 
   // expose submitForm to the parent
@@ -362,7 +377,12 @@ const SegmentProperties = forwardRef((_, ref) => {
               type="number"
               sx={{ flex: '1 1 45%' }}
               error={!!errors.offset}
-              onChange={(e) => field.onChange(Number(e.target.value))}
+              helperText={errors.offset?.message}
+              value={field.value ?? ''}
+              onChange={(e) => {
+                const value = e.target.value
+                field.onChange(value === '' ? null : Number(value))
+              }}
             />
           )}
         />
@@ -376,8 +396,11 @@ const SegmentProperties = forwardRef((_, ref) => {
               select
               sx={{ flex: '1 1 45%' }}
               value={regionNames.find((name) => name === field.value) ?? ''}
-              onChange={(e) => field.onChange(e.target.value)}
+              onChange={(e) => field.onChange(e.target.value || null)}
+              error={!!errors.region}
+              helperText={errors.region?.message}
             >
+              <MenuItem value="">None</MenuItem>
               {regionNames.map((name) => (
                 <MenuItem key={name} value={name}>
                   {name}

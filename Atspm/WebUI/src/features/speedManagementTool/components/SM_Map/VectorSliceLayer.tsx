@@ -1,5 +1,16 @@
-import { getRouteColor } from '@/features/speedManagementTool/components/SM_Map/SM_Legend'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import {
+  NO_DATA_ROUTE_COLOR,
+  NO_DATA_ROUTE_DASH_ARRAY,
+  NO_DATA_ROUTE_OPACITY,
+  getNoDataRouteWeight,
+  getRouteColor,
+  routeHasData,
+  routeHasNoData,
+} from '@/features/speedManagementTool/components/SM_Map/SM_Legend'
+import {
+  RouteRenderOption,
+  isViolationRenderOption,
+} from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import type { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
@@ -32,9 +43,16 @@ function colorFromProps(
   mediumMin: number,
   mediumMax: number
 ) {
-  if (opt === RouteRenderOption.Violations) {
-    const v = p?.violations ?? null
-    if (v === null) return '#000'
+  if (!routeHasData(p)) return NO_DATA_ROUTE_COLOR
+
+  if (isViolationRenderOption(opt)) {
+    const v =
+      opt === RouteRenderOption.Percent_Violations
+        ? (p?.percentViolations ?? null)
+        : opt === RouteRenderOption.Percent_Extreme_Violations
+          ? (p?.percentExtremeViolations ?? null)
+          : (p?.violations ?? null)
+    if (v === null) return NO_DATA_ROUTE_COLOR
     if (v <= mediumMin) return ViolationColors.Low
     if (v < mediumMax) return ViolationColors.Medium
     return ViolationColors.High
@@ -45,7 +63,7 @@ function colorFromProps(
       : opt === RouteRenderOption.Percentile_85th
         ? (p?.averageEightyFifthSpeed ?? null)
         : (p?.averageSpeed ?? null)
-  if (v === null) return '#000'
+  if (v === null) return NO_DATA_ROUTE_COLOR
   return getRouteColor(v)
 }
 
@@ -192,12 +210,18 @@ export default function VectorRoutesSlicerLayer({
   const { routeRenderOption, mediumMin, mediumMax } = useSpeedManagementStore()
 
   const styleFn = useMemo(
-    () => (props: any, z: number) => ({
-      color: colorFromProps(props, routeRenderOption, mediumMin, mediumMax),
-      weight: getPolylineWeight(z),
-      opacity: 1,
-      lineCap: 'round',
-    }),
+    () => (props: any, z: number) => {
+      const weight = getPolylineWeight(z)
+      const hasNoData = routeHasNoData(props)
+
+      return {
+        color: colorFromProps(props, routeRenderOption, mediumMin, mediumMax),
+        weight: hasNoData ? getNoDataRouteWeight(weight) : weight,
+        opacity: hasNoData ? NO_DATA_ROUTE_OPACITY : 1,
+        dashArray: hasNoData ? NO_DATA_ROUTE_DASH_ARRAY : undefined,
+        lineCap: 'round',
+      }
+    },
     [routeRenderOption, mediumMin, mediumMax]
   )
 
@@ -207,6 +231,7 @@ export default function VectorRoutesSlicerLayer({
         ...styleFn(pp, z),
         color: 'blue',
         weight: getPolylineWeight(z) + 3,
+        opacity: 1,
       }))
     },
     [styleFn]
@@ -242,10 +267,14 @@ export default function VectorRoutesSlicerLayer({
         properties: {
           route_id: p.route_id,
           name: p.name,
-          speedLimit: p.speedLimit || p.Speed_Limit,
+          hasData: p.hasData,
+          speedLimit: p.speedLimit ?? p.Speed_Limit,
           averageSpeed: p.averageSpeed,
           averageEightyFifthSpeed: p.averageEightyFifthSpeed,
           violations: p.violations,
+          extremeViolations: p.extremeViolations,
+          percentViolations: p.percentViolations,
+          percentExtremeViolations: p.percentExtremeViolations,
         },
       } as unknown as SpeedManagementRoute)
       const id = p.route_id
@@ -261,6 +290,7 @@ export default function VectorRoutesSlicerLayer({
         ...styleFn(pp, z),
         color: 'blue',
         weight: w,
+        opacity: 1,
       }))
     })
     vg.on('mouseout', (e) => {

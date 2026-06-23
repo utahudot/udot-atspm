@@ -6,6 +6,8 @@ import useSpeedManagementStore from '@/features/speedManagementTool/speedManagem
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { useNotificationStore } from '@/stores/notifications'
 import { getEnv } from '@/utils/getEnv'
+import { lineString } from '@turf/helpers'
+import lineOffset from '@turf/line-offset'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import {
   Box,
@@ -19,15 +21,18 @@ import {
   Tooltip,
 } from '@mui/material'
 import L from 'leaflet'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 import HotspotMarker from './HotspotMarker'
-import SpeedLegend from './SM_Legend'
+import SpeedLegend, { routeHasData } from './SM_Legend'
 
 type HotspotCoordinate = [number, number]
 
 type MapHotspot = {
   id?: string
+  segmentId?: string
+  segmentIds?: string[] | null
+  hotspotSource?: 'impact' | 'monthly'
   geometry?: {
     coordinates?: HotspotCoordinate[]
     geometries?: Array<{
@@ -36,6 +41,9 @@ type MapHotspot = {
   }
   properties?: {
     route_id?: string
+    segmentId?: string
+    segmentIds?: string[] | null
+    name?: string
   }
 }
 
@@ -59,6 +67,7 @@ const SM_Map = ({
   const [zoomLevel, setZoomLevel] = useState(7)
   const [hoveredSegment, setHoveredSegment] =
     useState<SpeedManagementRoute | null>(null)
+  const [includeNoDataSegments, setIncludeNoDataSegments] = useState(true)
 
   const {
     routeRenderOption,
@@ -69,6 +78,14 @@ const SM_Map = ({
     setMapRef, // from Zustand store
     mapRef, // from Zustand store
   } = useSpeedManagementStore()
+
+  const visibleRoutes = useMemo(
+    () =>
+      includeNoDataSegments
+        ? routes
+        : routes.filter((route) => routeHasData(route.properties)),
+    [includeNoDataSegments, routes]
+  )
 
   useEffect(() => {
     const fetchEnv = async () => {
@@ -83,13 +100,19 @@ const SM_Map = ({
 
   useEffect(() => {
     // when routeRenderOption changes, set map extent to show all routes
-    if (mapRef && routes.length) {
+    if (mapRef && visibleRoutes.length) {
       const bounds = L.latLngBounds(
-        routes.map((route) => route.geometry.coordinates).flat()
+        visibleRoutes.map((route) => route.geometry.coordinates).flat()
       )
       mapRef.fitBounds(bounds)
     }
-  }, [routeRenderOption, mapRef, routes])
+  }, [routeRenderOption, mapRef, visibleRoutes])
+
+  useEffect(() => {
+    if (!includeNoDataSegments && !routeHasData(hoveredSegment?.properties)) {
+      setHoveredSegment(null)
+    }
+  }, [includeNoDataSegments, hoveredSegment])
 
   useEffect(() => {
     if (mapRef) {
@@ -112,8 +135,6 @@ const SM_Map = ({
       }
     }
   }, [mapRef])
-
-  const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
 
   const toggleMultiselect = () => {
     if (!multiselect && routeRenderOption === RouteRenderOption.Posted_Speed) {
@@ -139,6 +160,91 @@ const SM_Map = ({
     return 2
   }
 
+  const hasDir = (name: string | undefined, dir: 'nb' | 'sb' | 'eb' | 'wb') =>
+    Boolean(name?.toLowerCase().includes(dir))
+
+  const offsetMetersForZoom = (zoom: number) => {
+    if (zoom >= 14) return 10
+    if (zoom >= 13) return 30
+    if (zoom >= 12) return 70
+    if (zoom >= 10) return 100
+    if (zoom >= 8) return 0
+    return 0
+  }
+
+  const getSignedOffsetMeters = (name?: string) => {
+    const meters = offsetMetersForZoom(zoomLevel)
+    if (!meters) return 0
+    if (hasDir(name, 'nb') || hasDir(name, 'eb')) return meters
+    if (hasDir(name, 'sb') || hasDir(name, 'wb')) return -meters
+    return 0
+  }
+
+  const isCoordinatePair = (value: unknown): value is number[] =>
+    Array.isArray(value) &&
+    value.length >= 2 &&
+    typeof value[0] === 'number' &&
+    typeof value[1] === 'number'
+
+  const cleanLine = (coordinates?: HotspotCoordinate[]) =>
+    Array.isArray(coordinates)
+      ? coordinates.filter(isCoordinatePair).map(([lat, lng]) => [lat, lng])
+      : []
+
+  const toLngLat = ([lat, lng]: number[]) => [lng, lat]
+  const toLatLng = ([lng, lat]: number[]) => [lat, lng] as HotspotCoordinate
+
+  const getHotspotRoute = (hotspot: MapHotspot, geometryIndex?: number) => {
+    const segmentIds = getHotspotSegmentIds(hotspot)
+    const routeId =
+      typeof geometryIndex === 'number' && segmentIds?.[geometryIndex]
+        ? segmentIds[geometryIndex]
+        : getSelectableHotspotRouteId(hotspot)
+
+    return routes.find((route) => route.properties.route_id === routeId)
+  }
+
+  const getHotspotOffsetName = (
+    hotspot: MapHotspot,
+    geometryIndex?: number
+  ) => getHotspotRoute(hotspot, geometryIndex)?.properties?.name ?? hotspot.properties?.name
+
+  const getOffsetHotspotCoordinates = (
+    hotspot: MapHotspot,
+    coordinates?: HotspotCoordinate[],
+    geometryIndex?: number
+  ): HotspotCoordinate[] => {
+    const cleanCoordinates = cleanLine(coordinates) as HotspotCoordinate[]
+    if (cleanCoordinates.length < 2) return cleanCoordinates
+
+    const meters = getSignedOffsetMeters(
+      getHotspotOffsetName(hotspot, geometryIndex)
+    )
+    if (!meters) return cleanCoordinates
+
+    try {
+      const offsetLine = lineOffset(
+        lineString(cleanCoordinates.map(toLngLat)),
+        meters,
+        { units: 'meters' }
+      )
+
+      return offsetLine.geometry.coordinates
+        .filter(isCoordinatePair)
+        .map(toLatLng)
+    } catch {
+      return cleanCoordinates
+    }
+  }
+
+  const makeHotspotPathPassive = (layer: L.Polyline) => {
+    const element = layer.getElement()
+    if (element) {
+      element.style.pointerEvents = 'none'
+    }
+    layer.bringToFront()
+  }
+
   const getMidpoint = (coordinates: [number, number][]) => {
     if (!coordinates.length) return null
     const midpointIndex = Math.floor(coordinates.length / 2)
@@ -146,7 +252,29 @@ const SM_Map = ({
   }
 
   const getHotspotMarkerId = (hotspot: MapHotspot) =>
-    hotspot?.properties?.route_id ?? hotspot?.id ?? null
+    getSelectableHotspotRouteId(hotspot) ?? hotspot?.id ?? null
+
+  const getHotspotSegmentIds = (hotspot: MapHotspot) =>
+    hotspot?.properties?.segmentIds ?? hotspot?.segmentIds ?? null
+
+  const isImpactHotspot = (hotspot: MapHotspot) =>
+    hotspot.hotspotSource === 'impact'
+
+  const getSelectableHotspotRouteId = (hotspot: MapHotspot) => {
+    const segmentIds = getHotspotSegmentIds(hotspot)
+    if (hotspot?.properties?.route_id) return hotspot.properties.route_id
+    if (hotspot?.properties?.segmentId) return hotspot.properties.segmentId
+    if (hotspot?.segmentId) return hotspot.segmentId
+    if (segmentIds?.length) {
+      return segmentIds[Math.floor(segmentIds.length / 2)]
+    }
+    return null
+  }
+
+  const formatPercent = (value: number | null | undefined) =>
+    typeof value === 'number' && Number.isFinite(value)
+      ? `${value.toFixed(1)}%`
+      : null
 
   return (
     <Box
@@ -168,7 +296,6 @@ const SM_Map = ({
           width: '100%',
           zIndex: 0,
         }}
-        renderer={renderer}
         ref={setMapRef}
         doubleClickZoom={false}
       >
@@ -199,67 +326,115 @@ const SM_Map = ({
             </Button>
           </Tooltip>
         </Box>
-        <RouteDisplayToggle />
+        <RouteDisplayToggle
+          includeNoDataSegments={includeNoDataSegments}
+          setIncludeNoDataSegments={setIncludeNoDataSegments}
+        />
+        <VectorRoutesSlicerLayer
+          routes={visibleRoutes}
+          selectedRouteIds={selectedRouteIds}
+          setSelectedRouteId={setSelectedRouteId}
+          setHoveredSegment={setHoveredSegment}
+        />
         {hotspotRoutes?.map((hotspot: MapHotspot, index) => {
           const hotspotMarkerId = getHotspotMarkerId(hotspot)
 
           if (hotspot.geometry?.geometries) {
             return hotspot.geometry.geometries.map(
               (geometry, geometryIndex) => {
+                const positions = getOffsetHotspotCoordinates(
+                  hotspot,
+                  geometry.coordinates,
+                  geometryIndex
+                )
+                if (positions.length < 2) return null
+
                 return (
                   <Polyline
                     key={`${hotspotMarkerId || 'hotspot'}-i${index}-g${geometryIndex}`}
                     pathOptions={{
                       weight: getPolylineWeight(zoomLevel) + 8,
+                      opacity: 0.45,
                     }}
-                    opacity={0.5}
-                    positions={geometry.coordinates}
+                    positions={positions}
                     interactive={false}
                     eventHandlers={{
-                      add: (e) => e.target.bringToBack(),
+                      add: (e) => makeHotspotPathPassive(e.target),
                     }}
                   />
                 )
               }
             )
           }
+
+          if (hotspot.geometry?.coordinates) {
+            const positions = getOffsetHotspotCoordinates(
+              hotspot,
+              hotspot.geometry.coordinates
+            )
+            if (positions.length < 2) return null
+
+            return (
+              <Polyline
+                key={`${hotspotMarkerId || 'hotspot'}-i${index}`}
+                pathOptions={{
+                  weight: getPolylineWeight(zoomLevel) + 8,
+                  opacity: 0.5,
+                }}
+                positions={positions}
+                interactive={false}
+                eventHandlers={{
+                  add: (e) => makeHotspotPathPassive(e.target),
+                }}
+              />
+            )
+          }
+
           return null
         })}
-        <VectorRoutesSlicerLayer
-          routes={routes}
-          selectedRouteIds={selectedRouteIds}
-          setSelectedRouteId={setSelectedRouteId}
-          setHoveredSegment={setHoveredSegment}
-        />
         {hotspotRoutes?.map((hotspot: MapHotspot, index) => {
           if (!hotspot?.geometry) return null
           const hotspotMarkerId = getHotspotMarkerId(hotspot)
           if (!hotspotMarkerId) return null
+          const selectableRouteId = getSelectableHotspotRouteId(hotspot)
+          const markerSelectableRouteId = isImpactHotspot(hotspot)
+            ? null
+            : selectableRouteId
 
           // If hotspot has multiple geometries, get the midpoint of the middle one.
           let midpoint
           if (hotspot.geometry.geometries) {
+            const midpointGeometryIndex = Math.floor(
+              hotspot.geometry.geometries.length / 2
+            )
             midpoint = getMidpoint(
-              hotspot.geometry.geometries[
-                Math.floor(hotspot.geometry.geometries.length / 2)
-              ].coordinates || []
+              getOffsetHotspotCoordinates(
+                hotspot,
+                hotspot.geometry.geometries[midpointGeometryIndex]
+                  .coordinates || [],
+                midpointGeometryIndex
+              )
             )
           } else {
-            midpoint = getMidpoint(hotspot.geometry.coordinates || [])
+            midpoint = getMidpoint(
+              getOffsetHotspotCoordinates(
+                hotspot,
+                hotspot.geometry.coordinates || []
+              )
+            )
           }
           if (!midpoint) return null
           return (
-            <React.Fragment key={index}>
+            <React.Fragment key={`${hotspotMarkerId}-${index}`}>
               <HotspotMarker
                 position={midpoint}
                 rank={index + 1}
                 segmentId={hotspotMarkerId}
-                onClick={() => {
-                  const routeId = hotspot.properties?.route_id
-                  if (routeId) {
-                    setSelectedRouteId(routeId)
-                  }
-                }}
+                onClick={
+                  markerSelectableRouteId
+                    ? () => setSelectedRouteId(markerSelectableRouteId)
+                    : undefined
+                }
               />
             </React.Fragment>
           )
@@ -335,6 +510,39 @@ const SM_Map = ({
                         hoveredSegment.properties.averageEightyFifthSpeed
                       )}{' '}
                       mph
+                    </TableCell>
+                  </TableRow>
+                )}
+                {formatPercent(hoveredSegment.properties.percentViolations) && (
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 'bold', fontSize: '12px' }}>
+                      % Violations:
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontSize: '12px' }}>
+                      {formatPercent(hoveredSegment.properties.percentViolations)}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {formatPercent(
+                  hoveredSegment.properties.percentExtremeViolations
+                ) && (
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: 'bold',
+                        fontSize: '12px',
+                        borderBottom: 'none',
+                      }}
+                    >
+                      % Extreme Violations:
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      sx={{ fontSize: '12px', borderBottom: 'none' }}
+                    >
+                      {formatPercent(
+                        hoveredSegment.properties.percentExtremeViolations
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

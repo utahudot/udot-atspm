@@ -447,6 +447,24 @@ function shiftTimestamp(value: string, offsetMs: number) {
 }
 
 describe('useTimeSpaceHandler', () => {
+  it('does not drag cycle overlays when cycle dragging is disabled', () => {
+    const chart = new MockChart(buildOption())
+
+    renderHook(() =>
+      useTimeSpaceHandler(chart as unknown as ECharts, 0, {
+        enableCycleDragging: false,
+      })
+    )
+
+    dragGroup(chart, 10, 5000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([0, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([
+      ['2026-03-20T00:00:00Z', 10, 0],
+    ])
+    expect(chart.setOptionCalls).toHaveLength(0)
+  })
+
   it('clears cached offsets after an external reset before the next drag', () => {
     const initialOption = buildOption()
     const chart = new MockChart(initialOption)

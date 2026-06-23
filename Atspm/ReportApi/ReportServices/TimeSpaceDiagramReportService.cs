@@ -379,11 +379,14 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return CreateEmptyPhaseResult(
                     parameter,
                     currentPhase,
+                    programmedCycleLength,
                     tmcEventsForPhase,
                     routeLocation,
                     srmTracks,
                     distanceToNextLocation,
                     distanceToPreviousLocation,
+                    isFirstElement,
+                    isLastElement,
                     phaseType,
                     $"No controller event logs found for location {currentPhase.Approach.Location.LocationIdentifier}, phase {currentPhase.Approach.ProtectedPhaseNumber} ({phaseType}), in time range {parameter.Start:u} to {parameter.End:u}.",
                     order);
@@ -458,17 +461,15 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             }
             catch (Exception ex)
             {
-                return CreateEmptyPhaseResult(
+                return CreateErrorPhaseResult(
                     parameter,
-                    currentPhase,
-                    tmcEventsForPhase,
                     routeLocation,
-                    srmTracks,
-                    distanceToNextLocation,
-                    distanceToPreviousLocation,
-                    phaseType,
-                    $"Error building time-space data for location {currentPhase.Approach.Location.LocationIdentifier}, phase {currentPhase.Approach.ProtectedPhaseNumber} ({phaseType}), in time range {parameter.Start:u} to {parameter.End:u}: {ex.Message}",
-                    order);
+                    currentPhase,
+                    phaseType: phaseType,
+                    order: order,
+                    distanceToNextLocation: distanceToNextLocation,
+                    distanceToPreviousLocation: distanceToPreviousLocation,
+                    errorMessage: $"Error building time-space data for location {currentPhase.Approach.Location.LocationIdentifier}, phase {currentPhase.Approach.ProtectedPhaseNumber} ({phaseType}), in time range {parameter.Start:u} to {parameter.End:u}: {ex.Message}");
             }
         }
 
@@ -489,16 +490,54 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private TimeSpaceDiagramPhaseResult CreateEmptyPhaseResult(
             TimeSpaceDiagramOptions parameter,
             PhaseDetail phase,
+            int? programmedCycleLength,
             TmcForPhaseDto tmcEventsForPhase,
             RouteLocation routeLocation,
             List<SrmEntityTrack> srmTracks,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
+            bool isFirstElement,
+            bool isLastElement,
             string phaseType,
-            string? error,
+            string error,
             int order)
         {
-            return TimeSpaceDiagramPhaseResult.Failure(error ?? "Unknown error");
+            var speedLimit = parameter.SpeedLimit ?? phase.Approach.Mph ?? 0;
+            var viewModel = new TimeSpaceDiagramResultForPhase(
+                phase.Approach.Id,
+                phase.Approach.Location.LocationIdentifier,
+                parameter.Start,
+                parameter.End,
+                phase.PhaseNumber,
+                phase.Approach.DirectionType.Abbreviation,
+                distanceToNextLocation,
+                distanceToPreviousLocation,
+                speedLimit,
+                programmedCycleLength,
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                phase.IsPermissivePhase,
+                0,
+                0,
+                0,
+                0,
+                [],
+                []);
+
+            PopulateCommonPhaseFields(viewModel, phase, phaseType, order, tmcEventsForPhase);
+            PopulateSrmTracks(
+                viewModel,
+                routeLocation,
+                srmTracks,
+                phaseType,
+                isFirstElement,
+                isLastElement);
+
+            return TimeSpaceDiagramPhaseResult.Failure(error, viewModel);
         }
 
         private static void PopulateSrmTracks(

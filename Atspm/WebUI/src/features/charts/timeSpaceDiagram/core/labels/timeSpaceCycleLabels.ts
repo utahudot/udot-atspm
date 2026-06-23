@@ -26,9 +26,9 @@ import {
   TIME_SPACE_PHASE_CONNECTOR_INNER_OFFSET,
   TIME_SPACE_PHASE_CONNECTOR_MIN_LENGTH,
 } from '@/features/charts/timeSpaceDiagram/core/labels/timeSpaceLocationCards'
+import { Color } from '@/features/charts/utils'
 import { directionTypes as staticDirectionTypes } from '@/features/locations/components/editDetector/selectOptions'
 import { getDirectionAccentColor } from '@/features/locations/utils/directionAccent'
-import { Color } from '@/features/charts/utils'
 import type {
   CustomSeriesRenderItemAPI,
   CustomSeriesRenderItemReturn,

@@ -56,6 +56,11 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             //Get all events 112-130
             var tspEventCodes = new List<short>() { 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130 };
             var events = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, tspEventCodes);
+            if (events.IsNullOrEmpty())
+            {
+                return await Task.FromException<PrioritySummaryResult>(new NullReferenceException("No Controller Event Logs found for Location"));
+            }
+
             PrioritySummaryResult result = prioritySummaryService.GetChartData(parameter, events);
             result.LocationDescription = Location.LocationDescription();
 

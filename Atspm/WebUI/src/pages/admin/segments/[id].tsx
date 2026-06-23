@@ -86,7 +86,7 @@ const SegmentAdminPage = () => {
           county: properties.County,
           alternateIdentifier: properties.AlternateIdentifier,
           accessCategory: properties.AccessCategory,
-          offset: properties.Offset ?? 0,
+          offset: properties.Offset ?? null,
           shape: properties.Shape,
           shapeWKT: properties.ShapeWKT,
         })
@@ -205,14 +205,14 @@ const SegmentAdminPage = () => {
       name,
       direction,
       speedLimit: Number(speedLimit),
-      region,
+      region: region || null,
       city,
       county,
       shape,
       shapeWKT,
       alternateIdentifier,
       accessCategory,
-      offset,
+      offset: offset ?? null,
     }
 
     const handleServerError = (error: any, fallbackMsg: string) => {
@@ -430,7 +430,7 @@ const SegmentAdminPage = () => {
       county: properties.County,
       alternateIdentifier: properties.AlternateIdentifier,
       accessCategory: properties.AccessCategory,
-      offset: properties.Offset ?? 0,
+      offset: properties.Offset ?? null,
       shape: properties.Shape,
       shapeWKT: properties.ShapeWKT,
     })

@@ -56,29 +56,82 @@ export const ImpactSpeedAggregationCategoryFilter = {
   AfterPercentExtremeViolations: 'AfterPercentExtremeViolations',
 } as const
 
-const flipHotspotCoordinates = (hotspots) => {
-  return hotspots.features.map((feature) => {
-    if (feature.geometry.geometries) {
-      // Flip coordinates for each geometry in geometries
-      feature.geometry.geometries = feature.geometry.geometries.map(
-        (geometry) => {
-          if (geometry.coordinates) {
-            geometry.coordinates = geometry.coordinates.map((coord) =>
-              Array.isArray(coord) ? coord.reverse() : coord
-            )
-          }
-          return geometry
-        }
-      )
-    } else if (feature.geometry.coordinates) {
-      // Flip coordinates for geometry.coordinates
-      feature.geometry.coordinates = feature.geometry.coordinates.map(
-        (coord) => (Array.isArray(coord) ? coord.reverse() : coord)
-      )
-    }
-    return feature
-  })
+type HotspotGeometry = {
+  coordinates?: unknown
+  geometries?: Array<{
+    coordinates?: unknown
+    [key: string]: unknown
+  }>
+  [key: string]: unknown
 }
+
+type HotspotFeature = {
+  geometry?: HotspotGeometry
+  hotspotSource?: 'impact' | 'monthly'
+  [key: string]: unknown
+}
+
+type HotspotResponse =
+  | {
+      features?: HotspotFeature[]
+    }
+  | HotspotFeature[]
+  | null
+  | undefined
+
+const isCoordinatePair = (value: unknown): value is number[] =>
+  Array.isArray(value) &&
+  value.length >= 2 &&
+  typeof value[0] === 'number' &&
+  typeof value[1] === 'number'
+
+const flipCoordinateOrder = (value: unknown): unknown => {
+  if (isCoordinatePair(value)) {
+    const [longitude, latitude, ...rest] = value
+    return [latitude, longitude, ...rest]
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(flipCoordinateOrder)
+  }
+
+  return value
+}
+
+const getHotspotFeatures = (hotspots: HotspotResponse): HotspotFeature[] => {
+  if (Array.isArray(hotspots)) return hotspots
+  return hotspots?.features ?? []
+}
+
+const flipHotspotCoordinates = (
+  hotspots: HotspotResponse
+): HotspotFeature[] =>
+  getHotspotFeatures(hotspots).map((feature) => ({
+    ...feature,
+    geometry: feature.geometry
+      ? {
+          ...feature.geometry,
+          coordinates: feature.geometry.coordinates
+            ? flipCoordinateOrder(feature.geometry.coordinates)
+            : feature.geometry.coordinates,
+          geometries: feature.geometry.geometries?.map((geometry) => ({
+            ...geometry,
+            coordinates: geometry.coordinates
+              ? flipCoordinateOrder(geometry.coordinates)
+              : geometry.coordinates,
+          })),
+        }
+      : feature.geometry,
+  }))
+
+const tagHotspotSource = (
+  hotspots: HotspotFeature[],
+  hotspotSource: HotspotFeature['hotspotSource']
+): HotspotFeature[] =>
+  hotspots.map((hotspot) => ({
+    ...hotspot,
+    hotspotSource,
+  }))
 
 const HotspotSidebar = ({ handleRouteSelection }) => {
   const {
@@ -141,6 +194,8 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
   const fetchHotspots = useCallback(async () => {
     try {
       setIsLoading(true)
+      setHotspotRoutes([])
+      setHoveredHotspot(null)
       const {
         startDate,
         endDate,
@@ -168,36 +223,42 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
           limit,
         }
 
-        let impactHotspots = await fetchImpactHotspots({ data: payload })
-        impactHotspots = flipHotspotCoordinates(impactHotspots)
+        const impactHotspots = tagHotspotSource(
+          flipHotspotCoordinates(await fetchImpactHotspots({ data: payload })),
+          'impact'
+        )
         setHotspotRoutes(impactHotspots)
       } else {
-        let hotspots = await fetchHotspotsAsync({
-          data: {
-            category: sortBy,
-            accessCategory,
-            functionalType,
-            timePeriod,
-            aggClassification,
-            startTime,
-            endTime,
-            sourceId,
-            region,
-            county,
-            city,
-            daysOfWeek,
-            order,
-            limit,
-            differenceBetweenStartAndEndMonth: isCompareDates,
-          },
-        })
-        hotspots = flipHotspotCoordinates(hotspots)
+        const hotspots = tagHotspotSource(
+          flipHotspotCoordinates(
+            await fetchHotspotsAsync({
+              data: {
+                category: sortBy,
+                accessCategory,
+                functionalType,
+                timePeriod,
+                aggClassification,
+                startTime,
+                endTime,
+                sourceId,
+                region,
+                county,
+                city,
+                daysOfWeek,
+                order,
+                limit,
+                differenceBetweenStartAndEndMonth: isCompareDates,
+              },
+            })
+          ),
+          'monthly'
+        )
         setHotspotRoutes(hotspots)
       }
-
-      setIsLoading(false)
     } catch (error) {
       console.error('Failed to fetch hotspots', error)
+      setHotspotRoutes([])
+    } finally {
       setIsLoading(false)
     }
   }, [
@@ -206,6 +267,7 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
     order,
     limit,
     setHotspotRoutes,
+    setHoveredHotspot,
     submittedRouteSpeedRequest,
     sortBy,
     isCompareDates,
@@ -390,7 +452,7 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
                 </Typography>
                 <Typography variant="body2">
                   Segments are ranked based on the data source, date range, and
-                  any other filters you've chosen in the top bar. For each
+                  any other filters you&apos;ve chosen in the top bar. For each
                   segment, we look at monthly values within the selected date
                   range and use the single highest monthly value in the chosen
                   category (e.g., average speed).

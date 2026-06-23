@@ -18,6 +18,7 @@ import {
   getChartTimespanMs,
   getTimeLikeMs,
 } from '@/features/charts/timeSpaceDiagram/core/math/timeSpaceLayout'
+import type { TimeSpaceDisplayDistanceOffset } from '@/features/charts/timeSpaceDiagram/core/types/timeSpaceCore.types'
 import {
   getCycleContinuationPatternFill,
   TIME_SPACE_CONTINUATION_NODE_NAME,
@@ -35,13 +36,26 @@ import {
 
 const opacity = 1
 
+function getDisplayDistanceOffset(
+  index: number,
+  rawDistanceOffset: number,
+  distanceScale: number,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
+) {
+  return (
+    displayDistanceOffset?.(index, rawDistanceOffset) ??
+    rawDistanceOffset * distanceScale
+  )
+}
+
 export function generateLaneByLaneCountEventLines(
   data: RawTimeSpaceHistoricData[],
   distanceData: number[],
   color: string,
   phaseType?: string,
   isPrimary?: boolean,
-  distanceScale = 1
+  distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   data.forEach((location, i) => {
@@ -63,9 +77,14 @@ export function generateLaneByLaneCountEventLines(
       },
       data: location.laneByLaneCountDetectors.flatMap((events) => {
         const distanceToNext = isPrimary
-          ? location.calculatedDistanceToNext
-          : -location.calculatedDistanceToNext
-        const displayDistanceToNext = distanceToNext * distanceScale
+          ? location.distanceToNextLocation
+          : -location.distanceToNextLocation
+        const displayDistanceToNext = getDisplayDistanceOffset(
+          i,
+          distanceToNext,
+          distanceScale,
+          displayDistanceOffset
+        )
         const initialX = events.detectorOn
         const finalX = getArrivalTime(
           location.calculatedDistanceToNext,
@@ -90,7 +109,8 @@ export function generateAdvanceCountEventLines(
   color: string,
   phaseType?: string,
   isPrimary?: boolean,
-  distanceScale = 1
+  distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
   const directionMultiplier = isPrimary ? 1 : -1
@@ -100,10 +120,16 @@ export function generateAdvanceCountEventLines(
     if (!location.advanceCountDetectors?.length) return
 
     const currentDistance = distanceData[i]
+    const displayDistanceToPrevious =
+      -directionMultiplier * Math.abs(location.distanceToPreviousLocation)
     const previousDistance =
-      currentDistance -
-      directionMultiplier *
-        Math.abs(location.calculatedDistanceToPrevious * distanceScale)
+      currentDistance +
+      getDisplayDistanceOffset(
+        i,
+        displayDistanceToPrevious,
+        distanceScale,
+        displayDistanceOffset
+      )
     const sideScope = isPrimary ? 'primary' : 'opposing'
 
     const series: SeriesOption = {
@@ -150,7 +176,8 @@ export function generateStopBarPresenceEventLines(
   color: string,
   phaseType?: string,
   isPrimary?: boolean,
-  distanceScale = 1
+  distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
 ): SeriesOption[] {
   const seriesOptions: SeriesOption[] = []
 
@@ -183,9 +210,14 @@ export function generateStopBarPresenceEventLines(
         }
         const nextIndex = dataIndex + 1
         const distanceToNext = isPrimary
-          ? location.calculatedDistanceToNext
-          : -location.calculatedDistanceToNext
-        const displayDistanceToNext = distanceToNext * distanceScale
+          ? location.distanceToNextLocation
+          : -location.distanceToNextLocation
+        const displayDistanceToNext = getDisplayDistanceOffset(
+          i,
+          distanceToNext,
+          distanceScale,
+          displayDistanceOffset
+        )
         const [x1, y1] = [api.value(0), api.value(1)]
         const [x2, y2] = [api.value(0, nextIndex), api.value(1, nextIndex)]
         const x1Ms = getTimeLikeMs(x1)

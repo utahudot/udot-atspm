@@ -118,7 +118,7 @@ function transformData(
     bottom: 120,
   })
 
-  const legend = createLegends(categoryFilter)
+  const legend = createLegends(categoryFilter, grid.top)
   const dataZoom = createDataZoom()
   const tooltip = createTooltip()
 
@@ -460,7 +460,8 @@ function formatDate(dateString: string): string {
 }
 
 function createLegends(
-  categoryFilter: ImpactSpeedAggregationCategoryFilter | null
+  categoryFilter: ImpactSpeedAggregationCategoryFilter | null,
+  top: number | string
 ): Partial<LegendComponentOption> {
   let legend: Partial<LegendComponentOption> = {}
   if (categoryFilter && categoryFilter.length > 0) {
@@ -487,11 +488,13 @@ function createLegends(
     legendData.push({ name: 'Speed Limit', icon: DashedLineSeriesSymbol })
     if (legendData.length > 0) {
       legend = createLegend({
+        top,
         data: legendData as { name: string; icon: string }[],
       })
     }
   } else {
     legend = createLegend({
+      top,
       data: [
         { name: 'Speed Limit', icon: DashedLineSeriesSymbol },
         { name: 'Average Speed', icon: SolidLineSeriesSymbol },

@@ -1,7 +1,7 @@
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, Slider } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import { isViolationRenderOption } from '@/features/speedManagementTool/enums'
 import { DataSource } from '@/features/speedManagementTool/enums'
 
 export const ViolationColors = {
@@ -40,7 +40,7 @@ export default function ViolationRangeSlider() {
     }
   }
 
-  const isViolation = routeRenderOption === RouteRenderOption.Violations
+  const isViolation = isViolationRenderOption(routeRenderOption)
   const isNotClearGuide =
     submittedRouteSpeedRequest.sourceId !== DataSource.ClearGuide
 
@@ -48,7 +48,9 @@ export default function ViolationRangeSlider() {
     <Box
       sx={{
         width: '80%',
-        margin: '16px',
+        mx: 2,
+        mt: 1,
+        mb: 2,
         display: isViolation && isNotClearGuide ? 'block' : 'none',
       }}
     >
@@ -63,11 +65,32 @@ export default function ViolationRangeSlider() {
             [`&:nth-of-type(${1}n)`]: {
               background: 'white',
               border: '2px solid grey',
-              '& span': {
-                background: 'lightgrey',
-                color: 'black',
-              },
             },
+          },
+          '& .MuiSlider-valueLabel': {
+            top: 30,
+            minWidth: 28,
+            height: 26,
+            px: 0.75,
+            fontSize: 12,
+            lineHeight: '26px',
+            overflow: 'visible',
+            transform: 'translateY(0) scale(1)',
+          },
+          '& .MuiSlider-valueLabel::before': {
+            width: 10,
+            height: 10,
+            top: 0,
+            bottom: 'auto',
+            transform: 'translate(-50%, -50%) rotate(45deg)',
+            zIndex: 0,
+          },
+          '& .MuiSlider-valueLabelLabel': {
+            position: 'relative',
+            zIndex: 1,
+          },
+          '& .MuiSlider-valueLabel.MuiSlider-valueLabelOpen': {
+            transform: 'translateY(0) scale(1)',
           },
           '& .MuiSlider-mark': {
             background: 'none',

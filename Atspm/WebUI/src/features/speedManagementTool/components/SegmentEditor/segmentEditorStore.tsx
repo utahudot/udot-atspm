@@ -127,7 +127,7 @@ const initialSegmentProperties: SegmentProperties = {
   county: null,
   alternateIdentifier: null,
   accessCategory: null,
-  offset: 0,
+  offset: null,
   shape: null,
   shapeWKT: null,
   entities: [],
@@ -138,21 +138,9 @@ const coordinatesToLineString = (coords: number[][]): string => {
   return `LINESTRING (${coordString})`
 }
 
-const getFirstVersion = (entities: Entity[], source: DataSource): string[] => {
-  const versions = Array.from(
-    new Set(
-      entities
-        .filter((entity) => entity.sourceId === source)
-        .map((entity) => entity.version)
-        .filter((version): version is string => !!version)
-    )
-  ).sort()
-  return versions.length ? [versions[0]] : []
-}
-
 export const useSegmentEditorStore = create<SegmentEditorState>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       allSegments: null,
       isLoadingSegments: false,
       segmentProperties: initialSegmentProperties,
@@ -273,12 +261,9 @@ export const useSegmentEditorStore = create<SegmentEditorState>()(
               index === self.findIndex((e) => e.id === entity.id)
           ),
           selectedEntityVersions: {
-            [DataSource.ATSPM]: getFirstVersion(entities, DataSource.ATSPM),
-            [DataSource.PeMS]: getFirstVersion(entities, DataSource.PeMS),
-            [DataSource.ClearGuide]: getFirstVersion(
-              entities,
-              DataSource.ClearGuide
-            ),
+            [DataSource.ATSPM]: [],
+            [DataSource.PeMS]: [],
+            [DataSource.ClearGuide]: [],
           },
         }),
 

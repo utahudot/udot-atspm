@@ -95,7 +95,6 @@ const SegmentEditorMap = () => {
 
   const filteredEntities = useMemo(() => {
     return nearByEntities.filter((entity) => {
-      if (associatedEntityIds.includes(entity.id)) return true
       if (
         ![DataSource.ATSPM, DataSource.PeMS, DataSource.ClearGuide].includes(
           entity.sourceId
@@ -104,10 +103,10 @@ const SegmentEditorMap = () => {
         return false
       }
       const selected = selectedEntityVersions[entity.sourceId]
-      if (selected.length === 0) return false
+      if (selected.length === 0) return true
       return selected.includes(entity.version)
     })
-  }, [nearByEntities, selectedEntityVersions, associatedEntityIds])
+  }, [nearByEntities, selectedEntityVersions])
 
   const handleRouteSelection = useCallback(
     async (feature: Feature | null) => {
