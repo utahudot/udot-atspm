@@ -203,7 +203,7 @@ export default function TurningMovementCountsResultsTable({
                 }}
               >
                 Peak Hour{' '}
-                {peakHour.peakHourFactor != null
+                {peakHour.peakHourFactor
                   ? `(PHF = ${peakHour.peakHourFactor.toFixed(2)})`
                   : null}
               </caption>

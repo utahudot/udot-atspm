@@ -196,19 +196,19 @@ namespace Utah.Udot.ATSPM.EventLogUtility.Commands
                         return builder.UseSqlServer(config.ConnectionString, opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
                     }
 
-                case PostgreSqlProvider.ProviderName:
+                case PostgreSQLProvider.ProviderName:
                     {
-                        return builder.UseNpgsql(config.ConnectionString, opt => opt.MigrationsAssembly(PostgreSqlProvider.Migration));
+                        return builder.UseNpgsql(config.ConnectionString, opt => opt.MigrationsAssembly(PostgreSQLProvider.Migration));
                     }
 
-                case SqliteProvider.ProviderName:
+                case SqlLiteProvider.ProviderName:
                     {
-                        return builder.UseSqlite(config.ConnectionString, opt => opt.MigrationsAssembly(SqliteProvider.Migration));
+                        return builder.UseSqlite(config.ConnectionString, opt => opt.MigrationsAssembly(SqlLiteProvider.Migration));
                     }
 
                 case MySqlProvider.ProviderName:
                     {
-                        return builder.UseMySql(ServerVersion.AutoDetect(config.ConnectionString), opt => opt.MigrationsAssembly(SqliteProvider.Migration));
+                        return builder.UseMySql(ServerVersion.AutoDetect(config.ConnectionString), opt => opt.MigrationsAssembly(SqlLiteProvider.Migration));
                     }
 
                 case OracleProvider.ProviderName:

@@ -44,7 +44,7 @@ import type {
   PatchMeasureOptionFromKeyParams,
   PostMeasureOptionParams,
   PutMeasureOptionFromKeyParams
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

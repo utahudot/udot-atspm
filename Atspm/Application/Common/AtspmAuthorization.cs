@@ -82,8 +82,6 @@ namespace Utah.Udot.Atspm.Common
             public const string UserAdmin = "UserAdmin";
             /// <summary>Subscriber role for watchdog monitoring alerts.</summary>
             public const string WatchdogSubscriber = "WatchdogSubscriber";
-            /// <summary>Administrator for managing speed-management-specific configurations.</summary>
-            public const string SpeedAdmin = "SpeedConfigurationAdmin";
         }
 
         /// <summary>
@@ -168,12 +166,6 @@ namespace Utah.Udot.Atspm.Common
             // Watchdog
             /// <summary>Permission to view watchdog monitoring status.</summary>
             public const string WatchdogView = "Watchdog:View";
-
-            // Speed Management
-            /// <summary>Permission to edit speed management configurations.</summary>
-            public const string SpeedEdit = "SpeedConfigurations:Edit";
-            /// <summary>Permission to delete speed management configurations.</summary>
-            public const string SpeedDelete = "SpeedConfigurations:Delete";
         }
 
         /// <summary>
@@ -272,14 +264,6 @@ namespace Utah.Udot.Atspm.Common
                 {
                     Permissions.WatchdogView,
                     Permissions.ReportView
-                }
-            },
-            {
-                Roles.SpeedAdmin,
-                new List<string>
-                {
-                    Permissions.SpeedEdit,
-                    Permissions.SpeedDelete
                 }
             }
         };

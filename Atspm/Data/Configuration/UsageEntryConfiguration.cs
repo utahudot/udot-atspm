@@ -32,6 +32,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Timestamp)
+                .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
             builder.Property(x => x.StatusCode)
@@ -94,4 +95,5 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.HasIndex(x => x.StatusCode);
         }
     }
+
 }

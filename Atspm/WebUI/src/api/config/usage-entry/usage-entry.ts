@@ -44,7 +44,7 @@ import type {
   PostUsageEntryParams,
   PutUsageEntryFromKeyParams,
   UsageEntry
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

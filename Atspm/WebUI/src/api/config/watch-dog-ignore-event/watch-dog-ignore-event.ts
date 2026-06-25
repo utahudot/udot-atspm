@@ -44,7 +44,7 @@ import type {
   PostWatchDogIgnoreEventParams,
   PutWatchDogIgnoreEventFromKeyParams,
   WatchDogIgnoreEvent
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

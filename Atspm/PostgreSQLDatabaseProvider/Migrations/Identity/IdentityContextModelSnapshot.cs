@@ -184,10 +184,10 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset?>("ExpiresAt")
+                    b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsRevoked")
@@ -211,10 +211,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
                     b.HasIndex("KeyHash")
                         .IsUnique();
 
-                    b.ToTable("ApiKeys", t =>
-                        {
-                            t.HasComment("API keys used for authentication and authorization.");
-                        });
+                    b.ToTable("ApiKeys");
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApiKeyClaim", b =>
@@ -240,10 +237,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Identity
 
                     b.HasIndex("ApiKeyId");
 
-                    b.ToTable("ApiKeyClaims", t =>
-                        {
-                            t.HasComment("Specific permissions or claims associated with an API key.");
-                        });
+                    b.ToTable("ApiKeyClaims");
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.IdentityModels.ApplicationUser", b =>

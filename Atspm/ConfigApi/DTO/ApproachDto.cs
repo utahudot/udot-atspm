@@ -32,7 +32,6 @@ namespace Utah.Udot.ATSPM.ConfigApi.DTO
         public int? PedestrianPhaseNumber { get; set; }
         public bool IsPedestrianPhaseOverlap { get; set; }
         public string PedestrianDetectors { get; set; }
-        public int? TransitSignalPriorityNumber { get; set; }
         public int LocationId { get; set; }
         public DirectionTypes DirectionTypeId { get; set; }
         public ICollection<DetectorDto> Detectors { get; set; }

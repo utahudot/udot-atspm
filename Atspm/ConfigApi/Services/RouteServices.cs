@@ -396,8 +396,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             routeApproachDto.IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap;
             routeApproachDto.PedestrianDetectors = approach.PedestrianDetectors;
             routeApproachDto.LocationId = approach.LocationId;
-            routeApproachDto.DirectionTypeId = approach.DirectionTypeId;
-            routeApproachDto.DirectionType = CreateDirectionTypeDto(approach.DirectionType);
             foreach (var detector in approach.Detectors)
             {
                 routeApproachDto.Detectors.Add(CreateRouteDetectorsDto(detector));
@@ -405,15 +403,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             return routeApproachDto;
         }
 
-        private DirectionTypeDto CreateDirectionTypeDto(DirectionType directionType)
-        {
-            return new DirectionTypeDto()
-            {
-                Abbreviation = directionType.Abbreviation,
-                Description = directionType.Description,
-                DisplayOrder = directionType.DisplayOrder,
-            };
-        }
 
         public RouteDetectorDto CreateRouteDetectorsDto(Detector detector)
         {

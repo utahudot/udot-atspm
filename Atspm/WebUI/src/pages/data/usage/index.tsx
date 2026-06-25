@@ -5,11 +5,7 @@ import { UsageEntryFiltersState } from '@/features/data/components/UsageEntryFil
 import UsageOverviewTab from '@/features/data/components/UsageSummaryTab'
 import { useGetAllUsers } from '@/features/identity/api/getAllUsers'
 import Authorization from '@/lib/Authorization'
-import {
-  localDateTimeToUtcODataLiteral,
-  parseWallClockDateTimeLiteral,
-  toWallClockDateTimeLiteral,
-} from '@/utils/dateTime'
+import { dateToTimestamp } from '@/utils/dateTime'
 import { Stack } from '@mui/material'
 import { addDays, startOfDay, startOfMonth } from 'date-fns'
 import * as React from 'react'
@@ -17,8 +13,8 @@ import { useMemo } from 'react'
 
 export default function UsageEntriesPage() {
   const createDefaultState = (): UsageEntryFiltersState => ({
-    fromUtc: toWallClockDateTimeLiteral(startOfMonth(new Date())),
-    toUtc: toWallClockDateTimeLiteral(startOfDay(new Date())),
+    fromUtc: dateToTimestamp(startOfMonth(new Date())),
+    toUtc: dateToTimestamp(startOfDay(new Date())),
     userId: '',
     apiName: '',
     method: '',
@@ -82,22 +78,25 @@ function escapeODataString(s: string) {
   return s.replace(/'/g, "''")
 }
 
-export function buildUsageEntryParams(
+function parseLocalTimestamp(value: string): Date | null {
+  const d = new Date(value)
+  return Number.isNaN(d.getTime()) ? null : d
+}
+
+function buildUsageEntryParams(
   filters: UsageEntryFiltersState
 ): GetUsageEntryParams {
   const parts: string[] = []
 
   if (filters.fromUtc) {
-    const from = localDateTimeToUtcODataLiteral(filters.fromUtc)
-    if (from) parts.push(`Timestamp ge ${from}`)
+    parts.push(`Timestamp ge ${filters.fromUtc}Z`)
   }
 
   if (filters.toUtc) {
-    const toDate = parseWallClockDateTimeLiteral(filters.toUtc)
+    const toDate = parseLocalTimestamp(filters.toUtc)
     if (toDate) {
-      const nextDayStart = addDays(startOfDay(toDate), 1)
-      const to = localDateTimeToUtcODataLiteral(nextDayStart)
-      if (to) parts.push(`Timestamp lt ${to}`)
+      const nextDayStart = dateToTimestamp(addDays(startOfDay(toDate), 1))
+      parts.push(`Timestamp lt ${nextDayStart}Z`)
     }
   }
 

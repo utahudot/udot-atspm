@@ -70,13 +70,7 @@ namespace Utah.Udot.Atspm.Enums
         WatchdogView,
 
         [Display(Name = "Report:View")]
-        ReportView,
-
-        [Display(Name = "SpeedConfiguration:Edit")]
-        SpeedConfigurationEdit,
-
-        [Display(Name = "SpeedConfiguration:Delete")]
-        SpeedConfigurationDelete
+        ReportView
     }
 }
 

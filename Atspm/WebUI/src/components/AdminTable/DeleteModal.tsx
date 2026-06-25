@@ -12,14 +12,14 @@ import {
 } from '@mui/material'
 
 interface DeleteModalProps<T> {
-  id: string | number
+  id: number
   name: string
   objectType: string
   open: boolean
   onClose: () => void
   onConfirm: (keyValue: string | number) => void
   deleteLabel?: (selectedRow: T) => string
-  selectedRow?: T
+  selectedRow: T
   associatedObjects?: { id: number; name: string }[]
   associatedObjectsLabel?: string
   filterFunction?: (
@@ -44,17 +44,14 @@ const DeleteModal = <T,>({
   deleteByKey, // NEW PROP
 }: DeleteModalProps<T>) => {
   const handleConfirm = () => {
-    const keyValue = deleteByKey && selectedRow ? selectedRow[deleteByKey] : id
+    const keyValue = deleteByKey ? selectedRow[deleteByKey] : id
     onConfirm(keyValue as string | number)
     onClose()
   }
 
-  const filteredAssociatedObjects =
-    typeof id === 'number'
-      ? filterFunction
-        ? filterFunction(id, associatedObjects)
-        : associatedObjects.filter((obj) => obj.id === id)
-      : []
+  const filteredAssociatedObjects = filterFunction
+    ? filterFunction(id, associatedObjects)
+    : associatedObjects.filter((obj) => obj.id === id)
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -79,7 +76,7 @@ const DeleteModal = <T,>({
         )}
         <Typography>
           Are you sure you want to delete{' '}
-          <b>{deleteLabel && selectedRow ? deleteLabel(selectedRow) : name}</b>?
+          <b>{deleteLabel ? deleteLabel(selectedRow) : name}</b>?
         </Typography>
       </DialogContent>
       <DialogActions>

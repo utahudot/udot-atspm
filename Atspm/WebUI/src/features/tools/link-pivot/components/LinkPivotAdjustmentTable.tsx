@@ -8,37 +8,31 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { AdjustmentDto, TransformedAdjustmentDto } from '../types'
 
-const HeaderCell = ({
-  label,
+const StyledTC = ({
+  children,
   width = '100px',
 }: {
-  label: string
+  children: React.ReactNode
   width?: string
-}) => (
-  <TableCell sx={{ minWidth: width, verticalAlign: 'top' }}>
-    <Box sx={{ fontWeight: 700 }}>{label}</Box>
-  </TableCell>
-)
+}) => <TableCell sx={{ minWidth: width }}>{children}</TableCell>
 
 interface LinkPivotAdjustmentTableProps {
   data: AdjustmentDto[]
-  cycleLength: number | null
+  cycleLength: number
 }
 
 const getTransformedData = (
   data: AdjustmentDto[]
 ): TransformedAdjustmentDto[] => {
   return data?.map((adjustment, index) => {
-    const existingOffset = adjustment.existingOffset ?? 0
-
     return {
       ...adjustment,
       editLinkData: adjustment.delta,
-      existingOffset,
-      newOffset: existingOffset + adjustment.delta,
+      existingOffset: 0,
+      newOffset: adjustment.delta,
       index: index,
     }
   })
@@ -48,20 +42,35 @@ const LinkPivotAdjustmentTable = ({
   data,
   cycleLength,
 }: LinkPivotAdjustmentTableProps) => {
-  const transformedData = useMemo(() => getTransformedData(data), [data])
+  const transformedData = getTransformedData(data)
   const [rows, setRows] = useState(transformedData)
-
-  useEffect(() => {
-    setRows(transformedData)
-  }, [transformedData])
 
   if (data === undefined) {
     return null
   }
 
+  const updateExistingOffset = (
+    row: TransformedAdjustmentDto,
+    value: string
+  ) => {
+    const updatedRows = rows.map((oldRow) =>
+      oldRow.index === row.index
+        ? {
+            ...oldRow,
+            existingOffset: value !== '' ? parseInt(value) : 0,
+            newOffset: calculateNewOffset(
+              oldRow.index,
+              value !== '' ? parseInt(value) : 0
+            ),
+          }
+        : oldRow
+    )
+    setRows(updatedRows)
+  }
+
   const updateLinkDelta = (row: TransformedAdjustmentDto, value: string) => {
     const updatedRows = rows
-      .map((oldRow) =>
+      .map((oldRow, index) =>
         oldRow.index === row.index
           ? {
               ...oldRow,
@@ -82,14 +91,6 @@ const LinkPivotAdjustmentTable = ({
       cumulativeChange += rows[i].editLinkData
     }
     const newOffset = cumulativeChange + existingOffset
-    if (
-      typeof cycleLength !== 'number' ||
-      !Number.isFinite(cycleLength) ||
-      cycleLength <= 0
-    ) {
-      return newOffset
-    }
-
     return newOffset >= cycleLength ? newOffset % cycleLength : newOffset
   }
 
@@ -107,13 +108,14 @@ const LinkPivotAdjustmentTable = ({
         <Table>
           <TableHead>
             <TableRow>
-              <HeaderCell label="Link" />
-              <HeaderCell label="Location" width="260px" />
-              <HeaderCell label="Recommended Change" />
-              <HeaderCell label="Manual Adjustment" />
-              <HeaderCell label="Cumulative Change" />
-              <HeaderCell label="Existing Offset" />
-              <HeaderCell label="Target Offset" />
+              <TableCell>Link</TableCell>
+              <TableCell>Location Identifier</TableCell>
+              <TableCell>Location</TableCell>
+              <TableCell>Link Delta</TableCell>
+              <StyledTC>Edit Link Delta</StyledTC>
+              <TableCell>Offset(+ To Offset)</TableCell>
+              <StyledTC>Existing Offset</StyledTC>
+              <TableCell>New Offset</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -127,19 +129,16 @@ const LinkPivotAdjustmentTable = ({
                   },
                 }}
               >
-                <TableCell sx={{ width: '160px' }}>{row.linkNumber}</TableCell>
-                <TableCell sx={{ width: '460px' }}>
-                  <Box component="span" sx={{ fontWeight: 700 }}>
-                    {row.locationIdentifier}
-                  </Box>
-                  {' - '}
-                  {row.location}
+                <TableCell sx={{ width: '160px' }}>{index + 1}</TableCell>
+                <TableCell sx={{ width: '160px' }}>
+                  {row.locationIdentifier}
                 </TableCell>
+                <TableCell sx={{ width: '300px' }}>{row.location}</TableCell>
                 <TableCell sx={{ width: '160px' }}>{row.delta}</TableCell>
                 <LinkPivotEditableCell
                   value={row.editLinkData}
                   onUpdate={(value) => {
-                    updateLinkDelta(row, value?.toString() ?? '')
+                    updateLinkDelta(row, value.toString())
                   }}
                   sx={{
                     width: '160px',
@@ -148,9 +147,15 @@ const LinkPivotAdjustmentTable = ({
                 <TableCell sx={{ width: '160px' }}>
                   {calculateOffsetToOffset(index)}
                 </TableCell>
-                <TableCell sx={{ width: '160px' }}>
-                  {row.existingOffset}
-                </TableCell>
+                <LinkPivotEditableCell
+                  value={row.existingOffset}
+                  onUpdate={(value) => {
+                    updateExistingOffset(row, value.toString())
+                  }}
+                  sx={{
+                    width: '160px',
+                  }}
+                />
                 <TableCell sx={{ width: '160px' }}>
                   {calculateNewOffset(index, row.existingOffset)}
                 </TableCell>

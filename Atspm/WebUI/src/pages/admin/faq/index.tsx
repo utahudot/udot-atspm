@@ -15,7 +15,7 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { useNotificationStore } from '@/stores/notifications'
-import { formatInstantAsLocalDate } from '@/utils/dateTime'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Backdrop, Box, Button, CircularProgress } from '@mui/material'
@@ -95,8 +95,8 @@ const FaqAdmin = () => {
   const filteredData = faqs.map((obj: Faq) => {
     return {
       ...obj,
-      created: formatInstantAsLocalDate(obj.created),
-      modified: formatInstantAsLocalDate(obj.modified),
+      created: obj.created ? toUTCDateStamp(obj.created) : undefined,
+      modified: obj.modified ? toUTCDateStamp(obj.modified) : undefined,
     }
   })
 
@@ -173,7 +173,7 @@ const FaqAdmin = () => {
             objectType="Faqs"
             deleteLabel={(selectedRow: Faq) => selectedRow.header}
             open={false}
-            onClose={onModalClose}
+            onClose={() => {}}
             onConfirm={HandleDeleteFaq}
           />
         }

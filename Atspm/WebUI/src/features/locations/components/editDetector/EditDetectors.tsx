@@ -89,7 +89,7 @@ const EditDetectors = ({
       detectionTypes
         .filter((d) => {
           if (locationType?.name === 'Intersection')
-            return ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP', 'PP'].includes(
+            return ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP'].includes(
               d.abbreviation
             )
           if (locationType?.name === 'Ramp')
@@ -404,7 +404,7 @@ const EditDetectors = ({
 export default EditDetectors
 
 // AuditIcon.tsx
-import { formatInstantAsLocalDate } from '@/utils/dateTime'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import HistoryIcon from '@mui/icons-material/History'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Box, IconButton } from '@mui/material'
@@ -415,10 +415,7 @@ const asDate = (d: DS) => {
   const dt = typeof d === 'string' ? new Date(d) : d
   return isNaN(dt.getTime()) ? undefined : dt
 }
-const fmt = (d: DS) => {
-  const date = asDate(d)
-  return date ? formatInstantAsLocalDate(date) : 'Not recorded'
-}
+const fmt = (d: DS) => (asDate(d) ? toUTCDateStamp(asDate(d)!) : 'Not recorded')
 
 export function AuditIcon({
   obj,

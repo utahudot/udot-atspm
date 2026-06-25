@@ -104,14 +104,6 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         //public string LocationIdentifier { get; set; }
     }
 
-    public class PrioritySummaryOptions : MeasureOptionsBase
-    {
-    }
-
-    public class PriorityDetailsOptions : MeasureOptionsBase
-    {
-    }
-
 
     public class TimeSpaceDiagramOptions : MeasureOptionsBase
     {
@@ -121,14 +113,6 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public double ExtendStartStopSearch { get; set; }
         public bool ShowAllLanesInfo { get; set; }
         // public string LocationIdentifier { get; set; }
-    }
-
-    public class TimeSpaceDiagramSrmOptions : AtspmOptionsBase
-    {
-        public int RouteId { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public string? SrmCsvContentBase64 { get; set; }
     }
 
     public class GreenTimeUtilizationOptions : MeasureOptionsBase
@@ -354,13 +338,13 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int? SpeedLimit { get; set; }
     }
 
-    public class LocationWithSequence : AtspmOptionsBase
+    public class LocationWithSequence
     {
         public string LocationIdentifier { get; set; }
         public int[][] Sequence { get; set; }
     }
 
-    public class LocationWithCoordPhases : AtspmOptionsBase
+    public class LocationWithCoordPhases
     {
         public string LocationIdentifier { get; set; }
         public int[] CoordinatedPhases { get; set; }
@@ -372,7 +356,7 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int CycleLength { get; set; }
         public string Direction { get; set; }
         public double Bias { get; set; }
-        public string? BiasDirection { get; set; }
+        public string BiasDirection { get; set; }
         public int[] DaysOfWeek { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }

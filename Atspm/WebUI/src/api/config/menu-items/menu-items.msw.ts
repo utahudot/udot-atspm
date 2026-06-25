@@ -34,7 +34,7 @@ import {
 
 import type {
   MenuItem
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 
 export const getGetMenuItemsResponseMock = (): MenuItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), icon: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), displayOrder: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), link: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), document: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), parentId: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), null]), undefined]), id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), created: faker.helpers.arrayElement([faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]), undefined]), modified: faker.helpers.arrayElement([faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]), undefined]), createdBy: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), modifiedBy: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), children: faker.helpers.arrayElement([[], undefined])})))

@@ -18,22 +18,10 @@
 // features/data/components/ReportApiInsightsCard/utils.ts
 import { UsageEntry } from '@/api/config'
 import { IdentityUser } from '@/features/data/components/ReportApiAgencyCard'
-import {
-  formatInstantAsLocalDate,
-  parseWallClockDateTimeLiteral,
-  parseUtcTimestampToMs,
-} from '@/utils/dateTime'
 import { addSpaces } from '@/utils/string'
 import { GroupBy, Metric, SortBy } from './InsightsHeader'
 
 export type InsightRow = { name: string; count: number; sortKey?: string }
-
-type UsageMetricFields = UsageEntry & {
-  ResultSizeBytes?: unknown
-  responseSizeBytes?: unknown
-  ResponseSizeBytes?: unknown
-  Route?: string | null
-}
 
 function toDateKey(d: Date, groupBy: GroupBy) {
   const y = d.getFullYear()
@@ -46,19 +34,16 @@ function toDateKey(d: Date, groupBy: GroupBy) {
   const oneJan = new Date(d.getFullYear(), 0, 1)
   const week =
     Math.ceil(
-      ((d.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) /
-        7
+      ((d.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) / 7
     ) || 1
 
   return `${y}-W${String(week).padStart(2, '0')}`
 }
 
-export function normalizeUsers(users: unknown): IdentityUser[] {
+export function normalizeUsers(users: any): IdentityUser[] {
   if (!users) return []
   if (Array.isArray(users)) return users as IdentityUser[]
-  if (typeof users === 'object') {
-    return Object.values(users as Record<string, IdentityUser>)
-  }
+  if (typeof users === 'object') return Object.values(users) as IdentityUser[]
   return []
 }
 
@@ -71,12 +56,12 @@ function metricValue(r: UsageEntry, metric: Metric): number {
   if (metric === 'ReportsGenerated') return 1
 
   // UsageEntry can be inconsistent; keep it defensive.
-  const usageRow = r as UsageMetricFields
+  const anyR = r as any
   const v =
-    usageRow.resultSizeBytes ??
-    usageRow.ResultSizeBytes ??
-    usageRow.responseSizeBytes ??
-    usageRow.ResponseSizeBytes ??
+    anyR?.resultSizeBytes ??
+    anyR?.ResultSizeBytes ??
+    anyR?.responseSizeBytes ??
+    anyR?.ResponseSizeBytes ??
     0
 
   const n = typeof v === 'number' ? v : Number(v)
@@ -99,11 +84,10 @@ export function buildByChartType(
   const m = new Map<string, number>()
 
   for (const r of metricRows) {
-    const usageRow = r as UsageMetricFields
     const keyRaw =
       opts.metric === 'ReportsGenerated'
         ? r.controller || 'Unknown'
-        : getDataApiTypeFromRoute(usageRow.route ?? usageRow.Route)
+        : getDataApiTypeFromRoute((r as any).route ?? (r as any).Route)
 
     const key = addSpaces(keyRaw || 'Unknown')
 
@@ -119,14 +103,13 @@ function pad2(n: number) {
 }
 
 export function toISODate(d: Date) {
-  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(
-    d.getDate()
-  )}`
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
 }
 
 // Monday-start week (more intuitive than W05)
 export function startOfWeekMonday(d: Date) {
-  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
   const day = x.getDay() // 0 Sun ... 6 Sat
   const diff = (day + 6) % 7 // Monday=0, Sunday=6
   x.setDate(x.getDate() - diff)
@@ -140,22 +123,7 @@ function formatMD(d: Date) {
 export function weekRangeLabel(weekStart: Date) {
   const endExclusive = new Date(weekStart)
   endExclusive.setDate(endExclusive.getDate() + 7)
-  return `${formatMD(weekStart)} - ${formatMD(endExclusive)}`
-}
-
-export function formatUsageLocalDateRange(
-  startDate?: string,
-  endDate?: string
-) {
-  if (!startDate && !endDate) return ''
-
-  const start = startDate ? formatInstantAsLocalDate(startDate) : ''
-  const end = endDate ? formatInstantAsLocalDate(endDate) : ''
-
-  if (!start || !end) return `${startDate ?? ''} - ${endDate ?? ''}`.trim()
-  if (start === end) return start
-
-  return `${start} - ${end}`
+  return `${formatMD(weekStart)} – ${formatMD(endExclusive)}`
 }
 
 function getDataApiTypeFromRoute(route?: string | null) {
@@ -179,10 +147,8 @@ export function buildByTime(
 
   for (const r of metricRows) {
     if (!r.timestamp) continue
-    const timestampMs = parseUtcTimestampToMs(r.timestamp)
-    if (timestampMs == null) continue
-
-    const d = new Date(timestampMs)
+    const d = new Date(r.timestamp)
+    if (Number.isNaN(d.getTime())) continue
 
     if (opts.groupBy === 'week') {
       const s = startOfWeekMonday(d)
@@ -198,9 +164,7 @@ export function buildByTime(
   if (opts.groupBy === 'week') {
     return [...m.entries()]
       .map(([weekStartIso, count]) => {
-        const s =
-          parseWallClockDateTimeLiteral(`${weekStartIso}T00:00:00`) ??
-          new Date(`${weekStartIso}T00:00:00`)
+        const s = new Date(`${weekStartIso}T00:00:00`)
         return { name: weekRangeLabel(s), count, sortKey: weekStartIso }
       })
       .sort((a, b) => (a.sortKey || '').localeCompare(b.sortKey || ''))

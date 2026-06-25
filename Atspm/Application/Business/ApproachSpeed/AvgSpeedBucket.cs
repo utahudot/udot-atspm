@@ -80,23 +80,19 @@ namespace Utah.Udot.Atspm.Business.ApproachSpeed
             var percentileValue = 0;
             try
             {
-                if (speeds.Count == 1)
-                    return speeds[0];
-
                 var tempPercentileIndex = SpeedVolume * percentile - 1;
                 var percentileIndex = 0;
                 if (SpeedVolume > 3)
                 {
 
                     percentileIndex = Convert.ToInt32(Math.Round(tempPercentileIndex + .5));
-                    percentileValue = speeds[Math.Clamp(percentileIndex, 0, speeds.Count - 1)];
+                    percentileValue = speeds[percentileIndex];
                 }
                 else
                 {
-                    percentileIndex = Math.Clamp(Convert.ToInt32(tempPercentileIndex), 0, speeds.Count - 1);
-                    var nextPercentileIndex = Math.Clamp(percentileIndex + 1, 0, speeds.Count - 1);
+                    percentileIndex = Convert.ToInt32(tempPercentileIndex);
                     var speed1 = (double)speeds[percentileIndex];
-                    var speed2 = (double)speeds[nextPercentileIndex];
+                    var speed2 = (double)speeds[percentileIndex + 1];
                     double rawPercentile = (speed1 + speed2) / 2;
                     percentileValue = Convert.ToInt32(Math.Round(rawPercentile));
                 }

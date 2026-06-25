@@ -34,7 +34,7 @@ import {
 
 import type {
   Product
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 
 export const getGetProductResponseMock = (): Product[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), created: faker.helpers.arrayElement([faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]), undefined]), modified: faker.helpers.arrayElement([faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]), undefined]), createdBy: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), modifiedBy: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), manufacturer: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), model: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), webPage: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined]), notes: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha(20), null]), undefined])})))

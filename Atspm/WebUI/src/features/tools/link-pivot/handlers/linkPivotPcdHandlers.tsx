@@ -2,8 +2,8 @@ import { DateTimeProps, TimeOnlyProps } from '@/types/TimeProps'
 import { toUTCDateStamp, toUTCDateWithTimeStamp } from '@/utils/dateTime'
 import { addDays } from 'date-fns'
 import { useState } from 'react'
-import { LinkPivotPcdTimeWindow } from '../linkPivotPcdTimeWindow'
 import { LinkPivotComponentDto, LinkPivotPcdOptions } from '../types'
+import { LinkPivotHandler } from './linkPivotHandlers'
 
 export interface LinkPivotPcdHandler extends DateTimeProps, TimeOnlyProps {
   locationIdentifier: string
@@ -16,24 +16,22 @@ export interface LinkPivotPcdHandler extends DateTimeProps, TimeOnlyProps {
 interface LPPcdContainerPresenterProps {
   handleToolOptions: (options: Partial<LinkPivotPcdOptions>) => void
   pcdDto: LinkPivotComponentDto
-  pcdTimeWindow: LinkPivotPcdTimeWindow
+  lpHandler: LinkPivotHandler
 }
 
 export const useLinkPivotPcdOptionsHandler = ({
   handleToolOptions,
   pcdDto,
-  pcdTimeWindow,
+  lpHandler,
 }: LPPcdContainerPresenterProps) => {
-  const [startDate, setStartDate] = useState(
-    new Date(pcdTimeWindow.startDateTime)
-  )
-  const [endDate, setEndDate] = useState(new Date(pcdTimeWindow.endDateTime))
-  const [startTime, setStartTime] = useState(new Date(pcdTimeWindow.startTime))
-  const [endTime, setEndTime] = useState(new Date(pcdTimeWindow.endTime))
+  const [startDate, setStartDate] = useState(new Date(lpHandler.startDateTime))
+  const [endDate, setEndDate] = useState(new Date(lpHandler.startDateTime))
+  const [startTime, setStartTime] = useState(new Date(lpHandler.startTime))
+  const [endTime, setEndTime] = useState(new Date(lpHandler.endTime))
   const [delta, setDelta] = useState(pcdDto.delta)
 
   const createTimeSelectValues = () => {
-    const { startDateTime, endDateTime, startTime } = pcdTimeWindow
+    const { startDateTime, endDateTime, startTime } = lpHandler
     const differenceMs = endDateTime.getTime() - startDateTime.getTime()
     let differenceDays = Math.abs(differenceMs / (1000 * 60 * 60 * 24))
     differenceDays = Math.floor(differenceDays)

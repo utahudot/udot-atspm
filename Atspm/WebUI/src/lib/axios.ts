@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { getEnv, type EnvVariables } from '@/utils/getEnv'
+import { getEnv } from '@/utils/getEnv'
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
 
@@ -52,11 +52,22 @@ export function buildApiUrl(
   return `${normalizeApiRoot(baseURL)}${normalizedPath}`
 }
 
-export const initializeAxiosInstances = async (envVariables?: EnvVariables) => {
-  const env = envVariables ?? (await getEnv())
+export const initializeAxiosInstances = async () => {
+  const env = await getEnv()
+
+  if (!env) {
+    return
+  }
 
   if (env.CONFIG_URL) {
     configAxios = createAxiosInstance(buildApiBaseUrl(env.CONFIG_URL, true))
+    configAxios.interceptors.response.use(
+      (responseData) => {
+        stripZFromDates(responseData)
+        return responseData
+      },
+      (error) => Promise.reject(error)
+    )
   }
   if (env.REPORTS_URL) {
     reportsAxios = createAxiosInstance(buildApiBaseUrl(env.REPORTS_URL))
@@ -68,7 +79,7 @@ export const initializeAxiosInstances = async (envVariables?: EnvVariables) => {
     dataAxios = createAxiosInstance(buildApiBaseUrl(env.DATA_URL))
   }
   if (env.SPEED_URL) {
-    speedAxios = createAxiosInstance(buildApiBaseUrl(env.SPEED_URL))
+    speedAxios = createAxiosInstance(buildApiBaseUrl(env.SPEED_URL, true))
   }
 }
 

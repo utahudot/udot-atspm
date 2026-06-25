@@ -18,7 +18,7 @@ import { useGetRequest } from '@/hooks/useGetRequest'
 import { identityAxios } from '@/lib/axios'
 import { AxiosHeaders } from 'axios'
 import Cookies from 'js-cookie'
-import UserDto from '../types/userDto'
+import { RolesResponse } from '../types/roles'
 
 const route = '/users'
 const token = Cookies.get('token')
@@ -28,7 +28,7 @@ const headers: AxiosHeaders = new AxiosHeaders({
 })
 
 export function useGetAllUsers() {
-  return useGetRequest<UserDto[]>({
+  return useGetRequest<RolesResponse>({
     route,
     headers,
     axiosInstance: identityAxios,

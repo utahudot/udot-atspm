@@ -44,7 +44,7 @@ import type {
   PatchMenuItemsFromKeyParams,
   PostMenuItemsParams,
   PutMenuItemsFromKeyParams
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

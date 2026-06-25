@@ -1,4 +1,4 @@
-import { StandardChart } from '@/features/charts/types'
+import { TransformedChartResponse } from '@/features/charts/types'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
@@ -15,7 +15,7 @@ import {
 import { useState } from 'react'
 
 interface ChartListProps {
-  charts: StandardChart[]
+  charts: TransformedChartResponse[]
   chartRefs: React.RefObject<HTMLDivElement>[]
   isDisabled: boolean
 }
@@ -35,15 +35,6 @@ function IndividualChartControls({ charts, chartRefs, isDisabled }: ChartListPro
   const [chartsVisibility, setChartsVisibility] = useState(
     charts.map(() => true)
   )
-
-  const getChartDescription = (chart: StandardChart) =>
-    (
-      chart.chart.displayProps as
-        | {
-            description?: string
-          }
-        | undefined
-    )?.description ?? ''
 
   const scrollToChart = (index: number) => {
     const chartRef = chartRefs[index]
@@ -133,7 +124,7 @@ function IndividualChartControls({ charts, chartRefs, isDisabled }: ChartListPro
                     fontSize={'.8rem'}
                     sx={{ textTransform: 'none' }}
                   >
-                    {getChartDescription(chartWrapper)}
+                    {chartWrapper.chart.displayProps.description}
                   </Typography>
                 </Button>
               </ListItem>

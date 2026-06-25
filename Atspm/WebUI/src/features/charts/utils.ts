@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import type { DataZoomComponentOption, ECharts, SeriesOption } from 'echarts'
+import { DataZoomComponentOption, ECharts } from 'echarts'
 import { ChartType, MarkAreaData, PlanData } from './common/types'
 
 export enum Color {
@@ -40,51 +40,12 @@ export const dateFormat: Intl.DateTimeFormatOptions = {
   day: '2-digit',
   hour: '2-digit',
   minute: '2-digit',
+  second: '2-digit',
   hour12: false,
 }
 
-export const hLineSvgSymbol = 'path://M0 288H640V352H0V288Z'
-
-export const mySvgPath =
-  'path://' +
-  'M0 0 C151.47 0 302.94 0 459 0 C459 56.76 459 113.52 459 172 C307.53 172 156.06 172 0 172 C0 115.24 0 58.48 0 0 Z ' +
-  'M171 98 C257.13 98 343.26 98 432 98 C432 122.42 432 146.84 432 172 C321.12 172 210.24 172 96 172 ' +
-  'C96 171.67 96 171.34 96 171 C96.98 170.78 97.96 170.56 98.97 170.34 ' +
-  'C123.49 164.66 143.91 153.67 158 132 ' +
-  'C164.15 121.39 168.59 110.03 171 98 Z ' +
-  'M95 0 C206.21 0 317.42 0 432 0 C432 24.42 432 48.84 432 74 ' +
-  'C345.87 74 259.74 74 171 74 ' +
-  'C169.68 68.72 168.36 63.44 167 58 ' +
-  'C165.87 54.95 164.8 52.19 163.38 49.31 ' +
-  'C163.04 48.61 162.7 47.92 162.35 47.2 ' +
-  'C151.75 26.13 133.19 12.04 111.25 4.13 ' +
-  'C105.96 2.53 100.46 1.79 95 1 Z ' +
-  'M0 95 C0.33 95 0.66 95 1 95 ' +
-  'C1.12 95.95 1.25 96.89 1.38 97.87 ' +
-  'C4.69 120.19 16.03 140.11 33.94 153.94 ' +
-  'C47.09 163.26 61.11 168.71 77 171 ' +
-  'C77 171.33 77 171.66 77 172 ' +
-  'C51.59 172 26.18 172 0 172 Z ' +
-  'M0 0 C25.74 0 51.48 0 78 0 ' +
-  'C78 0.33 78 0.66 78 1 ' +
-  'C76.37 1.24 76.37 1.24 74.7 1.48 ' +
-  'C65.53 2.9 57.38 4.83 49 9 ' +
-  'C48.07 9.45 47.13 9.91 46.17 10.38 ' +
-  'C39.45 13.83 33.68 18.02 28 23 ' +
-  'C26.97 23.89 26.97 23.89 25.91 24.8 ' +
-  'C10.6 38.96 3.26 58.8 1 79 ' +
-  'C0.67 79 0.34 79 0 79 Z'
-
-export const squiggleSvgSymbol =
-  'path://M84.582,59.425c-2.673,0-3.359-3.843-4.311-9.162c-0.328-1.833-0.83-4.646-1.356-6.051  c-0.525,1.405-1.028,4.218-1.355,6.051c-0.95,5.318-1.637,9.161-4.309,9.161c-2.671,0-3.356-3.843-4.306-9.161  c-0.327-1.832-0.828-4.641-1.353-6.048c-0.525,1.407-1.027,4.216-1.354,6.048c-0.95,5.318-1.637,9.161-4.308,9.161  s-3.357-3.843-4.307-9.161c-0.327-1.832-0.829-4.641-1.354-6.048c-0.524,1.407-1.026,4.216-1.354,6.047  c-0.949,5.319-1.636,9.162-4.307,9.162c-2.671,0-3.357-3.843-4.307-9.161c-0.327-1.831-0.829-4.64-1.353-6.047  c-0.524,1.407-1.025,4.215-1.353,6.046c-0.949,5.319-1.635,9.162-4.306,9.162c-2.67,0-3.355-3.843-4.304-9.161  c-0.327-1.831-0.828-4.638-1.352-6.045c-0.524,1.407-1.025,4.215-1.352,6.045c-0.949,5.318-1.635,9.161-4.306,9.161  c-2.671,0-3.357-3.843-4.306-9.161c-0.327-1.832-0.829-4.64-1.353-6.047c-0.524,1.407-1.026,4.216-1.353,6.047  c-0.949,5.318-1.635,9.161-4.306,9.161s-3.357-3.843-4.307-9.161c-0.396-2.215-1.047-5.861-1.685-6.725  C10,43.388,9.5,42.79,9.5,42.075c0-0.829,0.671-1.5,1.5-1.5c2.671,0,3.357,3.843,4.307,9.161c0.327,1.832,0.829,4.641,1.354,6.048  c0.524-1.407,1.026-4.216,1.353-6.048c0.949-5.318,1.635-9.161,4.306-9.161s3.357,3.843,4.306,9.161  c0.327,1.831,0.829,4.64,1.353,6.047c0.524-1.407,1.025-4.216,1.353-6.047c0.949-5.318,1.635-9.161,4.306-9.161  c2.67,0,3.355,3.843,4.304,9.161c0.327,1.831,0.828,4.638,1.352,6.046c0.524-1.408,1.025-4.216,1.352-6.046  c0.949-5.318,1.635-9.161,4.305-9.161c2.671,0,3.357,3.843,4.307,9.161c0.327,1.832,0.829,4.642,1.354,6.048  c0.525-1.406,1.027-4.216,1.354-6.048c0.949-5.318,1.636-9.161,4.307-9.161s3.357,3.843,4.307,9.161  c0.327,1.832,0.829,4.642,1.354,6.049c0.525-1.406,1.027-4.217,1.354-6.049c0.95-5.318,1.637-9.161,4.308-9.161  s3.356,3.843,4.306,9.161c0.327,1.832,0.829,4.642,1.354,6.049c0.525-1.406,1.027-4.217,1.354-6.049  c0.95-5.318,1.637-9.161,4.309-9.161s3.358,3.842,4.31,9.16c0.328,1.834,0.831,4.65,1.357,6.054  c0.526-1.404,1.029-4.219,1.357-6.053c0.951-5.318,1.638-9.161,4.311-9.161c0.828,0,1.5,0.671,1.5,1.5c0,0.715-0.5,1.313-1.17,1.463  c-0.64,0.863-1.291,4.51-1.688,6.726C87.941,55.582,87.255,59.425,84.582,59.425z'
-
 export const xSvgSymbol =
   'path://M640 320L512 192 320 384 128 192 0 320l192 192L0 704l128 128 192-192 192 192 128-128L448 512 640 320z'
-
-export const crossSvgSymbol =
-  'path://M256 0H384V256H640V384H384V640H256V384H0V256H256V0Z'
-
-export const diamondSvgSymbol = 'path://M320 0L640 320L320 640L0 320Z'
 
 export const triangleSvgSymbol =
   'path://M7.93189 1.24806C7.84228 1.09446 7.67783 1 7.5 1C7.32217 1 7.15772 1.09446 7.06811 1.24806L0.0681106 13.2481C-0.0220988 13.4027 -0.0227402 13.5938 0.0664289 13.749C0.155598 13.9043 0.320967 14 0.5 14H14.5C14.679 14 14.8444 13.9043 14.9336 13.749C15.0227 13.5938 15.0221 13.4027 14.9319 13.2481L7.93189 1.24806Z'
@@ -98,106 +59,11 @@ export const DottedLineSeriesSymbol =
 export const SolidLineSeriesSymbol =
   'path://M180 1000 l0 -20 200 0 200 0 0 20 0 20 -200 0 -200 0 0 -20z'
 
-export const dateTimeFormat: Intl.DateTimeFormatOptions = {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'long',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-  hour12: false,
-}
-
-const chartDateFormat: Intl.DateTimeFormatOptions = {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'long',
-  day: '2-digit',
-}
-
-const chartMonthFormat: Intl.DateTimeFormatOptions = {
-  year: 'numeric',
-  month: 'long',
-}
-
-type ChartDateRangeGranularity = 'date' | 'month'
-
-export function formatChartDateTimeRange(
-  startDate: string,
-  endDate: string,
-  granularity?: ChartDateRangeGranularity
-) {
-  if (granularity) return formatChartDateRange(startDate, endDate, granularity)
-
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    return `${startDate} - ${endDate}`
-  }
-
-  const sameDay =
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth() &&
-    start.getDate() === end.getDate()
-
-  const dayLabel = start.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-
-  const timeFmt: Intl.DateTimeFormatOptions = {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }
-
-  const startTime = start.toLocaleTimeString('en-US', timeFmt)
-  const endTime = end.toLocaleTimeString('en-US', timeFmt)
-
-  if (sameDay) {
-    return `${dayLabel} • ${startTime}–${endTime}`
-  }
-
-  const startFull = start.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    ...timeFmt,
-  })
-  const endFull = end.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    ...timeFmt,
-  })
-
-  return `${startFull} - ${endFull}`
-}
-
-export function formatChartDateRange(
-  startDate: string,
-  endDate: string,
-  granularity: ChartDateRangeGranularity = 'date'
-) {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    return `${startDate} - ${endDate}`
-  }
-
-  const format = granularity === 'month' ? chartMonthFormat : chartDateFormat
-
-  return `${start.toLocaleString('en-US', format)} - ${end.toLocaleString(
+export function formatChartDateTimeRange(startDate: string, endDate: string) {
+  return `${new Date(startDate).toLocaleString(
     'en-US',
-    format
-  )}`
+    dateFormat
+  )} - ${new Date(endDate).toLocaleString('en-US', dateFormat)}`
 }
 
 export function adjustPlanPositions(chart: ECharts) {
@@ -205,87 +71,35 @@ export function adjustPlanPositions(chart: ECharts) {
 
   if (!Array.isArray(options.dataZoom) || !Array.isArray(options.series)) return
 
-  const viewRange = extractViewRange(options.dataZoom[0], options.xAxis)
-  if (viewRange == null) return
+  const viewRange = extractViewRange(options.dataZoom[0])
 
-  const planSeries = options.series[options.series.length - 1] as SeriesOption
-  const markAreaData = planSeries.markArea?.data as MarkAreaData[] | undefined
-  const planData = planSeries.data as PlanData[] | undefined
+  const planSeries = options.series[options.series.length - 1]
 
-  if (!Array.isArray(markAreaData) || !Array.isArray(planData)) return
-  if (markAreaData.length === 0 || planData.length === 0) {
+  if (
+    !planSeries.markArea ||
+    !planSeries.markArea.data.length ||
+    !planSeries.data
+  )
     return
-  }
 
-  planData.forEach((plan, i) => {
-    const markData = markAreaData[i]
-    if (markData == null || plan == null) return
-    adjustMarkDataForViewRange(markData, viewRange, plan)
+  const planData: PlanData[] = planSeries.data
+
+  planData.forEach((_, i) => {
+    const markData = planSeries.markArea.data[i]
+    adjustMarkDataForViewRange(markData, viewRange, planData[i])
   })
 
   chart.setOption(options)
 }
 
-function extractViewRange(
-  dataZoom: DataZoomComponentOption | undefined,
-  xAxis: unknown
-): {
+function extractViewRange(dataZoom: DataZoomComponentOption): {
   start: number
   end: number
-} | null {
-  if (dataZoom == null) return null
-
-  const startValue = toTimestamp(dataZoom.startValue)
-  const endValue = toTimestamp(dataZoom.endValue)
-  if (startValue != null && endValue != null) {
-    return { start: startValue, end: endValue }
-  }
-
-  const startPercent = toFiniteNumber(dataZoom.start)
-  const endPercent = toFiniteNumber(dataZoom.end)
-  const axisRange = getXAxisTimeRange(xAxis)
-  if (startPercent == null || endPercent == null || axisRange == null) {
-    return null
-  }
-
-  const span = axisRange.end - axisRange.start
+} {
   return {
-    start: axisRange.start + span * (startPercent / 100),
-    end: axisRange.start + span * (endPercent / 100),
+    start: new Date(dataZoom.startValue as string).getTime(),
+    end: new Date(dataZoom.endValue as string).getTime(),
   }
-}
-
-function getXAxisTimeRange(
-  xAxis: unknown
-): { start: number; end: number } | null {
-  const primaryXAxis = Array.isArray(xAxis) ? xAxis[0] : xAxis
-  const axisRange = primaryXAxis as
-    | { min?: unknown; max?: unknown }
-    | undefined
-  const start = toTimestamp(axisRange?.min)
-  const end = toTimestamp(axisRange?.max)
-
-  return start == null || end == null ? null : { start, end }
-}
-
-function toTimestamp(value: unknown): number | null {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : null
-  if (typeof value !== 'string' && !(value instanceof Date)) return null
-
-  const timestamp =
-    value instanceof Date ? value.getTime() : new Date(value).getTime()
-  return Number.isFinite(timestamp) ? timestamp : null
-}
-
-function toFiniteNumber(value: unknown): number | null {
-  const number =
-    typeof value === 'number'
-      ? value
-      : typeof value === 'string'
-        ? Number(value)
-        : Number.NaN
-
-  return Number.isFinite(number) ? number : null
 }
 
 // const determineDecimals = (binWidth: number) => {

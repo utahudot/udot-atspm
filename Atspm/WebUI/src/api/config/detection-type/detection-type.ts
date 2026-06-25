@@ -50,7 +50,7 @@ import type {
   PatchDetectionTypeFromKeyParams,
   PostDetectionTypeParams,
   PutDetectionTypeFromKeyParams
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

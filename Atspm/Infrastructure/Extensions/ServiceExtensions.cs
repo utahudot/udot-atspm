@@ -21,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Utility;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
@@ -52,7 +51,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <param name="host">The host builder context providing access to the configuration system.</param>
         /// <returns>
         /// The <see cref="DbContextOptionsBuilder"/> configured with the selected database provider. 
-        /// If the provider type is unrecognized or set to InMemory, it falls back to an in-memory database using the connection string as the identifier.
+        /// If the provider type is unrecognized, it falls back to an in-memory database using the connection string as the identifier.
         /// </returns>
         /// <exception cref="InvalidOperationException">Thrown if the required configuration section for the context type is missing.</exception>
         internal static DbContextOptionsBuilder GetDbProviderInfo<T>(this DbContextOptionsBuilder builder, HostBuilderContext host) where T : DbContext
@@ -63,24 +62,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             var connectionString = settings.BuildConnectionString();
 
-            return settings.DBType switch
+            return settings.DBType.ToLower() switch
             {
-                DatabaseProvider.SqlServer => builder.UseSqlServer(connectionString,
+                "sqlserver" => builder.UseSqlServer(connectionString,
                     o => o.MigrationsAssembly(SqlServerProvider.Migration)),
 
-                DatabaseProvider.PostgreSql => builder.UseNpgsql(connectionString,
-                    o => o.MigrationsAssembly(PostgreSqlProvider.Migration)),
+                "postgresql" => builder.UseNpgsql(connectionString,
+                    o => o.MigrationsAssembly(PostgreSQLProvider.Migration)),
 
-                DatabaseProvider.MySql => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                "mysql" => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
                     o => o.MigrationsAssembly(MySqlProvider.Migration)),
 
-                DatabaseProvider.Oracle => builder.UseOracle(connectionString,
+                "oracle" => builder.UseOracle(connectionString,
                     o => o.MigrationsAssembly(OracleProvider.Migration)),
 
-                DatabaseProvider.Sqlite => builder.UseSqlite(connectionString,
-                    o => o.MigrationsAssembly(SqliteProvider.Migration)),
+                "sqlite" => builder.UseSqlite(connectionString,
+                    o => o.MigrationsAssembly(SqlLiteProvider.Migration)),
 
-                DatabaseProvider.InMemory or _ => builder.UseInMemoryDatabase(connectionString)
+                _ => builder.UseInMemoryDatabase(connectionString)
             };
         }
 
@@ -116,10 +115,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             string[] contexts = { nameof(ConfigContext), nameof(AggregationContext), nameof(EventLogContext), nameof(IdentityContext) };
             foreach (var contextName in contexts)
             {
-                services.AddOptions<DatabaseConfiguration>(contextName)
-                    .Bind(host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                services.Configure<DatabaseConfiguration>(contextName, host.Configuration.GetSection($"DatabaseConfiguration:{contextName}"));
             }
 
             services.AddDbContext<ConfigContext>((s, db) =>
@@ -218,7 +214,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IPreemptionAggregationRepository, PreemptionAggregationEFRepository>();
             services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
             services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
-            services.AddScoped<ISignalTimingPlanRepository, SignalTimingPlanEFRepository>();
+            services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
 
             return services;
         }

@@ -25,12 +25,12 @@ namespace Utah.Udot.Atspm.Data.Interfaces
         /// <summary>
         /// Gets or sets the date and time when the entity was created.
         /// </summary>
-        DateTimeOffset? Created { get; set; }
+        DateTime? Created { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time when the entity was last modified.
         /// </summary>
-        DateTimeOffset? Modified { get; set; }
+        DateTime? Modified { get; set; }
 
         /// <summary>
         /// Gets or sets the user who created the entity.

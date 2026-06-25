@@ -63,7 +63,7 @@ export default function LocationCoordinatePicker({
 
       if (Number.isFinite(defaultZoom)) {
         setZoom(defaultZoom)
-    }
+      }
 
       if (
         Number.isFinite(defaultLatitude) &&

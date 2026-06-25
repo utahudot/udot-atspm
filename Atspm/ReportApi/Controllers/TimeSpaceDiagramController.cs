@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
@@ -25,43 +24,9 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Time space diagram report controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class TimeSpaceDiagramController : ReportControllerBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramPhaseResult>>
+    public class TimeSpaceDiagramController : ReportControllerBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>
     {
-        private readonly TimeSpaceDiagramSrmService timeSpaceDiagramSrmService;
-
         /// <inheritdoc/>
-        public TimeSpaceDiagramController(
-            IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramPhaseResult>> reportService,
-            ILogger<TimeSpaceDiagramController> logger,
-            TimeSpaceDiagramSrmService timeSpaceDiagramSrmService) : base(reportService, logger)
-        {
-            this.timeSpaceDiagramSrmService = timeSpaceDiagramSrmService;
-        }
-
-        [HttpPost("getSrmData")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<IEnumerable<TimeSpaceDiagramSrmPhaseOverlay>> GetSrmData([FromBody] TimeSpaceDiagramSrmOptions options)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (string.IsNullOrWhiteSpace(options.SrmCsvContentBase64))
-            {
-                return BadRequest("SRM CSV content is required.");
-            }
-
-            try
-            {
-                var result = timeSpaceDiagramSrmService.GetOverlayData(options);
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        public TimeSpaceDiagramController(IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>> reportService, ILogger<TimeSpaceDiagramController> logger) : base(reportService, logger) { }
     }
 }

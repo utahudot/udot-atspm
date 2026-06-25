@@ -26,24 +26,23 @@ import type { ReactElement } from 'react'
 import React, { cloneElement, useMemo, useState } from 'react'
 
 interface BaseObj {
-  [key: string]: unknown
-  id: string | number
+  id: number
   name: string
-  created?: string | null
-  createdBy?: string | null
-  modified?: string | null
-  modifiedBy?: string | null
+  created: string
+  createdBy: string
+  modified: string
+  modifiedBy: string
 }
 
 interface DeleteModalProps<T> {
-  id: string | number
+  id: number
   name: string
-  selectedRow?: T
+  selectedRow: T
   open: boolean
   onClose?: () => void
 }
 interface EditModalProps<T> {
-  id: string | number
+  id: number
   data: T | null
   open: boolean
   onClose?: () => void
@@ -58,7 +57,7 @@ interface Cell<T> {
   key: string
   label: string
   align?: 'right' | 'left' | 'center'
-  component?: React.ElementType
+  component?: (value: T[keyof T], row: T) => React.ReactNode
   customSortFunction?: (a: T, b: T) => number
 }
 
@@ -117,7 +116,6 @@ const AdminTable = <T extends BaseObj>({
   }
 
   const handleEditClick = () => {
-    setAnchorEl(null)
     if (customEditFunction) {
       customEditFunction(selectedRow)
     } else {
@@ -126,7 +124,6 @@ const AdminTable = <T extends BaseObj>({
   }
 
   const handleDeleteClick = () => {
-    setAnchorEl(null)
     setIsDeleteModalOpen(true)
   }
 

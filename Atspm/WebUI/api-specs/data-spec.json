@@ -17,7 +17,7 @@
   "paths": {
     "/api/v1/Aggregation/GetDataTypes": {
       "get": {
-        "tags": ["Aggregation"],
+        "tags": [ "Aggregation" ],
         "summary": "Returns the possible aggregated data types",
         "operationId": "GetAggregationDataTypes",
         "parameters": [
@@ -98,7 +98,7 @@
     },
     "/api/v1/Aggregation/GetArchivedAggregations/{locationIdentifier}": {
       "get": {
-        "tags": ["Aggregation"],
+        "tags": [ "Aggregation" ],
         "summary": "Get all aggregations for location by date",
         "operationId": "GetAggregationArchivedAggregationsFromLocationIdentifier",
         "parameters": [
@@ -192,7 +192,7 @@
     },
     "/api/v1/Aggregation/GetArchivedAggregations/{locationIdentifier}/{dataType}": {
       "get": {
-        "tags": ["Aggregation"],
+        "tags": [ "Aggregation" ],
         "summary": "Get all aggregations for location by date and datatype",
         "operationId": "GetAggregationArchivedAggregationsFromLocationIdentifierAndDataType",
         "parameters": [
@@ -295,7 +295,7 @@
     },
     "/api/v1/EventLog/GetDataTypes": {
       "get": {
-        "tags": ["EventLog"],
+        "tags": [ "EventLog" ],
         "summary": "Returns the possible event log data types",
         "operationId": "GetEventLogDataTypes",
         "parameters": [
@@ -376,7 +376,7 @@
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}": {
       "get": {
-        "tags": ["EventLog"],
+        "tags": [ "EventLog" ],
         "summary": "Get all event logs for location by date",
         "operationId": "GetEventLogArchivedEventsFromLocationIdentifier",
         "parameters": [
@@ -470,7 +470,7 @@
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{deviceId}": {
       "get": {
-        "tags": ["EventLog"],
+        "tags": [ "EventLog" ],
         "summary": "Get all event logs for location by date and device id",
         "operationId": "GetEventLogArchivedEventsFromLocationIdentifierAndDeviceId",
         "parameters": [
@@ -574,7 +574,7 @@
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{dataType}": {
       "get": {
-        "tags": ["EventLog"],
+        "tags": [ "EventLog" ],
         "summary": "Get all event logs for location by date and datatype",
         "operationId": "GetEventLogArchivedEventsFromLocationIdentifierAndDataType",
         "parameters": [
@@ -677,7 +677,7 @@
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{deviceId}/{dataType}": {
       "get": {
-        "tags": ["EventLog"],
+        "tags": [ "EventLog" ],
         "summary": "Get all event logs for location by date, device id and datatype",
         "operationId": "GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataType",
         "parameters": [
@@ -790,7 +790,7 @@
     },
     "/api/v1/EventLog/GetDaysWithEventLogs/{locationIdentifier}": {
       "get": {
-        "tags": ["EventLog"],
+        "tags": [ "EventLog" ],
         "summary": "Get all days that have event logs for a given location.",
         "operationId": "GetEventLogDaysWithEventLogsFromLocationIdentifier",
         "parameters": [
@@ -875,7 +875,7 @@
     },
     "/api/v1/EventLogImport/UploadEventsFromCompressedJson/{locationIdentifier}": {
       "post": {
-        "tags": ["EventLogImport"],
+        "tags": [ "EventLogImport" ],
         "summary": "Save Events for a location\r\nThis must be a json file gzipped so for example it should be a file like this (7115CEL.json.gz)",
         "operationId": "GetEventLogImportUploadEventsFromCompressedJsonAndLocationIdentifier",
         "parameters": [

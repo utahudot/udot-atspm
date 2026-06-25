@@ -23,8 +23,6 @@ interface ChartsStore {
   setYAxisMaxStore: (yAxisMaxStore: string | null) => void
   syncZoom: boolean
   setSyncZoom: (syncZoom: boolean) => void
-  showBinStepLines: boolean
-  setShowBinStepLines: (showBinStepLines: boolean) => void
 }
 
 export const useChartsStore = create<ChartsStore>((set) => ({
@@ -36,8 +34,4 @@ export const useChartsStore = create<ChartsStore>((set) => ({
 
   syncZoom: false,
   setSyncZoom: (syncZoom: boolean) => set({ syncZoom }),
-
-  showBinStepLines: false,
-  setShowBinStepLines: (showBinStepLines: boolean) =>
-    set({ showBinStepLines }),
 }))

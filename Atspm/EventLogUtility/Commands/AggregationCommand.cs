@@ -102,9 +102,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                 {
                     eventLogAggregateConfiguration.UpdateInstance(a, b);
                     eventAggregationQueryOptions.UpdateInstance(a.EventAggregationQueryOptions, b);
-                })
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+                });
 
             services.AddHostedService<EventAggregationHostedService>();
         }

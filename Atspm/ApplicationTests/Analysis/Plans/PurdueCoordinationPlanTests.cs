@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for ApplicationTests - ApplicationCoreTests.Analysis.Plans/PurdueCoordinationPlanTests.cs
+// for ApplicationTests - %Namespace%/PurdueCoordinationPlanTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,18 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Analysis.Common;
+using Utah.Udot.Atspm.Analysis.Plans;
+using Utah.Udot.Atspm.Analysis.PurdueCoordination;
+using Utah.Udot.Atspm.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.Enums;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.NetStandardToolkit.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Extensions;
-using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,46 +43,27 @@ namespace ApplicationCoreTests.Analysis.Plans
 
         [Fact]
         [Trait(nameof(PurdueCoordinationPlanTests), "DurationCheck")]
-        public void Test()
+        public async void Test()
         {
-            var testData = new List<IndianaEvent>
-            {
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 11:10:01.1"), EventCode = 131, EventParam = 5},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 11:20:01.1"), EventCode = 54, EventParam = 1},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 11:30:01.1"), EventCode = 131, EventParam = 1},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 11:40:01.1"), EventCode = 131, EventParam = 1},
-                new IndianaEvent() { LocationIdentifier = "2000", Timestamp = DateTime.Parse("4/17/2023 12:10:01.1"), EventCode = 131, EventParam = 5},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:20:01.1"), EventCode = 54, EventParam = 1},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:30:01.1"), EventCode = 131, EventParam = 2},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:40:01.1"), EventCode = 131, EventParam = 2},
-                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:50:01.1"), EventCode = 131, EventParam = 27},
-            };
+            //var sut = new GeneratePurdueCoordinationResult();
 
-            var planIntervals = testData
-                .FromSpecification(new IndianaPlanDataSpecification())
-                .GroupBy(e => e.LocationIdentifier)
-                .SelectMany(group =>
-                {
-                    var unique = group.KeepFirstSequentialParam().ToList();
+            //var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
+            //{
+            //    locationId = "1001",
+            //    EventCode = (int)DataLoggerEnum.CoordPatternChange,
+            //    EventParam = 1,
+            //    Timestamp = DateTime.Now.AddSeconds(s)
 
-                    if (unique.Count == 0) return Enumerable.Empty<SignalTimingPlan>();
+            //});
 
-                    return unique.Zip(unique.Skip(1).Append(null), (current, next) => new SignalTimingPlan
-                    {
-                        LocationIdentifier = current.LocationIdentifier,
-                        PlanNumber = current.EventParam,
-                        Start = current.Timestamp,
-                        End = next?.Timestamp ?? DateTime.MinValue
-                    });
-                })
-                 .ToList();
+            //var result = await sut.ExecuteAsync(testEvents);
 
-            foreach (var p in planIntervals)
-            {
-                _output.WriteLine($"Location: {p.LocationIdentifier}, Plan: {p.PlanNumber}, Start: {p.Start}, End: {p.End}");
-            }
+            //var condition = result.SelectMany(s => s).All(a => Math.Round((a.End - a.Start).TotalSeconds, 0) == 1);
 
+            Assert.False(true);
         }
+
+
 
         public void Dispose()
         {

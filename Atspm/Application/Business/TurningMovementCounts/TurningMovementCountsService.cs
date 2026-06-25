@@ -85,10 +85,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
 
             var highestDetectorCountByLane = laneNumberVolumes.Values.Max(l => l.TotalDetectorCounts);
             var totalDetectorCounts = allLanesMovementVolumes.TotalDetectorCounts;
-            var laneUtilizationFactor = GetLaneUtilizationFactor(
-                totalDetectorCounts,
-                tmcDetectors.Count,
-                highestDetectorCountByLane);
+            var flu = totalDetectorCounts / (tmcDetectors.Count * (double)highestDetectorCountByLane);
 
             var peakHour = GetPeakHour(allLanesMovementVolumes, 60 / options.BinSize);
             var peakHourEnd = peakHour.Key.AddHours(1);
@@ -123,20 +120,8 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 $"{peakHour.Key:HH:mm} - {peakHourEnd:HH:mm}",
                 peakHour.Value / binMultiplier,
                 peakHourFactor,
-                laneUtilizationFactor
+                flu
             );
-        }
-
-        private static double? GetLaneUtilizationFactor(
-            int totalDetectorCounts,
-            int detectorCount,
-            int highestDetectorCountByLane)
-        {
-            var denominator = detectorCount * (double)highestDetectorCountByLane;
-
-            return denominator > 0
-                ? totalDetectorCounts / denominator
-                : null;
         }
 
         private static string GetMovementTypeLabel(
@@ -188,7 +173,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
 
         public double? GetPeakHourFactor(int PHV, int PeakHourMAXVolume, int binMultiplier)
         {
-            if (PHV > 0 && PeakHourMAXVolume > 0 && binMultiplier > 0)
+            if (PeakHourMAXVolume > 0)
             {
                 return SetSigFigs(
                     Convert.ToDouble(PHV) / (Convert.ToDouble(PeakHourMAXVolume) * Convert.ToDouble(binMultiplier)), 2);

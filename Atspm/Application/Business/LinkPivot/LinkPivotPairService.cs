@@ -17,7 +17,6 @@
 
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Common;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.TempExtensions;
@@ -39,8 +38,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             Approach downSignalApproach,
             LinkPivotOptions options,
             List<DateOnly> daysToInclude,
-            int linkNumber,
-            LinkPivotRequestCache cache = null)
+            int linkNumber)
         {
             LinkPivotPair linkPivotPair = new LinkPivotPair();
 
@@ -52,14 +50,11 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             {
                 throw new Exception("Route approaches are misconfigured");
             }
-
-            string biasDirection = options.BiasDirection ?? "Primary";
-
-            await SetPcds(options.StartTime, options.EndTime, daysToInclude, options.CycleLength, linkPivotPair, cache);
+            await SetPcds(options.StartTime, options.EndTime, daysToInclude, options.CycleLength, linkPivotPair);
             //Check to see if both directions have detection if so analyze both
             if (linkPivotPair.UpstreamPcd.Count > 0 && linkPivotPair.DownstreamPcd.Count > 0)
                 if (options.Bias.AreNotEqual(0d))
-                    GetBiasedLinkPivot(options.CycleLength, options.Bias, biasDirection, daysToInclude, linkPivotPair);
+                    GetBiasedLinkPivot(options.CycleLength, options.Bias, options.BiasDirection, daysToInclude, linkPivotPair);
                 //If no bias is provided
                 else
                     GetUnbiasedLinkPivot(options.CycleLength, daysToInclude, linkPivotPair);
@@ -378,26 +373,20 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             linkPivotPair.PaogTotalPredicted = (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream).AreEqual(0d) ? 0 : (int)(Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100);
         }
 
-        private async Task SetPcds(
-            TimeOnly startTime,
-            TimeOnly endTime,
-            List<DateOnly> daysToInclude,
-            int cycleTime,
-            LinkPivotPair linkPivotPair,
-            LinkPivotRequestCache cache)
+        private async Task SetPcds(TimeOnly startTime, TimeOnly endTime, List<DateOnly> daysToInclude, int cycleTime, LinkPivotPair linkPivotPair)
         {
             foreach (var dt in daysToInclude)
             {
                 var tempStartDate = dt.ToDateTime(startTime);
                 var tempEndDate = dt.ToDateTime(endTime);
-                var upstreamPcd = await getPcd(cycleTime, linkPivotPair.UpstreamLocationApproach, tempStartDate, tempEndDate, cache);
+                var upstreamPcd = await getPcd(cycleTime, linkPivotPair.UpstreamLocationApproach, tempStartDate, tempEndDate);
                 if (upstreamPcd != null)
                 {
                     linkPivotPair.UpstreamPcd.Add(upstreamPcd);
                     linkPivotPair.AogUpstreamBefore += upstreamPcd.TotalArrivalOnGreen;
                     linkPivotPair.TotalVolumeUpstream += upstreamPcd.TotalVolume;
                 }
-                var downstreamPcd = await getPcd(cycleTime, linkPivotPair.DownstreamLocationApproach, tempStartDate, tempEndDate, cache);
+                var downstreamPcd = await getPcd(cycleTime, linkPivotPair.DownstreamLocationApproach, tempStartDate, tempEndDate);
                 if (downstreamPcd != null)
                 {
                     linkPivotPair.DownstreamPcd.Add(downstreamPcd);
@@ -409,38 +398,16 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             linkPivotPair.PaogDownstreamBefore = linkPivotPair.TotalVolumeDownstream.AreEqual(0d) ? 0 : (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
         }
 
-        private async Task<LocationPhase> getPcd(
-            int cycleTime,
-            Approach approach,
-            DateTime tempStartDate,
-            DateTime tempEndDate,
-            LinkPivotRequestCache cache)
+        private async Task<LocationPhase> getPcd(int cycleTime, Approach approach, DateTime tempStartDate, DateTime tempEndDate)
         {
-            var start = tempStartDate.AddHours(-2);
-            var end = tempEndDate.AddHours(2);
-            var logs = GetEventsBetweenDates(approach.Location.LocationIdentifier, start, end, cache);
+            var logs = controllerEventLogRepository.GetEventsBetweenDates(approach.Location.LocationIdentifier, tempStartDate.AddHours(-2), tempEndDate.AddHours(2)).ToList();
             if (logs.Count == 0)
             {
                 throw new Exception($"No Controller Event Logs found for the dates provided for location {approach.Location.LocationIdentifier}");
             }
-            var plans = logs.GetPlanEvents(start, end).ToList();
+            var plans = logs.GetPlanEvents(tempStartDate.AddHours(-2), tempEndDate.AddHours(2)).ToList();
             var pcd = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, tempStartDate, tempEndDate, 15, 13, logs, plans, true, null, cycleTime);
             return pcd;
-        }
-
-        private List<IndianaEvent> GetEventsBetweenDates(
-            string locationIdentifier,
-            DateTime start,
-            DateTime end,
-            LinkPivotRequestCache cache)
-        {
-            return cache != null
-                ? cache.GetEvents(
-                    locationIdentifier,
-                    start,
-                    end,
-                    controllerEventLogRepository.GetEventsBetweenDates)
-                : controllerEventLogRepository.GetEventsBetweenDates(locationIdentifier, start, end).ToList();
         }
 
         private static bool IsApproachNull(LinkPivotPair linkPivotPair)

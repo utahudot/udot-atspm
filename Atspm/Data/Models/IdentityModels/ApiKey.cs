@@ -47,13 +47,13 @@ namespace Utah.Udot.Atspm.Data.Models.IdentityModels
         /// Gets or sets the date and time when the API key was created. 
         /// Defaults to <see cref="DateTime.UtcNow"/>.
         /// </summary>
-        public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the expiration date and time for the API key. 
         /// If null, the key does not expire.
         /// </summary>
-        public DateTimeOffset? ExpiresAt { get; set; }
+        public DateTime? ExpiresAt { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the API key has been manually revoked.

@@ -41,7 +41,6 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         public int PAOGUpstreamBefore { get; set; }
         public int Adjustment { get; set; }
         public int Delta { get; set; }
-        public int ExistingOffset { get; set; }
         public string LocationIdentifier { get; set; }
         public string DownstreamLocationIdentifier { get; set; }
         public string Location { get; set; }

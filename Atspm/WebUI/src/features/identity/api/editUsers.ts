@@ -14,8 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { identityRequest } from '@/lib/axios'
-import { useMutation } from 'react-query'
+import { usePostRequest } from '@/hooks/usePostRequest'
+import { identityAxios } from '@/lib/axios'
+import { AxiosHeaders } from 'axios'
+import Cookies from 'js-cookie'
 
 interface EditUsersData {
   firstName: string
@@ -26,19 +28,21 @@ interface EditUsersData {
   userId: string
   fullName: string
   roles: string[]
-  areaIds: number[]
-  regionIds: number[]
-  jurisdictionIds: number[]
 }
 
+const route = 'users/update'
+const token = Cookies.get('token')
+const headers: AxiosHeaders = new AxiosHeaders({
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${token}`,
+})
+
 export function useEditUsers() {
-  return useMutation({
-    mutationFn: async (data: EditUsersData) =>
-      identityRequest({
-        url: '/Users/update',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        data,
-      }),
+  const mutation = usePostRequest({
+    url: route,
+    axiosInstance: identityAxios,
+    headers,
+    notify: false,
   })
+  return mutation
 }

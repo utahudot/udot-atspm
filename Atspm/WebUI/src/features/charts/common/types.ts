@@ -14,8 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { PrioritySummaryResult } from '@/api/reports'
-import { PrioritySummaryOptions } from '@/api/reports/report-api.schemas'
 import {
   ApproachDelayChartOptions,
   RawApproachDelayReponse,
@@ -89,7 +87,7 @@ import { RawRampMeteringResponse } from '../rampMetering/types'
 import {
   RawTimeSpaceDiagramResponse,
   TimeSpaceOptions,
-} from '../timeSpaceDiagram/shared/types'
+} from '../timeSpaceDiagram/types'
 
 export interface BaseChartOptions {
   locationIdentifier: string
@@ -102,7 +100,6 @@ export interface BasePlan {
   planDescription: string
   start: string
   end: string
-  backgroundColor?: string
 }
 
 export type PlanData = [string, 1, string]
@@ -146,7 +143,6 @@ export type RawChartResponse =
   | RawPreemptionDetailsResponse
   | RawPurdueCoordinationDiagramResponse
   | RawPurduePhaseTerminationResponse
-  | PrioritySummaryResult
   | RawPurdueSplitFailureResponse
   | RawSplitMonitorResponse
   | RawTimingAndActuationResponse
@@ -169,7 +165,6 @@ export type ChartOptions =
   | LeftTurnGapAnalysisChartOptions
   | PedestrianDelayChartOptions
   | PreemptionDetailsChartOptions
-  | PrioritySummaryOptions
   | PurdueCoordinationDiagramChartOptions
   | PurduePhaseTerminationChartOptions
   | PurdueSplitFailureChartOptions
@@ -190,7 +185,6 @@ export type ChartOptionType =
   | 'LeftTurnGapAnalysis'
   | 'PedestrianDelay'
   | 'PreemptionDetails'
-  | 'PrioritySummary'
   | 'PurdueCoordinationDiagram'
   | 'PurduePhaseTermination'
   | 'PurdueSplitFailure'
@@ -212,8 +206,6 @@ export enum ChartType {
   PedestrianDelay = 'PedestrianDelay',
   PurduePhaseTermination = 'PurduePhaseTermination',
   PreemptionDetails = 'PreemptionDetails',
-  PriorityDetails = 'PriorityDetails',
-  PrioritySummary = 'PrioritySummary',
   PurdueSplitFailure = 'PurdueSplitFailure',
   SplitMonitor = 'SplitMonitor',
   TimingAndActuation = 'TimingAndActuation',
@@ -228,7 +220,6 @@ export enum ToolType {
   TimeSpaceAverage = 'TimeSpaceAverage',
   LinkPivot = 'LinkPivot',
   LpPcd = 'LpPcd',
-  LpTsd = 'LpTsd',
 }
 
 export const chartTypeToString = (chartType: ChartType) => {
@@ -265,8 +256,6 @@ export const chartTypeToString = (chartType: ChartType) => {
       return 'Wait Time'
     case ChartType.YellowAndRedActuations:
       return 'Yellow and Red Actuations'
-    case ChartType.PrioritySummary:
-      return 'Priority Summary'
     case ChartType.RampMetering:
       return 'Ramp Metering'
   }

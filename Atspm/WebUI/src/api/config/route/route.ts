@@ -50,7 +50,7 @@ import type {
   RouteDto,
   RouteLocation,
   UpsertRouteRouteParams
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

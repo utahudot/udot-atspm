@@ -292,7 +292,6 @@ namespace Utah.Udot.Atspm.TempExtensions
         {
             var planEvents = events.Where(e => e.EventCode == 131)
                 .OrderBy(e => e.Timestamp)
-                .Select(CloneIndianaEvent)
                 .ToList();
 
             var uniqueEvents = new List<IndianaEvent>();
@@ -310,17 +309,6 @@ namespace Utah.Udot.Atspm.TempExtensions
             UpdateEventsAfterDateForPlans(uniqueEvents, end);
             // Return the uniqueEvents list
             return uniqueEvents; ;
-        }
-
-        private static IndianaEvent CloneIndianaEvent(IndianaEvent source)
-        {
-            return new IndianaEvent
-            {
-                LocationIdentifier = source.LocationIdentifier,
-                Timestamp = source.Timestamp,
-                EventCode = source.EventCode,
-                EventParam = source.EventParam
-            };
         }
 
         public static void UpdateEventsAfterDateForPlans(List<IndianaEvent> events, DateTime date)

@@ -294,7 +294,7 @@ const PedatChartsContainer = ({
       `Start date: ${start}`,
       `End date: ${end}`,
       'Location unit: All',
-      `Time unit: ${timeUnitString}`,
+      'Time unit: Hour',
     ]
     pdf.text(params, margin, 280)
 
@@ -418,7 +418,7 @@ const PedatChartsContainer = ({
 
       {tabIndex === 2 && (
         <Box sx={{ mb: 4 }}>
-          <PedatMapContainer data={data} timeUnit={timeUnitString} />
+          <PedatMapContainer data={data} />
         </Box>
       )}
 

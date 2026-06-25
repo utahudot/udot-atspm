@@ -8,10 +8,10 @@ const PedatMap = dynamic(() => import('./PedatMap'), {
   ssr: false,
 })
 
-const PedatMapWrapper = ({ data, timeUnit }: PedatChartsContainerProps) => {
+const PedatMapWrapper = ({ data }: PedatChartsContainerProps) => {
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
-      <PedatMap data={data} timeUnit={timeUnit} />
+      <PedatMap data={data} />
     </Box>
   )
 }

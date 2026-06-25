@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.Analysis.Plans
         public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
-        public short PlanNumber { get; set; }
+        public int PlanNumber { get; set; }
 
         /// <inheritdoc/>
         public virtual void AssignToPlan<T>(IEnumerable<T> range) where T : IStartEndRange

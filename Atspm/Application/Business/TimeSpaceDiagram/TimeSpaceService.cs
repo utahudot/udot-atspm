@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
@@ -42,26 +43,6 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                 TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
                     start,
                     arrivalTime,
-                    gEvent.Value == 1 ? true : false);
-                greenTimeEvents.Add(resultOn);
-            }
-            return greenTimeEvents;
-        }
-
-        public static List<DataPointWithDetectorCheckBase> GetGreenTimeEvents(
-            List<CycleEventsDto> cycleEvents,
-            int speedLimit)
-        {
-            List<int> cycleGreenStartEndCodes = new List<int>() { 1, 8 };
-            var events = new List<CycleEventsDto>();
-            var greenTimeEvents = new List<DataPointWithDetectorCheckBase>();
-            var tempEvents = cycleEvents.Where(c => cycleGreenStartEndCodes.Contains(c.Value)).ToList();
-
-            foreach (var gEvent in tempEvents)
-            {
-                DateTime start = gEvent.Start;
-                DataPointWithDetectorCheckBase resultOn = new DataPointWithDetectorCheckBase(
-                    start,
                     gEvent.Value == 1 ? true : false);
                 greenTimeEvents.Add(resultOn);
             }
@@ -127,35 +108,6 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                 phaseDetail.Approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
                     "zOverlap - " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
                     : "Phase = " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
-        }
-
-        public static List<CycleEventsDto> GetPedestrianIntervals(
-            Approach approach,
-            List<IndianaEvent> controllerEventLogs,
-            MeasureOptionsBase options)
-        {
-            List<short> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
-            var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
-            return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode)
-                                                    && c.EventParam == pedPhase
-                                                    && c.Timestamp >= options.Start
-                                                    && c.Timestamp <= options.End).Select(s => new CycleEventsDto(s.Timestamp, (int)s.EventCode)).ToList();
-        }
-
-        private static List<short> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
-        {
-            var overlapCodes = new List<short>
-            {
-                21,
-                22,
-                23
-            };
-            if (isPhaseOrOverlap)
-            {
-                overlapCodes = new List<short> { 67, 68, 69 };
-            }
-
-            return overlapCodes;
         }
     }
 }

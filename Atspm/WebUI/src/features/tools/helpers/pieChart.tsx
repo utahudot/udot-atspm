@@ -27,9 +27,6 @@ export const PieChart = ({
         {
           type: 'pie',
           radius: '85%',
-          label: {
-            show: false,
-          },
           labelLine: {
             show: false,
           },

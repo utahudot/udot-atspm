@@ -15,11 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
+using Lextm.SharpSnmpLib.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
@@ -42,26 +43,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch, CancellationToken cancellationToken = default)
         {
             var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
-            var scopeFactory = scope.ServiceProvider.GetService<IServiceScopeFactory>();
 
-            var devices = repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions);
-            int targetInstances = _options.Value.WorkflowBatchSize;
+            var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-            int devicesPerWorkflow;
-
-            if (_options.Value.DevicesBatchSize > 0)
+            await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
             {
-                devicesPerWorkflow = _options.Value.DevicesBatchSize.Value;
-            }
-            else
-            {
-                var totalDevices = await devices.CountAsync(cancellationToken);
-                devicesPerWorkflow = (int)Math.Ceiling((double)totalDevices / targetInstances);
+                await workflow.Input.SendAsync(d);
             }
 
-            Func<DeviceEventLogWorkflow> workflowFactory = () => new DeviceEventLogWorkflow(scopeFactory, _options.Value.ProcessingBatchSize, _options.Value.ParallelProcesses, cancellationToken);
+            workflow.Input.Complete();
 
-            await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, targetInstances, cancellationToken);
+            await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
         }
     }
 }

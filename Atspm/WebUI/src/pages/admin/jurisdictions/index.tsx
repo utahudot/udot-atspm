@@ -17,7 +17,7 @@ import {
 
 import JurisdictionEditorModal from '@/features/jurisdictions/components/JurisdictionEditorModal'
 import { useNotificationStore } from '@/stores/notifications'
-import { formatInstantAsLocalDate } from '@/utils/dateTime'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const JurisdictionsAdmin = () => {
@@ -114,11 +114,11 @@ const JurisdictionsAdmin = () => {
   }
 
   const filteredData = jurisdictions.map((obj: Jurisdiction) => {
-    const { created, modified } = obj
+    const { created, createdBy, modified, modifiedBy } = obj
     return {
       ...obj,
-      created: formatInstantAsLocalDate(created),
-      modified: formatInstantAsLocalDate(modified),
+      created: created ? toUTCDateStamp(created) : '',
+      modified: modified ? toUTCDateStamp(modified) : '',
     }
   })
 
@@ -157,7 +157,7 @@ const JurisdictionsAdmin = () => {
             name={''}
             objectType="Jurisdiction"
             open={false}
-            onClose={onModalClose}
+            onClose={() => {}}
             onConfirm={HandleDeleteJurisdiction}
             associatedObjects={locations}
             associatedObjectsLabel="locations"

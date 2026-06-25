@@ -107,9 +107,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -135,8 +135,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -156,9 +156,6 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("ProtectedPhaseNumber")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int?>("TransitSignalPriorityNumber")
                         .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
@@ -181,17 +178,17 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -221,9 +218,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(5)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -239,8 +236,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -337,13 +334,6 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                             Abbreviation = "EQ",
                             Description = "Excessive Queue",
                             DisplayOrder = 11
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Abbreviation = "PP",
-                            Description = "Priority and Preemption",
-                            DisplayOrder = 12
                         });
                 });
 
@@ -358,9 +348,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("ApproachId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -368,10 +358,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("NUMBER(10)");
@@ -403,8 +393,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int?>("MinSpeedFilter")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -440,9 +430,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(256)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -452,15 +442,15 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("DetectorId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 
@@ -480,9 +470,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -530,8 +520,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<bool>("LoggingEnabled")
                         .HasColumnType("BOOLEAN");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -571,9 +561,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)")
                         .HasDefaultValueSql("((2000))");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -595,8 +585,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("LoggingOffset")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -668,9 +658,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(5)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -685,8 +675,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -779,9 +769,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("CLOB");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -797,8 +787,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(256)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -974,17 +964,17 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(50)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1025,9 +1015,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("BOOLEAN");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1054,8 +1044,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("BINARY_DOUBLE");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1089,7 +1079,7 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("VARCHAR2(100)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
@@ -1118,9 +1108,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1131,8 +1121,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(true)
                         .HasColumnType("NVARCHAR2(2000)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1187,9 +1177,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(255)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1202,15 +1192,15 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 
@@ -1230,9 +1220,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1242,8 +1232,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1667,27 +1657,6 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                             MeasureTypeId = 5,
                             Option = "yAxisDefault",
                             Value = "300"
-                        },
-                        new
-                        {
-                            Id = 121,
-                            MeasureTypeId = 5,
-                            Option = "combineThruRight",
-                            Value = "FALSE"
-                        },
-                        new
-                        {
-                            Id = 122,
-                            MeasureTypeId = 39,
-                            Option = "binSize",
-                            Value = "15"
-                        },
-                        new
-                        {
-                            Id = 123,
-                            MeasureTypeId = 40,
-                            Option = "binSize",
-                            Value = "15"
                         });
                 });
 
@@ -1699,9 +1668,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1711,8 +1680,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1749,9 +1718,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(8)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1761,8 +1730,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2110,24 +2079,6 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                             Name = "Transit Signal Priority",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = false
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Abbreviation = "TSPS",
-                            DisplayOrder = 133,
-                            Name = "Transit Signal Priority Summary",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = true
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Abbreviation = "TSPD",
-                            DisplayOrder = 134,
-                            Name = "Transit Signal Priority Details",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = true
                         });
                 });
 
@@ -2139,9 +2090,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2163,8 +2114,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2197,9 +2148,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2218,8 +2169,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(48)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2250,9 +2201,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2265,8 +2216,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(50)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2288,17 +2239,17 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2325,9 +2276,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2349,8 +2300,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2375,9 +2326,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2396,8 +2347,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(10)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2476,9 +2427,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(200)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2498,8 +2449,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(20)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2532,8 +2483,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<bool>("Success")
                         .HasColumnType("BOOLEAN");
 
-                    b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("TraceId")
                         .HasMaxLength(100)
@@ -2628,9 +2579,9 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                     b.Property<int?>("ComponentType")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<DateTimeOffset?>("Created")
+                    b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2638,7 +2589,7 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("End")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("IssueType")
                         .HasColumnType("NUMBER(10)");
@@ -2656,8 +2607,8 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("VARCHAR2(4000)");
 
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2667,7 +2618,7 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 
@@ -2715,7 +2666,7 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 

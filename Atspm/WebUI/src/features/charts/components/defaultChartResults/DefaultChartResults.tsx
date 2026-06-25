@@ -5,13 +5,11 @@ import { Box, Paper, useTheme } from '@mui/material'
 export interface DefaultChartResultsProps {
   chartData: TransformedDefaultResponse
   refs: React.RefObject<HTMLDivElement>[]
-  chartComponent?: React.ComponentType<any>
 }
 
 export default function DefaultChartResults({
   chartData,
   refs,
-  chartComponent: ChartComponent = ApacheEChart,
 }: DefaultChartResultsProps) {
   const theme = useTheme()
 
@@ -22,18 +20,18 @@ export default function DefaultChartResults({
           key={index}
           ref={refs[index]}
           sx={{
+            overflow: 'hidden',
             maxHeight: '1000px',
             transition: 'max-height .5s',
-            overflow: 'hidden',
             minWidth: '600px',
           }}
         >
           <Paper
             sx={{
-              p: 2,
-              my: 2,
-              height: chartWrapper.chart.displayProps?.height || '200px',
-              width: '100%',
+              p: 4,
+              my: 3,
+              height: chartWrapper.chart.displayProps?.height || '700px',
+              width: '99%',
               marginLeft: '2px',
               backgroundColor: chartWrapper.chart.displayProps
                 ?.isPermissivePhase
@@ -41,7 +39,7 @@ export default function DefaultChartResults({
                 : 'white',
             }}
           >
-            <ChartComponent
+            <ApacheEChart
               id={`chart-${index}`}
               option={chartWrapper.chart}
               chartType={chartData.type}

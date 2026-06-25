@@ -23,40 +23,21 @@ export interface EnvVariables {
   SPEED_URL: string | undefined
   MAP_DEFAULT_LATITUDE: string | undefined
   MAP_DEFAULT_LONGITUDE: string | undefined
-  MAP_DEFAULT_ZOOM: string | undefined
+  MAP_DEFAULT_ZOOM:string | undefined
   MAP_TILE_LAYER: string | undefined
   MAP_TILE_ATTRIBUTION: string | undefined
-  POWERED_BY_IMAGE_URL: string | undefined
-  SPEED_LIMIT_MAP_LAYER: string | undefined
+  SPONSOR_IMAGE_URL: string | undefined
+  MAP_DEFAULT_ZOOM: string | undefined
 }
 let cachedEnv: EnvVariables | null = null
-let envRequest: Promise<EnvVariables> | null = null
-
-export const getEnv = async (): Promise<EnvVariables> => {
+export const getEnv = async (): Promise<EnvVariables | null> => {
   if (cachedEnv) {
     return cachedEnv
   }
-
-  if (envRequest) {
-    return envRequest
-  }
-
   try {
-    envRequest = axios
-      .get<EnvVariables>('/api/get-env')
-      .then((response) => {
-        if (!response.data) {
-          throw new Error('Environment variables were not loaded.')
-        }
-
-        cachedEnv = response.data
-        return cachedEnv
-      })
-      .finally(() => {
-        envRequest = null
-      })
-
-    return await envRequest
+    const response = await axios.get('/api/get-env')
+    cachedEnv = response.data
+    return cachedEnv
   } catch (error) {
     console.error('Failed to load environment variables:', error)
     throw error

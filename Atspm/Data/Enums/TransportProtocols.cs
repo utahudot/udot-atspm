@@ -45,11 +45,6 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// <summary>
         /// Supports HTTP Protocol
         /// </summary>
-        Http,
-
-        /// <summary>
-        /// Supports MQTT Protocol
-        ///     
-        Mqtt
+        Http
     }
 }

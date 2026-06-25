@@ -46,7 +46,7 @@
 //            IPreemptionAggregationRepository preemptionAggregationRepository,
 //            IPriorityAggregationRepository priorityAggregationRepository,
 //            ISignalEventCountAggregationRepository signalEventCountAggregationRepository,
-//            ISignalTimingPlanRepository signalPlanAggregationRepository)
+//            ISignalPlanAggregationRepository signalPlanAggregationRepository)
 //        {
 //            _repositories = new Dictionary<AggregationType, object>
 //            {

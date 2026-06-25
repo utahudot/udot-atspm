@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
 
 namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
 {
@@ -27,19 +28,18 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             DateTime start,
             DateTime end,
             int phaseNumber,
-            string direction,
+            string phaseNumberSort,
             double distanceToNextLocation,
-            double distanceToPreviousLocation,
             int speed,
-            double? refPoint,
+            double refPoint,
             int programmedSplit,
             bool coordinatedPhases,
-            int? cycleLength,
+            int cycleLength,
             List<CycleEventsDto> cycleAllEvents,
-            List<DataPointWithDetectorCheckBase> greenTimeEvents) : base(approachId, locationId, start, end)
+            List<TimeSpaceEventBase> greenTimeEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
-            Direction = direction;
+            PhaseNumberSort = phaseNumberSort;
             DistanceToNextLocation = distanceToNextLocation;
             Speed = speed;
             Offset = refPoint;
@@ -53,15 +53,13 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public bool CoordinatedPhases { get; set; }
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
-        public double? Offset { get; }
+        public double Offset { get; }
         public int ProgrammedSplit { get; set; }
         public string PhaseType { get; set; }
-        public int? CycleLength { get; }
-        public string Direction { get; set; }
+        public int CycleLength { get; }
+        public string PhaseNumberSort { get; set; }
         public double DistanceToNextLocation { get; set; }
-        public double DistanceToPreviousLocation { get; set; }
-        public int Order { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
-        public List<DataPointWithDetectorCheckBase> GreenTimeEvents { get; set; }
+        public List<TimeSpaceEventBase> GreenTimeEvents { get; set; }
     }
 }

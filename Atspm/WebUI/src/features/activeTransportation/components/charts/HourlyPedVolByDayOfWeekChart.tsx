@@ -20,15 +20,14 @@ const HourlyPedVolByDayOfWeekChart = ({
   printMode,
 }: PedatChartsContainerProps) => {
   const combinedData = dayOrder.map((day, i) => {
-    const dayIndex = i + 1
     const dayVolume =
-      data?.reduce(
-        (sum, loc) =>
-          sum +
-          (loc.averageVolumeByDayOfWeek?.find((d) => d.index === dayIndex)
-            ?.volume ?? 0),
-        0
-      ) ?? 0
+      data
+        ?.map(
+          (loc) =>
+            loc.averageVolumeByDayOfWeek?.find((d) => d.index === i)?.volume ||
+            0
+        )
+        .reduce((a, b) => a + b, 0) || 0
 
     return { day, averageVolume: dayVolume }
   })

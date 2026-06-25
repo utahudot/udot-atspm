@@ -4,11 +4,11 @@ import { LoadingButton } from '@mui/lab'
 import { Box, Paper, Typography, useTheme } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useLinkPivotPcdCharts } from '../api/getLinkPivotPcdCharts'
+import { LinkPivotHandler } from '../handlers/linkPivotHandlers'
 import {
   LinkPivotPcdHandler,
   useLinkPivotPcdOptionsHandler,
 } from '../handlers/linkPivotPcdHandlers'
-import { LinkPivotPcdTimeWindow } from '../linkPivotPcdTimeWindow'
 import {
   LinkPivotComponentDto,
   LinkPivotPcdOptions,
@@ -21,7 +21,7 @@ import { LinkPivotPcdOptionsComponent } from './LinkPivotPcdOptionsComponent'
 
 interface props {
   pcdDto: LinkPivotComponentDto
-  pcdTimeWindow: LinkPivotPcdTimeWindow
+  lpHandler: LinkPivotHandler
 }
 
 const createBasePcdOptions = (
@@ -41,7 +41,7 @@ const createBasePcdOptions = (
   }
 }
 
-export const LinkPivotPcdComponent = ({ pcdDto, pcdTimeWindow }: props) => {
+export const LinkPivotPcdComponent = ({ pcdDto, lpHandler }: props) => {
   const theme = useTheme()
   const [data, setData] = useState<RawLinkPivotPcdResponse>()
   const [existingPcd, setExistingPcd] = useState<RawExistingPcdData>()
@@ -55,7 +55,7 @@ export const LinkPivotPcdComponent = ({ pcdDto, pcdTimeWindow }: props) => {
   const handler = useLinkPivotPcdOptionsHandler({
     handleToolOptions,
     pcdDto,
-    pcdTimeWindow,
+    lpHandler,
   })
 
   const [toolOptions, setToolOptions] = useState(
@@ -112,7 +112,7 @@ export const LinkPivotPcdComponent = ({ pcdDto, pcdTimeWindow }: props) => {
       </Box>
       {data && (
         <Box sx={{ overflowX: 'auto', width: '100%' }}>
-          <Box sx={{ minWidth: '200px' }}>
+          <Box sx={{  minWidth: '200px' }}> 
             <LinkPivotPcdCharts
               existingPcd={existingPcd as RawExistingPcdData}
               predictedPcd={predictedPcd as RawPredictedPcdData}

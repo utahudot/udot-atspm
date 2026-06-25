@@ -1,5 +1,4 @@
 import { UsageEntry } from '@/api/config'
-import { formatInstantAsLocalDateTime } from '@/utils/dateTime'
 import { formatMs } from '@/utils/formatting'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
@@ -25,10 +24,8 @@ export default function UsageTable({ isLoading, rows }: UsageTableProps) {
       {
         field: 'timestamp',
         headerName: 'Timestamp',
-        width: 210,
+        width: 190,
         valueGetter: (_, row) => row.timestamp,
-        valueFormatter: (v) =>
-          formatInstantAsLocalDateTime(typeof v === 'string' ? v : ''),
       },
       { field: 'apiName', headerName: 'API', width: 200 },
       { field: 'method', headerName: 'Method', width: 90 },

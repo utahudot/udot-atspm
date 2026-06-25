@@ -38,6 +38,8 @@ namespace Utah.Udot.Atspm.Data.Models
         /// </summary>
         public int? Mph { get; set; }
 
+        //TODO: name these better
+
         /// <summary>
         /// ProtectedPhaseNumber
         /// </summary>
@@ -72,11 +74,6 @@ namespace Utah.Udot.Atspm.Data.Models
         /// PedestrianDetectors
         /// </summary>
         public string PedestrianDetectors { get; set; }
-
-        /// <summary>
-        /// TransitSignalPriorityNumber
-        /// </summary>
-        public int? TransitSignalPriorityNumber { get; set; }
 
         #region IRelatedLocation
 

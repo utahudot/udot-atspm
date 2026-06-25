@@ -14,7 +14,7 @@ import {
   useEditRegion,
 } from '@/features/region/api/regionApi'
 import RegionEditorModal from '@/features/regions/components/RegionEditorModal'
-import { formatInstantAsLocalDate, formatInstantAsLocalDateTime } from '@/utils/dateTime'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const RegionsAdmin = () => {
@@ -103,8 +103,8 @@ const RegionsAdmin = () => {
   const filteredData = regions.map((region) => {
     return {
       ...region,
-      created: formatInstantAsLocalDate(region.created),
-      modified: formatInstantAsLocalDate(region.modified),
+      created: region.created ? toUTCDateStamp(region.created) : '',
+      modified: region.modified ? toUTCDateStamp(region.modified) : '',
     }
   })
 
@@ -146,7 +146,7 @@ const RegionsAdmin = () => {
               selectedRow.description
             }
             open={false}
-            onClose={onModalClose}
+            onClose={() => {}}
             onConfirm={HandleDeleteRegion}
             associatedObjects={locations}
             associatedObjectsLabel="locations"

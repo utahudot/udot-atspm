@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 
 namespace Utah.Udot.Atspm.Services
 {
@@ -27,10 +28,13 @@ namespace Utah.Udot.Atspm.Services
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
-            List<WatchdogEmailRecipient> recipients,
+            List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
+            List<UserJurisdiction> userJurisdictions,
             List<Area> areas,
+            List<UserArea> userAreas,
             List<Region> regions,
+            List<UserRegion> userRegions,
             List<WatchDogLogEvent> logsFromPreviousDay);
 
         Task<string> CreateEmailBody(

@@ -26,7 +26,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public List<PhaseDetail> PrimaryPhaseDetails { get; set; }
         public List<PhaseDetail> OpposingPhaseDetails { get; set; }
         public List<List<IndianaEvent>> ProgramSplits { get; set; }
-        public List<int?> ProgrammedCycleLength { get; set; }
-        public List<int?> Offset { get; set; }
+        public List<int> ProgrammedCycleLength { get; set; }
+        public List<int> Offset { get; set; }
     }
 }

@@ -14,7 +14,7 @@ import {
   useGetProducts,
 } from '@/features/products/api/index'
 import ProductEditorModal from '@/features/products/components/ProductEditorModal'
-import { formatInstantAsLocalDate } from '@/utils/dateTime'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const ProductsAdmin = () => {
@@ -100,8 +100,8 @@ const ProductsAdmin = () => {
   const filteredData = products.map((obj: Product) => {
     return {
       ...obj,
-      created: formatInstantAsLocalDate(obj.created),
-      modified: formatInstantAsLocalDate(obj.modified),
+      created: obj.created ? toUTCDateStamp(obj.created) : '',
+      modified: obj.modified ? toUTCDateStamp(obj.modified) : '',
     }
   })
 
@@ -143,7 +143,7 @@ const ProductsAdmin = () => {
               `${selectedRow.manufacturer} - ${selectedRow.model}`
             }
             open={false}
-            onClose={onModalClose}
+            onClose={() => {}}
             onConfirm={HandleDeleteProduct}
           />
         }

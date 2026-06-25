@@ -15,7 +15,9 @@
 // limitations under the License.
 #endregion
 
+using System.ComponentModel.DataAnnotations;
 using Utah.Udot.Atspm.Business.TimingAndActuation;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
@@ -29,22 +31,19 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
-        private readonly CycleService _cycleService;
 
         /// <inheritdoc/>
         public TimingAndActuactionReportService(
             TimingAndActuationsForPhaseService timingAndActuationsForPhaseService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService,
-            CycleService cycleService
+            PhaseService phaseService
             )
         {
             this.timingAndActuationsForPhaseService = timingAndActuationsForPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
-            this._cycleService = cycleService;
         }
 
         /// <inheritdoc/>
@@ -74,7 +73,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 var eventCodes = new List<short> { };
                 var globalEventCodes = parameter.GlobalEventCodesList?.Any() != true ? new List<short> { 81, 82, 89, 90 } : parameter.GlobalEventCodesList;
                 eventCodes.AddRange(globalEventCodes);
-                eventCodes.AddRange(_cycleService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
+                eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
                     eventCodes.AddRange(parameter.PhaseEventCodesList);
                 tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, phase.IsPermissivePhase));
@@ -99,17 +98,36 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             List<short> eventCodes,
             bool usePermissivePhase)
         {
-            eventCodes.AddRange(_cycleService.GetCycleCodes(phaseDetail.UseOverlap));
+            eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));
             var approachevents = controllerEventLogs.GetEventsByEventCodes(
                 options.Start.AddMinutes(-15),
                 options.End.AddMinutes(15),
                 eventCodes).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
             viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
-            string approachDescription = phaseDetail.GetApproachDescription();
+            string approachDescription = GetApproachDescription(phaseDetail);
             viewModel.ApproachDescription = approachDescription;
             return viewModel;
         }
 
+        private static string GetApproachDescription(PhaseDetail phaseDetail)
+        {
+            DirectionTypes direction = phaseDetail.Approach.DirectionTypeId;
+            string directionTypeName = direction.GetAttributeOfType<DisplayAttribute>().Name;
+            var ignoreDetectionTypes = new List<DetectionTypes> { DetectionTypes.AC, DetectionTypes.AS, DetectionTypes.AP };
+            var filteredDetectors = phaseDetail.Approach.Detectors.Where(d => d.DetectionTypes.Any(t => !ignoreDetectionTypes.Contains(t.Id)));
+            string approachDescription = "";
+            if (filteredDetectors.Any())
+            {
+                MovementTypes movementType = filteredDetectors.ToList()[0].MovementType;
+                string movementTypeName = movementType.GetAttributeOfType<DisplayAttribute>().Name;
+                approachDescription = $"{directionTypeName} {movementTypeName} Ph{phaseDetail.PhaseNumber}";
+            }
+            else
+            {
+                approachDescription = $"{directionTypeName} Ph{phaseDetail.PhaseNumber}";
+            }
+            return approachDescription;
+        }
     }
 }

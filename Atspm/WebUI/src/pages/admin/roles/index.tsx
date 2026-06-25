@@ -6,7 +6,6 @@ import {
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { useFlags } from '@/feature-flags/FeatureFlagContext'
 import { useAddRoleClaims } from '@/features/identity/api/addRoleClaims'
 import {
   PageNames,
@@ -19,13 +18,17 @@ import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, Box, CircularProgress, Typography } from '@mui/material'
 
 const RolesAdmin = () => {
-  const flags = useFlags()
   const pageAccess = useViewPage(PageNames.Roles)
   const hasRoleEditClaim = useUserHasClaim('Role:Edit')
   const hasRolesDeleteClaim = useUserHasClaim('Role:Delete')
   const { addNotification } = useNotificationStore()
 
-  const { data: roles, isLoading, refetch: refetchRoles } = useGetApiV1Roles()
+  const {
+    data: allRolesData,
+    isLoading,
+    refetch: refetchRoles,
+  } = useGetApiV1Roles()
+  const roles = allRolesData
 
   const { mutateAsync: createMutation } = usePostApiV1Roles()
   const { mutateAsync: deleteMutation } = useDeleteApiV1RolesRoleName()
@@ -68,14 +71,6 @@ const RolesAdmin = () => {
         'Can view Watchdog reports and is subscribed to email notifications for Watchdog alerts.',
     },
   ]
-
-  if (flags.speedManagementTool) {
-    builtInRoles.push({
-      role: 'SpeedConfigurationAdmin',
-      description:
-        'Can manage speed configurations, impacts, impact types, segments, and versions.',
-    })
-  }
 
   const protectedRoles: string[] = [
     'Admin',

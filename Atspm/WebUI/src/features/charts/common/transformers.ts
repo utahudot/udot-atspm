@@ -16,10 +16,12 @@
 // #endregion
 import {
   BasePlan,
+  ChartType,
   DataPoint,
   MarkAreaData,
   PlanData,
   PlanOptions,
+  ToolType,
 } from '@/features/charts/common/types'
 import { Color } from '@/features/charts/utils'
 import { format } from 'date-fns'
@@ -37,9 +39,11 @@ import {
   YAXisComponentOption,
 } from 'echarts'
 
-export type ChartSeriesOption = SeriesOption & {
-  binStepLineToggle?: boolean
-}
+const specialCasesCharts = [
+  ChartType.ApproachSpeed,
+  ChartType.GreenTimeUtilization,
+  ChartType.PreemptionDetails,
+]
 
 export function transformSeriesData(
   dataPoints: DataPoint[]
@@ -55,7 +59,7 @@ export function transformSeriesData(
   return series
 }
 
-export function createSeries(...seriesInputs: ChartSeriesOption[]) {
+export function createSeries(...seriesInputs: SeriesOption[]) {
   const defaultProperties: SeriesOption = {}
 
   seriesInputs.map((seriesInput) => {
@@ -68,13 +72,15 @@ export function createSeries(...seriesInputs: ChartSeriesOption[]) {
   return seriesInputs.map((seriesInput) => ({
     ...defaultProperties,
     ...seriesInput,
-  })) as ChartSeriesOption[]
+  })) as SeriesOption[]
 }
 
 function getMidpointTimestamp(start: string, end: string): string {
   const startTime = new Date(start).getTime()
   const endTime = new Date(end).getTime()
-  return new Date((startTime + endTime) / 2).toISOString()
+  const midpointTime = new Date((startTime + endTime) / 2).toISOString()
+
+  return midpointTime
 }
 
 export function createPlans<T extends BasePlan>(
@@ -82,8 +88,7 @@ export function createPlans<T extends BasePlan>(
   planYAxisIndex: number,
   options?: PlanOptions<T>,
   yLineLength?: number,
-  xAxisIndex?: number,
-  backgroundColor?: string
+  xAxisIndex?: number
 ): SeriesOption {
   const markAreaData: MarkAreaData[] = []
   const planData: PlanData[] = []
@@ -101,7 +106,7 @@ export function createPlans<T extends BasePlan>(
       const key = option as keyof Omit<T, keyof BasePlan>
       const value = plans[i][key]
 
-      if (value == null) continue
+      if (value === null || value === undefined) continue
 
       const formatter = options[key]
       planInfo += `\n{info|${formatter(value)}}`
@@ -141,7 +146,7 @@ export function createPlans<T extends BasePlan>(
       show: false,
     },
     labelLayout: {
-      y: yLineLength ? yLineLength : 130,
+      y: yLineLength ? yLineLength : 145,
       moveOverlap: 'shiftX',
       hideOverlap: plans.length > 10,
       draggable: true,
@@ -161,7 +166,7 @@ export function createPlans<T extends BasePlan>(
       borderRadius: 5,
       minMargin: 10,
       align: 'right',
-      backgroundColor: backgroundColor ? backgroundColor : '#f0f0f0',
+      backgroundColor: '#f0f0f0',
       rich: {
         plan: {
           fontSize: 9,
@@ -185,88 +190,51 @@ export function createPlans<T extends BasePlan>(
   return plansSeries
 }
 
-interface TitleProps {
-  title: string | string[]
-  location?: string
-  dateRange?: string
+type titleProps = {
+  title: string
+  dateRange: string
   info?: string
-  invertColors?: boolean
 }
 
-export function createTitle({
-  title,
-  location,
-  dateRange,
-  info,
-  invertColors,
-}: TitleProps): TitleComponentOption[] {
-  const titles: TitleComponentOption[] = []
-
-  // Row 1: main title
-  titles.push({
-    left: 10,
-    top: 0,
-    text: Array.isArray(title) ? title.join(' • ') : title,
+export function createTitle({ title, dateRange, info }: titleProps) {
+  const option: TitleComponentOption = {
     textStyle: {
-      fontSize: 18,
-      fontWeight: 600,
-      color: '#1f1f1f',
+      rich: {
+        title: {
+          fontSize: 20,
+          fontWeight: 'bold',
+          lineHeight: 24,
+        },
+        dateTime: {
+          fontSize: 14,
+          fontWeight: 500,
+          lineHeight: 30,
+        },
+      },
     },
-  })
-
-  // Row 2: location
-  if (location) {
-    titles.push({
-      left: 10,
-      top: 27,
-      text: location,
-      textStyle: {
-        fontSize: 15,
-        fontWeight: 400,
-        color: '#2b2b2b',
-      },
-    })
-  }
-
-  // Row 3: date range
-  if (dateRange) {
-    titles.push({
-      left: 10,
-      top: 52,
-      text: `{dateTime|${dateRange}}`,
-      textStyle: {
-        rich: {
-          dateTime: {
-            fontSize: 12,
-            fontWeight: 450,
-            color: '#6b6b6b',
-          },
+    subtextStyle: {
+      rich: {
+        description: {
+          fontStyle: 'italic',
+        },
+        values: {
+          fontStyle: 'italic',
+          fontWeight: 'bold',
         },
       },
-    })
+    },
+    text:
+      dateRange !== ''
+        ? `{title|${title}}\n{dateTime|${dateRange}}`
+        : `{title|${title}}`,
+    padding: 5,
   }
 
-  // Row 4: grey info strip
   if (info) {
-    titles.push({
-      left: 10,
-      right: 10,
-      top: 82,
-      text: info,
-      backgroundColor: invertColors ? Color.White : '#f2f2f2',
-      padding: [8, 12],
-      borderRadius: 6,
-      textStyle: {
-        fontWeight: 400,
-        fontSize: 12,
-        rich: {
-          values: { fontWeight: 600 },
-        },
-      },
-    })
+    option.subtext = `\n${info}`
   }
 
-  return titles
+  return option
 }
 
 const planYAxis: YAXisComponentOption = {
@@ -283,7 +251,7 @@ export function createYAxis(
   const defaultYAxis: YAXisComponentOption = {
     type: 'value',
     nameLocation: 'middle',
-    nameGap: 30,
+    nameGap: 40,
     min: 0,
     alignTicks: true,
     axisLabel: {
@@ -333,16 +301,10 @@ export function createDataZoom(
     minSpan: 0.2,
   } as const
 
+  // our two “built-in” defaults
   const base: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      ...commonDefaults,
-      xAxisIndex: 0,
-      bottom: 15,
-      height: 30,
-      showDataShadow: false,
-    },
-    { type: 'inside', ...commonDefaults },
+    { type: 'slider', ...commonDefaults }, // horizontal
+    { type: 'inside', ...commonDefaults }, // drag/scroll
   ]
 
   if (!overrides || overrides.length === 0) {
@@ -401,18 +363,12 @@ export function formatExportFileName(
   )
 }
 
-interface ToolboxProps {
-  title: string
-  dateRange?: string
-}
-
 export function createToolbox(
-  props: ToolboxProps,
-  locationIdentifier?: string | null,
-  chartType?: string
-): ToolboxComponentOption
-export function createToolbox({ title }: ToolboxProps): ToolboxComponentOption {
-  return {
+  { title, dateRange }: titleProps,
+  locationIdentifier: string,
+  type: ChartType | ToolType
+) {
+  const toolbox: ToolboxComponentOption = {
     feature: {
       saveAsImage: { name: title },
       dataView: {
@@ -420,6 +376,7 @@ export function createToolbox({ title }: ToolboxProps): ToolboxComponentOption {
       },
     },
   }
+  return toolbox
 }
 
 // function generateDataView(
@@ -577,65 +534,32 @@ export function createToolbox({ title }: ToolboxProps): ToolboxComponentOption {
 //     .filter((data: any) => data !== undefined)
 // }
 
-// {
-//   "orient": "vertical",
-//   "top": "middle",
-//   "right": 8,
-//   "backgroundColor": "#f2f2f2",
-//       "borderRadius": 6,
-
-//   "padding": [10, 12],
-//   "itemGap": 14,
-//   "data": [
-//     {
-//       "name": "Approach Delay\nPer Vehicle\n(per second)",
-//       "icon": "path://M180 1000 l0 -20 200 0 200 0 0 20 0 20 -200 0 -200 0 0 -20z"
-//     },
-//     {
-//       "name": "Approach Delay\n(per hour)",
-//       "icon": "path://M180 1000 l0 -20 200 0 200 0 0 20 0 20 -200 0 -200 0 0 -20z"
-//     }
-//   ]
-// }
-
 export function createLegend(legendConfig?: Partial<LegendComponentOption>) {
   const defaultLegend: LegendComponentOption = {
     orient: 'vertical' as const,
     top: 'middle',
     right: 0,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 6,
-    padding: [10, 12],
-    itemGap: 14,
   }
 
-  return {
+  const legend = {
     ...defaultLegend,
     ...legendConfig,
-  } as LegendComponentOption
+  }
+
+  return legend
 }
 
 export function createTooltip(tooltip?: TooltipComponentOption) {
-  const defaultTooltip: TooltipComponentOption = {
+  const defaultTooltip = {
     trigger: 'axis',
-    valueFormatter: (v: unknown) => {
-      if (v == null) return ''
-      if (typeof v === 'number' && Number.isFinite(v)) return v.toFixed(1)
-
-      const n = typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN
-      return Number.isFinite(n) ? n.toFixed(1) : String(v)
-    },
   }
-
   return {
     ...defaultTooltip,
     ...tooltip,
   } as TooltipComponentOption
 }
 
-export function createGrid<T extends Partial<GridComponentOption>>(
-  grid: T
-): GridComponentOption & T {
+export function createGrid(grid: GridComponentOption) {
   const defaultGrid: GridComponentOption = {
     show: true,
     bottom: 95,
@@ -648,14 +572,14 @@ export function createInfoString(...info: string[][]) {
   let infoString = ''
 
   for (const line of info) {
-    infoString += `${line[0]} {values|${line[1]}}   •   `
+    infoString += `{description|${line[0]}} {values|${line[1]}}  •  `
   }
 
-  return infoString.slice(0, -7) // remove the last "   •   " from the string
+  return infoString.slice(0, -4) // remove the last "  •  " from the string
 }
 
 interface CreateDisplayProps {
-  description?: string
+  description: string
   detectorEvents?: string[]
   numberOfLocations?: number
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -664,9 +588,10 @@ interface CreateDisplayProps {
 
 export function createDisplayProps(props: CreateDisplayProps) {
   const defaultProps = {
-    height: 550,
+    height: 700,
   }
-  return { ...defaultProps, ...props }
+  const displayProps = { ...defaultProps, ...props }
+  return displayProps
 }
 
 export function formatDataPointForStepView(

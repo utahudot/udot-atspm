@@ -63,7 +63,7 @@ import type {
   PostLocationParams,
   PutLocationFromKeyParams,
   SearchLocation
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

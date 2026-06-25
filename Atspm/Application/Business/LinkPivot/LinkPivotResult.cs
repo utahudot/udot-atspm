@@ -17,19 +17,6 @@
 
 namespace Utah.Udot.Atspm.Business.LinkPivot
 {
-    public class LinkPivotForTsd
-    {
-        public LinkPivotForTsd(string direction, LinkPivotResult data)
-        {
-            Direction = direction;
-            Data = data;
-        }
-
-        public string Direction { get; set; }
-        public LinkPivotResult Data { get; set; }
-
-    }
-
     public class LinkPivotResult
     {
 

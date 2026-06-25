@@ -47,7 +47,7 @@ import type {
   PostRegionParams,
   PutRegionFromKeyParams,
   Region
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

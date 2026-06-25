@@ -34,7 +34,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Aggregation
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -69,42 +69,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Aggregation
                     b.HasDiscriminator<string>("DataType");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.SignalTimingPlan", b =>
-                {
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<short>("PlanNumber")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("timestamp");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("timestamp");
-
-                    b.Property<bool>("Valid")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("boolean")
-                        .HasComputedColumnSql("(\"End\" > \"Start\")", true);
-
-                    b.HasKey("LocationIdentifier", "PlanNumber", "Start");
-
-                    b.ToTable("SignalTimingPlans", t =>
-                        {
-                            t.HasComment("Signal Timing Plans");
-                        });
-                });
-
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.CompressedAggregations<Utah.Udot.Atspm.Data.Models.AggregationApproachBase>", b =>
-                {
-                    b.HasBaseType("Utah.Udot.Atspm.Data.Models.CompressedAggregationBase");
-
-                    b.HasDiscriminator().HasValue("AggregationApproachBase");
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.CompressedAggregations<Utah.Udot.Atspm.Data.Models.ApproachPcdAggregation>", b =>
@@ -196,6 +160,13 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Aggregation
                     b.HasBaseType("Utah.Udot.Atspm.Data.Models.CompressedAggregationBase");
 
                     b.HasDiscriminator().HasValue("SignalEventCountAggregation");
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.CompressedAggregations<Utah.Udot.Atspm.Data.Models.SignalPlanAggregation>", b =>
+                {
+                    b.HasBaseType("Utah.Udot.Atspm.Data.Models.CompressedAggregationBase");
+
+                    b.HasDiscriminator().HasValue("SignalPlanAggregation");
                 });
 #pragma warning restore 612, 618
         }

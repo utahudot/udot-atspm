@@ -158,49 +158,6 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.Common
     }
 
 
-    public class PlanServiceSpeedStatisticsTests
-    {
-        private readonly PlanService _planService;
-
-        public PlanServiceSpeedStatisticsTests()
-        {
-            _planService = new PlanService();
-        }
-
-        [Fact]
-        public void SetSpeedStatistics_SingleSpeed_DoesNotThrow()
-        {
-            _planService.SetSpeedStatistics(
-                new List<int> { 37 },
-                out var avgSpeed,
-                out var stdDev,
-                out var eightyFifth,
-                out var fifteenth);
-
-            Assert.Equal(37, avgSpeed);
-            Assert.Equal(0, stdDev);
-            Assert.Equal(37, eightyFifth);
-            Assert.Equal(37, fifteenth);
-        }
-
-        [Fact]
-        public void SetSpeedStatistics_TwoSpeeds_DoesNotThrow()
-        {
-            _planService.SetSpeedStatistics(
-                new List<int> { 30, 40 },
-                out var avgSpeed,
-                out var stdDev,
-                out var eightyFifth,
-                out var fifteenth);
-
-            Assert.Equal(35, avgSpeed);
-            Assert.Equal(5, stdDev);
-            Assert.NotNull(eightyFifth);
-            Assert.NotNull(fifteenth);
-        }
-    }
-
-
 
     public class GetTransitSignalPriorityBasicPlansTests
     {

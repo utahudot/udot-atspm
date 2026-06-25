@@ -17,7 +17,6 @@ import {
   ConfigApproach,
   useLocationStore,
 } from '@/features/locations/components/editLocation/locationStore'
-import { getDirectionAccentColor } from '@/features/locations/utils/directionAccent'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp } from '@/utils/dateTime'
@@ -152,10 +151,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
     modifiedApproach.protectedPhaseNumber = protectedPhaseNumber
     modifiedApproach.permissivePhaseNumber = permissivePhaseNumber
     modifiedApproach.pedestrianPhaseNumber = pedestrianPhaseNumber
-    modifiedApproach.transitSignalPriorityNumber =
-      approach.transitSignalPriorityNumber === ''
-        ? null
-        : Number(approach.transitSignalPriorityNumber)
 
     // If the approach is new, remove the local ID so the server will create one
     if (modifiedApproach.isNew) {
@@ -319,8 +314,19 @@ function EditApproach({ approach }: ApproachAdminProps) {
     if (approach.directionTypeId === DirectionTypes.NA) {
       return 'lightgrey'
     }
-
-    return getDirectionAccentColor(approach.directionTypeId)
+    const dir = approach.directionTypeId?.charAt(0).toUpperCase()
+    switch (dir) {
+      case 'N':
+        return Color.Blue
+      case 'S':
+        return Color.BrightRed
+      case 'E':
+        return Color.Yellow
+      case 'W':
+        return Color.Orange
+      default:
+        return 'lightgrey'
+    }
   }, [approach.directionTypeId])
 
   return (

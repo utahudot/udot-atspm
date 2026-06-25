@@ -10,12 +10,10 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(NameSpacePrefix).Atspm.$(MSBuildProjectName)</AssemblyName>
-
-		<Version>5.3.0-rc8</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -23,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Migrations\EventLog\" />
+	  <Folder Include="Migrations\EventLog\" />
 	</ItemGroup>
 
 </Project>

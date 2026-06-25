@@ -50,10 +50,10 @@ export interface RawTurningMovementCountsData extends BaseChartData {
   lanes: Lane[]
   totalHourlyVolumes?: DataPoint[]
   totalVolume: number
-  peakHour: string | null
-  peakHourVolume: number | null
-  peakHourFactor: number | null
-  laneUtilizationFactor: number | null
+  peakHour: string
+  peakHourVolume: number
+  peakHourFactor: number
+  laneUtilizationFactor: number
 }
 
 export interface RawTurningMovementCountsResponse {

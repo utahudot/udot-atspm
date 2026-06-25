@@ -44,7 +44,7 @@ import type {
   PatchFaqFromKeyParams,
   PostFaqParams,
   PutFaqFromKeyParams
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

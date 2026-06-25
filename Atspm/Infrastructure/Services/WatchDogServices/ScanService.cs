@@ -18,7 +18,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Business.Watchdog;
-using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Repositories;
@@ -96,18 +95,15 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var locations = LocationRepository.GetLatestVersionOfAllLocations(scanDate).ToList();
 
             var regions = regionsRepository.GetList().ToList();
-            var userRegions = userRegionRepository.GetList().ToList();
+            var userRegions = userRegionRepository.GetList();
 
             var areas = areaRepository.GetList().ToList();
             var userAreas = userAreaRepository.GetList().ToList();
 
             var jurisdictions = jurisdictionRepository.GetList().ToList(); // only look for ramp in jurisdiction if only .....
-            var userJurisdictions = userJurisdictionRepository.GetList().ToList();
+            var userJurisdictions = userJurisdictionRepository.GetList();
 
-            var recipients = await GetWatchdogEmailRecipientsAsync(
-                userRegions,
-                userJurisdictions,
-                userAreas);
+            var users = await GetUsersWithWatchDogClaimAsync();
 
             var errors = new List<WatchDogLogEvent>();
             var existingEvents = watchDogLogEventRepository.GetList();
@@ -211,23 +207,19 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 finalDayBefore.AddRange(rampResult.DayBefore);
             }
 
-            var isWeekend = scanDate.DayOfWeek == DayOfWeek.Saturday || scanDate.DayOfWeek == DayOfWeek.Sunday;
-            if (emailOptions.WeekdayOnly && isWeekend)
-            {
-                logger.LogInformation("Skipping watchdog email: WeekdayOnly is enabled and scan date {Date} falls on a weekend.", scanDate);
-                return;
-            }
-
             await emailService.SendAllEmails(
                 emailOptions,
                 finalNew,
                 finalDaily,
                 finalRecurring,
                 locations,
-                recipients,
+                users,
                 jurisdictions,
+                userJurisdictions.ToList(),
                 areas,
+                userAreas.ToList(),
                 regions,
+                userRegions.ToList(),
                 finalDayBefore);
         }
 
@@ -320,71 +312,33 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
 
 
-        public async Task<List<WatchdogEmailRecipient>> GetWatchdogEmailRecipientsAsync(
-            List<UserRegion> userRegions,
-            List<UserJurisdiction> userJurisdictions,
-            List<UserArea> userAreas)
+        public async Task<List<ApplicationUser>> GetUsersWithWatchDogClaimAsync()
         {
-            var recipients = new List<WatchdogEmailRecipient>();
-            var roleHasWatchdogClaimCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-            foreach (var user in userManager.Users.ToList())
+            // Define the claim type you are looking for
+            const string claimValue = "Watchdog:View";
+
+            var usersWithWatchDogClaim = new List<ApplicationUser>();
+
+            // Get all users
+            var allUsers = userManager.Users.ToList();
+
+            foreach (var user in allUsers)
             {
                 var userRoles = await userManager.GetRolesAsync(user);
-                if (!await HasWatchdogClaimAsync(userRoles, roleHasWatchdogClaimCache))
-                    continue;
 
-                recipients.Add(new WatchdogEmailRecipient
+                foreach (var role in userRoles)
                 {
-                    UserId = user.Id,
-                    Email = user.Email ?? string.Empty,
-                    DisplayName = user.FullName?.Trim() ?? string.Empty,
-                    IsAdmin = userRoles.Any(role => string.Equals(role, AtspmAuthorization.Roles.Admin, StringComparison.OrdinalIgnoreCase)),
-                    IsWatchdogSubscriber = userRoles.Any(role => string.Equals(role, AtspmAuthorization.Roles.WatchdogSubscriber, StringComparison.OrdinalIgnoreCase)),
-                    RegionIds = userRegions.Where(ur => ur.UserId == user.Id).Select(ur => ur.RegionId).Distinct().ToList(),
-                    JurisdictionIds = userJurisdictions.Where(uj => uj.UserId == user.Id).Select(uj => uj.JurisdictionId).Distinct().ToList(),
-                    AreaIds = userAreas.Where(ua => ua.UserId == user.Id).Select(ua => ua.AreaId).Distinct().ToList()
-                });
-            }
+                    var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
 
-            return recipients;
-        }
-
-        private async Task<bool> HasWatchdogClaimAsync(
-            IEnumerable<string> userRoles,
-            IDictionary<string, bool> roleHasWatchdogClaimCache)
-        {
-            var claimValue = AtspmAuthorization.Permissions.WatchdogView;
-            foreach (var role in userRoles)
-            {
-                if (roleHasWatchdogClaimCache.TryGetValue(role, out var hasWatchdogClaim))
-                {
-                    if (hasWatchdogClaim)
+                    if (roleClaims.Any(claim => claim.Value == claimValue))
                     {
-                        return true;
+                        usersWithWatchDogClaim.Add(user);
+                        break; // Once we find the claim in one of the user's roles, no need to check further
                     }
-
-                    continue;
-                }
-
-                var identityRole = await roleManager.FindByNameAsync(role);
-                if (identityRole is null)
-                {
-                    roleHasWatchdogClaimCache[role] = false;
-                    continue;
-                }
-
-                var roleClaims = await roleManager.GetClaimsAsync(identityRole);
-                hasWatchdogClaim = roleClaims.Any(claim =>
-                    string.Equals(claim.Value, claimValue, StringComparison.OrdinalIgnoreCase));
-                roleHasWatchdogClaimCache[role] = hasWatchdogClaim;
-
-                if (hasWatchdogClaim)
-                {
-                    return true;
                 }
             }
 
-            return false;
+            return usersWithWatchDogClaim;
         }
 
 

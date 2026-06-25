@@ -15,6 +15,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
 		<Compile Remove="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
 		<Compile Remove="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
 		<Compile Remove="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
@@ -41,6 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
 		<None Include="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
 		<None Include="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
 		<None Include="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
@@ -49,7 +51,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
-	  <ProjectReference Include="..\Data\Data.csproj" />
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

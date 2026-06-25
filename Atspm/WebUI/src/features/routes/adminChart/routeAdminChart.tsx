@@ -1,5 +1,4 @@
 
-import { modalStyle } from '@/components/GenericAdminChart/GenericAdminChart'
 import { useGetRouteLocations } from '@/features/routes/api/getRouteLocations'
 import { RouteConfiguration } from '@/features/routes/routeConfiguration/routeConfiguration'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
@@ -22,10 +21,6 @@ import {
   GridRowId,
   GridRowModel,
   GridRowModesModel,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarExport,
-  GridToolbarFilterButton,
   gridClasses,
 } from '@mui/x-data-grid'
 import { useState } from 'react'
@@ -39,25 +34,6 @@ const editModalStyle = {
   boxShadow: 24,
   p: 4,
   overflow: 'auto',
-}
-
-interface DataGridChartProps {
-  headers: GridColDef[]
-  data: any
-  baseRowType: any
-  onDelete(data: any): void
-  onEdit(data: any): void
-  onCreate(data: any): void
-}
-
-function EditToolbar() {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarExport />
-    </GridToolbarContainer>
-  )
 }
 
 export const RouteAdminChart = ({

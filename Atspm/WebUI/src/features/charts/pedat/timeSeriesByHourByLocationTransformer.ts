@@ -33,50 +33,32 @@ type Loc = {
   rawData?: RawPoint[]
 }
 
-function formatDateParts(d: Date) {
+function toHourBucket(ts: string): string {
+  const d = new Date(ts)
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
-  return { y, m, day }
-}
-
-function toTimeBucket(ts: string, timeUnit: string): string {
-  const d = new Date(ts)
-  const { y, m, day } = formatDateParts(d)
   const hh = String(d.getHours()).padStart(2, '0')
-
-  switch (timeUnit) {
-    case 'Day':
-      return `${y}-${m}-${day}`
-    case 'Week':
-      return `Week of ${y}-${m}-${day}`
-    case 'Month':
-      return `${y}-${m}`
-    case 'Year':
-      return `${y}`
-    case 'Hour':
-    default:
-      return `${y}-${m}-${day} ${hh}:00`
-  }
+  return `${y}-${m}-${day} ${hh}:00`
 }
 
-function gatherBuckets(rows: Loc[], timeUnit: string): string[] {
+function gatherBuckets(rows: Loc[]): string[] {
   const s = new Set<string>()
   for (const r of rows) {
     for (const p of r.rawData ?? []) {
       const ts = p.timestamp ?? p.timeStamp
-      if (ts) s.add(toTimeBucket(ts, timeUnit))
+      if (ts) s.add(toHourBucket(ts))
     }
   }
   return Array.from(s).sort()
 }
 
-function bucketize(row: Loc, timeUnit: string): Map<string, number> {
+function bucketize(row: Loc): Map<string, number> {
   const m = new Map<string, number>()
   for (const p of row.rawData ?? []) {
     const ts = p.timestamp ?? p.timeStamp
     if (!ts) continue
-    const k = toTimeBucket(ts, timeUnit)
+    const k = toHourBucket(ts)
     const v = Number(p.pedestrianCount ?? 0)
     m.set(k, (m.get(k) ?? 0) + (Number.isFinite(v) ? v : 0))
   }
@@ -87,10 +69,10 @@ export default function timeSeriesByHourByLocationTransformer(
   data: Loc[] = [],
   timeUnit: string
 ): EChartsOption {
-  const xBuckets = gatherBuckets(data, timeUnit)
+  const xBuckets = gatherBuckets(data)
   const series = data.map((loc) => {
     const name = (loc.locationIdentifier || 'Unknown').trim()
-    const m = bucketize(loc, timeUnit)
+    const m = bucketize(loc)
     const values = xBuckets.map((b) => m.get(b) ?? 0)
     return {
       name,
@@ -111,6 +93,7 @@ export default function timeSeriesByHourByLocationTransformer(
     type: 'category',
     name: 'Time',
     data: xBuckets,
+    axisLabel: { formatter: (v: string) => v.split(' ')[0] },
   }
 
   const yAxis = { type: 'value', name: 'Pedestrian Volume' }
@@ -124,6 +107,9 @@ export default function timeSeriesByHourByLocationTransformer(
   const toolbox: ToolboxComponentOption = {
     feature: {
       saveAsImage: { name: title },
+      magicType: {
+        type: ['stack', 'line', 'bar'],
+      },
       dataView: {
         readOnly: true,
       },

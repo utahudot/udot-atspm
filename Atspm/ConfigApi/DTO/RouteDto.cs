@@ -79,8 +79,6 @@ namespace Utah.Udot.ATSPM.ConfigApi.DTO
         public bool IsPedestrianPhaseOverlap { get; set; }
         public string PedestrianDetectors { get; set; }
         public int LocationId { get; set; }
-        public DirectionTypes DirectionTypeId { get; set; }
-        public DirectionTypeDto DirectionType { get; set; }
         public virtual ICollection<RouteDetectorDto>? Detectors { get; set; } = new HashSet<RouteDetectorDto>();
     }
 
@@ -101,14 +99,6 @@ namespace Utah.Udot.ATSPM.ConfigApi.DTO
         public int? MovementDelay { get; set; }
         public double LatencyCorrection { get; set; }
         public int ApproachId { get; set; }
-    }
-
-    public class DirectionTypeDto
-    {
-        public string Description { get; set; }
-        public string Abbreviation { get; set; }
-        public int DisplayOrder { get; set; }
-        public override string ToString() => $"{Abbreviation} - {Description}";
     }
 
 }

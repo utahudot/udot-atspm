@@ -18,18 +18,15 @@ import { reportsAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { dateToTimestamp } from '@/utils/dateTime'
 import { useQuery } from 'react-query'
-import { ToolOptions, ToolType } from '../common/types'
-import {
-  RawTimeSpaceDiagramResponse,
-  TimeSpaceResponseData,
-} from '../timeSpaceDiagram/shared/types'
+import { RawToolResponse, ToolOptions, ToolType } from '../common/types'
+import { TransformedToolResponse } from '../types'
+import { transformToolData } from './transformData'
 
 export const toolTypeApiMap: Record<ToolType, string> = {
   [ToolType.TimeSpaceHistoric]: '/api/v1/TimeSpaceDiagram/GetReportData',
   [ToolType.TimeSpaceAverage]: '/api/v1/TimeSpaceDiagramAverage/GetReportData',
   [ToolType.LinkPivot]: '/api/v1/LinkPivot/GetReportData',
-    [ToolType.LpPcd]: '/api/v1/LinkPivot/getPcdData',
-    [ToolType.LpTsd]: '/api/v1/LinkPivot/getLinkPivotForTsd',
+  [ToolType.LpPcd]: '/api/v1/LinkPivot/getPcdData',
 }
 
 type QueryFnType = typeof getTools
@@ -39,7 +36,7 @@ type BaseOptions = {
 }
 
 type UseToolsOptions = BaseOptions & {
-  toolType: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage
+  toolType: ToolType
   toolOptions: ToolOptions
 }
 
@@ -66,9 +63,9 @@ export const mapStringBooleansToBoolean = (obj: ToolOptions) => {
 }
 
 export const getTools = async (
-  type: ToolType.TimeSpaceHistoric | ToolType.TimeSpaceAverage,
+  type: ToolType,
   options: ToolOptions
-): Promise<RawTimeSpaceDiagramResponse> => {
+): Promise<TransformedToolResponse> => {
   const endpoint = toolTypeApiMap[type]
 
   const transformedOptions = mapStringBooleansToBoolean(options)
@@ -78,18 +75,15 @@ export const getTools = async (
     transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)
   }
 
-  const response = (await reportsAxios.post(
-    endpoint,
-    transformedOptions
-  )) as TimeSpaceResponseData
+  const response = await reportsAxios.post(endpoint, transformedOptions)
 
-  return {
-    type,
+  return transformToolData({
+    type: type,
     data: response,
-  }
+  } as unknown as RawToolResponse)
 }
 
-export const useTimeSpaceCall = ({
+export const useTools = ({
   toolType,
   toolOptions,
   config,

@@ -21,11 +21,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Net;
-using System.Reflection.Emit;
-using Utah.Udot.Atspm.Data.Configuration.IdentityConfiguration;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Interfaces;
-using Utah.Udot.Atspm.Data.Utility;
 
 namespace Utah.Udot.Atspm.Data
 {
@@ -183,9 +180,6 @@ namespace Utah.Udot.Atspm.Data
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
-            configurationBuilder.ApplyDateTimeOffsetConverters();
-            configurationBuilder.ApplyProviderDateTimeTypes(Database.ProviderName);
-
             configurationBuilder.Properties<string>().AreUnicode(false);
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
             configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
@@ -197,6 +191,11 @@ namespace Utah.Udot.Atspm.Data
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceTypes>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceStatus>().HaveConversion<string>();
+
+            if (Database.IsNpgsql())
+                configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
+            //else
+            //    configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         /// <inheritdoc/>

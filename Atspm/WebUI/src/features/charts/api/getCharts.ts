@@ -40,18 +40,15 @@ export const TypeApiMap: Record<ChartType, string> = {
   [ChartType.PurduePhaseTermination]:
     '/api/v1/PurduePhaseTermination/GetReportData',
   [ChartType.PreemptionDetails]: '/api/v1/PreemptDetail/GetReportData',
-    [ChartType.PrioritySummary]: '/api/v1/PrioritySummary/GetReportData',
   [ChartType.PurdueSplitFailure]: '/api/v1/SplitFail/GetReportData',
   [ChartType.SplitMonitor]: '/api/v1/SplitMonitor/GetReportData',
   [ChartType.TimingAndActuation]: '/api/v1/TimingAndActuation/GetReportData',
-  [ChartType.PrioritySummary]: '/api/v1/PrioritySummary/GetReportData',
-  [ChartType.PriorityDetails]: '/api/v1/PriorityDetail/GetReportData',
   [ChartType.TurningMovementCounts]:
     '/api/v1/TurningMovementCounts/GetReportData',
   [ChartType.WaitTime]: '/api/v1/WaitTime/GetReportData',
   [ChartType.YellowAndRedActuations]:
     '/api/v1/YellowRedActivations/GetReportData', // Todo: Fix spelling
-    [ChartType.RampMetering]: '/api/v1/RampMetering/GetReportData',
+  [ChartType.RampMetering]: '/api/v1/RampMetering/GetReportData',
 }
 
 type StringBooleanMap = Record<string, boolean | string | Date>
@@ -87,7 +84,7 @@ export const getCharts = async (
 
   const response = await reportsAxios.post(endpoint, transformedOptions)
   return transformChartData({
-    type,
+    type: type,
     data: response,
   } as unknown as RawChartResponse)
 }

@@ -27,7 +27,7 @@ namespace Utah.Udot.Atspm.Data.Models
     /// Represents a log entry for API usage, capturing details about requests, responses,
     /// performance, and user-related metadata.
     /// </summary>
-    public class UsageEntry : AtspmConfigModelBase<int>
+    public class UsageEntry : AtspmConfigModelBase<int>, ITimestamp
     {
         ///// <summary>
         ///// Database identifier for the log entry.
@@ -42,7 +42,7 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <summary>
         /// Gets or sets the UTC timestamp when the log entry was created.
         /// </summary>
-        public DateTimeOffset Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the unique trace identifier for the request, useful for correlation.

@@ -21,7 +21,6 @@ using System.Linq;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
-using Utah.Udot.Atspm.TempExtensions;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.ApplicationTests.Extensions
@@ -39,29 +38,6 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Extensions
                 EventCode = eventCode,
                 Timestamp = timestamp
             };
-        }
-
-        [Fact]
-        public void GetPlanEvents_DoesNotMutateSourceEvents()
-        {
-            var start = new DateTime(2026, 4, 1, 8, 0, 0);
-            var end = start.AddHours(1);
-            var beforeStart = CreateEvent(Location, 1, start.AddMinutes(-10), 131);
-            var afterEnd = CreateEvent(Location, 2, end.AddMinutes(10), 131);
-            var events = new List<IndianaEvent>
-            {
-                beforeStart,
-                afterEnd
-            };
-
-            var result = events.GetPlanEvents(start, end);
-
-            Assert.Equal(start.AddMinutes(-10), beforeStart.Timestamp);
-            Assert.Equal(end.AddMinutes(10), afterEnd.Timestamp);
-            Assert.Contains(result, e => e.Timestamp == start);
-            Assert.Contains(result, e => e.Timestamp == end);
-            Assert.All(result, planEvent =>
-                Assert.DoesNotContain(events, sourceEvent => ReferenceEquals(sourceEvent, planEvent)));
         }
 
         #region IdentifyRedToRedCycles

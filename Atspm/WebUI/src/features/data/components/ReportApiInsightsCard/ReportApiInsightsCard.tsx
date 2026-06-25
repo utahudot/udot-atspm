@@ -1,5 +1,6 @@
 import { UsageEntry } from '@/api/config'
 import { UserDTO } from '@/api/identity/atspmAuthenticationApi.schemas'
+import { formatChartDateTimeRange } from '@/features/charts/utils'
 import InsightsChart from '@/features/data/components/ReportApiInsightsCard/InsightsChart'
 import InsightsHeader, {
   GroupBy,
@@ -12,7 +13,6 @@ import {
   buildByChartType,
   buildByTime,
   buildByUser,
-  formatUsageLocalDateRange,
   normalizeUsers,
 } from '@/features/data/components/ReportApiInsightsCard/utils'
 import { Box, Card, CardContent } from '@mui/material'
@@ -124,7 +124,7 @@ function ReportsApiInsightsCard({
   )
 
   const fullTitle = `${metricTitle(metric)} by ${viewTitle(view)}`
-  const subtitle = formatUsageLocalDateRange(dateRange?.start, dateRange?.end)
+  const subtitle = formatChartDateTimeRange(dateRange?.start, dateRange?.end)
 
   return (
     <Card sx={{ width: '100%', minWidth: 0 }}>

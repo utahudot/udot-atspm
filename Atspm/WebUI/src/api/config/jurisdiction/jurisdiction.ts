@@ -47,7 +47,7 @@ import type {
   PatchJurisdictionFromKeyParams,
   PostJurisdictionParams,
   PutJurisdictionFromKeyParams
-} from '../config-api.schemas';
+} from '../aTSPMConfigurationApi.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

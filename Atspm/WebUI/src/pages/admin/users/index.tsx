@@ -2,7 +2,7 @@ import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useDeleteUser } from '@/features/identity/api/deleteUser'
-import { UserAssignmentCell } from '@/features/identity/components/users/UserAssignmentCell'
+import { useEditUsers } from '@/features/identity/api/editUsers'
 import { useGetAllUsers } from '@/features/identity/api/getAllUsers'
 import UserModal from '@/features/identity/components/users/UserModal'
 import { UserRolesCell } from '@/features/identity/components/users/UserRolesCell'
@@ -12,9 +12,8 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import UserDto from '@/features/identity/types/userDto'
-import { identityRequest } from '@/lib/axios'
 import { useNotificationStore } from '@/stores/notifications'
-import { formatInstantAsLocalDate } from '@/utils/dateTime'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const UsersAdmin = () => {
@@ -25,6 +24,7 @@ const UsersAdmin = () => {
   const { addNotification } = useNotificationStore()
 
   const { mutateAsync: deleteMutation } = useDeleteUser()
+  const { mutateAsync: editMutation } = useEditUsers()
   const {
     data: allUserData,
     isLoading: usersIsLoading,
@@ -33,32 +33,11 @@ const UsersAdmin = () => {
 
   const users = allUserData
 
-  const normalizeIds = (values: unknown) =>
-    Array.isArray(values)
-      ? values
-          .map((value) => Number(value))
-          .filter((value) => !Number.isNaN(value))
-      : []
-
   const handleEditUser = async (userData) => {
-    const {
-      userId,
-      firstName,
-      lastName,
-      agency,
-      userName,
-      email,
-      roles,
-      areaIds,
-      regionIds,
-      jurisdictionIds,
-    } = userData
+    const { userId, firstName, lastName, agency, userName, email, roles } =
+      userData
     try {
-      await identityRequest({
-        url: '/Users/update',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        data: {
+      await editMutation({
         userId,
         firstName,
         lastName,
@@ -66,10 +45,6 @@ const UsersAdmin = () => {
         email: email.toLowerCase(),
         userName: userName.toLowerCase(),
         roles,
-        areaIds: normalizeIds(areaIds),
-        regionIds: normalizeIds(regionIds),
-        jurisdictionIds: normalizeIds(jurisdictionIds),
-        },
       })
       addNotification({
         title: `User updated successfully.`,
@@ -110,8 +85,8 @@ const UsersAdmin = () => {
     return {
       ...user,
       roles: user.roles?.sort(),
-      created: formatInstantAsLocalDate(user.created),
-      modified: formatInstantAsLocalDate(user.modified),
+      created: user.created ? toUTCDateStamp(user.created) : '',
+      modified: user.modified ? toUTCDateStamp(user.modified) : '',
     }
   })
 
@@ -136,21 +111,6 @@ const UsersAdmin = () => {
       key: 'roles',
       label: 'Roles',
       component: UserRolesCell,
-    },
-    {
-      key: 'regions',
-      label: 'Regions',
-      component: UserAssignmentCell,
-    },
-    {
-      key: 'jurisdictions',
-      label: 'Jurisdictions',
-      component: UserAssignmentCell,
-    },
-    {
-      key: 'areas',
-      label: 'Areas',
-      component: UserAssignmentCell,
     },
   ]
 
