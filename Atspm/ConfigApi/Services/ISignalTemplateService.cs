@@ -4,6 +4,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
 {
     public interface ISignalTemplateService
     {
-        TemplateLocationModifiedDto SyncNewLocationDetectorsAndApproaches(int locationId);
+        Task<TemplateLocationModifiedDto> SyncNewLocationDetectorsAndApproaches(int locationId);
     }
 }
