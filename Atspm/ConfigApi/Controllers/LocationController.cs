@@ -341,7 +341,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(Status400BadRequest)]
         public IActionResult GetLocationsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
-            var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 };
+            var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31, 39 };
             var result = _repository.GetList()
                 .FromSpecification(new ActiveLocationSpecification())
                 .Where(w => (jurisdictionId != null) ? w.JurisdictionId == jurisdictionId : true)

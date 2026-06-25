@@ -21,9 +21,9 @@ using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     [ApiVersion(1.0)]
-    public class TimeSpaceDiagramAverageController : ReportControllerBase<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>
+    public class TimeSpaceDiagramAverageController : ReportControllerBase<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAveragePhaseResult>>
     {
         /// <inheritdoc/>
-        public TimeSpaceDiagramAverageController(IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>> reportService, ILogger<TimeSpaceDiagramAverageController> logger) : base(reportService, logger) { }
+        public TimeSpaceDiagramAverageController(IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAveragePhaseResult>> reportService, ILogger<TimeSpaceDiagramAverageController> logger) : base(reportService, logger) { }
     }
 }

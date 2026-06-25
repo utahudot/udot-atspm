@@ -26,24 +26,27 @@ namespace DatabaseInstaller.Commands
     public class TransferConfigCommand : Command, ICommandOption<TransferConfigCommandConfiguration>
     {
 
-        public TransferConfigCommand() : base("transfer-config", "Copy configuration data from SQL Server to PostgreSQL")
+        public TransferConfigCommand() : base("transfer-config", "Copy configuration data from the ATSPM Config API into the target database")
         {
-            AddOption(SourceOption);
+            AddOption(ApiBaseUrlOption);
+            AddOption(BearerTokenOption);
             AddOption(DeleteOption);
             AddOption(UpdateLocationsOption);
             AddOption(ImportSpeedDevicesOption);
         }
 
-        public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
+        public Option<string> ApiBaseUrlOption { get; set; } = new("--api-base-url", () => "https://atspm.udot.utah.gov/", "Base URL for the source ATSPM site");
+        public Option<string> BearerTokenOption { get; set; } = new("--bearer-token", "Bearer token used to access the source Config API");
         public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete before inserting locations");
-        public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Update Locations from target");
-        public Option<bool> ImportSpeedDevicesOption { get; set; } = new("--update-speed", "Update Speed Devices from target");
+        public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Import location configuration from the source Config API");
+        public Option<bool> ImportSpeedDevicesOption { get; set; } = new("--update-speed", "Import speed devices from the source Config API");
 
         public ModelBinder<TransferConfigCommandConfiguration> GetOptionsBinder()
         {
             var binder = new ModelBinder<TransferConfigCommandConfiguration>();
 
-            binder.BindMemberFromValue(b => b.Source, SourceOption);
+            binder.BindMemberFromValue(b => b.ApiBaseUrl, ApiBaseUrlOption);
+            binder.BindMemberFromValue(b => b.BearerToken, BearerTokenOption);
             binder.BindMemberFromValue(b => b.Delete, DeleteOption);
             binder.BindMemberFromValue(b => b.UpdateLocations, UpdateLocationsOption);
             binder.BindMemberFromValue(b => b.ImportSpeedDevices, ImportSpeedDevicesOption);
@@ -62,7 +65,8 @@ namespace DatabaseInstaller.Commands
 
     public class TransferConfigCommandConfiguration
     {
-        public string Source { get; set; }
+        public string ApiBaseUrl { get; set; }
+        public string BearerToken { get; set; }
         public bool Delete { get; set; }
         public bool UpdateLocations { get; set; }
         public bool UpdateGeneralConfiguration { get; set; }

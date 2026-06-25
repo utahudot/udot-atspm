@@ -1,0 +1,226 @@
+// #region license
+// Copyright 2026 Utah Departement of Transportation
+// for WebUI - speedOverDistance.transformer.ts
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//http://www.apache.org/licenses/LICENSE-2.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// #endregion
+import { SpeedOverDistanceDto } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
+import {
+  createDataZoom,
+  createGrid,
+  createLegend,
+  createPlans,
+  createTooltip,
+  createYAxis,
+} from '@/features/charts/common/transformers'
+import { ExtendedEChartsOption } from '@/features/charts/types'
+import { createSpeedManagementTitle } from '@/features/charts/speedManagementTool/createSpeedManagementTitle'
+import {
+  Color,
+  DashedLineSeriesSymbol,
+  SolidLineSeriesSymbol,
+  formatChartDateTimeRange,
+} from '@/features/charts/utils'
+import { round } from '@/utils/math'
+
+export default function transformSpeedOverDistanceData(
+  response: SpeedOverDistanceDto[]
+) {
+  const sortedResponse = response
+    .map((segment) => {
+      if (segment.startingMilePoint > segment.endingMilePoint) {
+        return {
+          ...segment,
+          startingMilePoint: segment.endingMilePoint,
+          endingMilePoint: segment.startingMilePoint,
+        }
+      }
+      return segment
+    })
+    .sort((a, b) => a.startingMilePoint - b.startingMilePoint)
+
+  const dateRange = formatChartDateTimeRange(
+    response[0].startDate,
+    response[0].endDate
+  )
+
+  const title = createSpeedManagementTitle({
+    title: 'Speed Over Distance',
+    dateRange,
+  })
+
+  const xAxis = {
+    type: 'value',
+    name: 'Mile Points',
+    min: round(
+      Math.min(...sortedResponse.map((segment) => segment.startingMilePoint)),
+      2
+    ),
+    max: round(
+      Math.max(...sortedResponse.map((segment) => segment.endingMilePoint)),
+      2
+    ),
+  }
+
+  const yAxis = createYAxis(true, { name: 'Speed (mph)' })
+
+  const grid = createGrid({
+    top: 100,
+    left: 60,
+    right: 210,
+  })
+
+  const legend = createLegend({
+    top: grid.top,
+    data: [
+      { name: 'Average Speed', icon: SolidLineSeriesSymbol },
+      { name: '85th Percentile Speed', icon: SolidLineSeriesSymbol },
+      { name: 'Speed Limit', icon: DashedLineSeriesSymbol },
+    ],
+  })
+
+  const dataZoom = createDataZoom()
+
+  const tooltip = createTooltip()
+
+  // Destructure the series data from mergeSeriesData
+  const { averageSpeedData, eightyFifthPercentileData, speedLimitData } =
+    mergeSeriesData(sortedResponse)
+
+  const series = [
+    {
+      name: 'Average Speed',
+      data: averageSpeedData,
+      type: 'line',
+      step: 'start',
+      showSymbol: false,
+      color: Color.Blue,
+    },
+    {
+      name: '85th Percentile Speed',
+      data: eightyFifthPercentileData,
+      type: 'line',
+      step: 'start',
+      showSymbol: false,
+      color: Color.Red,
+    },
+    {
+      name: 'Speed Limit',
+      data: speedLimitData,
+      type: 'line',
+      step: 'start',
+      showSymbol: false,
+      color: Color.Black,
+      lineStyle: {
+        type: 'dashed',
+      },
+    },
+  ]
+
+  const planData = sortedResponse.map((segment) => {
+    return {
+      planDescription: segment.segmentName,
+      start: segment.startingMilePoint,
+      end: segment.endingMilePoint,
+    }
+  })
+
+  const planSeries = createPlans(
+    planData,
+    yAxis.length,
+    undefined,
+    65,
+    undefined,
+    'number'
+  )
+
+  const chartOptions: ExtendedEChartsOption = {
+    title,
+    xAxis,
+    yAxis,
+    grid,
+    legend,
+    tooltip,
+    displayProps: { useNumberForZoom: true },
+    series: [...series, planSeries],
+    dataZoom,
+  }
+
+  return chartOptions
+}
+
+function mergeSeriesData(response: SpeedOverDistanceResponse[]) {
+  const averageSpeedData: [number, number | null][] = []
+  const eightyFifthPercentileData: [number, number | null][] = []
+  const speedLimitData: [number, number | null][] = []
+
+  response.forEach((segment, index) => {
+    const {
+      startingMilePoint,
+      endingMilePoint,
+      average,
+      eightyFifth,
+      speedLimit,
+    } = segment
+    const previousSegment = response[index - 1]
+
+    // Ensure the startingMilePoint of the first segment is added
+    if (index === 0) {
+      if (average !== undefined) {
+        averageSpeedData.push([startingMilePoint, average])
+      }
+      if (eightyFifth !== undefined) {
+        eightyFifthPercentileData.push([startingMilePoint, eightyFifth])
+      }
+      if (speedLimit !== undefined) {
+        speedLimitData.push([startingMilePoint, speedLimit])
+      }
+    }
+
+    // Handle the break between non-continuous segments by adding [null, null]
+    if (index > 0 && previousSegment.endingMilePoint !== startingMilePoint) {
+      // Add a break for non-continuous segments
+      averageSpeedData.push([null, null])
+      eightyFifthPercentileData.push([null, null])
+      speedLimitData.push([null, null])
+
+      // Add the startingMilePoint of the current segment
+      if (average !== undefined) {
+        averageSpeedData.push([startingMilePoint, average])
+      }
+      if (eightyFifth !== undefined) {
+        eightyFifthPercentileData.push([startingMilePoint, eightyFifth])
+      }
+      if (speedLimit !== undefined) {
+        speedLimitData.push([startingMilePoint, speedLimit])
+      }
+    }
+
+    // Always add the endingMilePoint for each segment
+    if (average !== undefined) {
+      averageSpeedData.push([endingMilePoint, average])
+    }
+    if (eightyFifth !== undefined) {
+      eightyFifthPercentileData.push([endingMilePoint, eightyFifth])
+    }
+    if (speedLimit !== undefined) {
+      speedLimitData.push([endingMilePoint, speedLimit])
+    }
+  })
+
+  return {
+    averageSpeedData,
+    eightyFifthPercentileData,
+    speedLimitData,
+  }
+}

@@ -44,7 +44,7 @@ import type {
   PostProductParams,
   Product,
   PutProductFromKeyParams
-} from '../aTSPMConfigurationApi.schemas';
+} from '../config-api.schemas';
 
 import { configRequest } from '../../../lib/axios';
 

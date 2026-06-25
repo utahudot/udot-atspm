@@ -15,14 +15,29 @@
 // limitations under the License.
 // #endregion
 interface UserDto {
-  userId:string
+  userId: string
   firstName: string
   lastName: string
   agency: string
   phoneNumber: string
-  fullName:string,
-  userName:string,
+  fullName: string
+  userName: string
   email: string
   roles: string[]
+  areas: {
+    id: number
+    name: string
+  }[]
+  areaIds: number[]
+  regions: {
+    id: number
+    description: string
+  }[]
+  regionIds: number[]
+  jurisdictions: {
+    id: number
+    name: string
+  }[]
+  jurisdictionIds: number[]
 }
 export default UserDto

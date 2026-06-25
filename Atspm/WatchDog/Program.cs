@@ -50,10 +50,10 @@ cmdBuilder.UseHost(hostBuilder =>
     {
         c.AddUserSecrets<Program>(optional: true); // Load secrets first
         //c.AddCommandLine(args);                    // Override with command-line args
-
     })
     .ConfigureServices((h, s) =>
     {
+        s.AddSingleton(TimeProvider.System);
         s.AddEmailServices(h);
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();

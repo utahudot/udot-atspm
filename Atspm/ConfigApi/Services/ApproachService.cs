@@ -61,6 +61,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                 approach.PedestrianDetectors = dto.PedestrianDetectors;
                 approach.LocationId = dto.LocationId;
                 approach.DirectionTypeId = dto.DirectionTypeId;
+                approach.TransitSignalPriorityNumber = dto.TransitSignalPriorityNumber;
 
                 // Remove Detectors that are not in DTO
                 var detectorIds = dto.Detectors.Select(d => d.Id).ToList();
@@ -150,6 +151,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                     PedestrianDetectors = dto.PedestrianDetectors,
                     LocationId = dto.LocationId,
                     DirectionTypeId = dto.DirectionTypeId,
+                    TransitSignalPriorityNumber = dto.TransitSignalPriorityNumber,
                     Detectors = dto.Detectors?.Select(d => new Detector
                     {
                         DectectorIdentifier = d.DectectorIdentifier,
@@ -204,6 +206,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                 PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
                 IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
                 PedestrianDetectors = approach.PedestrianDetectors,
+                TransitSignalPriorityNumber = approach.TransitSignalPriorityNumber,
                 LocationId = approach.LocationId,
                 DirectionTypeId = approach.DirectionTypeId,
                 CreatedBy = approach.CreatedBy,

@@ -107,9 +107,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -135,8 +135,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -156,6 +156,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ProtectedPhaseNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TransitSignalPriorityNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -178,17 +181,17 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -218,9 +221,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(5)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -236,8 +239,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -334,6 +337,13 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Abbreviation = "EQ",
                             Description = "Excessive Queue",
                             DisplayOrder = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Abbreviation = "PP",
+                            Description = "Priority and Preemption",
+                            DisplayOrder = 12
                         });
                 });
 
@@ -348,9 +358,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("ApproachId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -393,8 +403,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int?>("MinSpeedFilter")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -430,9 +440,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -442,8 +452,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("DetectorId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -470,9 +480,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -520,8 +530,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<bool>("LoggingEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -561,9 +571,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValueSql("((2000))");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -585,8 +595,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("LoggingOffset")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -658,9 +668,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(5)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -675,8 +685,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -769,9 +779,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(8000)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -787,8 +797,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -964,17 +974,17 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1015,9 +1025,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1044,8 +1054,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1108,9 +1118,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1121,8 +1131,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(true)
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1177,9 +1187,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1192,8 +1202,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1220,9 +1230,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1232,8 +1242,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1657,6 +1667,27 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             MeasureTypeId = 5,
                             Option = "yAxisDefault",
                             Value = "300"
+                        },
+                        new
+                        {
+                            Id = 121,
+                            MeasureTypeId = 5,
+                            Option = "combineThruRight",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 122,
+                            MeasureTypeId = 39,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 123,
+                            MeasureTypeId = 40,
+                            Option = "binSize",
+                            Value = "15"
                         });
                 });
 
@@ -1668,9 +1699,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1680,8 +1711,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -1718,9 +1749,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(8)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -1730,8 +1761,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2079,6 +2110,24 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Name = "Transit Signal Priority",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = false
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Abbreviation = "TSPS",
+                            DisplayOrder = 133,
+                            Name = "Transit Signal Priority Summary",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Abbreviation = "TSPD",
+                            DisplayOrder = 134,
+                            Name = "Transit Signal Priority Details",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
                         });
                 });
 
@@ -2090,9 +2139,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2114,8 +2163,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(4000)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2148,9 +2197,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2169,8 +2218,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(48)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2201,9 +2250,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2216,8 +2265,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2239,17 +2288,17 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .IsUnicode(false)
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2276,9 +2325,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2300,8 +2349,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2326,9 +2375,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2347,8 +2396,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2427,9 +2476,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2449,8 +2498,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
@@ -2483,7 +2532,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<bool>("Success")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("Timestamp")
+                    b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("TraceId")
@@ -2579,9 +2628,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int?>("ComponentType")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTimeOffset?>("Created")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .ValueGeneratedOnAdd()
@@ -2607,8 +2656,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)

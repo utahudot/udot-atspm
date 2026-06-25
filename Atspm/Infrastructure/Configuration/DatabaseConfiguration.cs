@@ -20,34 +20,41 @@ using Microsoft.Data.Sqlite;
 using MySqlConnector;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
+using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
     /// Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
     /// </summary>
+    [ConfigurationSection(nameof(DatabaseConfiguration), null)]
     public class DatabaseConfiguration
     {
         /// <summary>
-        /// Gets or sets the type of database provider (e.g., "sqlserver", "postgresql", "mysql", "oracle", "sqlite").
+        /// Gets or sets the type of database provider 
         /// </summary>
-        public string DBType { get; set; } = string.Empty;
+        [EnumDataType(typeof(DatabaseProvider), ErrorMessage = "Invalid database provider.")]
+        public DatabaseProvider DBType { get; set; } = DatabaseProvider.InMemory;
 
         /// <summary>
         /// Gets or sets the network address or hostname of the database server.
         /// </summary>
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Database Host is required.")]
         public string Host { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the port number used to connect to the database server. 
         /// If null, a provider-specific default port is used.
         /// </summary>
+        [Range(1, 65535, ErrorMessage = "Port must be a valid network port between 1 and 65535.")]
         public int? Port { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the specific database or the file path for file-based databases like SQLite.
         /// </summary>
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Database Name is required.")]
         public string Database { get; set; } = string.Empty;
 
         /// <summary>
@@ -76,16 +83,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <returns>A formatted connection string compatible with the chosen database provider.</returns>
         public string BuildConnectionString()
         {
-            DbConnectionStringBuilder builder = DBType.ToLower() switch
+            DbConnectionStringBuilder builder = DBType switch
             {
-                "sqlserver" => new SqlConnectionStringBuilder
+                DatabaseProvider.SqlServer => new SqlConnectionStringBuilder
                 {
                     DataSource = Host,
                     InitialCatalog = Database,
                     UserID = User,
                     Password = Password
                 },
-                "postgresql" => new NpgsqlConnectionStringBuilder
+                DatabaseProvider.PostgreSql => new NpgsqlConnectionStringBuilder
                 {
                     Host = Host,
                     Port = Port ?? 5432,
@@ -93,7 +100,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
                     Username = User,
                     Password = Password
                 },
-                "mysql" => new MySqlConnectionStringBuilder
+                DatabaseProvider.MySql => new MySqlConnectionStringBuilder
                 {
                     Server = Host,
                     Port = (uint)(Port ?? 3306),
@@ -101,17 +108,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
                     UserID = User,
                     Password = Password
                 },
-                "oracle" => new OracleConnectionStringBuilder
+                DatabaseProvider.Oracle => new OracleConnectionStringBuilder
                 {
                     DataSource = $"{Host}:{Port ?? 1521}/{Database}",
                     UserID = User,
                     Password = Password
                 },
-                "sqlite" => new SqliteConnectionStringBuilder
+                DatabaseProvider.Sqlite => new SqliteConnectionStringBuilder
                 {
                     DataSource = $"{Database}.db"
                 },
-                _ => new DbConnectionStringBuilder
+                DatabaseProvider.InMemory or _ => new DbConnectionStringBuilder
                 {
                     { "DataSource", string.IsNullOrEmpty(Database) ? Guid.NewGuid().ToString() : Database }
                 }

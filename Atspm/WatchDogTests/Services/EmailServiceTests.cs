@@ -18,6 +18,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
@@ -134,7 +135,7 @@ namespace Utah.Udot.Atspm.WatchDogTests.Services
 
             var mockUser1 = new Mock<ApplicationUser>();
             mockUser1.Object.Id = "1";
-            mockUser1.Object.Email = "derekjlowe@gmail.com";
+            mockUser1.Object.Email = "user1@example.com";
             mockUser1.Object.FirstName = "Derek";
             mockUser1.Object.LastName = "Lowe";
             mockUser1.Object.PhoneNumber = "555-555-5555";
@@ -147,11 +148,11 @@ namespace Utah.Udot.Atspm.WatchDogTests.Services
             mockUser1.Object.SecurityStamp = "123456";
             mockUser1.Object.PasswordHash = "123456";
             mockUser1.Setup(u => u.Id).Returns("1");
-            mockUser1.Setup(u => u.Email).Returns("derekjlowe@gmail.com");
+            mockUser1.Setup(u => u.Email).Returns("user1@example.com");
 
             var mockUser2 = new Mock<ApplicationUser>();
             mockUser2.Object.Id = "2";
-            mockUser2.Object.Email = "dlowe@avenueconsultants.com";
+            mockUser2.Object.Email = "user2@example.com";
             mockUser2.Object.FirstName = "Derek";
             mockUser2.Object.LastName = "Lowe";
             mockUser2.Object.PhoneNumber = "555-555-5555";
@@ -164,10 +165,34 @@ namespace Utah.Udot.Atspm.WatchDogTests.Services
             mockUser2.Object.SecurityStamp = "123456";
             mockUser2.Object.PasswordHash = "123456";
             mockUser2.Setup(u => u.Id).Returns("2");
-            mockUser2.Setup(u => u.Email).Returns("dlowe@avenueconsultants.com");
+            mockUser2.Setup(u => u.Email).Returns("user2@example.com");
 
 
-            var users = new List<ApplicationUser> { mockUser1.Object, mockUser2.Object };
+            var recipients = new List<WatchdogEmailRecipient>
+            {
+                new WatchdogEmailRecipient
+                {
+                    UserId = "1",
+                    Email = "user1@example.com",
+                    DisplayName = "Derek Lowe",
+                    IsAdmin = true,
+                    IsWatchdogSubscriber = true,
+                    RegionIds = new List<int> { 1 },
+                    JurisdictionIds = new List<int> { 1 },
+                    AreaIds = new List<int> { 1 }
+                },
+                new WatchdogEmailRecipient
+                {
+                    UserId = "2",
+                    Email = "user2@example.com",
+                    DisplayName = "Derek Lowe",
+                    IsAdmin = false,
+                    IsWatchdogSubscriber = true,
+                    RegionIds = new List<int> { 2 },
+                    JurisdictionIds = new List<int> { 2 },
+                    AreaIds = new List<int> { 2 }
+                }
+            };
 
             var Locations = new List<Location> { region1MockLocation.Object };
 
@@ -183,9 +208,11 @@ namespace Utah.Udot.Atspm.WatchDogTests.Services
             var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
 
 
-            await emailService.SendAllEmails(emailOptions, errors, Locations, users, jurisdictions, userJurisdictions.ToList(), areas, userAreas.ToList(), regions, userRegions.ToList(), recordsFromTheDayBefore);
+            await emailService.SendAllEmails(emailOptions, errors, errors, errors, Locations, recipients, jurisdictions, areas, regions, recordsFromTheDayBefore);
 
-            Assert.Equal(1, 1);
+            Assert.Equal(2, recipients.Count);
+            Assert.Contains(recipients, r => r.CanReceiveAllLocationsEmail);
+            Assert.Contains(recipients, r => r.RegionIds.Contains(1));
         }
     }
 }

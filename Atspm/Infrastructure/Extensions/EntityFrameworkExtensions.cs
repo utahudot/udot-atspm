@@ -69,7 +69,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 logMessage.DatabaseExists(contextName, databaseExists);
 
-                if (databaseExists)
+                if (!databaseExists)
                 {
                     logMessage.CreateDatabase(contextName);
 
@@ -157,18 +157,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
         /// <summary>
         /// Seeds the roles and granular claims required for ATSPM authorization.
-        /// Only runs if the Admin role is missing.
         /// </summary>
         public static async Task SeedIdentityData(this IServiceProvider services)
         {
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var logMessages = new IdentitySeedLogMessages(services.GetRequiredService<ILogger<IdentityContext>>());
 
-            if (await roleManager.RoleExistsAsync(AtspmAuthorization.Roles.Admin))
-            {
-                logMessages.RolesAlreadyExist();
-                return;
-            }
+            //if (await roleManager.RoleExistsAsync(AtspmAuthorization.Roles.Admin))
+            //{
+            //    logMessages.RolesAlreadyExist();
+            //    return;
+            //}
 
             foreach (var entry in AtspmAuthorization.RoleClaimsMap)
             {

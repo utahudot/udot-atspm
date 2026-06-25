@@ -49,6 +49,11 @@ export interface TransformedToolResponse {
   }
 }
 
+export interface TransformedTimeSpaceResponse {
+  type: ToolType
+  data: StandardChart
+}
+
 export interface TransformedApproachVolumeResponse {
   type: ChartType.ApproachVolume
   data: {
@@ -71,9 +76,15 @@ export interface Labels {
   flatColumns: string[]
 }
 
+export interface TurningMovementCountsTableDisplayProps {
+  exportFileName?: string
+  height?: number
+}
+
 export interface TransformedTurningMovementCountsResponse {
   type: ChartType
   data: {
+    displayProps?: TurningMovementCountsTableDisplayProps
     labels: Labels
     table: RawTurningMovementCountTableRow[]
     charts: StandardChart[]

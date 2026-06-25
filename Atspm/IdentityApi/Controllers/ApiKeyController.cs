@@ -27,6 +27,7 @@ using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Dto;
+using Utah.Udot.NetStandardToolkit.Common;
 
 namespace Utah.Udot.ATSPM.IdentityApi.Controllers
 {
@@ -103,7 +104,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 Name = dto.Name,
                 KeyHash = hash,
                 OwnerId = userId,
-                ExpiresAt = dto.ExpiresAt?.ToUniversalTime(),
+                ExpiresAt = dto.ExpiresAt,
                 IsRevoked = false,
                 Claims = dto.Claims.Select(r => new ApiKeyClaim
                 {
@@ -140,6 +141,28 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             var keys = await _context.ApiKeys
                 .Where(k => k.OwnerId == userId && !k.IsRevoked)
                 .Select(k => new { k.Id, k.Name, k.CreatedAt, k.ExpiresAt })
+                .ToListAsync();
+
+            return Ok(keys);
+        }
+
+        /// <summary>
+        /// Retrieves all active, non-revoked API keys in the system.
+        /// </summary>
+        /// <returns>A list of all API key metadata.</returns>
+        /// <response code="200">Returns the complete list of system keys.</response>
+        /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
+        /// <response code="403">Forbidden if the user lacks global view permissions.</response>
+        [AuthorizePermission(AtspmAuthorization.Permissions.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("all-keys")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetAllKeys()
+        {
+            var keys = await _context.ApiKeys
+                .Where(k => !k.IsRevoked)
+                .Select(k => new { k.Id, k.Name, k.OwnerId, k.CreatedAt, k.ExpiresAt })
                 .ToListAsync();
 
             return Ok(keys);

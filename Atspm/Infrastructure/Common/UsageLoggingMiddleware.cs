@@ -204,7 +204,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Common
             return new UsageEntry
             {
                 ApiName = _apiName(context),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow,
                 TraceId = context.TraceIdentifier,
                 ConnectionId = context.Connection.Id,
                 RemoteIp = context.Connection.RemoteIpAddress?.ToString(),

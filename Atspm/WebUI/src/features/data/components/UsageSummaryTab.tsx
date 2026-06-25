@@ -81,7 +81,7 @@ function UsageSummaryTab({
   }, [dataRows])
 
   const tableData = React.useMemo(() => {
-    return reportRows.map((r) => {
+     return rows.map((r) => {
       const user = users?.find((u) => u.userId === r.userId)
       r.user = user ? user.userName : 'Anonymous'
       return r
