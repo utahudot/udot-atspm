@@ -98,7 +98,9 @@ describe('ApiKeyManagement', () => {
     cleanup()
   })
 
-  it('shows all API key list items with owner and revoked status for global admins', () => {
+  it('hides revoked API keys by default and toggles them for global admins', async () => {
+    const user = userEvent.setup()
+
     render(<ApiKeyManagement />)
 
     expect(mockUseApiKeys).toHaveBeenCalledWith(true)
@@ -106,14 +108,32 @@ describe('ApiKeyManagement', () => {
     expect(screen.getByRole('list', { name: /api keys/i })).toBeInTheDocument()
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
     expect(screen.getByText('Active key')).toBeInTheDocument()
+    expect(screen.queryByText('Revoked key')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('User Two (two@example.com)')
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Active')).toBeInTheDocument()
+    expect(screen.queryByText('Revoked')).not.toBeInTheDocument()
+
+    const revokeButtons = screen.getAllByRole('button', { name: /^revoke$/i })
+    expect(revokeButtons).toHaveLength(1)
+    expect(revokeButtons[0]).toBeEnabled()
+
+    await user.click(screen.getByRole('button', { name: /show revoked keys/i }))
+
     expect(screen.getByText('Revoked key')).toBeInTheDocument()
     expect(screen.getByText('User Two (two@example.com)')).toBeInTheDocument()
-    expect(screen.getByText('Active')).toBeInTheDocument()
     expect(screen.getByText('Revoked')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /hide revoked keys/i })
+    ).toBeInTheDocument()
 
-    const revokeButtons = screen.getAllByRole('button', { name: /revoke/i })
-    expect(revokeButtons[0]).toBeEnabled()
-    expect(revokeButtons[1]).toBeDisabled()
+    const visibleRevokeButtons = screen.getAllByRole('button', {
+      name: /^revoke$/i,
+    })
+    expect(visibleRevokeButtons).toHaveLength(2)
+    expect(visibleRevokeButtons[0]).toBeEnabled()
+    expect(visibleRevokeButtons[1]).toBeDisabled()
   })
 
   it('filters API key management claims from the create dialog', async () => {

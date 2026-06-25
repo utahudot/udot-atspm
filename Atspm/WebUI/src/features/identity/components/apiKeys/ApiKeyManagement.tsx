@@ -18,6 +18,8 @@ import {
 } from '@/features/identity/components/apiKeys/apiKeyUtils'
 import { useNotificationStore } from '@/stores/notifications'
 import AddIcon from '@mui/icons-material/Add'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 
@@ -64,6 +66,12 @@ const ApiKeyManagement = ({
     null
   )
   const [revokeTarget, setRevokeTarget] = useState<ApiKeyMetadata | null>(null)
+  const [showRevokedApiKeys, setShowRevokedApiKeys] = useState(false)
+
+  const revokedApiKeyCount = apiKeys.filter((key) => key.isRevoked).length
+  const visibleApiKeys = showRevokedApiKeys
+    ? apiKeys
+    : apiKeys.filter((key) => !key.isRevoked)
 
   const availableClaims = useMemo(() => {
     return getAssignableApiKeyClaims(isGlobalAdmin ? allClaims : currentClaims)
@@ -151,15 +159,28 @@ const ApiKeyManagement = ({
             Create and revoke keys for API integrations.
           </Typography>
         </Box>
-        {canCreateApiKeys && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setIsCreateOpen(true)}
-          >
-            New API Key
-          </Button>
-        )}
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          {revokedApiKeyCount > 0 && (
+            <Button
+              variant="outlined"
+              startIcon={
+                showRevokedApiKeys ? <VisibilityOffIcon /> : <VisibilityIcon />
+              }
+              onClick={() => setShowRevokedApiKeys((current) => !current)}
+            >
+              {showRevokedApiKeys ? 'Hide revoked keys' : 'Show revoked keys'}
+            </Button>
+          )}
+          {canCreateApiKeys && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setIsCreateOpen(true)}
+            >
+              New API Key
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {isApiKeysLoading ? (
@@ -170,9 +191,13 @@ const ApiKeyManagement = ({
         <Typography variant="body2" color="text.secondary">
           No API keys have been created.
         </Typography>
+      ) : visibleApiKeys.length === 0 ? (
+        <Typography variant="body2" color="text.secondary">
+          No active API keys. Show revoked keys to view revoked keys.
+        </Typography>
       ) : (
         <ApiKeyList
-          apiKeys={apiKeys}
+          apiKeys={visibleApiKeys}
           isGlobalAdmin={isGlobalAdmin}
           canRevokeApiKeys={canRevokeApiKeys}
           onRevoke={setRevokeTarget}

@@ -142,7 +142,10 @@ describe('ProfilePage', () => {
     await user.click(screen.getByRole('tab', { name: /api keys/i }))
     expect(screen.getByRole('list', { name: /api keys/i })).toBeInTheDocument()
     expect(screen.getByText('Active key')).toBeInTheDocument()
-    expect(screen.getByText('Revoked key')).toBeInTheDocument()
+    expect(screen.queryByText('Revoked key')).not.toBeInTheDocument()
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /show revoked keys/i }))
+    expect(screen.getByText('Revoked key')).toBeInTheDocument()
   })
 })
