@@ -16,11 +16,12 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.Atspm.ValueObjects;
@@ -54,7 +55,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// Synchronizes event logs for the requested devices.
         /// </summary>
         [HttpPost("SyncDeviceEvents")]
-        [Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<DeviceEventDownload>>> SyncDeviceEventsAsync([FromBody] SyncDeviceEventsRequest request, CancellationToken cancellationToken)

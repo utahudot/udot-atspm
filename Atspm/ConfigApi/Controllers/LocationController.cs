@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
@@ -183,7 +182,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <param name="key">Location version to template</param>
         /// <returns>New version of templated <see cref="Location"/></returns>
         ///
-        [Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         [HttpPost]
         [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
