@@ -15,17 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 
 namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
-    public class PeakHourOptions : OptionsBase
-    {
-        public int ApproachId { get; set; }
-        public int[] DaysOfWeek { get; set; }
-    }
     /// <summary>
     /// Measure option preset repository
     /// </summary>
