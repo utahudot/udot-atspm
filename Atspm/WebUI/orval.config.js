@@ -55,7 +55,7 @@ module.exports = {
   // },
   data: {
     input: {
-      target: './data-spec.json',
+      target: './api-specs/data-spec.json',
     },
     output: {
       workspace: './src/api/data',
