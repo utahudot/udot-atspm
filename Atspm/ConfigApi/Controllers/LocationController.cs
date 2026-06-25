@@ -164,11 +164,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(TemplateLocationModifiedDto), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult SyncLocation(int key)
+        public async Task<IActionResult> SyncLocation(int key)
         {
             try
             {
-                TemplateLocationModifiedDto modLocation = _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
+                TemplateLocationModifiedDto modLocation = await _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
                 return Ok(modLocation);
             }
             catch (ArgumentException e)

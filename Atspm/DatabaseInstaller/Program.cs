@@ -62,7 +62,6 @@ cmdBuilder.UseHost(hostBuilder =>
         services.Configure<TransferDailyToHourlyConfiguration>(hostContext.Configuration.GetSection(nameof(TransferDailyToHourlyConfiguration)));
         services.Configure<TransferCommandConfiguration>(hostContext.Configuration.GetSection(nameof(TransferCommandConfiguration)));
         services.Configure<TransferConfigCommandConfiguration>(hostContext.Configuration.GetSection(nameof(TransferConfigCommandConfiguration)));
-        services.Configure<CSVTransferCommandConfiguration>(hostContext.Configuration.GetSection(nameof(CSVTransferCommandConfiguration)));
 
     });
 },
