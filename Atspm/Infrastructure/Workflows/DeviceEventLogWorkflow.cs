@@ -99,9 +99,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
             BroadcastEvents.LinkTo(ArchiveEventLogsWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(TranformToIndianaEvent, new DataflowLinkOptions() { PropagateCompletion = true });
+
             TranformToIndianaEvent.LinkTo(SignalTimingPlansWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
 
             ArchiveEventLogsWorkflow.Output.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            Output.LinkTo(DataflowBlock.NullTarget<CompressedEventLogBase>());
         }
     }
 }

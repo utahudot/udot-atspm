@@ -20,8 +20,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
+using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
@@ -46,7 +48,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             var devices = repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions);
             int targetInstances = _options.Value.WorkflowBatchSize;
-
             int devicesPerWorkflow;
 
             if (_options.Value.DevicesBatchSize > 0)
@@ -62,6 +63,75 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             Func<DeviceEventLogWorkflow> workflowFactory = () => new DeviceEventLogWorkflow(scopeFactory, _options.Value.ProcessingBatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
             await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, targetInstances, cancellationToken);
+
+            Console.WriteLine($"-------------------hello!");
+        }
+    }
+
+    public static class WorkflowExtensions
+    {
+        public static async Task BatchRunAsync<TInput, TOutput>(this Func<WorkflowBase<TInput, TOutput>> factory, IAsyncEnumerable<TInput> source, int batchSize, int parallelInstances, CancellationToken cancellationToken)
+        {
+            Func<WorkflowBase<TInput, TOutput>> factory2 = factory;
+            BatchBlock<TInput> batcher = new BatchBlock<TInput>(batchSize, new GroupingDataflowBlockOptions
+            {
+                BoundedCapacity = batchSize * (parallelInstances + 2),
+                CancellationToken = cancellationToken
+            });
+            ActionBlock<TInput[]> manager = new ActionBlock<TInput[]>(async delegate (TInput[] chunk)
+            {
+                using WorkflowBase<TInput, TOutput> workflow = factory2();
+                int attempts = 0;
+                while (workflow.Input == null && attempts < 150)
+                {
+                    await Task.Delay(50, cancellationToken);
+                    attempts++;
+                }
+
+                attempts = 0;
+                while (!workflow.IsInitialized && attempts < 150)
+                {
+                    await Task.Delay(50, cancellationToken);
+                    attempts++;
+                }
+
+                foreach (TInput item in chunk)
+                {
+                    await workflow.Input.SendAsync(item, cancellationToken);
+                }
+
+                workflow.Input.Complete();
+
+                //while (await workflow.Output.OutputAvailableAsync(cancellationToken))
+                //{
+                //    workflow.Output.TryReceive(out _);
+                //}
+
+                //await Task.WhenAll(workflow.Steps.Select((IDataflowBlock s) => s.Completion)).ContinueWith(t => Console.WriteLine($"-------------------boo!"));
+                await workflow.Output.Completion;
+                Console.WriteLine($"-------------------did stuff!");
+            }, new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = parallelInstances,
+                CancellationToken = cancellationToken
+            });
+
+
+            batcher.LinkTo(manager, new DataflowLinkOptions
+            {
+                PropagateCompletion = true
+            });
+
+            await foreach (TInput item2 in source.WithCancellation(cancellationToken))
+            {
+                await batcher.SendAsync(item2, cancellationToken);
+            }
+
+            batcher.TriggerBatch();
+            batcher.Complete();
+
+            await manager.Completion;
+            Console.WriteLine($"-------------------manager!");
         }
     }
 }
