@@ -63,8 +63,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             Func<DeviceEventLogWorkflow> workflowFactory = () => new DeviceEventLogWorkflow(scopeFactory, _options.Value.ProcessingBatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
             await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, targetInstances, cancellationToken);
-
-            Console.WriteLine($"-------------------hello!");
         }
     }
 
@@ -73,27 +71,25 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public static async Task BatchRunAsync<TInput, TOutput>(this Func<WorkflowBase<TInput, TOutput>> factory, IAsyncEnumerable<TInput> source, int batchSize, int parallelInstances, CancellationToken cancellationToken)
         {
             Func<WorkflowBase<TInput, TOutput>> factory2 = factory;
+
             BatchBlock<TInput> batcher = new BatchBlock<TInput>(batchSize, new GroupingDataflowBlockOptions
             {
                 BoundedCapacity = batchSize * (parallelInstances + 2),
                 CancellationToken = cancellationToken
             });
+
             ActionBlock<TInput[]> manager = new ActionBlock<TInput[]>(async delegate (TInput[] chunk)
             {
                 using WorkflowBase<TInput, TOutput> workflow = factory2();
-                int attempts = 0;
-                while (workflow.Input == null && attempts < 150)
-                {
-                    await Task.Delay(50, cancellationToken);
-                    attempts++;
-                }
 
-                attempts = 0;
+                int attempts = 0;
                 while (!workflow.IsInitialized && attempts < 150)
                 {
                     await Task.Delay(50, cancellationToken);
                     attempts++;
                 }
+
+                using var outputLink = workflow.Output.LinkTo(DataflowBlock.NullTarget<TOutput>(), new DataflowLinkOptions { PropagateCompletion = true });
 
                 foreach (TInput item in chunk)
                 {
@@ -102,25 +98,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 workflow.Input.Complete();
 
-                //while (await workflow.Output.OutputAvailableAsync(cancellationToken))
-                //{
-                //    workflow.Output.TryReceive(out _);
-                //}
-
-                //await Task.WhenAll(workflow.Steps.Select((IDataflowBlock s) => s.Completion)).ContinueWith(t => Console.WriteLine($"-------------------boo!"));
                 await workflow.Output.Completion;
-                Console.WriteLine($"-------------------did stuff!");
+
             }, new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = parallelInstances,
                 CancellationToken = cancellationToken
             });
 
-
-            batcher.LinkTo(manager, new DataflowLinkOptions
-            {
-                PropagateCompletion = true
-            });
+            batcher.LinkTo(manager, new DataflowLinkOptions{PropagateCompletion = true});
 
             await foreach (TInput item2 in source.WithCancellation(cancellationToken))
             {
@@ -131,7 +117,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             batcher.Complete();
 
             await manager.Completion;
-            Console.WriteLine($"-------------------manager!");
         }
     }
 }

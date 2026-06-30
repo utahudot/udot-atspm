@@ -25,7 +25,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
     /// <summary>
     /// A high-level composite workflow that coordinates the import, broadcasting, transformation, and archival of device event logs.
     /// </summary>
-    public class DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000, int parallelProcesses = 50, CancellationToken cancellationToken = default) : WorkflowBase<Device, CompressedEventLogBase>
+    public class DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000, int parallelProcesses = 50, CancellationToken cancellationToken = default) : WorkflowBase<Device, Tuple<Device, EventLogModelBase>>
     {
         private readonly IServiceScopeFactory _services = services;
         private readonly int _batchSize = batchSize;
@@ -99,11 +99,32 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 
             BroadcastEvents.LinkTo(ArchiveEventLogsWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(TranformToIndianaEvent, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = false });
 
             TranformToIndianaEvent.LinkTo(SignalTimingPlansWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            ArchiveEventLogsWorkflow.Output.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-            Output.LinkTo(DataflowBlock.NullTarget<CompressedEventLogBase>());
+            SignalTimingPlansWorkflow.Output.LinkTo(DataflowBlock.NullTarget<SignalTimingPlan>(), new DataflowLinkOptions { PropagateCompletion = true });
+
+            ArchiveEventLogsWorkflow.Output.LinkTo(DataflowBlock.NullTarget<CompressedEventLogBase>(), new DataflowLinkOptions { PropagateCompletion = true });
+
+            _ = TrackWorkflowCompletionAsync();
+        }
+
+        private async Task TrackWorkflowCompletionAsync()
+        {
+            try
+            {
+                await Task.WhenAll(
+                    ArchiveEventLogsWorkflow.Output.Completion,
+                    SignalTimingPlansWorkflow.Output.Completion
+                );
+
+                Output.Complete();
+            }
+            catch (Exception ex)
+            {
+                ((IDataflowBlock)Output).Fault(ex);
+            }
         }
     }
 }
