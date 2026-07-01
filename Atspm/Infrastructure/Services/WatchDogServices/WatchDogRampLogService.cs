@@ -20,6 +20,7 @@ using System.Collections.Concurrent;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -28,12 +29,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
     {
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILogger<WatchDogRampLogService> logger;
+        private readonly WatchDogRampLogMessages logMessages;
 
         public WatchDogRampLogService(IIndianaEventLogRepository controllerEventLogRepository,
             ILogger<WatchDogRampLogService> logger)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.logger = logger;
+            this.logMessages = new WatchDogRampLogMessages(logger, nameof(WatchDogRampLogService));
         }
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
@@ -41,8 +44,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Location> locations,
             CancellationToken cancellationToken)
         {
+            logMessages.AnalysisStarted(locations?.Count ?? 0);
+
             if (locations.IsNullOrEmpty())
             {
+                logMessages.AnalysisCompleted(0);
                 return new List<WatchDogLogEvent>();
             }
             else
@@ -53,32 +59,41 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
+                        logMessages.AnalysisCancelled(errors.Count);
                         return errors.ToList();
                     }
-                    List<IndianaEvent> locationEvents = new List<IndianaEvent>();
 
-                    var RampMainLineLastRun = controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            Location.LocationIdentifier,
-                            options.RampMissedDetectorHitStart,
-                            options.RampMissedDetectorHitEnd)
-                        .ToList();
+                    try
+                    {
+                        List<IndianaEvent> locationEvents = new List<IndianaEvent>();
 
-                    var RampDetector = controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            Location.LocationIdentifier,
-                            options.RampDetectorStart,
-                            options.RampDetectorEnd)
-                        .ToList();
+                        var RampMainLineLastRun = controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                Location.LocationIdentifier,
+                                options.RampMissedDetectorHitStart,
+                                options.RampMissedDetectorHitEnd)
+                            .ToList();
 
-                    locationEvents.AddRange(RampMainLineLastRun);
-                    locationEvents.AddRange(RampDetector);
+                        var RampDetector = controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                Location.LocationIdentifier,
+                                options.RampDetectorStart,
+                                options.RampDetectorEnd)
+                            .ToList();
 
-                    CheckDetectors(Location, options, locationEvents, errors);
-                    CheckRampMissedDetectorHits(Location, options, locationEvents, errors);
+                        locationEvents.AddRange(RampMainLineLastRun);
+                        locationEvents.AddRange(RampDetector);
 
-
+                        CheckDetectors(Location, options, locationEvents, errors);
+                        CheckRampMissedDetectorHits(Location, options, locationEvents, errors);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Skip this location and continue so one failing/timed-out query does not abort the scan.
+                        logMessages.LocationScanFailed(Location.LocationIdentifier, ex);
+                    }
                 }
+                logMessages.AnalysisCompleted(errors.Count);
                 return errors.ToList();
             }
         }
@@ -134,7 +149,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError($"CheckForLowRampDetectorHits {detector.Id} {ex.Message}");
+                    logMessages.LowRampDetectorHitsError(detector.Id, ex);
                 }
         }
 

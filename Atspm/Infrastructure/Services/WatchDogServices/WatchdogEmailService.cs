@@ -20,6 +20,7 @@ using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
@@ -27,6 +28,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
     {
         private readonly ILogger<WatchdogEmailService> logger;
         private readonly IEmailService mailService;
+        private readonly WatchdogEmailLogMessages logMessages;
 
 
         public WatchdogEmailService(
@@ -36,6 +38,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             this.logger = logger;
             this.mailService = mailService;
+            this.logMessages = new WatchdogEmailLogMessages(logger, nameof(WatchdogEmailService));
         }
 
 
@@ -57,8 +60,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             await SendAreaEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, recipients, areas, logsFromPreviousDay);
             await SendAdminEmail(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, "All Locations", recipients.Where(r => r.CanReceiveAllLocationsEmail).ToList(), logsFromPreviousDay);
 
-            logger.LogInformation(
-                "Watchdog email recipients resolved. Total watchdog users: {TotalUsers}, admin subscriber users: {AdminSubscriberUsers}, regions: {Regions}, jurisdictions: {Jurisdictions}, areas: {Areas}",
+            logMessages.EmailRecipientsResolved(
                 recipients.Count,
                 recipients.Count(r => r.CanReceiveAllLocationsEmail),
                 regions.Count,
@@ -92,7 +94,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                 if (mailingAddresses.Any())
                 {
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
+                    await SendEmailWithLoggingAsync("All Locations", v, new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody);
                 }
             }
 
@@ -107,7 +109,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                 if (mailingAddresses.Any())
                 {
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, rampsubject, rampEmailBody, true);
+                    await SendEmailWithLoggingAsync("All Ramp Locations", v, new MailAddress(options.DefaultEmailAddress), mailingAddresses, rampsubject, rampEmailBody);
                 }
             }
 
@@ -148,7 +150,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                             LocationsByJurisdiction,
                             logsFromPreviousDay, true);
 
-                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
+                        await SendEmailWithLoggingAsync("Jurisdiction (Ramp)", jurisdiction.Name, new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody);
                     }
                 }
                 else if (options.EmailPmErrors || options.EmailAmErrors)
@@ -165,7 +167,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                             LocationsByJurisdiction,
                             logsFromPreviousDay);
 
-                        await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
+                        await SendEmailWithLoggingAsync("Jurisdiction", jurisdiction.Name, new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody);
                     }
                 }
             }
@@ -206,7 +208,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         LocationsByArea,
                         logsFromPreviousDay);
 
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
+                    await SendEmailWithLoggingAsync("Area", area.Name, new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody);
                 }
             }
         }
@@ -245,7 +247,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         LocationsByRegion,
                         logsFromPreviousDay);
 
-                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody, true);
+                    await SendEmailWithLoggingAsync("Region", region.Description, new MailAddress(options.DefaultEmailAddress), mailingAddresses, subject, emailBody);
                 }
             }
         }
@@ -256,6 +258,26 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 .Where(r => !string.IsNullOrWhiteSpace(r.Email))
                 .Select(r => new MailAddress(r.Email, r.DisplayName))
                 .ToList();
+        }
+
+        private async Task SendEmailWithLoggingAsync(
+            string scope,
+            string name,
+            MailAddress from,
+            IReadOnlyList<MailAddress> to,
+            string subject,
+            string body)
+        {
+            try
+            {
+                await mailService.SendEmailAsync(from, to, subject, body, true);
+                logMessages.EmailSent(scope, name, to.Count);
+            }
+            catch (Exception ex)
+            {
+                // Log and continue so a single failed email does not abort the remaining sends.
+                logMessages.EmailSendFailed(scope, name, ex);
+            }
         }
 
         public async Task<string> CreateEmailBody(
@@ -507,7 +529,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             if (locationDictionary is null || issues is null || logsFromPreviousDay is null)
             {
-                logger.LogError("Null parameter passed to GetMessage");
+                logMessages.NullParameterInGetMessage();
                 return string.Empty;
             }
             var errorMessage = "";
