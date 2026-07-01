@@ -164,8 +164,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             {
                 foreach (var c in apiKey.Claims)
                 {
-                    if (AtspmAuthorization.IsApiKeyPermission(c.Value)) continue;
-
                     claimsList.Add(new Claim(c.Type ?? ClaimTypes.Role, c.Value ?? ""));
                 }
             }
@@ -173,6 +171,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             if (!string.IsNullOrEmpty(apiKey.OwnerId))
             {
                 claimsList.Add(new Claim(ClaimTypes.NameIdentifier, apiKey.OwnerId));
+                claimsList.Add(new Claim(ClaimTypes.GivenName, apiKey.OwnerId));
+            }
+
+            if (!string.IsNullOrEmpty(apiKey.Name))
+            {
+                claimsList.Add(new Claim(ClaimTypes.Surname, apiKey.Name));
             }
 
             claimsList.Add(new Claim("AuthenticationMethod", "ApiKey"));
@@ -395,14 +399,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                         policy.RequireAssertion(context =>
                         {
-                            var isApiKeyPrincipal = IsApiKeyPrincipal(context.User);
-                            if (isApiKeyPrincipal && AtspmAuthorization.IsApiKeyPermission(permission))
-                            {
-                                return false;
-                            }
-
                             var hasPermission = context.User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == permission);
-                            var isAdmin = !isApiKeyPrincipal && context.User.IsInRole(AtspmAuthorization.Roles.Admin);
+                            var isAdmin = context.User.IsInRole(AtspmAuthorization.Roles.Admin);
 
                             return hasPermission || isAdmin;
                         });
@@ -412,21 +410,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.AddPolicy(AtspmAuthorization.Roles.Admin, policy =>
                 {
                     policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireAssertion(context =>
-                    {
-                        return !IsApiKeyPrincipal(context.User)
-                            && context.User.HasClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
-                    });
+                    policy.RequireClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
                 });
             });
 
             return services;
-        }
-
-        private static bool IsApiKeyPrincipal(ClaimsPrincipal user)
-        {
-            return user.Identities.Any(i => string.Equals(i.AuthenticationType, "ApiKey", StringComparison.OrdinalIgnoreCase))
-                || user.HasClaim(c => c.Type == "AuthenticationMethod" && c.Value == "ApiKey");
         }
     }
 }
