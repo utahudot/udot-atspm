@@ -1,5 +1,6 @@
 import {
   ApiKeyMetadata,
+  ApiKeyScope,
   CreateApiKeyData,
   CreatedApiKeyResponse,
   useApiKeys,
@@ -23,7 +24,10 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 
+type ApiKeyManagementMode = 'profile' | 'admin'
+
 interface ApiKeyManagementProps {
+  mode?: ApiKeyManagementMode
   currentClaims?: string[]
   apiKeys?: ApiKeyMetadata[]
   isApiKeysLoading?: boolean
@@ -31,6 +35,7 @@ interface ApiKeyManagementProps {
 }
 
 const ApiKeyManagement = ({
+  mode = 'profile',
   currentClaims: suppliedClaims,
   apiKeys: suppliedApiKeys,
   isApiKeysLoading: suppliedIsApiKeysLoading,
@@ -39,20 +44,26 @@ const ApiKeyManagement = ({
   const { addNotification } = useNotificationStore()
   const currentClaims = suppliedClaims ?? getCookieClaims()
   const isGlobalAdmin = currentClaims.includes('Admin')
+  const isAdminMode = mode === 'admin'
+  const apiKeyScope: ApiKeyScope = isAdminMode ? 'all' : 'mine'
   const canViewApiKeys =
-    isGlobalAdmin || currentClaims.includes('ApiKey:View')
+    isGlobalAdmin || (!isAdminMode && currentClaims.includes('ApiKey:View'))
   const canCreateApiKeys =
-    isGlobalAdmin || currentClaims.includes('ApiKey:Create')
+    isGlobalAdmin || (!isAdminMode && currentClaims.includes('ApiKey:Create'))
   const canRevokeApiKeys =
-    isGlobalAdmin || currentClaims.includes('ApiKey:Revoke')
+    isGlobalAdmin || (!isAdminMode && currentClaims.includes('ApiKey:Revoke'))
+  const shouldQueryApiKeys = suppliedApiKeys === undefined && canViewApiKeys
 
   const {
     data: queriedApiKeys = [],
     isLoading: queriedIsApiKeysLoading,
     refetch: queriedRefetchApiKeys,
-  } = useApiKeys(suppliedApiKeys === undefined && canViewApiKeys)
+  } = useApiKeys({
+    enabled: shouldQueryApiKeys,
+    scope: apiKeyScope,
+  })
   const { data: allClaims = [], isLoading: isClaimsLoading } =
-    useIdentityClaims(isGlobalAdmin)
+    useIdentityClaims(canCreateApiKeys && isGlobalAdmin)
   const createApiKey = useCreateApiKey()
   const revokeApiKey = useRevokeApiKey()
 
@@ -74,8 +85,10 @@ const ApiKeyManagement = ({
     : apiKeys.filter((key) => !key.isRevoked)
 
   const availableClaims = useMemo(() => {
+    if (!canCreateApiKeys) return []
+
     return getAssignableApiKeyClaims(isGlobalAdmin ? allClaims : currentClaims)
-  }, [allClaims, currentClaims, isGlobalAdmin])
+  }, [allClaims, canCreateApiKeys, currentClaims, isGlobalAdmin])
 
   const handleCreate = async (payload: CreateApiKeyData) => {
     try {

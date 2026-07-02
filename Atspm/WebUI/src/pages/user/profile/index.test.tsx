@@ -11,6 +11,7 @@ import '@testing-library/jest-dom'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
 
 jest.mock('@/features/identity/api/apiKeys', () => ({
   __esModule: true,
@@ -49,6 +50,10 @@ jest.mock('js-cookie', () => ({
   },
 }))
 
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
+}))
+
 const mockUseApiKeys = useApiKeys as jest.Mock
 const mockUseIdentityClaims = useIdentityClaims as jest.Mock
 const mockUseCreateApiKey = useCreateApiKey as jest.Mock
@@ -56,6 +61,7 @@ const mockUseRevokeApiKey = useRevokeApiKey as jest.Mock
 const mockUseEditUserInfo = useEditUserInfo as jest.Mock
 const mockUseUserInfo = useUserInfo as jest.Mock
 const mockCookiesGet = Cookies.get as jest.Mock
+const mockUseRouter = useRouter as jest.Mock
 
 const apiKeys = [
   {
@@ -82,10 +88,28 @@ const apiKeys = [
   },
 ]
 
+const allApiKeys = [
+  {
+    id: 3,
+    name: 'Other user key',
+    ownerId: 'user-3',
+    ownerEmail: 'three@example.com',
+    ownerName: 'User Three',
+    createdAt: '2026-06-14T12:00:00Z',
+    expiresAt: null,
+    isRevoked: false,
+    claims: ['Data:View'],
+  },
+]
+
 describe('ProfilePage', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockCookiesGet.mockReturnValue('Admin,ApiKey:View,ApiKey:Create')
+    mockUseRouter.mockReturnValue({
+      isReady: true,
+      query: {},
+    })
     mockUseUserInfo.mockReturnValue({
       data: {
         firstName: 'Admin',
@@ -98,11 +122,19 @@ describe('ProfilePage', () => {
     mockUseEditUserInfo.mockReturnValue({
       mutate: jest.fn(),
     })
-    mockUseApiKeys.mockImplementation((enabled: boolean) => ({
-      data: enabled ? apiKeys : [],
-      isLoading: false,
-      refetch: jest.fn(),
-    }))
+    mockUseApiKeys.mockImplementation(
+      (options: { enabled?: boolean; scope?: 'mine' | 'all' } | boolean) => {
+        const enabled =
+          (typeof options === 'boolean' ? options : options.enabled) === true
+        const scope = typeof options === 'boolean' ? 'mine' : options.scope
+
+        return {
+          data: enabled ? (scope === 'all' ? allApiKeys : apiKeys) : [],
+          isLoading: false,
+          refetch: jest.fn(),
+        }
+      }
+    )
     mockUseIdentityClaims.mockReturnValue({
       data: ['Admin', 'ApiKey:Create', 'ApiKey:Revoke', 'Data:View'],
       isLoading: false,
@@ -126,9 +158,22 @@ describe('ProfilePage', () => {
 
     render(<ProfilePage />)
 
+    expect(mockUseApiKeys).toHaveBeenCalledWith({
+      enabled: true,
+      scope: 'mine',
+    })
+    expect(mockUseApiKeys).toHaveBeenCalledWith({
+      enabled: false,
+      scope: 'all',
+    })
     expect(screen.getByRole('tab', { name: /account/i })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /security/i })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: /api keys/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /^api keys$/i })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /all api keys/i })
+    ).toBeInTheDocument()
     expect(screen.getByText('Your Information')).toBeInTheDocument()
     expect(screen.getByText('Admin')).toBeInTheDocument()
     expect(screen.getByText('WatchdogSubscriber')).toBeInTheDocument()
@@ -139,7 +184,7 @@ describe('ProfilePage', () => {
       screen.getByRole('button', { name: /update password/i })
     ).toBeInTheDocument()
 
-    await user.click(screen.getByRole('tab', { name: /api keys/i }))
+    await user.click(screen.getByRole('tab', { name: /^api keys$/i }))
     expect(screen.getByRole('list', { name: /api keys/i })).toBeInTheDocument()
     expect(screen.getByText('Active key')).toBeInTheDocument()
     expect(screen.queryByText('Revoked key')).not.toBeInTheDocument()
@@ -147,5 +192,13 @@ describe('ProfilePage', () => {
 
     await user.click(screen.getByRole('button', { name: /show revoked keys/i }))
     expect(screen.getByText('Revoked key')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('tab', { name: /all api keys/i }))
+    expect(mockUseApiKeys).toHaveBeenCalledWith({
+      enabled: true,
+      scope: 'all',
+    })
+    expect(screen.getByText('Other user key')).toBeInTheDocument()
+    expect(screen.getByText('User Three (three@example.com)')).toBeInTheDocument()
   })
 })

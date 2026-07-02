@@ -23,6 +23,7 @@ import {
   Typography,
 } from '@mui/material'
 import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -68,6 +69,7 @@ const TabPanel = ({
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
+  const router = useRouter()
 
   const { data: profile } = useUserInfo({ config: { enabled: true } })
   const { mutate: saveUser } = useEditUserInfo()
@@ -79,7 +81,15 @@ const ProfilePage = () => {
     data: apiKeys = [],
     isLoading: isApiKeysLoading,
     refetch: refetchApiKeys,
-  } = useApiKeys(canViewApiKeys)
+  } = useApiKeys({ enabled: canViewApiKeys, scope: 'mine' })
+  const {
+    data: allApiKeys = [],
+    isLoading: isAllApiKeysLoading,
+    refetch: refetchAllApiKeys,
+  } = useApiKeys({
+    enabled: isGlobalAdmin && activeTab === 3,
+    scope: 'all',
+  })
 
   const roles = useMemo(() => {
     const rawRoles = profile?.roles as unknown
@@ -123,6 +133,18 @@ const ProfilePage = () => {
       setIsEditing(false)
     }
   }, [profile, reset])
+
+  useEffect(() => {
+    if (!router.isReady || !isGlobalAdmin) return
+
+    const tab = Array.isArray(router.query.tab)
+      ? router.query.tab[0]
+      : router.query.tab
+
+    if (tab === 'all-api-keys') {
+      setActiveTab(3)
+    }
+  }, [isGlobalAdmin, router.isReady, router.query.tab])
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     saveUser({ ...data, roles })
@@ -183,6 +205,13 @@ const ProfilePage = () => {
             aria-controls="profile-tabpanel-2"
             label="API Keys"
           />
+          {isGlobalAdmin && (
+            <Tab
+              id="profile-tab-3"
+              aria-controls="profile-tabpanel-3"
+              label="All API Keys"
+            />
+          )}
         </Tabs>
 
         <TabPanel value={activeTab} index={0}>
@@ -347,6 +376,18 @@ const ProfilePage = () => {
             refetchApiKeys={refetchApiKeys}
           />
         </TabPanel>
+
+        {isGlobalAdmin && (
+          <TabPanel value={activeTab} index={3}>
+            <ApiKeyManagement
+              mode="admin"
+              currentClaims={currentClaims}
+              apiKeys={allApiKeys}
+              isApiKeysLoading={isAllApiKeysLoading}
+              refetchApiKeys={refetchAllApiKeys}
+            />
+          </TabPanel>
+        )}
       </Box>
     </ResponsivePageLayout>
   )

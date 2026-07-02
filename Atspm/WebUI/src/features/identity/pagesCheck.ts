@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react'
 
 export enum PageNames {
   Areas = 'Areas',
+  ApiKeys = 'API Keys',
   DeviceConfigurations = 'Device Configurations',
   FAQs = 'FAQs',
   Jurisdiction = 'Jurisdictions',
@@ -69,7 +70,12 @@ const rolesConfigToLink: Map<string, string> = new Map([
   [PageNames.Roles, '/admin/roles'],
 ])
 
+const apiKeyAdminConfigToLink: Map<string, string> = new Map([
+  [PageNames.ApiKeys, '/user/profile?tab=all-api-keys'],
+])
+
 const adminAccessToLinks = new Map([
+  ['Admin', apiKeyAdminConfigToLink],
   ['GeneralConfiguration:View', generalConfigListToLink],
   ['LocationConfiguration:View', locationConfigListToLink],
   ['User:View', userConfigToLink],
@@ -84,15 +90,21 @@ export const useGetAdminPagesList = () => {
     return new Map()
   }
   const pagesToView = new Map<string, string>()
+  const claimsList = claims
+    .split(',')
+    .map((claim) => claim.trim())
+    .filter(Boolean)
+  const isGlobalAdmin = claimsList.some(
+    (claim) => claim.toLowerCase() === 'admin'
+  )
 
-  if (claims.toLowerCase().includes('admin')) {
+  if (isGlobalAdmin) {
     adminAccessToLinks.forEach((map) => {
       map.forEach((value, key) => {
         pagesToView.set(key, value)
       })
     })
   } else {
-    const claimsList = claims.split(',')
     claimsList.forEach((claim) => {
       adminAccessToLinks.forEach((value, key) => {
         if (claim.toLowerCase() === key.toLowerCase()) {
@@ -173,7 +185,6 @@ export const useSideBarPermission = (
 export const useUserHasClaim = (claim: string) => {
   const [hasPermission, setHasPermission] = useState(false)
   const claims = Cookies.get('claims')
-  const userClaims = claims ? claims.split(',') : []
 
   useEffect(() => {
     const checkPermission = () => {
@@ -182,6 +193,7 @@ export const useUserHasClaim = (claim: string) => {
         return
       }
 
+      const userClaims = claims ? claims.split(',') : []
       if (userClaims.includes(claim) || userClaims.includes('Admin')) {
         setHasPermission(true)
       } else {
@@ -190,7 +202,7 @@ export const useUserHasClaim = (claim: string) => {
     }
 
     checkPermission()
-  }, [claim, userClaims])
+  }, [claim, claims])
 
   return hasPermission
 }

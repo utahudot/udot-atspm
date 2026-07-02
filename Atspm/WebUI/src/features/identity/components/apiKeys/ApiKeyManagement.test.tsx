@@ -103,7 +103,10 @@ describe('ApiKeyManagement', () => {
 
     render(<ApiKeyManagement />)
 
-    expect(mockUseApiKeys).toHaveBeenCalledWith(true)
+    expect(mockUseApiKeys).toHaveBeenCalledWith({
+      enabled: true,
+      scope: 'mine',
+    })
     expect(mockUseIdentityClaims).toHaveBeenCalledWith(true)
     expect(screen.getByRole('list', { name: /api keys/i })).toBeInTheDocument()
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
@@ -184,10 +187,74 @@ describe('ApiKeyManagement', () => {
 
     render(<ApiKeyManagement />)
 
-    expect(mockUseApiKeys).toHaveBeenCalledWith(false)
+    expect(mockUseApiKeys).toHaveBeenCalledWith({
+      enabled: false,
+      scope: 'mine',
+    })
     expect(screen.getByText('API Keys')).toBeInTheDocument()
     expect(
       screen.getByText('API key management is not enabled for your account.')
     ).toBeInTheDocument()
+  })
+
+  it('uses the all-keys scope in admin mode and keeps the normal key-management UI', async () => {
+    const user = userEvent.setup()
+    mockUseApiKeys.mockReturnValue({
+      data: [
+        {
+          id: 10,
+          name: 'System integration',
+          ownerId: 'user-2',
+          createdAt: '2026-06-18T12:00:00Z',
+          expiresAt: null,
+          isRevoked: false,
+          claims: [],
+        },
+        {
+          id: 11,
+          name: 'Revoked integration',
+          ownerId: 'user-3',
+          createdAt: '2026-06-17T12:00:00Z',
+          expiresAt: null,
+          isRevoked: true,
+          claims: [],
+        },
+      ],
+      isLoading: false,
+      refetch: jest.fn(),
+    })
+
+    render(<ApiKeyManagement mode="admin" />)
+
+    expect(mockUseApiKeys).toHaveBeenCalledWith({
+      enabled: true,
+      scope: 'all',
+    })
+    expect(mockUseIdentityClaims).toHaveBeenCalledWith(true)
+    expect(screen.getByText('System integration')).toBeInTheDocument()
+    expect(screen.getByText('user-2')).toBeInTheDocument()
+    expect(screen.queryByText('Revoked integration')).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Create and revoke keys for API integrations.')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /new api key/i })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: /view all api keys/i })
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^revoke$/i })).toBeEnabled()
+    expect(screen.getByText('Claims')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /show revoked keys/i }))
+    expect(screen.getByText('Revoked integration')).toBeInTheDocument()
+    expect(screen.getByText('user-3')).toBeInTheDocument()
+
+    const visibleRevokeButtons = screen.getAllByRole('button', {
+      name: /^revoke$/i,
+    })
+    expect(visibleRevokeButtons).toHaveLength(2)
+    expect(visibleRevokeButtons[0]).toBeEnabled()
+    expect(visibleRevokeButtons[1]).toBeDisabled()
   })
 })
