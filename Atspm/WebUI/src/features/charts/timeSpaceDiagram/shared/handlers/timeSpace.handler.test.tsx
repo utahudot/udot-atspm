@@ -336,6 +336,31 @@ function buildOptionWithAssociatedSeries(): EChartsOption {
   }
 }
 
+function buildOptionWithNoDataCycle(): EChartsOption {
+  return {
+    grid: {
+      left: 220,
+    },
+    series: [
+      {
+        id: 'Cycles 1 Eastbound',
+        data: [[0, 10, 0]],
+      },
+      {
+        id: 'Cycles 2 Eastbound',
+        data: [['2026-03-20T00:00:00Z', 20, 0]],
+      },
+      {
+        id: TIME_SPACE_LOCATION_AXIS_SERIES_ID,
+        data: [
+          ['2026-03-20T00:00:00Z', 10, '1', null, 150, 0, 0, 0],
+          ['2026-03-20T00:00:00Z', 20, '2', null, 150, 0, 0, 0],
+        ],
+      },
+    ],
+  }
+}
+
 function buildOptionWithMissingCycleLength(): EChartsOption {
   return {
     series: [
@@ -463,6 +488,31 @@ describe('useTimeSpaceHandler', () => {
       ['2026-03-20T00:00:00Z', 10, 0],
     ])
     expect(chart.setOptionCalls).toHaveLength(0)
+  })
+
+  it('does not drag cycle overlays when the cycle has no data', () => {
+    const chart = new MockChart(buildOptionWithNoDataCycle())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 10, 5000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([0, 0])
+    expect(getSeriesData(chart, 'Cycles 1 Eastbound')).toEqual([[0, 10, 0]])
+    expect(chart.setOptionCalls).toHaveLength(0)
+  })
+
+  it('drags data-backed cycle overlays when another row has no data', () => {
+    const chart = new MockChart(buildOptionWithNoDataCycle())
+
+    renderHook(() => useTimeSpaceHandler(chart as unknown as ECharts, 0))
+
+    dragGroup(chart, 20, 5000)
+
+    expect(getLocationAxisOffsets(chart)).toEqual([0, 5])
+    expect(getSeriesData(chart, 'Cycles 2 Eastbound')).toEqual([
+      [shiftTimestamp('2026-03-20T00:00:00Z', 5000), 20, 0],
+    ])
   })
 
   it('clears cached offsets after an external reset before the next drag', () => {
