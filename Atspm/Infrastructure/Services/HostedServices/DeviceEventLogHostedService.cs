@@ -20,10 +20,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
-using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
-using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
@@ -60,63 +58,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 devicesPerWorkflow = (int)Math.Ceiling((double)totalDevices / targetInstances);
             }
 
-            Func<DeviceEventLogWorkflow> workflowFactory = () => new DeviceEventLogWorkflow(scopeFactory, _options.Value.ProcessingBatchSize, _options.Value.ParallelProcesses, cancellationToken);
+            Func<DeviceEventLogWorkflow> workflowFactory = () =>
+                new DeviceEventLogWorkflow(
+                    scopeFactory,
+                    _options.Value.ProcessingBatchSize,
+                    _options.Value.ParallelProcesses,
+                    cancellationToken
+                );
 
             await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, targetInstances, cancellationToken);
-        }
-    }
-
-    public static class WorkflowExtensions
-    {
-        public static async Task BatchRunAsync<TInput, TOutput>(this Func<WorkflowBase<TInput, TOutput>> factory, IAsyncEnumerable<TInput> source, int batchSize, int parallelInstances, CancellationToken cancellationToken)
-        {
-            Func<WorkflowBase<TInput, TOutput>> factory2 = factory;
-
-            BatchBlock<TInput> batcher = new BatchBlock<TInput>(batchSize, new GroupingDataflowBlockOptions
-            {
-                BoundedCapacity = batchSize * (parallelInstances + 2),
-                CancellationToken = cancellationToken
-            });
-
-            ActionBlock<TInput[]> manager = new ActionBlock<TInput[]>(async delegate (TInput[] chunk)
-            {
-                using WorkflowBase<TInput, TOutput> workflow = factory2();
-
-                int attempts = 0;
-                while (!workflow.IsInitialized && attempts < 150)
-                {
-                    await Task.Delay(50, cancellationToken);
-                    attempts++;
-                }
-
-                using var outputLink = workflow.Output.LinkTo(DataflowBlock.NullTarget<TOutput>(), new DataflowLinkOptions { PropagateCompletion = true });
-
-                foreach (TInput item in chunk)
-                {
-                    await workflow.Input.SendAsync(item, cancellationToken);
-                }
-
-                workflow.Input.Complete();
-
-                await workflow.Output.Completion;
-
-            }, new ExecutionDataflowBlockOptions
-            {
-                MaxDegreeOfParallelism = parallelInstances,
-                CancellationToken = cancellationToken
-            });
-
-            batcher.LinkTo(manager, new DataflowLinkOptions{PropagateCompletion = true});
-
-            await foreach (TInput item2 in source.WithCancellation(cancellationToken))
-            {
-                await batcher.SendAsync(item2, cancellationToken);
-            }
-
-            batcher.TriggerBatch();
-            batcher.Complete();
-
-            await manager.Completion;
         }
     }
 }

@@ -18,7 +18,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 {
@@ -54,21 +53,20 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         /// <inheritdoc/>
         public override async Task Initialize()
         {
-            Steps = new();
             Input = new(null, blockOptions);
             Output = new(blockOptions);
 
             InstantiateSteps();
 
-            await Task.WhenAll(
-                ImportEventLogsWorkflow.WhenInitialized(),
-                ArchiveEventLogsWorkflow.WhenInitialized(),
-                SignalTimingPlansWorkflow.WhenInitialized()
-            );
+            await ImportEventLogsWorkflow.Initialize();
+            await ArchiveEventLogsWorkflow.Initialize();
+            await SignalTimingPlansWorkflow.Initialize();
 
             Steps.Add(Input);
             AddStepsToTracker();
             LinkSteps();
+
+            _ = TrackWorkflowCompletionAsync();
         }
 
         /// <inheritdoc/>
@@ -86,7 +84,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             ImportEventLogsWorkflow = new(_services, _parallelProcesses, _cancellationToken);
             BroadcastEvents = new(null, new DataflowBlockOptions() { CancellationToken = _cancellationToken });
-            TranformToIndianaEvent = new(t => new[] { t.Item2 }.OfType<IndianaEvent>(), new ExecutionDataflowBlockOptions { CancellationToken = _cancellationToken });
+            TranformToIndianaEvent = new(t => new[] { t.Item2 }.OfType<IndianaEvent>(), new ExecutionDataflowBlockOptions {EnsureOrdered = false, CancellationToken = _cancellationToken });
             ArchiveEventLogsWorkflow = new(_services, _batchSize, _parallelProcesses, _cancellationToken);
             SignalTimingPlansWorkflow = new(_services, _batchSize, _parallelProcesses, _cancellationToken);
         }
@@ -102,12 +100,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             BroadcastEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = false });
 
             TranformToIndianaEvent.LinkTo(SignalTimingPlansWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            SignalTimingPlansWorkflow.Output.LinkTo(DataflowBlock.NullTarget<SignalTimingPlan>(), new DataflowLinkOptions { PropagateCompletion = true });
-
-            ArchiveEventLogsWorkflow.Output.LinkTo(DataflowBlock.NullTarget<CompressedEventLogBase>(), new DataflowLinkOptions { PropagateCompletion = true });
-
-            _ = TrackWorkflowCompletionAsync();
+            SignalTimingPlansWorkflow.Output.LinkTo(DataflowBlock.NullTarget<SignalTimingPlan>());
+            ArchiveEventLogsWorkflow.Output.LinkTo(DataflowBlock.NullTarget<CompressedEventLogBase>());
         }
 
         private async Task TrackWorkflowCompletionAsync()
@@ -126,6 +120,52 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
                 ((IDataflowBlock)Output).Fault(ex);
             }
         }
+    }
+
+    public abstract class WorkflowBase<TIn, TOut> 
+    {
+        protected readonly DataflowBlockOptions blockOptions;
+
+        public BroadcastBlock<TIn> Input { get; protected set; }
+        public BufferBlock<TOut> Output { get; protected set; }
+        public List<IDataflowBlock> Steps { get; } = new();
+
+        protected WorkflowBase(DataflowBlockOptions? options = null)
+        {
+            blockOptions = options ?? new DataflowBlockOptions();
+        }
+
+        /// <summary>
+        /// Call this once before sending data.
+        /// </summary>
+        public virtual async Task Initialize()
+        {
+            Input = new(null, blockOptions);
+            Output = new(blockOptions);
+
+            InstantiateSteps();
+
+            Steps.Add(Input);
+
+            AddStepsToTracker();
+
+            LinkSteps();
+        }
+
+        /// <summary>
+        /// Instantiate workflow steps objects
+        /// </summary>
+        protected abstract void InstantiateSteps();
+
+        /// <summary>
+        /// Add steps to <see cref="Steps"/> for step task tracking
+        /// </summary>
+        protected abstract void AddStepsToTracker();
+
+        /// <summary>
+        /// Link workflow steps
+        /// </summary>
+        protected abstract void LinkSteps();
     }
 }
 

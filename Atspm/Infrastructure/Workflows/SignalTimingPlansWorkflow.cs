@@ -78,11 +78,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         /// <inheritdoc/>
         protected override void InstantiateSteps()
         {
-            BatchEventLogs = new(_batchSize, new GroupingDataflowBlockOptions() { CancellationToken = _cancellationToken });
-            GenerateSignalPlansStep = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            MergeExistingSignalPlansStep = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            ReconcileSignalPlansStep = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            SaveSignalTimingPlans = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            BatchEventLogs = new(_batchSize, new GroupingDataflowBlockOptions() {EnsureOrdered = false, CancellationToken = _cancellationToken });
+            GenerateSignalPlansStep = new(new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            MergeExistingSignalPlansStep = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            ReconcileSignalPlansStep = new(new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            SaveSignalTimingPlans = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
         }
 
         /// <inheritdoc/>

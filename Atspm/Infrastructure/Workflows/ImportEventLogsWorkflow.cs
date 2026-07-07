@@ -63,8 +63,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             Thread.MemoryBarrier();
 
-            DownloadDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            DecodeDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            DownloadDeviceData = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            DecodeDeviceData = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
         }
 
         /// <inheritdoc/>

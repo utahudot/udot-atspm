@@ -68,9 +68,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         /// <inheritdoc/>
         protected override void InstantiateSteps()
         {
-            BatchEventLogs = new(_batchSize, new GroupingDataflowBlockOptions() { CancellationToken = _cancellationToken });
-            ArchiveDeviceData = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = _cancellationToken });
+            BatchEventLogs = new(_batchSize, new GroupingDataflowBlockOptions() { EnsureOrdered = false, CancellationToken = _cancellationToken });
+            ArchiveDeviceData = new(new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = 1, CancellationToken = _cancellationToken });
         }
 
         /// <inheritdoc/>

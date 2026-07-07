@@ -35,7 +35,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
         protected override async IAsyncEnumerable<IEnumerable<SignalTimingPlan>> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var groups = input.GroupBy(g => (g.LocationIdentifier, g.PlanNumber));
-            if (!groups.Any()) yield return Enumerable.Empty<SignalTimingPlan>();
+            if (!groups.Any()) yield break;
 
             using var scope = _services.CreateAsyncScope();
             var repo = scope.ServiceProvider.GetService<ISignalTimingPlanRepository>();
