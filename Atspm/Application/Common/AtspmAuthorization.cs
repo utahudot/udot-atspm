@@ -52,6 +52,14 @@ namespace Utah.Udot.Atspm.Common
 
         public const string PluginFeatureClaimType = "atspm:plugin:feature";
 
+        public const string ApiKeyPermissionPrefix = "ApiKey:";
+
+        public static bool IsApiKeyPermission(string? permission)
+        {
+            return !string.IsNullOrWhiteSpace(permission)
+                && permission.StartsWith(ApiKeyPermissionPrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// Contains the static string identifiers for application-level roles.
         /// These are typically assigned to users to group multiple permissions.

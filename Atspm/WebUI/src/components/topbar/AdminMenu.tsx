@@ -23,7 +23,7 @@ const GROUPS: Record<string, PageNames[]> = {
     PageNames.ImpactTypes,
     PageNames.UpdateNewEntityVersion,
   ],
-  'User Management': [PageNames.Users, PageNames.Roles],
+  'User Management': [PageNames.Users, PageNames.Roles, PageNames.ApiKeys],
   Other: [PageNames.FAQs, PageNames.MenuItems, PageNames.MeasureDefaults],
 }
 

@@ -1,4 +1,4 @@
-﻿#region license
+﻿﻿#region license
 // Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Utah.Udot.ATSPM.IdentityApi.Controllers/ApiKeyController.cs
 // 
