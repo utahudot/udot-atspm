@@ -21,6 +21,7 @@ using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -30,6 +31,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly ILogger<WatchDogRampLogService> logger;
+        private readonly WatchDogAmLogMessages logMessages;
 
         public WatchDogAmLogService(IIndianaEventLogRepository controllerEventLogRepository,
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
@@ -38,6 +40,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.logger = logger;
+            this.logMessages = new WatchDogAmLogMessages(logger, nameof(WatchDogAmLogService));
         }
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
@@ -45,8 +48,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Location> locations,
             CancellationToken cancellationToken)
         {
+            logMessages.AnalysisStarted(locations?.Count ?? 0);
+
             if (locations.IsNullOrEmpty())
             {
+                logMessages.AnalysisCompleted(0);
                 return new List<WatchDogLogEvent>();
             }
             else
@@ -57,25 +63,36 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
+                        logMessages.AnalysisCancelled(errors.Count);
                         return errors.ToList();
                     }
-                    List<IndianaEvent> locationEvents = new List<IndianaEvent>();
 
-                    var AmAnalysis = controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            Location.LocationIdentifier,
-                            options.AmAnalysisStart,
-                            options.AmAnalysisEnd)
-                        .ToList();
+                    try
+                    {
+                        List<IndianaEvent> locationEvents = new List<IndianaEvent>();
 
-                    locationEvents.AddRange(AmAnalysis);
+                        var AmAnalysis = controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                Location.LocationIdentifier,
+                                options.AmAnalysisStart,
+                                options.AmAnalysisEnd)
+                            .ToList();
 
-                    var tasks = new List<Task>();
-                    tasks.Add(CheckLocationForPhaseErrors(Location, options, locationEvents, errors));
+                        locationEvents.AddRange(AmAnalysis);
 
-                    await Task.WhenAll(tasks);
+                        var tasks = new List<Task>();
+                        tasks.Add(CheckLocationForPhaseErrors(Location, options, locationEvents, errors));
+
+                        await Task.WhenAll(tasks);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Skip this location and continue so one failing/timed-out query does not abort the scan.
+                        logMessages.LocationScanFailed(Location.LocationIdentifier, ex);
+                    }
                 }
 
+                logMessages.AnalysisCompleted(errors.Count);
                 return errors.ToList();
             }
         }
@@ -151,7 +168,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
             catch (Exception e)
             {
-                logger.LogError($"Unable to get analysis phase for Location {Location.LocationIdentifier}");
+                logMessages.AnalysisPhaseUnavailable(Location.LocationIdentifier, e);
             }
 
             if (analysisPhaseCollection != null)
@@ -159,39 +176,36 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 foreach (var phase in analysisPhaseCollection.AnalysisPhases)
                 //Parallel.ForEach(APcollection.Cycles, options,phase =>
                 {
-                    var taskList = new List<Task>();
                     var approach = Location.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault();
                     if (approach != null)
                     {
                         try
                         {
-                            taskList.Add(CheckForMaxOut(phase, approach, options, errors));
+                            await CheckForMaxOut(phase, approach, options, errors);
                         }
                         catch (Exception e)
                         {
-                            logger.LogError($"{phase.locationIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
+                            logMessages.MaxOutCheckError(phase.locationIdentifier, phase.PhaseNumber, e);
                         }
 
                         try
                         {
-
-                            taskList.Add(CheckForForceOff(phase, approach, options, errors));
+                            await CheckForForceOff(phase, approach, options, errors);
                         }
                         catch (Exception e)
                         {
-                            logger.LogError($"{phase.locationIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
+                            logMessages.ForceOffCheckError(phase.locationIdentifier, phase.PhaseNumber, e);
                         }
 
                         try
                         {
-                            taskList.Add(CheckForStuckPed(phase, approach, options, errors));
+                            await CheckForStuckPed(phase, approach, options, errors);
                         }
                         catch (Exception e)
                         {
-                            logger.LogError($"{phase.locationIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
+                            logMessages.StuckPedCheckError(phase.locationIdentifier, phase.PhaseNumber, e);
                         }
                     }
-                    await Task.WhenAll(taskList);
                 }
             }
         }
@@ -209,7 +223,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             {
                 var message = $"{phase.PedestrianEvents.Count} Pedestrian Activations";
 
-                logger.LogDebug($"Location {approach.Location.LocationIdentifier} {phase.PedestrianEvents.Count} Pedestrian Activations");
+                logMessages.StuckPedDetected(approach.Location.LocationIdentifier, phase.PedestrianEvents.Count);
 
                 AddApproachError(
                     approach.Location,
@@ -230,7 +244,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             {
                 var message = $"Force Offs {Math.Round(phase.PercentForceOffs * 100, 1)}%";
 
-                logger.LogDebug($"Location {approach.Location.LocationIdentifier} Has ForceOff Errors");
+                logMessages.ForceOffDetected(approach.Location.LocationIdentifier);
 
                 AddApproachError(
                     approach.Location,
@@ -252,7 +266,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             {
                 var message = $"Max Outs {Math.Round(phase.PercentMaxOuts * 100, 1)}%";
 
-                logger.LogDebug($"Location {approach.Location.LocationIdentifier} Has MaxOut Errors");
+                logMessages.MaxOutDetected(approach.Location.LocationIdentifier);
 
                 AddApproachError(
                     approach.Location,

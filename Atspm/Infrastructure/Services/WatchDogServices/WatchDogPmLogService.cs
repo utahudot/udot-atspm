@@ -21,6 +21,7 @@ using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -30,6 +31,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly PhaseService phaseService;
         private readonly ILogger<WatchDogRampLogService> logger;
+        private readonly WatchDogPmLogMessages logMessages;
 
         public WatchDogPmLogService(IIndianaEventLogRepository controllerEventLogRepository,
             PhaseService phaseService,
@@ -38,6 +40,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.phaseService = phaseService;
             this.logger = logger;
+            this.logMessages = new WatchDogPmLogMessages(logger, nameof(WatchDogPmLogService));
         }
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
@@ -45,8 +48,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Location> locations,
             CancellationToken cancellationToken)
         {
+            logMessages.AnalysisStarted(locations?.Count ?? 0);
+
             if (locations.IsNullOrEmpty())
             {
+                logMessages.AnalysisCompleted(0);
                 return new List<WatchDogLogEvent>();
             }
             else
@@ -57,46 +63,57 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
+                        logMessages.AnalysisCancelled(errors.Count);
                         return errors.ToList();
                     }
-                    List<IndianaEvent> locationEvents = new List<IndianaEvent>();
 
-                    var PmAnalysis = controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            Location.LocationIdentifier,
-                            options.PmAnalysisStart,
-                            options.PmAnalysisEnd)
-                        .ToList();
-                    var RampMainline = controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            Location.LocationIdentifier,
-                            options.PmScanDate.Date + new TimeSpan(options.RampMainlineStartHour, 0, 0),
-                            options.PmScanDate.Date + new TimeSpan(options.RampMainlineEndHour, 0, 0))
-                        .ToList();
-                    var RampStuckQueue = controllerEventLogRepository
-                        .GetEventsBetweenDates(
-                            Location.LocationIdentifier,
-                            options.PmScanDate.Date + new TimeSpan(options.RampStuckQueueStartHour, 0, 0),
-                            options.PmScanDate.Date + new TimeSpan(options.RampStuckQueueEndHour, 0, 0))
-                        .ToList();
-
-                    locationEvents.AddRange(PmAnalysis);
-                    locationEvents.AddRange(RampMainline);
-                    locationEvents.AddRange(RampStuckQueue);
-
-                    var recordsError = await CheckLocationRecordCount(options.PmScanDate, Location, options, locationEvents);
-                    if (recordsError != null)
+                    try
                     {
-                        errors.Add(recordsError);
-                        continue;
-                    }
-                    var tasks = new List<Task>();
-                    tasks.Add(CheckLocationForPhaseErrors(Location, options, locationEvents, errors));
-                    tasks.Add(CheckDetectors(Location, options, locationEvents, errors));
+                        List<IndianaEvent> locationEvents = new List<IndianaEvent>();
 
-                    await Task.WhenAll(tasks);
+                        var PmAnalysis = controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                Location.LocationIdentifier,
+                                options.PmAnalysisStart,
+                                options.PmAnalysisEnd)
+                            .ToList();
+                        var RampMainline = controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                Location.LocationIdentifier,
+                                options.PmScanDate.Date + new TimeSpan(options.RampMainlineStartHour, 0, 0),
+                                options.PmScanDate.Date + new TimeSpan(options.RampMainlineEndHour, 0, 0))
+                            .ToList();
+                        var RampStuckQueue = controllerEventLogRepository
+                            .GetEventsBetweenDates(
+                                Location.LocationIdentifier,
+                                options.PmScanDate.Date + new TimeSpan(options.RampStuckQueueStartHour, 0, 0),
+                                options.PmScanDate.Date + new TimeSpan(options.RampStuckQueueEndHour, 0, 0))
+                            .ToList();
+
+                        locationEvents.AddRange(PmAnalysis);
+                        locationEvents.AddRange(RampMainline);
+                        locationEvents.AddRange(RampStuckQueue);
+
+                        var recordsError = await CheckLocationRecordCount(options.PmScanDate, Location, options, locationEvents);
+                        if (recordsError != null)
+                        {
+                            errors.Add(recordsError);
+                            continue;
+                        }
+                        var tasks = new List<Task>();
+                        tasks.Add(CheckLocationForPhaseErrors(Location, options, locationEvents, errors));
+                        tasks.Add(CheckDetectors(Location, options, locationEvents, errors));
+
+                        await Task.WhenAll(tasks);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Skip this location and continue so one failing/timed-out query does not abort the scan.
+                        logMessages.LocationScanFailed(Location.LocationIdentifier, ex);
+                    }
                 }
 
+                logMessages.AnalysisCompleted(errors.Count);
                 return errors.ToList();
             }
         }
@@ -164,7 +181,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
             catch (Exception ex)
             {
-                logger.LogError($"{issueType} {location.Id} {ex.Message}");
+                logMessages.CheckDetectionsError(issueType, location.Id, ex);
             }
         }
 
@@ -218,12 +235,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             if (LocationEvents.Count > options.MinimumRecords)
             {
-                logger.LogDebug($"Location {Location.LocationIdentifier} has {LocationEvents.Count} records");
+                logMessages.RecordCountSufficient(Location.LocationIdentifier, LocationEvents.Count);
                 return null;
             }
             else
             {
-                logger.LogDebug($"Location {Location.LocationIdentifier} Does Not Have Sufficient records");
+                logMessages.RecordCountInsufficient(Location.LocationIdentifier);
                 return new WatchDogLogEvent(
                     Location.Id,
                     Location.LocationIdentifier,
@@ -275,7 +292,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError($"CheckForLowDetectorHits {detector.Id} {ex.Message}");
+                    logMessages.LowDetectorHitsError(detector.Id, ex);
                 }
         }
 
@@ -289,7 +306,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 var phase = phaseService.GetPhases(Location).Find(p => p.PhaseNumber == phaseNumber);
                 if (phase == null)
                 {
-                    logger.LogDebug($"Location {Location.LocationIdentifier} {phaseNumber} Not Configured");
+                    logMessages.UnconfiguredApproach(Location.LocationIdentifier, phaseNumber);
 
                     AddApproachError(
                         Location,
