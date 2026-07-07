@@ -48,6 +48,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
             logMessages.ResolvedWatchdogScanOptions(
                 _options.TimeZoneId,
+                pmScanDate.Kind.ToString(),
                 pmScanDate,
                 pmScanDate.Date + new TimeSpan(_options.PmPeakStartHour, 0, 0),
                 pmScanDate.Date + new TimeSpan(_options.PmPeakEndHour, 0, 0),

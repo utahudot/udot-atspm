@@ -44,9 +44,10 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// Logs the effective watchdog scan dates and analysis windows after configuration and command-line overrides are resolved.
         /// </summary>
         [LoggerMessage(EventId = 1260, EventName = "Resolved Watchdog Scan Options", Level = LogLevel.Information, Message =
-            "Resolved watchdog scan options. TimeZone: {timeZoneId}. PM date: {pmScanDate}, PM window: {pmStart} to {pmEnd}. AM date: {amScanDate}, AM window: {amStart} to {amEnd}. Ramp start date: {rampStartScanDate}, ramp end date: {rampEndScanDate}, ramp detector window: {rampDetectorStart} to {rampDetectorEnd}, ramp missed-detector window: {rampMissedDetectorStart} to {rampMissedDetectorEnd}, ramp mainline window: {rampMainlineStart} to {rampMainlineEnd}, ramp stuck-queue window: {rampStuckQueueStart} to {rampStuckQueueEnd}.")]
+            "Resolved watchdog scan options. TimeZone: {timeZoneId}. DateTimeKind: {dateTimeKind}. PM date: {pmScanDate}, PM window: {pmStart} to {pmEnd}. AM date: {amScanDate}, AM window: {amStart} to {amEnd}. Ramp start date: {rampStartScanDate}, ramp end date: {rampEndScanDate}, ramp detector window: {rampDetectorStart} to {rampDetectorEnd}, ramp missed-detector window: {rampMissedDetectorStart} to {rampMissedDetectorEnd}, ramp mainline window: {rampMainlineStart} to {rampMainlineEnd}, ramp stuck-queue window: {rampStuckQueueStart} to {rampStuckQueueEnd}.")]
         public partial void ResolvedWatchdogScanOptions(
             string timeZoneId,
+            string dateTimeKind,
             DateTime pmScanDate,
             DateTime pmStart,
             DateTime pmEnd,

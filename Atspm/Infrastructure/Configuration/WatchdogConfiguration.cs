@@ -74,14 +74,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         {
             if (configuredDate != default)
             {
-                return configuredDate.Date;
+                return AsDatabaseDate(configuredDate);
             }
 
             var timeZone = GetTimeZoneInfo(TimeZoneId);
             var localToday = TimeZoneInfo.ConvertTimeFromUtc(timeProvider.GetUtcNow().UtcDateTime, timeZone).Date;
 
-            return localToday.AddDays(dayOffset);
+            return AsDatabaseDate(localToday.AddDays(dayOffset));
         }
+
+        private static DateTime AsDatabaseDate(DateTime date) =>
+            DateTime.SpecifyKind(date.Date, DateTimeKind.Unspecified);
 
         private static TimeZoneInfo GetTimeZoneInfo(string timeZoneId)
         {
