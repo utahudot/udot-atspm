@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -35,6 +36,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
     public class ScanHostedService(ILogger<ScanHostedService> log, IServiceScopeFactory serviceProvider, IOptions<WatchdogConfiguration> options, TimeProvider timeProvider) : HostedServiceBase(log, serviceProvider)
     {
         private readonly WatchdogConfiguration _options = options.Value;
+        private readonly ScanHostedServiceLogMessages logMessages = new(log, nameof(ScanHostedService));
 
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
@@ -43,6 +45,25 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var pmScanDate = _options.GetPmScanDate(timeProvider);
             var rampMissedDetectorHitsStartScanDate = _options.GetRampMissedDetectorHitsStartScanDate(timeProvider);
             var rampMissedDetectorHitsEndScanDate = _options.GetRampMissedDetectorHitsEndScanDate(timeProvider);
+
+            logMessages.ResolvedWatchdogScanOptions(
+                _options.TimeZoneId,
+                pmScanDate,
+                pmScanDate.Date + new TimeSpan(_options.PmPeakStartHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.PmPeakEndHour, 0, 0),
+                amScanDate,
+                amScanDate.Date + new TimeSpan(_options.AmStartHour, 0, 0),
+                amScanDate.Date + new TimeSpan(_options.AmEndHour, 0, 0),
+                rampMissedDetectorHitsStartScanDate,
+                rampMissedDetectorHitsEndScanDate,
+                rampMissedDetectorHitsStartScanDate.Date + new TimeSpan(_options.RampDetectorStartHour, 0, 0),
+                rampMissedDetectorHitsEndScanDate.Date + new TimeSpan(_options.RampDetectorEndHour, 0, 0),
+                rampMissedDetectorHitsStartScanDate.Date + new TimeSpan(_options.RampMissedDetectorHitStartHour, 0, 0),
+                rampMissedDetectorHitsEndScanDate.Date + new TimeSpan(_options.RampMissedDetectorHitEndHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampMainlineStartHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampMainlineEndHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampStuckQueueStartHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampStuckQueueEndHour, 0, 0));
 
             var options = new WatchdogLoggingOptions
             {
