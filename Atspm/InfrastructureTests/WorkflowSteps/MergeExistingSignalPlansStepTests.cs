@@ -52,20 +52,14 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockRepo = new Mock<ISignalTimingPlanRepository>();
 
-            // 1. Setup DI for the Repository
             _mockServiceProvider.Setup(x => x.GetService(typeof(ISignalTimingPlanRepository)))
                 .Returns(_mockRepo.Object);
 
-            // 2. Setup the Scope to return the ServiceProvider
             _mockScope.Setup(x => x.ServiceProvider).Returns(_mockServiceProvider.Object);
 
-            // 3. FIX: Mock CreateScope. 
-            // Even though the code calls CreateAsyncScope(), the extension method 
-            // actually executes CreateScope() under the hood.
             _mockScopeFactory.Setup(x => x.CreateScope())
                 .Returns(_mockScope.Object);
 
-            // Cleanup SQLite table between tests
             _context.SignalTimingPlans.RemoveRange(_context.SignalTimingPlans);
             _context.SaveChanges();
         }
@@ -74,28 +68,23 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         [Trait(nameof(MergeExistingSignalPlansStep), "Process")]
         public async Task Process_SuccessfullyMergesExistingAndNewPlans()
         {
-            // Arrange
             var startTime = new DateTime(2026, 1, 1, 10, 0, 0);
             var loc = "1001";
             short planId = 1;
 
-            // Add existing plan to SQLite
             var existing = new SignalTimingPlan { LocationIdentifier = loc, PlanNumber = planId, Start = startTime.AddHours(-1) };
             _context.SignalTimingPlans.Add(existing);
             await _context.SaveChangesAsync();
 
-            // Input plan (New)
             var inputPlans = new List<SignalTimingPlan>
-            {
-                new() { LocationIdentifier = loc, PlanNumber = planId, Start = startTime }
-            };
+        {
+            new() { LocationIdentifier = loc, PlanNumber = planId, Start = startTime }
+        };
 
-            // Point the mocked repo to the SQLite context
             _mockRepo.Setup(r => r.GetList()).Returns(_context.SignalTimingPlans.AsNoTracking());
 
             var sut = new MergeExistingSignalPlansStep(_mockScopeFactory.Object, new ExecutionDataflowBlockOptions());
 
-            // Act
             sut.Post(inputPlans);
             sut.Complete();
 
@@ -105,10 +94,8 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 if (sut.TryReceive(out var chunk)) results.Add(chunk);
             }
 
-            // Assert
             var flatResults = results.SelectMany(x => x).ToList();
 
-            // Total should be 2 (1 from DB, 1 from input)
             Assert.Equal(2, flatResults.Count);
             Assert.True(flatResults.Any(p => p.Start == startTime));
             Assert.True(flatResults.Any(p => p.Start == startTime.AddHours(-1)));
@@ -118,27 +105,24 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         [Trait(nameof(MergeExistingSignalPlansStep), "Process")]
         public async Task Process_RespectsTemporalWindow_UsingSqliteFixture()
         {
-            // Arrange
             var startTime = new DateTime(2026, 8, 1, 10, 0, 0);
 
-            // Seed one inside window (+5h), one outside (-13h)
             _context.SignalTimingPlans.AddRange(new List<SignalTimingPlan>
-            {
-                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime.AddHours(5) },
-                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime.AddHours(-13) }
-            });
+        {
+            new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime.AddHours(5) },
+            new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime.AddHours(-13) }
+        });
             await _context.SaveChangesAsync();
 
             var inputPlans = new List<SignalTimingPlan>
-            {
-                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime }
-            };
+        {
+            new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime }
+        };
 
             _mockRepo.Setup(r => r.GetList()).Returns(_context.SignalTimingPlans.AsQueryable());
 
             var sut = new MergeExistingSignalPlansStep(_mockScopeFactory.Object, new ExecutionDataflowBlockOptions());
 
-            // Act
             sut.Post(inputPlans);
             sut.Complete();
 
@@ -148,10 +132,8 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 if (sut.TryReceive(out var chunk)) results.Add(chunk);
             }
 
-            // Assert
             var flatResults = results.SelectMany(x => x).ToList();
 
-            // Expected: Input (1) + Inside Window (1) = 2. Outside window is filtered.
             Assert.Equal(2, flatResults.Count);
             Assert.DoesNotContain(flatResults, p => p.Start == startTime.AddHours(-13));
         }
@@ -160,24 +142,20 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         [Trait(nameof(MergeExistingSignalPlansStep), "Process")]
         public async Task Process_HandlesMultipleLocations_DoesNotMixData()
         {
-            // Arrange
             var startTime = new DateTime(2026, 1, 1);
 
-            // Seed DB with data for Location 1 ONLY
             _context.SignalTimingPlans.Add(new SignalTimingPlan { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime.AddMinutes(5) });
             await _context.SaveChangesAsync();
 
-            // Input data for both Location 1 and Location 2
             var inputPlans = new List<SignalTimingPlan>
-            {
-                new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime },
-                new() { LocationIdentifier = "L2", PlanNumber = 1, Start = startTime }
-            };
+        {
+            new() { LocationIdentifier = "L1", PlanNumber = 1, Start = startTime },
+            new() { LocationIdentifier = "L2", PlanNumber = 1, Start = startTime }
+        };
 
             _mockRepo.Setup(r => r.GetList()).Returns(_context.SignalTimingPlans.AsNoTracking());
             var sut = new MergeExistingSignalPlansStep(_mockScopeFactory.Object, new ExecutionDataflowBlockOptions());
 
-            // Act
             sut.Post(inputPlans);
             sut.Complete();
 
@@ -187,36 +165,60 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 if (sut.TryReceive(out var chunk)) results.Add(chunk);
             }
 
-            // Assert
-            Assert.Equal(2, results.Count); // Two groups: (L1, P1) and (L2, P1)
+            Assert.Equal(2, results.Count);
 
             var l1Group = results.First(g => g.Any(p => p.LocationIdentifier == "L1")).ToList();
             var l2Group = results.First(g => g.Any(p => p.LocationIdentifier == "L2")).ToList();
 
-            Assert.Equal(2, l1Group.Count); // Input + DB
-            Assert.Single(l2Group); // Input Only - No bleed from L1 DB data
+            Assert.Equal(2, l1Group.Count);
+            Assert.Single(l2Group);
         }
 
         [Fact]
         [Trait(nameof(MergeExistingSignalPlansStep), "Process")]
         public async Task Process_EmptyInput_DoesNotQueryDatabase()
         {
-            // Arrange
             var sut = new MergeExistingSignalPlansStep(_mockScopeFactory.Object, new ExecutionDataflowBlockOptions());
 
-            // Act
             sut.Post(Enumerable.Empty<SignalTimingPlan>());
             sut.Complete();
 
-            // Assert
+            // With yield break, the block produces nothing, so OutputAvailableAsync evaluates to false
             var resultsExist = await sut.OutputAvailableAsync();
             Assert.False(resultsExist);
             _mockRepo.Verify(r => r.GetList(), Times.Never);
         }
 
+        // ==========================================
+        // TEST 5: THE CHAINED EMPTY-INPUT TIMEOUT VERIFIER
+        // ==========================================
+        [Fact]
+        [Trait(nameof(MergeExistingSignalPlansStep), "Faults")]
+        public async Task Process_EmptyInput_DoesItDeadlockDownstream()
+        {
+            var sut = new MergeExistingSignalPlansStep(_mockScopeFactory.Object, new ExecutionDataflowBlockOptions());
+
+            var downstreamMockBlock = new BufferBlock<IEnumerable<SignalTimingPlan>>();
+            sut.LinkTo(downstreamMockBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+            sut.Post(Enumerable.Empty<SignalTimingPlan>());
+            sut.Complete();
+
+            try
+            {
+                // With yield break, completion propagates cleanly to the downstream target block
+                await downstreamMockBlock.Completion.WaitAsync(TimeSpan.FromSeconds(5));
+            }
+            catch (TimeoutException)
+            {
+                Assert.Fail("The empty data payload execution loop stalled the downstream completion tracking handles.");
+            }
+
+            Assert.True(downstreamMockBlock.Completion.IsCompletedSuccessfully);
+        }
+
         public void Dispose()
         {
-            // The fixture handles the connection disposal
         }
     }
 }
