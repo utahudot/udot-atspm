@@ -33,6 +33,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
             AddOption(AmScanDateOption);
             AddOption(RampMissedDetectorHitsStartScanDateOption);
             AddOption(RampMissedDetectorHitsEndScanDateOption);
+            AddOption(TimeZoneIdOption);
 
             AddOption(AmStartHourOption);
             AddOption(AmEndHourOption);
@@ -69,6 +70,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
         public Option<DateTime> AmScanDateOption { get; set; } = new("--amScanDate", "Scan Date");
         public Option<DateTime> RampMissedDetectorHitsStartScanDateOption { get; set; } = new("--rampMissedDetectorHitsStartScanDate", "Ramp Missed Detector Hits Start");
         public Option<DateTime> RampMissedDetectorHitsEndScanDateOption { get; set; } = new("--rampMissedDetectorHitsEndScanDate", "Ramp Missed Detector Hits End");
+        public Option<string> TimeZoneIdOption { get; set; } = new("--timeZoneId", "Time zone used for automatic scan dates");
 
         public Option<int> AmStartHourOption { get; set; } = new("--amStartHour", "Am Start Hour");
         public Option<int> AmEndHourOption { get; set; } = new("--amEndHour", "Am End Hour");
@@ -108,6 +110,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
             binder.BindMemberFromValue(b => b.AmScanDate, AmScanDateOption);
             binder.BindMemberFromValue(b => b.RampMissedDetectorHitsStartScanDate, RampMissedDetectorHitsStartScanDateOption);
             binder.BindMemberFromValue(b => b.RampMissedDetectorHitsEndScanDate, RampMissedDetectorHitsEndScanDateOption);
+            binder.BindMemberFromValue(b => b.TimeZoneId, TimeZoneIdOption);
 
             binder.BindMemberFromValue(b => b.AmStartHour, AmStartHourOption);
             binder.BindMemberFromValue(b => b.AmEndHour, AmEndHourOption);

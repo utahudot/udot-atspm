@@ -30,12 +30,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
     {
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
-        private readonly ILogger<WatchDogRampLogService> logger;
+        private readonly ILogger<WatchDogAmLogService> logger;
         private readonly WatchDogAmLogMessages logMessages;
 
         public WatchDogAmLogService(IIndianaEventLogRepository controllerEventLogRepository,
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
-            ILogger<WatchDogRampLogService> logger)
+            ILogger<WatchDogAmLogService> logger)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;

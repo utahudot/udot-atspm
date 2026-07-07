@@ -45,7 +45,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// </summary>
         /// <param name="locationIdentifier">The location identifier being analyzed.</param>
         /// <param name="ex">The exception thrown while retrieving the analysis phase collection.</param>
-        [LoggerMessage(EventId = 1210, EventName = "Analysis Phase Unavailable", Level = LogLevel.Error, Message = "Unable to get analysis phase for Location {locationIdentifier}")]
+        [LoggerMessage(EventId = 1210, EventName = "Analysis Phase Unavailable", Level = LogLevel.Warning, Message = "Unable to get analysis phase for Location {locationIdentifier}")]
         public partial void AnalysisPhaseUnavailable(string locationIdentifier, Exception ex);
 
         /// <summary>

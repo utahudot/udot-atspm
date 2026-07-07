@@ -74,5 +74,13 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <param name="ex">The exception thrown while sending the email.</param>
         [LoggerMessage(EventId = 1243, EventName = "Email Send Failed", Level = LogLevel.Error, Message = "Failed to send watchdog email - {scope}: {name}")]
         public partial void EmailSendFailed(string scope, string name, Exception ex);
+
+        /// <summary>
+        /// Logs that the configured email service returned a failed send result.
+        /// </summary>
+        /// <param name="scope">The email scope (e.g. Region, Jurisdiction, Area, All Locations).</param>
+        /// <param name="name">The name of the scoped entity.</param>
+        [LoggerMessage(EventId = 1244, EventName = "Email Send Returned False", Level = LogLevel.Warning, Message = "Watchdog email was not sent - {scope}: {name}")]
+        public partial void EmailSendReturnedFalse(string scope, string name);
     }
 }
