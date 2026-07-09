@@ -1,6 +1,6 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Repositories.EventLogRepositories/EnhancedVehicleEventLogEFRepository.cs
+#region license
+// Copyright 2026 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories/EnhancedVehicleEventLogEFRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

@@ -1,5 +1,5 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+#region license
+// Copyright 2026 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models.EventLogModels/VisionCameraStatisticsEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");

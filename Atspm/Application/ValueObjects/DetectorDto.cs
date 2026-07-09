@@ -1,6 +1,6 @@
-﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Models/DetectorDto.cs
+#region license
+// Copyright 2026 Utah Departement of Transportation
+// for Application - Utah.Udot.Atspm.ValueObjects/DetectorDto.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
