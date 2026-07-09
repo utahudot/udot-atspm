@@ -270,8 +270,15 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             try
             {
-                await mailService.SendEmailAsync(from, to, subject, body, true);
-                logMessages.EmailSent(scope, name, to.Count);
+                var sent = await mailService.SendEmailAsync(from, to, subject, body, true);
+                if (sent)
+                {
+                    logMessages.EmailSent(scope, name, to.Count);
+                }
+                else
+                {
+                    logMessages.EmailSendReturnedFalse(scope, name);
+                }
             }
             catch (Exception ex)
             {
