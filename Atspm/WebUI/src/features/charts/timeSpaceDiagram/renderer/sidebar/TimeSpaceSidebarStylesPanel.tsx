@@ -433,7 +433,7 @@ export default function TimeSpaceSidebarStylesPanel({
                   }}
                 >
                   <ColorInputControl
-                    label="Early Green"
+                    label="Early green"
                     value={cycleColors.beginGreen}
                     ariaLabel="Cycles begin green color"
                     onChange={(value) =>

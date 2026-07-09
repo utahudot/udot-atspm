@@ -154,7 +154,7 @@ const SIDEBAR_ITEM_DEFINITIONS: SidebarItemDefinition[] = [
     description:
       'Horizontal phase-state band showing how each cycle progresses through the signal indications.',
     details: [
-      { color: Color.Green, label: 'Early Green' },
+      { color: Color.Green, label: 'Early green' },
       { color: '#8ef08d', label: 'Green phase' },
       { color: Color.Yellow, label: 'Yellow clearance' },
       { color: '#FF0000', label: 'Red clearance' },
@@ -746,7 +746,7 @@ export function getRenderedItemDetails(
   return [
     {
       color: appearanceSettings.cycles.indicationColors.beginGreen,
-      label: 'Early Green',
+      label: 'Early green',
     },
     {
       color: appearanceSettings.cycles.indicationColors.trailingGreen,
