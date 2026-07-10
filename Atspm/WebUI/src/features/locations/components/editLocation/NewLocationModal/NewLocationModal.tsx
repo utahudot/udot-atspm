@@ -98,8 +98,13 @@ const NewLocationModal = ({
   )
   const { mutate: createLocation } = useCreateLocation()
   const { data: allLocationsData } = useLatestVersionOfAllLocations()
-  const allLocations = (allLocationsData?.value ||
-    []) as unknown as SearchLocation[]
+  const locationsResponse = allLocationsData as unknown as
+    | SearchLocation[]
+    | { value?: SearchLocation[] }
+    | undefined
+  const allLocations = Array.isArray(locationsResponse)
+    ? locationsResponse
+    : locationsResponse?.value || []
 
   const chosenSchema = useMemo(() => {
     return copyLocationFromTemplate ? templateSchema : noTemplateSchema
