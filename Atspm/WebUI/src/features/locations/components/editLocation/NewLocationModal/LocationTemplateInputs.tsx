@@ -1,16 +1,25 @@
+import type { SearchLocation } from '@/api/config'
 import { LocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
-import { Location, LocationExpanded } from '@/features/locations/types'
 import { Box, TextField } from '@mui/material'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 
+export type NewLocationFormData = {
+  locationIdentifier: string
+  primaryName?: string
+  secondaryName?: string
+  latitude?: number | string
+  longitude?: number | string
+  devices?: { ipaddress: string }[]
+}
+
 interface LocationTemplateInputsProps {
   locationHandler: LocationConfigHandler
-  control: Control<LocationExpanded>
-  selectedLocation: Location | null
-  setSelectedLocation: (location: Location | null) => void
-  locations: Location[]
-  errors: FieldErrors<LocationExpanded>
+  control: Control<NewLocationFormData>
+  selectedLocation: SearchLocation | null
+  setSelectedLocation: (location: SearchLocation | null) => void
+  locations: SearchLocation[]
+  errors: FieldErrors<NewLocationFormData>
 }
 
 const LocationTemplateInputs = ({
@@ -25,7 +34,7 @@ const LocationTemplateInputs = ({
 
   const handleCopyLocationChange = (
     _: React.SyntheticEvent,
-    value: Location | null
+    value: SearchLocation | null
   ) => {
     setSelectedLocation(value)
   }
@@ -36,6 +45,7 @@ const LocationTemplateInputs = ({
         <LocationInput
           location={selectedLocation}
           locations={locations}
+          filters={{}}
           handleChange={handleCopyLocationChange}
         />
       </Box>

@@ -6,20 +6,34 @@ import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import { sortApproachesAndDetectors } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import LocationEditor from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import {
+  type ConfigLocation,
+  useLocationStore,
+} from '@/features/locations/components/editLocation/locationStore'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export async function getLocation(locationId: number) {
-  const res = await getLocationFromKey(locationId, {
+type LocationResponse = Location | { value?: Location[] }
+type LocationWithApproaches = Omit<Location, 'approaches'> & {
+  approaches?: Parameters<typeof sortApproachesAndDetectors>[0]
+}
+
+export async function getLocation(
+  locationId: number
+): Promise<ConfigLocation | null> {
+  const res = (await getLocationFromKey(locationId, {
     expand:
       'areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))',
-  })
-  if (res?.value?.length) {
-    const newest = res.value[0]
-    newest.approaches = sortApproachesAndDetectors(newest.approaches)
-    return newest
+  })) as LocationResponse
+
+  const response = res as { value?: Location[] }
+  const location = (Array.isArray(response.value) ? response.value[0] : res) as
+    | LocationWithApproaches
+    | undefined
+  if (location) {
+    location.approaches = sortApproachesAndDetectors(location.approaches || [])
+    return location as unknown as ConfigLocation
   }
   return null
 }
@@ -34,7 +48,6 @@ const LocationsAdmin = () => {
 
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
-  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   const onSelectLocation = useCallback(
     (sel: Location | number | null) => {
@@ -70,7 +83,7 @@ const LocationsAdmin = () => {
     }
   }, [location?.id, setLocation, onSelectLocation])
 
-  const handleOpenWizard = () => setIsWizardOpen(true)
+  const handleCreatedFromTemplate = useCallback(() => undefined, [])
   const openNewLocationModal = useCallback(() => setModalOpen(true), [])
   const closeModal = useCallback(() => setModalOpen(false), [])
 
@@ -95,7 +108,7 @@ const LocationsAdmin = () => {
         <NewLocationModal
           closeModal={closeModal}
           setLocation={onSelectLocation}
-          onCreatedFromTemplate={handleOpenWizard}
+          onCreatedFromTemplate={handleCreatedFromTemplate}
         />
       )}
     </ResponsivePageLayout>
