@@ -50,6 +50,9 @@ const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Location, '/admin/locations'],
   [PageNames.Region, '/admin/regions'],
   [PageNames.Routes, '/admin/routes'],
+])
+
+const deviceConfigListToLink: Map<string, string> = new Map([
   [PageNames.Products, '/admin/products'],
   [PageNames.DeviceConfigurations, '/admin/device-configurations'],
 ])
@@ -72,6 +75,7 @@ const rolesConfigToLink: Map<string, string> = new Map([
 const adminAccessToLinks = new Map([
   ['GeneralConfiguration:View', generalConfigListToLink],
   ['LocationConfiguration:View', locationConfigListToLink],
+  ['Device:View', deviceConfigListToLink],
   ['User:View', userConfigToLink],
   ['Role:View', rolesConfigToLink],
   ['SpeedConfiguration:View', speedManagementConfigToLink],
@@ -172,8 +176,6 @@ export const useSideBarPermission = (
 
 export const useUserHasClaim = (claim: string) => {
   const [hasPermission, setHasPermission] = useState(false)
-  const claims = Cookies.get('claims')
-  const userClaims = claims ? claims.split(',') : []
 
   useEffect(() => {
     const checkPermission = () => {
@@ -181,6 +183,9 @@ export const useUserHasClaim = (claim: string) => {
         setHasPermission(false)
         return
       }
+
+      const claims = Cookies.get('claims')
+      const userClaims = claims ? claims.split(',') : []
 
       if (userClaims.includes(claim) || userClaims.includes('Admin')) {
         setHasPermission(true)
@@ -190,7 +195,7 @@ export const useUserHasClaim = (claim: string) => {
     }
 
     checkPermission()
-  }, [claim, userClaims])
+  }, [claim])
 
   return hasPermission
 }

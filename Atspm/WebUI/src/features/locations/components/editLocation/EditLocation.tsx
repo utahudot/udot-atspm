@@ -1,5 +1,6 @@
 import { usePatchApproachFromKey, usePatchLocationFromKey } from '@/api/config'
 import { AddButton } from '@/components/addButton'
+import { useUserHasClaim } from '@/features/identity/pagesCheck'
 import ApproachesInfo from '@/features/locations/components/ApproachesInfo/approachesInfo'
 import { NavigationProvider } from '@/features/locations/components/Cell/CellNavigation'
 import DetectorsInfo from '@/features/locations/components/DetectorsInfo/detectorsInfo'
@@ -33,6 +34,7 @@ function EditLocation() {
   const hasUnsavedChanges = useLocationStore((state) => state.hasUnsavedChanges)
   const resetStore = useLocationStore((state) => state.resetStore)
   const resetApproaches = useLocationStore((state) => state.resetApproaches)
+  const hasDeviceViewClaim = useUserHasClaim('Device:View')
   const [currentTab, setCurrentTab] = useState('1')
 
   const { allowNavigate, Prompt } = useUnsavedGuard({
@@ -41,12 +43,20 @@ function EditLocation() {
   })
 
   const handleTabChange = async (_: React.SyntheticEvent, newTab: string) => {
+    if (newTab === '2' && !hasDeviceViewClaim) return
+
     if (await allowNavigate(`tab:${newTab}`)) {
       setCurrentTab(newTab)
     }
   }
 
   useEffect(() => () => resetStore(), [resetStore])
+
+  useEffect(() => {
+    if (currentTab === '2' && !hasDeviceViewClaim) {
+      setCurrentTab('1')
+    }
+  }, [currentTab, hasDeviceViewClaim])
 
   if (!location) return null
 
@@ -56,7 +66,7 @@ function EditLocation() {
         <EditLocationHeader />
         <TabList onChange={handleTabChange} aria-label="Location Tabs">
           <Tab label="General" value="1" />
-          <Tab label="Devices" value="2" />
+          <Tab label="Devices" value="2" disabled={!hasDeviceViewClaim} />
           <Tab label="Approaches" value="3" />
           <Tab label="Watchdog" value="4" />
         </TabList>
@@ -68,7 +78,7 @@ function EditLocation() {
           value="2"
           sx={{ padding: 0, marginBottom: '100px', minHeight: '400px' }}
         >
-          <EditDevices />
+          {hasDeviceViewClaim && <EditDevices />}
         </TabPanel>
         <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
           <ApproachesTab />

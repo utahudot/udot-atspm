@@ -4,6 +4,7 @@ import {
   useDeleteDevice,
   useGetDevicesForLocation,
 } from '@/features/devices/api/devices'
+import { useUserHasClaim } from '@/features/identity/pagesCheck'
 import DeviceCard from '@/features/locations/components/editLocation/DeviceCard'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import DeviceModal from '@/features/locations/components/editLocation/NewDeviceModal'
@@ -15,6 +16,8 @@ const EditDevices = () => {
   const theme = useTheme()
 
   const { location } = useLocationStore()
+  const hasDeviceEditClaim = useUserHasClaim('Device:Edit')
+  const hasDeviceDeleteClaim = useUserHasClaim('Device:Delete')
 
   const locationId = location?.id
 
@@ -23,36 +26,39 @@ const EditDevices = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [deleteDeviceId, setDeleteDeviceId] = useState<string | null>(null)
 
-  const {
-    data: devicesData,
-    refetch: refetchDevices,
-    isFetching: isResyncing,
-  } = useGetDevicesForLocation(locationId)
+  const { data: devicesData, refetch: refetchDevices } =
+    useGetDevicesForLocation(locationId)
   const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
   const { mutate: deleteDevice } = useDeleteDevice()
-
-  const devices = devicesData?.value || []
 
   if (!deviceConfigurationsData?.value || !devicesData?.value) {
     return <Typography variant="h6">Loading...</Typography>
   }
 
   const handleAddClick = () => {
+    if (!hasDeviceEditClaim) return
+
     setCurrentDevice(null)
     setModalOpen(true)
   }
 
   const handleEditClick = (device: Device) => {
+    if (!hasDeviceEditClaim) return
+
     setCurrentDevice(device)
     setModalOpen(true)
   }
 
   const handleDelete = (deviceId: string) => {
+    if (!hasDeviceDeleteClaim) return
+
     setDeleteDeviceId(deviceId)
     setOpenDeleteModal(true)
   }
 
   const confirmDeleteDevice = () => {
+    if (!hasDeviceDeleteClaim) return
+
     if (deleteDeviceId) {
       deleteDevice(deleteDeviceId, { onSuccess: refetchDevices })
     }
@@ -75,33 +81,37 @@ const EditDevices = () => {
           <DeviceCard
             key={device.id}
             device={device}
+            canEdit={hasDeviceEditClaim}
+            canDelete={hasDeviceDeleteClaim}
             onEdit={handleEditClick}
             onDelete={() => handleDelete(device.id)}
           />
         ))}
-        <Button
-          onClick={handleAddClick}
-          sx={{
-            padding: 2,
-            mb: 1.95,
-            minWidth: '400px',
-            minHeight: '400px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            border: `4px dashed ${theme.palette.primary.main}`,
-          }}
-        >
-          <Avatar sx={{ bgcolor: theme.palette.primary.main, mb: 1 }}>
-            <AddIcon />
-          </Avatar>
-          <Typography variant="h6" sx={{ marginTop: 2 }} component={'p'}>
-            Add New Device
-          </Typography>
-        </Button>
+        {hasDeviceEditClaim && (
+          <Button
+            onClick={handleAddClick}
+            sx={{
+              padding: 2,
+              mb: 1.95,
+              minWidth: '400px',
+              minHeight: '400px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              border: `4px dashed ${theme.palette.primary.main}`,
+            }}
+          >
+            <Avatar sx={{ bgcolor: theme.palette.primary.main, mb: 1 }}>
+              <AddIcon />
+            </Avatar>
+            <Typography variant="h6" sx={{ marginTop: 2 }} component={'p'}>
+              Add New Device
+            </Typography>
+          </Button>
+        )}
 
-        {isModalOpen && (
+        {isModalOpen && hasDeviceEditClaim && (
           <DeviceModal
             onClose={() => setModalOpen(false)}
             device={currentDevice}
@@ -110,7 +120,7 @@ const EditDevices = () => {
           />
         )}
         <Modal
-          open={openDeleteModal}
+          open={openDeleteModal && hasDeviceDeleteClaim}
           onClose={() => setOpenDeleteModal(false)}
           aria-labelledby="delete-confirmation"
           aria-describedby="confirm-delete-approach"
