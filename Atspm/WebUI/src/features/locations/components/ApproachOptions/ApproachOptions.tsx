@@ -1,5 +1,6 @@
 import { usePatchApproachFromKey, usePatchLocationFromKey } from '@/api/config'
 import { AddButton } from '@/components/addButton'
+import { useGetDeviceConfigurations } from '@/features/devices/api'
 import ApproachesInfo from '@/features/locations/components/ApproachesInfo/approachesInfo'
 import ApproachesReconcilationReport from '@/features/locations/components/ApproachesReconcilationReport/ApproachesReconcilationReport'
 import { LocationDiscrepancyReport } from '@/features/locations/components/ApproachesReconcilationReport/useDiscrepancyStatuses'
@@ -9,23 +10,32 @@ import EditApproach from '@/features/locations/components/editApproach/EditAppro
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import type { LocationExpanded } from '@/features/locations/types'
+import { usePostRequest } from '@/hooks/usePostRequest'
 import { configAxios } from '@/lib/axios'
 import { useNotificationStore } from '@/stores/notifications'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import SyncIcon from '@mui/icons-material/Sync'
 import { LoadingButton } from '@mui/lab'
 import {
   Box,
   Button,
   Checkbox,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   FormControlLabel,
+  Grid,
+  IconButton,
   Paper,
   Typography,
 } from '@mui/material'
+import type { AxiosResponse } from 'axios'
+import { AxiosHeaders } from 'axios'
+import Cookies from 'js-cookie'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation } from 'react-query'
 
@@ -37,11 +47,57 @@ type SyncLocationResponse = {
   removedDetectors?: Array<string | number> | null
 }
 
+type ZoneRequest = {
+  IpAddress?: string | null
+  port?: string
+  detectionType?: string
+  deviceId?: string
+}
+
+type ZoneResult = {
+  zones: string[]
+  error?: string
+}
+
+type ZoneDevice = {
+  id?: number | null
+  deviceIdentifier?: string | number | null
+  deviceType?: string | number | null
+  ipaddress?: string | null
+  deviceConfigurationId?: number | null
+}
+
 const emptyCategories: LocationDiscrepancyReport = {
   foundPhaseNumbers: [],
   notFoundApproaches: [],
   foundDetectorChannels: [],
   notFoundDetectorChannels: [],
+}
+
+const token = Cookies.get('token')
+const headers: AxiosHeaders = new AxiosHeaders({
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${token}`,
+})
+
+const deviceTypeNames: Record<number, string> = {
+  0: 'Unknown',
+  1: 'SignalController',
+  2: 'RampController',
+  3: 'AICamera',
+  4: 'FIRCamera',
+  5: 'LidarSensor',
+  6: 'WavetronixSpeed',
+  7: 'SpeedSensor',
+}
+
+function useGetZones() {
+  return usePostRequest<string[], ZoneRequest>({
+    url: '/Detector/retrieveDetectionData',
+    axiosInstance: configAxios,
+    headers,
+    notify: false,
+  })
 }
 
 function useSyncLocation() {
@@ -50,6 +106,50 @@ function useSyncLocation() {
       `/Location/${locationId}/SyncLocation`
     )
   )
+}
+
+const getDeviceTypeName = (deviceType: string | number | null | undefined) => {
+  if (typeof deviceType === 'number') {
+    return deviceTypeNames[deviceType] ?? `${deviceType}`
+  }
+
+  return deviceType ?? ''
+}
+
+const isFirCameraDevice = (device: ZoneDevice) =>
+  getDeviceTypeName(device.deviceType) === 'FIRCamera'
+
+const getZonesFromResponse = (response: unknown) => {
+  if (Array.isArray(response)) return response as string[]
+
+  const data = (response as AxiosResponse<string[]> | undefined)?.data
+  return Array.isArray(data) ? data : []
+}
+
+const getExternalServiceErrorMessage = (error: unknown) => {
+  if (typeof error === 'object' && error !== null) {
+    if ('response' in error) {
+      const response = error.response
+
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'data' in response
+      ) {
+        const data = response.data
+
+        if (typeof data === 'string' && data.length > 0) {
+          return data
+        }
+      }
+    }
+
+    if ('message' in error && typeof error.message === 'string') {
+      return error.message
+    }
+  }
+
+  return 'Failed to retrieve data from the external service.'
 }
 
 const ApproachOptions = () => {
@@ -76,9 +176,13 @@ const ApproachOptions = () => {
     useSyncLocation()
   const { mutateAsync: updateLocation } = usePatchLocationFromKey()
   const { mutateAsync: updateApproach } = usePatchApproachFromKey()
+  const { mutateAsync: getZones } = useGetZones()
+  const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
 
   const [showSummary, setShowSummary] = useState(false)
+  const [showZones, setShowZones] = useState(false)
   const [showPedsAre1To1Dialog, setShowPedsAre1To1Dialog] = useState(false)
+  const [zones, setZones] = useState<Record<string, ZoneResult>>({})
   const [categories, setCategories] =
     useState<LocationDiscrepancyReport>(emptyCategories)
 
@@ -91,6 +195,21 @@ const ApproachOptions = () => {
     | LocationExpanded
     | undefined
 
+  const locationDevices = useMemo(
+    () =>
+      Array.isArray(combinedLocation?.devices)
+        ? (combinedLocation.devices as ZoneDevice[])
+        : [],
+    [combinedLocation?.devices]
+  )
+
+  const firCameraDevices = useMemo(
+    () => locationDevices.filter(isFirCameraDevice),
+    [locationDevices]
+  )
+
+  const hasFirCameraDevice = firCameraDevices.length > 0
+
   const detectorCount = useMemo(
     () =>
       approaches.reduce(
@@ -99,6 +218,48 @@ const ApproachOptions = () => {
       ),
     [approaches]
   )
+
+  const handleGetZones = useCallback(async () => {
+    if (firCameraDevices.length === 0) {
+      addNotification({ title: 'No FIRCamera devices found', type: 'error' })
+      return
+    }
+
+    const grouped: Record<string, ZoneResult> = {}
+
+    for (const device of firCameraDevices) {
+      const deviceConfig = deviceConfigurationsData?.value?.find(
+        (config) => config.id === device.deviceConfigurationId
+      )
+      const deviceType = getDeviceTypeName(device.deviceType)
+      const label = `${deviceType} - ${
+        device.deviceIdentifier || `Device ${device.id}`
+      }`
+
+      try {
+        const response = await getZones({
+          IpAddress: device.ipaddress,
+          port: deviceConfig?.port?.toString(),
+          detectionType: deviceType,
+          deviceId: device.deviceIdentifier?.toString(),
+        })
+        grouped[label] = { zones: getZonesFromResponse(response) }
+      } catch (error: unknown) {
+        grouped[label] = {
+          zones: [],
+          error: getExternalServiceErrorMessage(error),
+        }
+      }
+    }
+
+    setZones(grouped)
+    setShowZones(true)
+  }, [
+    addNotification,
+    deviceConfigurationsData?.value,
+    firCameraDevices,
+    getZones,
+  ])
 
   const handleSyncLocation = useCallback(async () => {
     if (!location?.id) return
@@ -272,8 +433,90 @@ const ApproachOptions = () => {
           >
             Reconcile Approaches
           </LoadingButton>
+
+          {hasFirCameraDevice && (
+            <Button variant="outlined" onClick={handleGetZones}>
+              Get Zones
+            </Button>
+          )}
         </Box>
       </Paper>
+
+      {showZones && (
+        <Paper sx={{ mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              p: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Found Zones
+            </Typography>
+            <IconButton
+              size="small"
+              onClick={() => setShowZones((prev) => !prev)}
+            >
+              {showZones ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Box>
+          <Collapse in={showZones}>
+            <Divider sx={{ mx: 1 }} />
+            <Box sx={{ p: 2 }}>
+              {Object.keys(zones).length > 0 ? (
+                <Grid container spacing={2}>
+                  {Object.entries(zones).map(([label, result]) => (
+                    <Grid item xs={12} sm={6} md={4} key={label}>
+                      <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 'bold', mb: 1 }}
+                        >
+                          {label}
+                        </Typography>
+                        <Divider sx={{ mb: 1 }} />
+
+                        {result.zones.length > 0 && (
+                          <Box
+                            sx={{
+                              columnCount: 1,
+                              '& p': { breakInside: 'avoid' },
+                            }}
+                          >
+                            {result.zones.map((zone, index) => (
+                              <Typography key={index} variant="body2">
+                                {zone}
+                              </Typography>
+                            ))}
+                          </Box>
+                        )}
+
+                        {result.zones.length === 0 && !result.error && (
+                          <Typography variant="body2" color="text.secondary">
+                            No zones
+                          </Typography>
+                        )}
+
+                        {result.error && (
+                          <Typography variant="body2" color="error">
+                            {result.error}
+                          </Typography>
+                        )}
+                      </Paper>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography variant="body1" color="text.secondary">
+                  No zones found
+                </Typography>
+              )}
+            </Box>
+          </Collapse>
+        </Paper>
+      )}
 
       {approachVerificationStatus === 'DONE' && (
         <ApproachesReconcilationReport categories={categories} />
