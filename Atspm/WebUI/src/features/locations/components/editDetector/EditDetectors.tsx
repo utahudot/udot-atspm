@@ -102,14 +102,14 @@ const EditDetectors = ({
 
   const detectors = approach.detectors
   const rowCount = detectors.length + 1
-  const colCount = 13
+  const colCount = 14
 
   return (
     <TableContainer component={Paper}>
       <Table stickyHeader aria-label="detector table">
         <TableHead>
           <TableRow>
-            <TableCell colSpan={9} sx={{ py: 1 }} />
+            <TableCell colSpan={10} sx={{ py: 1 }} />
             <TableCell colSpan={2} align="center" sx={{ py: 1 }}>
               <Typography variant="caption" fontStyle="italic">
                 Advanced Count Only
@@ -124,6 +124,7 @@ const EditDetectors = ({
           </TableRow>
           <TableRow>
             {[
+              'Identifier',
               'Channel',
               'Detection Types',
               'Hardware',
@@ -170,6 +171,7 @@ const EditDetectors = ({
 
               return (
                 <TableRow
+                  id={`detector-${det.id}`}
                   key={det.id}
                   sx={{
                     position: 'relative',
@@ -189,6 +191,17 @@ const EditDetectors = ({
                     approachId={approach.id}
                     row={rowIdx}
                     col={0}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.dectectorIdentifier}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'dectectorIdentifier', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={1}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.detectorChannel}
@@ -218,7 +231,7 @@ const EditDetectors = ({
                   <MultiSelectCell<string>
                     approachId={approach.id}
                     row={rowIdx}
-                    col={1}
+                    col={2}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.detectionTypes.map((dt) => dt.abbreviation)}
@@ -265,7 +278,7 @@ const EditDetectors = ({
                   <SelectCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={2}
+                    col={3}
                     rowCount={rowCount}
                     colCount={colCount}
                     options={hardwareTypeOptions}
@@ -277,7 +290,7 @@ const EditDetectors = ({
                   <TextCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={3}
+                    col={4}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.latencyCorrection}
@@ -288,7 +301,7 @@ const EditDetectors = ({
                   <TextCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={4}
+                    col={5}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.laneNumber}
@@ -297,7 +310,7 @@ const EditDetectors = ({
                   <SelectCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={5}
+                    col={6}
                     rowCount={rowCount}
                     colCount={colCount}
                     options={movementTypeOptions}
@@ -307,7 +320,7 @@ const EditDetectors = ({
                   <SelectCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={6}
+                    col={7}
                     rowCount={rowCount}
                     colCount={colCount}
                     options={laneTypeOptions}
@@ -317,7 +330,7 @@ const EditDetectors = ({
                   <CalendarCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={7}
+                    col={8}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.dateAdded}
@@ -327,14 +340,14 @@ const EditDetectors = ({
                     approachId={approach.id}
                     detector={det}
                     row={rowIdx}
-                    col={8}
+                    col={9}
                     rowCount={rowCount}
                     colCount={colCount}
                   />
                   <TextCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={9}
+                    col={10}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.distanceFromStopBar}
@@ -345,7 +358,7 @@ const EditDetectors = ({
                   <TextCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={10}
+                    col={11}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.decisionPoint}
@@ -354,7 +367,7 @@ const EditDetectors = ({
                   <TextCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={11}
+                    col={12}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.minSpeedFilter}
@@ -365,7 +378,7 @@ const EditDetectors = ({
                   <TextCell
                     approachId={approach.id}
                     row={rowIdx}
-                    col={12}
+                    col={13}
                     rowCount={rowCount}
                     colCount={colCount}
                     value={det.movementDelay}
