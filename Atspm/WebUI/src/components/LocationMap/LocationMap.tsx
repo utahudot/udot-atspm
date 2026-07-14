@@ -1,6 +1,10 @@
+import MapLayersLegends from '@/components/LocationMap/MapLayersLegends'
+import MapLayersList from '@/components/LocationMap/MapLayersList'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
+import { useGetMapLayers } from '@/features/mapLayers/api'
+import { PersistedMapLayer, ServiceType } from '@/features/mapLayers/types'
 import { useEnv } from '@/hooks/useEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
@@ -12,18 +16,26 @@ import {
   Skeleton,
   useTheme,
 } from '@mui/material'
+import { DynamicMapLayer, FeatureLayer } from 'esri-leaflet'
 import 'esri-leaflet-renderers'
-import L, { Map as LeafletMap } from 'leaflet'
+import L, { Layer as LeafletLayer, Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  type ComponentProps,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 
 interface Filters {
-  areaId?: number | null
-  regionId?: number | null
-  locationTypeId?: number | null
-  jurisdictionId?: number | null
-  measureTypeId?: number | null
+  areaId: number | null
+  regionId: number | null
+  locationTypeId: number | null
+  jurisdictionId: number | null
+  measureTypeId: number | null
 }
 
 interface LocationMapProps {
@@ -58,6 +70,10 @@ const LocationMap = ({
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [hasFocusedRoute, setHasFocusedRoute] = useState(false)
   const filtersButtonRef = useRef(null)
+  const { data: mapLayers = [] } = useGetMapLayers()
+  const [activeLayers, setActiveLayers] = useState<number[]>([])
+  const layerRefreshers = useRef<Record<number, number | null>>({})
+  const createdLayers = useRef<Record<number, LeafletLayer | null>>({})
 
   const [mapInfo, setMapInfo] = useState<{
     tile_layer: string | undefined
@@ -68,6 +84,103 @@ const LocationMap = ({
   } | null>(null)
 
   const locationsEnabledLength = locations.filter((l) => l.chartEnabled).length
+
+  useEffect(() => {
+    if (!mapLayers.length) return
+
+    setActiveLayers(
+      mapLayers.filter((layer) => layer.showByDefault).map((layer) => layer.id)
+    )
+  }, [mapLayers])
+
+  const clearAllDynamicLayers = useCallback(() => {
+    if (!mapRef) return
+
+    Object.entries(createdLayers.current).forEach(([id, layer]) => {
+      if (layer && mapRef.hasLayer(layer)) {
+        mapRef.removeLayer(layer)
+      }
+      createdLayers.current[Number(id)] = null
+    })
+
+    Object.values(layerRefreshers.current).forEach((refreshId) => {
+      if (refreshId !== null) {
+        clearInterval(refreshId)
+      }
+    })
+    layerRefreshers.current = {}
+  }, [mapRef])
+
+  const createLayer = useCallback(
+    async (layerDef: PersistedMapLayer): Promise<LeafletLayer | null> => {
+      if (!mapRef) return null
+      const { serviceType, mapLayerUrl, resourceId, style } = layerDef
+      if (!mapLayerUrl) return null
+
+      if (serviceType === ServiceType.MapServer) {
+        const layer = new DynamicMapLayer({ url: mapLayerUrl, opacity: 1 })
+        layer.addTo(mapRef)
+        return layer as unknown as LeafletLayer
+      }
+
+      if (serviceType === ServiceType.FeatureServer) {
+        const url = /\/FeatureServer\/\d+$/.test(mapLayerUrl)
+          ? mapLayerUrl
+          : `${mapLayerUrl.replace(/\/?$/, '/')}${resourceId ?? '0'}`
+        const layer = new FeatureLayer({ url })
+        layer.addTo(mapRef)
+        return layer as unknown as LeafletLayer
+      }
+
+      if (serviceType === ServiceType.WMS || serviceType === ServiceType.WFS) {
+        const layer = L.tileLayer.wms(mapLayerUrl, {
+          layers: resourceId ?? '',
+          styles: style || '',
+          format: 'image/png',
+          transparent: true,
+        })
+        layer.addTo(mapRef)
+        return layer
+      }
+
+      return null
+    },
+    [mapRef]
+  )
+
+  useEffect(() => {
+    if (!mapRef) return
+    clearAllDynamicLayers()
+
+    mapLayers.forEach(async (layer) => {
+      if (!activeLayers.includes(layer.id)) return
+
+      const createdLayer = await createLayer(layer)
+      createdLayers.current[layer.id] = createdLayer
+
+      if (layer.refreshIntervalSeconds && layer.refreshIntervalSeconds > 0) {
+        const refreshId = window.setInterval(async () => {
+          const existing = createdLayers.current[layer.id]
+          if (existing && mapRef.hasLayer(existing)) {
+            mapRef.removeLayer(existing)
+          }
+          const refreshedLayer = await createLayer(layer)
+          createdLayers.current[layer.id] = refreshedLayer
+        }, layer.refreshIntervalSeconds * 1000)
+        layerRefreshers.current[layer.id] = refreshId
+      }
+    })
+
+    return () => clearAllDynamicLayers()
+  }, [mapRef, activeLayers, clearAllDynamicLayers, createLayer, mapLayers])
+
+  const handleLayerToggle = useCallback((layerId: number) => {
+    setActiveLayers((prev) =>
+      prev.includes(layerId)
+        ? prev.filter((id) => id !== layerId)
+        : [...prev, layerId]
+    )
+  }, [])
 
   useEffect(() => {
     setMapInfo({
@@ -171,6 +284,13 @@ const LocationMap = ({
     setIsFiltersOpen(false)
   }, [])
 
+  const markerLocations = filteredLocations as unknown as ComponentProps<
+    typeof Markers
+  >['locations']
+  const handleMarkerSelect = setLocation as unknown as ComponentProps<
+    typeof Markers
+  >['setLocation']
+
   if (!mapInfo) {
     return <Skeleton variant="rectangular" height={mapHeight ?? 400} />
   }
@@ -233,6 +353,18 @@ const LocationMap = ({
         </Box>
       </ClickAwayListener>
 
+      <MapLayersList
+        mapLayers={mapLayers}
+        activeLayers={activeLayers}
+        handleLayerToggle={handleLayerToggle}
+      />
+
+      <MapLayersLegends
+        activeMapLayers={mapLayers.filter((layer) =>
+          activeLayers.includes(layer.id)
+        )}
+      />
+
       {googleSession ? (
         <TileLayer
           attribution={
@@ -243,9 +375,12 @@ const LocationMap = ({
         />
       ) : (
         // optional: keep your old layer as fallback or show skeleton
-        <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
+        <TileLayer
+          attribution={mapInfo.attribution}
+          url={mapInfo.tile_layer ?? ''}
+        />
       )}
-      <Markers locations={filteredLocations} setLocation={setLocation} />
+      <Markers locations={markerLocations} setLocation={handleMarkerSelect} />
       {route && route.length > 0 && (
         <Polyline
           positions={route.map((coord) => [coord[0], coord[1]])}

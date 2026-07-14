@@ -3,6 +3,8 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
+import LocationSetupWizard from '@/features/locations/components/LocationSetupWizard/LocationSetupWizard'
+import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import { sortApproachesAndDetectors } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import LocationEditor from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
@@ -45,9 +47,13 @@ const LocationsAdmin = () => {
 
   const location = useLocationStore((s) => s.location)
   const setLocation = useLocationStore((s) => s.setLocation)
+  const resetWizardStore = useLocationWizardStore((s) => s.resetStore)
+  const setUseWizard = useLocationWizardStore((s) => s.setUseWizard)
+  const useWizard = useLocationWizardStore((s) => s.useWizard)
 
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   const onSelectLocation = useCallback(
     (sel: Location | number | null) => {
@@ -83,7 +89,11 @@ const LocationsAdmin = () => {
     }
   }, [location?.id, setLocation, onSelectLocation])
 
-  const handleCreatedFromTemplate = useCallback(() => undefined, [])
+  const handleCreatedFromTemplate = useCallback(() => {
+    resetWizardStore()
+    setUseWizard(true)
+    setIsWizardOpen(true)
+  }, [resetWizardStore, setUseWizard])
   const openNewLocationModal = useCallback(() => setModalOpen(true), [])
   const closeModal = useCallback(() => setModalOpen(false), [])
 
@@ -109,6 +119,12 @@ const LocationsAdmin = () => {
           closeModal={closeModal}
           setLocation={onSelectLocation}
           onCreatedFromTemplate={handleCreatedFromTemplate}
+        />
+      )}
+      {useWizard && (
+        <LocationSetupWizard
+          open={isWizardOpen}
+          onClose={() => setIsWizardOpen(false)}
         />
       )}
     </ResponsivePageLayout>

@@ -106,6 +106,11 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<MenuItem> MenuItems { get; set; }
 
         /// <summary>
+        /// Map Layers table
+        /// </summary>
+        public virtual DbSet<MapLayer> MapLayer { get; set; }
+
+        /// <summary>
         /// Measure comments table
         /// </summary>
         public virtual DbSet<MeasureComment> MeasureComments { get; set; }
@@ -215,6 +220,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new LocationTypeConfiguration());
             modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new MenuItemConfiguration());
+            modelBuilder.ApplyConfiguration(new MapLayerConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionsConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionPresetConfiguration());
