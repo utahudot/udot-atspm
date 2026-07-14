@@ -44,9 +44,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Location> locations,
             CancellationToken cancellationToken)
         {
-            logMessages.AnalysisStarted(locations?.Count ?? 0);
+            var rampLocations = locations?
+                .Where(l => l.LocationTypeId == (int)LocationTypes.RM)
+                .ToList();
 
-            if (locations.IsNullOrEmpty())
+            logMessages.AnalysisStarted(rampLocations?.Count ?? 0);
+
+            if (rampLocations.IsNullOrEmpty())
             {
                 logMessages.AnalysisCompleted(0);
                 return new List<WatchDogLogEvent>();
@@ -55,7 +59,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             {
                 var errors = new ConcurrentBag<WatchDogLogEvent>();
 
-                foreach (var Location in locations)
+                foreach (var Location in rampLocations)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
