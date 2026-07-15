@@ -32,6 +32,8 @@ function computeChartHeight(opts: { count: number; horizontal: boolean }) {
   return clamp(base + count * per, min, max)
 }
 
+const CHART_RESIZE_TRANSITION_MS = 260
+
 function metricTitle(metric: Metric) {
   return metric === 'ReportsGenerated' ? 'Reports Generated' : 'Data Downloaded'
 }
@@ -52,6 +54,15 @@ interface ReportsApiInsightsCardProps {
   maxBars?: number
   dateRange?: { start: string | undefined; end: string | undefined }
   isLoading?: boolean
+}
+
+type RenderedInsightsChart = {
+  horizontal: boolean
+  items: { name: string; value: number }[]
+  loading?: boolean
+  metric: Metric
+  subtitle: string
+  title: string
 }
 
 function ReportsApiInsightsCard({
@@ -125,6 +136,87 @@ function ReportsApiInsightsCard({
 
   const fullTitle = `${metricTitle(metric)} by ${viewTitle(view)}`
   const subtitle = formatUsageLocalDateRange(dateRange?.start, dateRange?.end)
+  const chartItems = React.useMemo(
+    () => active.map((x) => ({ name: x.name, value: x.count })),
+    [active]
+  )
+  const nextChart = React.useMemo<RenderedInsightsChart>(
+    () => ({
+      horizontal,
+      items: chartItems,
+      loading: isLoading,
+      metric,
+      subtitle,
+      title: fullTitle,
+    }),
+    [chartItems, fullTitle, horizontal, isLoading, metric, subtitle]
+  )
+  const [displayedChart, setDisplayedChart] = React.useState(nextChart)
+  const [chartAnimationKey, setChartAnimationKey] = React.useState(0)
+  const [isResizingChart, setIsResizingChart] = React.useState(false)
+  const didInitializeChartRef = React.useRef(false)
+  const pendingChartRef = React.useRef(nextChart)
+  const previousHeightRef = React.useRef(height)
+  const resizePendingRef = React.useRef(false)
+  const resizeTimerRef = React.useRef<number | null>(null)
+
+  const clearResizeTimer = React.useCallback(() => {
+    if (resizeTimerRef.current === null) return
+
+    window.clearTimeout(resizeTimerRef.current)
+    resizeTimerRef.current = null
+  }, [])
+
+  const applyPendingChart = React.useCallback(() => {
+    clearResizeTimer()
+    resizePendingRef.current = false
+    setDisplayedChart(pendingChartRef.current)
+    setChartAnimationKey((key) => key + 1)
+    setIsResizingChart(false)
+  }, [clearResizeTimer])
+
+  React.useEffect(() => {
+    pendingChartRef.current = nextChart
+
+    if (!didInitializeChartRef.current) {
+      didInitializeChartRef.current = true
+      return
+    }
+
+    const heightChanged = previousHeightRef.current !== height
+    previousHeightRef.current = height
+
+    if (!heightChanged && !resizePendingRef.current) {
+      applyPendingChart()
+      return
+    }
+
+    resizePendingRef.current = true
+    setIsResizingChart(true)
+
+    if (heightChanged) {
+      clearResizeTimer()
+      resizeTimerRef.current = window.setTimeout(
+        applyPendingChart,
+        CHART_RESIZE_TRANSITION_MS
+      )
+    }
+  }, [applyPendingChart, clearResizeTimer, height, nextChart])
+
+  React.useEffect(() => clearResizeTimer, [clearResizeTimer])
+
+  const handleChartHeightTransitionEnd = React.useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      if (
+        event.target === event.currentTarget &&
+        event.propertyName === 'height' &&
+        isResizingChart
+      ) {
+        applyPendingChart()
+      }
+    },
+    [applyPendingChart, isResizingChart]
+  )
 
   return (
     <Card sx={{ width: '100%', minWidth: 0 }}>
@@ -142,16 +234,29 @@ function ReportsApiInsightsCard({
       </CardContent>
 
       <CardContent sx={{ pt: 1 }}>
-        <Box sx={{ height }}>
-          <InsightsChart
-            chartHeight={height}
-            loading={isLoading}
-            horizontal={horizontal}
-            metric={metric}
-            title={fullTitle}
-            subtitle={subtitle}
-            items={active.map((x) => ({ name: x.name, value: x.count }))}
-          />
+        <Box
+          onTransitionEnd={handleChartHeightTransitionEnd}
+          sx={(theme) => ({
+            height,
+            overflow: 'hidden',
+            transition: theme.transitions.create('height', {
+              duration: CHART_RESIZE_TRANSITION_MS,
+              easing: theme.transitions.easing.easeInOut,
+            }),
+          })}
+        >
+          {!isResizingChart && (
+            <InsightsChart
+              key={chartAnimationKey}
+              chartHeight={height}
+              loading={displayedChart.loading}
+              horizontal={displayedChart.horizontal}
+              metric={displayedChart.metric}
+              title={displayedChart.title}
+              subtitle={displayedChart.subtitle}
+              items={displayedChart.items}
+            />
+          )}
         </Box>
       </CardContent>
     </Card>

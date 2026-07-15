@@ -51,6 +51,10 @@ const RolesAdmin = () => {
       description: 'Can manage location-specific settings and configurations.',
     },
     {
+      role: 'DeviceAdmin',
+      description: 'Can manage devices, products, and device configurations.',
+    },
+    {
       role: 'RoleAdmin',
       description: 'Can manage roles and permissions.',
     },
@@ -61,6 +65,10 @@ const RolesAdmin = () => {
     {
       role: 'ReportAdmin',
       description: 'Privileges are granted to access restricted reports.',
+    },
+    {
+      role: 'UsageAdmin',
+      description: 'Can view, edit, and delete usage reports.',
     },
     {
       role: 'WatchdogSubscriber',
@@ -82,11 +90,17 @@ const RolesAdmin = () => {
     'DataAdmin',
     'GeneralConfigurationAdmin',
     'LocationConfigurationAdmin',
+    'DeviceAdmin',
     'RoleAdmin',
     'UserAdmin',
     'ReportAdmin',
+    'UsageAdmin',
     'WatchdogSubscriber',
   ]
+
+  if (flags.speedManagementTool) {
+    protectedRoles.push('SpeedConfigurationAdmin')
+  }
 
   const HandleDeleteRole = async (roleName: string) => {
     if (protectedRoles.includes(roleName)) {
@@ -239,7 +253,7 @@ const RolesAdmin = () => {
             objectType="Role"
             deleteByKey="role"
             open={false}
-            onClose={() => {}}
+            onClose={onModalClose}
             onConfirm={HandleDeleteRole}
             deleteLabel={(selectedRow: Role) => selectedRow.role}
           />

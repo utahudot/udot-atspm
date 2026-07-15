@@ -145,6 +145,8 @@ const findClosestGroup = (
   let closest: { groupKey: string; distance: number } | null = null
 
   for (const s of baseSeries) {
+    if (isMissingCyclePlaceholderSeries(s)) continue
+
     const id = String(s.id ?? '')
     const yValue = (s.data as any[])?.[0]?.[1]
     if (yValue == null) continue
@@ -161,6 +163,17 @@ const findClosestGroup = (
   }
 
   return closest
+}
+
+function isMissingCyclePlaceholderSeries(series: SeriesOption) {
+  const data = Array.isArray(series.data) ? series.data : []
+  if (data.length !== 1) {
+    return false
+  }
+
+  const value = getSeriesDatumValue(data[0])
+
+  return Array.isArray(value) && value[0] === 0 && value[2] === 0
 }
 
 function shiftTimeLike(value: unknown, offsetMs: number) {

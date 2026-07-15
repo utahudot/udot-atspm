@@ -20,10 +20,8 @@ import { Backdrop, CircularProgress } from '@mui/material'
 const ProductsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Products)
 
-  const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
-  const hasLocationsDeleteClaim = useUserHasClaim(
-    'LocationConfiguration:Delete'
-  )
+  const hasDeviceEditClaim = useUserHasClaim('Device:Edit')
+  const hasDeviceDeleteClaim = useUserHasClaim('Device:Delete')
 
   const { mutateAsync: createMutation } = useCreateProduct()
   const { mutateAsync: deleteMutation } = useDeleteProduct()
@@ -118,8 +116,8 @@ const ProductsAdmin = () => {
         pageName="Product"
         cells={cells}
         data={filteredData}
-        hasEditPrivileges={hasLocationsEditClaim}
-        hasDeletePrivileges={hasLocationsDeleteClaim}
+        hasEditPrivileges={hasDeviceEditClaim}
+        hasDeletePrivileges={hasDeviceDeleteClaim}
         editModal={
           <ProductEditorModal
             isOpen={true}
@@ -128,11 +126,13 @@ const ProductsAdmin = () => {
           />
         }
         createModal={
-          <ProductEditorModal
-            isOpen={true}
-            onSave={HandleCreateProduct}
-            onClose={onModalClose}
-          />
+          hasDeviceEditClaim ? (
+            <ProductEditorModal
+              isOpen={true}
+              onSave={HandleCreateProduct}
+              onClose={onModalClose}
+            />
+          ) : undefined
         }
         deleteModal={
           <DeleteModal
