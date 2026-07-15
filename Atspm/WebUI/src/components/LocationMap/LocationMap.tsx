@@ -84,8 +84,8 @@ const LocationMap = ({
       try {
         const r = await fetch('/api/google/tiles/session', { method: 'POST' })
         if (!r.ok) return
-        const data = (await r.json()) as { session: string }
-        setGoogleSession(data.session)
+        const data = (await r.json()) as { session?: string | null }
+        setGoogleSession(data.session ?? null)
       } catch {}
     }
     run()
@@ -236,13 +236,12 @@ const LocationMap = ({
       {googleSession ? (
         <TileLayer
           attribution={
-            mapInfo.attribution /* or hardcode Google attribution string */
+            mapInfo.attribution
           }
           url={`/api/google/tiles/{z}/{x}/{y}?session=${encodeURIComponent(googleSession)}`}
           crossOrigin
         />
       ) : (
-        // optional: keep your old layer as fallback or show skeleton
         <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
       )}
       <Markers locations={filteredLocations} setLocation={setLocation} />

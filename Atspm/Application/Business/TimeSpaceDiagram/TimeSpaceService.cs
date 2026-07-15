@@ -103,7 +103,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
 
         public static List<short> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<short> { 1, 8, 9 };
+            var phaseEventCodesForCycles = new List<short> { 1, 8, 9, 11 };
             if (getOverlapCodes)
             {
                 phaseEventCodesForCycles = new List<short> {

@@ -23,8 +23,13 @@ const PageClaimsCard = ({
 }: PageClaimsCardProps) => {
   const flags = useFlags()
   const claims = useMemo(
-    () => claimsData?.filter((claim) => claim !== 'Admin') || [],
-    [claimsData]
+    () =>
+      claimsData?.filter(
+        (claim) =>
+          claim !== 'Admin' &&
+          (flags.speedManagementTool || !claim.startsWith('SpeedConfiguration'))
+      ) || [],
+    [claimsData, flags.speedManagementTool]
   )
 
   const [selectedPermissions, setSelectedPermissions] = useState<{
