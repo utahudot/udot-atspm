@@ -35,9 +35,9 @@ namespace DatabaseInstaller.Commands
             AddOption(ImportSpeedDevicesOption);
         }
 
-        public Option<string> ApiBaseUrlOption { get; set; } = new("--api-base-url", () => "https://atspm.udot.utah.gov/", "Base URL for the source ATSPM site");
+        public Option<string> ApiBaseUrlOption { get; set; } = new("--api-base-url", () => "https://atspm.udot.utah.gov/config/", "Base URL for the source ATSPM Config API");
         public Option<string> BearerTokenOption { get; set; } = new("--bearer-token", "Bearer token used to access the source Config API");
-        public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete before inserting locations");
+        public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete selected target records before importing");
         public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Import location configuration from the source Config API");
         public Option<bool> ImportSpeedDevicesOption { get; set; } = new("--update-speed", "Import speed devices from the source Config API");
 
