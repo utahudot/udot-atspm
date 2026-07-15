@@ -36,6 +36,7 @@ export enum PageNames {
   ImpactTypes = 'Impact Types',
   Segments = 'Segments',
   UpdateNewEntityVersion = 'Versions',
+  MapLayers = 'Map Layers',
 }
 
 const generalConfigListToLink: Map<string, string> = new Map([
@@ -52,6 +53,7 @@ const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Routes, '/admin/routes'],
   [PageNames.Products, '/admin/products'],
   [PageNames.DeviceConfigurations, '/admin/device-configurations'],
+  [PageNames.MapLayers, '/admin/map-layers'],
 ])
 
 const speedManagementConfigToLink: Map<string, string> = new Map([
@@ -172,8 +174,6 @@ export const useSideBarPermission = (
 
 export const useUserHasClaim = (claim: string) => {
   const [hasPermission, setHasPermission] = useState(false)
-  const claims = Cookies.get('claims')
-  const userClaims = claims ? claims.split(',') : []
 
   useEffect(() => {
     const checkPermission = () => {
@@ -181,6 +181,9 @@ export const useUserHasClaim = (claim: string) => {
         setHasPermission(false)
         return
       }
+
+      const claims = Cookies.get('claims')
+      const userClaims = claims ? claims.split(',') : []
 
       if (userClaims.includes(claim) || userClaims.includes('Admin')) {
         setHasPermission(true)
@@ -190,7 +193,7 @@ export const useUserHasClaim = (claim: string) => {
     }
 
     checkPermission()
-  }, [claim, userClaims])
+  }, [claim])
 
   return hasPermission
 }

@@ -6,7 +6,6 @@ import {
   MovementTypes,
 } from '@/api/config'
 import AuditInfo from '@/components/AuditInfo'
-import { Color } from '@/features/charts/utils'
 import { useEditApproach } from '@/features/locations/api/approach'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
@@ -36,7 +35,7 @@ import {
   Divider,
   Paper,
 } from '@mui/material'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 interface ApproachAdminProps {
   approach: ConfigApproach
@@ -48,18 +47,16 @@ function EditApproach({ approach }: ApproachAdminProps) {
   )
   const deleteDetector = useLocationStore((s) => s.deleteDetector)
   const channelMap = useLocationStore((s) => s.channelMap)
-  const errors = useLocationStore((s) => s.errors)
-  const warnings = useLocationStore((s) => s.warnings)
   const setErrors = useLocationStore((s) => s.setErrors)
-  const setWarnings = useLocationStore((s) => s.setWarnings)
-  const clearErrorsAndWarnings = useLocationStore(
-    (s) => s.clearErrorsAndWarnings
-  )
   const updateApproachInStore = useLocationStore((s) => s.updateApproach)
   const copyApproachInStore = useLocationStore((s) => s.copyApproach)
   const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
   const addDetectorInStore = useLocationStore((s) => s.addDetector)
-  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproach)
+  const scrollToApproach = useLocationStore((s) => s.scrollToApproach)
+  const scrollToDetector = useLocationStore((s) => s.scrollToDetector)
+  const setScrollToApproach = useLocationStore((s) => s.setScrollToApproach)
+  const setScrollToDetector = useLocationStore((s) => s.setScrollToDetector)
+  const updateSavedApproach = useLocationStore((s) => s.updateSavedApproach)
 
   const [open, setOpen] = useState(false)
   const [openHistory, setOpenHistory] = useState(false)
@@ -67,6 +64,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const [deleteMode, setDeleteMode] = useState(false)
   const [selectedDetectorIds, setSelectedDetectorIds] = useState<number[]>([])
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const { addNotification } = useNotificationStore()
   const { mutate: editApproach } = useEditApproach()
@@ -243,7 +241,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
           }
 
           updateApproachInStore(normalizedSaved)
-          updateSavedApproaches(normalizedSaved)
+          updateSavedApproach(normalizedSaved)
           addNotification({
             title: 'Approach saved successfully',
             type: 'success',
@@ -283,10 +281,10 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findLaneType,
     findDetectionHardware,
     findDetectionType,
-    updateSavedApproaches,
     updateApproachInStore,
     deleteApproachInStore,
     addNotification,
+    updateSavedApproach,
   ])
 
   const confirmDeleteSelected = useCallback(() => {
@@ -323,9 +321,42 @@ function EditApproach({ approach }: ApproachAdminProps) {
     return getDirectionAccentColor(approach.directionTypeId)
   }, [approach.directionTypeId])
 
+  useEffect(() => {
+    if (scrollToApproach !== approach.id) return
+
+    containerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+
+    setTimeout(() => {
+      if (!open) setOpen(true)
+    }, 500)
+
+    setScrollToApproach(null)
+  }, [scrollToApproach, approach.id, open, setScrollToApproach])
+
+  useEffect(() => {
+    if (!scrollToDetector) return
+
+    const hasDetector = approach.detectors.some(
+      (det) => det.id.toString() === scrollToDetector.toString()
+    )
+    if (!hasDetector) return
+
+    if (!open) setOpen(true)
+
+    setTimeout(() => {
+      const el = document.getElementById(`detector-${scrollToDetector}`)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setScrollToDetector(null)
+    }, 0)
+  }, [scrollToDetector, approach.detectors, open, setScrollToDetector])
+
   return (
     <>
       <Paper
+        ref={containerRef}
         variant="outlined"
         sx={{ mb: '6px', borderLeft: `7px solid ${leftBorderColor}` }}
       >

@@ -372,12 +372,41 @@ export interface ILocationLayer {
   locationIdentifier?: string | null;
 }
 
+export type DeviceTypes = typeof DeviceTypes[keyof typeof DeviceTypes];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceTypes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_6: 6,
+} as const;
+
+export interface DeviceEventDownload {
+  deviceId?: number;
+  /** @nullable */
+  ipaddress?: string | null;
+  deviceType?: DeviceTypes;
+  beforeWorkflowEventCount?: number;
+  afterWorkflowEventCount?: number;
+  changeInEventCount?: number;
+}
+
 export interface IndianaEvent {
   /** @nullable */
   locationIdentifier?: string | null;
   timestamp?: string;
   eventCode?: number;
   eventParam?: number;
+}
+
+export interface SyncDeviceEventsRequest {
+  /** @nullable */
+  deviceIds?: number[] | null;
 }
 
 export interface IntPtr { [key: string]: unknown }

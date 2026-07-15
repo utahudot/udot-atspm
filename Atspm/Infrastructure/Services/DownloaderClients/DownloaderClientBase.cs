@@ -157,6 +157,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 var path = uri.LocalPath.Replace("\\\\localhost\\", "");
 
+                // Normalize slashes for the OS
+                path = path.Replace('/', Path.DirectorySeparatorChar)
+                           .Replace('\\', Path.DirectorySeparatorChar);
+
+                // Ensure absolute path
+                if (!Path.IsPathRooted(path))
+                    path = Path.DirectorySeparatorChar + path;
+
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
                 if (fileCheck && extCheck)

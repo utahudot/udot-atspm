@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
+import type { Location as ConfigLocation } from '@/api/config'
 import { Location, LocationExpanded } from '@/features/locations/types'
 import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
@@ -41,6 +42,22 @@ export function useGetLocation(id: number) {
 
 export function useCreateLocation() {
   return usePostRequest({ url: route, headers })
+}
+
+export type SaveTemplatedLocationData = {
+  locationIdentifier: string
+  primaryName: string
+  secondaryName: string
+  latitude: number | null
+  longitude: number | null
+  devices: unknown[]
+}
+
+export function useSaveTemplatedLocation(id?: number | string) {
+  return usePostRequest<ConfigLocation, SaveTemplatedLocationData>({
+    url: `${route}/${id}/SaveTemplatedLocation`,
+    headers,
+  })
 }
 
 export function useEditLocation() {
@@ -83,7 +100,12 @@ export const useAllVersionsOfLocation = (
 }
 
 export const useLatestVersionOfAllLocations = (
-  config?: UseQueryOptions<Location, unknown, Location, QueryKey>
+  config?: UseQueryOptions<
+    ApiResponse<Location>,
+    unknown,
+    ApiResponse<Location>,
+    QueryKey
+  >
 ) => {
   return useGetRequest<ApiResponse<Location>>({
     route: `${route}/GetLocationsForSearch?count=false`,

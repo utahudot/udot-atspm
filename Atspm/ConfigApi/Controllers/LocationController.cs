@@ -17,10 +17,12 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
@@ -28,6 +30,7 @@ using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Infrastructure.Services;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
@@ -39,10 +42,14 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// </summary>
     /// 
     [ApiVersion(1.0)]
-    public class LocationController(ILocationRepository repository, ILocationManager locationManager) : LocationPolicyControllerBase<Location, int>(repository)
+    public class LocationController(
+        ILocationRepository repository,
+        ILocationManager locationManager,
+        ISignalTemplateService signalTemplateService) : LocationPolicyControllerBase<Location, int>(repository)
     {
         private readonly ILocationRepository _repository = repository;
         private readonly ILocationManager _locationManager = locationManager;
+        private readonly ISignalTemplateService _signalTemplateService = signalTemplateService;
 
         #region NavigationProperties
 
@@ -103,7 +110,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <param name="key">Location version to copy</param>
         /// <param name="newVersionLabel">Label of new version</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
-        /// 
+        ///
         [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         [HttpPost]
         [ProducesResponseType(typeof(Location), Status200OK)]
@@ -127,7 +134,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// </summary>
         /// <param name="key">Key of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
-        /// 
+        ///
         [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsDelete)]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
@@ -139,6 +146,70 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 await _locationManager.SetLocationToDeleted(key);
 
                 return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Copies <see cref="Location"/> and associated <see cref="Approach"/> to new version
+        /// </summary>
+        /// <param name="key">Location version to copy</param>
+        /// <returns>New version of copied <see cref="Location"/></returns>
+        ///
+        //[Authorize(Policy = "CanEditLocationConfigurations")]
+        [HttpPost]
+        [ProducesResponseType(typeof(TemplateLocationModifiedDto), Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SyncLocation(int key)
+        {
+            try
+            {
+                TemplateLocationModifiedDto modLocation = await _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
+                return Ok(modLocation);
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Templates <see cref="Location"/> and associated <see cref="Approach"/> to new version
+        /// </summary>
+        /// <param name="key">Location version to template</param>
+        /// <returns>New version of templated <see cref="Location"/></returns>
+        ///
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
+        [HttpPost]
+        [ProducesResponseType(typeof(Location), Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SaveTemplatedLocation(int key, ODataActionParameters ourParams)
+        {
+            if (!ModelState.IsValid) { return BadRequest(); }
+
+            try
+            {
+                string locationIdentifier = ourParams["locationIdentifier"].ToString();
+                double lat = double.Parse(ourParams["latitude"].ToString());
+                double lon = double.Parse(ourParams["longitude"].ToString());
+                string primary = ourParams["primaryName"].ToString();
+                string secondary = ourParams["secondaryName"].ToString();
+                //(List<Device>)ourParams["devices"];
+                List<Device> devices = (ourParams["devices"] as IEnumerable<Device>)?.ToList();
+
+                TemplateLocationDto templateLocationDto = new TemplateLocationDto
+                {
+                    LocationIdentifier = locationIdentifier,
+                    Latitude = lat,
+                    Longitude = lon,
+                    PrimaryName = primary,
+                    SecondaryName = secondary,
+                    Devices = devices
+                };
+                return Ok(await _repository.SaveTemplatedLocation(key, templateLocationDto));
             }
             catch (ArgumentException e)
             {

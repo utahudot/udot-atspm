@@ -21,6 +21,7 @@ using Microsoft.OData.ModelBuilder;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
@@ -81,7 +82,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         var g = model.Collection.Function("GetDetectionTypeCount");
                         g.ReturnsCollectionFromEntitySet<DetectionTypeGroup>("DetectionTypeGroups");
 
-
                         var h = model.Action("SaveTemplatedLocation").ReturnsFromEntitySet<Location>("Location"); ;
                         h.Parameter<string>("locationIdentifier");
                         h.Parameter<double>("latitude");
@@ -91,6 +91,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         h.Parameter<string>("note");
                         h.CollectionParameter<Device>("devices");
 
+                        var i = model.Action("SyncLocation").ReturnsFromEntitySet<TemplateLocationModifiedDto>("templateLocationModifiedDto");
+
+                        var j = model.Action("DeleteAllVersions");
 
                         var detectionTypeGroup = builder.EntitySet<DetectionTypeGroup>("DetectionTypeGroups").EntityType;
                         detectionTypeGroup.Property(d => d.Id).IsRequired();
