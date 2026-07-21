@@ -26,6 +26,7 @@ namespace DatabaseInstaller.Commands
             // Initialize and add the UpdateCommand
             AddCommand(UpdateCommand);
             AddCommand(CopyConfigurationCommand);
+            AddCommand(TransferV4ConfigurationCommand);
             AddCommand(MoveEventLogsSqlServerToPostgresCommand);
             AddCommand(TransferEventLogsCommand);
             AddCommand(TransferSpeedEventsCommand);
@@ -36,6 +37,7 @@ namespace DatabaseInstaller.Commands
 
         public UpdateCommand UpdateCommand { get; set; } = new UpdateCommand();
         public TransferConfigCommand CopyConfigurationCommand { get; set; } = new TransferConfigCommand();
+        public TransferV4ConfigCommand TransferV4ConfigurationCommand { get; set; } = new TransferV4ConfigCommand();
         public MoveEventLogsSqlServerToPostgresCommand MoveEventLogsSqlServerToPostgresCommand { get; set; } = new MoveEventLogsSqlServerToPostgresCommand();
         public TransferEventLogsCommand TransferEventLogsCommand { get; set; } = new TransferEventLogsCommand();
         public TransferSpeedEventsCommand TransferSpeedEventsCommand { get; set; } = new TransferSpeedEventsCommand();
