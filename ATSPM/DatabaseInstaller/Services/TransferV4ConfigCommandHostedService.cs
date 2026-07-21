@@ -633,14 +633,16 @@ namespace DatabaseInstaller.Services
             {
                 try
                 {
-                    var existingJurisdiction = _configContext.Jurisdictions
+                    var existingJurisdictionId = _configContext.Jurisdictions
                         .AsNoTracking()
-                        .FirstOrDefault(j => j.Name == v4Jurisdiction.Name);
+                        .Where(j => j.Name == v4Jurisdiction.Name)
+                        .Select(j => (int?)j.Id)
+                        .FirstOrDefault();
 
-                    if (existingJurisdiction != null)
+                    if (existingJurisdictionId.HasValue)
                     {
-                        _logger.LogDebug("Jurisdiction {Name} already exists (ID: {V5Id})", v4Jurisdiction.Name, existingJurisdiction.Id);
-                        _v4ToV5JurisdictionMap[v4Jurisdiction.Id] = existingJurisdiction.Id;
+                        _logger.LogDebug("Jurisdiction {Name} already exists (ID: {V5Id})", v4Jurisdiction.Name, existingJurisdictionId.Value);
+                        _v4ToV5JurisdictionMap[v4Jurisdiction.Id] = existingJurisdictionId.Value;
                     }
                     else
                     {
@@ -653,16 +655,9 @@ namespace DatabaseInstaller.Services
                         };
 
                         await _jurisdictionRepository.AddAsync(newJurisdiction);
-                        // Refresh from DB to get the ID
-                        var createdJurisdiction = _configContext.Jurisdictions
-                            .AsNoTracking()
-                            .FirstOrDefault(j => j.Name == newJurisdiction.Name);
 
-                        if (createdJurisdiction != null)
-                        {
-                            _logger.LogInformation("Created new jurisdiction: {Name} (V5 ID: {V5Id})", newJurisdiction.Name, createdJurisdiction.Id);
-                            _v4ToV5JurisdictionMap[v4Jurisdiction.Id] = createdJurisdiction.Id;
-                        }
+                        _logger.LogInformation("Created new jurisdiction: {Name} (V5 ID: {V5Id})", newJurisdiction.Name, newJurisdiction.Id);
+                        _v4ToV5JurisdictionMap[v4Jurisdiction.Id] = newJurisdiction.Id;
                     }
                 }
                 catch (Exception ex)
@@ -680,14 +675,16 @@ namespace DatabaseInstaller.Services
             {
                 try
                 {
-                    var existingRegion = _configContext.Regions
+                    var existingRegionId = _configContext.Regions
                         .AsNoTracking()
-                        .FirstOrDefault(r => r.Description == v4Region.Description);
+                        .Where(r => r.Description == v4Region.Description)
+                        .Select(r => (int?)r.Id)
+                        .FirstOrDefault();
 
-                    if (existingRegion != null)
+                    if (existingRegionId.HasValue)
                     {
-                        _logger.LogDebug("Region {Description} already exists (ID: {V5Id})", v4Region.Description, existingRegion.Id);
-                        _v4ToV5RegionMap[v4Region.Id] = existingRegion.Id;
+                        _logger.LogDebug("Region {Description} already exists (ID: {V5Id})", v4Region.Description, existingRegionId.Value);
+                        _v4ToV5RegionMap[v4Region.Id] = existingRegionId.Value;
                     }
                     else
                     {
@@ -697,16 +694,9 @@ namespace DatabaseInstaller.Services
                         };
 
                         await _regionsRepository.AddAsync(newRegion);
-                        // Refresh from DB to get the ID
-                        var createdRegion = _configContext.Regions
-                            .AsNoTracking()
-                            .FirstOrDefault(r => r.Description == newRegion.Description);
 
-                        if (createdRegion != null)
-                        {
-                            _logger.LogInformation("Created new region: {Description} (V5 ID: {V5Id})", newRegion.Description, createdRegion.Id);
-                            _v4ToV5RegionMap[v4Region.Id] = createdRegion.Id;
-                        }
+                        _logger.LogInformation("Created new region: {Description} (V5 ID: {V5Id})", newRegion.Description, newRegion.Id);
+                        _v4ToV5RegionMap[v4Region.Id] = newRegion.Id;
                     }
                 }
                 catch (Exception ex)
@@ -723,6 +713,17 @@ namespace DatabaseInstaller.Services
             _logger.LogInformation("Starting location migration...");
             var locationsToAdd = new List<Location>();
 
+            var existingLocationMap = _configContext.Locations
+                .AsNoTracking()
+                .Where(l => l.LocationIdentifier != null)
+                .GroupBy(l => l.LocationIdentifier)
+                .Select(g => new
+                {
+                    LocationIdentifier = g.Key,
+                    Id = g.OrderByDescending(l => l.Start).Select(l => l.Id).FirstOrDefault()
+                })
+                .ToDictionary(l => l.LocationIdentifier!, l => l.Id);
+
             for (int i = 0; i < v4Signals.Count; i += BatchSize)
             {
                 var batch = v4Signals.Skip(i).Take(BatchSize).ToList();
@@ -732,14 +733,12 @@ namespace DatabaseInstaller.Services
                     try
                     {
                         // Check if location already exists by LocationIdentifier (using SignalID as the unique key)
-                        var existingLocation = _locationRepository.GetLatestVersionOfAllLocations()
-                            .FirstOrDefault(l => l.LocationIdentifier == v4Signal.SignalID);
-
-                        if (existingLocation != null)
+                        if (!string.IsNullOrEmpty(v4Signal.SignalID) &&
+                            existingLocationMap.TryGetValue(v4Signal.SignalID, out var existingLocationId))
                         {
                             _logger.LogInformation("Skipping duplicate location: {LocationIdentifier}", v4Signal.SignalID);
                             // Still map for reference in case it's needed
-                            _signalToLocationMap[v4Signal.SignalID] = existingLocation.Id;
+                            _signalToLocationMap[v4Signal.SignalID] = existingLocationId;
                             continue;
                         }
 
@@ -783,20 +782,20 @@ namespace DatabaseInstaller.Services
                     _locationRepository.AddRange(locationsToAdd);
                     _logger.LogInformation("Added {Count} locations to repository", locationsToAdd.Count);
 
-                    // Save changes to generate Location IDs
                     await _configContext.SaveChangesAsync(cancellationToken);
                     _logger.LogInformation("Persisted {Count} locations to database", locationsToAdd.Count);
 
-                    // Map the newly added locations - now they have IDs from the database
-                    var addedLocations = _locationRepository.GetLatestVersionOfAllLocations();
-                    foreach (var v4Signal in batch)
+                    // Map the newly added locations using tracked entities (IDs assigned after AddRange save)
+                    foreach (var added in locationsToAdd)
                     {
-                        var added = addedLocations.FirstOrDefault(l => l.LocationIdentifier == v4Signal.SignalID);
-                        if (added != null)
+                        if (string.IsNullOrEmpty(added.LocationIdentifier))
                         {
-                            _signalToLocationMap[v4Signal.SignalID] = added.Id;
-                            _logger.LogDebug("Mapped v4 Signal {SignalID} to v5 Location {LocationId}", v4Signal.SignalID, added.Id);
+                            continue;
                         }
+
+                        _signalToLocationMap[added.LocationIdentifier] = added.Id;
+                        existingLocationMap[added.LocationIdentifier] = added.Id;
+                        _logger.LogDebug("Mapped v4 Signal {SignalID} to v5 Location {LocationId}", added.LocationIdentifier, added.Id);
                     }
 
                     locationsToAdd.Clear();
@@ -812,9 +811,20 @@ namespace DatabaseInstaller.Services
             var approachesToAdd = new List<Approach>();
             var v4ApproachesToTracking = new List<(V4Approach v4, Approach v5)>();
 
+            var existingApproachKeyToId = _configContext.Approaches
+                .AsNoTracking()
+                .Where(a => a.Description != null)
+                .Select(a => new { a.Id, a.LocationId, a.Description })
+                .ToList()
+                .ToDictionary(
+                    a => BuildApproachDuplicateKey(a.LocationId, a.Description),
+                    a => a.Id,
+                    StringComparer.OrdinalIgnoreCase);
+
             for (int i = 0; i < v4Approaches.Count; i += BatchSize)
             {
                 var batch = v4Approaches.Skip(i).Take(BatchSize).ToList();
+                var pendingApproachesByKey = new Dictionary<string, Approach>(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var v4Approach in batch)
                 {
@@ -822,12 +832,28 @@ namespace DatabaseInstaller.Services
                     {
                         if (string.IsNullOrEmpty(v4Approach.SignalID) || !_signalToLocationMap.ContainsKey(v4Approach.SignalID))
                         {
-                            _logger.LogWarning("Skipping approach {ApproachID}: parent signal {SignalID} not found in mapping", 
+                            _logger.LogWarning("Skipping approach {ApproachID}: parent signal {SignalID} not found in mapping",
                                 v4Approach.ApproachID, v4Approach.SignalID ?? "NULL");
                             continue;
                         }
 
                         var locationId = _signalToLocationMap[v4Approach.SignalID];
+                        var description = v4Approach.Description ?? $"Approach {v4Approach.ApproachID}";
+                        var approachDuplicateKey = BuildApproachDuplicateKey(locationId, description);
+
+                        if (existingApproachKeyToId.TryGetValue(approachDuplicateKey, out var existingApproachId))
+                        {
+                            _approachMap[v4Approach.ApproachID] = existingApproachId;
+                            _logger.LogInformation("Skipping duplicate approach for location {LocationId} and description {Description}", locationId, description);
+                            continue;
+                        }
+
+                        if (pendingApproachesByKey.TryGetValue(approachDuplicateKey, out var pendingApproach))
+                        {
+                            v4ApproachesToTracking.Add((v4Approach, pendingApproach));
+                            _logger.LogInformation("Skipping duplicate approach in current batch for location {LocationId} and description {Description}", locationId, description);
+                            continue;
+                        }
 
                         // Map DirectionTypeID to DirectionTypes enum
                         var directionType = MapDirectionTypeFromId(v4Approach.DirectionTypeID);
@@ -836,7 +862,7 @@ namespace DatabaseInstaller.Services
                         {
                             LocationId = locationId,
                             DirectionTypeId = directionType,
-                            Description = v4Approach.Description ?? $"Approach {v4Approach.ApproachID}",
+                            Description = description,
                             Mph = v4Approach.Mph,
                             ProtectedPhaseNumber = v4Approach.ProtectedPhaseNumber > 0 ? v4Approach.ProtectedPhaseNumber : 1,
                             IsProtectedPhaseOverlap = v4Approach.IsProtectedPhaseOverlap,
@@ -845,11 +871,11 @@ namespace DatabaseInstaller.Services
                             PedestrianPhaseNumber = v4Approach.PedestrianPhaseNumber,
                             IsPedestrianPhaseOverlap = v4Approach.IsPedestrianPhaseOverlap,
                             PedestrianDetectors = v4Approach.PedestrianDetectors
-                            // Note: TransitSignalPriorityNumber is not in v5 database schema, so we don't set it
                         };
 
                         approachesToAdd.Add(approach);
                         v4ApproachesToTracking.Add((v4Approach, approach));
+                        pendingApproachesByKey[approachDuplicateKey] = approach;
                         _logger.LogDebug("Prepared approach: {ApproachID}", v4Approach.ApproachID);
                     }
                     catch (Exception ex)
@@ -862,21 +888,16 @@ namespace DatabaseInstaller.Services
                 // Batch add
                 if (approachesToAdd.Count > 0)
                 {
-                    _approachRepository.AddRange(approachesToAdd);
-                    _logger.LogInformation("Added {Count} approaches to repository", approachesToAdd.Count);
-
-                    // Exclude TransitSignalPriorityNumber from EF Core tracking
-                    // This property exists on the model but is not in the v5 database schema
-                    foreach (var entry in _configContext.ChangeTracker.Entries<Approach>().Where(e => e.State == EntityState.Added))
+                    foreach (var approach in approachesToAdd)
                     {
-                        entry.Property(e => e.TransitSignalPriorityNumber).IsModified = false;
+                        var insertedId = await InsertApproachWithoutTransitSignalPriorityAsync(approach, cancellationToken);
+                        if (insertedId > 0)
+                        {
+                            approach.Id = insertedId;
+                            existingApproachKeyToId[BuildApproachDuplicateKey(approach.LocationId, approach.Description)] = insertedId;
+                        }
                     }
 
-                    // Save changes to generate Approach IDs
-                    await _configContext.SaveChangesAsync(cancellationToken);
-                    _logger.LogInformation("Persisted {Count} approaches to database", approachesToAdd.Count);
-
-                    // Map the newly added approaches - they should now have IDs assigned from the database
                     foreach (var (v4, v5) in v4ApproachesToTracking)
                     {
                         if (v5.Id > 0)
@@ -886,6 +907,8 @@ namespace DatabaseInstaller.Services
                         }
                     }
 
+                    _logger.LogInformation("Persisted {Count} approaches to database", approachesToAdd.Count);
+
                     approachesToAdd.Clear();
                     v4ApproachesToTracking.Clear();
                 }
@@ -894,15 +917,112 @@ namespace DatabaseInstaller.Services
             _logger.LogInformation("Approach migration completed. Migrated {Count} approaches", _approachMap.Count);
         }
 
+        private static string BuildApproachDuplicateKey(int locationId, string? description)
+            => $"{locationId}|{description?.Trim()}";
+
+        private async Task<int> InsertApproachWithoutTransitSignalPriorityAsync(Approach approach, CancellationToken cancellationToken)
+        {
+            if (!_configContext.Database.IsSqlServer())
+            {
+                await _approachRepository.AddAsync(approach);
+                return approach.Id;
+            }
+
+            var connection = (SqlConnection)_configContext.Database.GetDbConnection();
+            var closeWhenDone = connection.State != System.Data.ConnectionState.Open;
+
+            if (closeWhenDone)
+            {
+                await connection.OpenAsync(cancellationToken);
+            }
+
+            try
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = @"
+INSERT INTO [dbo].[Approaches]
+(
+    [Description],
+    [Mph],
+    [ProtectedPhaseNumber],
+    [IsProtectedPhaseOverlap],
+    [PermissivePhaseNumber],
+    [IsPermissivePhaseOverlap],
+    [PedestrianPhaseNumber],
+    [IsPedestrianPhaseOverlap],
+    [PedestrianDetectors],
+    [LocationId],
+    [DirectionTypeId],
+    [Created],
+    [Modified],
+    [CreatedBy],
+    [ModifiedBy]
+)
+OUTPUT INSERTED.[Id]
+VALUES
+(
+    @Description,
+    @Mph,
+    @ProtectedPhaseNumber,
+    @IsProtectedPhaseOverlap,
+    @PermissivePhaseNumber,
+    @IsPermissivePhaseOverlap,
+    @PedestrianPhaseNumber,
+    @IsPedestrianPhaseOverlap,
+    @PedestrianDetectors,
+    @LocationId,
+    @DirectionTypeId,
+    @Created,
+    @Modified,
+    @CreatedBy,
+    @ModifiedBy
+);";
+
+                command.Parameters.AddWithValue("@Description", (object?)approach.Description ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Mph", (object?)approach.Mph ?? DBNull.Value);
+                command.Parameters.AddWithValue("@ProtectedPhaseNumber", approach.ProtectedPhaseNumber);
+                command.Parameters.AddWithValue("@IsProtectedPhaseOverlap", approach.IsProtectedPhaseOverlap);
+                command.Parameters.AddWithValue("@PermissivePhaseNumber", (object?)approach.PermissivePhaseNumber ?? DBNull.Value);
+                command.Parameters.AddWithValue("@IsPermissivePhaseOverlap", approach.IsPermissivePhaseOverlap);
+                command.Parameters.AddWithValue("@PedestrianPhaseNumber", (object?)approach.PedestrianPhaseNumber ?? DBNull.Value);
+                command.Parameters.AddWithValue("@IsPedestrianPhaseOverlap", approach.IsPedestrianPhaseOverlap);
+                command.Parameters.AddWithValue("@PedestrianDetectors", (object?)approach.PedestrianDetectors ?? DBNull.Value);
+                command.Parameters.AddWithValue("@LocationId", approach.LocationId);
+                command.Parameters.AddWithValue("@DirectionTypeId", (int)approach.DirectionTypeId);
+                command.Parameters.AddWithValue("@Created", (object?)approach.Created ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Modified", (object?)approach.Modified ?? DBNull.Value);
+                command.Parameters.AddWithValue("@CreatedBy", (object?)approach.CreatedBy ?? DBNull.Value);
+                command.Parameters.AddWithValue("@ModifiedBy", (object?)approach.ModifiedBy ?? DBNull.Value);
+
+                var result = await command.ExecuteScalarAsync(cancellationToken);
+                return result == null ? 0 : Convert.ToInt32(result);
+            }
+            finally
+            {
+                if (closeWhenDone)
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+
         private async Task MigrateDetectorsAsync(List<V4Detector> v4Detectors, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Starting detector migration...");
             var detectorsToAdd = new List<Detector>();
             var v4DetectorsToTracking = new List<(V4Detector v4, Detector v5)>();
 
+            var existingDetectorIdentifierToId = _configContext.Detectors
+                .AsNoTracking()
+                .Where(d => d.DectectorIdentifier != null)
+                .Select(d => new { d.Id, d.DectectorIdentifier })
+                .ToList()
+                .ToDictionary(d => d.DectectorIdentifier!, d => d.Id, StringComparer.OrdinalIgnoreCase);
+
             for (int i = 0; i < v4Detectors.Count; i += BatchSize)
             {
                 var batch = v4Detectors.Skip(i).Take(BatchSize).ToList();
+                var pendingDetectorsByIdentifier = new Dictionary<string, Detector>(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var v4Detector in batch)
                 {
@@ -910,8 +1030,24 @@ namespace DatabaseInstaller.Services
                     {
                         if (!_approachMap.ContainsKey(v4Detector.ApproachID))
                         {
-                            _logger.LogWarning("Skipping detector {DetectorID}: parent approach {ApproachID} not found in mapping", 
+                            _logger.LogWarning("Skipping detector {DetectorID}: parent approach {ApproachID} not found in mapping",
                                 v4Detector.DetectorID, v4Detector.ApproachID);
+                            continue;
+                        }
+
+                        var detectorIdentifier = v4Detector.DetectorID ?? $"DET_{v4Detector.ID}";
+
+                        if (existingDetectorIdentifierToId.TryGetValue(detectorIdentifier, out var existingDetectorId))
+                        {
+                            _detectorMap[v4Detector.ID] = existingDetectorId;
+                            _logger.LogInformation("Skipping duplicate detector: {DetectorIdentifier}", detectorIdentifier);
+                            continue;
+                        }
+
+                        if (pendingDetectorsByIdentifier.TryGetValue(detectorIdentifier, out var pendingDetector))
+                        {
+                            v4DetectorsToTracking.Add((v4Detector, pendingDetector));
+                            _logger.LogInformation("Skipping duplicate detector in current batch: {DetectorIdentifier}", detectorIdentifier);
                             continue;
                         }
 
@@ -920,7 +1056,7 @@ namespace DatabaseInstaller.Services
                         var detector = new Detector
                         {
                             ApproachId = approachId,
-                            DectectorIdentifier = v4Detector.DetectorID ?? $"DET_{v4Detector.ID}",
+                            DectectorIdentifier = detectorIdentifier,
                             DetectorChannel = v4Detector.DetChannel,
                             DistanceFromStopBar = v4Detector.DistanceFromStopBar,
                             MinSpeedFilter = v4Detector.MinSpeedFilter,
@@ -937,6 +1073,7 @@ namespace DatabaseInstaller.Services
 
                         detectorsToAdd.Add(detector);
                         v4DetectorsToTracking.Add((v4Detector, detector));
+                        pendingDetectorsByIdentifier[detectorIdentifier] = detector;
                         _logger.LogDebug("Prepared detector: {DetectorIdentifier}", detector.DectectorIdentifier);
                     }
                     catch (Exception ex)
@@ -962,6 +1099,7 @@ namespace DatabaseInstaller.Services
                         if (v5.Id > 0)
                         {
                             _detectorMap[v4.ID] = v5.Id;
+                            existingDetectorIdentifierToId[v5.DectectorIdentifier] = v5.Id;
                             _logger.LogDebug("Mapped v4 Detector {DetectorID} to v5 Detector {Id}", v4.ID, v5.Id);
                         }
                     }
@@ -979,6 +1117,13 @@ namespace DatabaseInstaller.Services
             _logger.LogInformation("Starting detector comment migration...");
             var commentsToAdd = new List<DetectorComment>();
 
+            var existingCommentKeys = _configContext.DetectorComments
+                .AsNoTracking()
+                .Select(c => new { c.DetectorId, c.TimeStamp })
+                .ToList()
+                .Select(c => $"{c.DetectorId}|{c.TimeStamp.Ticks}")
+                .ToHashSet();
+
             for (int i = 0; i < v4Comments.Count; i += BatchSize)
             {
                 var batch = v4Comments.Skip(i).Take(BatchSize).ToList();
@@ -989,12 +1134,19 @@ namespace DatabaseInstaller.Services
                     {
                         if (!_detectorMap.ContainsKey(v4Comment.ID))
                         {
-                            _logger.LogWarning("Skipping comment {CommentID}: detector {ID} not found in mapping", 
+                            _logger.LogWarning("Skipping comment {CommentID}: detector {ID} not found in mapping",
                                 v4Comment.CommentID, v4Comment.ID);
                             continue;
                         }
 
                         var detectorId = _detectorMap[v4Comment.ID];
+                        var commentKey = $"{detectorId}|{v4Comment.TimeStamp.Ticks}";
+
+                        if (existingCommentKeys.Contains(commentKey))
+                        {
+                            _logger.LogInformation("Skipping duplicate detector comment for detector {DetectorId} at {TimeStamp}", detectorId, v4Comment.TimeStamp);
+                            continue;
+                        }
 
                         var comment = new DetectorComment
                         {
@@ -1004,6 +1156,7 @@ namespace DatabaseInstaller.Services
                         };
 
                         commentsToAdd.Add(comment);
+                        existingCommentKeys.Add(commentKey);
                         _logger.LogDebug("Prepared comment: {CommentID}", v4Comment.CommentID);
                     }
                     catch (Exception ex)
