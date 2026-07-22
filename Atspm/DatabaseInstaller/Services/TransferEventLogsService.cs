@@ -79,9 +79,7 @@ namespace DatabaseInstaller.Services
             {
                 _logger.LogInformation($"Processing data for {date}");
 
-                var locationsQuery = _locationRepository.GetList()
-                    .Include(s => s.Devices)
-                    .AsQueryable();
+                var locationsQuery = _locationRepository.GetList().AsQueryable();
 
                 if (_config.Device != null)
                 {
@@ -96,19 +94,60 @@ namespace DatabaseInstaller.Services
                         .Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
                 }
 
-                var locations = locationsQuery
+                var activeLocations = locationsQuery
                     .FromSpecification(new ActiveLocationSpecification())
-                    .GroupBy(r => r.LocationIdentifier)
-                    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                    .Where(l => l.LocationIdentifier != null)
+                    .Select(l => new
+                    {
+                        l.Id,
+                        l.LocationIdentifier,
+                        l.Start
+                    })
+                    .ToList();
+
+                var latestLocations = activeLocations
+                    .GroupBy(l => l.LocationIdentifier)
+                    .Select(g => g.OrderByDescending(l => l.Start).First())
+                    .ToList();
+
+                var latestLocationIds = latestLocations.Select(l => l.Id).ToList();
+
+                var signalControllerDevices = _locationRepository.GetList()
+                    .Where(l => latestLocationIds.Contains(l.Id))
+                    .SelectMany(l => l.Devices
+                        .Where(d => d.DeviceType == DeviceTypes.SignalController)
+                        .Select(d => new
+                        {
+                            l.LocationIdentifier,
+                            DeviceId = d.Id
+                        }))
+                    .ToList()
+                    .GroupBy(d => d.LocationIdentifier)
+                    .ToDictionary(g => g.Key, g => g.First().DeviceId);
+
+                var locationsToProcess = latestLocations
+                    .Select(l => new
+                    {
+                        l.LocationIdentifier,
+                        DeviceId = signalControllerDevices.TryGetValue(l.LocationIdentifier!, out var deviceId)
+                            ? (int?)deviceId
+                            : null
+                    })
                     .ToList();
 
                 var hourLogs = new ConcurrentBag<CompressedEventLogs<IndianaEvent>>();
 
-                await Task.WhenAll(locations.Select(async location =>
+                await Task.WhenAll(locationsToProcess.Select(async location =>
                 {
+                    if (location!.DeviceId == null)
+                    {
+                        _logger.LogWarning($"No signal controller device found for location {location.LocationIdentifier}");
+                        return;
+                    }
+
                     try
                     {
-                        var log = await GetLogsAsync(date, date.AddHours(1), _config.Source, location, cancellationToken);
+                        var log = await GetLogsAsync(date, date.AddHours(1), _config.Source, location.LocationIdentifier!, location.DeviceId.Value, cancellationToken);
                         if (log != null)
                         {
                             hourLogs.Add(log);
@@ -134,12 +173,13 @@ namespace DatabaseInstaller.Services
             DateTime start,
             DateTime end,
             string sourceConnectionString,
-            Location location,
+            string locationIdentifier,
+            int deviceId,
             CancellationToken cancellationToken)
         {
             string connectionString = $"{sourceConnectionString};Max Pool Size=200;Connection Timeout=60;";
             string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] " +
-                                 $"WHERE SignalId = '{location.LocationIdentifier}' " +
+                                 $"WHERE SignalId = '{locationIdentifier}' " +
                                  $"AND Timestamp >= '{start}' AND Timestamp < '{end}'";
 
             try
@@ -171,33 +211,25 @@ namespace DatabaseInstaller.Services
                                     }
                                     catch (Exception ex)
                                     {
-                                        _logger.LogWarning($"Error reading record for {location.LocationIdentifier} on {start}: {ex.Message}");
+                                        _logger.LogWarning($"Error reading record for {locationIdentifier} on {start}: {ex.Message}");
 
                                     }
                                 }
                             }
 
-                            _logger.LogInformation($"Found {eventLogs.Count} events for location {location.LocationIdentifier} on {start}");
+                            _logger.LogInformation($"Found {eventLogs.Count} events for location {locationIdentifier} on {start}");
 
                             if (eventLogs.Any())
                             {
-                                var device = location.Devices
-                                    .FirstOrDefault(d => d.DeviceType == DeviceTypes.SignalController);
-
-                                if (device != null)
+                                return new CompressedEventLogs<IndianaEvent>
                                 {
-                                    return new CompressedEventLogs<IndianaEvent>
-                                    {
-                                        LocationIdentifier = location.LocationIdentifier,
-                                        DeviceId = device.Id,
-                                        //ArchiveDate = DateOnly.FromDateTime(start),
-                                        Start = start,
-                                        End = end,
-                                        Data = eventLogs
-                                    };
-                                }
-
-                                _logger.LogWarning($"No device found for location {location.LocationIdentifier}");
+                                    LocationIdentifier = locationIdentifier,
+                                    DeviceId = deviceId,
+                                    //ArchiveDate = DateOnly.FromDateTime(start),
+                                    Start = start,
+                                    End = end,
+                                    Data = eventLogs
+                                };
                             }
                         }
                     }
@@ -207,7 +239,7 @@ namespace DatabaseInstaller.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to get logs for {location.LocationIdentifier} on {start} after multiple attempts: {ex.Message}");
+                _logger.LogError($"Failed to get logs for {locationIdentifier} on {start} after multiple attempts: {ex.Message}");
                 return null;
             }
         }

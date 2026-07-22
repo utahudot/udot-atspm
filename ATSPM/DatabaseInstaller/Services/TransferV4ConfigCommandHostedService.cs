@@ -117,8 +117,11 @@ namespace DatabaseInstaller.Services
 
         // Dictionary to map v4 IDs to v5 IDs during migration
         private readonly Dictionary<string, int> _signalToLocationMap = new();
+        private readonly Dictionary<string, int> _signalToDeviceMap = new();
         private readonly Dictionary<int, int> _approachMap = new();
         private readonly Dictionary<int, int> _detectorMap = new();
+        private readonly Dictionary<int, int> _controllerTypeToProductMap = new();
+        private readonly Dictionary<int, int> _controllerTypeToDeviceConfigurationMap = new();
 
         // Cache for jurisdiction and region IDs with their descriptions
         private Dictionary<int, int> _v4ToV5JurisdictionMap;
@@ -178,7 +181,16 @@ namespace DatabaseInstaller.Services
                     return;
                 }
 
+                var controllerTypeIds = v4Signals
+                    .Where(s => s.ControllerTypeID.HasValue)
+                    .Select(s => s.ControllerTypeID!.Value)
+                    .Distinct()
+                    .ToList();
+
                 // Step 2: Load v4 related data
+                var v4ControllerTypes = await LoadV4ControllerTypesAsync(_config.Source, controllerTypeIds, cancellationToken);
+                _logger.LogInformation("Loaded {Count} controller types from v4 database", v4ControllerTypes.Count);
+
                 var signalIds = v4Signals.Select(s => s.SignalID).ToList();
                 var v4Approaches = await LoadV4ApproachesAsync(_config.Source, signalIds, cancellationToken);
                 _logger.LogInformation("Loaded {Count} approaches from v4 database", v4Approaches.Count);
@@ -190,8 +202,14 @@ namespace DatabaseInstaller.Services
                 _logger.LogInformation("Loaded {Count} detector comments from v4 database", v4DetectorComments.Count);
 
                 // Step 3: Migrate data
+                await MigrateDeviceConfigurationsAsync(v4ControllerTypes, cancellationToken);
+                _logger.LogInformation("Migrated {Count} device configurations", _controllerTypeToDeviceConfigurationMap.Count);
+
                 await MigrateLocationsAsync(v4Signals, cancellationToken);
                 _logger.LogInformation("Migrated {Count} locations", _signalToLocationMap.Count);
+
+                await MigrateDevicesAsync(v4Signals, cancellationToken);
+                _logger.LogInformation("Migrated {Count} devices", _signalToDeviceMap.Count);
 
                 await MigrateApproachesAsync(v4Approaches, cancellationToken);
                 _logger.LogInformation("Migrated {Count} approaches", _approachMap.Count);
@@ -246,8 +264,11 @@ namespace DatabaseInstaller.Services
                             SecondaryName, 
                             Latitude, 
                             Longitude, 
+                            IPAddress,
                             Note,
                             RegionID,
+                            ControllerTypeID,
+                            Enabled,
                             JurisdictionId,
                             Pedsare1to1
                         FROM Signals
@@ -285,10 +306,13 @@ namespace DatabaseInstaller.Services
                                     SecondaryName = reader.IsDBNull(2) ? null : reader.GetString(2),
                                     Latitude = latitude,
                                     Longitude = longitude,
-                                    Note = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    RegionID = reader.IsDBNull(6) ? null : (int?)reader.GetInt32(6),
-                                    JurisdictionId = reader.IsDBNull(7) ? null : (int?)reader.GetInt32(7),
-                                    Pedsare1to1 = reader.IsDBNull(8) ? false : reader.GetBoolean(8)
+                                    IPAddress = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                    Note = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                    RegionID = reader.IsDBNull(7) ? null : (int?)reader.GetInt32(7),
+                                    ControllerTypeID = reader.IsDBNull(8) ? null : (int?)reader.GetInt32(8),
+                                    Enabled = !reader.IsDBNull(9) && reader.GetBoolean(9),
+                                    JurisdictionId = reader.IsDBNull(10) ? null : (int?)reader.GetInt32(10),
+                                    Pedsare1to1 = reader.IsDBNull(11) ? false : reader.GetBoolean(11)
                                 });
                             }
                         }
@@ -302,6 +326,63 @@ namespace DatabaseInstaller.Services
             }
 
             return signals;
+        }
+
+        private async Task<List<V4ControllerType>> LoadV4ControllerTypesAsync(string connectionString, List<int> controllerTypeIds, CancellationToken cancellationToken)
+        {
+            var controllerTypes = new List<V4ControllerType>();
+
+            try
+            {
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var query = @"
+                        SELECT 
+                            ControllerTypeID,
+                            Description,
+                            SNMPPort,
+                            FTPDirectory,
+                            ActiveFTP,
+                            UserName,
+                            Password
+                        FROM ControllerTypes
+                        WHERE 1=1";
+
+                if (controllerTypeIds.Count > 0)
+                {
+                    var placeholders = string.Join(",", Enumerable.Range(0, controllerTypeIds.Count).Select(i => $"@controllerType{i}"));
+                    query += $" AND ControllerTypeID IN ({placeholders})";
+                }
+
+                using var command = new SqlCommand(query, connection);
+                for (int i = 0; i < controllerTypeIds.Count; i++)
+                {
+                    command.Parameters.AddWithValue($"@controllerType{i}", controllerTypeIds[i]);
+                }
+
+                using var reader = await command.ExecuteReaderAsync(cancellationToken);
+                while (await reader.ReadAsync(cancellationToken))
+                {
+                    controllerTypes.Add(new V4ControllerType
+                    {
+                        ControllerTypeID = reader.GetInt32(0),
+                        Description = reader.IsDBNull(1) ? null : reader.GetString(1),
+                        SNMPPort = reader.IsDBNull(2) ? 0 : reader.GetInt64(2),
+                        FTPDirectory = reader.IsDBNull(3) ? null : reader.GetString(3),
+                        ActiveFTP = !reader.IsDBNull(4) && reader.GetBoolean(4),
+                        UserName = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        Password = reader.IsDBNull(6) ? null : reader.GetString(6)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading v4 controller types from database");
+                throw;
+            }
+
+            return controllerTypes;
         }
 
         private async Task<List<V4Approach>> LoadV4ApproachesAsync(string connectionString, List<string> signalIds, CancellationToken cancellationToken)
@@ -805,6 +886,246 @@ namespace DatabaseInstaller.Services
             _logger.LogInformation("Location migration completed. Migrated {Count} locations", _signalToLocationMap.Count);
         }
 
+        private async Task MigrateDeviceConfigurationsAsync(List<V4ControllerType> v4ControllerTypes, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Starting device configuration migration...");
+
+            foreach (var v4ControllerType in v4ControllerTypes)
+            {
+                try
+                {
+                    await GetOrCreateDeviceConfigurationIdAsync(v4ControllerType, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error preparing device configuration for controller type {ControllerTypeId}", v4ControllerType.ControllerTypeID);
+                    throw;
+                }
+            }
+
+            _logger.LogInformation("Device configuration migration completed. Migrated {Count} device configurations", _controllerTypeToDeviceConfigurationMap.Count);
+        }
+
+        private async Task MigrateDevicesAsync(List<V4Signal> v4Signals, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Starting device migration...");
+            var devicesToAdd = new List<Device>();
+
+            var existingDeviceMap = _configContext.Devices
+                .AsNoTracking()
+                .Where(d => d.DeviceIdentifier != null)
+                .GroupBy(d => d.DeviceIdentifier)
+                .Select(g => new
+                {
+                    DeviceIdentifier = g.Key,
+                    Id = g.OrderByDescending(d => d.Id).Select(d => d.Id).FirstOrDefault()
+                })
+                .ToDictionary(d => d.DeviceIdentifier!, d => d.Id, StringComparer.OrdinalIgnoreCase);
+
+            for (int i = 0; i < v4Signals.Count; i += BatchSize)
+            {
+                var batch = v4Signals.Skip(i).Take(BatchSize).ToList();
+
+                foreach (var v4Signal in batch)
+                {
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(v4Signal.SignalID) ||
+                            !_signalToLocationMap.TryGetValue(v4Signal.SignalID, out var locationId))
+                        {
+                            _logger.LogWarning("Skipping device for signal {SignalID} because the location was not migrated", v4Signal.SignalID);
+                            continue;
+                        }
+
+                        if (existingDeviceMap.TryGetValue(v4Signal.SignalID, out var existingDeviceId))
+                        {
+                            _logger.LogInformation("Skipping duplicate device: {DeviceIdentifier}", v4Signal.SignalID);
+                            _signalToDeviceMap[v4Signal.SignalID] = existingDeviceId;
+                            continue;
+                        }
+
+                        var deviceConfigurationId = await GetOrCreateDeviceConfigurationIdAsync(v4Signal.ControllerTypeID, cancellationToken);
+
+                        var device = new Device
+                        {
+                            DeviceIdentifier = v4Signal.SignalID,
+                            DeviceProperties = new Dictionary<string, object>
+                            {
+                                ["ControllerTypeID"] = v4Signal.ControllerTypeID ?? 0,
+                                ["IPAddress"] = v4Signal.IPAddress ?? string.Empty
+                            },
+                            LoggingEnabled = v4Signal.Enabled,
+                            Ipaddress = string.IsNullOrWhiteSpace(v4Signal.IPAddress) ? "0.0.0.0" : v4Signal.IPAddress,
+                            DeviceStatus = v4Signal.Enabled ? DeviceStatus.Active : DeviceStatus.Inactive,
+                            DeviceType = DeviceTypes.SignalController,
+                            Notes = v4Signal.Note ?? "Migrated from v4",
+                            LocationId = locationId,
+                            DeviceConfigurationId = deviceConfigurationId
+                        };
+
+                        devicesToAdd.Add(device);
+                        _logger.LogDebug("Prepared device: {DeviceIdentifier}", device.DeviceIdentifier);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error preparing device for signal {SignalID}", v4Signal.SignalID);
+                        throw;
+                    }
+                }
+
+                if (devicesToAdd.Count > 0)
+                {
+                    _configContext.Devices.AddRange(devicesToAdd);
+                    await _configContext.SaveChangesAsync(cancellationToken);
+
+                    foreach (var added in devicesToAdd)
+                    {
+                        if (string.IsNullOrWhiteSpace(added.DeviceIdentifier))
+                        {
+                            continue;
+                        }
+
+                        _signalToDeviceMap[added.DeviceIdentifier] = added.Id;
+                        existingDeviceMap[added.DeviceIdentifier] = added.Id;
+                        _logger.LogDebug("Mapped v4 Signal {SignalID} to v5 Device {DeviceId}", added.DeviceIdentifier, added.Id);
+                    }
+
+                    devicesToAdd.Clear();
+                }
+            }
+
+            _logger.LogInformation("Device migration completed. Migrated {Count} devices", _signalToDeviceMap.Count);
+        }
+
+        private async Task<int> GetOrCreateDeviceConfigurationIdAsync(int? controllerTypeId, CancellationToken cancellationToken)
+        {
+            var v4ControllerType = controllerTypeId.HasValue
+                ? await LoadSingleV4ControllerTypeAsync(_config.Source, controllerTypeId.Value, cancellationToken)
+                : null;
+
+            if (v4ControllerType == null)
+            {
+                v4ControllerType = new V4ControllerType
+                {
+                    ControllerTypeID = controllerTypeId ?? 0,
+                    Description = "SignalController",
+                    SNMPPort = 161,
+                    FTPDirectory = null,
+                    ActiveFTP = false,
+                    UserName = null,
+                    Password = null
+                };
+            }
+
+            return await GetOrCreateDeviceConfigurationIdAsync(v4ControllerType, cancellationToken);
+        }
+
+        private async Task<int> GetOrCreateDeviceConfigurationIdAsync(V4ControllerType v4ControllerType, CancellationToken cancellationToken)
+        {
+            if (_controllerTypeToDeviceConfigurationMap.TryGetValue(v4ControllerType.ControllerTypeID, out var deviceConfigurationId))
+            {
+                return deviceConfigurationId;
+            }
+
+            var description = Truncate(v4ControllerType.Description ?? $"ControllerType {v4ControllerType.ControllerTypeID}", 24);
+            var notes = $"Migrated from v4 ControllerType {v4ControllerType.ControllerTypeID}";
+
+            var existingConfigId = _configContext.DeviceConfigurations
+                .AsNoTracking()
+                .Where(dc => dc.Notes == notes)
+                .Select(dc => (int?)dc.Id)
+                .FirstOrDefault();
+
+            if (existingConfigId.HasValue)
+            {
+                _controllerTypeToDeviceConfigurationMap[v4ControllerType.ControllerTypeID] = existingConfigId.Value;
+                return existingConfigId.Value;
+            }
+
+            var productId = await GetOrCreateControllerProductIdAsync(v4ControllerType, cancellationToken);
+            var port = ToInt32Safe(v4ControllerType.SNMPPort);
+
+            var deviceConfiguration = new DeviceConfiguration
+            {
+                Description = description,
+                Notes = notes,
+                Protocol = v4ControllerType.ActiveFTP ? TransportProtocols.Ftp : TransportProtocols.Snmp,
+                Port = port,
+                Path = Truncate(v4ControllerType.FTPDirectory, 512),
+                ConnectionProperties = new Dictionary<string, object>
+                {
+                    ["ActiveFTP"] = v4ControllerType.ActiveFTP,
+                    ["SNMPPort"] = v4ControllerType.SNMPPort,
+                    ["FTPDirectory"] = v4ControllerType.FTPDirectory ?? string.Empty
+                },
+                UserName = Truncate(v4ControllerType.UserName, 50),
+                Password = Truncate(v4ControllerType.Password, 50),
+                ProductId = productId
+            };
+
+            _configContext.DeviceConfigurations.Add(deviceConfiguration);
+            await _configContext.SaveChangesAsync(cancellationToken);
+
+            _controllerTypeToDeviceConfigurationMap[v4ControllerType.ControllerTypeID] = deviceConfiguration.Id;
+            return deviceConfiguration.Id;
+        }
+
+        private async Task<int> GetOrCreateControllerProductIdAsync(V4ControllerType v4ControllerType, CancellationToken cancellationToken)
+        {
+            if (_controllerTypeToProductMap.TryGetValue(v4ControllerType.ControllerTypeID, out var productId))
+            {
+                return productId;
+            }
+
+            var manufacturer = Truncate(v4ControllerType.Description ?? $"ControllerType {v4ControllerType.ControllerTypeID}", 48);
+            const string model = "Controller";
+
+            var existingProductId = _configContext.Products
+                .AsNoTracking()
+                .Where(p => p.Manufacturer == manufacturer && p.Model == model)
+                .Select(p => (int?)p.Id)
+                .FirstOrDefault();
+
+            if (existingProductId.HasValue)
+            {
+                _controllerTypeToProductMap[v4ControllerType.ControllerTypeID] = existingProductId.Value;
+                return existingProductId.Value;
+            }
+
+            var product = new Product
+            {
+                Manufacturer = manufacturer,
+                Model = model
+            };
+
+            _configContext.Products.Add(product);
+            await _configContext.SaveChangesAsync(cancellationToken);
+
+            _controllerTypeToProductMap[v4ControllerType.ControllerTypeID] = product.Id;
+            return product.Id;
+        }
+
+        private async Task<V4ControllerType> LoadSingleV4ControllerTypeAsync(string connectionString, int controllerTypeId, CancellationToken cancellationToken)
+        {
+            var controllerTypes = await LoadV4ControllerTypesAsync(connectionString, new List<int> { controllerTypeId }, cancellationToken);
+            return controllerTypes.FirstOrDefault();
+        }
+
+        private static string Truncate(string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value) || value.Length <= maxLength)
+            {
+                return value;
+            }
+
+            return value.Substring(0, maxLength);
+        }
+
+        private static int ToInt32Safe(long value)
+        {
+            return value > int.MaxValue ? int.MaxValue : (int)value;
+        }
+
         private async Task MigrateApproachesAsync(List<V4Approach> v4Approaches, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Starting approach migration...");
@@ -816,9 +1137,10 @@ namespace DatabaseInstaller.Services
                 .Where(a => a.Description != null)
                 .Select(a => new { a.Id, a.LocationId, a.Description })
                 .ToList()
+                .GroupBy(a => BuildApproachDuplicateKey(a.LocationId, a.Description), StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(
-                    a => BuildApproachDuplicateKey(a.LocationId, a.Description),
-                    a => a.Id,
+                    g => g.Key,
+                    g => g.OrderByDescending(a => a.Id).First().Id,
                     StringComparer.OrdinalIgnoreCase);
 
             for (int i = 0; i < v4Approaches.Count; i += BatchSize)
@@ -1017,7 +1339,11 @@ VALUES
                 .Where(d => d.DectectorIdentifier != null)
                 .Select(d => new { d.Id, d.DectectorIdentifier })
                 .ToList()
-                .ToDictionary(d => d.DectectorIdentifier!, d => d.Id, StringComparer.OrdinalIgnoreCase);
+                .GroupBy(d => d.DectectorIdentifier!, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(d => d.Id).First().Id,
+                    StringComparer.OrdinalIgnoreCase);
 
             for (int i = 0; i < v4Detectors.Count; i += BatchSize)
             {
@@ -1229,10 +1555,24 @@ VALUES
         public string SecondaryName { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string IPAddress { get; set; }
         public string Note { get; set; }
         public int? RegionID { get; set; }
+        public int? ControllerTypeID { get; set; }
+        public bool Enabled { get; set; }
         public int? JurisdictionId { get; set; }
         public bool Pedsare1to1 { get; set; }
+    }
+
+    internal class V4ControllerType
+    {
+        public int ControllerTypeID { get; set; }
+        public string Description { get; set; }
+        public long SNMPPort { get; set; }
+        public string FTPDirectory { get; set; }
+        public bool ActiveFTP { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 
     internal class V4Approach
