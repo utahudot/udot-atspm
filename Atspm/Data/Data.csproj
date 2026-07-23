@@ -23,7 +23,7 @@
 		<PackageTags>C#; .net standard; .net core; efcore</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
-		<Version>5.3.1-rc2</Version>
+		<Version>5.3.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

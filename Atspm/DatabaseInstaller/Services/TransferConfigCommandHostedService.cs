@@ -93,21 +93,28 @@ public class TransferConfigCommandHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (_config.Delete)
-        {
-            DeleteLocations();
-            DeleteRegions();
-            DeleteAreas();
-            DeleteJurisdictions();
-            DeleteDevices();
-            DeleteDevicesConfigurations();
-            DeleteProducts();
-        }
-
         SourceConfigData? sourceData = null;
         if (_config.UpdateLocations || _config.ImportSpeedDevices)
         {
             sourceData = await LoadSourceConfigDataAsync(cancellationToken);
+        }
+
+        if (_config.Delete)
+        {
+            if (_config.ImportSpeedDevices && !_config.UpdateLocations)
+            {
+                DeleteSpeedDevices();
+            }
+            else
+            {
+                DeleteLocations();
+                DeleteRegions();
+                DeleteAreas();
+                DeleteJurisdictions();
+                DeleteDevices();
+                DeleteDevicesConfigurations();
+                DeleteProducts();
+            }
         }
 
         if (_config.UpdateLocations && sourceData is not null)
@@ -134,9 +141,24 @@ public class TransferConfigCommandHostedService : IHostedService
 
         if (_config.ImportSpeedDevices && sourceData is not null)
         {
-            ImportProducts(sourceData.Products);
-            ImportDeviceConfigurations(sourceData.DeviceConfigurations);
-            ImportSpeedDevices(sourceData.SpeedDevices);
+            var speedDevices = EnsureSpeedDependencies(
+                sourceData.SpeedDevices,
+                sourceData.DeviceConfigurations,
+                sourceData.Products);
+            var activeTargetLocations = _locationRepository.GetLatestVersionOfAllLocations(DateTime.Now);
+            var speedDevicesForActiveLocations = MapSpeedDevicesToActiveLocations(
+                speedDevices,
+                sourceData.Locations,
+                activeTargetLocations);
+
+            if (speedDevicesForActiveLocations.Count < speedDevices.Count)
+            {
+                _logger.LogWarning(
+                    "Skipped {Count} speed devices because their source location or current active target location could not be found.",
+                    speedDevices.Count - speedDevicesForActiveLocations.Count);
+            }
+
+            ImportSpeedDevices(speedDevicesForActiveLocations);
             ResetSequences();
         }
     }
@@ -257,18 +279,7 @@ public class TransferConfigCommandHostedService : IHostedService
         _logger.LogInformation("Loaded {Count} route locations in {Elapsed}", routeLocations.Count, phaseStopwatch.Elapsed);
 
         phaseStopwatch.Restart();
-        var speedConfigurationIds = deviceConfigurations
-            .Where(dc =>
-                string.Equals(dc.Description, "Speed", StringComparison.OrdinalIgnoreCase) ||
-                products.Any(p =>
-                    p.Id == dc.ProductId &&
-                    string.Equals(p.Manufacturer, "Wavetronix", StringComparison.OrdinalIgnoreCase)))
-            .Select(dc => dc.Id)
-            .ToHashSet();
-
-        var speedDevices = devices
-            .Where(d => d.DeviceConfigurationId.HasValue && speedConfigurationIds.Contains(d.DeviceConfigurationId.Value))
-            .ToList();
+        var speedDevices = IdentifySpeedDevices(devices, deviceConfigurations, products);
         _logger.LogInformation("Identified {Count} speed devices in {Elapsed}", speedDevices.Count, phaseStopwatch.Elapsed);
 
         _logger.LogInformation("Finished downloading and preparing configuration in {Elapsed}", loadStopwatch.Elapsed);
@@ -289,6 +300,26 @@ public class TransferConfigCommandHostedService : IHostedService
             Devices = devices,
             SpeedDevices = speedDevices
         };
+    }
+
+    private static List<Device> IdentifySpeedDevices(
+        IEnumerable<Device> devices,
+        IEnumerable<DeviceConfiguration> deviceConfigurations,
+        IEnumerable<Product> products)
+    {
+        var productList = products.ToList();
+        var speedConfigurationIds = deviceConfigurations
+            .Where(dc =>
+                string.Equals(dc.Description, "Speed", StringComparison.OrdinalIgnoreCase) ||
+                productList.Any(p =>
+                    p.Id == dc.ProductId &&
+                    string.Equals(p.Manufacturer, "Wavetronix", StringComparison.OrdinalIgnoreCase)))
+            .Select(dc => dc.Id)
+            .ToHashSet();
+
+        return devices
+            .Where(d => d.DeviceConfigurationId.HasValue && speedConfigurationIds.Contains(d.DeviceConfigurationId.Value))
+            .ToList();
     }
 
     private HttpClient CreateApiClient()
@@ -451,8 +482,21 @@ public class TransferConfigCommandHostedService : IHostedService
 
             if (!response.IsSuccessStatusCode)
             {
+                const int maxErrorContentLength = 500;
+                var contentPreview = content.Length <= maxErrorContentLength
+                    ? content
+                    : $"{content[..maxErrorContentLength]}...";
+                var isHtmlNotFound = response.StatusCode == System.Net.HttpStatusCode.NotFound &&
+                    string.Equals(
+                        response.Content.Headers.ContentType?.MediaType,
+                        "text/html",
+                        StringComparison.OrdinalIgnoreCase);
+                var baseUrlGuidance = isHtmlNotFound
+                    ? $" The response was an HTML page rather than the Config API. Check --api-base-url; the current base URL is '{client.BaseAddress}'."
+                    : string.Empty;
+
                 throw new HttpRequestException(
-                    $"Request to '{nextUrl}' failed with status {(int)response.StatusCode}: {content}");
+                    $"Request to '{nextUrl}' failed with status {(int)response.StatusCode}: {contentPreview}{baseUrlGuidance}");
             }
 
             var payload = JsonSerializer.Deserialize<ODataResponse<T>>(content, JsonOptions);
@@ -535,8 +579,8 @@ public class TransferConfigCommandHostedService : IHostedService
         }
         else
         {
-            var deviceIds = _deviceRepository.GetList().Select(d => d.Id).ToHashSet();
-            var newDevices = devices.Where(d => !deviceIds.Contains(d.Id)).ToList();
+            var existingDevices = _deviceRepository.GetList().ToList();
+            var newDevices = FindNewSpeedDevices(devices, existingDevices);
             foreach (var device in newDevices)
             {
                 try
@@ -550,6 +594,136 @@ public class TransferConfigCommandHostedService : IHostedService
                 }
             }
         }
+    }
+
+    private List<Device> EnsureSpeedDependencies(
+        IEnumerable<Device> speedDevices,
+        IEnumerable<DeviceConfiguration> sourceDeviceConfigurations,
+        IEnumerable<Product> sourceProducts)
+    {
+        var devices = speedDevices.ToList();
+        if (devices.Count == 0)
+        {
+            return devices;
+        }
+
+        var speedConfigurationIds = devices
+            .Select(device => device.DeviceConfigurationId)
+            .Distinct()
+            .ToList();
+        if (speedConfigurationIds.Count != 1 || !speedConfigurationIds[0].HasValue)
+        {
+            throw new InvalidOperationException(
+                "All source speed devices must reference the same device configuration.");
+        }
+
+        var speedConfigurationId = speedConfigurationIds[0]!.Value;
+        var speedConfiguration = sourceDeviceConfigurations
+            .FirstOrDefault(configuration => configuration.Id == speedConfigurationId)
+            ?? throw new InvalidOperationException(
+                $"Source speed device configuration {speedConfigurationId} was not found.");
+
+        if (!speedConfiguration.ProductId.HasValue)
+        {
+            throw new InvalidOperationException(
+                $"Source speed device configuration {speedConfigurationId} does not reference a product.");
+        }
+
+        var speedProductId = speedConfiguration.ProductId.Value;
+        var speedProduct = sourceProducts
+            .FirstOrDefault(product => product.Id == speedProductId)
+            ?? throw new InvalidOperationException(
+                $"Source speed product {speedProductId} was not found.");
+
+        if (!_productRepository.GetList().Any(product => product.Id == speedProductId))
+        {
+            _productRepository.Add(speedProduct);
+            _logger.LogInformation("Added required speed product {ProductId}.", speedProductId);
+        }
+
+        if (!_deviceConfigurationRepository.GetList().Any(configuration => configuration.Id == speedConfigurationId))
+        {
+            _deviceConfigurationRepository.Add(speedConfiguration);
+            _logger.LogInformation(
+                "Added required speed device configuration {DeviceConfigurationId}.",
+                speedConfigurationId);
+        }
+
+        return devices;
+    }
+
+    private static List<Device> FindNewSpeedDevices(
+        IEnumerable<Device> sourceDevices,
+        IEnumerable<Device> existingDevices)
+    {
+        var existingDeviceList = existingDevices.ToList();
+        var existingIds = existingDeviceList.Select(device => device.Id).ToHashSet();
+        var existingSpeedLocationIds = existingDeviceList
+            .Where(device => device.DeviceType == DeviceTypes.SpeedSensor)
+            .Select(device => device.LocationId)
+            .ToHashSet();
+        var existingSpeedIdentifiers = existingDeviceList
+            .Where(device => device.DeviceType == DeviceTypes.SpeedSensor)
+            .Select(device => device.DeviceIdentifier?.Trim())
+            .Where(identifier => !string.IsNullOrWhiteSpace(identifier))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var newDevices = new List<Device>();
+        foreach (var device in sourceDevices)
+        {
+            var identifier = device.DeviceIdentifier?.Trim();
+            var alreadyExists = existingIds.Contains(device.Id) ||
+                existingSpeedLocationIds.Contains(device.LocationId) ||
+                (!string.IsNullOrWhiteSpace(identifier) && existingSpeedIdentifiers.Contains(identifier));
+
+            if (alreadyExists)
+            {
+                continue;
+            }
+
+            newDevices.Add(device);
+            existingIds.Add(device.Id);
+            existingSpeedLocationIds.Add(device.LocationId);
+            if (!string.IsNullOrWhiteSpace(identifier))
+            {
+                existingSpeedIdentifiers.Add(identifier);
+            }
+        }
+
+        return newDevices;
+    }
+
+    private static List<Device> MapSpeedDevicesToActiveLocations(
+        IEnumerable<Device> sourceDevices,
+        IEnumerable<Location> sourceLocations,
+        IEnumerable<Location> activeTargetLocations)
+    {
+        var sourceLocationIdentifiersById = sourceLocations
+            .Where(location => !string.IsNullOrWhiteSpace(location.LocationIdentifier))
+            .GroupBy(location => location.Id)
+            .ToDictionary(group => group.Key, group => group.First().LocationIdentifier);
+        var activeTargetLocationsByIdentifier = activeTargetLocations
+            .Where(location => !string.IsNullOrWhiteSpace(location.LocationIdentifier))
+            .GroupBy(location => location.LocationIdentifier, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                group => group.Key,
+                group => group.OrderByDescending(location => location.Start).First(),
+                StringComparer.OrdinalIgnoreCase);
+
+        var mappedDevices = new List<Device>();
+        foreach (var device in sourceDevices)
+        {
+            if (!sourceLocationIdentifiersById.TryGetValue(device.LocationId, out var locationIdentifier) ||
+                !activeTargetLocationsByIdentifier.TryGetValue(locationIdentifier, out var activeTargetLocation))
+            {
+                continue;
+            }
+
+            device.LocationId = activeTargetLocation.Id;
+            mappedDevices.Add(device);
+        }
+
+        return mappedDevices;
     }
 
     private void DeleteProducts()
@@ -1138,6 +1312,24 @@ public class TransferConfigCommandHostedService : IHostedService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting devices");
+            throw;
+        }
+    }
+
+    private void DeleteSpeedDevices()
+    {
+        _logger.LogInformation("Deleting speed devices");
+        try
+        {
+            var speedDevices = _deviceRepository.GetList()
+                .Where(device => device.DeviceType == DeviceTypes.SpeedSensor)
+                .ToList();
+            _deviceRepository.RemoveRange(speedDevices);
+            _logger.LogInformation("Deleted {Count} speed devices", speedDevices.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting speed devices");
             throw;
         }
     }
