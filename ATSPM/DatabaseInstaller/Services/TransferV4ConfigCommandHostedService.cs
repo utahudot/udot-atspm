@@ -201,6 +201,9 @@ namespace DatabaseInstaller.Services
                 var v4DetectorComments = await LoadV4DetectorCommentsAsync(_config.Source, v4Detectors.Select(d => d.ID).ToList(), cancellationToken);
                 _logger.LogInformation("Loaded {Count} detector comments from v4 database", v4DetectorComments.Count);
 
+                var v4DetectionTypeDetectors = await LoadV4DetectionTypeDetectorsAsync(_config.Source, v4Detectors.Select(d => d.ID).ToList(), cancellationToken);
+                _logger.LogInformation("Loaded {Count} detector-to-detection-type mappings from v4 database", v4DetectionTypeDetectors.Count);
+
                 // Step 3: Migrate data
                 await MigrateDeviceConfigurationsAsync(v4ControllerTypes, cancellationToken);
                 _logger.LogInformation("Migrated {Count} device configurations", _controllerTypeToDeviceConfigurationMap.Count);
@@ -216,6 +219,9 @@ namespace DatabaseInstaller.Services
 
                 await MigrateDetectorsAsync(v4Detectors, cancellationToken);
                 _logger.LogInformation("Migrated {Count} detectors", _detectorMap.Count);
+
+                await MigrateDetectionTypeDetectorsAsync(v4DetectionTypeDetectors, cancellationToken);
+                _logger.LogInformation("Migrated {Count} detector-to-detection-type mappings", v4DetectionTypeDetectors.Count);
 
                 await MigrateDetectorCommentsAsync(v4DetectorComments, cancellationToken);
                 _logger.LogInformation("Migrated {Count} detector comments", v4DetectorComments.Count);
@@ -590,6 +596,56 @@ namespace DatabaseInstaller.Services
             }
 
             return comments;
+        }
+
+        private async Task<List<V4DetectionTypeDetector>> LoadV4DetectionTypeDetectorsAsync(string connectionString, List<int> detectorIds, CancellationToken cancellationToken)
+        {
+            var detectionTypeDetectors = new List<V4DetectionTypeDetector>();
+
+            if (detectorIds.Count == 0)
+                return detectionTypeDetectors;
+
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync(cancellationToken);
+
+                    var query = @"
+                        SELECT
+                            ID,
+                            DetectionTypeID
+                        FROM DetectionTypeDetector
+                        WHERE ID IN (" + string.Join(",", Enumerable.Range(0, detectorIds.Count).Select(i => $"@dtd{i}")) + ")";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        for (int i = 0; i < detectorIds.Count; i++)
+                        {
+                            command.Parameters.AddWithValue($"@dtd{i}", detectorIds[i]);
+                        }
+
+                        using (var reader = await command.ExecuteReaderAsync(cancellationToken))
+                        {
+                            while (await reader.ReadAsync(cancellationToken))
+                            {
+                                detectionTypeDetectors.Add(new V4DetectionTypeDetector
+                                {
+                                    ID = reader.GetInt32(0),
+                                    DetectionTypeID = reader.GetInt32(1)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading v4 detector-to-detection-type mappings from database");
+                throw;
+            }
+
+            return detectionTypeDetectors;
         }
 
         private async Task SyncJurisdictionsAndRegionsAsync(string connectionString, CancellationToken cancellationToken)
@@ -1438,6 +1494,91 @@ VALUES
             _logger.LogInformation("Detector migration completed. Migrated {Count} detectors", _detectorMap.Count);
         }
 
+        private async Task MigrateDetectionTypeDetectorsAsync(List<V4DetectionTypeDetector> v4DetectionTypeDetectors, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Starting detector-to-detection-type mapping migration...");
+
+            if (v4DetectionTypeDetectors.Count == 0)
+            {
+                _logger.LogInformation("No detector-to-detection-type mappings found to migrate");
+                return;
+            }
+
+            var distinctMappings = new HashSet<(int DetectionTypeId, int DetectorId)>();
+            var skippedForMissingDetector = 0;
+
+            foreach (var mapping in v4DetectionTypeDetectors)
+            {
+                if (!_detectorMap.TryGetValue(mapping.ID, out var v5DetectorId))
+                {
+                    skippedForMissingDetector++;
+                    continue;
+                }
+
+                distinctMappings.Add((mapping.DetectionTypeID, v5DetectorId));
+            }
+
+            if (distinctMappings.Count == 0)
+            {
+                _logger.LogInformation("No detector-to-detection-type mappings could be resolved to migrated detectors");
+                return;
+            }
+
+            var connection = _configContext.Database.GetDbConnection();
+            var closeWhenDone = connection.State != System.Data.ConnectionState.Open;
+
+            if (closeWhenDone)
+            {
+                await connection.OpenAsync(cancellationToken);
+            }
+
+            var insertedCount = 0;
+
+            try
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = @"
+INSERT INTO [dbo].[DetectionTypeDetector] ([DetectionTypesId], [DetectorsId])
+SELECT @DetectionTypeId, @DetectorId
+WHERE EXISTS (SELECT 1 FROM [dbo].[DetectionTypes] WHERE [Id] = @DetectionTypeId)
+  AND EXISTS (SELECT 1 FROM [dbo].[Detectors] WHERE [Id] = @DetectorId)
+  AND NOT EXISTS (
+      SELECT 1
+      FROM [dbo].[DetectionTypeDetector]
+      WHERE [DetectionTypesId] = @DetectionTypeId
+        AND [DetectorsId] = @DetectorId
+  );";
+
+                var detectionTypeIdParameter = command.CreateParameter();
+                detectionTypeIdParameter.ParameterName = "@DetectionTypeId";
+                command.Parameters.Add(detectionTypeIdParameter);
+
+                var detectorIdParameter = command.CreateParameter();
+                detectorIdParameter.ParameterName = "@DetectorId";
+                command.Parameters.Add(detectorIdParameter);
+
+                foreach (var (detectionTypeId, detectorId) in distinctMappings)
+                {
+                    detectionTypeIdParameter.Value = detectionTypeId;
+                    detectorIdParameter.Value = detectorId;
+
+                    insertedCount += await command.ExecuteNonQueryAsync(cancellationToken);
+                }
+            }
+            finally
+            {
+                if (closeWhenDone)
+                {
+                    await connection.CloseAsync();
+                }
+            }
+
+            _logger.LogInformation(
+                "Detector-to-detection-type mapping migration completed. Added {InsertedCount} mappings, skipped {SkippedCount} due to missing migrated detectors",
+                insertedCount,
+                skippedForMissingDetector);
+        }
+
         private async Task MigrateDetectorCommentsAsync(List<V4DetectorComment> v4Comments, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Starting detector comment migration...");
@@ -1608,6 +1749,12 @@ VALUES
         public int? DecisionPoint { get; set; }
         public int? MovementDelay { get; set; }
         public double LatencyCorrection { get; set; }
+    }
+
+    internal class V4DetectionTypeDetector
+    {
+        public int ID { get; set; }
+        public int DetectionTypeID { get; set; }
     }
 
     internal class V4DetectorComment
