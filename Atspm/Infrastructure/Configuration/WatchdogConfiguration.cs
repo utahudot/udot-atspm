@@ -17,6 +17,10 @@
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
+    /// <summary>
+    /// Configuration values used by Watchdog scans, report windows, thresholds, and email behavior.
+    /// </summary>
+    [ConfigurationSection(nameof(WatchdogConfiguration), "Configuration for Watchdog scan behavior")]
     public class WatchdogConfiguration
     {
         public const string DefaultTimeZoneId = "America/Denver";

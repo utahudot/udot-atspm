@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+.vs/
+*.suo
+*.user
+TestResults/
+site/build/
+site/docs/configuration/*.md
+!site/docs/configuration/.gitkeep

@@ -1,0 +1,22 @@
+site_name: ATSPM Documentation
+site_description: Generated configuration reference for the ATSPM platform
+site_url: ""
+repo_url: https://github.com/utahudot/udot-atspm
+repo_name: utahudot/udot-atspm
+docs_dir: site/docs
+site_dir: site/build
+strict: true
+
+theme:
+  name: mkdocs
+  nav_style: dark
+
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+
+copyright: Copyright Utah Department of Transportation

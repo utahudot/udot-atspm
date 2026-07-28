@@ -1,0 +1,108 @@
+# ATSPM documentation generator
+
+This directory is a self-contained documentation generator for ATSPM
+configuration classes. It reads C# source with Roslyn, produces deterministic
+Markdown, builds an MkDocs site, and contains the workflows needed to publish
+that site with GitHub Pages after this directory is transferred to its own
+repository.
+
+It does not compile or load ATSPM assemblies. Initializer expressions such as
+`System.IO.Path.GetTempPath()` are documented as source text and are never
+executed.
+
+## Repository layout
+
+- `src/GenerateDocuments` contains the .NET 8 command-line generator.
+- `tests/GenerateDocuments.Tests` contains parser, validation, and snapshot tests.
+- `config` contains the documented container map and its JSON Schema.
+- `site/docs` contains hand-written and generated MkDocs source pages.
+- `.github/workflows` contains workflows that become active after transfer.
+- `integration` contains the ATSPM dispatch workflow template for post-transfer use.
+
+## Local use inside ATSPM
+
+Requirements:
+
+- .NET 8 SDK
+- Python 3.11 or newer
+- MkDocs dependencies from `requirements.txt`
+
+From the ATSPM repository root in PowerShell:
+
+```powershell
+$sourceSha = git rev-parse HEAD
+
+dotnet test GenerateDocuments/GenerateDocuments.sln
+
+dotnet run --project GenerateDocuments/src/GenerateDocuments -- `
+  --source-root . `
+  --output-root GenerateDocuments/site/docs/configuration `
+  --map GenerateDocuments/config/container-config-map.json `
+  --repository-url https://github.com/utahudot/udot-atspm `
+  --repository-ref $sourceSha
+
+python -m pip install --requirement GenerateDocuments/requirements.txt
+python -m mkdocs build --strict --config-file GenerateDocuments/mkdocs.yml
+```
+
+Generated pages are intentionally ignored by Git. GitHub Pages receives the
+built site as a workflow artifact, so generated Markdown and HTML are not
+committed.
+
+## Command-line interface
+
+All inputs are explicit so the generator works against any checkout and does not
+depend on its installation location:
+
+```text
+--source-root <path>
+--output-root <path>
+--map <path>
+--repository-url <url>
+--repository-ref <branch-tag-or-sha>
+```
+
+`--output-root` must be a dedicated generated-content directory. Markdown files
+there that are not present in the current map are removed to prevent stale pages.
+
+The map's `sourcePaths` are relative to `--source-root`. Each container entry
+defines a display `name`, stable URL `slug`, and ordered list of configuration
+section names. A section can also include a concrete path beneath a documented
+section class, such as `DatabaseConfiguration:ConfigContext`; generated
+environment variable names use double underscores for each path segment. The schema is
+[`config/container-config-map.schema.json`](config/container-config-map.schema.json).
+
+## Transfer to a documentation repository
+
+Do not enable the cross-repository trigger until the standalone build succeeds.
+
+1. Move the contents of this directory, including `.github`, to the root of the
+   new documentation repository.
+2. In that repository, configure Pages to use **GitHub Actions** as its source.
+3. Optionally set repository variables:
+   - `SOURCE_REPOSITORY`: source checkout in `owner/repository` format. Defaults
+     to `utahudot/udot-atspm`.
+   - `SOURCE_REF`: branch, tag, or commit used by validation workflows. Defaults
+     to `main`.
+4. Run the **Publish documentation pages** workflow manually. It checks out the
+   configured source repository, runs tests, generates the site, and deploys it.
+5. Confirm the Pages URL and its source links.
+6. Copy `integration/atspm-docs-dispatch.yml` into
+   `.github/workflows/atspm-docs-dispatch.yml` in the ATSPM repository.
+7. In ATSPM, set the `DOCS_REPOSITORY` Actions variable to the destination
+   `owner/repository` and set `DOCS_REPO_DISPATCH_TOKEN` to a fine-grained token
+   with Contents write permission on that repository.
+8. Merge the trigger workflow only after a manual dispatch has succeeded.
+
+The dispatch event is `atspm-docs-update` with this payload:
+
+```json
+{
+  "source_repository": "utahudot/udot-atspm",
+  "source_sha": "<commit-sha>"
+}
+```
+
+The nested workflows are ignored by GitHub while this directory remains inside
+ATSPM because GitHub only loads workflows from the repository-root
+`.github/workflows` directory.

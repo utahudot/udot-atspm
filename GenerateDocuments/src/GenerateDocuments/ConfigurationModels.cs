@@ -1,0 +1,18 @@
+namespace AtspmDocsGenerator;
+
+public sealed record ConfigurationSection(
+    string SectionName,
+    string? AttributeDescription,
+    string? Summary,
+    string SourcePath,
+    int SourceLine,
+    IReadOnlyList<ConfigurationProperty> Properties);
+
+public sealed record ConfigurationProperty(
+    string Name,
+    string TypeName,
+    string DefaultExpression,
+    bool IsRequired,
+    string? Summary);
+
+public sealed record GenerationResult(int PageCount, int DocumentedSectionCount);
