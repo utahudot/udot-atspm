@@ -73,7 +73,7 @@ public class TransferConfigCommandTests
             new[]
             {
                 "--api-base-url",
-                "--bearer-token",
+                "--api-key",
                 "--delete",
                 "--update-locations",
                 "--update-speed"
