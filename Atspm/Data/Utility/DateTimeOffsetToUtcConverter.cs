@@ -20,19 +20,21 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Utah.Udot.Atspm.Data.Utility
 {
     /// <summary>
-    /// Forces all non-nullable DateTimeOffset properties to UTC (+00:00) 
-    /// when sending to or retrieving from the database.
+    /// Bridges non-nullable <see cref="DateTimeOffset"/> model properties to a <see cref="DateTime"/> store type,
+    /// ensuring values are always normalized to UTC before being written to or read from the database.
+    /// Using <see cref="DateTime"/> as the provider type allows compatibility with both SQL Server <c>datetime2</c>
+    /// and PostgreSQL <c>timestamp</c> columns without requiring provider-specific workarounds.
     /// </summary>
-    public class DateTimeOffsetToUtcConverter : ValueConverter<DateTimeOffset, DateTimeOffset>
+    public class DateTimeOffsetToUtcConverter : ValueConverter<DateTimeOffset, DateTime>
     {
         /// <summary>
-        /// Forces all non-nullable DateTimeOffset properties to UTC (+00:00) 
-        /// when sending to or retrieving from the database.
+        /// Bridges non-nullable <see cref="DateTimeOffset"/> model properties to a <see cref="DateTime"/> store type,
+        /// ensuring values are always normalized to UTC before being written to or read from the database.
         /// </summary>
         public DateTimeOffsetToUtcConverter()
             : base(
-                csharp => csharp.ToUniversalTime(),
-                database => database.ToUniversalTime()
+                csharp => csharp.ToUniversalTime().UtcDateTime,
+                database => new DateTimeOffset(database, TimeSpan.Zero)
             )
         { }
     }
