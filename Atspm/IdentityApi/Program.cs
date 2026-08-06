@@ -27,8 +27,9 @@ using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
-using Utah.Udot.Atspm.Infrastructure.Services;
-using Utah.Udot.Atspm.Services.ApiKeys;
+using Utah.Udot.Atspm.Services.Identity;
+using Utah.Udot.Atspm.Infrastructure.Services.Identity;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 //git 2
 
@@ -78,7 +79,7 @@ builder.Host
         s.AddScoped<RoleManager<IdentityRole>>();
         s.AddScoped<UserManager<ApplicationUser>>();
         s.AddScoped<UsersService>();
-        s.AddScoped<IApiKeyService, ApiKeyService>();
+        s.AddAtspmIdentityServices();
         s.AddPathBaseFilter(h);
         s.AddAtspmAuthentication(h);
         s.AddAtspmAuthorization();

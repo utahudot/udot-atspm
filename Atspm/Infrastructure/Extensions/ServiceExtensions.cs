@@ -301,5 +301,21 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             return services;
         }
+
+        /// <summary>
+        /// Adds the clean-slate, framework-agnostic ATSPM Identity and Access Management (IAM) service layer.
+        /// </summary>
+        /// <param name="services">The service collection to register services on.</param>
+        /// <returns>The registered service collection.</returns>
+        public static IServiceCollection AddAtspmIdentityServices(this IServiceCollection services)
+        {
+            services.AddScoped<Utah.Udot.Atspm.Services.Identity.IAuthenticationService, Utah.Udot.Atspm.Infrastructure.Services.Identity.AuthenticationService>();
+            services.AddScoped<Utah.Udot.Atspm.Services.Identity.IIdentityService, Utah.Udot.Atspm.Infrastructure.Services.Identity.IdentityService>();
+            services.AddScoped<Utah.Udot.Atspm.Services.Identity.IRoleService, Utah.Udot.Atspm.Infrastructure.Services.Identity.RoleService>();
+            services.AddScoped<Utah.Udot.Atspm.Services.Identity.IFederatedAuthService, Utah.Udot.Atspm.Infrastructure.Services.Identity.FederatedAuthService>();
+            services.AddScoped<Utah.Udot.Atspm.Services.Identity.IApiKeyService, Utah.Udot.Atspm.Infrastructure.Services.Identity.ApiKeyService>();
+
+            return services;
+        }
     }
 }

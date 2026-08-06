@@ -1,19 +1,38 @@
+#region license
+// Copyright 2026 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.Identity/ApiKeyService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Repositories.IdentityRepositories;
-using Utah.Udot.Atspm.Services.ApiKeys;
+using Utah.Udot.Atspm.Services.Identity;
+using Utah.Udot.Atspm.Services.Identity.Dto;
+using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
 
-namespace Utah.Udot.Atspm.Infrastructure.Services
+namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
 {
     /// <inheritdoc cref="IApiKeyService"/>
     public class ApiKeyService : IApiKeyService
     {
         private readonly IApiKeyRepository _apiKeyRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApiKeyServiceLogMessages _log;
+        private readonly Utah.Udot.Atspm.Infrastructure.LogMessages.Identity.ApiKeyServiceLogMessages _log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiKeyService"/> class.
@@ -21,11 +40,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
         /// <param name="apiKeyRepository">The API key repository.</param>
         /// <param name="userManager">The ASP.NET Core Identity user manager.</param>
         /// <param name="logger">The logger instance.</param>
-        public ApiKeyService(IApiKeyRepository apiKeyRepository, UserManager<ApplicationUser> userManager, ILogger<ApiKeyService> logger)
+        public ApiKeyService(
+            IApiKeyRepository apiKeyRepository,
+            UserManager<ApplicationUser> userManager,
+            ILogger<ApiKeyService> logger)
         {
-            _apiKeyRepository = apiKeyRepository;
-            _userManager = userManager;
-            _log = new ApiKeyServiceLogMessages(logger);
+            _apiKeyRepository = apiKeyRepository ?? throw new ArgumentNullException(nameof(apiKeyRepository));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _log = new Utah.Udot.Atspm.Infrastructure.LogMessages.Identity.ApiKeyServiceLogMessages(logger ?? throw new ArgumentNullException(nameof(logger)));
         }
 
         /// <inheritdoc/>
@@ -39,11 +61,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
             var currentUserId = _userManager.GetUserId(currentUser) ?? "Unknown";
             string userId;
 
-            // 1. Resolve target user ID
             if (dto.UserId.HasValue)
             {
                 var targetUserId = dto.UserId.Value.ToString();
-                var targetUser = await _userManager.FindByIdAsync(targetUserId);
+                var targetUser = await _userManager.FindByIdAsync(targetUserId).ConfigureAwait(false);
                 if (targetUser == null)
                 {
                     throw new KeyNotFoundException($"User with ID '{dto.UserId}' was not found.");
@@ -92,11 +113,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
                 }).ToList() ?? new List<ApiKeyClaim>()
             };
 
-            await _apiKeyRepository.AddAsync(apiKey);
+            await _apiKeyRepository.AddAsync(apiKey).ConfigureAwait(false);
 
             _log.KeyCreatedSuccessfully(apiKey.Name, apiKey.Id, apiKey.OwnerId);
 
-            return new ApiKeyCreatedResponseDto(rawKey, "Copy this key now. For security reasons, it cannot be retrieved again.");
+            return new ApiKeyCreatedResponseDto(
+                dto.Name,
+                rawKey,
+                apiKey.CreatedAt,
+                apiKey.ExpiresAt
+            );
         }
 
         /// <inheritdoc/>
@@ -110,7 +136,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
 
             _log.UserKeysRetrieved(userId);
 
-            var keys = await _apiKeyRepository.GetActiveKeysByOwnerAsync(userId);
+            var keys = await _apiKeyRepository.GetActiveKeysByOwnerAsync(userId).ConfigureAwait(false);
 
             return keys.Select(k => new ApiKeySummaryDto(k.Id, k.Name, k.CreatedAt, k.ExpiresAt));
         }
@@ -122,9 +148,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
 
             _log.SystemKeysRetrieved(adminId);
 
-            var keys = await _apiKeyRepository.GetAllActiveKeysAsync();
+            var keys = await _apiKeyRepository.GetAllActiveKeysAsync().ConfigureAwait(false);
 
-            return keys.Select(k => new ApiKeyDetailDto(k.Id, k.Name, k.OwnerId, k.CreatedAt, k.ExpiresAt));
+            return keys.Select(k => new ApiKeyDetailDto(
+                k.Id,
+                k.Name,
+                k.OwnerId,
+                k.CreatedAt,
+                k.ExpiresAt,
+                k.Claims.Select(c => c.Value).ToList()
+            ));
         }
 
         /// <inheritdoc/>
@@ -138,7 +171,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
 
             _log.KeyRevocationRequested(userId, id);
 
-            var apiKey = await _apiKeyRepository.GetKeyWithOwnerAsync(id, userId);
+            var apiKey = await _apiKeyRepository.GetKeyWithOwnerAsync(id, userId).ConfigureAwait(false);
 
             if (apiKey == null)
             {
@@ -152,7 +185,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services
             }
 
             apiKey.IsRevoked = true;
-            await _apiKeyRepository.UpdateAsync(apiKey);
+            await _apiKeyRepository.UpdateAsync(apiKey).ConfigureAwait(false);
 
             _log.KeyRevokedSuccessfully(id);
 
