@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Utah.Udot.ATSPM.IdentityApi.Controllers/ApiKeyController.cs
 // 
@@ -77,8 +77,28 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 );
             }
 
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
+            string userId;
+
+            if (dto.UserId.HasValue)
+            {
+                var targetUserId = dto.UserId.Value.ToString();
+                var targetUser = await _userManager.FindByIdAsync(targetUserId);
+                if (targetUser == null)
+                {
+                    return Problem(
+                        detail: $"User with ID '{dto.UserId}' was not found.",
+                        statusCode: StatusCodes.Status404NotFound,
+                        title: "User Not Found"
+                    );
+                }
+                userId = targetUserId;
+            }
+            else
+            {
+                var currentUserId = _userManager.GetUserId(User);
+                if (currentUserId == null) return Unauthorized();
+                userId = currentUserId;
+            }
 
             var isGlobalAdmin = User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
 
@@ -153,7 +173,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// <response code="200">Returns the complete list of system keys.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
         /// <response code="403">Forbidden if the user lacks global view permissions.</response>
-        [AuthorizePermission(AtspmAuthorization.Permissions.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Policy = AtspmAuthorization.Roles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("all-keys")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

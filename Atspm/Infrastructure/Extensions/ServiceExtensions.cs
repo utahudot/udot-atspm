@@ -27,10 +27,12 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Infrastructure.Repositories.IdentityRepositories;
 using Utah.Udot.Atspm.MySqlDatabaseProvider;
 using Utah.Udot.Atspm.OracleDatabaseProvider;
 using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
 using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.Atspm.Repositories.IdentityRepositories;
 using Utah.Udot.Atspm.SqlDatabaseProvider;
 using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
 using Utah.Udot.NetStandardToolkit.Authentication;
@@ -218,6 +220,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
             services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
             services.AddScoped<ISignalTimingPlanRepository, SignalTimingPlanEFRepository>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds all repositories that belong to <see cref="IdentityContext"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAtspmEFIdentityRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IApiKeyRepository, ApiKeyEFRepository>();
 
             return services;
         }

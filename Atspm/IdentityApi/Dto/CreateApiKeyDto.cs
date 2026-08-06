@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Utah.Udot.ATSPM.IdentityApi.Dto/CreateApiKeyDto.cs
 // 
@@ -39,5 +39,11 @@ namespace Utah.Udot.ATSPM.IdentityApi.Dto
         /// </summary>
         /// <value>A list of strings representing claim names.</value>
         public List<string> Claims { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional user ID (as a GUID) to associate with the API key.
+        /// If not provided, defaults to the current authenticated user's ID.
+        /// </summary>
+        public Guid? UserId { get; set; }
     }
 }
