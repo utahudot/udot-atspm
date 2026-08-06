@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.IdentityRepositories
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ApiKey>> GetActiveKeysByOwnerAsync(string ownerId)
+        public async Task<IEnumerable<ApiKey?>> GetActiveKeysByOwnerAsync(string ownerId)
         {
             return await table
                 .AsNoTracking()
@@ -47,7 +47,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.IdentityRepositories
         }
 
         /// <inheritdoc/>
-        public async Task<ApiKey> GetKeyWithOwnerAsync(int id, string ownerId)
+        public async Task<ApiKey?> GetKeyWithOwnerAsync(int id, string ownerId)
         {
             return await table.FirstOrDefaultAsync(k => k.Id == id && k.OwnerId == ownerId);
         }

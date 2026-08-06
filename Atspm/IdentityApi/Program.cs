@@ -64,6 +64,7 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
         s.AddAtspmDbContext(h);
+        s.AddAtspmEFIdentityRepositories();
         s.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<IdentityContext>()
         .AddDefaultTokenProviders();
