@@ -84,7 +84,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             ImportEventLogsWorkflow = new(_services, _parallelProcesses, _cancellationToken);
             BroadcastEvents = new(null, new DataflowBlockOptions() { CancellationToken = _cancellationToken });
-            TranformToIndianaEvent = new(t => new[] { t.Item2 }.OfType<IndianaEvent>(), new ExecutionDataflowBlockOptions {EnsureOrdered = false, CancellationToken = _cancellationToken });
+            TranformToIndianaEvent = new(t => new[] { t.Item2 }.OfType<IndianaEvent>(), new ExecutionDataflowBlockOptions { EnsureOrdered = false, CancellationToken = _cancellationToken });
             ArchiveEventLogsWorkflow = new(_services, _batchSize, _parallelProcesses, _cancellationToken);
             SignalTimingPlansWorkflow = new(_services, _batchSize, _parallelProcesses, _cancellationToken);
         }
@@ -122,7 +122,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         }
     }
 
-    public abstract class WorkflowBase<TIn, TOut> 
+    public abstract class WorkflowBase<TIn, TOut>
     {
         protected readonly DataflowBlockOptions blockOptions;
 
