@@ -40,6 +40,7 @@ using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Authorization;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -312,47 +313,63 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
 
-            var oidc = host.Configuration.GetSection("Oidc");
-            if (oidc.Exists() && !string.IsNullOrEmpty(oidc["Authority"]) &&
-                !string.IsNullOrEmpty(oidc["ClientId"]) &&
-                !string.IsNullOrEmpty(oidc["ClientSecret"]) &&
-                !string.IsNullOrEmpty(oidc["CallbackPath"]))
+            var federatedAuthSection = host.Configuration.GetSection("FederatedAuthentication");
+            if (federatedAuthSection.Exists())
             {
-                services.AddAuthentication()
-            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-            {
-                options.Authority = oidc["Authority"];
-                options.ClientId = oidc["ClientId"];
-                options.ClientSecret = oidc["ClientSecret"];
-                options.ResponseType = OpenIdConnectResponseType.IdToken;
-                options.SaveTokens = true;
-                options.Scope.Clear();
-                options.Scope.Add("openid");
-                options.Scope.Add("email");
-                options.Scope.Add("profile");
-                //options.Scope.Add("app:Atspm");
+                services.Configure<FederatedAuthenticationConfiguration>(federatedAuthSection);
+                var fedOptions = federatedAuthSection.Get<FederatedAuthenticationConfiguration>();
 
-                options.CallbackPath = oidc["CallbackPath"];
-
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.UseTokenLifetime = true;
-                options.SkipUnrecognizedRequests = true;
-
-                options.Events = new OpenIdConnectEvents
+                if (fedOptions?.Providers != null)
                 {
-                    OnRedirectToIdentityProvider = context =>
+                    var authBuilder = services.AddAuthentication();
+
+                    foreach (var provider in fedOptions.Providers)
                     {
-                        var b = new UriBuilder(context.ProtocolMessage.RedirectUri);
-                        b.Scheme = "https";
-                        b.Port = -1;
-                        context.ProtocolMessage.RedirectUri = b.ToString();
+                        authBuilder.AddOpenIdConnect(provider.ProviderName, options =>
+                        {
+                            options.Authority = provider.Authority;
+                            options.ClientId = provider.ClientId;
+                            options.ClientSecret = provider.ClientSecret;
+                            options.CallbackPath = provider.CallbackPath;
+                            options.ResponseType = OpenIdConnectResponseType.IdToken;
+                            options.SaveTokens = true;
 
-                        Console.WriteLine($"callback: {b.ToString()}");
+                            options.Scope.Clear();
+                            options.Scope.Add("openid");
+                            options.Scope.Add("email");
+                            options.Scope.Add("profile");
 
-                        return Task.CompletedTask;
-                    },
-                };
-            });
+                            if (provider.CustomScopes != null)
+                            {
+                                foreach (var scope in provider.CustomScopes)
+                                {
+                                    options.Scope.Add(scope);
+                                }
+                            }
+
+                            options.GetClaimsFromUserInfoEndpoint = true;
+                            options.UseTokenLifetime = true;
+                            options.SkipUnrecognizedRequests = true;
+
+                            options.Events = new OpenIdConnectEvents
+                            {
+                                OnRedirectToIdentityProvider = context =>
+                                {
+                                    var b = new UriBuilder(context.ProtocolMessage.RedirectUri)
+                                    {
+                                        Scheme = "https",
+                                        Port = -1
+                                    };
+                                    context.ProtocolMessage.RedirectUri = b.ToString();
+
+                                    Console.WriteLine($"SSO Redirect callback: {b}");
+
+                                    return Task.CompletedTask;
+                                }
+                            };
+                        });
+                    }
+                }
             }
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

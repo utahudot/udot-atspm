@@ -66,5 +66,23 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages.Identity
         /// <param name="userId">The unique identifier assigned to the new user.</param>
         [LoggerMessage(EventId = 1185, EventName = "SSO Auto-Provision Complete", Level = LogLevel.Information, Message = "Dynamically auto-provisioned user account '{Email}' (ID: {UserId}) via OIDC SSO provider '{Provider}' upon first successful login.")]
         public partial void NewSSOUserCreated(string provider, string email, string userId);
+
+        /// <summary>
+        /// Logs when a user's system roles are dynamically synchronized from OIDC claims.
+        /// </summary>
+        /// <param name="email">The email address of the synchronized user account.</param>
+        /// <param name="roles">The comma-separated active system roles assigned to the user.</param>
+        [LoggerMessage(EventId = 1186, EventName = "SSO Roles Synchronized", Level = LogLevel.Information, Message = "Dynamically synchronized system roles from OIDC SSO provider for user '{Email}'. Active roles: [{Roles}]")]
+        public partial void RolesSynchronized(string email, string roles);
+
+        /// <summary>
+        /// Logs when a user's geographic profile and boundaries are dynamically synchronized from OIDC claims.
+        /// </summary>
+        /// <param name="email">The email address of the synchronized user account.</param>
+        /// <param name="areas">The comma-separated geographic area identifiers.</param>
+        /// <param name="regions">The comma-separated geographic region identifiers.</param>
+        /// <param name="jurisdictions">The comma-separated geographic jurisdiction identifiers.</param>
+        [LoggerMessage(EventId = 1187, EventName = "SSO Geography Synchronized", Level = LogLevel.Information, Message = "Dynamically synchronized geographic boundaries from OIDC SSO provider for user '{Email}'. Areas: [{Areas}], Regions: [{Regions}], Jurisdictions: [{Jurisdictions}]")]
+        public partial void GeographySynchronized(string email, string areas, string regions, string jurisdictions);
     }
 }

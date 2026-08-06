@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,9 @@ using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
 {
@@ -40,6 +43,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUserGeographyRepository _geographyRepository;
+        private readonly IOptions<FederatedAuthenticationConfiguration> _federatedOptions;
         private readonly IConfiguration _configuration;
         private readonly FederatedAuthServiceLogMessages _log;
 
@@ -49,18 +54,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
         /// <param name="signInManager">The ASP.NET Core Identity sign-in manager.</param>
         /// <param name="userManager">The ASP.NET Core Identity user manager.</param>
         /// <param name="roleManager">The ASP.NET Core Identity role manager.</param>
+        /// <param name="geographyRepository">The repository for updating user geographic profiles.</param>
+        /// <param name="federatedOptions">The dynamic federated OIDC provider configurations.</param>
         /// <param name="configuration">The application configuration provider.</param>
         /// <param name="logger">The logger instance.</param>
         public FederatedAuthService(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
+            IUserGeographyRepository geographyRepository,
+            IOptions<FederatedAuthenticationConfiguration> federatedOptions,
             IConfiguration configuration,
             ILogger<FederatedAuthService> logger)
         {
             _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
+            _geographyRepository = geographyRepository ?? throw new ArgumentNullException(nameof(geographyRepository));
+            _federatedOptions = federatedOptions ?? throw new ArgumentNullException(nameof(federatedOptions));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _log = new FederatedAuthServiceLogMessages(logger ?? throw new ArgumentNullException(nameof(logger)));
         }
@@ -97,19 +108,38 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
                 throw new ArgumentNullException(nameof(externalInfo));
             }
 
-            externalInfo.UserClaims.TryGetValue(ClaimTypes.Email, out var email);
+            var providerConfig = _federatedOptions.Value?.Providers?
+                .FirstOrDefault(p => p.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+
+            var emailClaimKey = providerConfig?.UserProfileClaims?.Email ?? "email";
+            var firstNameClaimKey = providerConfig?.UserProfileClaims?.FirstName ?? "given_name";
+            var lastNameClaimKey = providerConfig?.UserProfileClaims?.LastName ?? "family_name";
+
+            externalInfo.UserClaims.TryGetValue(emailClaimKey, out var email);
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                externalInfo.UserClaims.TryGetValue(ClaimTypes.Email, out email);
+            }
             if (string.IsNullOrWhiteSpace(email))
             {
                 externalInfo.UserClaims.TryGetValue("email", out email);
             }
 
-            externalInfo.UserClaims.TryGetValue(ClaimTypes.GivenName, out var firstName);
+            externalInfo.UserClaims.TryGetValue(firstNameClaimKey, out var firstName);
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                externalInfo.UserClaims.TryGetValue(ClaimTypes.GivenName, out firstName);
+            }
             if (string.IsNullOrWhiteSpace(firstName))
             {
                 externalInfo.UserClaims.TryGetValue("givenname", out firstName);
             }
 
-            externalInfo.UserClaims.TryGetValue(ClaimTypes.Surname, out var lastName);
+            externalInfo.UserClaims.TryGetValue(lastNameClaimKey, out var lastName);
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                externalInfo.UserClaims.TryGetValue(ClaimTypes.Surname, out lastName);
+            }
             if (string.IsNullOrWhiteSpace(lastName))
             {
                 externalInfo.UserClaims.TryGetValue("surname", out lastName);
@@ -166,6 +196,48 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
                 _log.AccountLinked(providerName, user.Id);
             }
 
+            if (providerConfig != null)
+            {
+                if (!string.IsNullOrEmpty(providerConfig.UserProfileClaims?.Agency) &&
+                    externalInfo.UserClaims.TryGetValue(providerConfig.UserProfileClaims.Agency, out var ssoAgency))
+                {
+                    user.Agency = ssoAgency;
+                    await _userManager.UpdateAsync(user).ConfigureAwait(false);
+                }
+
+                var areaIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.AreaIds);
+                var regionIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.RegionIds);
+                var jurisdictionIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.JurisdictionIds);
+
+                await _geographyRepository.UpdateUserGeographyAsync(user.Id, areaIds, regionIds, jurisdictionIds).ConfigureAwait(false);
+
+                _log.GeographySynchronized(
+                    user.Email,
+                    string.Join(",", areaIds),
+                    string.Join(",", regionIds),
+                    string.Join(",", jurisdictionIds));
+
+                if (!string.IsNullOrEmpty(providerConfig.UserProfileClaims?.Roles))
+                {
+                    var desiredRoles = ParseStringListClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims.Roles);
+                    var currentRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+
+                    var rolesToAdd = desiredRoles.Except(currentRoles).ToList();
+                    var rolesToRemove = currentRoles.Except(desiredRoles).ToList();
+
+                    if (rolesToAdd.Any())
+                    {
+                        await _userManager.AddToRolesAsync(user, rolesToAdd).ConfigureAwait(false);
+                    }
+                    if (rolesToRemove.Any())
+                    {
+                        await _userManager.RemoveFromRolesAsync(user, rolesToRemove).ConfigureAwait(false);
+                    }
+
+                    _log.RolesSynchronized(user.Email, string.Join(", ", desiredRoles));
+                }
+            }
+
             await _signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
 
             var token = await GenerateJwtTokenInternalAsync(user).ConfigureAwait(false);
@@ -176,6 +248,52 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
 
             return new FederatedLoginResponseDto(true, string.Empty, token, permissions);
         }
+
+        private static IEnumerable<int> ParseIntegerClaims(IDictionary<string, string> userClaims, string claimType)
+        {
+            if (string.IsNullOrWhiteSpace(claimType) || !userClaims.TryGetValue(claimType, out var claimValue) || string.IsNullOrWhiteSpace(claimValue))
+            {
+                return Enumerable.Empty<int>();
+            }
+
+            var results = new List<int>();
+            var cleanedValue = claimValue.Trim('[', ']');
+            var parts = cleanedValue.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in parts)
+            {
+                if (int.TryParse(part.Trim().Trim('"'), out var id))
+                {
+                    results.Add(id);
+                }
+            }
+
+            return results;
+        }
+
+        private static IEnumerable<string> ParseStringListClaims(IDictionary<string, string> userClaims, string claimType)
+        {
+            if (string.IsNullOrWhiteSpace(claimType) || !userClaims.TryGetValue(claimType, out var claimValue) || string.IsNullOrWhiteSpace(claimValue))
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            var results = new List<string>();
+            var cleanedValue = claimValue.Trim('[', ']');
+            var parts = cleanedValue.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in parts)
+            {
+                var val = part.Trim().Trim('"').Trim();
+                if (!string.IsNullOrWhiteSpace(val))
+                {
+                    results.Add(val);
+                }
+            }
+
+            return results;
+        }
+
 
         /// <inheritdoc/>
         public async Task LinkAccountAsync(string userId, ExternalIdentityDto externalInfo)
