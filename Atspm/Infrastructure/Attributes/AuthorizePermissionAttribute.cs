@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Attributes/AuthorizePermissionAttribute.cs
 // 
@@ -31,7 +31,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Attributes
         /// <param name="permission">The permission constant from <see cref="AtspmAuthorization.Permissions"/>.</param>
         public AuthorizePermissionAttribute(string permission)
         {
-            Policy = AtspmAuthorization.GetPolicyName(permission);
+            Policy = permission;
+            AuthenticationSchemes = "Bearer,ApiKey";
         }
     }
 }

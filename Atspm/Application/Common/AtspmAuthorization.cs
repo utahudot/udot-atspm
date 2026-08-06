@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Common/AtspmAuthorization.cs
 // 
@@ -315,25 +315,5 @@ namespace Utah.Udot.Atspm.Common
         //    // --- UI/UX ---
         //    { typeof(IHasWebPages),         new List<string> { Permissions.DataView } }
         //};
-
-        /// <summary>
-        /// Transforms a raw permission string into a standardized Authorization Policy name.
-        /// </summary>
-        /// <remarks>
-        /// This follows the pattern: <c>"Category:Action"</c> becomes <c>"Can{Action}{Category}"</c>.
-        /// <para>Example: <c>"Users:View"</c> returns <c>"CanViewUsers"</c>.</para>
-        /// </remarks>
-        /// <param name="permission">The permission constant from <see cref="Permissions"/>.</param>
-        /// <returns>A formatted policy name string used by the ASP.NET Core Authorization system.</returns>
-        public static string GetPolicyName(string permission)
-        {
-            if (string.IsNullOrEmpty(permission)) return string.Empty;
-
-            var parts = permission.Split(':');
-            var category = parts[0];
-            var action = parts.Length > 1 ? parts[1] : string.Empty;
-
-            return $"Can{action}{category}";
-        }
     }
 }

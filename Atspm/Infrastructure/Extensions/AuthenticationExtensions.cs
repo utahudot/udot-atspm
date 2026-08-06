@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ using System.Text.Encodings.Web;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Authorization;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -328,7 +330,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.Scope.Add("openid");
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
-                options.Scope.Add("app:Atspm");
+                //options.Scope.Add("app:Atspm");
 
                 options.CallbackPath = oidc["CallbackPath"];
 
@@ -376,43 +378,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services)
         {
-            services.AddAuthorization(options =>
-            {
-                var schemes = new[] { JwtBearerDefaults.AuthenticationScheme, "ApiKey" };
+            // 1. Add core ASP.NET authorization services
+            services.AddAuthorization();
 
-                var permissions = typeof(AtspmAuthorization.Permissions)
-                    .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                    .Where(f => f.IsLiteral && !f.IsInitOnly)
-                    .Select(f => f.GetRawConstantValue()?.ToString())
-                    .Where(v => v != null)
-                    .ToList();
+            // 2. Register dynamic policy provider
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
-                foreach (var permission in permissions!)
-                {
-                    if (permission == AtspmAuthorization.Permissions.Admin) continue;
-
-                    var policyName = AtspmAuthorization.GetPolicyName(permission);
-
-                    options.AddPolicy(policyName, policy =>
-                    {
-                        policy.AddAuthenticationSchemes(schemes);
-
-                        policy.RequireAssertion(context =>
-                        {
-                            var hasPermission = context.User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == permission);
-                            var isAdmin = context.User.IsInRole(AtspmAuthorization.Roles.Admin);
-
-                            return hasPermission || isAdmin;
-                        });
-                    });
-                }
-
-                options.AddPolicy(AtspmAuthorization.Roles.Admin, policy =>
-                {
-                    policy.AddAuthenticationSchemes(schemes);
-                    policy.RequireClaim(AtspmAuthorization.RoleClaimType, AtspmAuthorization.Roles.Admin);
-                });
-            });
+            // 3. Register dynamic permission checking handler
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
             return services;
         }
