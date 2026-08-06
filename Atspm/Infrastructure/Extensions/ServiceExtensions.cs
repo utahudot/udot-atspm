@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Extensions/ServiceExtensions.cs
 // 
@@ -176,6 +176,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IUserAreaRepository, UserAreaEFRepository>();
             services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
             services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
+            services.AddScoped<IUserGeographyRepository, UserGeographyEFRepository>();
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
 
