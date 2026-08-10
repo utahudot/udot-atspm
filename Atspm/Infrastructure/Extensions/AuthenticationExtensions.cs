@@ -325,7 +325,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                             options.Authority = provider.Authority;
                             options.ClientId = provider.ClientId;
                             options.ClientSecret = provider.ClientSecret;
-                            options.CallbackPath = provider.CallbackPath;
+                            options.RequireHttpsMetadata = !host.HostingEnvironment.IsProduction();
+                            options.CallbackPath = !string.IsNullOrWhiteSpace(provider.CallbackPath)
+                                ? provider.CallbackPath
+                                : $"/signin-{provider.ProviderName.ToLower()}";
                             options.ResponseType = OpenIdConnectResponseType.IdToken;
                             options.SaveTokens = true;
 
@@ -376,6 +379,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                         options.Authority = oidcSection["Authority"];
                         options.ClientId = oidcSection["ClientId"];
                         options.ClientSecret = oidcSection["ClientSecret"];
+                        options.RequireHttpsMetadata = !host.HostingEnvironment.IsProduction();
                         options.CallbackPath = oidcSection["CallbackPath"] ?? "/api/v1/Account/OIDCLoginCallback";
                         options.ResponseType = OpenIdConnectResponseType.IdToken;
                         options.SaveTokens = true;

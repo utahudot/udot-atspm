@@ -233,6 +233,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         public static IServiceCollection AddAtspmEFIdentityRepositories(this IServiceCollection services)
         {
             services.AddScoped<IApiKeyRepository, ApiKeyEFRepository>();
+            services.AddScoped<IUserGeographyRepository, UserGeographyEFRepository>();
 
             return services;
         }
