@@ -16,8 +16,11 @@
 #endregion
 
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
@@ -122,7 +125,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// </summary>
         /// <returns>The comprehensive list of system users.</returns>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsers()
         {
@@ -137,7 +140,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="model">The complete updated account payload.</param>
         /// <returns>An empty confirmation of successful update.</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersEdit, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UpdateUserRequestDto model)
@@ -157,7 +160,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="id">The identifier of the user to delete.</param>
         /// <returns>A status code confirming deletion or a bad request.</returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.UsersDelete, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteUser([FromRoute] string id)

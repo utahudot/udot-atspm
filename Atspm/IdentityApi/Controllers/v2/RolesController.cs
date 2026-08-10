@@ -16,8 +16,11 @@
 #endregion
 
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
@@ -27,7 +30,6 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
     /// Handles roles and role-claims mapping management.
     /// </summary>
     [ApiVersion("2.0")]
-    [Authorize(Roles = "Admin")]
     [Produces("application/json")]
     public class RolesController : IdentityControllerBase
     {
@@ -47,6 +49,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// </summary>
         /// <returns>A dictionary grouping category scopes to lists of claim permissions.</returns>
         [HttpGet("permissions")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSystemPermissions()
         {
@@ -59,6 +62,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// </summary>
         /// <returns>A collection of role definitions.</returns>
         [HttpGet]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(typeof(IEnumerable<RoleResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetRoles()
         {
@@ -72,6 +76,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="roleName">The name of the role to create.</param>
         /// <returns>An action result indicating success.</returns>
         [HttpPost("{roleName}")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesEdit, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateRole([FromRoute] string roleName)
@@ -91,6 +96,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="roleName">The name of the role to delete.</param>
         /// <returns>A status indicating success or failure.</returns>
         [HttpDelete("{roleName}")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesDelete, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteRole([FromRoute] string roleName)
@@ -110,6 +116,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="roleName">The name of the role.</param>
         /// <returns>A collection of claim structures representing the active permissions.</returns>
         [HttpGet("{roleName}/claims")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetRoleClaims([FromRoute] string roleName)
@@ -130,6 +137,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="claims">The updated set of permission claims.</param>
         /// <returns>A confirmation of successful update.</returns>
         [HttpPost("{roleName}/claims")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.RolesEdit, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateRoleClaims([FromRoute] string roleName, [FromBody] IEnumerable<string> claims)

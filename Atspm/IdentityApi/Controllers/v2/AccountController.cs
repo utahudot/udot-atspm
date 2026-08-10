@@ -190,5 +190,17 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
             await _federatedAuthService.LinkAccountAsync(userId, externalInfo);
             return Ok();
         }
+
+        /// <summary>
+        /// Retrieves the list of configured external OIDC Single Sign-On (SSO) identity provider names.
+        /// </summary>
+        /// <returns>A list of active identity provider names.</returns>
+        [HttpGet("providers")]
+        [ProducesResponseType(typeof(System.Collections.Generic.IEnumerable<string>), StatusCodes.Status200OK)]
+        public IActionResult GetConfiguredProviders()
+        {
+            var providers = _federatedAuthService.GetConfiguredProviders();
+            return Ok(providers);
+        }
     }
 }

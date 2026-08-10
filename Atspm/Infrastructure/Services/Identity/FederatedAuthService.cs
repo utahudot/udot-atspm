@@ -323,6 +323,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
             _log.AccountLinked(externalInfo.ProviderName, userId);
         }
 
+        /// <inheritdoc/>
+        public System.Collections.Generic.IEnumerable<string> GetConfiguredProviders()
+        {
+            return _federatedOptions.Value?.Providers?.Select(p => p.ProviderName) ?? System.Linq.Enumerable.Empty<string>();
+        }
+
         private async Task<string> GenerateJwtTokenInternalAsync(ApplicationUser user)
         {
             var claims = new List<Claim>

@@ -48,5 +48,11 @@ namespace Utah.Udot.Atspm.Services.Identity
         /// <param name="externalInfo">The SSO provider claims model.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task LinkAccountAsync(string userId, ExternalIdentityDto externalInfo);
+
+        /// <summary>
+        /// Retrieves the names of all configured external identity providers.
+        /// </summary>
+        /// <returns>A collection of provider names.</returns>
+        System.Collections.Generic.IEnumerable<string> GetConfiguredProviders();
     }
 }
