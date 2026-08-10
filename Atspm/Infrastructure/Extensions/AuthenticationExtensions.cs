@@ -325,7 +325,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                             options.Authority = provider.Authority;
                             options.ClientId = provider.ClientId;
                             options.ClientSecret = provider.ClientSecret;
-                            options.RequireHttpsMetadata = !host.HostingEnvironment.IsProduction();
+                            options.RequireHttpsMetadata = host.HostingEnvironment.IsProduction();
                             options.CallbackPath = !string.IsNullOrWhiteSpace(provider.CallbackPath)
                                 ? provider.CallbackPath
                                 : $"/signin-{provider.ProviderName.ToLower()}";
