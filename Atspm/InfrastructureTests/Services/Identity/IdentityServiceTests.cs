@@ -26,11 +26,11 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Models.IdentityModels;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Services.Identity.Dto;
+using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Services.Identity;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Services.Identity.Dto;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.Identity.Tests

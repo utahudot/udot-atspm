@@ -18,12 +18,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Utah.Udot.Atspm.Services.Identity.Dto;
 using Utah.Udot.Atspm.Infrastructure.Services.Identity;
 using Xunit;
 

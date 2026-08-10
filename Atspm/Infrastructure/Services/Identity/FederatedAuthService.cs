@@ -15,25 +15,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
-using Utah.Udot.Atspm.Infrastructure.Configuration;
-using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
 {

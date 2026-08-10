@@ -17,11 +17,7 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
@@ -51,16 +47,16 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="model">The registration payload details.</param>
         /// <returns>A confirmation containing the created user's account details.</returns>
         [HttpPost("register")]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto model)
+        public async Task<IActionResult> Register([FromBody] CreateUserRequestDto model)
         {
             if (model == null)
             {
                 return BadRequest("Registration payload cannot be null.");
             }
 
-            var result = await _identityService.RegisterUserAsync(model);
+            var result = await _identityService.CreateUserAsync(model);
             if (result != null)
             {
                 return Ok(result);
@@ -75,7 +71,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <returns>The authenticated user's profile and regional constraints.</returns>
         [HttpGet("profile")]
         [Authorize]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProfile()
@@ -99,25 +95,26 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// Updates the profile data of the currently authenticated user.
         /// </summary>
         /// <param name="model">The updated profile details.</param>
-        /// <returns>The fully updated user representation.</returns>
+        /// <returns>A confirmation of successful update.</returns>
         [HttpPut("profile")]
         [Authorize]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserDto model)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequestDto model)
         {
+            var userId = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
             if (model == null)
             {
                 return BadRequest("Profile update content cannot be null.");
             }
 
-            var result = await _identityService.UpdateUserAsync(model);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest("Failed to update user profile.");
+            await _identityService.UpdateUserAsync(userId, model);
+            return Ok();
         }
 
         /// <summary>
@@ -126,10 +123,10 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <returns>The comprehensive list of system users.</returns>
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _identityService.GetUsersAsync();
+            var users = await _identityService.GetAllUsersAsync();
             return Ok(users);
         }
 
@@ -138,25 +135,20 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// </summary>
         /// <param name="id">The identifier of the user to update.</param>
         /// <param name="model">The complete updated account payload.</param>
-        /// <returns>The updated user details.</returns>
+        /// <returns>An empty confirmation of successful update.</returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UserDto model)
+        public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UpdateUserRequestDto model)
         {
-            if (string.IsNullOrWhiteSpace(id) || model == null || !id.Equals(model.Id, StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(id) || model == null)
             {
-                return BadRequest("Invalid route parameter or mismatched user model identity.");
+                return BadRequest("Invalid route parameter or empty user model identity.");
             }
 
-            var result = await _identityService.UpdateUserAsync(model);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest("Failed to update user.");
+            await _identityService.UpdateUserAsync(id, model);
+            return Ok();
         }
 
         /// <summary>
@@ -175,38 +167,8 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
                 return BadRequest("User ID must be specified.");
             }
 
-            var result = await _identityService.DeleteUserAsync(id);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-
-            return BadRequest(result);
-        }
-
-        /// <summary>
-        /// Grants or revokes roles for a designated user (Admin only).
-        /// </summary>
-        /// <param name="model">The payload mapping user IDs to their updated roles.</param>
-        /// <returns>The updated user details on success.</returns>
-        [HttpPost("assign-role")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AssignRole([FromBody] UserDto model)
-        {
-            if (model == null || string.IsNullOrWhiteSpace(model.Id))
-            {
-                return BadRequest("User assignment payload and identifier are required.");
-            }
-
-            var result = await _identityService.UpdateUserRolesAsync(model.Id, model.Roles);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest("Failed to complete role assignment.");
+            await _identityService.DeleteUserAsync(id);
+            return Ok();
         }
     }
 }

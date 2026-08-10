@@ -24,11 +24,10 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
-using Utah.Udot.Atspm.Services.Identity.Dto;
 using Utah.Udot.Atspm.Infrastructure.Services.Identity;
+using Utah.Udot.Atspm.Services.Identity.Dto;
 using Utah.Udot.NetStandardToolkit.Services;
 using Xunit;
 

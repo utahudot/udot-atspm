@@ -27,9 +27,6 @@ using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
-using Utah.Udot.Atspm.Services.Identity;
-using Utah.Udot.Atspm.Infrastructure.Services.Identity;
-using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 //git 2
 

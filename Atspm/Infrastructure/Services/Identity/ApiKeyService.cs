@@ -23,7 +23,6 @@ using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Repositories.IdentityRepositories;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
-using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
 {

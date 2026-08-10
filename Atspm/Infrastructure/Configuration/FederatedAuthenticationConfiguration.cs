@@ -15,8 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>

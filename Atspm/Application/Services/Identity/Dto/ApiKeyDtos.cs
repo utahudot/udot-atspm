@@ -15,9 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-
 namespace Utah.Udot.Atspm.Services.Identity.Dto
 {
     /// <summary>

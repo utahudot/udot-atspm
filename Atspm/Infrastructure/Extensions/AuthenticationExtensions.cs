@@ -32,7 +32,6 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -40,7 +39,6 @@ using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Authorization;
-using Utah.Udot.Atspm.Infrastructure.Configuration;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -290,7 +288,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.Secure = CookieSecurePolicy.Always;
             });
 
-            services.AddAuthentication(options =>
+            var authBuilder = services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -310,7 +308,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                         Encoding.UTF8.GetBytes(host.Configuration["Jwt:Key"]))
                 };
             })
-
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
 
             var federatedAuthSection = host.Configuration.GetSection("FederatedAuthentication");
@@ -321,8 +318,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
                 if (fedOptions?.Providers != null)
                 {
-                    var authBuilder = services.AddAuthentication();
-
                     foreach (var provider in fedOptions.Providers)
                     {
                         authBuilder.AddOpenIdConnect(provider.ProviderName, options =>
@@ -369,6 +364,60 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                             };
                         });
                     }
+                }
+            }
+            else
+            {
+                var oidcSection = host.Configuration.GetSection("Oidc");
+                if (oidcSection.Exists())
+                {
+                    authBuilder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                    {
+                        options.Authority = oidcSection["Authority"];
+                        options.ClientId = oidcSection["ClientId"];
+                        options.ClientSecret = oidcSection["ClientSecret"];
+                        options.CallbackPath = oidcSection["CallbackPath"] ?? "/api/v1/Account/OIDCLoginCallback";
+                        options.ResponseType = OpenIdConnectResponseType.IdToken;
+                        options.SaveTokens = true;
+
+                        options.Scope.Clear();
+                        options.Scope.Add("openid");
+                        options.Scope.Add("email");
+                        options.Scope.Add("profile");
+
+                        options.GetClaimsFromUserInfoEndpoint = true;
+                        options.UseTokenLifetime = true;
+                        options.SkipUnrecognizedRequests = true;
+
+                        options.Events = new OpenIdConnectEvents
+                        {
+                            OnRedirectToIdentityProvider = context =>
+                            {
+                                var b = new UriBuilder(context.ProtocolMessage.RedirectUri)
+                                {
+                                    Scheme = "https",
+                                    Port = -1
+                                };
+                                context.ProtocolMessage.RedirectUri = b.ToString();
+
+                                Console.WriteLine($"SSO Redirect callback: {b}");
+
+                                return Task.CompletedTask;
+                            }
+                        };
+                    });
+
+                    services.Configure<FederatedAuthenticationConfiguration>(options =>
+                    {
+                        options.Providers.Add(new FederatedProviderConfiguration
+                        {
+                            ProviderName = OpenIdConnectDefaults.AuthenticationScheme,
+                            Authority = oidcSection["Authority"],
+                            ClientId = oidcSection["ClientId"],
+                            ClientSecret = oidcSection["ClientSecret"],
+                            CallbackPath = oidcSection["CallbackPath"] ?? "/api/v1/Account/OIDCLoginCallback"
+                        });
+                    });
                 }
             }
 

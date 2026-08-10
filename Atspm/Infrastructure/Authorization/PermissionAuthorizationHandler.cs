@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Common;
 
 namespace Utah.Udot.Atspm.Infrastructure.Authorization

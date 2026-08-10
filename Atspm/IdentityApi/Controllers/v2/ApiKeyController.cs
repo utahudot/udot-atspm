@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +23,6 @@ using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
-
-using Asp.Versioning;
 
 namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
 {

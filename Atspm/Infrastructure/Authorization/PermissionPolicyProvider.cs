@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Common;
 
 namespace Utah.Udot.Atspm.Infrastructure.Authorization

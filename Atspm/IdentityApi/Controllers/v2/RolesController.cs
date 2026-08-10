@@ -17,11 +17,7 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
@@ -51,10 +47,10 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// </summary>
         /// <returns>A dictionary grouping category scopes to lists of claim permissions.</returns>
         [HttpGet("permissions")]
-        [ProducesResponseType(typeof(IDictionary<string, List<string>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSystemPermissions()
         {
-            var permissions = await _roleService.GetSystemPermissionsAsync();
+            var permissions = await _roleService.GetAllSystemPermissionsAsync();
             return Ok(permissions);
         }
 
@@ -63,35 +59,30 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// </summary>
         /// <returns>A collection of role definitions.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<RoleDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<RoleResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetRoles()
         {
-            var roles = await _roleService.GetRolesAsync();
+            var roles = await _roleService.GetAllRolesAsync();
             return Ok(roles);
         }
 
         /// <summary>
         /// Creates a brand new system role.
         /// </summary>
-        /// <param name="model">The specification of the role to create.</param>
-        /// <returns>The newly created role on success.</returns>
-        [HttpPost]
-        [ProducesResponseType(typeof(RoleDto), StatusCodes.Status200OK)]
+        /// <param name="roleName">The name of the role to create.</param>
+        /// <returns>An action result indicating success.</returns>
+        [HttpPost("{roleName}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateRole([FromBody] RoleDto model)
+        public async Task<IActionResult> CreateRole([FromRoute] string roleName)
         {
-            if (model == null)
+            if (string.IsNullOrWhiteSpace(roleName))
             {
-                return BadRequest("Role definition cannot be null.");
+                return BadRequest("Role name cannot be empty.");
             }
 
-            var result = await _roleService.CreateRoleAsync(model);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest("Failed to create role.");
+            await _roleService.CreateRoleAsync(roleName);
+            return Ok();
         }
 
         /// <summary>
@@ -109,13 +100,8 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
                 return BadRequest("Role name must be specified.");
             }
 
-            var result = await _roleService.DeleteRoleAsync(roleName);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-
-            return BadRequest(result);
+            await _roleService.DeleteRoleAsync(roleName);
+            return Ok();
         }
 
         /// <summary>
@@ -124,7 +110,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="roleName">The name of the role.</param>
         /// <returns>A collection of claim structures representing the active permissions.</returns>
         [HttpGet("{roleName}/claims")]
-        [ProducesResponseType(typeof(IEnumerable<ClaimDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetRoleClaims([FromRoute] string roleName)
         {
@@ -133,7 +119,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
                 return BadRequest("Role name is required.");
             }
 
-            var claims = await _roleService.GetRoleClaimsAsync(roleName);
+            var claims = await _roleService.GetClaimsForRoleAsync(roleName);
             return Ok(claims);
         }
 
@@ -146,20 +132,15 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         [HttpPost("{roleName}/claims")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateRoleClaims([FromRoute] string roleName, [FromBody] IEnumerable<ClaimDto> claims)
+        public async Task<IActionResult> UpdateRoleClaims([FromRoute] string roleName, [FromBody] IEnumerable<string> claims)
         {
             if (string.IsNullOrWhiteSpace(roleName) || claims == null)
             {
                 return BadRequest("Role name and claim permissions list are required.");
             }
 
-            var result = await _roleService.UpdateRoleClaimsAsync(roleName, claims);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-
-            return BadRequest(result);
+            await _roleService.SyncClaimsToRoleAsync(roleName, claims);
+            return Ok();
         }
     }
 }

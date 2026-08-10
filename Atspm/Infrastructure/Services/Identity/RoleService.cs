@@ -18,17 +18,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Common;
-using Utah.Udot.Atspm.Enums;
+using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
-using Utah.Udot.NetStandardToolkit.Extensions;
-using Utah.Udot.Atspm.Infrastructure.LogMessages.Identity;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
 {

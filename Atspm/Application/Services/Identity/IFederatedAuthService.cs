@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
 namespace Utah.Udot.Atspm.Services.Identity

@@ -29,7 +29,6 @@ using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
-using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v1
 {

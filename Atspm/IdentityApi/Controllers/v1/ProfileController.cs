@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
-using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v1
 {

@@ -25,13 +25,12 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
-using Utah.Udot.Atspm.Services.Identity.Dto;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.Identity;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Services.Identity.Dto;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.Identity.Tests
@@ -188,13 +187,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.Identity.Tests
             };
 
             var externalInfo = new ExternalIdentityDto(providerName, "authentik-external-key-123", userClaims);
-            var user = new ApplicationUser 
-            { 
-                Id = "user-id-999", 
-                Email = userEmail, 
-                FirstName = "Test", 
-                LastName = "User", 
-                Agency = "Old Agency" 
+            var user = new ApplicationUser
+            {
+                Id = "user-id-999",
+                Email = userEmail,
+                FirstName = "Test",
+                LastName = "User",
+                Agency = "Old Agency"
             };
 
             _userManagerMock.Setup(u => u.FindByEmailAsync(userEmail))

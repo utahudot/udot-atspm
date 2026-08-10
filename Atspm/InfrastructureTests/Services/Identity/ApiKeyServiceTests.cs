@@ -24,9 +24,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Services.Identity;
 using Utah.Udot.Atspm.Repositories.IdentityRepositories;
 using Utah.Udot.Atspm.Services.Identity.Dto;
-using Utah.Udot.Atspm.Infrastructure.Services.Identity;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.Identity.Tests
@@ -44,7 +44,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.Identity.Tests
         public ApiKeyServiceTests()
         {
             _apiKeyRepositoryMock = new Mock<IApiKeyRepository>();
-            
+
             var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
             _userManagerMock = new Mock<UserManager<ApplicationUser>>(
                 userStoreMock.Object, null, null, null, null, null, null, null, null);

@@ -17,10 +17,7 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
@@ -55,9 +52,9 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <param name="model">The credential model containing user login details.</param>
         /// <returns>An authentication token and associated claims on success.</returns>
         [HttpPost("login")]
-        [ProducesResponseType(typeof(AuthenticationResultDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthenticationResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Login([FromBody] LoginCredentialDto model)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
             if (model == null)
             {
@@ -65,12 +62,12 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
             }
 
             var result = await _authenticationService.LoginAsync(model);
-            if (result.Success)
+            if (result != null)
             {
                 return Ok(result);
             }
 
-            return Unauthorized(result.Message);
+            return Unauthorized("Invalid login credentials.");
         }
 
         /// <summary>
@@ -82,7 +79,13 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Logout()
         {
-            await _authenticationService.LogoutAsync();
+            var userId = User.Identity?.Name;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            await _authenticationService.LogoutAsync(userId);
             return Ok();
         }
 
@@ -100,7 +103,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
                 return BadRequest("Forgot password request cannot be null.");
             }
 
-            await _authenticationService.ForgotPasswordAsync(model);
+            await _authenticationService.InitiateForgotPasswordAsync(model);
             return Ok();
         }
 
@@ -111,21 +114,15 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
         /// <returns>An action result indicating success or a bad request if validation fails.</returns>
         [HttpPost("reset-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto model)
         {
             if (model == null)
             {
                 return BadRequest("Reset password request cannot be null.");
             }
 
-            var result = await _authenticationService.ResetPasswordAsync(model);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-
-            return BadRequest(result);
+            await _authenticationService.ResetPasswordAsync(model);
+            return Ok();
         }
 
         /// <summary>
@@ -165,12 +162,12 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
             }
 
             var result = await _federatedAuthService.HandleCallbackAsync(providerName, externalInfo);
-            if (result.Success)
+            if (result.IsSuccess)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(result.ErrorMessage);
         }
 
         /// <summary>
@@ -190,13 +187,8 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
                 return BadRequest("User ID and external identity metadata are required.");
             }
 
-            var result = await _federatedAuthService.LinkAccountAsync(userId, externalInfo);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-
-            return BadRequest(result);
+            await _federatedAuthService.LinkAccountAsync(userId, externalInfo);
+            return Ok();
         }
     }
 }
