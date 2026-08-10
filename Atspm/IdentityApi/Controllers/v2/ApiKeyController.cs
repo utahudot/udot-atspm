@@ -23,15 +23,17 @@ using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Services.Identity;
 using Utah.Udot.Atspm.Services.Identity.Dto;
 
-namespace Utah.Udot.ATSPM.IdentityApi.Controllers
+using Asp.Versioning;
+
+namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v2
 {
     /// <summary>
     /// Provides endpoints for managing API keys, including creation, retrieval, and revocation.
     /// </summary>
     [Authorize]
-    [Route("api/[controller]")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
-    public class ApiKeyController : ControllerBase
+    public class ApiKeyController : IdentityControllerBase
     {
         private readonly IApiKeyService _apiKeyService;
 

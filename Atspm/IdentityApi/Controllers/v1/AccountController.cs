@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Identity.Controllers/AccountController.cs
 // 
@@ -31,7 +31,7 @@ using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
-namespace Identity.Controllers
+namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v1
 {
     [ApiVersion("1.0")]
     public class AccountController : IdentityControllerBase

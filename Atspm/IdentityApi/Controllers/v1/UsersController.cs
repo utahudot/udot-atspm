@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for IdentityApi - Identity.Controllers/UsersController.cs
 // 
@@ -26,7 +26,7 @@ using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
-namespace Identity.Controllers
+namespace Utah.Udot.ATSPM.IdentityApi.Controllers.v1
 {
     //[Authorize()]
     [ApiVersion("1.0")]
