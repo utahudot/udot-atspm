@@ -43,6 +43,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
 
     public class AggregatePreemptTestData : AnalysisTestDataBase { }
 
+    public class AggregatePriorityTestData : AnalysisTestDataBase { }
+
 
 
 
