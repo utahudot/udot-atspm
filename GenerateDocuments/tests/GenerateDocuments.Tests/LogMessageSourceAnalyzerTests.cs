@@ -1,5 +1,6 @@
 namespace AtspmDocsGenerator.Tests;
 
+//
 public sealed class LogMessageSourceAnalyzerTests
 {
     [Fact]
