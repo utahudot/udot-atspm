@@ -126,3 +126,71 @@ Configuration values used by the Config API GitHub release service.
 | `RepositoryOwner` | `string` | `Not set` | No | `GitHubReleaseConfiguration__RepositoryOwner` | GitHub repository owner that contains ATSPM releases. |
 | `RepositoryName` | `string` | `Not set` | No | `GitHubReleaseConfiguration__RepositoryName` | GitHub repository name that contains ATSPM releases. |
 
+## Example JSON configuration
+
+This example includes every documented setting. Replace placeholder secrets, URLs, paths, and connection details before use.
+
+```json
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "Jwt": {
+    "Issuer": "https://identity.example.com",
+    "Audience": "atspm",
+    "Key": "replace-with-a-secret",
+    "ExpireDays": null
+  },
+  "Oidc": {
+    "Authority": "https://identity-provider.example.com",
+    "ClientId": "atspm",
+    "ClientSecret": "replace-with-a-secret",
+    "CallbackPath": "/signin-oidc"
+  },
+  "GitHubReleaseConfiguration": {
+    "UserAgengt": "replace-me",
+    "RepositoryOwner": "replace-me",
+    "RepositoryName": "replace-me"
+  }
+}
+```
+

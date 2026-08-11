@@ -125,3 +125,70 @@ Configuration values used by the Identity API for identity workflows and generat
 | `Website` | `string` | `Not set` | No | `IdentityConfiguration__Website` | Public website URL used when building account and identity links. |
 | `DefaultEmailAddress` | `string` | `Not set` | No | `IdentityConfiguration__DefaultEmailAddress` | Default email address used by identity workflows. |
 
+## Example JSON configuration
+
+This example includes every documented setting. Replace placeholder secrets, URLs, paths, and connection details before use.
+
+```json
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "Jwt": {
+    "Issuer": "https://identity.example.com",
+    "Audience": "atspm",
+    "Key": "replace-with-a-secret",
+    "ExpireDays": null
+  },
+  "Oidc": {
+    "Authority": "https://identity-provider.example.com",
+    "ClientId": "atspm",
+    "ClientSecret": "replace-with-a-secret",
+    "CallbackPath": "/signin-oidc"
+  },
+  "IdentityConfiguration": {
+    "Website": "https://atspm.example.com",
+    "DefaultEmailAddress": "atspm@example.com"
+  }
+}
+```
+

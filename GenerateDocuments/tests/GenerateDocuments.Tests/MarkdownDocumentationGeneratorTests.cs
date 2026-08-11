@@ -166,5 +166,8 @@ public sealed class MarkdownDocumentationGeneratorTests
         Assert.Contains("- [SampleOptions:Nested](#sampleoptionsnested)", actual);
         Assert.Contains("## SampleOptions:Nested", actual);
         Assert.Contains("`SampleOptions__Nested__Host`", actual);
+        Assert.Contains("\"SampleOptions\": {", actual);
+        Assert.Contains("\"Nested\": {", actual);
+        Assert.Contains("\"Host\": \"localhost\"", actual);
     }
 }

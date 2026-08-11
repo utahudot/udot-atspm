@@ -1,10 +1,10 @@
 # ATSPM documentation generator
 
 This directory is a self-contained documentation generator for ATSPM
-configuration classes. It reads C# source with Roslyn, produces deterministic
-Markdown, builds an MkDocs site, and contains the workflows needed to publish
-that site with GitHub Pages after this directory is transferred to its own
-repository.
+configuration classes and logger messages. It reads C# source with Roslyn,
+produces deterministic Markdown, builds an MkDocs site, and contains the
+workflows needed to publish that site with GitHub Pages after this directory is
+transferred to its own repository.
 
 It does not compile or load ATSPM assemblies. Initializer expressions such as
 `System.IO.Path.GetTempPath()` are documented as source text and are never
@@ -48,6 +48,10 @@ python -m mkdocs build --strict --config-file GenerateDocuments/mkdocs.yml
 Generated pages are intentionally ignored by Git. GitHub Pages receives the
 built site as a workflow artifact, so generated Markdown and HTML are not
 committed.
+
+Generation also creates `log-messages.md` from the `LoggerMessage` declarations
+under `Atspm/Infrastructure/LogMessages`. The table is sorted numerically by
+event ID and includes the event name, level, XML summary, and source link.
 
 ## Command-line interface
 

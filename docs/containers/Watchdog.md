@@ -123,3 +123,88 @@ Configuration values used by Watchdog scans, report windows, thresholds, and ema
 | `DefaultEmailAddress` | `string` | `Not set` | No | `WatchdogConfiguration__DefaultEmailAddress` |  |
 | `Sort` | `string` | `Not set` | No | `WatchdogConfiguration__Sort` |  |
 
+## Example JSON configuration
+
+This example includes every documented setting. Replace placeholder secrets, URLs, paths, and connection details before use.
+
+```json
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "WatchdogConfiguration": {
+    "PmScanDate": "2026-01-01T00:00:00Z",
+    "AmScanDate": "2026-01-01T00:00:00Z",
+    "RampMissedDetectorHitsStartScanDate": "2026-01-01T00:00:00Z",
+    "RampMissedDetectorHitsEndScanDate": "2026-01-01T00:00:00Z",
+    "TimeZoneId": "America/Denver",
+    "AmStartHour": 1,
+    "AmEndHour": 5,
+    "PmPeakStartHour": 18,
+    "PmPeakEndHour": 17,
+    "RampDetectorStartHour": 7,
+    "RampDetectorEndHour": 8,
+    "RampMissedDetectorHitStartHour": 15,
+    "RampMissedDetectorHitEndHour": 7,
+    "RampMainlineStartHour": 15,
+    "RampMainlineEndHour": 19,
+    "RampStuckQueueStartHour": 1,
+    "RampStuckQueueEndHour": 4,
+    "WeekdayOnly": true,
+    "ConsecutiveCount": 3,
+    "MinPhaseTerminations": 50,
+    "PercentThreshold": 0.9,
+    "MinimumRecords": 500,
+    "LowHitThreshold": 50,
+    "LowHitRampThreshold": 10,
+    "MaximumPedestrianEvents": 200,
+    "RampMissedEventsThreshold": 3,
+    "EmailAllErrors": false,
+    "EmailPmErrors": true,
+    "EmailAmErrors": true,
+    "EmailRampErrors": true,
+    "DefaultEmailAddress": "atspm@example.com",
+    "Sort": "replace-me"
+  }
+}
+```
+

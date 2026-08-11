@@ -194,3 +194,105 @@ Options for transferring event logs between repositories.
 | `IncludedDeviceIds` | `IEnumerable<int>` | `[]` | No | `EventLogTransferOptions__IncludedDeviceIds` | List of Device Id's to include |
 | `DataType` | `string` | `"all"` | No | `EventLogTransferOptions__DataType` | Data type of the event logs to transfer. Defaults to "all" for all types. |
 
+## Example JSON configuration
+
+This example includes every documented setting. Replace placeholder secrets, URLs, paths, and connection details before use.
+
+```json
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "localhost",
+      "Port": null,
+      "Database": "atspm",
+      "User": "atspm",
+      "Password": "replace-with-a-secret",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "DecodeEventsConfiguration": {
+    "Path": "./data"
+  },
+  "DeviceDownloaderConfiguration": {
+    "BasePath": "./data",
+    "DeleteRemoteFile": false,
+    "Ping": false
+  },
+  "DeviceEventLoggingConfiguration": {
+    "Path": "./data",
+    "ProcessingBatchSize": 50000,
+    "ParallelProcesses": 5,
+    "WorkflowBatchSize": 20,
+    "DevicesBatchSize": null,
+    "SignalTimingPlanOffsetHours": 12,
+    "DeviceEventLoggingQueryOptions": {}
+  },
+  "EventLogAggregateConfiguration": {
+    "AggregationType": "all",
+    "Dates": [],
+    "ParallelProcesses": 1,
+    "EventAggregationQueryOptions": {}
+  },
+  "EventLogExtractConfiguration": {
+    "FileFormat": "csv",
+    "DateTimeFormat": "yyyy-MM-dd HH:mm:ss",
+    "Dates": [],
+    "Included": [],
+    "Excluded": [],
+    "Path": "./data"
+  },
+  "EventLogImporterConfiguration": {
+    "EarliestAcceptableDate": "2026-01-01T00:00:00Z",
+    "DeleteSource": false
+  },
+  "EventLogTransferOptions": {
+    "SourceRepository": {
+      "Provider": "PostgreSql",
+      "ConnectionString": "Host=localhost;Port=5432;Database=atspm;Username=atspm;Password=replace-with-a-secret"
+    },
+    "DestinationRepository": {
+      "Provider": "PostgreSql",
+      "ConnectionString": "Host=localhost;Port=5432;Database=atspm;Username=atspm;Password=replace-with-a-secret"
+    },
+    "IncludedLocations": [],
+    "ExcludedLocations": [],
+    "StartDate": null,
+    "EndDate": null,
+    "IncludedDeviceIds": [],
+    "DataType": "all"
+  }
+}
+```
+

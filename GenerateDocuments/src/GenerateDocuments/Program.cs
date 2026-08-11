@@ -35,9 +35,20 @@ public static class Program
                 sections,
                 options);
 
+            var logMessages = new LogMessageSourceAnalyzer().Analyze(
+                options.SourceRoot,
+                LogMessageSourceAnalyzer.DefaultSourcePath);
+            var logResult = new LogMessageDocumentationGenerator().Generate(
+                logMessages,
+                Path.Combine(options.OutputRoot, "log-messages.md"),
+                options);
+
             Console.WriteLine(
                 $"Generated {result.PageCount} container pages from " +
                 $"{result.DocumentedSectionCount} configuration sections.");
+            Console.WriteLine(
+                $"Generated a log message reference containing {logResult.MessageCount} messages " +
+                $"({logResult.DuplicateEventIdCount} duplicated event IDs).");
 
             var mappedSections = map.Containers
                 .SelectMany(container => container.Sections)
