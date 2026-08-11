@@ -563,6 +563,11 @@ namespace Utah.Udot.Atspm.Data.Models
         /// Useful for identifying missed requests, controller limitations, or conflicting operations.
         /// </summary>
         public int PreemptServices { get; set; }
+
+        public override string ToString()
+        {
+            return $"result: {Start} - {End} - {LocationIdentifier} - {PreemptNumber} - {PreemptRequests} - {PreemptServices}";
+        }
     }
 
     /// <summary>

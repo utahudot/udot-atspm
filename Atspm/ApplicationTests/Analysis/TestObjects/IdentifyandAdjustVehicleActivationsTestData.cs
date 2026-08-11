@@ -41,6 +41,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
     public class AggregatePhaseSplitMonitorData : AnalysisTestDataBase { }
 
 
+    public class AggregatePreemptTestData : AnalysisTestDataBase { }
+
+
 
 
 
@@ -77,19 +80,5 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
         public Location Configuration { get; set; }
         public List<IndianaEvent> Input { get; set; }
         public List<PreempDetailValueBase> Output { get; set; }
-    }
-
-    public class AggregatePriorityCodesTestData
-    {
-        public Location Configuration { get; set; }
-        public List<IndianaEvent> Input { get; set; }
-        public List<PriorityAggregation> Output { get; set; }
-    }
-
-    public class AggregatePreemptCodesTestData
-    {
-        public Location Configuration { get; set; }
-        public List<IndianaEvent> Input { get; set; }
-        public List<PreemptionAggregation> Output { get; set; }
     }
 }

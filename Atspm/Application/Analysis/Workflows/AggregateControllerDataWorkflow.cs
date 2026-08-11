@@ -73,71 +73,18 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
-    //public class LocationPlansAggregationWorkflow : AggregationWorkflowBase<SignalTimingPlan>
-    //{
-    //    /// <inheritdoc/>
-    //    public LocationPlansAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
-    //    {
-    //    }
-
-    //    public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
-    //    public FilterPlanDataProcessStep FilteredPlanData { get; private set; }
-    //    public GroupLocationByParameter GroupLocationPlans { get; private set; }
-    //    public CalculateTimingPlans<Plan> CalculateTimingPlans { get; private set; }
-    //    public AggregateLocationPlans AggregateLocationPlans { get; private set; }
-
-    //    /// <inheritdoc/>
-    //    protected override void AddStepsToTracker()
-    //    {
-    //        Steps.Add(FilterIndianaEvents);
-    //        Steps.Add(FilteredPlanData);
-    //        Steps.Add(GroupLocationPlans);
-    //        Steps.Add(CalculateTimingPlans);
-    //        Steps.Add(AggregateLocationPlans);
-    //    }
-
-    //    /// <inheritdoc/>
-    //    protected override void InstantiateSteps()
-    //    {
-    //        FilterIndianaEvents = new(executionBlockOptions);
-    //        FilteredPlanData = new(blockOptions);
-    //        GroupLocationPlans = new(executionBlockOptions);
-    //        CalculateTimingPlans = new(executionBlockOptions);
-    //        AggregateLocationPlans = new(executionBlockOptions);
-    //    }
-
-    //    /// <inheritdoc/>
-    //    protected override void LinkSteps()
-    //    {
-    //        Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-    //        FilterIndianaEvents.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
-    //        FilteredPlanData.LinkTo(GroupLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-    //        GroupLocationPlans.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-    //        CalculateTimingPlans.LinkTo(AggregateLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-
-    //        AggregateLocationPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-    //    }
-    //}
-
-    public class PreemptCodesAggregationWorkflow : AggregationWorkflowBase<PreemptionAggregation>
+    /// <inheritdoc/>
+    public class PreemptCodesAggregationWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PreemptionAggregation>(options)
     {
-        /// <inheritdoc/>
-        public PreemptCodesAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
-        {
-        }
-
         public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
         public FilterPreemptionDataProcessStep FilteredPreemptionData { get; private set; }
-        public GroupLocationByParameter GroupPreemptNumber { get; private set; }
-        public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
+        public AggregatePreemptStep AggregatePreemptCodes { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
             Steps.Add(FilterIndianaEvents);
             Steps.Add(FilteredPreemptionData);
-            Steps.Add(GroupPreemptNumber);
             Steps.Add(AggregatePreemptCodes);
         }
 
@@ -146,8 +93,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
             FilterIndianaEvents = new(executionBlockOptions);
             FilteredPreemptionData = new(blockOptions);
-            GroupPreemptNumber = new(executionBlockOptions);
-            AggregatePreemptCodes = new(executionBlockOptions);
+            AggregatePreemptCodes = new(workflowOptions.Timeline, executionBlockOptions);
         }
 
         /// <inheritdoc/>
@@ -156,8 +102,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
             FilterIndianaEvents.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(GroupPreemptNumber, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupPreemptNumber.LinkTo(AggregatePreemptCodes, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredPreemptionData.LinkTo(AggregatePreemptCodes, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregatePreemptCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
@@ -172,15 +117,13 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
 
         public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
         public FilterPriorityDataProcessStep FilterPriorityData { get; private set; }
-        public GroupLocationByParameter GroupPriorityNumber { get; private set; }
-        public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
+        public AggregatePriorityStep AggregatePriorityCodes { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
             Steps.Add(FilterIndianaEvents);
             Steps.Add(FilterPriorityData);
-            Steps.Add(GroupPriorityNumber);
             Steps.Add(AggregatePriorityCodes);
         }
 
@@ -189,8 +132,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         {
             FilterIndianaEvents = new(executionBlockOptions);
             FilterPriorityData = new(blockOptions);
-            GroupPriorityNumber = new(executionBlockOptions);
-            AggregatePriorityCodes = new(executionBlockOptions);
+            AggregatePriorityCodes = new(workflowOptions.Timeline, executionBlockOptions);
         }
 
         /// <inheritdoc/>
@@ -199,8 +141,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
             FilterIndianaEvents.LinkTo(FilterPriorityData, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilterPriorityData.LinkTo(GroupPriorityNumber, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterPriorityData.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }

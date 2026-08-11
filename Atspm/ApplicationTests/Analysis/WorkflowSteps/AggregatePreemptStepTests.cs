@@ -1,0 +1,197 @@
+﻿#region license
+// Copyright 2026 Utah Departement of Transportation
+// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePedestrianPhasesStepTests.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Utah.Udot.Atspm.Analysis.PedestrianDelay;
+using Utah.Udot.Atspm.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Attributes;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
+{
+    public class AggregatePreemptStepTests : IClassFixture<TestLocationFixture>, IDisposable
+    {
+        private readonly ITestOutputHelper _output;
+        private readonly Location _testLocation;
+
+        public AggregatePreemptStepTests(ITestOutputHelper output, TestLocationFixture testLocation)
+        {
+            _output = output;
+            _testLocation = testLocation.TestLocation;
+        }
+
+
+        //[Fact(Skip = "Used to create test data")]
+        [Fact]
+        public async Task Stuff()
+        {
+            {
+                //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\Location7115TestData.json").FullName);
+                //var Location = JsonConvert.DeserializeObject<Location>(json);
+
+                var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\7707-preemp-raw.csv");
+
+                var logs = File.ReadAllLines(file1.FullName)
+                       .Skip(1)
+                       .Select(x => x.Split(','))
+                       .Select(x => new IndianaEvent
+                       {
+                           //LocationIdentifier = x[0],
+                           LocationIdentifier = "7115",
+                           Timestamp = DateTime.Parse(x[1]),
+                           EventCode = short.Parse(x[2]),
+                           EventParam = short.Parse(x[3])
+                       }).ToList();
+
+                //logs = logs
+                //    .Where(w => w.EventCode == 0 || w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90 || w.EventCode == 45 || w.EventCode == 67 || w.EventCode == 68)
+                //    .Where(w => w.EventParam == 2)
+                //    .OrderBy(o => o.Timestamp)
+                //    .ToList();
+
+                //_testLocation.Approaches = _testLocation.Approaches.Where(w => w.ProtectedPhaseNumber == 2).ToList();
+
+                var file2 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\preemptaggresult.csv");
+
+                var output = File.ReadAllLines(file2.FullName)
+                       .Skip(1)
+                       .Select(x => x.Split(','))
+                       .Select(x => new PreemptionAggregation
+                       {
+                           Start = DateTime.Parse(x[0]),
+                           End = DateTime.Parse(x[1]).AddMinutes(15),
+                           LocationIdentifier = "x[2]",
+                           PreemptNumber = int.Parse(x[3]),
+                           PreemptRequests = int.Parse(x[4]),
+                           PreemptServices = int.Parse(x[5]),
+
+                       }).ToList();
+
+                _output.WriteLine($"{output.Count}");
+
+                foreach (var o in output)
+                {
+                    _output.WriteLine($"{o}");
+                }
+
+                var result = new AggregatePreemptTestData()
+                {
+                    Configuration = _testLocation,
+                    Input = logs,
+                    Output = output
+                };
+
+
+                var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All,
+                    Formatting = Formatting.Indented
+                });
+                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\AggregatePreemptTestData1.json", test);
+            }
+        }
+
+
+
+
+
+
+
+
+        [Theory]
+        [AnalysisTestData<AggregatePreemptTestData>]
+        [Trait(nameof(AggregatePreemptStep), "From File")]
+        public async Task AggregatePedestrianPhasesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PreemptionAggregation> output)
+        {
+            var testData = Tuple.Create(config, input);
+
+            var aggDate = input
+                .GroupBy(dt => dt.Timestamp)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault().Key;
+
+            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
+
+            var sut = new AggregatePreemptStep(tl);
+
+            var temp = await sut.ExecuteAsync(testData);
+            var actual = temp.ToList();
+
+            _output.WriteLine($"actual: {actual.Count()}");
+
+            //_output.WriteLine($"actual: {actual.First()}");
+            //_output.WriteLine($"actual: {actual.Last()}");
+
+            //foreach (var a in actual)
+            //{
+            //    _output.WriteLine($"result: {a.Start} - {a.End} - {a .LocationIdentifier} - {a.PreemptNumber} - {a.PreemptRequests} - {a.PreemptServices}");
+            //}
+
+            var expected = output.ToList();
+
+            _output.WriteLine($"expected: {expected.Count()}");
+
+            //_output.WriteLine($"expected: {expected.First()}");
+            //.WriteLine($"expected: {expected.Last()}");
+
+            //Assert.Equivalent(actual, expected);
+
+            int maxCount = Math.Max(expected.Count, actual.Count);
+
+            Assert.Multiple(() =>
+            {
+                Assert.Equal(expected.Count, actual.Count);
+
+                int maxCount = Math.Max(expected.Count, actual.Count);
+
+                for (int i = 0; i < maxCount; i++)
+                {
+                    var exp = i < expected.Count ? expected[i] : null;
+                    var act = i < actual.Count ? actual[i] : null;
+
+                    // Check if objects match by comparing serialized JSON or properties
+                    bool isMatch = System.Text.Json.JsonSerializer.Serialize(exp) ==
+                                   System.Text.Json.JsonSerializer.Serialize(act);
+
+                    Assert.True(
+                        isMatch,
+                        $"[INDEX {i} MISMATCH]\n  Expected: {System.Text.Json.JsonSerializer.Serialize(exp)}\n  Actual:   {System.Text.Json.JsonSerializer.Serialize(act)}"
+                    );
+                }
+            });
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+}
