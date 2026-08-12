@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Analysis.Workflows/AggregateControllerDataWorkflow.cs
 // 
@@ -20,11 +20,32 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.Workflows
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// A workflow that aggregates preemption event data from event logs.
+    /// </summary>
+    /// <remarks>
+    /// This workflow filters, processes, and aggregates signal preemption events
+    /// into summarized <see cref="PreemptionAggregation"/> data.
+    /// </remarks>
+    /// <param name="options">
+    /// The workflow options used to configure execution, such as timeline, parallelism, and cancellation.
+    /// Defaults to <c>null</c> if not provided.
+    /// </param>
     public class AggregatePreemptionWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PreemptionAggregation>(options)
     {
+        /// <summary>
+        /// Gets the step that filters events by type to select <see cref="IndianaEvent"/> instances.
+        /// </summary>
         public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
+
+        /// <summary>
+        /// Gets the step that filters and refines preemption-specific data.
+        /// </summary>
         public FilterPreemptionDataProcessStep FilteredPreemptionData { get; private set; }
+
+        /// <summary>
+        /// Gets the step that aggregates processed preemption events into <see cref="PreemptionAggregation"/> results.
+        /// </summary>
         public AggregatePreemptStep AggregatePreemptCodes { get; private set; }
 
         /// <inheritdoc/>

@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Workflows/AggregationWorkflow.cs
 // 
@@ -23,6 +23,14 @@ using Utah.Udot.Atspm.Infrastructure.WorkflowSteps;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 {
+    /// <summary>
+    /// Workflow for aggregating event logs into various traffic metrics and analysis results.
+    /// </summary>
+    /// <remarks>
+    /// This workflow coordinates multiple sub-workflows and processing steps to run in parallel,
+    /// including detector event counts, pedestrian phases, phase cycles, split monitoring,
+    /// preemption, and priority metrics, and saves the archived results.
+    /// </remarks>
     public class AggregationWorkflow : WorkflowBase<Tuple<Location, IEnumerable<CompressedEventLogBase>>, CompressedAggregationBase>
     {
         private readonly IServiceScopeFactory _services;
@@ -30,6 +38,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         private readonly int _parallelProcesses;
         private readonly CancellationToken _cancellationToken;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregationWorkflow"/> class.
+        /// </summary>
+        /// <param name="services">The service scope factory to resolve dependencies.</param>
+        /// <param name="timeline">The timeline specifying the start and end ranges for aggregation.</param>
+        /// <param name="parallelProcesses">The maximum degree of parallel processes to run.</param>
+        /// <param name="cancellationToken">The cancellation token to observe.</param>
         public AggregationWorkflow(IServiceScopeFactory services, Timeline<StartEndRange> timeline, int parallelProcesses = 1, CancellationToken cancellationToken = default)
         {
             _services = services;
@@ -38,22 +53,56 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             _cancellationToken = cancellationToken;
         }
 
-        ///<inheritdoc cref="RestorArchivedEventsProcess"/>
+        /// <summary>
+        /// Gets the process that restores archived events if necessary.
+        /// </summary>
         public RestorArchivedEventsProcess RestorArchivedEventsProcess { get; private set; }
 
+        /// <summary>
+        /// Gets the broadcast block that distributes location and event log data to all sub-workflows.
+        /// </summary>
         public BroadcastBlock<Tuple<Location, IEnumerable<EventLogModelBase>>> BroadcastEvents { get; private set; }
 
 
+        /// <summary>
+        /// Gets the sub-workflow that aggregates detector event counts.
+        /// </summary>
         public AggregateDetectorEventCountWorkflow AggregateDetectorEventCountWorkflow { get; private set; }
+
+        /// <summary>
+        /// Gets the sub-workflow that aggregates pedestrian phases.
+        /// </summary>
         public AggregatePedestrianPhasesWorkflow AggregatePedestrianPhasesWorkflow { get; private set; }
+
+        /// <summary>
+        /// Gets the sub-workflow that aggregates phase cycles.
+        /// </summary>
         public AggregatePhaseCyclesWorkflow AggregatePhaseCyclesWorkflow { get; private set; }
+
+        /// <summary>
+        /// Gets the sub-workflow that aggregates phase split monitor metrics.
+        /// </summary>
         public AggregatePhaseSplitMonitorWorkflow AggregatePhaseSplitMonitorWorkflow { get; private set; }
+
+        /// <summary>
+        /// Gets the sub-workflow that aggregates preemption events.
+        /// </summary>
         public AggregatePreemptionWorkflow AggregatePreemptionWorkflow { get; private set; }
+
+        /// <summary>
+        /// Gets the sub-workflow that aggregates priority events.
+        /// </summary>
         public AggregatePriorityWorkflow AggregatePriorityWorkflow { get; private set; }
 
 
+        /// <summary>
+        /// Gets the process that handles archiving of all aggregated metrics.
+        /// </summary>
         public ArchiveAggregationsProcess ArchiveAggregationsProcess { get; private set; }
 
+        /// <summary>
+        /// Gets the process that saves the archived aggregations to storage.
+        /// </summary>
         public SaveArchivedAggregationsProcess SaveArchivedAggregationsProcess { get; private set; }
 
         /// <inheritdoc/>
