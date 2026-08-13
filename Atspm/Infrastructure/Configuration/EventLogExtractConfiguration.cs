@@ -17,24 +17,14 @@
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
-    /// <summary>
-    /// Provides configuration settings for extracting event log data, including
-    /// formatting rules, date filters, inclusion and exclusion lists, and the
-    /// destination directory for generated output.
-    /// </summary>
     [ConfigurationSection(nameof(EventLogExtractConfiguration), "Configuration for extracting raw event log files")]
     public class EventLogExtractConfiguration
     {
         public string FileFormat { get; set; }
-
         public string DateTimeFormat { get; set; }
-
         public IEnumerable<DateTime> Dates { get; set; }
-
         public IEnumerable<string> Included { get; set; }
-
         public IEnumerable<string> Excluded { get; set; }
-
         public DirectoryInfo Path { get; set; }
     }
 }
