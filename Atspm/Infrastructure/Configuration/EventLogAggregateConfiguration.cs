@@ -28,6 +28,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         [Required]
         public IEnumerable<DateTime> Dates { get; set; }
 
+        /// <summary>
+        /// Amount of processes that can be run in parallel
+        /// </summary>
         [Range(1, 100, ErrorMessage = "It is not recommended to set Parallel Processes than 100")]
         public int ParallelProcesses { get; set; } = 1;
 
