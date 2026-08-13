@@ -2,6 +2,8 @@ using System.Text;
 
 namespace AtspmDocsGenerator;
 
+using static DocumentationText;
+
 public sealed class LogMessageDocumentationGenerator
 {
     private static readonly UTF8Encoding Utf8WithoutBom = new(encoderShouldEmitUTF8Identifier: false);
@@ -64,49 +66,11 @@ public sealed class LogMessageDocumentationGenerator
 
         File.WriteAllText(
             outputPath,
-            builder.ToString()
-                .Replace("\r\n", "\n", StringComparison.Ordinal)
-                .Replace('\r', '\n'),
+            NormalizeLineEndings(builder.ToString()),
             Utf8WithoutBom);
 
         return new LogMessageGenerationResult(messages.Count, duplicateEventIdCount);
     }
 
-    private static string BuildRepositoryUrl(
-        string repositoryUrl,
-        string operation,
-        string repositoryRef,
-        string? relativePath = null)
-    {
-        var builder = new StringBuilder(repositoryUrl.TrimEnd('/'));
-        builder.Append('/');
-        builder.Append(operation);
-        builder.Append('/');
-        builder.Append(Uri.EscapeDataString(repositoryRef));
-
-        if (!string.IsNullOrWhiteSpace(relativePath))
-        {
-            foreach (var segment in relativePath.Replace('\\', '/').Split('/'))
-            {
-                builder.Append('/');
-                builder.Append(Uri.EscapeDataString(segment));
-            }
-        }
-
-        return builder.ToString();
-    }
-
-    private static string RepositoryLabel(string repositoryUrl)
-    {
-        var uri = new Uri(repositoryUrl);
-        return uri.AbsolutePath.Trim('/');
-    }
-
-    private static string EscapeTableText(string value) =>
-        value.Replace("|", "\\|", StringComparison.Ordinal)
-            .Replace("\r", " ", StringComparison.Ordinal)
-            .Replace("\n", " ", StringComparison.Ordinal);
-
-    private static string EscapeCode(string value) =>
-        EscapeTableText(value).Replace("`", "\\`", StringComparison.Ordinal);
+    private static string EscapeTableText(string value) => EscapeText(value);
 }

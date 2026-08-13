@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,6 +16,7 @@ public sealed partial class ConfigurationSourceAnalyzer
     {
         var normalizedRoot = Path.GetFullPath(sourceRoot);
         var sections = new Dictionary<string, ConfigurationSection>(StringComparer.Ordinal);
+        var types = new List<TypeDeclarationSyntax>();
 
         foreach (var file in EnumerateSourceFiles(normalizedRoot, sourcePaths))
         {
@@ -28,23 +28,29 @@ public sealed partial class ConfigurationSourceAnalyzer
                 encoding: Encoding.UTF8);
             var root = tree.GetCompilationUnitRoot();
 
-            foreach (var type in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
+            types.AddRange(root.DescendantNodes().OfType<TypeDeclarationSyntax>());
+        }
+
+        var typesByName = types
+            .GroupBy(type => type.Identifier.ValueText, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+
+        foreach (var type in types)
+        {
+            var attribute = type.AttributeLists
+                .SelectMany(list => list.Attributes)
+                .FirstOrDefault(IsConfigurationSectionAttribute);
+
+            if (attribute is null)
             {
-                var attribute = type.AttributeLists
-                    .SelectMany(list => list.Attributes)
-                    .FirstOrDefault(IsConfigurationSectionAttribute);
+                continue;
+            }
 
-                if (attribute is null)
-                {
-                    continue;
-                }
-
-                var section = CreateSection(type, attribute, normalizedRoot);
-                if (!sections.TryAdd(section.SectionName, section))
-                {
-                    throw new InvalidDataException(
-                        $"Configuration section '{section.SectionName}' is declared more than once.");
-                }
+            var section = CreateSection(type, attribute, normalizedRoot, typesByName);
+            if (!sections.TryAdd(section.SectionName, section))
+            {
+                throw new InvalidDataException(
+                    $"Configuration section '{section.SectionName}' is declared more than once.");
             }
         }
 
@@ -59,8 +65,10 @@ public sealed partial class ConfigurationSourceAnalyzer
 
         foreach (var sourcePath in sourcePaths)
         {
-            var fullPath = Path.GetFullPath(Path.Combine(sourceRoot, sourcePath));
-            EnsureWithinSourceRoot(sourceRoot, fullPath);
+            var fullPath = SourcePath.ResolveWithinRoot(
+                sourceRoot,
+                sourcePath,
+                "Configured source path");
 
             if (!Directory.Exists(fullPath))
             {
@@ -85,24 +93,11 @@ public sealed partial class ConfigurationSourceAnalyzer
         return files;
     }
 
-    private static void EnsureWithinSourceRoot(string sourceRoot, string path)
-    {
-        var rootWithSeparator = sourceRoot.TrimEnd(
-            Path.DirectorySeparatorChar,
-            Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
-
-        if (!path.Equals(sourceRoot, StringComparison.OrdinalIgnoreCase)
-            && !path.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidDataException(
-                $"Configured source path must remain inside the source root: {path}");
-        }
-    }
-
     private static ConfigurationSection CreateSection(
         TypeDeclarationSyntax type,
         AttributeSyntax attribute,
-        string sourceRoot)
+        string sourceRoot,
+        IReadOnlyDictionary<string, TypeDeclarationSyntax> typesByName)
     {
         var arguments = attribute.ArgumentList?.Arguments ?? default;
         var sectionArgument = FindArgument(arguments, "sectionName", 0)
@@ -118,7 +113,10 @@ public sealed partial class ConfigurationSourceAnalyzer
         var properties = type.Members
             .OfType<PropertyDeclarationSyntax>()
             .Where(IsDocumentedProperty)
-            .Select(CreateProperty)
+            .Select(property => CreateProperty(
+                property,
+                typesByName,
+                new HashSet<string>(StringComparer.Ordinal) { type.Identifier.ValueText }))
             .ToArray();
 
         var line = type.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
@@ -128,7 +126,7 @@ public sealed partial class ConfigurationSourceAnalyzer
         return new ConfigurationSection(
             sectionName,
             description,
-            ReadDocumentation(type),
+            XmlDocumentationReader.ReadSummary(type),
             relativePath,
             line,
             properties);
@@ -205,13 +203,15 @@ public sealed partial class ConfigurationSourceAnalyzer
     private static bool IsDocumentedProperty(PropertyDeclarationSyntax property)
     {
         var isStatic = property.Modifiers.Any(SyntaxKind.StaticKeyword);
-        var isPublic = property.Modifiers.Count == 0
-            || property.Modifiers.Any(SyntaxKind.PublicKeyword);
+        var isPublic = property.Modifiers.Any(SyntaxKind.PublicKeyword);
 
         return isPublic && !isStatic;
     }
 
-    private static ConfigurationProperty CreateProperty(PropertyDeclarationSyntax property)
+    private static ConfigurationProperty CreateProperty(
+        PropertyDeclarationSyntax property,
+        IReadOnlyDictionary<string, TypeDeclarationSyntax> typesByName,
+        IReadOnlySet<string> visitedTypes)
     {
         var typeName = property.Type
             .WithoutTrivia()
@@ -236,108 +236,65 @@ public sealed partial class ConfigurationSourceAnalyzer
             typeName,
             defaultExpression,
             isRequired,
-            ReadDocumentation(property));
+            XmlDocumentationReader.ReadSummary(property, includeInheritDoc: true),
+            GetEnvironmentVariableSuffixes(property, typesByName, visitedTypes));
     }
 
-    private static string? ReadDocumentation(MemberDeclarationSyntax member)
+    private static IReadOnlyList<string> GetEnvironmentVariableSuffixes(
+        PropertyDeclarationSyntax property,
+        IReadOnlyDictionary<string, TypeDeclarationSyntax> typesByName,
+        IReadOnlySet<string> visitedTypes)
     {
-        var documentation = member.GetLeadingTrivia()
-            .Select(trivia => trivia.GetStructure())
-            .OfType<DocumentationCommentTriviaSyntax>()
-            .LastOrDefault();
-
-        if (documentation is null)
+        var propertyName = property.Identifier.ValueText;
+        var (typeName, isCollection, isDictionary) = DescribeType(property.Type);
+        if (isDictionary)
         {
-            return null;
+            return [$"{propertyName}__KEY"];
         }
 
-        var summary = documentation.Content
-            .OfType<XmlElementSyntax>()
-            .FirstOrDefault(element =>
-                element.StartTag.Name.LocalName.ValueText == "summary");
-
-        if (summary is not null)
+        var index = isCollection ? "__0" : string.Empty;
+        if (!typesByName.TryGetValue(typeName, out var nestedType) || visitedTypes.Contains(typeName))
         {
-            return NormalizeDocumentation(FlattenXml(summary.Content));
+            return [$"{propertyName}{index}"];
         }
 
-        var inheritDoc = documentation.Content
-            .OfType<XmlEmptyElementSyntax>()
-            .FirstOrDefault(element => element.Name.LocalName.ValueText == "inheritdoc");
-
-        if (inheritDoc is null)
-        {
-            return null;
-        }
-
-        var cref = inheritDoc.Attributes
-            .OfType<XmlCrefAttributeSyntax>()
-            .Select(attribute => attribute.Cref.ToString())
-            .FirstOrDefault();
-
-        return string.IsNullOrWhiteSpace(cref)
-            ? "Inherited documentation."
-            : $"See {SimplifyCref(cref)}.";
+        var nextVisited = new HashSet<string>(visitedTypes, StringComparer.Ordinal) { typeName };
+        var childSuffixes = nestedType.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Where(IsDocumentedProperty)
+            .SelectMany(child => GetEnvironmentVariableSuffixes(child, typesByName, nextVisited))
+            .ToArray();
+        return childSuffixes.Length == 0
+            ? [$"{propertyName}{index}"]
+            : childSuffixes.Select(child => $"{propertyName}{index}__{child}").ToArray();
     }
 
-    private static string FlattenXml(SyntaxList<XmlNodeSyntax> nodes)
+    private static (string TypeName, bool IsCollection, bool IsDictionary) DescribeType(TypeSyntax type)
     {
-        var builder = new StringBuilder();
-
-        foreach (var node in nodes)
+        type = type is NullableTypeSyntax nullable ? nullable.ElementType : type;
+        if (type is ArrayTypeSyntax array)
         {
-            switch (node)
-            {
-                case XmlTextSyntax text:
-                    foreach (var token in text.TextTokens)
-                    {
-                        builder.Append(token.ValueText);
-                    }
-
-                    break;
-                case XmlElementSyntax element:
-                    builder.Append(FlattenXml(element.Content));
-                    break;
-                case XmlEmptyElementSyntax element
-                    when element.Name.LocalName.ValueText is "see" or "seealso":
-                    var cref = element.Attributes
-                        .OfType<XmlCrefAttributeSyntax>()
-                        .Select(attribute => attribute.Cref.ToString())
-                        .FirstOrDefault();
-                    if (!string.IsNullOrWhiteSpace(cref))
-                    {
-                        builder.Append(SimplifyCref(cref));
-                    }
-
-                    break;
-                case XmlEmptyElementSyntax element:
-                    builder.Append(element.ToString());
-                    break;
-            }
+            return (GetSimpleTypeName(array.ElementType), true, false);
         }
 
-        return builder.ToString();
-    }
-
-    private static string SimplifyCref(string cref)
-    {
-        var value = cref.Trim();
-        var colonIndex = value.IndexOf(':');
-        if (colonIndex >= 0)
+        if (type is GenericNameSyntax generic)
         {
-            value = value[(colonIndex + 1)..];
+            var name = generic.Identifier.ValueText;
+            var isDictionary = name is "Dictionary" or "IDictionary" or "IReadOnlyDictionary";
+            var isCollection = name is "IEnumerable" or "ICollection" or "IReadOnlyCollection"
+                or "IList" or "IReadOnlyList" or "List" or "HashSet";
+            var elementType = isDictionary
+                ? generic.TypeArgumentList.Arguments.Last()
+                : generic.TypeArgumentList.Arguments.First();
+            return (GetSimpleTypeName(elementType), isCollection, isDictionary);
         }
 
-        return value.Replace("{", "<", StringComparison.Ordinal)
-            .Replace("}", ">", StringComparison.Ordinal);
+        return (GetSimpleTypeName(type), false, false);
     }
 
-    private static string? NormalizeDocumentation(string value)
+    private static string GetSimpleTypeName(TypeSyntax type)
     {
-        var normalized = WhitespaceRegex().Replace(value, " ").Trim();
-        return normalized.Length == 0 ? null : normalized;
+        var value = type.ToString().TrimEnd('?');
+        return value.Split('.').Last();
     }
-
-    [GeneratedRegex(@"\s+")]
-    private static partial Regex WhitespaceRegex();
 }

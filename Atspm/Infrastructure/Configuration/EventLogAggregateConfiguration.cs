@@ -20,40 +20,18 @@ using System.Text;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
-    /// <summary>
-    /// Provides configuration settings for aggregating event log data, including
-    /// aggregation behavior, date filters, parallelization options, and query
-    /// parameters used during the aggregation process.
-    /// </summary>
     [ConfigurationSection(nameof(EventLogAggregateConfiguration), "Configuration for aggregating the event logs")]
     public class EventLogAggregateConfiguration
     {
-        /// <summary>
-        /// Gets or sets the type of aggregation to perform. This value determines
-        /// how event log data is grouped, summarized, or transformed during the
-        /// aggregation process.
-        /// </summary>
         public string AggregationType { get; set; } = "all";
 
-        /// <summary>
-        /// Gets or sets the collection of dates to include in the aggregation.
-        /// Only events occurring on these dates will be processed.
-        /// </summary>
         [Required]
         public IEnumerable<DateTime> Dates { get; set; }
 
-        /// <summary>
-        /// Gets or sets the maximum number of aggregation processes that may run
-        /// concurrently. Increasing this value can improve performance on systems
-        /// with multiple CPU cores.
-        /// </summary>
         [Range(1, 100, ErrorMessage = "It is not recommended to set Parallel Processes than 100")]
         public int ParallelProcesses { get; set; } = 1;
 
-        /// <summary>
-        /// Gets or sets the query options used to filter and shape event data
-        /// before aggregation is performed.
-        /// </summary>
+        /// <inheritdoc cref="EventAggregationQueryOptions"/>
         public EventAggregationQueryOptions EventAggregationQueryOptions { get; set; } = new();
 
         /// <inheritdoc/>

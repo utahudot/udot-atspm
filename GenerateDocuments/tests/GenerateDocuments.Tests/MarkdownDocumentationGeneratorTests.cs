@@ -82,7 +82,7 @@ public sealed class MarkdownDocumentationGeneratorTests
     }
 
     [Fact]
-    public void GenerateRejectsUnknownMappedSections()
+    public void GenerateRejectsUnknownMappedSectionsWithoutChangingExistingOutput()
     {
         using var directory = new TemporaryDirectory();
         var map = new DocumentationMap
@@ -99,9 +99,12 @@ public sealed class MarkdownDocumentationGeneratorTests
                 }
             ]
         };
+        var output = System.IO.Path.Combine(directory.Path, "output");
+        Directory.CreateDirectory(output);
+        File.WriteAllText(System.IO.Path.Combine(output, "existing.md"), "existing");
         var options = new CliOptions(
             directory.Path,
-            System.IO.Path.Combine(directory.Path, "output"),
+            output,
             "map.json",
             "https://github.com/example/source",
             "main");
@@ -113,6 +116,7 @@ public sealed class MarkdownDocumentationGeneratorTests
                 options));
 
         Assert.Contains("MissingOptions", exception.Message);
+        Assert.Equal("existing", File.ReadAllText(System.IO.Path.Combine(output, "existing.md")));
     }
 
     [Fact]

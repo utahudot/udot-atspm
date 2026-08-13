@@ -1,9 +1,14 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace AtspmDocsGenerator;
 
 public sealed class DocumentationMap
 {
+    [JsonPropertyName("$schema")]
+    public string? Schema { get; init; }
+
     public int SchemaVersion { get; init; }
 
     public IReadOnlyList<string> SourcePaths { get; init; } = [];
@@ -25,7 +30,8 @@ public static class DocumentationMapLoader
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow
     };
 
     public static DocumentationMap Load(string path)
@@ -52,6 +58,8 @@ public static class DocumentationMapLoader
             throw new InvalidDataException("At least one non-empty source path is required.");
         }
 
+        EnsureUnique(map.SourcePaths, "source path");
+
         if (map.Containers.Count == 0)
         {
             throw new InvalidDataException("At least one container definition is required.");
@@ -72,11 +80,10 @@ public static class DocumentationMapLoader
             }
 
             if (string.IsNullOrWhiteSpace(container.Slug)
-                || container.Slug.Any(character =>
-                    !char.IsAsciiLetterOrDigit(character) && character != '-'))
+                || !Regex.IsMatch(container.Slug, "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$", RegexOptions.CultureInvariant))
             {
                 throw new InvalidDataException(
-                    $"Container slug '{container.Slug}' must contain only ASCII letters, numbers, and hyphens.");
+                    $"Container slug '{container.Slug}' must contain ASCII letters or numbers separated by single hyphens.");
             }
 
             if (container.Sections.Count == 0 || container.Sections.Any(string.IsNullOrWhiteSpace))

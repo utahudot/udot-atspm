@@ -20,9 +20,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
-    /// Configuration options for device event logging
+    /// Configuration options for the Device Event Logging background service.
     /// </summary>
-    [ConfigurationSection(nameof(DeviceEventLoggingConfiguration), "Configuration logging event log data from devices")]
+    [ConfigurationSection(nameof(DeviceEventLoggingConfiguration), "Configuration for device event logging")]
     public class DeviceEventLoggingConfiguration
     {
         /// <summary>

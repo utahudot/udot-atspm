@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
     /// <summary>
     /// Options for transferring event logs between repositories.
     /// </summary>
-    [ConfigurationSection(nameof(EventLogTransferOptions), "Configuration for transfering event logs between databases")]
+    [ConfigurationSection(nameof(EventLogTransferOptions), "Configuration for transferring event logs between databases")]
     public class EventLogTransferOptions
     {
         /// <summary>

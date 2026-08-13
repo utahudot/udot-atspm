@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace AtspmDocsGenerator;
 
+using static DocumentationText;
+
 public sealed partial class MarkdownDocumentationGenerator
 {
     private static readonly UTF8Encoding Utf8WithoutBom = new(encoderShouldEmitUTF8Identifier: false);
@@ -20,7 +22,26 @@ public sealed partial class MarkdownDocumentationGenerator
         CliOptions options)
     {
         DocumentationMapLoader.Validate(map);
-        Directory.CreateDirectory(options.OutputRoot);
+        var documentedSections = new HashSet<string>(StringComparer.Ordinal);
+        var pages = map.Containers
+            .Select(container =>
+            {
+                var sections = container.Sections
+                    .Select(sectionName => ResolveMappedSection(container.Name, sectionName, availableSections))
+                    .ToArray();
+                documentedSections.UnionWith(sections.Select(section => section.SectionName));
+                return new
+                {
+                    FileName = $"{container.Slug}.md",
+                    Contents = BuildContainerPage(container, sections, options)
+                };
+            })
+            .Append(new
+            {
+                FileName = "index.md",
+                Contents = BuildIndexPage(map.Containers, options)
+            })
+            .ToArray();
 
         var expectedFiles = map.Containers
             .Select(container => $"{container.Slug}.md")
@@ -28,6 +49,7 @@ public sealed partial class MarkdownDocumentationGenerator
             .Append("log-messages.md")
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        Directory.CreateDirectory(options.OutputRoot);
         foreach (var existingFile in Directory.EnumerateFiles(options.OutputRoot, "*.md"))
         {
             if (!expectedFiles.Contains(Path.GetFileName(existingFile)))
@@ -36,27 +58,12 @@ public sealed partial class MarkdownDocumentationGenerator
             }
         }
 
-        var documentedSections = new HashSet<string>(StringComparer.Ordinal);
-
-        foreach (var container in map.Containers)
+        foreach (var page in pages)
         {
-            var sections = container.Sections
-                .Select(sectionName => ResolveMappedSection(container.Name, sectionName, availableSections))
-                .ToArray();
-
-            foreach (var section in sections)
-            {
-                documentedSections.Add(section.SectionName);
-            }
-
             WriteFile(
-                Path.Combine(options.OutputRoot, $"{container.Slug}.md"),
-                BuildContainerPage(container, sections, options));
+                Path.Combine(options.OutputRoot, page.FileName),
+                page.Contents);
         }
-
-        WriteFile(
-            Path.Combine(options.OutputRoot, "index.md"),
-            BuildIndexPage(map.Containers, options));
 
         return new GenerationResult(map.Containers.Count, documentedSections.Count);
     }
@@ -343,13 +350,19 @@ public sealed partial class MarkdownDocumentationGenerator
 
         foreach (var property in section.Properties)
         {
-            var environmentVariable = $"{ToEnvironmentVariablePrefix(section.SectionName)}__{property.Name}";
+            var environmentVariables = property.EnvironmentVariableSuffixes is { Count: > 0 }
+                ? property.EnvironmentVariableSuffixes
+                : [property.Name];
+            var environmentVariable = string.Join(
+                "<br>",
+                environmentVariables.Select(suffix =>
+                    $"`{EscapeCode(MappedSectionName.ToEnvironmentVariablePrefix(section.SectionName))}__{EscapeCode(suffix)}`"));
             builder.AppendLine(
                 $"| `{EscapeCode(property.Name)}` " +
                 $"| `{EscapeCode(property.TypeName)}` " +
                 $"| `{EscapeCode(property.DefaultExpression)}` " +
                 $"| {(property.IsRequired ? "Yes" : "No")} " +
-                $"| `{EscapeCode(environmentVariable)}` " +
+                $"| {environmentVariable} " +
                 $"| {EscapeTableText(property.Summary ?? string.Empty)} |");
         }
 
@@ -371,7 +384,7 @@ public sealed partial class MarkdownDocumentationGenerator
             return section;
         }
 
-        var baseSectionName = GetBaseSectionName(mappedSectionName);
+        var baseSectionName = MappedSectionName.GetBaseName(mappedSectionName);
         if (!string.Equals(baseSectionName, mappedSectionName, StringComparison.Ordinal)
             && availableSections.TryGetValue(baseSectionName, out section))
         {
@@ -382,63 +395,7 @@ public sealed partial class MarkdownDocumentationGenerator
             $"Container '{containerName}' references unknown configuration section '{mappedSectionName}'.");
     }
 
-    private static string GetBaseSectionName(string mappedSectionName)
-    {
-        var separatorIndex = mappedSectionName.IndexOf(':', StringComparison.Ordinal);
-        return separatorIndex < 0
-            ? mappedSectionName
-            : mappedSectionName[..separatorIndex];
-    }
-
-    private static string ToEnvironmentVariablePrefix(string sectionName) =>
-        sectionName.Replace(":", "__", StringComparison.Ordinal);
-
-    private static string BuildRepositoryUrl(
-        string repositoryUrl,
-        string operation,
-        string repositoryRef,
-        string? relativePath = null)
-    {
-        var builder = new StringBuilder(repositoryUrl.TrimEnd('/'));
-        builder.Append('/');
-        builder.Append(operation);
-        builder.Append('/');
-        builder.Append(Uri.EscapeDataString(repositoryRef));
-
-        if (!string.IsNullOrWhiteSpace(relativePath))
-        {
-            foreach (var segment in relativePath.Replace('\\', '/').Split('/'))
-            {
-                builder.Append('/');
-                builder.Append(Uri.EscapeDataString(segment));
-            }
-        }
-
-        return builder.ToString();
-    }
-
-    private static string RepositoryLabel(string repositoryUrl)
-    {
-        if (!Uri.TryCreate(repositoryUrl, UriKind.Absolute, out var uri))
-        {
-            return repositoryUrl;
-        }
-
-        var label = uri.AbsolutePath.Trim('/');
-        return label.EndsWith(".git", StringComparison.OrdinalIgnoreCase)
-            ? label[..^4]
-            : label;
-    }
-
-    private static string EscapeText(string value) =>
-        value.Replace("|", "\\|", StringComparison.Ordinal)
-            .Replace("\r", " ", StringComparison.Ordinal)
-            .Replace("\n", " ", StringComparison.Ordinal);
-
     private static string EscapeTableText(string value) => EscapeText(value);
-
-    private static string EscapeCode(string value) =>
-        EscapeText(value).Replace("`", "\\`", StringComparison.Ordinal);
 
     private static string ToAnchor(string value)
     {
@@ -447,10 +404,6 @@ public sealed partial class MarkdownDocumentationGenerator
             .Trim('-');
         return RepeatedHyphenRegex().Replace(anchor, "-");
     }
-
-    private static string NormalizeLineEndings(string value) =>
-        value.Replace("\r\n", "\n", StringComparison.Ordinal)
-            .Replace('\r', '\n');
 
     private static void WriteFile(string path, string contents) =>
         File.WriteAllText(path, contents, Utf8WithoutBom);

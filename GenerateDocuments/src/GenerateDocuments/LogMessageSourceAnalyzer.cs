@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,14 +9,19 @@ public sealed partial class LogMessageSourceAnalyzer
 {
     public const string DefaultSourcePath = "Atspm/Infrastructure/LogMessages";
 
+    public static readonly IReadOnlySet<int> AllowedDuplicateEventIds =
+        new HashSet<int> { 201, 202, 203, 1000, 1001, 1002, 1003, 9001 };
+
     private static readonly CSharpParseOptions ParseOptions =
         new(languageVersion: LanguageVersion.Latest, documentationMode: DocumentationMode.Parse);
 
     public IReadOnlyList<LogMessageDefinition> Analyze(string sourceRoot, string sourcePath)
     {
         var normalizedRoot = Path.GetFullPath(sourceRoot);
-        var fullSourcePath = Path.GetFullPath(Path.Combine(normalizedRoot, sourcePath));
-        EnsureWithinSourceRoot(normalizedRoot, fullSourcePath);
+        var fullSourcePath = SourcePath.ResolveWithinRoot(
+            normalizedRoot,
+            sourcePath,
+            "Log message source path");
 
         if (!Directory.Exists(fullSourcePath))
         {
@@ -48,6 +52,18 @@ public sealed partial class LogMessageSourceAnalyzer
                     messages.Add(CreateDefinition(method, attribute, normalizedRoot));
                 }
             }
+        }
+
+        var unexpectedDuplicates = messages
+            .GroupBy(message => message.EventId)
+            .Where(group => group.Count() > 1 && !AllowedDuplicateEventIds.Contains(group.Key))
+            .Select(group => group.Key)
+            .Order()
+            .ToArray();
+        if (unexpectedDuplicates.Length > 0)
+        {
+            throw new InvalidDataException(
+                $"Duplicate logger event IDs are not allowed: {string.Join(", ", unexpectedDuplicates)}.");
         }
 
         return messages
@@ -99,7 +115,7 @@ public sealed partial class LogMessageSourceAnalyzer
             eventId,
             eventNameLiteral.Token.ValueText,
             level,
-            ReadDocumentation(method),
+            XmlDocumentationReader.ReadSummary(method),
             relativePath,
             line);
     }
@@ -125,74 +141,4 @@ public sealed partial class LogMessageSourceAnalyzer
         string missingArgument) =>
         new($"LoggerMessage on '{method.Identifier.ValueText}' does not define {missingArgument}.");
 
-    private static string? ReadDocumentation(MethodDeclarationSyntax method)
-    {
-        var documentation = method.GetLeadingTrivia()
-            .Select(trivia => trivia.GetStructure())
-            .OfType<DocumentationCommentTriviaSyntax>()
-            .LastOrDefault();
-        var summary = documentation?.Content
-            .OfType<XmlElementSyntax>()
-            .FirstOrDefault(element => element.StartTag.Name.LocalName.ValueText == "summary");
-
-        if (summary is null)
-        {
-            return null;
-        }
-
-        var normalized = WhitespaceRegex().Replace(FlattenXml(summary.Content), " ").Trim();
-        return normalized.Length == 0 ? null : normalized;
-    }
-
-    private static string FlattenXml(SyntaxList<XmlNodeSyntax> nodes)
-    {
-        var builder = new StringBuilder();
-
-        foreach (var node in nodes)
-        {
-            switch (node)
-            {
-                case XmlTextSyntax text:
-                    foreach (var token in text.TextTokens)
-                    {
-                        builder.Append(token.ValueText);
-                    }
-
-                    break;
-                case XmlElementSyntax element:
-                    builder.Append(FlattenXml(element.Content));
-                    break;
-                case XmlEmptyElementSyntax element:
-                    var value = element.Attributes
-                        .OfType<XmlCrefAttributeSyntax>()
-                        .Select(attribute => attribute.Cref.ToString())
-                        .FirstOrDefault()
-                        ?? element.Attributes
-                            .OfType<XmlNameAttributeSyntax>()
-                            .Select(attribute => attribute.Identifier.Identifier.ValueText)
-                            .FirstOrDefault();
-                    builder.Append(value ?? element.ToString());
-                    break;
-            }
-        }
-
-        return builder.ToString();
-    }
-
-    private static void EnsureWithinSourceRoot(string sourceRoot, string path)
-    {
-        var rootWithSeparator = sourceRoot.TrimEnd(
-            Path.DirectorySeparatorChar,
-            Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
-
-        if (!path.Equals(sourceRoot, StringComparison.OrdinalIgnoreCase)
-            && !path.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidDataException(
-                $"Log message source path must remain inside the source root: {path}");
-        }
-    }
-
-    [GeneratedRegex(@"\s+")]
-    private static partial Regex WhitespaceRegex();
 }

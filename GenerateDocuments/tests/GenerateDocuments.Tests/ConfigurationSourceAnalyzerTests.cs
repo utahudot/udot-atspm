@@ -35,6 +35,8 @@ public sealed class ConfigurationSourceAnalyzerTests
 
                 private string Hidden { get; set; } = "hidden";
 
+                string ImplicitlyPrivate { get; set; } = "hidden";
+
                 public static string StaticValue { get; set; } = "static";
             }
 
@@ -67,6 +69,36 @@ public sealed class ConfigurationSourceAnalyzerTests
 
         var inherited = Assert.Single(section.Properties, property => property.Name == "Inherited");
         Assert.Equal("See NestedOptions.", inherited.Summary);
+    }
+
+    [Fact]
+    public void AnalyzeBuildsIndexedAndNestedEnvironmentVariableSuffixes()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.WriteFile(
+            "Options.cs",
+            """
+            [ConfigurationSection("Sample")]
+            public class SampleOptions
+            {
+                public string[] Names { get; set; }
+                public NestedOptions Nested { get; set; }
+                public NestedOptions[] Items { get; set; }
+            }
+
+            public class NestedOptions
+            {
+                public string Host { get; set; }
+                private string Hidden { get; set; }
+            }
+            """);
+
+        var section = Assert.Single(
+            new ConfigurationSourceAnalyzer().Analyze(directory.Path, ["."])).Value;
+
+        Assert.Equal(["Names__0"], section.Properties.Single(property => property.Name == "Names").EnvironmentVariableSuffixes);
+        Assert.Equal(["Nested__Host"], section.Properties.Single(property => property.Name == "Nested").EnvironmentVariableSuffixes);
+        Assert.Equal(["Items__0__Host"], section.Properties.Single(property => property.Name == "Items").EnvironmentVariableSuffixes);
     }
 
     [Fact]

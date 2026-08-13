@@ -1,6 +1,5 @@
 namespace AtspmDocsGenerator.Tests;
 
-//
 public sealed class LogMessageSourceAnalyzerTests
 {
     [Fact]
@@ -53,5 +52,36 @@ public sealed class LogMessageSourceAnalyzerTests
             () => new LogMessageSourceAnalyzer().Analyze(directory.Path, ".."));
 
         Assert.Contains("inside the source root", exception.Message);
+    }
+
+    [Theory]
+    [InlineData(42, false)]
+    [InlineData(201, true)]
+    public void AnalyzeOnlyAllowsExplicitDuplicateEventIds(int eventId, bool isAllowed)
+    {
+        using var directory = new TemporaryDirectory();
+        directory.WriteFile(
+            "Logs/Duplicates.cs",
+            $$"""
+            public partial class DuplicateLogMessages
+            {
+                [LoggerMessage(EventId = {{eventId}}, EventName = "First", Level = LogLevel.Information, Message = "First")]
+                public partial void First();
+
+                [LoggerMessage(EventId = {{eventId}}, EventName = "Second", Level = LogLevel.Information, Message = "Second")]
+                public partial void Second();
+            }
+            """);
+
+        if (isAllowed)
+        {
+            Assert.Equal(2, new LogMessageSourceAnalyzer().Analyze(directory.Path, "Logs").Count);
+        }
+        else
+        {
+            var exception = Assert.Throws<InvalidDataException>(
+                () => new LogMessageSourceAnalyzer().Analyze(directory.Path, "Logs"));
+            Assert.Contains(eventId.ToString(), exception.Message);
+        }
     }
 }
