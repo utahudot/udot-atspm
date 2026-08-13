@@ -17,20 +17,11 @@
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
-    /// <summary>
-    /// Configuration values used by the Identity API for identity workflows and generated links.
-    /// </summary>
-    [ConfigurationSection(nameof(IdentityConfiguration), "Configuration for identity API behavior")]
+    [ConfigurationSection(nameof(IdentityConfiguration), "Configuration for identity API")]
     public class IdentityConfiguration
     {
-        /// <summary>
-        /// Public website URL used when building account and identity links.
-        /// </summary>
         public string Website { get; set; }
 
-        /// <summary>
-        /// Default email address used by identity workflows.
-        /// </summary>
         public string DefaultEmailAddress { get; set; }
     }
 }
