@@ -328,20 +328,4 @@ namespace Utah.Udot.Atspm.Data.Models
         /// </summary>
         public double SumGreenTime { get; set; }
     }
-
-    /// <summary>
-    /// Represents the total number of signal controller events recorded for a location
-    /// during the aggregation period.  
-    /// This metric helps traffic engineers assess controller activity levels,
-    /// detect unusual event patterns, and validate system communication.
-    /// </summary>
-    public partial class SignalEventCountAggregation : AggregationModelBase, ILocationLayer
-    {
-        /// <summary>
-        /// Total number of signal controller events captured.  
-        /// Useful for monitoring controller health, logging frequency,
-        /// and identifying periods of abnormal activity.
-        /// </summary>
-        public int EventCount { get; set; }
-    }
 }
