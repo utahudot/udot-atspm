@@ -38,6 +38,60 @@
       font-weight: 600;
     }
 
+    /* Keep long configuration section names inside the page sidebar. */
+    .bs-sidebar,
+    .bs-sidebar > .navbar-collapse,
+    .bs-sidebar .nav,
+    .bs-sidebar .nav-item {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .bs-sidebar {
+      overflow-x: hidden;
+    }
+
+    .bs-sidebar .nav,
+    .bs-sidebar .nav-item {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    .bs-sidebar .nav > li > a {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-all;
+    }
+
+    .bs-sidebar .nav > li > a:hover,
+    .bs-sidebar .nav > li > a:focus,
+    .bs-sidebar .nav > li > a.active,
+    .bs-sidebar .nav > li > a.active:hover,
+    .bs-sidebar .nav > li > a.active:focus {
+      border-right: 0;
+      box-shadow: inset -3px 0 var(--bs-primary);
+    }
+
+    [role="main"] {
+      min-width: 0;
+    }
+
+    .table-scroll {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 1rem;
+      overflow-x: auto;
+    }
+
+    .table-scroll table {
+      margin-bottom: 0;
+    }
+
     .json-copy-wrapper {
       position: relative;
     }
@@ -97,6 +151,20 @@
   {{ super() }}
   <script>
     (() => {
+      document.querySelectorAll('[role="main"] table').forEach((table) => {
+        if (table.parentElement?.classList.contains('table-scroll')) {
+          return;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-scroll';
+        wrapper.setAttribute('role', 'region');
+        wrapper.setAttribute('aria-label', 'Scrollable table');
+        wrapper.tabIndex = 0;
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      });
+
       const copyText = async (text) => {
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(text);
