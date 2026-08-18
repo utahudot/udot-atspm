@@ -82,6 +82,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         public AggregatePhaseTerminationsWorkflow AggregatePhaseTerminationsWorkflow { get; private set; }
 
         /// <inheritdoc/>
+        public AggregateSignalEventCountWorkflow AggregateSignalEventCountWorkflow { get; private set; }
+
+        /// <inheritdoc/>
         public ArchiveAggregationsProcess ArchiveAggregationsProcess { get; private set; }
 
         /// <inheritdoc/>
@@ -103,7 +106,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
                 AggregatePhaseSplitMonitorWorkflow.WhenInitialized(),
                 AggregatePreemptionWorkflow.WhenInitialized(),
                 AggregatePriorityWorkflow.WhenInitialized(),
-                AggregatePhaseTerminationsWorkflow.WhenInitialized()
+                AggregatePhaseTerminationsWorkflow.WhenInitialized(),
+                AggregateSignalEventCountWorkflow.WhenInitialized()
             );
 
 
@@ -125,6 +129,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             Steps.Add(AggregatePreemptionWorkflow.Output);
             Steps.Add(AggregatePriorityWorkflow.Output);
             Steps.Add(AggregatePhaseTerminationsWorkflow.Output);
+            Steps.Add(AggregateSignalEventCountWorkflow.Output);
 
             Steps.Add(ArchiveAggregationsProcess);
             Steps.Add(SaveArchivedAggregationsProcess);
@@ -150,6 +155,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             AggregatePreemptionWorkflow = new(aggregationOptions);
             AggregatePriorityWorkflow = new(aggregationOptions);
             AggregatePhaseTerminationsWorkflow = new(aggregationOptions);
+            AggregateSignalEventCountWorkflow = new(aggregationOptions);
 
             ArchiveAggregationsProcess = new ArchiveAggregationsProcess(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             SaveArchivedAggregationsProcess = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
@@ -168,6 +174,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             BroadcastEvents.LinkTo(AggregatePreemptionWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(AggregatePriorityWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(AggregatePhaseTerminationsWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(AggregateSignalEventCountWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregateDetectorEventCountWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
             AggregatePedestrianPhasesWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
@@ -176,6 +183,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             AggregatePreemptionWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
             AggregatePriorityWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
             AggregatePhaseTerminationsWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregateSignalEventCountWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
 
             Task.WhenAll(
                 AggregateDetectorEventCountWorkflow.Output.Completion,
@@ -184,7 +192,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
                 AggregatePhaseSplitMonitorWorkflow.Output.Completion,
                 AggregatePreemptionWorkflow.Output.Completion,
                 AggregatePriorityWorkflow.Output.Completion,
-                AggregatePhaseTerminationsWorkflow.Output.Completion)
+                AggregatePhaseTerminationsWorkflow.Output.Completion,
+                AggregateSignalEventCountWorkflow.Output.Completion)
                 .ContinueWith(_ =>
                 {
                     ArchiveAggregationsProcess.Complete();
