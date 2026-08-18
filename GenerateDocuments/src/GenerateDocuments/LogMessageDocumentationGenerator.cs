@@ -22,11 +22,15 @@ public sealed class LogMessageDocumentationGenerator
         builder.AppendLine(
             "Logger messages declared in `Utah.Udot.Atspm.Infrastructure.LogMessages`, sorted by event ID.");
         builder.AppendLine();
-        builder.AppendLine(
-            $"Generated from [{RepositoryLabel(options.RepositoryUrl)} at " +
-            $"`{EscapeCode(options.RepositoryRef)}`]({BuildRepositoryUrl(options.RepositoryUrl, "tree", options.RepositoryRef)}).");
+        builder.AppendLine(GenerationTimestamp(options.GeneratedAt));
         builder.AppendLine();
         builder.AppendLine($"This reference contains **{messages.Count}** log messages.");
+        builder.AppendLine();
+        builder.AppendLine("<div class=\"log-download-actions\" aria-label=\"Download log message reference\">");
+        builder.AppendLine("  <button type=\"button\" class=\"btn btn-primary\" id=\"download-log-pdf\">Download PDF</button>");
+        builder.AppendLine("  <button type=\"button\" class=\"btn btn-success\" id=\"download-log-excel\">Download Excel</button>");
+        builder.AppendLine("  <span class=\"log-download-status\" role=\"status\" aria-live=\"polite\"></span>");
+        builder.AppendLine("</div>");
         builder.AppendLine();
 
         if (duplicateEventIdCount > 0)

@@ -2,7 +2,7 @@
 
 Configuration options available to the **Event Log Utility** container.
 
-Generated from [utahudot/udot-atspm at `abc123`](https://github.com/utahudot/udot-atspm/tree/abc123).
+<small>Generated on August 18, 2026 at 7:15 PM UTC.</small>
 
 ## Contents
 

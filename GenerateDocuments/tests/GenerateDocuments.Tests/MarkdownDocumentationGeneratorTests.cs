@@ -54,7 +54,8 @@ public sealed class MarkdownDocumentationGeneratorTests
             output,
             System.IO.Path.Combine(directory.Path, "map.json"),
             "https://github.com/utahudot/udot-atspm",
-            "abc123");
+            "abc123",
+            new DateTimeOffset(2026, 8, 18, 19, 15, 0, TimeSpan.Zero));
 
         var result = new MarkdownDocumentationGenerator().Generate(map, sections, options);
 
@@ -107,7 +108,8 @@ public sealed class MarkdownDocumentationGeneratorTests
             output,
             "map.json",
             "https://github.com/example/source",
-            "main");
+            "main",
+            DateTimeOffset.UtcNow);
 
         var exception = Assert.Throws<InvalidDataException>(
             () => new MarkdownDocumentationGenerator().Generate(
@@ -160,7 +162,8 @@ public sealed class MarkdownDocumentationGeneratorTests
             output,
             "map.json",
             "https://github.com/example/source",
-            "main");
+            "main",
+            DateTimeOffset.UtcNow);
 
         var result = new MarkdownDocumentationGenerator().Generate(map, sections, options);
 

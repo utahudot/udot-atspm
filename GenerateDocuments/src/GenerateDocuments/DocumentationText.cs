@@ -35,6 +35,9 @@ internal static class DocumentationText
         return label.EndsWith(".git", StringComparison.OrdinalIgnoreCase) ? label[..^4] : label;
     }
 
+    public static string GenerationTimestamp(DateTimeOffset generatedAt) =>
+        $"<small>Generated on {generatedAt.ToUniversalTime():MMMM d, yyyy 'at' h:mm tt 'UTC'}.</small>";
+
     public static string EscapeText(string value) =>
         value.Replace("|", "\\|", StringComparison.Ordinal)
             .Replace("\r", " ", StringComparison.Ordinal)

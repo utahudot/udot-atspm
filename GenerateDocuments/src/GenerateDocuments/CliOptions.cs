@@ -5,7 +5,8 @@ public sealed record CliOptions(
     string OutputRoot,
     string MapPath,
     string RepositoryUrl,
-    string RepositoryRef)
+    string RepositoryRef,
+    DateTimeOffset GeneratedAt)
 {
     private static readonly string[] RequiredOptionNames =
     [
@@ -113,7 +114,8 @@ public sealed record CliOptions(
             Path.GetFullPath(values["--output-root"]),
             mapPath,
             repositoryUrl,
-            values["--repository-ref"]));
+            values["--repository-ref"],
+            DateTimeOffset.UtcNow));
     }
 }
 

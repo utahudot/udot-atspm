@@ -11,7 +11,20 @@ strict: true
 
 theme:
   name: mkdocs
+  custom_dir: overrides
   nav_style: dark
+
+nav:
+  - Home: index.md
+  - Containers:
+      - Config API: config-api.md
+      - Data API: data-api.md
+      - Identity API: identity-api.md
+      - Report API: report-api.md
+      - Event Log Utility: event-log-utility.md
+      - Watchdog: watchdog.md
+  - References:
+      - Log messages: log-messages.md
 
 plugins:
   - search

@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <style>
+    /* Keep the primary navigation behind a hamburger at every screen size. */
+    .navbar.navbar-expand-lg > .container {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .navbar.navbar-expand-lg .navbar-toggler {
+      display: block;
+      margin-left: auto;
+    }
+
+    .navbar.navbar-expand-lg .navbar-collapse {
+      display: none !important;
+      flex-basis: 100%;
+      width: 100%;
+    }
+
+    .navbar.navbar-expand-lg .navbar-collapse.show {
+      display: block !important;
+    }
+
+    .navbar.navbar-expand-lg .navbar-nav {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .navbar.navbar-expand-lg .navbar-nav .dropdown-menu {
+      position: static;
+    }
+
+    #navbar-collapse > .navbar-nav:first-child > .nav-item > .nav-link {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .json-copy-wrapper {
+      position: relative;
+    }
+
+    .json-copy-wrapper pre {
+      padding-top: 3.25rem;
+    }
+
+    .json-copy-button {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 1;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid #adb5bd;
+      border-radius: 0.25rem;
+      background: #fff;
+      color: #212529;
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .json-copy-button:hover,
+    .json-copy-button:focus-visible {
+      background: #e9ecef;
+    }
+
+    .json-copy-button.copied {
+      border-color: #198754;
+      background: #198754;
+      color: #fff;
+    }
+
+    .log-download-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 1rem 0 1.25rem;
+    }
+
+    .log-download-status {
+      min-height: 1.5rem;
+      color: #495057;
+      font-size: 0.9rem;
+    }
+  </style>
+{% endblock %}
+
+{% block next_prev %}{% endblock %}
+
+{% block repo %}{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    (() => {
+      const copyText = async (text) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        const copied = document.execCommand('copy');
+        textArea.remove();
+
+        if (!copied) {
+          throw new Error('Copy command failed');
+        }
+      };
+
+      document.querySelectorAll('pre > code.language-json').forEach((code) => {
+        const pre = code.parentElement;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'json-copy-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'json-copy-button';
+        button.textContent = 'Copy JSON';
+        button.setAttribute('aria-label', 'Copy JSON to clipboard');
+        wrapper.appendChild(button);
+
+        button.addEventListener('click', async () => {
+          try {
+            await copyText(code.textContent);
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+          } catch {
+            button.textContent = 'Copy failed';
+          }
+
+          window.setTimeout(() => {
+            button.textContent = 'Copy JSON';
+            button.classList.remove('copied');
+          }, 1800);
+        });
+      });
+
+      const pdfButton = document.getElementById('download-log-pdf');
+      const excelButton = document.getElementById('download-log-excel');
+
+      if (!pdfButton || !excelButton) {
+        return;
+      }
+
+      const status = document.querySelector('.log-download-status');
+      const table = document.querySelector('[role="main"] table');
+      const libraries = new Map();
+
+      const loadScript = (url, globalCheck) => {
+        if (globalCheck()) {
+          return Promise.resolve();
+        }
+
+        if (!libraries.has(url)) {
+          libraries.set(url, new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(`Unable to load ${url}`));
+            document.head.appendChild(script);
+          }));
+        }
+
+        return libraries.get(url);
+      };
+
+      const tableData = () => {
+        if (!table) {
+          throw new Error('The log message table was not found.');
+        }
+
+        const headers = Array.from(table.querySelectorAll('thead th'), (cell) => cell.innerText.trim());
+        const rows = Array.from(table.querySelectorAll('tbody tr'), (row) =>
+          Array.from(row.querySelectorAll('td'), (cell) => cell.innerText.trim()));
+        return { headers, rows };
+      };
+
+      const runDownload = async (button, progressText, action) => {
+        const originalText = button.textContent;
+        pdfButton.disabled = true;
+        excelButton.disabled = true;
+        button.textContent = progressText;
+        status.textContent = '';
+
+        try {
+          await action();
+          status.textContent = 'Download ready.';
+        } catch (error) {
+          console.error(error);
+          status.textContent = 'The download could not be created. Please try again.';
+        } finally {
+          button.textContent = originalText;
+          pdfButton.disabled = false;
+          excelButton.disabled = false;
+        }
+      };
+
+      excelButton.addEventListener('click', () => runDownload(excelButton, 'Creating Excel...', async () => {
+        await loadScript(
+          'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js',
+          () => Boolean(window.XLSX));
+
+        const { headers, rows } = tableData();
+        const typedRows = rows.map((row) => [Number(row[0]), ...row.slice(1)]);
+        const worksheet = window.XLSX.utils.aoa_to_sheet([headers, ...typedRows]);
+        worksheet['!cols'] = [
+          { wch: 10 },
+          { wch: 34 },
+          { wch: 15 },
+          { wch: 80 },
+          { wch: 42 }
+        ];
+        worksheet['!autofilter'] = { ref: worksheet['!ref'] };
+
+        const workbook = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Log Messages');
+        window.XLSX.writeFile(workbook, 'atspm-log-messages.xlsx', { compression: true });
+      }));
+
+      pdfButton.addEventListener('click', () => runDownload(pdfButton, 'Creating PDF...', async () => {
+        await loadScript(
+          'https://unpkg.com/jspdf@4.2.1/dist/jspdf.umd.min.js',
+          () => Boolean(window.jspdf));
+        await loadScript(
+          'https://unpkg.com/jspdf-autotable@5.0.8/dist/jspdf.plugin.autotable.min.js',
+          () => Boolean(window.jspdf?.jsPDF?.API?.autoTable));
+
+        const { headers, rows } = tableData();
+        const documentTitle = 'ATSPM Log Message Reference';
+        const generatedAt = document.querySelector('[role="main"] small')?.innerText ?? '';
+        const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
+
+        pdf.autoTable({
+          head: [headers],
+          body: rows,
+          startY: 62,
+          margin: { top: 62, right: 28, bottom: 32, left: 28 },
+          theme: 'striped',
+          styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', valign: 'top' },
+          headStyles: { fillColor: [33, 37, 41], textColor: 255, fontStyle: 'bold' },
+          columnStyles: {
+            0: { cellWidth: 45, halign: 'right' },
+            1: { cellWidth: 125 },
+            2: { cellWidth: 68 },
+            3: { cellWidth: 330 },
+            4: { cellWidth: 162 }
+          },
+          didDrawPage: (data) => {
+            pdf.setTextColor(33, 37, 41);
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(documentTitle, data.settings.margin.left, 28);
+            pdf.setFont(undefined, 'normal');
+            pdf.setFontSize(8);
+            pdf.text(generatedAt, data.settings.margin.left, 43);
+            pdf.text(
+              `Page ${pdf.getNumberOfPages()}`,
+              pdf.internal.pageSize.getWidth() - data.settings.margin.right,
+              pdf.internal.pageSize.getHeight() - 14,
+              { align: 'right' });
+          }
+        });
+
+        pdf.save('atspm-log-messages.pdf');
+      }));
+    })();
+  </script>
+{% endblock %}

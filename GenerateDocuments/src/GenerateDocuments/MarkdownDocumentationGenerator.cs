@@ -78,7 +78,7 @@ public sealed partial class MarkdownDocumentationGenerator
         builder.AppendLine(
             "Configuration sections are grouped by the ATSPM service or utility that consumes them.");
         builder.AppendLine();
-        AppendGeneratedFrom(builder, options);
+        AppendGenerationTimestamp(builder, options);
         builder.AppendLine("## Containers");
         builder.AppendLine();
 
@@ -106,7 +106,7 @@ public sealed partial class MarkdownDocumentationGenerator
         builder.AppendLine(
             $"Configuration options available to the **{EscapeText(container.Name)}** container.");
         builder.AppendLine();
-        AppendGeneratedFrom(builder, options);
+        AppendGenerationTimestamp(builder, options);
         builder.AppendLine("## Contents");
         builder.AppendLine();
 
@@ -302,15 +302,9 @@ public sealed partial class MarkdownDocumentationGenerator
         };
     }
 
-    private static void AppendGeneratedFrom(StringBuilder builder, CliOptions options)
+    private static void AppendGenerationTimestamp(StringBuilder builder, CliOptions options)
     {
-        var treeUrl = BuildRepositoryUrl(
-            options.RepositoryUrl,
-            "tree",
-            options.RepositoryRef);
-        builder.AppendLine(
-            $"Generated from [{RepositoryLabel(options.RepositoryUrl)} at " +
-            $"`{EscapeCode(options.RepositoryRef)}`]({treeUrl}).");
+        builder.AppendLine(GenerationTimestamp(options.GeneratedAt));
         builder.AppendLine();
     }
 
