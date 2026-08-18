@@ -1526,53 +1526,66 @@ VALUES
                 return;
             }
 
-            var connection = _configContext.Database.GetDbConnection();
-            var closeWhenDone = connection.State != System.Data.ConnectionState.Open;
+            var detectionTypeIds = distinctMappings
+                .Select(m => (DetectionTypes)m.DetectionTypeId)
+                .Distinct()
+                .ToList();
 
-            if (closeWhenDone)
-            {
-                await connection.OpenAsync(cancellationToken);
-            }
+            var detectorIds = distinctMappings
+                .Select(m => m.DetectorId)
+                .Distinct()
+                .ToList();
+
+            var existingMappings = await _configContext.DetectionTypes
+                .AsNoTracking()
+                .Where(dt => detectionTypeIds.Contains(dt.Id))
+                .SelectMany(dt => dt.Detectors
+                    .Where(d => detectorIds.Contains(d.Id))
+                    .Select(d => new { DetectionTypeId = dt.Id, DetectorId = d.Id }))
+                .ToListAsync(cancellationToken);
+
+            var existingMappingSet = existingMappings
+                .Select(m => (m.DetectionTypeId, m.DetectorId))
+                .ToHashSet();
+
+            var detectionTypesById = await _configContext.DetectionTypes
+                .Where(dt => detectionTypeIds.Contains(dt.Id))
+                .Include(dt => dt.Detectors)
+                .ToDictionaryAsync(dt => dt.Id, cancellationToken);
+
+            var detectorsById = await _configContext.Detectors
+                .Where(d => detectorIds.Contains(d.Id))
+                .ToDictionaryAsync(d => d.Id, cancellationToken);
 
             var insertedCount = 0;
 
-            try
+            foreach (var (detectionTypeId, detectorId) in distinctMappings)
             {
-                using var command = connection.CreateCommand();
-                command.CommandText = @"
-INSERT INTO [dbo].[DetectionTypeDetector] ([DetectionTypesId], [DetectorsId])
-SELECT @DetectionTypeId, @DetectorId
-WHERE EXISTS (SELECT 1 FROM [dbo].[DetectionTypes] WHERE [Id] = @DetectionTypeId)
-  AND EXISTS (SELECT 1 FROM [dbo].[Detectors] WHERE [Id] = @DetectorId)
-  AND NOT EXISTS (
-      SELECT 1
-      FROM [dbo].[DetectionTypeDetector]
-      WHERE [DetectionTypesId] = @DetectionTypeId
-        AND [DetectorsId] = @DetectorId
-  );";
+                var detectionTypeKey = (DetectionTypes)detectionTypeId;
 
-                var detectionTypeIdParameter = command.CreateParameter();
-                detectionTypeIdParameter.ParameterName = "@DetectionTypeId";
-                command.Parameters.Add(detectionTypeIdParameter);
-
-                var detectorIdParameter = command.CreateParameter();
-                detectorIdParameter.ParameterName = "@DetectorId";
-                command.Parameters.Add(detectorIdParameter);
-
-                foreach (var (detectionTypeId, detectorId) in distinctMappings)
+                if (!detectionTypesById.TryGetValue(detectionTypeKey, out var detectionType))
                 {
-                    detectionTypeIdParameter.Value = detectionTypeId;
-                    detectorIdParameter.Value = detectorId;
-
-                    insertedCount += await command.ExecuteNonQueryAsync(cancellationToken);
+                    continue;
                 }
+
+                if (!detectorsById.TryGetValue(detectorId, out var detector))
+                {
+                    continue;
+                }
+
+                if (existingMappingSet.Contains((detectionTypeKey, detectorId)))
+                {
+                    continue;
+                }
+
+                detectionType.Detectors.Add(detector);
+                existingMappingSet.Add((detectionTypeKey, detectorId));
+                insertedCount++;
             }
-            finally
+
+            if (insertedCount > 0)
             {
-                if (closeWhenDone)
-                {
-                    await connection.CloseAsync();
-                }
+                await _configContext.SaveChangesAsync(cancellationToken);
             }
 
             _logger.LogInformation(
