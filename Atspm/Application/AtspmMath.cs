@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm/AtspmMath.cs
 // 
@@ -144,17 +144,50 @@ namespace Utah.Udot.Atspm
                 .Aggregate((a, b) => a.Sum(s => s.DetectorCount) >= b.Sum(s => s.DetectorCount) ? a : b).ToList();
         }
 
-        //HACK: this is not working right!
+        ////HACK: this is not working right!
+        //public static IReadOnlyList<IndianaEvent> GetLastConsecutiveEvent(this IEnumerable<IndianaEvent> events, int consecutiveCount = 2)
+        //{
+        //    return events
+        //        .OrderBy(o => o.Timestamp)
+        //        .Skip(consecutiveCount - 1)
+        //        .Where((w, i) => events
+        //        .Skip(i - consecutiveCount)
+        //        .Take(consecutiveCount)
+        //        .All(a => a.EventCode == w.EventCode))
+        //        .ToList();
+        //}
+
+        /// <summary>
+        /// Identifies event items that are part of a continuous sequence of at least <paramref name="consecutiveCount"/> identical EventCodes.
+        /// </summary>
         public static IReadOnlyList<IndianaEvent> GetLastConsecutiveEvent(this IEnumerable<IndianaEvent> events, int consecutiveCount = 2)
         {
-            return events
-                .OrderBy(o => o.Timestamp)
-                .Skip(consecutiveCount - 1)
-                .Where((w, i) => events
-                .Skip(i - consecutiveCount)
-                .Take(consecutiveCount)
-                .All(a => a.EventCode == w.EventCode))
-                .ToList();
+            if (events == null) throw new ArgumentNullException(nameof(events));
+            if (consecutiveCount <= 1) return events.ToList();
+
+            var sorted = events.OrderBy(e => e.Timestamp).ToList();
+            if (sorted.Count < consecutiveCount) return Array.Empty<IndianaEvent>();
+
+            var result = new List<IndianaEvent>();
+            int runLength = 1;
+
+            for (int i = 1; i < sorted.Count; i++)
+            {
+                if (sorted[i].EventCode == sorted[i - 1].EventCode)
+                {
+                    runLength++;
+                }
+                else
+                {
+                    runLength = 1;
+                }
+                if (runLength >= consecutiveCount)
+                {
+                    result.Add(sorted[i]);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
