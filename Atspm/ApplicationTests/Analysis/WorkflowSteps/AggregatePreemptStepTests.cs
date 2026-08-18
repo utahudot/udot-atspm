@@ -1,193 +1,205 @@
-﻿#region license
-// Copyright 2026 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePedestrianPhasesStepTests.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+#region license
+/// Copyright 2026 Utah Departement of Transportation
+/// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePreemptStepTests.cs
+/// 
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
-using Utah.Udot.Atspm.ApplicationTests.Attributes;
-using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 
 namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
-    public class AggregatePreemptStepTests : IClassFixture<TestLocationFixture>, IDisposable
+    /// <summary>
+    /// Unit tests for the AggregatePreemptStep workflow step.
+    /// </summary>
+    public class AggregatePreemptStepTests : WorkflowStepTestBase<AggregatePreemptStep, AggregatePreemptTestData, Location, IEnumerable<IndianaEvent>, IEnumerable<PreemptionAggregation>>
     {
-        private readonly ITestOutputHelper _output;
-        private readonly Location _testLocation;
+        /// <summary>
+        /// Initializes a new instance of the AggregatePreemptStepTests class.
+        /// </summary>
+        /// <param name="output">The xUnit test output helper.</param>
+        /// <param name="testLocationFixture">The test location class fixture.</param>
+        public AggregatePreemptStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture) : base(output, testLocationFixture) { }
 
-        public AggregatePreemptStepTests(ITestOutputHelper output, TestLocationFixture testLocation)
+        /// <inheritdoc/>
+        protected override Location DefaultTestConfig => TestLocation;
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IndianaEvent> DefaultTestInput => new List<IndianaEvent>();
+
+        /// <inheritdoc/>
+        protected override AggregatePreemptStep CreateStep(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PreemptionAggregation> expected)
         {
-            _output = output;
-            _testLocation = testLocation.TestLocation;
+            var timeline = DateTime.Today.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
+            return new AggregatePreemptStep(timeline);
         }
 
+        /// <inheritdoc/>
+        protected override Task<IEnumerable<PreemptionAggregation>> ExecuteStepAsync(AggregatePreemptStep step, Location config, IEnumerable<IndianaEvent> input, CancellationToken cancelToken = default)
+        {
+            return step.ExecuteAsync(Tuple.Create(config, input), cancelToken);
+        }
 
-        //[Fact(Skip = "Used to create test data")]
+        /// <summary>
+        /// Verifies that an empty event stream does not crash the step and produces zero-filled binned rows.
+        /// </summary>
         [Fact]
-        public async Task Stuff()
+        [Trait(nameof(AggregatePreemptStep), "EmptyEvents")]
+        public async Task Process_EmptyEvents_ReturnsZeroFilledBins()
         {
-            {
-                //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\Location7115TestData.json").FullName);
-                //var Location = JsonConvert.DeserializeObject<Location>(json);
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePreemptStep(timeline);
 
-                var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\7707-preemp-raw.csv");
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)new List<IndianaEvent>()));
 
-                var logs = File.ReadAllLines(file1.FullName)
-                       .Skip(1)
-                       .Select(x => x.Split(','))
-                       .Select(x => new IndianaEvent
-                       {
-                           //LocationIdentifier = x[0],
-                           LocationIdentifier = "7115",
-                           Timestamp = DateTime.Parse(x[1]),
-                           EventCode = short.Parse(x[2]),
-                           EventParam = short.Parse(x[3])
-                       }).ToList();
-
-                //logs = logs
-                //    .Where(w => w.EventCode == 0 || w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90 || w.EventCode == 45 || w.EventCode == 67 || w.EventCode == 68)
-                //    .Where(w => w.EventParam == 2)
-                //    .OrderBy(o => o.Timestamp)
-                //    .ToList();
-
-                //_testLocation.Approaches = _testLocation.Approaches.Where(w => w.ProtectedPhaseNumber == 2).ToList();
-
-                var file2 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\preemptaggresult.csv");
-
-                var output = File.ReadAllLines(file2.FullName)
-                       .Skip(1)
-                       .Select(x => x.Split(','))
-                       .Select(x => new PreemptionAggregation
-                       {
-                           Start = DateTime.Parse(x[0]),
-                           End = DateTime.Parse(x[1]).AddMinutes(15),
-                           LocationIdentifier = "x[2]",
-                           PreemptNumber = int.Parse(x[3]),
-                           PreemptRequests = int.Parse(x[4]),
-                           PreemptServices = int.Parse(x[5]),
-
-                       }).ToList();
-
-                _output.WriteLine($"{output.Count}");
-
-                foreach (var o in output)
-                {
-                    _output.WriteLine($"{o}");
-                }
-
-                var result = new AggregatePreemptTestData()
-                {
-                    Configuration = _testLocation,
-                    Input = logs,
-                    Output = output
-                };
-
-
-                var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.All,
-                    Formatting = Formatting.Indented
-                });
-                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\AggregatePreemptTestData1.json", test);
-            }
+            var list = result.ToList();
+            Assert.Empty(list);
         }
 
-
-
-
-
-
-
-
-        [Theory]
-        [AnalysisTestData<AggregatePreemptTestData>]
-        [Trait(nameof(AggregatePreemptStep), "From File")]
-        public async Task AggregatePedestrianPhasesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PreemptionAggregation> output)
+        /// <summary>
+        /// Verifies that preempt call input on events (EC 102) are correctly counted in the segment.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePreemptStep), "PreemptRequests")]
+        public async Task Process_PreemptCallOn_CountsCorrectly()
         {
-            var testData = Tuple.Create(config, input);
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePreemptStep(timeline);
 
-            var aggDate = input
-                .GroupBy(dt => dt.Timestamp)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault().Key;
-
-            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
-
-            var sut = new AggregatePreemptStep(tl);
-
-            var temp = await sut.ExecuteAsync(testData);
-            var actual = temp.ToList();
-
-            _output.WriteLine($"actual: {actual.Count()}");
-
-            //_output.WriteLine($"actual: {actual.First()}");
-            //_output.WriteLine($"actual: {actual.Last()}");
-
-            //foreach (var a in actual)
-            //{
-            //    _output.WriteLine($"result: {a.Start} - {a.End} - {a .LocationIdentifier} - {a.PreemptNumber} - {a.PreemptRequests} - {a.PreemptServices}");
-            //}
-
-            var expected = output.ToList();
-
-            _output.WriteLine($"expected: {expected.Count()}");
-
-            //_output.WriteLine($"expected: {expected.First()}");
-            //.WriteLine($"expected: {expected.Last()}");
-
-            //Assert.Equivalent(actual, expected);
-
-            int maxCount = Math.Max(expected.Count, actual.Count);
-
-            Assert.Multiple(() =>
+            var events = new List<IndianaEvent>
             {
-                Assert.Equal(expected.Count, actual.Count);
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 102, EventParam = 1 },
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(10), EventCode = 102, EventParam = 1 }
+            };
 
-                int maxCount = Math.Max(expected.Count, actual.Count);
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
 
-                for (int i = 0; i < maxCount; i++)
-                {
-                    var exp = i < expected.Count ? expected[i] : null;
-                    var act = i < actual.Count ? actual[i] : null;
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
 
-                    // Check if objects match by comparing serialized JSON or properties
-                    bool isMatch = System.Text.Json.JsonSerializer.Serialize(exp) ==
-                                   System.Text.Json.JsonSerializer.Serialize(act);
-
-                    Assert.True(
-                        isMatch,
-                        $"[INDEX {i} MISMATCH]\n  Expected: {System.Text.Json.JsonSerializer.Serialize(exp)}\n  Actual:   {System.Text.Json.JsonSerializer.Serialize(act)}"
-                    );
-                }
-            });
+            var bin1 = list.FirstOrDefault(a => a.Start == start && a.PreemptNumber == 1);
+            Assert.NotNull(bin1);
+            Assert.Equal(2, bin1.PreemptRequests);
+            Assert.Equal(0, bin1.PreemptServices);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Verifies that preempt entry started events (EC 105) are correctly counted in the segment.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePreemptStep), "PreemptServices")]
+        public async Task Process_PreemptEntryStarted_CountsCorrectly()
         {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePreemptStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 105, EventParam = 1 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
+
+            var bin1 = list.FirstOrDefault(a => a.Start == start && a.PreemptNumber == 1);
+            Assert.NotNull(bin1);
+            Assert.Equal(0, bin1.PreemptRequests);
+            Assert.Equal(1, bin1.PreemptServices);
+        }
+
+        /// <summary>
+        /// Verifies that preempt numbers are isolated and grouped separately.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePreemptStep), "PreemptIsolation")]
+        public async Task Process_PreemptIsolation_IgnoresOtherPreemptNumbers()
+        {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(15), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePreemptStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 102, EventParam = 1 },
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(6), EventCode = 102, EventParam = 2 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
+
+            var p1 = list.FirstOrDefault(a => a.PreemptNumber == 1);
+            var p2 = list.FirstOrDefault(a => a.PreemptNumber == 2);
+
+            Assert.NotNull(p1);
+            Assert.Equal(1, p1.PreemptRequests);
+
+            Assert.NotNull(p2);
+            Assert.Equal(1, p2.PreemptRequests);
+        }
+
+        /// <summary>
+        /// Verifies that preempt events falling outside the timeline boundaries are excluded.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePreemptStep), "BoundaryExclusion")]
+        public async Task Process_BoundaryEvents_ExcludesCorrectly()
+        {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(15), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePreemptStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(-5), EventCode = 102, EventParam = 1 },
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(20), EventCode = 102, EventParam = 1 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Single(list);
+            Assert.All(list, a => Assert.Equal(0, a.PreemptRequests));
+            Assert.All(list, a => Assert.Equal(0, a.PreemptServices));
+        }
+
+        private Location CreateLocalMockLocation()
+        {
+            return new Location { LocationIdentifier = "MOCK_7573" };
         }
     }
 }

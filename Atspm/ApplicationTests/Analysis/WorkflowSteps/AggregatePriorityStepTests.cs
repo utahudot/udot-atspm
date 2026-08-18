@@ -1,183 +1,237 @@
-﻿#region license
-// Copyright 2026 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePedestrianPhasesStepTests.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+#region license
+/// Copyright 2026 Utah Departement of Transportation
+/// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregatePriorityStepTests.cs
+/// 
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
-using Utah.Udot.Atspm.ApplicationTests.Attributes;
-using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Common;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 
 namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
-    public class AggregatePriorityStepTests : IClassFixture<TestLocationFixture>, IDisposable
+    /// <summary>
+    /// Unit tests for the AggregatePriorityStep workflow step.
+    /// </summary>
+    public class AggregatePriorityStepTests : WorkflowStepTestBase<AggregatePriorityStep, AggregatePriorityTestData, Location, IEnumerable<IndianaEvent>, IEnumerable<PriorityAggregation>>
     {
-        private readonly ITestOutputHelper _output;
-        private readonly Location _testLocation;
+        /// <summary>
+        /// Initializes a new instance of the AggregatePriorityStepTests class.
+        /// </summary>
+        /// <param name="output">The xUnit test output helper.</param>
+        /// <param name="testLocationFixture">The test location class fixture.</param>
+        public AggregatePriorityStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture) : base(output, testLocationFixture) { }
 
-        public AggregatePriorityStepTests(ITestOutputHelper output, TestLocationFixture testLocation)
+        /// <inheritdoc/>
+        protected override Location DefaultTestConfig => TestLocation;
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IndianaEvent> DefaultTestInput => new List<IndianaEvent>();
+
+        /// <inheritdoc/>
+        protected override AggregatePriorityStep CreateStep(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PriorityAggregation> expected)
         {
-            _output = output;
-            _testLocation = testLocation.TestLocation;
+            var timeline = DateTime.Today.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
+            return new AggregatePriorityStep(timeline);
         }
 
+        /// <inheritdoc/>
+        protected override Task<IEnumerable<PriorityAggregation>> ExecuteStepAsync(AggregatePriorityStep step, Location config, IEnumerable<IndianaEvent> input, CancellationToken cancelToken = default)
+        {
+            return step.ExecuteAsync(Tuple.Create(config, input), cancelToken);
+        }
 
-        //[Fact(Skip = "Used to create test data")]
+        /// <summary>
+        /// Verifies that an empty event stream does not crash the step and produces zero-filled binned rows.
+        /// </summary>
         [Fact]
-        public async Task Stuff()
+        [Trait(nameof(AggregatePriorityStep), "EmptyEvents")]
+        public async Task Process_EmptyEvents_ReturnsZeroFilledBins()
         {
-            {
-                //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\Location7115TestData.json").FullName);
-                //var Location = JsonConvert.DeserializeObject<Location>(json);
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePriorityStep(timeline);
 
-                var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\7707-priortiy-raw.csv");
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)new List<IndianaEvent>()));
 
-                var logs = File.ReadAllLines(file1.FullName)
-                       .Skip(1)
-                       .Select(x => x.Split(','))
-                       .Select(x => new IndianaEvent
-                       {
-                           //LocationIdentifier = x[0],
-                           LocationIdentifier = "7115",
-                           Timestamp = DateTime.Parse(x[1]),
-                           EventCode = short.Parse(x[2]),
-                           EventParam = short.Parse(x[3])
-                       }).ToList();
-
-                //logs = logs
-                //    .Where(w => w.EventCode == 0 || w.EventCode == 21 || w.EventCode == 22 || w.EventCode == 90 || w.EventCode == 45 || w.EventCode == 67 || w.EventCode == 68)
-                //    .Where(w => w.EventParam == 2)
-                //    .OrderBy(o => o.Timestamp)
-                //    .ToList();
-
-                //_testLocation.Approaches = _testLocation.Approaches.Where(w => w.ProtectedPhaseNumber == 2).ToList();
-
-                var file2 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\priorityaggresult.csv");
-
-                var output = File.ReadAllLines(file2.FullName)
-                       .Skip(1)
-                       .Select(x => x.Split(','))
-                       .Select(x => new PriorityAggregation
-                       {
-                           Start = DateTime.Parse(x[0]),
-                           End = DateTime.Parse(x[1]).AddMinutes(15),
-                           LocationIdentifier = "7115",
-                           PriorityNumber = int.Parse(x[3]),
-                           PriorityRequests = int.Parse(x[4]),
-                           PriorityServiceEarlyGreen = int.Parse(x[5]),
-                           PriorityServiceExtendedGreen = int.Parse(x[6]),
-
-                       }).ToList();
-
-                _output.WriteLine($"{output.Count}");
-
-                foreach (var o in output)
-                {
-                    _output.WriteLine($"{o}");
-                }
-
-                var result = new AggregatePriorityTestData()
-                {
-                    Configuration = _testLocation,
-                    Input = logs,
-                    Output = output
-                };
-
-
-                var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.All,
-                    Formatting = Formatting.Indented
-                });
-                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\AggregatePriorityTestData1.json", test);
-            }
+            var list = result.ToList();
+            Assert.Empty(list);
         }
 
-
-
-
-
-
-
-
-        [Theory]
-        [AnalysisTestData<AggregatePriorityTestData>]
-        [Trait(nameof(AggregatePriorityStep), "From File")]
-        public async Task AggregatePedestrianPhasesFromFileTest(Location config, IEnumerable<IndianaEvent> input, IEnumerable<PriorityAggregation> output)
+        /// <summary>
+        /// Verifies that TSP check-in events (EC 112) are correctly counted in the segment.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePriorityStep), "PriorityRequests")]
+        public async Task Process_TSPCheckIn_CountsCorrectly()
         {
-            var testData = Tuple.Create(config, input);
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePriorityStep(timeline);
 
-            var aggDate = input
-                .GroupBy(dt => dt.Timestamp)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault().Key;
-
-            var tl = aggDate.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
-
-            var sut = new AggregatePriorityStep(tl);
-
-            var temp = await sut.ExecuteAsync(testData);
-            var actual = temp.ToList();
-
-            _output.WriteLine($"actual: {actual.Count()}");
-
-            var expected = output.ToList();
-
-            _output.WriteLine($"expected: {expected.Count()}");
-
-            //Assert.Equivalent(actual, expected);
-
-            int maxCount = Math.Max(expected.Count, actual.Count);
-
-            Assert.Multiple(() =>
+            var events = new List<IndianaEvent>
             {
-                Assert.Equal(expected.Count, actual.Count);
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 112, EventParam = 1 },
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(10), EventCode = 112, EventParam = 1 }
+            };
 
-                int maxCount = Math.Max(expected.Count, actual.Count);
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
 
-                for (int i = 0; i < maxCount; i++)
-                {
-                    var exp = i < expected.Count ? expected[i] : null;
-                    var act = i < actual.Count ? actual[i] : null;
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
 
-                    // Check if objects match by comparing serialized JSON or properties
-                    bool isMatch = System.Text.Json.JsonSerializer.Serialize(exp) ==
-                                   System.Text.Json.JsonSerializer.Serialize(act);
-
-                    Assert.True(
-                        isMatch,
-                        $"[INDEX {i} MISMATCH]\n  Expected: {System.Text.Json.JsonSerializer.Serialize(exp)}\n  Actual:   {System.Text.Json.JsonSerializer.Serialize(act)}"
-                    );
-                }
-            });
+            var bin1 = list.FirstOrDefault(a => a.Start == start && a.PriorityNumber == 1);
+            Assert.NotNull(bin1);
+            Assert.Equal(2, bin1.PriorityRequests);
+            Assert.Equal(0, bin1.PriorityServiceEarlyGreen);
+            Assert.Equal(0, bin1.PriorityServiceExtendedGreen);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Verifies that TSP adjustment to early green events (EC 113) are correctly counted in the segment.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePriorityStep), "PriorityServiceEarlyGreen")]
+        public async Task Process_TSPAdjustmenttoEarlyGreen_CountsCorrectly()
         {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePriorityStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 113, EventParam = 1 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
+
+            var bin1 = list.FirstOrDefault(a => a.Start == start && a.PriorityNumber == 1);
+            Assert.NotNull(bin1);
+            Assert.Equal(0, bin1.PriorityRequests);
+            Assert.Equal(1, bin1.PriorityServiceEarlyGreen);
+            Assert.Equal(0, bin1.PriorityServiceExtendedGreen);
+        }
+
+        /// <summary>
+        /// Verifies that TSP adjustment to extended green events (EC 114) are correctly counted in the segment.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePriorityStep), "PriorityServiceExtendedGreen")]
+        public async Task Process_TSPAdjustmenttoExtendGreen_CountsCorrectly()
+        {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(30), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePriorityStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 114, EventParam = 1 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
+
+            var bin1 = list.FirstOrDefault(a => a.Start == start && a.PriorityNumber == 1);
+            Assert.NotNull(bin1);
+            Assert.Equal(0, bin1.PriorityRequests);
+            Assert.Equal(0, bin1.PriorityServiceEarlyGreen);
+            Assert.Equal(1, bin1.PriorityServiceExtendedGreen);
+        }
+
+        /// <summary>
+        /// Verifies that priority numbers are isolated and grouped separately.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePriorityStep), "PriorityIsolation")]
+        public async Task Process_PriorityIsolation_IgnoresOtherPriorityNumbers()
+        {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(15), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePriorityStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(5), EventCode = 112, EventParam = 1 },
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(6), EventCode = 112, EventParam = 2 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Equal(2, list.Count);
+
+            var p1 = list.FirstOrDefault(a => a.PriorityNumber == 1);
+            var p2 = list.FirstOrDefault(a => a.PriorityNumber == 2);
+
+            Assert.NotNull(p1);
+            Assert.Equal(1, p1.PriorityRequests);
+
+            Assert.NotNull(p2);
+            Assert.Equal(1, p2.PriorityRequests);
+        }
+
+        /// <summary>
+        /// Verifies that priority events falling outside the timeline boundaries are excluded.
+        /// </summary>
+        [Fact]
+        [Trait(nameof(AggregatePriorityStep), "BoundaryExclusion")]
+        public async Task Process_BoundaryEvents_ExcludesCorrectly()
+        {
+            var localLocation = CreateLocalMockLocation();
+            var start = DateTime.Today.AddHours(8);
+            var timeline = new Timeline<StartEndRange>(start, start.AddMinutes(15), TimeSpan.FromMinutes(15));
+            var sut = new AggregatePriorityStep(timeline);
+
+            var events = new List<IndianaEvent>
+            {
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(-5), EventCode = 112, EventParam = 1 },
+                new() { LocationIdentifier = localLocation.LocationIdentifier, Timestamp = start.AddMinutes(20), EventCode = 112, EventParam = 1 }
+            };
+
+            var result = await sut.ExecuteAsync(Tuple.Create(localLocation, (IEnumerable<IndianaEvent>)events));
+
+            var list = result.ToList();
+            Assert.Single(list);
+            Assert.All(list, a => Assert.Equal(0, a.PriorityRequests));
+            Assert.All(list, a => Assert.Equal(0, a.PriorityServiceEarlyGreen));
+            Assert.All(list, a => Assert.Equal(0, a.PriorityServiceExtendedGreen));
+        }
+
+        private Location CreateLocalMockLocation()
+        {
+            return new Location { LocationIdentifier = "MOCK_7115" };
         }
     }
 }

@@ -15,13 +15,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
-		<Compile Remove="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
-		<Compile Remove="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
-		<Compile Remove="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AutoFixture" Version="4.17.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
 		<PackageReference Include="Moq" Version="4.18.2" />
@@ -38,13 +31,6 @@
 
 	<ItemGroup>
 		<Folder Include="Analysis\ReportTests\" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
-		<None Include="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
-		<None Include="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
-		<None Include="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
