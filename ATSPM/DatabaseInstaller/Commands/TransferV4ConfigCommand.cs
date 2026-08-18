@@ -81,12 +81,12 @@ namespace DatabaseInstaller.Commands
         /// <summary>
         /// Connection string to v4 ATSPM database
         /// </summary>
-        public string Source { get; set; }
+        public string Source { get; set; } = string.Empty;
 
         /// <summary>
         /// Comma-separated list of LocationIdentifiers to migrate (null = migrate all)
         /// </summary>
-        public string Locations { get; set; }
+        public string? Locations { get; set; }
 
         /// <summary>
         /// Device type filter (null = no filter)
