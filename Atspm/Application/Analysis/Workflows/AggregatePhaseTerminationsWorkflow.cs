@@ -61,6 +61,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         protected override void LinkSteps()
         {
             Input.LinkTo(FilterEventsByTypeStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterEventsByTypeStep.LinkTo(FilteredTerminationsStep, new DataflowLinkOptions() { PropagateCompletion = true });
             FilteredTerminationsStep.LinkTo(AggregatePhaseTerminationStep, new DataflowLinkOptions() { PropagateCompletion = true });
             AggregatePhaseTerminationStep.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }

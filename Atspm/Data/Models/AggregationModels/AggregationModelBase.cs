@@ -330,49 +330,6 @@ namespace Utah.Udot.Atspm.Data.Models
     }
 
     /// <summary>
-    /// Represents aggregated phase termination metrics for a signalized phase.  
-    /// These values help traffic engineers understand how often a phase ends due to
-    /// gap‑out, max‑out, force‑off, or other termination conditions, which is essential
-    /// for evaluating detector performance, timing parameters, and phase utilization.
-    /// </summary>
-    public partial class PhaseTerminationAggregation : AggregationModelBase, ILocationPhaseLayer
-    {
-        /// <summary>
-        /// Number of times the phase terminated due to a force‑off.  
-        /// Indicates that coordination or timing constraints ended the phase
-        /// before demand was fully served.
-        /// </summary>
-        public int ForceOffs { get; set; }
-
-        /// <summary>
-        /// Number of times the phase terminated due to a gap‑out.  
-        /// Occurs when no vehicles are detected within the allowable passage time,
-        /// often indicating low or intermittent demand.
-        /// </summary>
-        public int GapOuts { get; set; }
-
-        /// <summary>
-        /// Number of times the phase terminated due to max‑out.  
-        /// Suggests that demand exceeded the available green time and the phase
-        /// reached its programmed maximum duration.
-        /// </summary>
-        public int MaxOuts { get; set; }
-
-        /// <summary>
-        /// The phase number associated with this movement.  
-        /// Corresponds to the controller’s configured phase for the approach.
-        /// </summary>
-        public int PhaseNumber { get; set; }
-
-        /// <summary>
-        /// Number of phase terminations that did not match a known termination type.  
-        /// Useful for identifying data anomalies or controller behaviors outside
-        /// standard termination classifications.
-        /// </summary>
-        public int Unknown { get; set; }
-    }
-
-    /// <summary>
     /// Represents the total number of signal controller events recorded for a location
     /// during the aggregation period.  
     /// This metric helps traffic engineers assess controller activity levels,
