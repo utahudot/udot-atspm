@@ -21,12 +21,6 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public abstract class PhaseTerminationEventBase
-    {
-        public DateTime StartTime { get; set; }
-        public int PhaseNumber { get; set; }
-    }
-
     public class IdentifyTerminationTypesAndTimes : TransformProcessStepBase<Tuple<Approach, int, IEnumerable<IndianaEvent>>, Tuple<Approach, int, PhaseTerminations>>
     {
         private readonly int _consecutiveCounts;
@@ -38,12 +32,12 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
         protected override Task<Tuple<Approach, int, PhaseTerminations>> Process(Tuple<Approach, int, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
-            var filters = new List<int>()
+            var filters = new List<short>()
             {
-                4,
-                5,
-                6,
-                (int)IndianaEnumerations.PhaseGreenTermination
+                (short)IndianaEnumerations.PhaseGapOut,
+                (short)IndianaEnumerations.PhaseMaxOut,
+                (short)IndianaEnumerations.PhaseForceOff,
+                (short)IndianaEnumerations.PhaseGreenTermination
             };
 
             var approach = input.Item1;

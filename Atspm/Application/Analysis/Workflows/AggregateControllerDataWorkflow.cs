@@ -30,8 +30,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             _consecutiveCount = consecutiveCount;
         }
 
-        public FilterEventsByTypeStep<IndianaEvent> FilterIndianaEvents { get; set; }
-        public FilterTerminationsProcessStep FilteredTerminations { get; private set; }
+        public FilterEventsByTypeStep<IndianaEvent> FilterEventsByTypeStep { get; set; }
+        public FilterTerminationsProcessStep FilteredTerminationsStep { get; private set; }
         public GroupLocationsByApproaches GroupApproachesForTerminations { get; private set; }
         public GroupPhaseTerminationsByApproaches GroupApproachesByPhase { get; private set; }
         public IdentifyTerminationTypesAndTimes IdentifyTerminationTypesAndTimes { get; private set; }
@@ -40,8 +40,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
-            Steps.Add(FilterIndianaEvents);
-            Steps.Add(FilteredTerminations);
+            Steps.Add(FilterEventsByTypeStep);
+            Steps.Add(FilteredTerminationsStep);
             Steps.Add(GroupApproachesForTerminations);
             Steps.Add(GroupApproachesByPhase);
             Steps.Add(IdentifyTerminationTypesAndTimes);
@@ -51,8 +51,8 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         /// <inheritdoc/>
         protected override void InstantiateSteps()
         {
-            FilterIndianaEvents = new(executionBlockOptions);
-            FilteredTerminations = new(blockOptions);
+            FilterEventsByTypeStep = new(executionBlockOptions);
+            FilteredTerminationsStep = new(blockOptions);
             GroupApproachesForTerminations = new(executionBlockOptions);
             GroupApproachesByPhase = new(executionBlockOptions);
             IdentifyTerminationTypesAndTimes = new(_consecutiveCount, executionBlockOptions);
@@ -62,9 +62,9 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         /// <inheritdoc/>
         protected override void LinkSteps()
         {
-            Input.LinkTo(FilterIndianaEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            Input.LinkTo(FilterEventsByTypeStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            FilteredTerminations.LinkTo(GroupApproachesForTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredTerminationsStep.LinkTo(GroupApproachesForTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
             GroupApproachesForTerminations.LinkTo(GroupApproachesByPhase, new DataflowLinkOptions() { PropagateCompletion = true });
             GroupApproachesByPhase.LinkTo(IdentifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
             IdentifyTerminationTypesAndTimes.LinkTo(AggregatePhaseTerminationEvents, new DataflowLinkOptions() { PropagateCompletion = true });
