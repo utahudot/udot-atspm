@@ -46,12 +46,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         public CreateSplitFailDetectorActivationsStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture) : base(output, testLocationFixture) { }
 
         /// <inheritdoc/>
-        [Theory(Skip = "No JSON test data files available yet.")]
-        [AnalysisTestData<CreateSplitFailDetectorActivationsTestData>]
-        public override Task ExecuteStepFromFileTest(Location config, Tuple<IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> input, Tuple<Location, Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> expected)
-        {
-            return base.ExecuteStepFromFileTest(config, input, expected);
-        }
+        protected override Location DefaultTestConfig => TestLocation;
+
+        /// <inheritdoc/>
+        protected override Tuple<IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> DefaultTestInput => Tuple.Create((IEnumerable<IndianaEvent>)new List<IndianaEvent>(), new Dictionary<PhaseDetail, List<CycleTimestamps>>());
 
         /// <inheritdoc/>
         protected override CreateSplitFailDetectorActivationsStep CreateStep(Location config, Tuple<IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> input, Tuple<Location, Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> expected)
@@ -60,25 +58,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <inheritdoc/>
-        protected override Task<Tuple<Location, Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>>> ExecuteStepAsync(CreateSplitFailDetectorActivationsStep step, Location config, Tuple<IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> input)
+        protected override Task<Tuple<Location, Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>>> ExecuteStepAsync(CreateSplitFailDetectorActivationsStep step, Location config, Tuple<IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> input, CancellationToken cancelToken = default)
         {
-            return step.ExecuteAsync(Tuple.Create(config, input.Item1, input.Item2));
-        }
-
-        /// <summary>
-        /// Verifies that processing is cancelled when a cancelled token is passed.
-        /// </summary>
-        [Fact]
-        [Trait(nameof(CreateSplitFailDetectorActivationsStep), "Cancellation")]
-        public async Task Process_Cancellation_ThrowsTaskCanceledException()
-        {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-
-            var sut = new CreateSplitFailDetectorActivationsStep();
-            var input = Tuple.Create(TestLocation, (IEnumerable<IndianaEvent>)new List<IndianaEvent>(), new Dictionary<PhaseDetail, List<CycleTimestamps>>());
-
-            await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(input, cts.Token));
+            return step.ExecuteAsync(Tuple.Create(config, input.Item1, input.Item2), cancelToken);
         }
 
         /// <summary>

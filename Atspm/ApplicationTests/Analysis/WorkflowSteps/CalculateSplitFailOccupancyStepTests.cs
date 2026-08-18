@@ -44,12 +44,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         public CalculateSplitFailOccupancyStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture) : base(output, testLocationFixture) { }
 
         /// <inheritdoc/>
-        [Theory(Skip = "No JSON test data files available yet.")]
-        [AnalysisTestData<CalculateSplitFailOccupancyTestData>]
-        public override Task ExecuteStepFromFileTest(Location config, Tuple<Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> input, Tuple<Location, Dictionary<PhaseDetail, List<SplitFailCycleResult>>> expected)
-        {
-            return base.ExecuteStepFromFileTest(config, input, expected);
-        }
+        protected override Location DefaultTestConfig => TestLocation;
+
+        /// <inheritdoc/>
+        protected override Tuple<Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> DefaultTestInput => Tuple.Create(new Dictionary<PhaseDetail, List<CycleTimestamps>>(), new Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>());
 
         /// <inheritdoc/>
         protected override CalculateSplitFailOccupancyStep CreateStep(Location config, Tuple<Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> input, Tuple<Location, Dictionary<PhaseDetail, List<SplitFailCycleResult>>> expected)
@@ -58,25 +56,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <inheritdoc/>
-        protected override Task<Tuple<Location, Dictionary<PhaseDetail, List<SplitFailCycleResult>>>> ExecuteStepAsync(CalculateSplitFailOccupancyStep step, Location config, Tuple<Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> input)
+        protected override Task<Tuple<Location, Dictionary<PhaseDetail, List<SplitFailCycleResult>>>> ExecuteStepAsync(CalculateSplitFailOccupancyStep step, Location config, Tuple<Dictionary<PhaseDetail, List<CycleTimestamps>>, Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>> input, CancellationToken cancelToken = default)
         {
-            return step.ExecuteAsync(Tuple.Create(config, input.Item1, input.Item2));
-        }
-
-        /// <summary>
-        /// Verifies that processing is cancelled when a cancelled token is passed.
-        /// </summary>
-        [Fact]
-        [Trait(nameof(CalculateSplitFailOccupancyStep), "Cancellation")]
-        public async Task Process_Cancellation_ThrowsTaskCanceledException()
-        {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-
-            var sut = new CalculateSplitFailOccupancyStep();
-            var input = Tuple.Create(TestLocation, new Dictionary<PhaseDetail, List<CycleTimestamps>>(), new Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>());
-
-            await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(input, cts.Token));
+            return step.ExecuteAsync(Tuple.Create(config, input.Item1, input.Item2), cancelToken);
         }
 
         /// <summary>

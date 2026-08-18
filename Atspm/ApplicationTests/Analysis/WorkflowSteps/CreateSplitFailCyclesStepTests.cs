@@ -46,12 +46,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         public CreateSplitFailCyclesStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture) : base(output, testLocationFixture) { }
 
         /// <inheritdoc/>
-        [Theory(Skip = "No JSON test data files available yet.")]
-        [AnalysisTestData<CreateSplitFailCyclesTestData>]
-        public override Task ExecuteStepFromFileTest(Location config, IEnumerable<IndianaEvent> input, Tuple<Location, IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> expected)
-        {
-            return base.ExecuteStepFromFileTest(config, input, expected);
-        }
+        protected override Location DefaultTestConfig => TestLocation;
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IndianaEvent> DefaultTestInput => new List<IndianaEvent>();
 
         /// <inheritdoc/>
         protected override CreateSplitFailCyclesStep CreateStep(Location config, IEnumerable<IndianaEvent> input, Tuple<Location, IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>> expected)
@@ -60,25 +58,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <inheritdoc/>
-        protected override Task<Tuple<Location, IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>>> ExecuteStepAsync(CreateSplitFailCyclesStep step, Location config, IEnumerable<IndianaEvent> input)
+        protected override Task<Tuple<Location, IEnumerable<IndianaEvent>, Dictionary<PhaseDetail, List<CycleTimestamps>>>> ExecuteStepAsync(CreateSplitFailCyclesStep step, Location config, IEnumerable<IndianaEvent> input, CancellationToken cancelToken = default)
         {
-            return step.ExecuteAsync(Tuple.Create(config, input));
-        }
-
-        /// <summary>
-        /// Verifies that processing is cancelled when a cancelled token is passed.
-        /// </summary>
-        [Fact]
-        [Trait(nameof(CreateSplitFailCyclesStep), "Cancellation")]
-        public async Task Process_Cancellation_ThrowsTaskCanceledException()
-        {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-
-            var sut = new CreateSplitFailCyclesStep();
-            var input = Tuple.Create(TestLocation, (IEnumerable<IndianaEvent>)new List<IndianaEvent>());
-
-            await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(input, cts.Token));
+            return step.ExecuteAsync(Tuple.Create(config, input), cancelToken);
         }
 
         /// <summary>

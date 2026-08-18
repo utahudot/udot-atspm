@@ -47,12 +47,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         public AggregateApproachSplitFailStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture) : base(output, testLocationFixture) { }
 
         /// <inheritdoc/>
-        [Theory(Skip = "No JSON test data files available yet.")]
-        [AnalysisTestData<AggregateApproachSplitFailTestData>]
-        public override Task ExecuteStepFromFileTest(Location config, Dictionary<PhaseDetail, List<SplitFailCycleResult>> input, IEnumerable<ApproachSplitFailAggregation> expected)
-        {
-            return base.ExecuteStepFromFileTest(config, input, expected);
-        }
+        protected override Location DefaultTestConfig => TestLocation;
+
+        /// <inheritdoc/>
+        protected override Dictionary<PhaseDetail, List<SplitFailCycleResult>> DefaultTestInput => new Dictionary<PhaseDetail, List<SplitFailCycleResult>>();
 
         /// <inheritdoc/>
         protected override AggregateApproachSplitFailStep CreateStep(Location config, Dictionary<PhaseDetail, List<SplitFailCycleResult>> input, IEnumerable<ApproachSplitFailAggregation> expected)
@@ -73,26 +71,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <inheritdoc/>
-        protected override Task<IEnumerable<ApproachSplitFailAggregation>> ExecuteStepAsync(AggregateApproachSplitFailStep step, Location config, Dictionary<PhaseDetail, List<SplitFailCycleResult>> input)
+        protected override Task<IEnumerable<ApproachSplitFailAggregation>> ExecuteStepAsync(AggregateApproachSplitFailStep step, Location config, Dictionary<PhaseDetail, List<SplitFailCycleResult>> input, CancellationToken cancelToken = default)
         {
-            return step.ExecuteAsync(Tuple.Create(config, input));
-        }
-
-        /// <summary>
-        /// Verifies that processing is cancelled when a cancelled token is passed.
-        /// </summary>
-        [Fact]
-        [Trait(nameof(AggregateApproachSplitFailStep), "Cancellation")]
-        public async Task Process_Cancellation_ThrowsTaskCanceledException()
-        {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-
-            var timeline = DateTime.Today.CreateTimeline<StartEndRange>(TimeSpan.FromMinutes(15));
-            var sut = new AggregateApproachSplitFailStep(timeline);
-            var input = Tuple.Create(TestLocation, new Dictionary<PhaseDetail, List<SplitFailCycleResult>>());
-
-            await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(input, cts.Token));
+            return step.ExecuteAsync(Tuple.Create(config, input), cancelToken);
         }
 
         /// <summary>

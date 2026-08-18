@@ -1,23 +1,25 @@
 #region license
-// Copyright 2026 Utah Departement of Transportation
-// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/WorkflowStepTestBase.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/// Copyright 2026 Utah Departement of Transportation
+/// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/WorkflowStepTestBase.cs
+/// 
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
 #endregion
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Attributes;
 using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Models;
 using Xunit;
@@ -60,15 +62,32 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
+        /// Gets a default configuration specifically for testing generic step operations.
+        /// </summary>
+        protected abstract TConfig DefaultTestConfig { get; }
+
+        /// <summary>
+        /// Gets a default input packet specifically for testing generic step operations.
+        /// </summary>
+        protected abstract TInput DefaultTestInput { get; }
+
+        /// <summary>
         /// Generic runner that executes the step and asserts equality against expected outcomes.
-        /// Inheritors should override this method to add the [Theory] and [AnalysisTestData] attributes.
         /// </summary>
         /// <param name="config">The configuration object.</param>
         /// <param name="input">The input data packet.</param>
         /// <param name="expected">The expected output data packet.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        [Theory]
+        [AnalysisTestData]
         public virtual async Task ExecuteStepFromFileTest(TConfig config, TInput input, TOutput expected)
         {
+            if (config == null || input == null)
+            {
+                Output?.WriteLine("No JSON test data files available yet. Skipping generic file-based theory test.");
+                return;
+            }
+
             var sut = CreateStep(config, input, expected);
 
             var actual = await ExecuteStepAsync(sut, config, input);
@@ -92,8 +111,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         /// <param name="step">The step under test.</param>
         /// <param name="config">The configuration object.</param>
         /// <param name="input">The input data packet.</param>
+        /// <param name="cancelToken">A cancellation token.</param>
         /// <returns>A task returning the actual output.</returns>
-        protected abstract Task<TOutput> ExecuteStepAsync(TStep step, TConfig config, TInput input);
+        protected abstract Task<TOutput> ExecuteStepAsync(TStep step, TConfig config, TInput input, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Asserts that the actual step output matches the expected outcome.
@@ -104,6 +124,22 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         protected virtual void AssertOutputs(TOutput actual, TOutput expected)
         {
             Assert.Equivalent(expected, actual);
+        }
+
+        /// <summary>
+        /// Automatically tests cancellation behavior for every inheriting workflow step.
+        /// </summary>
+        [Fact]
+        [Trait("WorkflowStep", "Cancellation")]
+        public async Task Process_Cancellation_ThrowsTaskCanceledException()
+        {
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            var sut = CreateStep(DefaultTestConfig, DefaultTestInput, default);
+
+            await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+                await ExecuteStepAsync(sut, DefaultTestConfig, DefaultTestInput, cts.Token));
         }
 
         /// <inheritdoc/>

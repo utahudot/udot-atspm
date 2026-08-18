@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects/IdentifyandAdjustVehicleActivationsTestData.cs
 // 
@@ -31,6 +31,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
     }
 
     public class AggregateDetectorEventCountTestData : AnalysisTestDataBase { }
+
+    public class AggregateSignalEventCountTestData : AnalysisTestDataBase { }
 
 
     public class AggregatePedestrianPhasesTestData : AnalysisTestDataBase { }
