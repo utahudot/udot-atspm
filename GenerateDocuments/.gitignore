@@ -5,3 +5,5 @@
 *.user
 TestResults/
 site/build/
+_generated/
+_source/
