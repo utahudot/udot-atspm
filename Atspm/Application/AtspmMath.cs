@@ -277,5 +277,60 @@ namespace Utah.Udot.Atspm
             return Math.Sqrt(sumOfSquares / (sequence.Count() - 1));
         }
 
+        /// <summary>
+        /// Merges any collection of overlapping time intervals.
+        /// </summary>
+        /// <param name="intervals">The collection of intervals to merge.</param>
+        /// <returns>A list of merged, distinct, non-overlapping intervals.</returns>
+        public static List<Tuple<DateTime, DateTime>> MergeOverlappingIntervals(this IEnumerable<Tuple<DateTime, DateTime>> intervals)
+        {
+            var sorted = intervals.OrderBy(i => i.Item1).ToList();
+            if (sorted.Count <= 1)
+            {
+                return sorted;
+            }
+
+            var merged = new List<Tuple<DateTime, DateTime>> { sorted[0] };
+
+            foreach (var current in sorted.Skip(1))
+            {
+                var last = merged[^1];
+                if (current.Item1 <= last.Item2)
+                {
+                    if (current.Item2 > last.Item2)
+                    {
+                        merged[merged.Count - 1] = Tuple.Create(last.Item1, current.Item2);
+                    }
+                }
+                else
+                {
+                    merged.Add(current);
+                }
+            }
+
+            return merged;
+        }
+
+        /// <summary>
+        /// Calculates the total duration of intersection between a collection of intervals and a target time window.
+        /// </summary>
+        /// <param name="windowStart">The start time of the target window.</param>
+        /// <param name="windowEnd">The end time of the target window.</param>
+        /// <param name="intervals">The collection of intervals to intersect.</param>
+        /// <returns>The total intersection duration, in seconds.</returns>
+        public static double GetIntersectionDuration(DateTime windowStart, DateTime windowEnd, IEnumerable<Tuple<DateTime, DateTime>> intervals)
+        {
+            if (windowStart >= windowEnd)
+            {
+                return 0;
+            }
+
+            return intervals
+                .Where(i => i.Item1 < windowEnd && i.Item2 > windowStart)
+                .Sum(i => (MathMin(i.Item2, windowEnd) - MathMax(i.Item1, windowStart)).TotalSeconds);
+        }
+
+        private static DateTime MathMin(DateTime a, DateTime b) => a < b ? a : b;
+        private static DateTime MathMax(DateTime a, DateTime b) => a > b ? a : b;
     }
 }

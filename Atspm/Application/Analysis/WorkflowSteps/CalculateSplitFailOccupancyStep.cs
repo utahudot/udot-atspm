@@ -102,8 +102,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
                 foreach (var cycle in cycles)
                 {
-                    var greenOccupancy = GetIntersectionDuration(cycle.GreenStart, cycle.YellowStart, intervals);
-                    var redOccupancy = GetIntersectionDuration(cycle.RedStart, cycle.RedStart.AddSeconds(_redAnalysisSeconds), intervals);
+                    var greenOccupancy = AtspmMath.GetIntersectionDuration(cycle.GreenStart, cycle.YellowStart, intervals);
+                    var redOccupancy = AtspmMath.GetIntersectionDuration(cycle.RedStart, cycle.RedStart.AddSeconds(_redAnalysisSeconds), intervals);
 
                     var greenDuration = (cycle.YellowStart - cycle.GreenStart).TotalSeconds;
                     var greenOccupancyPercent = greenDuration > 0 ? (greenOccupancy / greenDuration) * 100 : 0;
@@ -128,20 +128,5 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             return Task.FromResult(Tuple.Create(location, phaseResults));
         }
-
-        private static double GetIntersectionDuration(DateTime windowStart, DateTime windowEnd, IEnumerable<Tuple<DateTime, DateTime>> intervals)
-        {
-            if (windowStart >= windowEnd)
-            {
-                return 0;
-            }
-
-            return intervals
-                .Where(i => i.Item1 < windowEnd && i.Item2 > windowStart)
-                .Sum(i => (MathMin(i.Item2, windowEnd) - MathMax(i.Item1, windowStart)).TotalSeconds);
-        }
-
-        private static DateTime MathMin(DateTime a, DateTime b) => a < b ? a : b;
-        private static DateTime MathMax(DateTime a, DateTime b) => a > b ? a : b;
     }
 }

@@ -15,15 +15,11 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
@@ -73,85 +69,13 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                             Timestamp = AtspmMath.AdjustTimeStamp(e.Timestamp, phaseDetail.Approach.Mph ?? 0, detector.DistanceFromStopBar ?? 0, detector.LatencyCorrection)
                         });
 
-                    var detectorIntervals = GetPresenceIntervalsForChannel(channelEvents, minTime, maxTime);
-                    rawIntervals.AddRange(detectorIntervals);
+                    rawIntervals.AddRange(channelEvents.GetPresenceIntervals(minTime, maxTime));
                 }
 
-                var mergedIntervals = MergeIntervals(rawIntervals);
-                phasePresence.Add(phaseDetail, mergedIntervals);
+                phasePresence.Add(phaseDetail, rawIntervals.MergeOverlappingIntervals());
             }
 
             return Task.FromResult(Tuple.Create(location, phaseCycles, phasePresence));
-        }
-
-        private static IEnumerable<Tuple<DateTime, DateTime>> GetPresenceIntervalsForChannel(IEnumerable<IndianaEvent> events, DateTime start, DateTime end)
-        {
-            var sorted = events
-                .Where(e => e.EventCode == (short)IndianaEnumerations.VehicleDetectorOn || e.EventCode == (short)IndianaEnumerations.VehicleDetectorOff)
-                .OrderBy(e => e.Timestamp)
-                .ToList();
-
-            if (!sorted.Any())
-            {
-                yield break;
-            }
-
-            DateTime? currentOnTime = null;
-
-            if (sorted[0].EventCode == (short)IndianaEnumerations.VehicleDetectorOff)
-            {
-                currentOnTime = start;
-            }
-
-            foreach (var ev in sorted)
-            {
-                if (ev.EventCode == (short)IndianaEnumerations.VehicleDetectorOn)
-                {
-                    if (!currentOnTime.HasValue)
-                    {
-                        currentOnTime = ev.Timestamp;
-                    }
-                }
-                else if (ev.EventCode == (short)IndianaEnumerations.VehicleDetectorOff && currentOnTime.HasValue)
-                {
-                    yield return Tuple.Create(currentOnTime.Value, ev.Timestamp);
-                    currentOnTime = null;
-                }
-            }
-
-            if (currentOnTime.HasValue)
-            {
-                yield return Tuple.Create(currentOnTime.Value, end);
-            }
-        }
-
-        private static List<Tuple<DateTime, DateTime>> MergeIntervals(IEnumerable<Tuple<DateTime, DateTime>> intervals)
-        {
-            var sorted = intervals.OrderBy(i => i.Item1).ToList();
-            if (sorted.Count <= 1)
-            {
-                return sorted;
-            }
-
-            var merged = new List<Tuple<DateTime, DateTime>> { sorted[0] };
-
-            foreach (var current in sorted.Skip(1))
-            {
-                var last = merged[^1];
-                if (current.Item1 <= last.Item2)
-                {
-                    if (current.Item2 > last.Item2)
-                    {
-                        merged[merged.Count - 1] = Tuple.Create(last.Item1, current.Item2);
-                    }
-                }
-                else
-                {
-                    merged.Add(current);
-                }
-            }
-
-            return merged;
         }
     }
 }
