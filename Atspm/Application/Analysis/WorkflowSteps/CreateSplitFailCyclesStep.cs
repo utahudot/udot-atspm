@@ -71,6 +71,15 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             var phaseCycles = new Dictionary<PhaseDetail, List<CycleTimestamps>>();
 
+            if (!locationEvents.Any())
+            {
+                foreach (var phaseDetail in phaseDetails)
+                {
+                    phaseCycles.Add(phaseDetail, new List<CycleTimestamps>());
+                }
+                return Task.FromResult(Tuple.Create(location, rawEvents, phaseCycles));
+            }
+
             foreach (var phaseDetail in phaseDetails)
             {
                 var cycleEvents = locationEvents.GetCycleEventsWithTimeExtension(

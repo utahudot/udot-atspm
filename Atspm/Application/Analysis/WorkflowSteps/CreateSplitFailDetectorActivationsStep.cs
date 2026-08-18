@@ -42,6 +42,15 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 
             var phasePresence = new Dictionary<PhaseDetail, List<Tuple<DateTime, DateTime>>>();
 
+            if (!locationEvents.Any())
+            {
+                foreach (var phaseDetail in phaseCycles.Keys)
+                {
+                    phasePresence.Add(phaseDetail, new List<Tuple<DateTime, DateTime>>());
+                }
+                return Task.FromResult(Tuple.Create(location, phaseCycles, phasePresence));
+            }
+
             var minTime = locationEvents.Min(e => e.Timestamp);
             var maxTime = locationEvents.Max(e => e.Timestamp);
 
