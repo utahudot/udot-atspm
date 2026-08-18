@@ -2,7 +2,8 @@
   "$schema": "./container-config-map.schema.json",
   "schemaVersion": 1,
   "sourcePaths": [
-    "Atspm/Infrastructure/Configuration"
+    "Atspm/Infrastructure/Configuration",
+    "Atspm/Data/Enums"
   ],
   "containers": [
     {

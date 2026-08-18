@@ -339,8 +339,8 @@ public sealed partial class MarkdownDocumentationGenerator
             section.SourcePath) + $"#L{section.SourceLine}";
         builder.AppendLine($"[View source]({sourceUrl})");
         builder.AppendLine();
-        builder.AppendLine("| Setting | Type | Default | Required | Environment variable | Description |");
-        builder.AppendLine("| --- | --- | --- | --- | --- | --- |");
+        builder.AppendLine("| Setting | Type | Default | Required | Options | Environment variable | Description |");
+        builder.AppendLine("| --- | --- | --- | --- | --- | --- | --- |");
 
         foreach (var property in section.Properties)
         {
@@ -351,18 +351,22 @@ public sealed partial class MarkdownDocumentationGenerator
                 "<br>",
                 environmentVariables.Select(suffix =>
                     $"`{EscapeCode(MappedSectionName.ToEnvironmentVariablePrefix(section.SectionName))}__{EscapeCode(suffix)}`"));
+            var enumOptions = property.Options is { Count: > 0 }
+                ? string.Join("<br>", property.Options.Select(option => $"`{EscapeCode(option)}`"))
+                : string.Empty;
             builder.AppendLine(
                 $"| `{EscapeCode(property.Name)}` " +
                 $"| `{EscapeCode(property.TypeName)}` " +
                 $"| `{EscapeCode(property.DefaultExpression)}` " +
                 $"| {(property.IsRequired ? "Yes" : "No")} " +
+                $"| {enumOptions} " +
                 $"| {environmentVariable} " +
                 $"| {EscapeTableText(property.Summary ?? string.Empty)} |");
         }
 
         if (section.Properties.Count == 0)
         {
-            builder.AppendLine("| _No public configuration properties_ |  |  |  |  |  |");
+            builder.AppendLine("| _No public configuration properties_ |  |  |  |  |  |  |");
         }
 
         builder.AppendLine();

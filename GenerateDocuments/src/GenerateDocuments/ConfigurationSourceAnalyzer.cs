@@ -17,6 +17,7 @@ public sealed partial class ConfigurationSourceAnalyzer
         var normalizedRoot = Path.GetFullPath(sourceRoot);
         var sections = new Dictionary<string, ConfigurationSection>(StringComparer.Ordinal);
         var types = new List<TypeDeclarationSyntax>();
+        var enums = new List<EnumDeclarationSyntax>();
 
         foreach (var file in EnumerateSourceFiles(normalizedRoot, sourcePaths))
         {
@@ -29,10 +30,14 @@ public sealed partial class ConfigurationSourceAnalyzer
             var root = tree.GetCompilationUnitRoot();
 
             types.AddRange(root.DescendantNodes().OfType<TypeDeclarationSyntax>());
+            enums.AddRange(root.DescendantNodes().OfType<EnumDeclarationSyntax>());
         }
 
         var typesByName = types
             .GroupBy(type => type.Identifier.ValueText, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+        var enumsByName = enums
+            .GroupBy(enumDeclaration => enumDeclaration.Identifier.ValueText, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
 
         foreach (var type in types)
@@ -46,7 +51,7 @@ public sealed partial class ConfigurationSourceAnalyzer
                 continue;
             }
 
-            var section = CreateSection(type, attribute, normalizedRoot, typesByName);
+            var section = CreateSection(type, attribute, normalizedRoot, typesByName, enumsByName);
             if (!sections.TryAdd(section.SectionName, section))
             {
                 throw new InvalidDataException(
@@ -97,7 +102,8 @@ public sealed partial class ConfigurationSourceAnalyzer
         TypeDeclarationSyntax type,
         AttributeSyntax attribute,
         string sourceRoot,
-        IReadOnlyDictionary<string, TypeDeclarationSyntax> typesByName)
+        IReadOnlyDictionary<string, TypeDeclarationSyntax> typesByName,
+        IReadOnlyDictionary<string, EnumDeclarationSyntax> enumsByName)
     {
         var arguments = attribute.ArgumentList?.Arguments ?? default;
         var sectionArgument = FindArgument(arguments, "sectionName", 0)
@@ -116,6 +122,7 @@ public sealed partial class ConfigurationSourceAnalyzer
             .Select(property => CreateProperty(
                 property,
                 typesByName,
+                enumsByName,
                 new HashSet<string>(StringComparer.Ordinal) { type.Identifier.ValueText }))
             .ToArray();
 
@@ -211,6 +218,7 @@ public sealed partial class ConfigurationSourceAnalyzer
     private static ConfigurationProperty CreateProperty(
         PropertyDeclarationSyntax property,
         IReadOnlyDictionary<string, TypeDeclarationSyntax> typesByName,
+        IReadOnlyDictionary<string, EnumDeclarationSyntax> enumsByName,
         IReadOnlySet<string> visitedTypes)
     {
         var typeName = property.Type
@@ -237,7 +245,23 @@ public sealed partial class ConfigurationSourceAnalyzer
             defaultExpression,
             isRequired,
             XmlDocumentationReader.ReadSummary(property, includeInheritDoc: true),
-            GetEnvironmentVariableSuffixes(property, typesByName, visitedTypes));
+            GetEnvironmentVariableSuffixes(property, typesByName, visitedTypes),
+            GetEnumOptions(property.Type, enumsByName));
+    }
+
+    private static IReadOnlyList<string>? GetEnumOptions(
+        TypeSyntax propertyType,
+        IReadOnlyDictionary<string, EnumDeclarationSyntax> enumsByName)
+    {
+        var (typeName, _, _) = DescribeType(propertyType);
+        if (!enumsByName.TryGetValue(typeName, out var enumDeclaration))
+        {
+            return null;
+        }
+
+        return enumDeclaration.Members
+            .Select(member => member.Identifier.ValueText)
+            .ToArray();
     }
 
     private static IReadOnlyList<string> GetEnvironmentVariableSuffixes(

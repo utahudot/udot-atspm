@@ -16,10 +16,10 @@ Options used by the sample utility.
 
 [View source](https://github.com/utahudot/udot-atspm/blob/abc123/Atspm/Infrastructure/Configuration/SampleOptions.cs#L10)
 
-| Setting | Type | Default | Required | Environment variable | Description |
-| --- | --- | --- | --- | --- | --- |
-| `Dates` | `IEnumerable<DateTime?>` | `[]` | No | `SampleOptions__Dates` | Dates to include. |
-| `Path` | `string` | `System.IO.Path.GetTempPath()` | Yes | `SampleOptions__Path` | Output path \| directory. |
+| Setting | Type | Default | Required | Options | Environment variable | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Dates` | `IEnumerable<DateTime?>` | `[]` | No |  | `SampleOptions__Dates` | Dates to include. |
+| `Path` | `string` | `System.IO.Path.GetTempPath()` | Yes | `Local`<br>`Remote` | `SampleOptions__Path` | Output path \| directory. |
 
 ## Example JSON configuration
 

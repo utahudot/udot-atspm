@@ -46,7 +46,9 @@ public sealed class MarkdownDocumentationGeneratorTests
                         "string",
                         "System.IO.Path.GetTempPath()",
                         true,
-                        "Output path | directory.")
+                        "Output path | directory.",
+                        null,
+                        ["Local", "Remote"])
                 ])
         };
         var options = new CliOptions(

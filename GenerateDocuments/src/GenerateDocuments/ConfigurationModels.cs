@@ -14,6 +14,7 @@ public sealed record ConfigurationProperty(
     string DefaultExpression,
     bool IsRequired,
     string? Summary,
-    IReadOnlyList<string>? EnvironmentVariableSuffixes = null);
+    IReadOnlyList<string>? EnvironmentVariableSuffixes = null,
+    IReadOnlyList<string>? Options = null);
 
 public sealed record GenerationResult(int PageCount, int DocumentedSectionCount);

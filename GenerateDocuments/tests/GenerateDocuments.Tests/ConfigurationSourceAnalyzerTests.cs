@@ -33,6 +33,8 @@ public sealed class ConfigurationSourceAnalyzerTests
                 /// <inheritdoc cref="NestedOptions"/>
                 public NestedOptions Inherited { get; set; } = new NestedOptions();
 
+                public SampleMode Mode { get; set; } = SampleMode.Automatic;
+
                 private string Hidden { get; set; } = "hidden";
 
                 string ImplicitlyPrivate { get; set; } = "hidden";
@@ -41,6 +43,13 @@ public sealed class ConfigurationSourceAnalyzerTests
             }
 
             public class NestedOptions;
+
+            public enum SampleMode
+            {
+                Automatic,
+                Manual,
+                Disabled
+            }
             """);
 
         var sections = new ConfigurationSourceAnalyzer().Analyze(directory.Path, ["."]);
@@ -51,7 +60,7 @@ public sealed class ConfigurationSourceAnalyzerTests
         Assert.Equal("Configuration for a sample process.", section.Summary);
         Assert.Equal("Options.cs", section.SourcePath);
         Assert.Equal(8, section.SourceLine);
-        Assert.Equal(4, section.Properties.Count);
+        Assert.Equal(5, section.Properties.Count);
 
         var dates = Assert.Single(section.Properties, property => property.Name == "Dates");
         Assert.Equal("IEnumerable<DateTime?>", dates.TypeName);
@@ -69,6 +78,9 @@ public sealed class ConfigurationSourceAnalyzerTests
 
         var inherited = Assert.Single(section.Properties, property => property.Name == "Inherited");
         Assert.Equal("See NestedOptions.", inherited.Summary);
+
+        var mode = Assert.Single(section.Properties, property => property.Name == "Mode");
+        Assert.Equal(["Automatic", "Manual", "Disabled"], mode.Options);
     }
 
     [Fact]
