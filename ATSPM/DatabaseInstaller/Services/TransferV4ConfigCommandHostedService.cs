@@ -150,6 +150,8 @@ namespace DatabaseInstaller.Services
             _jurisdictionRepository = jurisdictionRepository;
             _locationTypeRepository = locationTypeRepository;
             _config = config.Value;
+            _v4ToV5JurisdictionMap = new Dictionary<int, int>();
+            _v4ToV5RegionMap = new Dictionary<int, int>();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -308,12 +310,12 @@ namespace DatabaseInstaller.Services
                                 signals.Add(new V4Signal
                                 {
                                     SignalID = reader.GetString(0),
-                                    PrimaryName = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    SecondaryName = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    PrimaryName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                                    SecondaryName = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                                     Latitude = latitude,
                                     Longitude = longitude,
-                                    IPAddress = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    Note = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                    IPAddress = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                                    Note = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
                                     RegionID = reader.IsDBNull(7) ? null : (int?)reader.GetInt32(7),
                                     ControllerTypeID = reader.IsDBNull(8) ? null : (int?)reader.GetInt32(8),
                                     Enabled = !reader.IsDBNull(9) && reader.GetBoolean(9),
@@ -373,12 +375,12 @@ namespace DatabaseInstaller.Services
                     controllerTypes.Add(new V4ControllerType
                     {
                         ControllerTypeID = reader.GetInt32(0),
-                        Description = reader.IsDBNull(1) ? null : reader.GetString(1),
+                        Description = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
                         SNMPPort = reader.IsDBNull(2) ? 0 : reader.GetInt64(2),
-                        FTPDirectory = reader.IsDBNull(3) ? null : reader.GetString(3),
+                        FTPDirectory = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                         ActiveFTP = !reader.IsDBNull(4) && reader.GetBoolean(4),
-                        UserName = reader.IsDBNull(5) ? null : reader.GetString(5),
-                        Password = reader.IsDBNull(6) ? null : reader.GetString(6)
+                        UserName = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                        Password = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
                     });
                 }
             }
@@ -437,14 +439,14 @@ namespace DatabaseInstaller.Services
                         {
                             while (await reader.ReadAsync(cancellationToken))
                             {
-                                var signalId = reader.IsDBNull(1) ? null : reader.GetString(1);
+                                var signalId = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
 
                                 approaches.Add(new V4Approach
                                 {
                                     ApproachID = reader.GetInt32(0),
                                     SignalID = signalId,
                                     DirectionTypeID = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
-                                    Description = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                    Description = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                                     ProtectedPhaseNumber = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
                                     PermissivePhaseNumber = reader.IsDBNull(5) ? null : (int?)reader.GetInt32(5),
                                     PedestrianPhaseNumber = reader.IsDBNull(6) ? null : (int?)reader.GetInt32(6),
@@ -452,7 +454,7 @@ namespace DatabaseInstaller.Services
                                     IsProtectedPhaseOverlap = reader.IsDBNull(8) ? false : reader.GetBoolean(8),
                                     IsPermissivePhaseOverlap = reader.IsDBNull(9) ? false : reader.GetBoolean(9),
                                     IsPedestrianPhaseOverlap = reader.IsDBNull(10) ? false : reader.GetBoolean(10),
-                                    PedestrianDetectors = reader.IsDBNull(11) ? null : reader.GetString(11)
+                                    PedestrianDetectors = reader.IsDBNull(11) ? string.Empty : reader.GetString(11)
                                 });
                             }
                         }
@@ -516,7 +518,7 @@ namespace DatabaseInstaller.Services
                                 {
                                     ID = reader.GetInt32(0),
                                     ApproachID = reader.GetInt32(1),
-                                    DetectorID = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    DetectorID = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                                     DetChannel = reader.IsDBNull(3) ? 0 : reader.GetInt32(3),
                                     DistanceFromStopBar = reader.IsDBNull(4) ? null : (int?)reader.GetInt32(4),
                                     MinSpeedFilter = reader.IsDBNull(5) ? null : (int?)reader.GetInt32(5),
@@ -582,7 +584,7 @@ namespace DatabaseInstaller.Services
                                     CommentID = reader.GetInt32(0),
                                     ID = reader.GetInt32(1),
                                     TimeStamp = reader.GetDateTime(2),
-                                    CommentText = reader.IsDBNull(3) ? null : reader.GetString(3)
+                                    CommentText = reader.IsDBNull(3) ? string.Empty : reader.GetString(3)
                                 });
                             }
                         }
@@ -706,10 +708,10 @@ namespace DatabaseInstaller.Services
                             {
                                 jurisdictions.Add((
                                     reader.GetInt32(0),
-                                    reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    reader.IsDBNull(3) ? null : reader.GetString(3),
-                                    reader.IsDBNull(4) ? null : reader.GetString(4)
+                                    reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                                    reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                                    reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                                    reader.IsDBNull(4) ? string.Empty : reader.GetString(4)
                                 ));
                             }
                         }
@@ -749,7 +751,7 @@ namespace DatabaseInstaller.Services
                             {
                                 regions.Add((
                                     reader.GetInt32(0),
-                                    reader.IsDBNull(1) ? null : reader.GetString(1)
+                                    reader.IsDBNull(1) ? string.Empty : reader.GetString(1)
                                 ));
                             }
                         }
@@ -1066,10 +1068,10 @@ namespace DatabaseInstaller.Services
                     ControllerTypeID = controllerTypeId ?? 0,
                     Description = "SignalController",
                     SNMPPort = 161,
-                    FTPDirectory = null,
+                    FTPDirectory = string.Empty,
                     ActiveFTP = false,
-                    UserName = null,
-                    Password = null
+                    UserName = string.Empty,
+                    Password = string.Empty
                 };
             }
 
@@ -1161,7 +1163,7 @@ namespace DatabaseInstaller.Services
             return product.Id;
         }
 
-        private async Task<V4ControllerType> LoadSingleV4ControllerTypeAsync(string connectionString, int controllerTypeId, CancellationToken cancellationToken)
+        private async Task<V4ControllerType?> LoadSingleV4ControllerTypeAsync(string connectionString, int controllerTypeId, CancellationToken cancellationToken)
         {
             var controllerTypes = await LoadV4ControllerTypesAsync(connectionString, new List<int> { controllerTypeId }, cancellationToken);
             return controllerTypes.FirstOrDefault();
@@ -1691,13 +1693,13 @@ WHERE EXISTS (SELECT 1 FROM [dbo].[DetectionTypes] WHERE [Id] = @DetectionTypeId
     // Data transfer objects for v4 entities
     internal class V4Signal
     {
-        public string SignalID { get; set; }
-        public string PrimaryName { get; set; }
-        public string SecondaryName { get; set; }
+        public string SignalID { get; set; } = string.Empty;
+        public string PrimaryName { get; set; } = string.Empty;
+        public string SecondaryName { get; set; } = string.Empty;
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public string IPAddress { get; set; }
-        public string Note { get; set; }
+        public string IPAddress { get; set; } = string.Empty;
+        public string Note { get; set; } = string.Empty;
         public int? RegionID { get; set; }
         public int? ControllerTypeID { get; set; }
         public bool Enabled { get; set; }
@@ -1708,20 +1710,20 @@ WHERE EXISTS (SELECT 1 FROM [dbo].[DetectionTypes] WHERE [Id] = @DetectionTypeId
     internal class V4ControllerType
     {
         public int ControllerTypeID { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public long SNMPPort { get; set; }
-        public string FTPDirectory { get; set; }
+        public string FTPDirectory { get; set; } = string.Empty;
         public bool ActiveFTP { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 
     internal class V4Approach
     {
         public int ApproachID { get; set; }
-        public string SignalID { get; set; }
+        public string SignalID { get; set; } = string.Empty;
         public int DirectionTypeID { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public int ProtectedPhaseNumber { get; set; }
         public int? PermissivePhaseNumber { get; set; }
         public int? PedestrianPhaseNumber { get; set; }
@@ -1729,14 +1731,14 @@ WHERE EXISTS (SELECT 1 FROM [dbo].[DetectionTypes] WHERE [Id] = @DetectionTypeId
         public bool IsProtectedPhaseOverlap { get; set; }
         public bool IsPermissivePhaseOverlap { get; set; }
         public bool IsPedestrianPhaseOverlap { get; set; }
-        public string PedestrianDetectors { get; set; }
+        public string PedestrianDetectors { get; set; } = string.Empty;
     }
 
     internal class V4Detector
     {
         public int ID { get; set; }
         public int ApproachID { get; set; }
-        public string DetectorID { get; set; }
+        public string DetectorID { get; set; } = string.Empty;
         public int DetChannel { get; set; }
         public int? DistanceFromStopBar { get; set; }
         public int? MinSpeedFilter { get; set; }
@@ -1762,6 +1764,6 @@ WHERE EXISTS (SELECT 1 FROM [dbo].[DetectionTypes] WHERE [Id] = @DetectionTypeId
         public int CommentID { get; set; }
         public int ID { get; set; }
         public DateTime TimeStamp { get; set; }
-        public string CommentText { get; set; }
+        public string CommentText { get; set; } = string.Empty;
     }
 }
