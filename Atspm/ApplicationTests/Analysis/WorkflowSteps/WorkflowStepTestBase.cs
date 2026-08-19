@@ -78,15 +78,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         /// <param name="input">The input data packet.</param>
         /// <param name="expected">The expected output data packet.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        [Theory]
+        [SkippableTheory]
         [AnalysisTestData]
         public virtual async Task ExecuteStepFromFileTest(TConfig config, TInput input, TOutput expected)
         {
-            if (config == null || input == null)
-            {
-                Output?.WriteLine("No JSON test data files available yet. Skipping generic file-based theory test.");
-                return;
-            }
+            Skip.If(config == null || input == null, "No JSON test data files available yet. Skipping generic file-based theory test.");
 
             var sut = CreateStep(config, input, expected);
 
