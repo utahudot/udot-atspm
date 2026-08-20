@@ -118,7 +118,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             {
                 logMessages.AdminNotFound(email);
 
-                var user = new ApplicationUser { UserName = email, Email = email };
+                var user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = "Admin",
+                    LastName = "User",
+                    Agency = "Transportation Agency"
+                };
+
                 var result = await userManager.CreateAsync(user, password);
 
                 if (result.Succeeded)
