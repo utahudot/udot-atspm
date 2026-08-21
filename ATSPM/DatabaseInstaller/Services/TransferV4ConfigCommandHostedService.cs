@@ -45,10 +45,10 @@ namespace DatabaseInstaller.Services
     /// SignalName (append region/area)   SecondaryName              Secondary name for clarity
     /// Latitude                          Latitude                   Coordinate mapping
     /// Longitude                         Longitude                  Coordinate mapping
-    /// NULL (default true)               ChartEnabled               Defaults to false initially
+    /// NULL (default true)               ChartEnabled               Defaults to true initially
     /// NULL (default)                    VersionAction              Set to New
     /// Comments                          Note                       Migration comment field
-    /// NULL (default NOW)                Start                      Set to current date/time
+    /// Start                             Start                      Mapped from v4 Signal.Start
     /// NULL (default false)              PedsAre1to1                Defaults to false; check v4 if available
     /// NULL (create/lookup)              LocationTypeId             Lookup or default to standard type (ID 1)
     /// NULL (optional)                   JurisdictionId             Lookup by jurisdiction if available in v4
@@ -278,7 +278,8 @@ namespace DatabaseInstaller.Services
                             ControllerTypeID,
                             Enabled,
                             JurisdictionId,
-                            Pedsare1to1
+                            Pedsare1to1,
+                            Start
                         FROM Signals
                         WHERE 1=1";
 
@@ -320,7 +321,8 @@ namespace DatabaseInstaller.Services
                                     ControllerTypeID = reader.IsDBNull(8) ? null : (int?)reader.GetInt32(8),
                                     Enabled = !reader.IsDBNull(9) && reader.GetBoolean(9),
                                     JurisdictionId = reader.IsDBNull(10) ? null : (int?)reader.GetInt32(10),
-                                    Pedsare1to1 = reader.IsDBNull(11) ? false : reader.GetBoolean(11)
+                                    Pedsare1to1 = reader.IsDBNull(11) ? false : reader.GetBoolean(11),
+                                    Start = reader.IsDBNull(12) ? DateTime.Now : reader.GetDateTime(12)
                                 });
                             }
                         }
@@ -889,10 +891,10 @@ namespace DatabaseInstaller.Services
                             SecondaryName = v4Signal.SecondaryName ?? string.Empty,
                             Latitude = v4Signal.Latitude,
                             Longitude = v4Signal.Longitude,
-                            ChartEnabled = false,
+                            ChartEnabled = true,
                             VersionAction = LocationVersionActions.New,
                             Note = v4Signal.Note ?? "Migrated from v4",
-                            Start = DateTime.Now,
+                            Start = v4Signal.Start,
                             PedsAre1to1 = v4Signal.Pedsare1to1,
                             LocationTypeId = 1,
                             // Map jurisdiction from v4 to v5 ID
@@ -1718,6 +1720,7 @@ VALUES
         public bool Enabled { get; set; }
         public int? JurisdictionId { get; set; }
         public bool Pedsare1to1 { get; set; }
+        public DateTime Start { get; set; }
     }
 
     internal class V4ControllerType

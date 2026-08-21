@@ -27,6 +27,8 @@ The migration is safe to run more than once. Existing Locations, Devices, Approa
 | Comments | Note | |
 | JurisdictionID | JurisdictionId | Mapped through synced jurisdiction keys |
 | RegionID | RegionId | Mapped through synced region keys |
+| Enabled | ChartEnabled | Sets the Location's chart-enabled status |
+| Start | Start | Determines earliest date charts could be generated |
 
 ### Signals -> Devices
 | v4 Source | v5 Target | Notes |
