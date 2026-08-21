@@ -25,6 +25,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 
 namespace DatabaseInstaller.Services
@@ -189,6 +190,7 @@ namespace DatabaseInstaller.Services
             _logger.LogInformation("Migrations applied for IdentityContext.");
 
             // Seed roles and claims
+            await serviceProvider.SeedIdentityData();
             //await RolesAndClaimsDBInitializer.SeedRolesAndClaims(serviceProvider, _config.IdentityConnection);
         }
 
