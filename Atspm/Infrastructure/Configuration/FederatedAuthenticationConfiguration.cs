@@ -64,6 +64,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         public List<string> CustomScopes { get; set; } = new();
 
         /// <summary>
+        /// Gets or sets a value indicating whether roles from the external identity provider should be synchronized to the local user.
+        /// </summary>
+        public bool EnableRoleSynchronization { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether geographic claims from the external provider should be synchronized.
+        /// </summary>
+        public bool EnableGeographySynchronization { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the claim mappings that bind OIDC claims to local user profile fields.
         /// </summary>
         public UserProfileClaimConfiguration UserProfileClaims { get; set; } = new();

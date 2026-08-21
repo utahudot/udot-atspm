@@ -296,16 +296,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             })
             .AddJwtBearer(options =>
             {
+                var keyString = host.Configuration["Jwt:Key"] ?? string.Empty;
+                var keyBytes = Encoding.UTF8.GetBytes(keyString);
+                if (keyBytes.Length < 32)
+                {
+                    var padded = new byte[32];
+                    Array.Copy(keyBytes, padded, Math.Min(keyBytes.Length, 32));
+                    keyBytes = padded;
+                }
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = false,
+                    ValidateAudience = !string.IsNullOrEmpty(host.Configuration["Jwt:Audience"]),
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = host.Configuration["Jwt:Issuer"],
                     ValidAudience = host.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(host.Configuration["Jwt:Key"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
                 };
             })
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", null);

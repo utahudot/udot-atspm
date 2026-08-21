@@ -198,36 +198,45 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
                     await _userManager.UpdateAsync(user).ConfigureAwait(false);
                 }
 
-                var areaIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.AreaIds);
-                var regionIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.RegionIds);
-                var jurisdictionIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.JurisdictionIds);
-
-                await _geographyRepository.UpdateUserGeographyAsync(user.Id, areaIds, regionIds, jurisdictionIds).ConfigureAwait(false);
-
-                _log.GeographySynchronized(
-                    user.Email,
-                    string.Join(",", areaIds),
-                    string.Join(",", regionIds),
-                    string.Join(",", jurisdictionIds));
-
-                if (!string.IsNullOrEmpty(providerConfig.UserProfileClaims?.Roles))
+                if (providerConfig.EnableGeographySynchronization)
                 {
-                    var desiredRoles = ParseStringListClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims.Roles);
-                    var currentRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                    var areaIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.AreaIds).ToList();
+                    var regionIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.RegionIds).ToList();
+                    var jurisdictionIds = ParseIntegerClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims?.JurisdictionIds).ToList();
 
-                    var rolesToAdd = desiredRoles.Except(currentRoles).ToList();
-                    var rolesToRemove = currentRoles.Except(desiredRoles).ToList();
-
-                    if (rolesToAdd.Any())
+                    if (areaIds.Any() || regionIds.Any() || jurisdictionIds.Any())
                     {
-                        await _userManager.AddToRolesAsync(user, rolesToAdd).ConfigureAwait(false);
-                    }
-                    if (rolesToRemove.Any())
-                    {
-                        await _userManager.RemoveFromRolesAsync(user, rolesToRemove).ConfigureAwait(false);
-                    }
+                        await _geographyRepository.UpdateUserGeographyAsync(user.Id, areaIds, regionIds, jurisdictionIds).ConfigureAwait(false);
 
-                    _log.RolesSynchronized(user.Email, string.Join(", ", desiredRoles));
+                        _log.GeographySynchronized(
+                            user.Email,
+                            string.Join(",", areaIds),
+                            string.Join(",", regionIds),
+                            string.Join(",", jurisdictionIds));
+                    }
+                }
+
+                if (providerConfig.EnableRoleSynchronization && !string.IsNullOrEmpty(providerConfig.UserProfileClaims?.Roles))
+                {
+                    var desiredRoles = ParseStringListClaims(externalInfo.UserClaims, providerConfig.UserProfileClaims.Roles).ToList();
+
+                    if (desiredRoles.Any())
+                    {
+                        var currentRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                        var rolesToAdd = desiredRoles.Except(currentRoles).ToList();
+                        var rolesToRemove = currentRoles.Except(desiredRoles).ToList();
+
+                        if (rolesToAdd.Any())
+                        {
+                            await _userManager.AddToRolesAsync(user, rolesToAdd).ConfigureAwait(false);
+                        }
+                        if (rolesToRemove.Any())
+                        {
+                            await _userManager.RemoveFromRolesAsync(user, rolesToRemove).ConfigureAwait(false);
+                        }
+
+                        _log.RolesSynchronized(user.Email, string.Join(", ", desiredRoles));
+                    }
                 }
             }
 
@@ -250,12 +259,19 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
             }
 
             var results = new List<int>();
-            var cleanedValue = claimValue.Trim('[', ']');
-            var parts = cleanedValue.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var cleanedValue = claimValue.Trim().Trim('[', ']');
+
+            if (cleanedValue.StartsWith("\"") && cleanedValue.EndsWith("\""))
+            {
+                cleanedValue = cleanedValue.Trim('"');
+            }
+
+            var parts = cleanedValue.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {
-                if (int.TryParse(part.Trim().Trim('"'), out var id))
+                var cleanPart = part.Trim().Trim('"').Trim();
+                if (int.TryParse(cleanPart, out var id))
                 {
                     results.Add(id);
                 }
@@ -272,12 +288,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
             }
 
             var results = new List<string>();
-            var cleanedValue = claimValue.Trim('[', ']');
-            var parts = cleanedValue.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var trimmedValue = claimValue.Trim();
+
+            if (trimmedValue.StartsWith("[") && trimmedValue.EndsWith("]"))
+            {
+                trimmedValue = trimmedValue.Substring(1, trimmedValue.Length - 2).Trim();
+            }
+
+            var parts = trimmedValue.Split(new[] { ',', ';', '"' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {
-                var val = part.Trim().Trim('"').Trim();
+                var val = part.Trim();
                 if (!string.IsNullOrWhiteSpace(val))
                 {
                     results.Add(val);
@@ -362,14 +384,25 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Identity
                 }
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var keyString = _configuration["Jwt:Key"] ?? string.Empty;
+            var keyBytes = Encoding.UTF8.GetBytes(keyString);
+            if (keyBytes.Length < 32)
+            {
+                var padded = new byte[32];
+                Array.Copy(keyBytes, padded, Math.Min(keyBytes.Length, 32));
+                keyBytes = padded;
+            }
+
+            var key = new SymmetricSecurityKey(keyBytes);
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expireDays = Convert.ToDouble(_configuration["Jwt:ExpireDays"] ?? "7");
             var expires = DateTime.Now.AddDays(expireDays);
 
+            var audience = _configuration["Jwt:Audience"];
+
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
-                null,
+                audience,
                 claims: claims,
                 expires: expires,
                 signingCredentials: credentials
