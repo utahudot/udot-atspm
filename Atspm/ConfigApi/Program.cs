@@ -97,6 +97,7 @@ builder.Host
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
         s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();
+        s.AddMemoryCache();
         s.Configure<GitHubReleaseConfiguration>(h.Configuration.GetSection(nameof(GitHubReleaseConfiguration)));
 
         s.AddAutoMapper(c =>
