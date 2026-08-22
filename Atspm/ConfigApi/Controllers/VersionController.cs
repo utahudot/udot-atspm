@@ -71,9 +71,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                var assembly = AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .FirstOrDefault(a => a.GetName().Name == "Utah.Udot.Atspm");
+                var assembly = typeof(IGitHubReleaseService).Assembly;
 
                 var info = assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
                 var tag = info?.InformationalVersion?.Split('+')[0];
