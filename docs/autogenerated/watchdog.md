@@ -2,7 +2,7 @@
 
 Configuration options available to the **Watchdog** container.
 
-<small>Generated on August 18, 2026 at 8:09 PM UTC.</small>
+<small>Generated on September 1, 2026 at 8:35 PM UTC.</small>
 
 ## Contents
 
@@ -16,7 +16,7 @@ Configuration options available to the **Watchdog** container.
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/utahudot/udot-atspm/blob/6b7f1ab23f0ae3d22fc0c437531aa05695e2e70b/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/959a545293005ce48ea370b1258fd3768f2e9032/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -33,7 +33,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/utahudot/udot-atspm/blob/6b7f1ab23f0ae3d22fc0c437531aa05695e2e70b/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/959a545293005ce48ea370b1258fd3768f2e9032/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,7 +50,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/utahudot/udot-atspm/blob/6b7f1ab23f0ae3d22fc0c437531aa05695e2e70b/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/959a545293005ce48ea370b1258fd3768f2e9032/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/utahudot/udot-atspm/blob/6b7f1ab23f0ae3d22fc0c437531aa05695e2e70b/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/959a545293005ce48ea370b1258fd3768f2e9032/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -86,7 +86,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Configuration values used by Watchdog scans, report windows, thresholds, and email behavior.
 
-[View source](https://github.com/utahudot/udot-atspm/blob/6b7f1ab23f0ae3d22fc0c437531aa05695e2e70b/Atspm/Infrastructure/Configuration/WatchdogConfiguration.cs#L23)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/959a545293005ce48ea370b1258fd3768f2e9032/Atspm/Infrastructure/Configuration/WatchdogConfiguration.cs#L23)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
