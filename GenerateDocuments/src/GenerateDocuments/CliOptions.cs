@@ -51,7 +51,6 @@ public sealed record CliOptions(
         }
 
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
-
         for (var index = 0; index < args.Length; index += 2)
         {
             var name = args[index];
