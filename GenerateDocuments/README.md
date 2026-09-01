@@ -1,3 +1,14 @@
+## NOTICE: Local generator removed
+
+This fork no longer contains the full local .NET generator source. The
+GitHub Actions workflow in this repository now checks out and runs the
+generator from the external repository
+`avenueconsultants/atspm-documentation-generator` and publishes generated
+documentation to the `Code-Documentations` branch in this repo.
+
+If you need the generator source restored here, re-add it from the external
+repository or open an issue.
+
 # ATSPM documentation generator
 
 This repository contains the source-only GitHub Action that generates ATSPM
