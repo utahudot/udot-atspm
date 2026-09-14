@@ -38,7 +38,17 @@ public class TransferConfigUpdateSpeedTests
     }
 
     [Fact]
-    public async Task StartAsync_UpdateSpeedWithoutBearerToken_Throws()
+    public void ApiKeyOption_ParsesValue()
+    {
+        var command = new TransferConfigCommand();
+
+        var parseResult = command.Parse(new[] { "--api-key", "test-api-key" });
+
+        Assert.Equal("test-api-key", parseResult.GetValueForOption(command.ApiKeyOption));
+    }
+
+    [Fact]
+    public async Task StartAsync_UpdateSpeedWithoutApiKey_Throws()
     {
         var service = CreateHostedService(new TransferConfigCommandConfiguration
         {
@@ -50,12 +60,12 @@ public class TransferConfigUpdateSpeedTests
             () => service.StartAsync(CancellationToken.None));
 
         Assert.Equal(
-            "A bearer token is required when transferring configuration from the Config API.",
+            "An API key is required when transferring configuration from the Config API.",
             exception.Message);
     }
 
     [Fact]
-    public async Task StartAsync_DeleteSpeedWithoutBearerToken_DoesNotDeleteDevices()
+    public async Task StartAsync_DeleteSpeedWithoutApiKey_DoesNotDeleteDevices()
     {
         var deviceRepository = new Mock<IDeviceRepository>();
         var service = CreateHostedService(
@@ -76,7 +86,7 @@ public class TransferConfigUpdateSpeedTests
     }
 
     [Fact]
-    public async Task StartAsync_WithoutUpdateFlags_DoesNotRequireBearerToken()
+    public async Task StartAsync_WithoutUpdateFlags_DoesNotRequireApiKey()
     {
         var deviceRepository = new Mock<IDeviceRepository>();
         var service = CreateHostedService(
@@ -89,7 +99,27 @@ public class TransferConfigUpdateSpeedTests
     }
 
     [Fact]
-    public void IdentifySpeedDevices_IncludesSpeedConfigurationAndWavetronixProduct()
+    public void CreateApiClient_UsesApiKeyHeaderWithoutBearerAuthorization()
+    {
+        var service = CreateHostedService(new TransferConfigCommandConfiguration
+        {
+            ApiBaseUrl = "https://example.test/",
+            ApiKey = "test-api-key"
+        });
+        var method = typeof(TransferConfigCommandHostedService).GetMethod(
+            "CreateApiClient",
+            BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        using var client = Assert.IsType<HttpClient>(method.Invoke(service, null));
+
+        Assert.Null(client.DefaultRequestHeaders.Authorization);
+        Assert.Equal(
+            "test-api-key",
+            Assert.Single(client.DefaultRequestHeaders.GetValues("X-API-KEY")));
+    }
+
+    [Fact]
+    public void IdentifySpeedDevices_IncludesSpeedDeviceTypeConfigurationAndWavetronixProduct()
     {
         var products = new List<Product>
         {
@@ -107,7 +137,8 @@ public class TransferConfigUpdateSpeedTests
             new() { Id = 1, DeviceConfigurationId = 100 },
             new() { Id = 2, DeviceConfigurationId = 101 },
             new() { Id = 3, DeviceConfigurationId = 102 },
-            new() { Id = 4, DeviceConfigurationId = null }
+            new() { Id = 4, DeviceConfigurationId = null },
+            new() { Id = 5, DeviceType = DeviceTypes.SpeedSensor, DeviceConfigurationId = 102 }
         };
 
         var method = typeof(TransferConfigCommandHostedService).GetMethod(
@@ -117,7 +148,7 @@ public class TransferConfigUpdateSpeedTests
         var result = Assert.IsType<List<Device>>(
             method.Invoke(null, new object[] { devices, configurations, products }));
 
-        Assert.Equal(new[] { 1, 2 }, result.Select(device => device.Id));
+        Assert.Equal(new[] { 1, 2, 5 }, result.Select(device => device.Id));
     }
 
     [Fact]

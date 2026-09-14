@@ -70,14 +70,14 @@ Imports configuration records from the ATSPM Config API into the target database
 ### Options
 
 - `--api-base-url`
-- `--bearer-token`
+- `--api-key`
 - `--delete`
 - `--update-locations`
 - `--update-speed`
 
 ### Notes
 
-- `--bearer-token` is required when importing configuration.
+- `--api-key` is required when importing configuration. The key is sent to the Config API in the `X-API-KEY` header.
 - With only `--update-speed`, `--delete` removes only existing speed devices before importing them again. Speed products, device configurations, locations, and other device types are preserved.
 - With `--update-locations`, `--delete` clears the existing target configuration before inserting new data.
 - `--update-locations` imports locations and related configuration data.
@@ -90,7 +90,7 @@ Imports configuration records from the ATSPM Config API into the target database
 ```bash
 dotnet run --project DatabaseInstaller -- transfer-config \
   --api-base-url "https://atspm.udot.utah.gov/config/" \
-  --bearer-token "<token>" \
+  --api-key "<key>" \
   --update-locations true
 ```
 

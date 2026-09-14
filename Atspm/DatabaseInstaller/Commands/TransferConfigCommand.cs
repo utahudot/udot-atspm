@@ -29,14 +29,14 @@ namespace DatabaseInstaller.Commands
         public TransferConfigCommand() : base("transfer-config", "Copy configuration data from the ATSPM Config API into the target database")
         {
             AddOption(ApiBaseUrlOption);
-            AddOption(BearerTokenOption);
+            AddOption(ApiKeyOption);
             AddOption(DeleteOption);
             AddOption(UpdateLocationsOption);
             AddOption(ImportSpeedDevicesOption);
         }
 
         public Option<string> ApiBaseUrlOption { get; set; } = new("--api-base-url", () => "https://atspm.udot.utah.gov/config/", "Base URL for the source ATSPM Config API");
-        public Option<string> BearerTokenOption { get; set; } = new("--bearer-token", "Bearer token used to access the source Config API");
+        public Option<string> ApiKeyOption { get; set; } = new("--api-key", "API key used to access the source Config API");
         public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete selected target records before importing");
         public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Import location configuration from the source Config API");
         public Option<bool> ImportSpeedDevicesOption { get; set; } = new("--update-speed", "Import speed devices from the source Config API");
@@ -46,7 +46,7 @@ namespace DatabaseInstaller.Commands
             var binder = new ModelBinder<TransferConfigCommandConfiguration>();
 
             binder.BindMemberFromValue(b => b.ApiBaseUrl, ApiBaseUrlOption);
-            binder.BindMemberFromValue(b => b.BearerToken, BearerTokenOption);
+            binder.BindMemberFromValue(b => b.ApiKey, ApiKeyOption);
             binder.BindMemberFromValue(b => b.Delete, DeleteOption);
             binder.BindMemberFromValue(b => b.UpdateLocations, UpdateLocationsOption);
             binder.BindMemberFromValue(b => b.ImportSpeedDevices, ImportSpeedDevicesOption);
@@ -66,7 +66,7 @@ namespace DatabaseInstaller.Commands
     public class TransferConfigCommandConfiguration
     {
         public string ApiBaseUrl { get; set; }
-        public string BearerToken { get; set; }
+        public string ApiKey { get; set; }
         public bool Delete { get; set; }
         public bool UpdateLocations { get; set; }
         public bool UpdateGeneralConfiguration { get; set; }

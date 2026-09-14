@@ -46,7 +46,6 @@ namespace Utah.Udot.Atspm.Business.PedDelay
             pedPhaseData.Cycles = new List<PedCycle>();
             pedPhaseData.PedBeginWalkEvents = new List<IndianaEvent>();
             pedPhaseData.HourlyTotals = new List<DataPointForDouble>();
-            pedPhaseData.Plans = GetPedPlans(options, plansData, pedEvents, mainEvents, pedPhaseData);
 
             if (pedPhaseData.Approach.IsPedestrianPhaseOverlap)
             {
@@ -58,6 +57,8 @@ namespace Utah.Udot.Atspm.Business.PedDelay
                 pedPhaseData.BeginWalkEvent = 21;
                 pedPhaseData.BeginClearanceEvent = 22;
             }
+
+            pedPhaseData.Plans = GetPedPlans(options, plansData, pedEvents, mainEvents, pedPhaseData);
 
             GetCycles(pedPhaseData, mainEvents, previousEvents);
             AddCyclesToPlans(pedPhaseData);
@@ -115,15 +116,22 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         {
             pedPhaseData.PedPresses = mainEvents.Count(e => e.EventCode == 90);
             pedPhaseData.UniquePedDetections = CountUniquePedDetections(mainEvents, previousEvents, pedPhaseData);
+            pedPhaseData.PedCallsRegisteredCount = mainEvents.Count(e => e.EventCode == 45);
 
+            var pedEventCodes = new List<short>
+            {
+                pedPhaseData.BeginWalkEvent,
+                pedPhaseData.BeginClearanceEvent,
+                90
+            };
+            // Ignore call-registration and detector-off events before collapsing repeated detector-on events.
+            mainEvents = mainEvents
+                .Where(e => pedEventCodes.Contains(e.EventCode))
+                .OrderBy(e => e.Timestamp)
+                .ToList();
             mainEvents = CombineSequential90s(mainEvents);
 
             pedPhaseData.PedRequests = mainEvents.Count(e => e.EventCode == 90);
-            pedPhaseData.PedCallsRegisteredCount = mainEvents.Count(e => e.EventCode == 45);
-
-            //mainEvents = Remove45s(mainEvents);
-            var pedEventCodes = new List<int> { 21, 22, 90 };
-            mainEvents = mainEvents.Where(e => pedEventCodes.Contains(e.EventCode)).OrderBy(e => e.Timestamp).ToList();
 
             pedPhaseData.PedBeginWalkCount = mainEvents.Count(e => e.EventCode == pedPhaseData.BeginWalkEvent);
             pedPhaseData.ImputedPedCallsRegistered = CountImputedPedCalls(mainEvents, previousEvents, pedPhaseData);
@@ -246,7 +254,7 @@ namespace Utah.Udot.Atspm.Business.PedDelay
             if (tempEvents.Count == 0) return 0;
 
             int pedDetections = 0;
-            var previousEventCode = GetPreviousEventCode(previousEvents, pedPhaseData);
+            var previousEventCode = GetPreviousPedDetectorOn(previousEvents);
 
             if (previousEventCode != null)
             {
@@ -269,6 +277,14 @@ namespace Utah.Udot.Atspm.Business.PedDelay
             }
 
             return pedDetections;
+        }
+
+        private IndianaEvent GetPreviousPedDetectorOn(List<IndianaEvent> previousEvents)
+        {
+            return previousEvents?
+                .Where(e => e.EventCode == 90)
+                .OrderByDescending(e => e.Timestamp)
+                .FirstOrDefault();
         }
 
         private void SetHourlyTotals(PedPhaseData pedPhaseData)

@@ -165,9 +165,9 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private async Task<SourceConfigData> LoadSourceConfigDataAsync(CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(_config.BearerToken))
+        if (string.IsNullOrWhiteSpace(_config.ApiKey))
         {
-            throw new InvalidOperationException("A bearer token is required when transferring configuration from the Config API.");
+            throw new InvalidOperationException("An API key is required when transferring configuration from the Config API.");
         }
 
         using var client = CreateApiClient();
@@ -318,7 +318,9 @@ public class TransferConfigCommandHostedService : IHostedService
             .ToHashSet();
 
         return devices
-            .Where(d => d.DeviceConfigurationId.HasValue && speedConfigurationIds.Contains(d.DeviceConfigurationId.Value))
+            .Where(d =>
+                d.DeviceType == DeviceTypes.SpeedSensor ||
+                (d.DeviceConfigurationId.HasValue && speedConfigurationIds.Contains(d.DeviceConfigurationId.Value)))
             .ToList();
     }
 
@@ -328,7 +330,7 @@ public class TransferConfigCommandHostedService : IHostedService
         {
             BaseAddress = BuildBaseUri(_config.ApiBaseUrl)
         };
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _config.BearerToken);
+        client.DefaultRequestHeaders.Add("X-API-KEY", _config.ApiKey);
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         return client;
     }
