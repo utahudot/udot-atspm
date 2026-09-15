@@ -1,0 +1,74 @@
+name: Validate documentation generator
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out generator
+        uses: actions/checkout@v6
+
+      - name: Check out ATSPM fixture source
+        uses: actions/checkout@v6
+        with:
+          repository: utahudot/udot-atspm
+          ref: main
+          path: _source
+
+      - name: Resolve fixture source commit
+        id: source
+        shell: bash
+        run: echo "sha=$(git -C _source rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Test generator
+        run: dotnet test GenerateDocuments.sln --configuration Release
+
+      - name: Exercise repository action
+        uses: ./
+        with:
+          source-root: _source
+          output-root: _generated
+          repository-url: https://github.com/utahudot/udot-atspm
+          repository-ref: ${{ steps.source.outputs.sha }}
+
+      - name: Verify expected output
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            config-api.md
+            data-api.md
+            event-log-utility.md
+            identity-api.md
+            index.md
+            log-messages.md
+            report-api.md
+            watchdog.md
+          )
+
+          for file in "${expected[@]}"; do
+            test -s "_generated/$file"
+          done
+
+          test "$(find _generated -maxdepth 1 -type f -name '*.md' | wc -l)" -eq "${#expected[@]}"

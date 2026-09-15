@@ -17,9 +17,11 @@
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
+    [ConfigurationSection(nameof(IdentityConfiguration), "Configuration for identity API")]
     public class IdentityConfiguration
     {
         public string Website { get; set; }
+
         public string DefaultEmailAddress { get; set; }
     }
 }
