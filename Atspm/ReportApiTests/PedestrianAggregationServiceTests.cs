@@ -222,6 +222,66 @@ namespace ReportApiTests
             Assert.True(result.TotalVolume >= 0);
         }
 
+        [Fact]
+        public async Task ExecutePedAgg_AllPhases_EqualsSumOfIndividualPhases_WhenCombinedActivityExceedsThreshold()
+        {
+            var service = CreateService();
+            var start = new DateTime(2026, 1, 1);
+            var end = start.AddDays(1);
+
+            _locationRepo.Setup(x => x.GetLatestVersionOfLocation("1", It.IsAny<DateTime>()))
+                .Returns(CreateLocation());
+
+            _pedRepo.Setup(x => x.GetAggregationsBetweenDates("1", It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Returns(new List<PhasePedAggregation>
+                {
+                    new()
+                    {
+                        Start = start,
+                        End = end,
+                        PhaseNumber = 1,
+                        ImputedPedCallsRegistered = 200,
+                        PedBeginWalkCount = 200,
+                        UniquePedDetections = 200
+                    },
+                    new()
+                    {
+                        Start = start,
+                        End = end,
+                        PhaseNumber = 2,
+                        ImputedPedCallsRegistered = 200,
+                        PedBeginWalkCount = 200,
+                        UniquePedDetections = 200
+                    }
+                });
+
+            _cycleRepo.Setup(x => x.GetAggregationsBetweenDates("1", It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Returns(new List<PhaseCycleAggregation>
+                {
+                    new() { Start = start, End = end, PhaseNumber = 1, PhaseBeginCount = 10 },
+                    new() { Start = start, End = end, PhaseNumber = 2, PhaseBeginCount = 10 }
+                });
+
+            async Task<double> GetTotalVolume(int? phase)
+            {
+                var query = new PedatLocationDataQuery
+                {
+                    StartDate = start,
+                    EndDate = end,
+                    LocationIdentifiers = new List<string> { "1" },
+                    TimeUnit = PedestrianTimeUnit.Hour,
+                    Phase = phase
+                };
+
+                return (await service.ExecutePedAgg(query)).Single().TotalVolume;
+            }
+
+            var allPhasesTotal = await GetTotalVolume(null);
+            var individualPhasesTotal = await GetTotalVolume(1) + await GetTotalVolume(2);
+
+            Assert.Equal(individualPhasesTotal, allPhasesTotal, 10);
+        }
+
         // ---------------------------
         // CalculateStatistics
         // ---------------------------
