@@ -20,7 +20,6 @@ using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Infrastructure.LogMessages;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
@@ -78,14 +77,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchdogEmailRecipient> recipients,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            if (!(options.EmailPmErrors || options.EmailAmErrors || options.EmailRampErrors))
+            if (!(options.EmailPmErrors || options.EmailAmErrors || options.EmailRampErrors || options.EmailAllErrors))
             {
                 return;
             }
 
             var mailingAddresses = ToMailingAddresses(recipients);
 
-            if (options.EmailPmErrors || options.EmailAmErrors)
+            if (options.EmailPmErrors || options.EmailAmErrors || options.EmailAllErrors)
             {
                 string emailScanDatesString = BuildEmailScanDatesShortString(options);
                 var subject = $"All Locations ATSPM Alerts for {emailScanDatesString}";
@@ -371,7 +370,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 bodyBuilder.Append(BuildErrorSection("Ramp Detectors Threshold Errors", $"The following Ramps encountered errors above the set threshold on {emailScanDate} between {options.RampDetectorStartHour}:00 and {options.RampDetectorEndHour}:00",
                     rampDetectorThresholdErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
             }
-            if (options.EmailPmErrors && !rampEmail)
+            if ((options.EmailPmErrors || options.EmailAllErrors) && !rampEmail)
             {
                 var emailScanDate = options.PmScanDate.Date.ToShortDateString();
                 bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {emailScanDate}",
@@ -383,7 +382,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", $"The following Detectors flagged as unconfigured on {emailScanDate}",
                     unconfiguredDetectorErrorsLogs, locationDictionary, emailAllErrors, logsFromPreviousDay, includeErrorCounts, includeConsecutive));
             }
-            if (options.EmailAmErrors && !rampEmail)
+            if ((options.EmailAmErrors || options.EmailAllErrors) && !rampEmail)
             {
                 var emailScanDate = options.AmScanDate.Date.ToShortDateString();
                 bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.AmStartHour}:00 and {options.AmEndHour}:00 on {emailScanDate}",
