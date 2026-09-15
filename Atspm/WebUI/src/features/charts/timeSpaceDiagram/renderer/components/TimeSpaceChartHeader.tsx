@@ -1,13 +1,16 @@
 import { TIME_SPACE_GUIDE_WIDTH } from '@/features/charts/timeSpaceDiagram/renderer/sidebar/timeSpaceSidebar.constants'
 import { TimeSpaceSidebarTabs } from '@/features/charts/timeSpaceDiagram/renderer/sidebar/TimeSpaceSidebarTabs'
 import type { TimeSpaceRendererTab } from '@/features/charts/timeSpaceDiagram/renderer/types/timeSpaceRenderer.types'
-import type { TimeSpaceDistanceSpacingMode } from '@/features/charts/timeSpaceDiagram/shared/types'
 import {
   CHART_CONTENT_PADDING,
   FULLSCREEN_PADDING_X,
   GUIDE_EASING,
   GUIDE_TRANSITION_MS,
 } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartLayout'
+import type {
+  TimeSpaceDistanceSpacingMode,
+  TimeSpaceRouteOrientation,
+} from '@/features/charts/timeSpaceDiagram/shared/types'
 import {
   Box,
   Button,
@@ -33,10 +36,12 @@ type TimeSpaceChartHeaderProps = {
   onResetChart: () => void
   onSidebarTabChange: (tab: TimeSpaceRendererTab) => void
   onToggleDistanceSpacingMode?: (mode: TimeSpaceDistanceSpacingMode) => void
+  onToggleRouteOrientation?: () => void
   onToggleFullscreen: () => void | Promise<void>
   onToggleGuide: () => void
   onTogglePhaseInfo: () => void
   distanceSpacingMode: TimeSpaceDistanceSpacingMode
+  routeOrientation: TimeSpaceRouteOrientation
   rangeText: string
   showPhaseInfo: boolean
   sidebarTab: TimeSpaceRendererTab
@@ -147,6 +152,21 @@ function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
         strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </SvgIcon>
+  )
+}
+
+function RouteFlipActionIcon() {
+  return (
+    <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox={'0 0 24 24'}>
+      <path
+        d={'M7 4v15m0 0-4-4m4 4 4-4M17 20V5m0 0-4 4m4-4 4 4'}
+        fill={'none'}
+        stroke={'currentColor'}
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
+        strokeLinecap={'round'}
+        strokeLinejoin={'round'}
       />
     </SvgIcon>
   )
@@ -365,10 +385,12 @@ export function TimeSpaceChartHeader({
   onResetChart,
   onSidebarTabChange,
   onToggleDistanceSpacingMode,
+  onToggleRouteOrientation,
   onToggleFullscreen,
   onToggleGuide,
   onTogglePhaseInfo,
   distanceSpacingMode,
+  routeOrientation,
   rangeText,
   showPhaseInfo,
   sidebarTab,
@@ -506,8 +528,48 @@ export function TimeSpaceChartHeader({
               />
             </>
           ) : null}
+          {onToggleRouteOrientation ? (
+            <>
+              <Tooltip
+                title={
+                  routeOrientation === 'reversed'
+                    ? 'Restore configured route direction'
+                    : 'Reverse route direction'
+                }
+                placement={'bottom'}
+              >
+                <IconButton
+                  size={'small'}
+                  onClick={onToggleRouteOrientation}
+                  aria-label={
+                    routeOrientation === 'reversed'
+                      ? 'Restore configured route direction'
+                      : 'Reverse route direction'
+                  }
+                  aria-pressed={routeOrientation === 'reversed'}
+                  sx={{
+                    color:
+                      routeOrientation === 'reversed' ? '#334155' : '#64748B',
+                    p: 0.45,
+                    '&:hover': {
+                      backgroundColor: 'rgba(15, 23, 42, 0.06)',
+                    },
+                  }}
+                >
+                  <RouteFlipActionIcon />
+                </IconButton>
+              </Tooltip>
+              <Divider
+                orientation={'vertical'}
+                flexItem
+                sx={{ mx: 0.35, borderColor: '#CBD5E1' }}
+              />
+            </>
+          ) : null}
           <Tooltip
-            title={isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'}
+            title={
+              isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'
+            }
             placement="bottom"
           >
             <IconButton

@@ -95,6 +95,7 @@ function transformData(
     primaryPhaseData,
   } = buildTimeSpacePhaseLayout(data, {
     distanceSpacingMode: options?.distanceSpacingMode,
+    routeOrientation: options?.routeOrientation,
     sortByOrder: true,
   })
   const getPrimaryDisplayDistanceOffset = getDisplayDistanceOffset

@@ -163,6 +163,7 @@ function transformData(data: RawApproachSpeedData) {
         [data.end, data.postedSpeed],
       ],
       type: 'line',
+      step: 'start',
       color: Color.Green,
       lineStyle: {
         type: 'dashed',

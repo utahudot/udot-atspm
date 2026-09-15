@@ -20,6 +20,7 @@ using System.Text;
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
+    [ConfigurationSection(nameof(EventLogAggregateConfiguration), "Configuration for aggregating the event logs")]
     public class EventLogAggregateConfiguration
     {
         public string AggregationType { get; set; } = "all";

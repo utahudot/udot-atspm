@@ -47,12 +47,32 @@ function buildRows() {
   const distances = [300, 1100, 0]
 
   return [
-    ...distances.map((distance, index) =>
-      buildRow(index, 'Primary', distance)
-    ),
+    ...distances.map((distance, index) => buildRow(index, 'Primary', distance)),
     ...distances.map((distance, index) =>
       buildRow(index, 'Opposing', distance)
     ),
+  ]
+}
+
+function buildDirectionalRows() {
+  const row = (
+    phaseType: TimeSpaceCoreRow['phaseType'],
+    locationIdentifier: string,
+    order: number,
+    distanceToNextLocation: number
+  ): TimeSpaceCoreRow => ({
+    ...buildRow(order, phaseType, distanceToNextLocation),
+    locationIdentifier,
+    approachDescription: phaseType === 'Primary' ? 'NB' : 'SB',
+  })
+
+  return [
+    row('Primary', 'A', 0, 300),
+    row('Primary', 'B', 1, 1100),
+    row('Primary', 'C', 2, 0),
+    row('Opposing', 'C', 0, 1100),
+    row('Opposing', 'B', 1, 300),
+    row('Opposing', 'A', 2, 0),
   ]
 }
 
@@ -104,5 +124,36 @@ describe('buildTimeSpacePhaseLayout distance spacing modes', () => {
     expect(layout.getDisplayDistanceOffset(1, 1100)).toBe(
       TIME_SPACE_MIN_SEGMENT + TIME_SPACE_HYBRID_BIN_STEP
     )
+  })
+
+  it('uses the opposing travel lane when the route is reversed', () => {
+    const rows = buildDirectionalRows()
+    const layout = buildTimeSpacePhaseLayout(rows, {
+      routeOrientation: 'reversed',
+      sortByOrder: true,
+    })
+
+    expect(
+      layout.primaryPhaseData.map((location) => location.locationIdentifier)
+    ).toEqual(['C', 'B', 'A'])
+    expect(
+      layout.opposingPhaseData.map((location) => location.locationIdentifier)
+    ).toEqual(['A', 'B', 'C'])
+    expect(layout.rawDistanceData).toEqual([0, 1100, 1400])
+    expect(layout.primaryDirection).toBe('SB')
+    expect(layout.opposingDirection).toBe('NB')
+    expect(
+      layout.primaryPhaseData.every(
+        (location) => location.phaseType === 'Primary'
+      )
+    ).toBe(true)
+    expect(rows.map((location) => location.phaseType)).toEqual([
+      'Primary',
+      'Primary',
+      'Primary',
+      'Opposing',
+      'Opposing',
+      'Opposing',
+    ])
   })
 })

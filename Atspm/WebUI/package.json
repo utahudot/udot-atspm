@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write .",
-    "prepare": "cd ../.. && husky install ATSPM/WebUI/.husky",
+    "prepare": "cd ../.. && husky install Atspm/WebUI/.husky",
     "analyze": "cross-env ANALYZE=true next build",
     "test": "jest",
     "test:watch": "jest --watch"

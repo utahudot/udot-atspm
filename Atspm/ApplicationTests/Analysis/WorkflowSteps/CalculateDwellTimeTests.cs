@@ -226,7 +226,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Theory]
-        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateDwellTimeTestData1.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\CalculateDwellTimeTestData1.json")]
         [Trait(nameof(CalculateDwellTime), "From File")]
         public async void CalculateDwellTimeFromFileTest(string file)
         {

@@ -24,10 +24,11 @@ import { useEffect, useState } from 'react'
 import type {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
-  TimeSpaceDistanceSpacingMode,
   TimeSpaceDiagramPhaseResult,
+  TimeSpaceDistanceSpacingMode,
   TimeSpaceHistoricOptions,
   TimeSpaceOptions,
+  TimeSpaceRouteOrientation,
 } from '../../shared/types'
 import {
   addDefaultTimeSpaceValues,
@@ -77,6 +78,8 @@ export default function TimeSpaceResultsContainer({
   const [ignoredLocations, setIgnoredLocation] = useState<string[]>([])
   const [distanceSpacingMode, setDistanceSpacingMode] =
     useState<TimeSpaceDistanceSpacingMode>('distance')
+  const [routeOrientation, setRouteOrientation] =
+    useState<TimeSpaceRouteOrientation>('configured')
   const supportsLinkPivot = supportsLinkPivotForTimeSpace(
     baseTimeSpaceData.type
   )
@@ -139,6 +142,7 @@ export default function TimeSpaceResultsContainer({
     setBaseTimeSpaceData(nextBaseData)
     setIgnoredLocation([])
     setDistanceSpacingMode('distance')
+    setRouteOrientation('configured')
     setGpxEntries([createEmptyTimeSpaceEntry(nextLocations)])
     setSrmError(null)
     setHasAppliedSrm(false)
@@ -161,6 +165,7 @@ export default function TimeSpaceResultsContainer({
     try {
       const result = transformTimeSpaceData(updatedResponse, {
         distanceSpacingMode,
+        routeOrientation,
       })
       setTransformedData(result)
       if ('errors' in result && result.errors) {
@@ -178,7 +183,12 @@ export default function TimeSpaceResultsContainer({
         data: { chart: {} },
       })
     }
-  }, [ignoredLocations, baseTimeSpaceData, distanceSpacingMode])
+  }, [
+    ignoredLocations,
+    baseTimeSpaceData,
+    distanceSpacingMode,
+    routeOrientation,
+  ])
 
   const chartHeight = transformedData.data.chart.displayProps?.height ?? 500
   const pcdTimeWindow =
@@ -276,6 +286,12 @@ export default function TimeSpaceResultsContainer({
               onToggleIgnoredLocation={toggleIgnoredLocation}
               distanceSpacingMode={distanceSpacingMode}
               onToggleDistanceSpacingMode={setDistanceSpacingMode}
+              routeOrientation={routeOrientation}
+              onToggleRouteOrientation={() =>
+                setRouteOrientation((current) =>
+                  current === 'configured' ? 'reversed' : 'configured'
+                )
+              }
               sidebarUploadContent={sidebarUploadContent}
             />
           </Box>
@@ -301,9 +317,8 @@ export default function TimeSpaceResultsContainer({
               <LinkPivotAdjustmentTable
                 data={pivot.data.adjustments}
                 cycleLength={
-                  baseTimeSpaceData.data.find(
-                    (entry) => entry.result
-                  )?.result?.cycleLength ?? null
+                  baseTimeSpaceData.data.find((entry) => entry.result)?.result
+                    ?.cycleLength ?? null
                 }
               />
             </Paper>

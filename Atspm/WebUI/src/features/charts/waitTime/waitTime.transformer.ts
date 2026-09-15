@@ -187,7 +187,7 @@ function transformData(data: RawWaitTimeData) {
       name: programmedSplitsText,
       data: transformSeriesData(planSplits),
       type: 'line',
-      step: 'end',
+      step: 'start',
       color: Color.Red,
     }
   )

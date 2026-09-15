@@ -1,0 +1,111 @@
+name: Generate Code Documentation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 0' # weekly on Sunday at 03:00 UTC (optional)
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout generator repository
+        uses: actions/checkout@v4
+        with:
+          repository: avenueconsultants/atspm-documentation-generator
+          path: generator
+          fetch-depth: 0
+
+      - name: Setup .NET (fallback)
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Run generator (capture logs)
+        shell: bash
+        env:
+          OUTPUT_DIR: generated-output
+        run: |
+          set -euo pipefail
+          cd generator || { echo "generator folder not found"; exit 1; }
+
+          # Capture all stdout/stderr to $GITHUB_WORKSPACE/generator.log while still showing it in the step output
+          exec > >(tee -a "$GITHUB_WORKSPACE/generator.log") 2>&1
+          echo "Starting generator run: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          # Prefer an explicit script if provided by the generator repo
+          if [ -f ./generate.sh ]; then
+            chmod +x ./generate.sh
+            ./generate.sh "$OUTPUT_DIR"
+          elif [ -f ./generate.ps1 ]; then
+            pwsh -NoLogo -NoProfile -NonInteractive -File ./generate.ps1 -OutputDir "$OUTPUT_DIR"
+          else
+            # Try to find a .csproj and run it; many generators in this org are .NET
+            proj=$(find . -maxdepth 3 -name '*.csproj' | head -n 1 || true)
+            if [ -n "$proj" ]; then
+              dotnet restore "$proj"
+              dotnet build "$proj" -c Release
+              dotnet run --project "$proj" --configuration Release -- "$OUTPUT_DIR" || true
+            else
+              echo "No known generator entrypoint found (no generate.sh/generate.ps1/.csproj)" >&2
+              exit 1
+            fi
+          fi
+
+          # If the generator placed output in a common folder, move it to the repo root for commit
+          if [ -d "$OUTPUT_DIR" ]; then
+            echo "Generator output in $OUTPUT_DIR"
+            ls -la "$OUTPUT_DIR"
+            mv "$OUTPUT_DIR" ../
+          else
+            for d in output site docs out _site; do
+              if [ -d "$d" ]; then
+                mv "$d" ../generated-output && break
+              fi
+            done
+          fi
+          cd ..
+          echo "Generator finished: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+      - name: Publish to Code-Documentations branch
+        shell: bash
+        env:
+          GIT_PUSH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create an orphan branch (replace its contents) then add generated files
+          if git show-ref --verify --quiet refs/heads/Code-Documentations; then
+            git branch -D Code-Documentations || true
+          fi
+          git checkout --orphan Code-Documentations
+          git rm -rf . || true
+
+          if [ -d generated-output ]; then
+            cp -a generated-output/. .
+          else
+            echo "generated-output not found; nothing to publish" >&2
+            exit 1
+          fi
+
+          git add -A
+          if git commit -m "Update code documentation from atspm-documentation-generator"; then
+            git push --force "https://${GIT_PUSH_TOKEN}@github.com/${{ github.repository }}" Code-Documentations
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Upload generated docs and logs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-docs-and-logs
+          path: |
+            generated-output
+            generator.log

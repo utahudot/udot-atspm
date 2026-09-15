@@ -42,7 +42,9 @@
 *.pdb
 
 # Kernel Module Compile Results
-*.mod*
+*.mod
+*.mod.c
+*.mod.o
 *.cmd
 .tmp_versions/
 modules.order
@@ -110,6 +112,7 @@ logs/
 *.ncrunchsolution
 _ReSharper.Caches/
 TestResult*/
+
 
 # Node.js dependencies (if applicable)
 node_modules/

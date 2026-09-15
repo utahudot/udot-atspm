@@ -22,7 +22,9 @@
   "paths": {
     "/api/v1/Aggregation/test": {
       "get": {
-        "tags": ["Aggregation"],
+        "tags": [
+          "Aggregation"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetAggregationTestData",
         "responses": {
@@ -54,7 +56,9 @@
     },
     "/api/v1/Aggregation/getReportData": {
       "post": {
-        "tags": ["Aggregation"],
+        "tags": [
+          "Aggregation"
+        ],
         "summary": "Get report data",
         "operationId": "GetAggregationReportData",
         "requestBody": {
@@ -116,7 +120,9 @@
     },
     "/api/v1/ApproachDelay/test": {
       "get": {
-        "tags": ["ApproachDelay"],
+        "tags": [
+          "ApproachDelay"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetApproachDelayTestData",
         "responses": {
@@ -148,7 +154,9 @@
     },
     "/api/v1/ApproachDelay/getReportData": {
       "post": {
-        "tags": ["ApproachDelay"],
+        "tags": [
+          "ApproachDelay"
+        ],
         "summary": "Get report data",
         "operationId": "GetApproachDelayReportData",
         "requestBody": {
@@ -210,7 +218,9 @@
     },
     "/api/v1/ApproachSpeed/test": {
       "get": {
-        "tags": ["ApproachSpeed"],
+        "tags": [
+          "ApproachSpeed"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetApproachSpeedTestData",
         "responses": {
@@ -242,7 +252,9 @@
     },
     "/api/v1/ApproachSpeed/getReportData": {
       "post": {
-        "tags": ["ApproachSpeed"],
+        "tags": [
+          "ApproachSpeed"
+        ],
         "summary": "Get report data",
         "operationId": "GetApproachSpeedReportData",
         "requestBody": {
@@ -304,7 +316,9 @@
     },
     "/api/v1/ApproachVolume/test": {
       "get": {
-        "tags": ["ApproachVolume"],
+        "tags": [
+          "ApproachVolume"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetApproachVolumeTestData",
         "responses": {
@@ -336,7 +350,9 @@
     },
     "/api/v1/ApproachVolume/getReportData": {
       "post": {
-        "tags": ["ApproachVolume"],
+        "tags": [
+          "ApproachVolume"
+        ],
         "summary": "Get report data",
         "operationId": "GetApproachVolumeReportData",
         "requestBody": {
@@ -398,7 +414,9 @@
     },
     "/api/v1/ArrivalOnRed/test": {
       "get": {
-        "tags": ["ArrivalOnRed"],
+        "tags": [
+          "ArrivalOnRed"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetArrivalOnRedTestData",
         "responses": {
@@ -430,7 +448,9 @@
     },
     "/api/v1/ArrivalOnRed/getReportData": {
       "post": {
-        "tags": ["ArrivalOnRed"],
+        "tags": [
+          "ArrivalOnRed"
+        ],
         "summary": "Get report data",
         "operationId": "GetArrivalOnRedReportData",
         "requestBody": {
@@ -492,7 +512,9 @@
     },
     "/api/v1/GreenTimeUtilization/test": {
       "get": {
-        "tags": ["GreenTimeUtilization"],
+        "tags": [
+          "GreenTimeUtilization"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetGreenTimeUtilizationTestData",
         "responses": {
@@ -524,7 +546,9 @@
     },
     "/api/v1/GreenTimeUtilization/getReportData": {
       "post": {
-        "tags": ["GreenTimeUtilization"],
+        "tags": [
+          "GreenTimeUtilization"
+        ],
         "summary": "Get report data",
         "operationId": "GetGreenTimeUtilizationReportData",
         "requestBody": {
@@ -586,7 +610,9 @@
     },
     "/api/v1/LeftTurnGapAnalysis/test": {
       "get": {
-        "tags": ["LeftTurnGapAnalysis"],
+        "tags": [
+          "LeftTurnGapAnalysis"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnGapAnalysisTestData",
         "responses": {
@@ -618,7 +644,9 @@
     },
     "/api/v1/LeftTurnGapAnalysis/getReportData": {
       "post": {
-        "tags": ["LeftTurnGapAnalysis"],
+        "tags": [
+          "LeftTurnGapAnalysis"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnGapAnalysisReportData",
         "requestBody": {
@@ -680,7 +708,9 @@
     },
     "/api/v1/LeftTurnGapDuration/test": {
       "get": {
-        "tags": ["LeftTurnGapDuration"],
+        "tags": [
+          "LeftTurnGapDuration"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnGapDurationTestData",
         "responses": {
@@ -709,7 +739,9 @@
     },
     "/api/v1/LeftTurnGapDuration/getReportData": {
       "post": {
-        "tags": ["LeftTurnGapDuration"],
+        "tags": [
+          "LeftTurnGapDuration"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnGapDurationReportData",
         "requestBody": {
@@ -768,7 +800,9 @@
     },
     "/api/v1/LeftTurnGapReport/test": {
       "get": {
-        "tags": ["LeftTurnGapReport"],
+        "tags": [
+          "LeftTurnGapReport"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnGapReportTestData",
         "responses": {
@@ -800,7 +834,9 @@
     },
     "/api/v1/LeftTurnGapReport/getReportData": {
       "post": {
-        "tags": ["LeftTurnGapReport"],
+        "tags": [
+          "LeftTurnGapReport"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnGapReportReportData",
         "requestBody": {
@@ -862,7 +898,9 @@
     },
     "/api/v1/LeftTurnGapReportDataCheck/test": {
       "get": {
-        "tags": ["LeftTurnGapReportDataCheck"],
+        "tags": [
+          "LeftTurnGapReportDataCheck"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnGapReportDataCheckTestData",
         "responses": {
@@ -891,7 +929,9 @@
     },
     "/api/v1/LeftTurnGapReportDataCheck/getReportData": {
       "post": {
-        "tags": ["LeftTurnGapReportDataCheck"],
+        "tags": [
+          "LeftTurnGapReportDataCheck"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnGapReportDataCheckReportData",
         "requestBody": {
@@ -950,7 +990,9 @@
     },
     "/api/v1/LeftTurnPeakHours/test": {
       "get": {
-        "tags": ["LeftTurnPeakHours"],
+        "tags": [
+          "LeftTurnPeakHours"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnPeakHoursTestData",
         "responses": {
@@ -979,7 +1021,9 @@
     },
     "/api/v1/LeftTurnPeakHours/getReportData": {
       "post": {
-        "tags": ["LeftTurnPeakHours"],
+        "tags": [
+          "LeftTurnPeakHours"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnPeakHoursReportData",
         "requestBody": {
@@ -1038,7 +1082,9 @@
     },
     "/api/v1/LeftTurnPedActuation/test": {
       "get": {
-        "tags": ["LeftTurnPedActuation"],
+        "tags": [
+          "LeftTurnPedActuation"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnPedActuationTestData",
         "responses": {
@@ -1067,7 +1113,9 @@
     },
     "/api/v1/LeftTurnPedActuation/getReportData": {
       "post": {
-        "tags": ["LeftTurnPedActuation"],
+        "tags": [
+          "LeftTurnPedActuation"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnPedActuationReportData",
         "requestBody": {
@@ -1126,7 +1174,9 @@
     },
     "/api/v1/LeftTurnSplitFail/test": {
       "get": {
-        "tags": ["LeftTurnSplitFail"],
+        "tags": [
+          "LeftTurnSplitFail"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnSplitFailTestData",
         "responses": {
@@ -1155,7 +1205,9 @@
     },
     "/api/v1/LeftTurnSplitFail/getReportData": {
       "post": {
-        "tags": ["LeftTurnSplitFail"],
+        "tags": [
+          "LeftTurnSplitFail"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnSplitFailReportData",
         "requestBody": {
@@ -1214,7 +1266,9 @@
     },
     "/api/v1/LeftTurnVolume/test": {
       "get": {
-        "tags": ["LeftTurnVolume"],
+        "tags": [
+          "LeftTurnVolume"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLeftTurnVolumeTestData",
         "responses": {
@@ -1243,7 +1297,9 @@
     },
     "/api/v1/LeftTurnVolume/getReportData": {
       "post": {
-        "tags": ["LeftTurnVolume"],
+        "tags": [
+          "LeftTurnVolume"
+        ],
         "summary": "Get report data",
         "operationId": "GetLeftTurnVolumeReportData",
         "requestBody": {
@@ -1302,7 +1358,9 @@
     },
     "/api/v1/LinkPivot/getPcdData": {
       "post": {
-        "tags": ["LinkPivot"],
+        "tags": [
+          "LinkPivot"
+        ],
         "operationId": "GetLinkPivotPcdData",
         "requestBody": {
           "content": {
@@ -1359,7 +1417,9 @@
     },
     "/api/v1/LinkPivot/test": {
       "get": {
-        "tags": ["LinkPivot"],
+        "tags": [
+          "LinkPivot"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetLinkPivotTestData",
         "responses": {
@@ -1388,7 +1448,9 @@
     },
     "/api/v1/LinkPivot/getReportData": {
       "post": {
-        "tags": ["LinkPivot"],
+        "tags": [
+          "LinkPivot"
+        ],
         "summary": "Get report data",
         "operationId": "GetLinkPivotReportData",
         "requestBody": {
@@ -1447,7 +1509,9 @@
     },
     "/api/v1/PedDelay/test": {
       "get": {
-        "tags": ["PedDelay"],
+        "tags": [
+          "PedDelay"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPedDelayTestData",
         "responses": {
@@ -1479,7 +1543,9 @@
     },
     "/api/v1/PedDelay/getReportData": {
       "post": {
-        "tags": ["PedDelay"],
+        "tags": [
+          "PedDelay"
+        ],
         "summary": "Get report data",
         "operationId": "GetPedDelayReportData",
         "requestBody": {
@@ -1541,7 +1607,9 @@
     },
     "/api/v1/PedestrianAggregation/test": {
       "get": {
-        "tags": ["PedestrianAggregation"],
+        "tags": [
+          "PedestrianAggregation"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPedestrianAggregationTestData",
         "responses": {
@@ -1573,7 +1641,9 @@
     },
     "/api/v1/PedestrianAggregation/getReportData": {
       "post": {
-        "tags": ["PedestrianAggregation"],
+        "tags": [
+          "PedestrianAggregation"
+        ],
         "summary": "Get traffic location data based on query",
         "operationId": "GetPedestrianAggregationLocationData",
         "requestBody": {
@@ -1635,7 +1705,9 @@
     },
     "/api/v1/PreemptDetail/test": {
       "get": {
-        "tags": ["PreemptDetail"],
+        "tags": [
+          "PreemptDetail"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPreemptDetailTestData",
         "responses": {
@@ -1664,7 +1736,9 @@
     },
     "/api/v1/PreemptDetail/getReportData": {
       "post": {
-        "tags": ["PreemptDetail"],
+        "tags": [
+          "PreemptDetail"
+        ],
         "summary": "Get report data",
         "operationId": "GetPreemptDetailReportData",
         "requestBody": {
@@ -1723,7 +1797,9 @@
     },
     "/api/v1/PreemptService/test": {
       "get": {
-        "tags": ["PreemptService"],
+        "tags": [
+          "PreemptService"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPreemptServiceTestData",
         "responses": {
@@ -1752,7 +1828,9 @@
     },
     "/api/v1/PreemptService/getReportData": {
       "post": {
-        "tags": ["PreemptService"],
+        "tags": [
+          "PreemptService"
+        ],
         "summary": "Get report data",
         "operationId": "GetPreemptServiceReportData",
         "requestBody": {
@@ -1811,7 +1889,9 @@
     },
     "/api/v1/PreemptServiceRequest/test": {
       "get": {
-        "tags": ["PreemptServiceRequest"],
+        "tags": [
+          "PreemptServiceRequest"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPreemptServiceRequestTestData",
         "responses": {
@@ -1840,7 +1920,9 @@
     },
     "/api/v1/PreemptServiceRequest/getReportData": {
       "post": {
-        "tags": ["PreemptServiceRequest"],
+        "tags": [
+          "PreemptServiceRequest"
+        ],
         "summary": "Get report data",
         "operationId": "GetPreemptServiceRequestReportData",
         "requestBody": {
@@ -1899,7 +1981,9 @@
     },
     "/api/v1/PurdueCoordinationDiagram/test": {
       "get": {
-        "tags": ["PurdueCoordinationDiagram"],
+        "tags": [
+          "PurdueCoordinationDiagram"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPurdueCoordinationDiagramTestData",
         "responses": {
@@ -1931,7 +2015,9 @@
     },
     "/api/v1/PurdueCoordinationDiagram/getReportData": {
       "post": {
-        "tags": ["PurdueCoordinationDiagram"],
+        "tags": [
+          "PurdueCoordinationDiagram"
+        ],
         "summary": "Get report data",
         "operationId": "GetPurdueCoordinationDiagramReportData",
         "requestBody": {
@@ -1993,7 +2079,9 @@
     },
     "/api/v1/PurduePhaseTermination/test": {
       "get": {
-        "tags": ["PurduePhaseTermination"],
+        "tags": [
+          "PurduePhaseTermination"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetPurduePhaseTerminationTestData",
         "responses": {
@@ -2022,7 +2110,9 @@
     },
     "/api/v1/PurduePhaseTermination/getReportData": {
       "post": {
-        "tags": ["PurduePhaseTermination"],
+        "tags": [
+          "PurduePhaseTermination"
+        ],
         "summary": "Get report data",
         "operationId": "GetPurduePhaseTerminationReportData",
         "requestBody": {
@@ -2081,7 +2171,9 @@
     },
     "/api/v1/RampMetering/test": {
       "get": {
-        "tags": ["RampMetering"],
+        "tags": [
+          "RampMetering"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetRampMeteringTestData",
         "responses": {
@@ -2110,7 +2202,9 @@
     },
     "/api/v1/RampMetering/getReportData": {
       "post": {
-        "tags": ["RampMetering"],
+        "tags": [
+          "RampMetering"
+        ],
         "summary": "Get report data",
         "operationId": "GetRampMeteringReportData",
         "requestBody": {
@@ -2169,7 +2263,9 @@
     },
     "/api/v1/SplitFail/test": {
       "get": {
-        "tags": ["SplitFail"],
+        "tags": [
+          "SplitFail"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetSplitFailTestData",
         "responses": {
@@ -2201,7 +2297,9 @@
     },
     "/api/v1/SplitFail/getReportData": {
       "post": {
-        "tags": ["SplitFail"],
+        "tags": [
+          "SplitFail"
+        ],
         "summary": "Get report data",
         "operationId": "GetSplitFailReportData",
         "requestBody": {
@@ -2263,7 +2361,9 @@
     },
     "/api/v1/SplitMonitor/test": {
       "get": {
-        "tags": ["SplitMonitor"],
+        "tags": [
+          "SplitMonitor"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetSplitMonitorTestData",
         "responses": {
@@ -2295,7 +2395,9 @@
     },
     "/api/v1/SplitMonitor/getReportData": {
       "post": {
-        "tags": ["SplitMonitor"],
+        "tags": [
+          "SplitMonitor"
+        ],
         "summary": "Get report data",
         "operationId": "GetSplitMonitorReportData",
         "requestBody": {
@@ -2355,9 +2457,103 @@
         }
       }
     },
+    "/api/v1/TimeOfDay/test": {
+      "get": {
+        "tags": [
+          "TimeOfDay"
+        ],
+        "summary": "Get example data for testing",
+        "operationId": "GetTimeOfDayTestData",
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeOfDayResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/TimeOfDay/getReportData": {
+      "post": {
+        "tags": [
+          "TimeOfDay"
+        ],
+        "summary": "Get report data",
+        "operationId": "GetTimeOfDayReportData",
+        "requestBody": {
+          "description": "Reporting options",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeOfDayOptions"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeOfDayOptions"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeOfDayOptions"
+              }
+            }
+          }
+        },
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeOfDayResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/TimeSpaceDiagram/test": {
       "get": {
-        "tags": ["TimeSpaceDiagram"],
+        "tags": [
+          "TimeSpaceDiagram"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetTimeSpaceDiagramTestData",
         "responses": {
@@ -2389,7 +2585,9 @@
     },
     "/api/v1/TimeSpaceDiagram/getReportData": {
       "post": {
-        "tags": ["TimeSpaceDiagram"],
+        "tags": [
+          "TimeSpaceDiagram"
+        ],
         "summary": "Get report data",
         "operationId": "GetTimeSpaceDiagramReportData",
         "requestBody": {
@@ -2451,7 +2649,9 @@
     },
     "/api/v1/TimeSpaceDiagramAverage/test": {
       "get": {
-        "tags": ["TimeSpaceDiagramAverage"],
+        "tags": [
+          "TimeSpaceDiagramAverage"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetTimeSpaceDiagramAverageTestData",
         "responses": {
@@ -2483,7 +2683,9 @@
     },
     "/api/v1/TimeSpaceDiagramAverage/getReportData": {
       "post": {
-        "tags": ["TimeSpaceDiagramAverage"],
+        "tags": [
+          "TimeSpaceDiagramAverage"
+        ],
         "summary": "Get report data",
         "operationId": "GetTimeSpaceDiagramAverageReportData",
         "requestBody": {
@@ -2545,7 +2747,9 @@
     },
     "/api/v1/TimingAndActuation/test": {
       "get": {
-        "tags": ["TimingAndActuation"],
+        "tags": [
+          "TimingAndActuation"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetTimingAndActuationTestData",
         "responses": {
@@ -2577,7 +2781,9 @@
     },
     "/api/v1/TimingAndActuation/getReportData": {
       "post": {
-        "tags": ["TimingAndActuation"],
+        "tags": [
+          "TimingAndActuation"
+        ],
         "summary": "Get report data",
         "operationId": "GetTimingAndActuationReportData",
         "requestBody": {
@@ -2639,7 +2845,9 @@
     },
     "/api/v1/TransitSignalPriority/test": {
       "get": {
-        "tags": ["TransitSignalPriority"],
+        "tags": [
+          "TransitSignalPriority"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetTransitSignalPriorityTestData",
         "responses": {
@@ -2671,7 +2879,9 @@
     },
     "/api/v1/TransitSignalPriority/getReportData": {
       "post": {
-        "tags": ["TransitSignalPriority"],
+        "tags": [
+          "TransitSignalPriority"
+        ],
         "summary": "Get report data",
         "operationId": "GetTransitSignalPriorityReportData",
         "requestBody": {
@@ -2733,7 +2943,9 @@
     },
     "/api/v1/TurningMovementCounts/test": {
       "get": {
-        "tags": ["TurningMovementCounts"],
+        "tags": [
+          "TurningMovementCounts"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetTurningMovementCountsTestData",
         "responses": {
@@ -2762,7 +2974,9 @@
     },
     "/api/v1/TurningMovementCounts/getReportData": {
       "post": {
-        "tags": ["TurningMovementCounts"],
+        "tags": [
+          "TurningMovementCounts"
+        ],
         "summary": "Get report data",
         "operationId": "GetTurningMovementCountsReportData",
         "requestBody": {
@@ -2821,7 +3035,9 @@
     },
     "/api/v1/WaitTime/test": {
       "get": {
-        "tags": ["WaitTime"],
+        "tags": [
+          "WaitTime"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetWaitTimeTestData",
         "responses": {
@@ -2853,7 +3069,9 @@
     },
     "/api/v1/WaitTime/getReportData": {
       "post": {
-        "tags": ["WaitTime"],
+        "tags": [
+          "WaitTime"
+        ],
         "summary": "Get report data",
         "operationId": "GetWaitTimeReportData",
         "requestBody": {
@@ -2915,7 +3133,9 @@
     },
     "/api/v1/Watchdog/GetIssueTypes": {
       "get": {
-        "tags": ["Watchdog"],
+        "tags": [
+          "Watchdog"
+        ],
         "operationId": "GetWatchdogIssueTypes",
         "responses": {
           "406": {
@@ -2933,7 +3153,9 @@
     },
     "/api/v1/Watchdog/test": {
       "get": {
-        "tags": ["Watchdog"],
+        "tags": [
+          "Watchdog"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetWatchdogTestData",
         "responses": {
@@ -2962,7 +3184,9 @@
     },
     "/api/v1/Watchdog/getReportData": {
       "post": {
-        "tags": ["Watchdog"],
+        "tags": [
+          "Watchdog"
+        ],
         "summary": "Get report data",
         "operationId": "GetWatchdogReportData",
         "requestBody": {
@@ -3021,7 +3245,9 @@
     },
     "/api/v1/WatchDogDashboard/getDashboardGroup": {
       "post": {
-        "tags": ["WatchDogDashboard"],
+        "tags": [
+          "WatchDogDashboard"
+        ],
         "operationId": "GetWatchDogDashboardDashboardGroup",
         "requestBody": {
           "content": {
@@ -3078,7 +3304,9 @@
     },
     "/api/v1/YellowRedActivations/test": {
       "get": {
-        "tags": ["YellowRedActivations"],
+        "tags": [
+          "YellowRedActivations"
+        ],
         "summary": "Get example data for testing",
         "operationId": "GetYellowRedActivationsTestData",
         "responses": {
@@ -3110,7 +3338,9 @@
     },
     "/api/v1/YellowRedActivations/getReportData": {
       "post": {
-        "tags": ["YellowRedActivations"],
+        "tags": [
+          "YellowRedActivations"
+        ],
         "summary": "Get report data",
         "operationId": "GetYellowRedActivationsReportData",
         "requestBody": {
@@ -3174,7 +3404,10 @@
   "components": {
     "schemas": {
       "AggregationCalculationType": {
-        "enum": [0, 1],
+        "enum": [
+          0,
+          1
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -3278,7 +3511,22 @@
         "additionalProperties": false
       },
       "AggregationType": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -3805,7 +4053,14 @@
         "additionalProperties": false
       },
       "BinSize": {
-        "enum": [0, 1, 2, 3, 4, 5],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -3882,7 +4137,15 @@
         "additionalProperties": false
       },
       "DayOfWeek": {
-        "enum": [0, 1, 2, 3, 4, 5, 6],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -3904,7 +4167,20 @@
         "additionalProperties": false
       },
       "DetectionTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -4224,7 +4500,7 @@
         },
         "additionalProperties": false
       },
-      "KeyValuePair`2": {
+      "KeyValuePair2": {
         "type": "object",
         "properties": {
           "key": {
@@ -4264,7 +4540,16 @@
         "additionalProperties": false
       },
       "LaneTypes": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -6033,7 +6318,13 @@
         "additionalProperties": false
       },
       "PedestrianTimeUnit": {
-        "enum": [0, 1, 2, 3, 4],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -6712,7 +7003,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       },
       "PurdueCoordinationDiagramOptions": {
         "type": "object",
@@ -7016,7 +7307,13 @@
         "additionalProperties": false
       },
       "SeriesType": {
-        "enum": [0, 1, 2, 3, 4],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -7442,6 +7739,660 @@
         },
         "additionalProperties": false
       },
+      "TimeOfDayCrossTrafficLocationDto": {
+        "type": "object",
+        "properties": {
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "period": {
+            "type": "string",
+            "nullable": true
+          },
+          "peakTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalVehiclesPerHour": {
+            "type": "number",
+            "format": "double"
+          },
+          "percentOfCrossTraffic": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayCrossTrafficSharePointDto": {
+        "type": "object",
+        "properties": {
+          "timeOfDay": {
+            "type": "string",
+            "nullable": true
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "primaryVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "crossStreetVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "crossTrafficPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayDataSource": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "TimeOfDayLocationResult": {
+        "type": "object",
+        "properties": {
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "daysWithData": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "datesWithData": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "nullable": true
+          },
+          "missingDates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "nullable": true
+          },
+          "coverageFallbackUsed": {
+            "type": "boolean"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/TimeOfDayProfileDto"
+          },
+          "movementProfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayProfileDto"
+            },
+            "nullable": true
+          },
+          "summary": {
+            "$ref": "#/components/schemas/TimeOfDayLocationSummaryDto"
+          },
+          "currentPlanSchedule": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "nullable": true
+          },
+          "dataQualityFlag": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayLocationSummaryDto": {
+        "type": "object",
+        "properties": {
+          "peakRawVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "peakSmoothedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "peakHourlyRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "peakOccupancyPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "amPeakOccupancyPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "pmPeakOccupancyPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "amDirectionExceptionMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "pmDirectionExceptionMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "crossTrafficReview": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayMovementPressureDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "movement": {
+            "type": "string",
+            "nullable": true
+          },
+          "movementLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "peakTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "volume": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayOptions": {
+        "type": "object",
+        "properties": {
+          "locationIdentifiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "selectedDates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "nullable": true
+          },
+          "binSizeMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dataSource": {
+            "$ref": "#/components/schemas/TimeOfDayDataSource"
+          },
+          "allDayPrimaryDirections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "amPrimaryDirections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "pmPrimaryDirections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "laneCapacityVehiclesPerHour": {
+            "type": "number",
+            "format": "double"
+          },
+          "directionLaneCounts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayPeakEventDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "series": {
+            "type": "string",
+            "nullable": true
+          },
+          "period": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "timeOfDay": {
+            "type": "string",
+            "nullable": true
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "valueUnits": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayPlanComparisonDto": {
+        "type": "object",
+        "properties": {
+          "commonCurrentSchedule": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "nullable": true
+          },
+          "exceptionLocationIdentifiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "summaryText": {
+            "type": "string",
+            "nullable": true
+          },
+          "exceptionsText": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayPlanProfileDto": {
+        "type": "object",
+        "properties": {
+          "corridorProfile": {
+            "$ref": "#/components/schemas/TimeOfDayProfileDto"
+          },
+          "directionalProfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayProfileDto"
+            },
+            "nullable": true
+          },
+          "peaks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayPeakEventDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayProfileDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "units": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction": {
+            "type": "string",
+            "nullable": true
+          },
+          "movement": {
+            "type": "string",
+            "nullable": true
+          },
+          "movementLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayProfilePointDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayProfilePointDto": {
+        "type": "object",
+        "properties": {
+          "timeOfDay": {
+            "type": "string",
+            "nullable": true
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "averageVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "smoothedVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "rollingHourVph": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "delta": {
+            "type": "number",
+            "format": "double"
+          },
+          "participatingLocations": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayRecommendationDto": {
+        "type": "object",
+        "properties": {
+          "recommendedSchedule": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "nullable": true
+          },
+          "amPeakTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "middayValleyTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "pmPeakTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "summaryText": {
+            "type": "string",
+            "nullable": true
+          },
+          "algorithmVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "thresholdConfigurationName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayResult": {
+        "type": "object",
+        "properties": {
+          "locationIdentifiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "selectedDates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "nullable": true
+          },
+          "binSizeMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dataSource": {
+            "type": "string",
+            "nullable": true
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/TimeOfDayRecommendationDto"
+          },
+          "planProfile": {
+            "$ref": "#/components/schemas/TimeOfDayPlanProfileDto"
+          },
+          "splitPressure": {
+            "$ref": "#/components/schemas/TimeOfDaySplitPressureDto"
+          },
+          "planComparison": {
+            "$ref": "#/components/schemas/TimeOfDayPlanComparisonDto"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayLocationResult"
+            },
+            "nullable": true
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayWarningDto"
+            },
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDaySplitPressureDto": {
+        "type": "object",
+        "properties": {
+          "primaryDirections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "crossDirections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "primaryProfile": {
+            "$ref": "#/components/schemas/TimeOfDayProfileDto"
+          },
+          "crossStreetProfile": {
+            "$ref": "#/components/schemas/TimeOfDayProfileDto"
+          },
+          "crossTrafficShare": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayCrossTrafficSharePointDto"
+            },
+            "nullable": true
+          },
+          "thresholdPercentByName": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "periodPeaks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayPeakEventDto"
+            },
+            "nullable": true
+          },
+          "crossTrafficLocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayCrossTrafficLocationDto"
+            },
+            "nullable": true
+          },
+          "movementPressures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayMovementPressureDto"
+            },
+            "nullable": true
+          },
+          "primaryPeakVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "primaryPeakTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "crossStreetPeakVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "crossStreetPeakTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "peakCrossTrafficPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "peakCrossTrafficPercentTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "primaryStreetRemainsDominant": {
+            "type": "boolean"
+          },
+          "summaryText": {
+            "type": "string",
+            "nullable": true
+          },
+          "reviewText": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeOfDayWarningDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "TimeOptions": {
         "type": "object",
         "properties": {
@@ -7490,7 +8441,10 @@
         "additionalProperties": false
       },
       "TimePeriodOptions": {
-        "enum": [0, 1],
+        "enum": [
+          0,
+          1
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -8208,6 +9162,9 @@
             "type": "integer",
             "format": "int32"
           },
+          "combineThruRight": {
+            "type": "boolean"
+          },
           "metricTypeId": {
             "type": "integer",
             "format": "int32",
@@ -8234,7 +9191,7 @@
             "nullable": true
           },
           "peakHour": {
-            "$ref": "#/components/schemas/KeyValuePair`2"
+            "$ref": "#/components/schemas/KeyValuePair2"
           },
           "peakHourFactor": {
             "type": "number",
@@ -8458,7 +9415,11 @@
         "additionalProperties": false
       },
       "WatchDogComponentTypes": {
-        "enum": [0, 1, 2],
+        "enum": [
+          0,
+          1,
+          2
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -8511,7 +9472,19 @@
         "additionalProperties": false
       },
       "WatchDogIssueTypes": {
-        "enum": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -8548,6 +9521,10 @@
             "type": "string",
             "nullable": true
           },
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
           "phase": {
             "type": "integer",
             "format": "int32",
@@ -8581,7 +9558,7 @@
         },
         "additionalProperties": false
       },
-      "WatchDogModel`1": {
+      "WatchDogModel1": {
         "type": "object",
         "properties": {
           "name": {
@@ -8649,7 +9626,7 @@
           "model": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/WatchDogModel`1"
+              "$ref": "#/components/schemas/WatchDogModel1"
             },
             "nullable": true
           }
@@ -8678,7 +9655,14 @@
         "additionalProperties": false
       },
       "XAxisType": {
-        "enum": [0, 1, 2, 3, 4, 5],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -8861,12 +9845,19 @@
         "description": "Put **_ONLY_** your JWT Bearer token on textbox below!",
         "scheme": "Bearer",
         "bearerFormat": "JWT"
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "description": "Enter your API Key directly (no 'Bearer' prefix needed)",
+        "name": "X-API-KEY",
+        "in": "header"
       }
     }
   },
   "security": [
     {
-      "Bearer": []
+      "Bearer": [ ],
+      "ApiKey": [ ]
     }
   ]
 }

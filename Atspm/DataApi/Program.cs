@@ -20,11 +20,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Retry;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
+using Utah.Udot.Atspm.DataApi.Services;
 using Utah.Udot.Atspm.Infrastructure.Common;
 
 //git 2
@@ -71,6 +74,22 @@ builder.Host
             l.RequestBodyLogLimit = 4096;
             l.ResponseBodyLogLimit = 4096;
         });
+        s.AddScoped<AsyncRetryPolicy>(serviceProvider =>
+        {
+            var logger = serviceProvider.GetRequiredService<ILogger<EventLogImporterService>>();
+            return Policy
+                .Handle<Exception>(exception => exception is not OperationCanceledException)
+                .WaitAndRetryAsync(
+                    retryCount: 3,
+                    sleepDurationProvider: _ => TimeSpan.FromSeconds(2),
+                    onRetry: (exception, delay, retryCount, _) =>
+                        logger.LogWarning(
+                            exception,
+                            "Retrying event-log import after {Delay}; attempt {RetryCount}",
+                            delay,
+                            retryCount));
+        });
+        s.AddScoped<IEventLogImporterService, EventLogImporterService>();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();

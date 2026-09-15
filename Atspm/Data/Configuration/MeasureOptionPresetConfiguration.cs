@@ -47,6 +47,98 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 TypeNameHandling = TypeNameHandling.Objects,
                 SerializationBinder = new AssemblySerializationBinder<AtspmOptionsBase>()
             }));
+
+            builder.HasData(
+                new MeasureOptionPreset
+                {
+                    Id = 4101,
+                    Name = "Commuter Arterial",
+                    MeasureTypeId = 41,
+                    Option = BuildTimeOfDayPreset(
+                        0.60,
+                        0.42,
+                        0.72,
+                        0.40,
+                        0.20,
+                        0.16,
+                        2,
+                        4)
+                },
+                new MeasureOptionPreset
+                {
+                    Id = 4102,
+                    Name = "Suburban Mixed-Use",
+                    MeasureTypeId = 41,
+                    Option = BuildTimeOfDayPreset(
+                        0.55,
+                        0.40,
+                        0.68,
+                        0.38,
+                        0.22,
+                        0.18,
+                        2,
+                        4)
+                },
+                new MeasureOptionPreset
+                {
+                    Id = 4103,
+                    Name = "Retail / Commercial",
+                    MeasureTypeId = 41,
+                    Option = BuildTimeOfDayPreset(
+                        0.50,
+                        0.38,
+                        0.62,
+                        0.36,
+                        0.25,
+                        0.20,
+                        3,
+                        4)
+                },
+                new MeasureOptionPreset
+                {
+                    Id = 4104,
+                    Name = "Weekend / Recreation",
+                    MeasureTypeId = 41,
+                    Option = BuildTimeOfDayPreset(
+                        0.48,
+                        0.36,
+                        0.60,
+                        0.34,
+                        0.24,
+                        0.20,
+                        3,
+                        5)
+                });
+        }
+
+        private static TimeOfDayOptions BuildTimeOfDayPreset(
+            double amEntryPctOfPeak,
+            double amExitPctOfPeak,
+            double pmEntryPctOfPeak,
+            double pmExitPctOfPeak,
+            double freeEntryPctOfDailyPeak,
+            double freeEntryPctOfDynamicRange,
+            int entrySustainedBins,
+            int freeSustainedBins)
+        {
+            return new TimeOfDayOptions
+            {
+                AmEntryPctOfPeak = amEntryPctOfPeak,
+                AmExitPctOfPeak = amExitPctOfPeak,
+                PmEntryPctOfPeak = pmEntryPctOfPeak,
+                PmExitPctOfPeak = pmExitPctOfPeak,
+                FreeEntryPctOfDailyPeak = freeEntryPctOfDailyPeak,
+                FreeEntryPctOfDynamicRange = freeEntryPctOfDynamicRange,
+                EntrySustainedBins = entrySustainedBins,
+                FreeSustainedBins = freeSustainedBins,
+                FreeFallbackTime = "23:30",
+                MaxAmEndTime = "10:00",
+                MaxPmEndTime = "20:00",
+                LaneCapacityVehiclesPerHour = 800,
+                ApproachVolumeAssumedLanes = 2,
+                SplitReviewThresholdPercent = 35,
+                ShoulderReviewThresholdPercent = 45
+            };
         }
     }
 }
