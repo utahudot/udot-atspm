@@ -582,9 +582,12 @@ describe('TimeSpaceSidebar directional controls', () => {
         />
       )
 
-      fireEvent.change(screen.getByLabelText('Cycles begin green color'), {
-        target: { value: '#123456' },
-      })
+      fireEvent.change(
+        screen.getByLabelText('Cycles programmed split green color'),
+        {
+          target: { value: '#123456' },
+        }
+      )
 
       expect(onAppearanceChange).not.toHaveBeenCalled()
 

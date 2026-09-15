@@ -31,6 +31,7 @@ export interface TimeSpaceCoreRow {
 }
 
 export type TimeSpaceDistanceSpacingMode = 'distance' | 'sequence' | 'hybrid'
+export type TimeSpaceRouteOrientation = 'configured' | 'reversed'
 
 export type TimeSpaceDisplayDistanceOffset = (
   index: number,

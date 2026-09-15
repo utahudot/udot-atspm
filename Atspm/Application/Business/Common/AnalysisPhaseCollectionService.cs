@@ -61,6 +61,32 @@ namespace Utah.Udot.Atspm.Business.Common
             Location Location,
             int consecutiveCount)
         {
+            var plans = planService.GetBasicPlans(startTime, endTime, locationIdentifier, planEvents);
+            return GetAnalysisPhaseCollectionData(
+                locationIdentifier,
+                startTime,
+                endTime,
+                plans,
+                cycleEvents,
+                splitsEvents,
+                pedestrianEvents,
+                terminationEvents,
+                Location,
+                consecutiveCount);
+        }
+
+        public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
+            string locationIdentifier,
+            DateTime startTime,
+            DateTime endTime,
+            IReadOnlyList<Plan> planData,
+            IReadOnlyList<IndianaEvent> cycleEvents,
+            IReadOnlyList<IndianaEvent> splitsEvents,
+            IReadOnlyList<IndianaEvent> pedestrianEvents,
+            IReadOnlyList<IndianaEvent> terminationEvents,
+            Location Location,
+            int consecutiveCount)
+        {
             if (Location.Approaches.IsNullOrEmpty())
             {
                 throw new Exception("Approaches cannot be empty");
@@ -68,7 +94,7 @@ namespace Utah.Udot.Atspm.Business.Common
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.locationId = locationIdentifier;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, locationIdentifier, planEvents.ToList());
+            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, locationIdentifier, planData);
             foreach (var phaseNumber in phasesInUse)
             {
                 var aPhase = analysisPhaseService.GetAnalysisPhaseData(

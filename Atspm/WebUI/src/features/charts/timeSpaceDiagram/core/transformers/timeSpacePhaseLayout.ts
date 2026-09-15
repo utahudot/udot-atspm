@@ -15,33 +15,40 @@
 // limitations under the License.
 // #endregion
 import {
-  getDistanceAtDisplayCoordinate,
   getDisplayDistanceScale,
+  getDistanceAtDisplayCoordinate,
   getHybridDistanceData,
   getSequenceDistanceData,
   getTimeSpaceChartHeight,
   getTimeSpacePhaseRowDistances,
 } from '../math/timeSpaceLayout'
 import type {
-  TimeSpaceDistanceSpacingMode,
   TimeSpaceCoreRow,
+  TimeSpaceDistanceSpacingMode,
   TimeSpacePhaseLayout,
+  TimeSpaceRouteOrientation,
 } from '../types/timeSpaceCore.types'
 
 export function buildTimeSpacePhaseLayout<T extends TimeSpaceCoreRow>(
   data: T[],
   options?: {
     distanceSpacingMode?: TimeSpaceDistanceSpacingMode
+    routeOrientation?: TimeSpaceRouteOrientation
     sortByOrder?: boolean
   }
 ): TimeSpacePhaseLayout<T> {
   const byOrder = (a: T, b: T) =>
     (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
 
-  const primaryPhaseData = data
+  const orientedData =
+    options?.routeOrientation === 'reversed'
+      ? data.map(swapDisplayPhaseType)
+      : data
+
+  const primaryPhaseData = orientedData
     .filter((location) => location.phaseType === 'Primary')
     .sort(options?.sortByOrder ? byOrder : undefined)
-  const opposingPhaseData = data
+  const opposingPhaseData = orientedData
     .filter((location) => location.phaseType === 'Opposing')
     .sort(options?.sortByOrder ? byOrder : undefined)
 
@@ -111,6 +118,13 @@ export function buildTimeSpacePhaseLayout<T extends TimeSpaceCoreRow>(
       maxDisplayDistance,
       primaryPhaseData.length
     ),
+  }
+}
+
+function swapDisplayPhaseType<T extends TimeSpaceCoreRow>(location: T): T {
+  return {
+    ...location,
+    phaseType: location.phaseType === 'Primary' ? 'Opposing' : 'Primary',
   }
 }
 

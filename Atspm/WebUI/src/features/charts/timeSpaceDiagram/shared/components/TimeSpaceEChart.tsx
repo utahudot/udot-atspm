@@ -15,6 +15,7 @@ import {
   type TimeSpaceRendererDirectionRole,
   type TimeSpaceRendererTab,
 } from '@/features/charts/timeSpaceDiagram/renderer/types/timeSpaceRenderer.types'
+import { buildTimeSpaceExportOption } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartExport'
 import {
   buildLocationToggleButtons,
   buildOffsetResetButtons,
@@ -22,6 +23,10 @@ import {
   type LocationToggleButton,
   type OffsetResetButton,
 } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartGeometry'
+import {
+  extractHeaderContent,
+  getChartDownloadName,
+} from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartHeader'
 import {
   buildChartOptionWithSidebar,
   CHART_CONTENT_PADDING,
@@ -31,11 +36,6 @@ import {
   GUIDE_EASING,
   GUIDE_TRANSITION_MS,
 } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartLayout'
-import { buildTimeSpaceExportOption } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartExport'
-import {
-  extractHeaderContent,
-  getChartDownloadName,
-} from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartHeader'
 import {
   getLegendSelectedMap,
   syncRequestedLegendSelections,
@@ -72,8 +72,8 @@ import {
 import { GpxUploadOptions, TIME_SPACE_GPX_TRACKS_LEGEND_NAME } from '../types'
 import TimeSpaceSidebar from './TimeSpaceSidebar'
 
-export { getRequestedLegendVisibility } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceLegend'
 export { buildOffsetResetButtons } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartGeometry'
+export { getRequestedLegendVisibility } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceLegend'
 
 export type TimeSpaceChartProps = TimeSpaceChartRendererProps
 
@@ -125,6 +125,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     onToggleIgnoredLocation,
     distanceSpacingMode = 'distance',
     onToggleDistanceSpacingMode,
+    routeOrientation = 'configured',
+    onToggleRouteOrientation,
     sidebarUploadContent,
     isVisible = true,
   } = prop
@@ -182,7 +184,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
       ),
     [gpxEntries, option]
   )
-  const baseSelectedSeries = useMemo(() => getLegendSelectedMap(option), [option])
+  const baseSelectedSeries = useMemo(
+    () => getLegendSelectedMap(option),
+    [option]
+  )
   const defaultSelectedSeries = useMemo(() => {
     const next = { ...baseSelectedSeries }
     if (hasGpxTracks) {
@@ -974,8 +979,10 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
           onToggleFullscreen={handleToggleFullscreen}
           onToggleGuide={handleToggleGuide}
           onToggleDistanceSpacingMode={onToggleDistanceSpacingMode}
+          onToggleRouteOrientation={onToggleRouteOrientation}
           onTogglePhaseInfo={handleTogglePhaseInfo}
           distanceSpacingMode={distanceSpacingMode}
+          routeOrientation={routeOrientation}
           rangeText={rangeText}
           showPhaseInfo={showPhaseInfo}
           sidebarTab={sidebarTab}

@@ -24,6 +24,15 @@ namespace Utah.Udot.Atspm.Enums
         [Display(Name = "Admin")]
         Admin,
 
+        [Display(Name = "ApiKey:Create")]
+        ApiKeyCreate,
+
+        [Display(Name = "ApiKey:View")]
+        ApiKeyView,
+
+        [Display(Name = "ApiKey:Revoke")]
+        ApiKeyRevoke,
+
         [Display(Name = "User:View")]
         UserView,
 
@@ -66,16 +75,34 @@ namespace Utah.Udot.Atspm.Enums
         [Display(Name = "Data:Edit")]
         DataEdit,
 
+        [Display(Name = "Device:View")]
+        DeviceView,
+
+        [Display(Name = "Device:Edit")]
+        DeviceEdit,
+
+        [Display(Name = "Device:Delete")]
+        DeviceDelete,
+
+        [Display(Name = "Usage:View")]
+        UsageView,
+
+        [Display(Name = "Usage:Edit")]
+        UsageEdit,
+
+        [Display(Name = "Usage:Delete")]
+        UsageDelete,
+
         [Display(Name = "Watchdog:View")]
         WatchdogView,
 
         [Display(Name = "Report:View")]
         ReportView,
 
-        [Display(Name = "SpeedConfiguration:Edit")]
+        [Display(Name = "SpeedConfigurations:Edit")]
         SpeedConfigurationEdit,
 
-        [Display(Name = "SpeedConfiguration:Delete")]
+        [Display(Name = "SpeedConfigurations:Delete")]
         SpeedConfigurationDelete
     }
 }

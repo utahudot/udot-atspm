@@ -1,4 +1,7 @@
-import { getEventLogDaysWithDataFromLocationIdentifierAndDataType } from '@/api/data'
+import {
+  getAggregationDaysWithDataFromLocationIdentifierAndDataType,
+  getEventLogDaysWithDataFromLocationIdentifierAndDataType,
+} from '@/api/data'
 import { dateToTimestamp } from '@/utils/dateTime'
 import {
   eachDayOfInterval,
@@ -12,10 +15,31 @@ import {
   startOfWeek,
 } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
+import type { CalendarDayAvailability } from './types'
 
-const TIME_SPACE_DATA_TYPE = 'IndianaEvent'
+type EventLogDataType = Parameters<
+  typeof getEventLogDaysWithDataFromLocationIdentifierAndDataType
+>[1]
+type AggregationDataType = Parameters<
+  typeof getAggregationDaysWithDataFromLocationIdentifierAndDataType
+>[1]
 
-interface TimeSpaceDayAvailabilityParams {
+export type DayAvailabilityDataSource =
+  | {
+      dataCategory: 'raw'
+      dataType: EventLogDataType
+    }
+  | {
+      dataCategory: 'aggregation'
+      dataType: AggregationDataType
+    }
+
+const defaultDataSource: DayAvailabilityDataSource = {
+  dataCategory: 'raw',
+  dataType: 'IndianaEvent',
+}
+
+interface DayAvailabilityParams {
   locationIdentifiers: string[]
   availableDaysByLocation: string[][]
   startDate: Date
@@ -24,16 +48,9 @@ interface TimeSpaceDayAvailabilityParams {
   includedDaysOfWeek?: number[]
 }
 
-export interface TimeSpaceLocationDayAvailability {
-  locationIdentifier: string
-  hasData: boolean
-}
-
-export interface TimeSpaceDayAvailability {
-  date: Date
-  availableLocationCount: number
-  totalLocationCount: number
-  locations: TimeSpaceLocationDayAvailability[]
+interface DayAvailabilityResult {
+  requestKey: string
+  days: CalendarDayAvailability[]
 }
 
 const normalizeLocationIdentifiers = (locationIdentifiers: string[]) =>
@@ -58,19 +75,19 @@ const normalizeIncludedDaysOfWeek = (includedDaysOfWeek?: number[]) => {
   )
 }
 
-export const getTimeSpaceCalendarRange = (date: Date) => ({
+export const getDayAvailabilityCalendarRange = (date: Date) => ({
   start: startOfWeek(startOfMonth(date)),
   end: endOfWeek(endOfMonth(date)),
 })
 
-export const getTimeSpaceDayAvailabilityFromLocationData = ({
+export const getDayAvailabilityFromLocationData = ({
   locationIdentifiers,
   availableDaysByLocation,
   startDate,
   endDate,
   today = startOfToday(),
   includedDaysOfWeek,
-}: TimeSpaceDayAvailabilityParams): TimeSpaceDayAvailability[] => {
+}: DayAvailabilityParams): CalendarDayAvailability[] => {
   const normalizedLocationIdentifiers =
     normalizeLocationIdentifiers(locationIdentifiers)
 
@@ -119,15 +136,17 @@ export const getTimeSpaceDayAvailabilityFromLocationData = ({
     })
 }
 
-export const useTimeSpaceDayAvailability = (
+export const useDayAvailability = (
   locationIdentifiers: string[],
   startDate: Date,
   endDate: Date,
-  includedDaysOfWeek?: number[]
-): TimeSpaceDayAvailability[] => {
-  const [dayAvailability, setDayAvailability] = useState<
-    TimeSpaceDayAvailability[]
-  >([])
+  includedDaysOfWeek?: number[],
+  dataSource: DayAvailabilityDataSource = defaultDataSource
+): CalendarDayAvailability[] => {
+  const [result, setResult] = useState<DayAvailabilityResult>({
+    requestKey: '',
+    days: [],
+  })
   const normalizedLocationIdentifiers = useMemo(
     () => normalizeLocationIdentifiers(locationIdentifiers),
     [locationIdentifiers]
@@ -136,6 +155,14 @@ export const useTimeSpaceDayAvailability = (
     () => normalizeIncludedDaysOfWeek(includedDaysOfWeek),
     [includedDaysOfWeek]
   )
+  const requestKey = JSON.stringify([
+    normalizedLocationIdentifiers,
+    startDate.getTime(),
+    endDate.getTime(),
+    normalizedIncludedDaysOfWeek,
+    dataSource.dataCategory,
+    dataSource.dataType,
+  ])
 
   useEffect(() => {
     if (
@@ -144,7 +171,7 @@ export const useTimeSpaceDayAvailability = (
       !isValid(endDate) ||
       isAfter(startDate, endDate)
     ) {
-      setDayAvailability([])
+      setResult({ requestKey, days: [] })
       return
     }
 
@@ -153,35 +180,45 @@ export const useTimeSpaceDayAvailability = (
     const computeDayAvailability = async () => {
       try {
         const availableDaysByLocation = await Promise.all(
-          normalizedLocationIdentifiers.map((locationIdentifier) =>
-            getEventLogDaysWithDataFromLocationIdentifierAndDataType(
-              locationIdentifier,
-              TIME_SPACE_DATA_TYPE,
-              {
-                start: dateToTimestamp(startDate),
-                end: dateToTimestamp(endDate),
-              },
-              abortController.signal
-            )
-          )
+          normalizedLocationIdentifiers.map((locationIdentifier) => {
+            const params = {
+              start: dateToTimestamp(startDate),
+              end: dateToTimestamp(endDate),
+            }
+
+            return dataSource.dataCategory === 'aggregation'
+              ? getAggregationDaysWithDataFromLocationIdentifierAndDataType(
+                  locationIdentifier,
+                  dataSource.dataType,
+                  params,
+                  abortController.signal
+                )
+              : getEventLogDaysWithDataFromLocationIdentifierAndDataType(
+                  locationIdentifier,
+                  dataSource.dataType,
+                  params,
+                  abortController.signal
+                )
+          })
         )
 
         if (abortController.signal.aborted) return
 
-        setDayAvailability(
-          getTimeSpaceDayAvailabilityFromLocationData({
+        setResult({
+          requestKey,
+          days: getDayAvailabilityFromLocationData({
             locationIdentifiers: normalizedLocationIdentifiers,
             availableDaysByLocation,
             startDate,
             endDate,
             includedDaysOfWeek: normalizedIncludedDaysOfWeek,
-          })
-        )
+          }),
+        })
       } catch (error) {
         if (abortController.signal.aborted) return
 
-        console.error('Error computing time-space day availability:', error)
-        setDayAvailability([])
+        console.error('Error computing day availability:', error)
+        setResult({ requestKey, days: [] })
       }
     }
 
@@ -193,7 +230,10 @@ export const useTimeSpaceDayAvailability = (
     startDate,
     endDate,
     normalizedIncludedDaysOfWeek,
+    dataSource.dataCategory,
+    dataSource.dataType,
+    requestKey,
   ])
 
-  return dayAvailability
+  return result.requestKey === requestKey ? result.days : []
 }

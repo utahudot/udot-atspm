@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
     {
         protected override async IAsyncEnumerable<IEnumerable<SignalTimingPlan>> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var groups = input.GroupBy(g => (g.LocationIdentifier, g.PlanNumber));
+            var groups = input.GroupBy(g => g.LocationIdentifier);
 
             foreach (var g in groups)
             {

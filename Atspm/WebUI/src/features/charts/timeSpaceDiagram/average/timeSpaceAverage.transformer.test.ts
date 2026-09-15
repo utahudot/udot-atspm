@@ -84,6 +84,43 @@ describe('transformTimeSpaceAverageData', () => {
     expect(result.data.chart).toBeDefined()
   })
 
+  it('uses the opposing lane as the displayed route when reversed', () => {
+    const response: RawTimeSpaceDiagramResponse = {
+      type: ToolType.TimeSpaceAverage,
+      data: [
+        {
+          isSuccess: true,
+          error: null,
+          result: buildAverageLocation('Primary'),
+        },
+        {
+          isSuccess: true,
+          error: null,
+          result: buildAverageLocation('Opposing'),
+        },
+      ],
+    }
+
+    const result = transformTimeSpaceAverageData(response, {
+      routeOrientation: 'reversed',
+    })
+    const chart = result.data.chart as EChartsOption
+    const series = Array.isArray(chart.series)
+      ? (chart.series as SeriesOption[])
+      : []
+
+    expect(
+      (chart.displayProps as { locations?: string[] } | undefined)?.locations
+    ).toEqual(['opposing-location'])
+    expect(
+      series.some(
+        (entry) =>
+          String(entry.id).includes('opposing-location') &&
+          String(entry.id).includes('primary')
+      )
+    ).toBe(true)
+  })
+
   it('builds the same header and axis scaffolding used by the historic chart shell', () => {
     const response: RawTimeSpaceDiagramResponse = {
       type: ToolType.TimeSpaceAverage,

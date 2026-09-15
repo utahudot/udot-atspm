@@ -76,8 +76,8 @@ function PreviewCard({
       <Box component="svg" viewBox="0 0 78 48" sx={{ width: '100%', height: '100%' }}>
         {kind === 'cycles' && (
           <>
-            <rect x="7" y="15" width="14" height="14" fill={cycleColors.beginGreen} opacity={cycleOpacity} />
-            <rect x="21" y="15" width="10" height="14" fill={cycleColors.trailingGreen} opacity={cycleOpacity} />
+            <rect x="7" y="15" width="10" height="14" fill={cycleColors.trailingGreen} opacity={cycleOpacity} />
+            <rect x="17" y="15" width="14" height="14" fill={cycleColors.beginGreen} opacity={cycleOpacity} />
             <rect x="31" y="15" width="8" height="14" fill={cycleColors.yellowClearance} opacity={cycleOpacity} />
             <rect x="39" y="15" width="10" height="14" fill={cycleColors.redClearance} opacity={cycleOpacity} />
             <rect x="49" y="15" width="22" height="14" fill={cycleColors.redIndication} opacity={cycleOpacity} />

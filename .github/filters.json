@@ -4,6 +4,16 @@
   "atspm-data-api": "Atspm/DataApi/**",
   "atspm-identity-api": "Atspm/IdentityApi/**",
   "atspm-report-api": "Atspm/ReportApi/**",
-  "atspm-watchdog": "Atspm/WatchDog/**",
+  "atspm-watchdog": [
+    "Atspm/WatchDog/**",
+    "Atspm/Infrastructure/**",
+    "Atspm/Application/**",
+    "Atspm/Data/**",
+    "Atspm/MySqlDatabaseProvider/**",
+    "Atspm/OracleDatabaseProvider/**",
+    "Atspm/PostgreSQLDatabaseProvider/**",
+    "Atspm/SqlDatabaseProvider/**",
+    "Atspm/SqlLiteDatabaseProvider/**"
+  ],
   "atspm-eventlogutil": "Atspm/EventLogUtility/**"
 }

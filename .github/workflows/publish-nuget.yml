@@ -61,24 +61,24 @@ jobs:
       - name: Pack Core Libraries Only
         run: |
           VERSION="${{steps.validate_version.outputs.CLEAN_VERSION}}"
-          
+
           echo "📦 Finding and packing specific target libraries..."
-          
+
           # Find and pack Data project
           DATA_PATH=$(find . -name "Data.csproj")
           echo "Packing Data: $DATA_PATH"
           dotnet pack "$DATA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
-          
+
           # FIXED: Searching for Application.csproj directly
           APP_PATH=$(find . -name "Application.csproj")
           echo "Packing Application: $APP_PATH"
           dotnet pack "$APP_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
-          
+
           # Find and pack Infrastructure project
           INFRA_PATH=$(find . -name "Infrastructure.csproj")
           echo "Packing Infrastructure: $INFRA_PATH"
           dotnet pack "$INFRA_PATH" --configuration Release --no-build -p:PackageVersion=$VERSION -o ./nupkgs
-          
+
           echo "📦 Finding and packing database providers..."
           find . -name "*DatabaseProvider.csproj" | while read -r provider; do
             echo "Packing Provider: $provider"

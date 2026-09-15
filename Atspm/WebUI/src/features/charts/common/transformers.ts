@@ -21,6 +21,7 @@ import {
   PlanData,
   PlanOptions,
 } from '@/features/charts/common/types'
+import { supportsStepChartToggle } from '@/features/charts/common/chartFeatureFlags'
 import { Color } from '@/features/charts/utils'
 import { format } from 'date-fns'
 import {
