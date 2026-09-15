@@ -17,7 +17,6 @@
 
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
-    [ConfigurationSection(nameof(EventLogExtractConfiguration), "Configuration for extracting raw event log files")]
     public class EventLogExtractConfiguration
     {
         public string FileFormat { get; set; }

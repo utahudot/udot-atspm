@@ -20,7 +20,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
     /// <summary>
     /// Options pattern model for services that implement <see cref="IDeviceDownloader"/>
     /// </summary>
-    [ConfigurationSection(nameof(DeviceDownloaderConfiguration), "Configuration for downloading event logs from devices")]
     public class DeviceDownloaderConfiguration
     {
         /// <summary>

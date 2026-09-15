@@ -111,7 +111,6 @@ logs/
 _ReSharper.Caches/
 TestResult*/
 
-
 # Node.js dependencies (if applicable)
 node_modules/
 
