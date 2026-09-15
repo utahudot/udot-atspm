@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
@@ -26,6 +26,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="Configuration\Documentation\**" />
 		<Compile Remove="Migrations\**" />
 		<EmbeddedResource Remove="Migrations\**" />
 		<None Remove="Migrations\**" />
