@@ -108,7 +108,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         {
                             Direction = direction.GetAttributeOfType<DisplayAttribute>().Name,
                             LaneType = laneResultsByMovementType.FirstOrDefault().LaneType,
-                            MovementType = movementType
+                            MovementType = movementType,
+                            DetectorCount = laneResultsByMovementType.Sum(r => r.DetectorCount)
                         };
 
                         //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes
