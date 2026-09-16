@@ -35,8 +35,8 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             ) : base(approach, approachAggregationMetricOptions, startDate, endDate, getProtectedPhase, dataType, options)
 
         {
-            LoadBins(approach, approachAggregationMetricOptions, getProtectedPhase, dataType, options);
             this.phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
+            LoadBins(approach, approachAggregationMetricOptions, getProtectedPhase, dataType, options);
         }
 
         protected override void LoadBins(

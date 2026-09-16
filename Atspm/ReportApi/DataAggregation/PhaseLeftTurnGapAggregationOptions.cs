@@ -137,14 +137,14 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         protected override int GetAverageByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var phaseCycleAggregationBySignal =
-                new PhaseLeftTurnGapAggregationBySignal(this, signal, direction, options);
+                new PhaseLeftTurnGapAggregationBySignal(this, signal, direction, phaseLeftTurnGapAggregationRepository, options);
             return phaseCycleAggregationBySignal.Average;
         }
 
         protected override double GetSumByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var phaseCycleAggregationBySignal =
-                new PhaseLeftTurnGapAggregationBySignal(this, signal, direction, options);
+                new PhaseLeftTurnGapAggregationBySignal(this, signal, direction, phaseLeftTurnGapAggregationRepository, options);
             return phaseCycleAggregationBySignal.Average;
         }
 
@@ -158,14 +158,14 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             Location signal, AggregationOptions options)
         {
             var phaseCycleAggregationBySignal =
-                new PhaseLeftTurnGapAggregationBySignal(this, signal, directionType, options);
+                new PhaseLeftTurnGapAggregationBySignal(this, signal, directionType, phaseLeftTurnGapAggregationRepository, options);
             return phaseCycleAggregationBySignal.BinsContainers;
         }
 
         protected override List<BinsContainer> GetBinsContainersByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PhaseLeftTurnGapAggregationBySignal(this, signal, phaseNumber, options);
+                new PhaseLeftTurnGapAggregationBySignal(this, signal, phaseNumber, phaseLeftTurnGapAggregationRepository, options);
             return splitFailAggregationBySignal.BinsContainers;
         }
 
