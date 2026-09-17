@@ -22,6 +22,7 @@ using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -128,7 +129,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var finalRecurring = new List<WatchDogLogEventWithCountAndDate>();
             var finalDayBefore = new List<WatchDogLogEvent>();
             // PM
-            if (emailOptions.EmailPmErrors || emailOptions.EmailAllErrors)
+            if (emailOptions.EmailPmErrors)
             {
                 var scanDateForErrors = emailOptions.PmScanDate;
                 //since they can be on different days we need to check that the pm scan ran not just the day exists
@@ -167,7 +168,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
 
             // AM
-            if (emailOptions.EmailAmErrors || emailOptions.EmailAllErrors)
+            if (emailOptions.EmailAmErrors)
             {
                 var scanDateForErrors = emailOptions.AmScanDate;
                 //since they can be on different days we need to check that the am scan ran not just the day exists

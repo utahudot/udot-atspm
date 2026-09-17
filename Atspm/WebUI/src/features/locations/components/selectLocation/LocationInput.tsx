@@ -33,9 +33,6 @@ interface LocationInputProps {
   location: Location | null
   locations: Location[]
   chartsDisabled?: boolean
-  size?: 'small' | 'medium'
-  label?: string
-  placeholder?: string
   filters: Filters
   handleChange: (_: React.SyntheticEvent, value: Location | null) => void
 }
@@ -43,9 +40,6 @@ interface LocationInputProps {
 const LocationInput = ({
   location,
   locations,
-  size = 'medium',
-  label = 'Location',
-  placeholder,
   filters,
   handleChange,
 }: LocationInputProps) => {
@@ -91,14 +85,7 @@ const LocationInput = ({
           setInputValue(newInputValue)
         }}
         sx={{ width: '100%', marginBottom: 2 }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label={label}
-            placeholder={placeholder}
-            size={size}
-          />
-        )}
+        renderInput={(params) => <TextField {...params} label="Location" />}
         autoHighlight={true}
         autoSelect={true}
         onChange={handleChange}

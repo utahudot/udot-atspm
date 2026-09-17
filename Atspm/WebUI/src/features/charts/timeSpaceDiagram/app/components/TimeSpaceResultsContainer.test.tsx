@@ -103,7 +103,6 @@ function buildHistoricDatum(): RawTimeSpaceHistoricData {
     },
     order: 1,
     cycleLength: 120,
-    programmedSplit: 60,
     isPhaseOverLap: false,
     tspNumberCheckins: 0,
     tspNumberCheckouts: 0,

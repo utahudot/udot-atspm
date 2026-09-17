@@ -27,19 +27,16 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly SplitMonitorService splitMonitorService;
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
-        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public SplitMonitorReportService(
             SplitMonitorService splitMonitorService,
             IIndianaEventLogRepository controllerEventLogRepository,
-            ILocationRepository LocationRepository,
-            PlanService planService)
+            ILocationRepository LocationRepository)
         {
             this.splitMonitorService = splitMonitorService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
-            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -53,7 +50,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<SplitMonitorResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -61,7 +58,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<SplitMonitorResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
             var pedEvents = controllerEventLogs.Where(e =>
                 new List<short>
                 {
@@ -106,7 +105,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             var results = await splitMonitorService.GetChartData(
                parameter,
-               plans,
+               planEvents,
                cycleEvents,
                pedEvents,
                splitsEvents,

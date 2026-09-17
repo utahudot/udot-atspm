@@ -18,8 +18,6 @@ jest.mock('@/features/locations/utils', () => ({
   generatePin: jest.fn(),
 }))
 
-jest.mock('@/components/LeafletMap/SmoothWheelZoom', () => () => null)
-
 jest.mock('react-leaflet', () => {
   const React = require('react')
 

@@ -30,7 +30,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly ILocationRepository _LocationRepository;
         private readonly IIndianaEventLogRepository _controllerEventLogRepository;
         private readonly PhaseService _phaseService;
-        private readonly PlanService _planService;
 
         /// <inheritdoc/>
         public ApproachDelayReportService(
@@ -38,8 +37,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             LocationPhaseService LocationPhaseService,
             ILocationRepository LocationRepository,
             IIndianaEventLogRepository controllerEventLogRepository,
-            PhaseService phaseService,
-            PlanService planService
+            PhaseService phaseService
             )
         {
             _approachDelayService = approachDelayService;
@@ -47,7 +45,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             _LocationRepository = LocationRepository;
             _controllerEventLogRepository = controllerEventLogRepository;
             _phaseService = phaseService;
-            _planService = planService;
         }
 
         /// <inheritdoc/>
@@ -62,8 +59,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             }
 
             var controllerEventLogs = _controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier,
-                parameter.Start,
-                parameter.End).ToList();
+                parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -71,7 +68,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 await Task.FromException<IEnumerable<Analysis.ApproachDelay.ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await _planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
             var phaseDetails = _phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachDelayResult>>();
 
@@ -79,7 +78,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             {
                 if (phase.IsPermissivePhase && parameter.GetPermissivePhase || !phase.IsPermissivePhase)
                 {
-                    tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, plans, Location.LocationDescription()));
+                    tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
                 }
             }
 
@@ -93,7 +92,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             ApproachDelayOptions options,
             PhaseDetail phaseDetail,
             List<IndianaEvent> controllerEventLogs,
-            IReadOnlyList<Plan> plans,
+            List<IndianaEvent> planEvents,
             string LocationDescription)
         {
             var LocationPhase = await _LocationPhaseService.GetLocationPhaseData(
@@ -103,7 +102,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 options.BinSize,
                 null,
                 controllerEventLogs,
-                plans,
+                planEvents,
                 options.GetVolume);
             if (LocationPhase == null)
             {

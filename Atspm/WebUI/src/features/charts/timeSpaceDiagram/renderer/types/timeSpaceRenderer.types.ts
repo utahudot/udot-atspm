@@ -17,7 +17,6 @@
 import type {
   GpxUploadOptions,
   TimeSpaceDistanceSpacingMode,
-  TimeSpaceRouteOrientation,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import type { EChartsOption } from 'echarts'
 import type { CSSProperties, ReactNode } from 'react'
@@ -35,8 +34,6 @@ export interface TimeSpaceChartRendererProps {
   onToggleIgnoredLocation?: (location: string) => void
   distanceSpacingMode?: TimeSpaceDistanceSpacingMode
   onToggleDistanceSpacingMode?: (mode: TimeSpaceDistanceSpacingMode) => void
-  routeOrientation?: TimeSpaceRouteOrientation
-  onToggleRouteOrientation?: () => void
   sidebarUploadContent?: ReactNode
   isVisible?: boolean
 }

@@ -22,9 +22,6 @@ module.exports = withBundleAnalyzer({
   reactStrictMode: false,
   transpilePackages: ['react-leaflet'],
   output: 'standalone',
-  watchOptions: {
-    pollIntervalMs: 1000,
-  },
   webpack: (config) => {
     config.experiments = { ...config.experiments, topLevelAwait: true }
     return config

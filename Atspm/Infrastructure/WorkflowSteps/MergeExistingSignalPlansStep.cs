@@ -34,7 +34,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
         /// <inheritdoc/>
         protected override async IAsyncEnumerable<IEnumerable<SignalTimingPlan>> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var groups = input.GroupBy(g => g.LocationIdentifier);
+            var groups = input.GroupBy(g => (g.LocationIdentifier, g.PlanNumber));
             if (!groups.Any()) yield break;
 
             using var scope = _services.CreateAsyncScope();
@@ -50,7 +50,8 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
 
                 var existing = await repo.GetList()
                     .AsNoTracking()
-                    .Where(w => w.LocationIdentifier == g.Key
+                    .Where(w => w.LocationIdentifier == g.Key.LocationIdentifier
+                    && w.PlanNumber == g.Key.PlanNumber
                     && w.Start >= minStart
                     && w.Start < maxStart)
                     .ToListAsync(cancelToken);

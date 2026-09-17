@@ -1,9 +1,7 @@
-import type { CalendarDayAvailability } from '@/features/dataAvailability/types'
 import { styled } from '@mui/material/styles'
 import { DateCalendar, PickersDay, PickersDayProps } from '@mui/x-date-pickers'
 import { addDays, eachDayOfInterval, isSameDay, startOfDay } from 'date-fns'
 import { useMemo, useState } from 'react'
-import DayAvailabilityIndicator from './DayAvailabilityIndicator'
 
 function getDatesInRange(start: Date, end: Date) {
   const s = start < end ? start : end
@@ -18,7 +16,7 @@ interface ExtendedProps {
   isHovered: boolean
 }
 
-const ConnectedPickersDay = styled(PickersDay<Date>, {
+const ConnectedPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) =>
     prop !== 'isSelected' &&
     prop !== 'isPrevSelected' &&
@@ -52,19 +50,17 @@ const ConnectedPickersDay = styled(PickersDay<Date>, {
 )
 
 interface MultiSelectDayProps extends PickersDayProps<Date> {
-  selectedDays?: Date[]
-  tempDays?: Date[]
+  selectedDays: Date[]
+  tempDays: Date[]
   hoveredDay?: Date | null
-  dayAvailability?: CalendarDayAvailability[]
 }
 
 function MultiSelectDay(props: MultiSelectDayProps) {
   const {
     day,
-    selectedDays = [],
-    tempDays = [],
+    selectedDays,
+    tempDays,
     hoveredDay,
-    dayAvailability,
     outsideCurrentMonth,
     ...other
   } = props
@@ -75,40 +71,31 @@ function MultiSelectDay(props: MultiSelectDayProps) {
   const isPrevSelected = allSelected.some((d) => isSameDay(d, prevDay))
   const isNextSelected = allSelected.some((d) => isSameDay(d, nextDay))
   const isHovered = hoveredDay ? isSameDay(day, hoveredDay) : false
-  const availability = dayAvailability?.find((candidate) =>
-    isSameDay(candidate.date, day)
-  )
 
   return (
-    <DayAvailabilityIndicator availability={availability}>
-      <ConnectedPickersDay
-        {...other}
-        day={day}
-        disableMargin
-        selected={false}
-        outsideCurrentMonth={outsideCurrentMonth}
-        isSelected={isSelected}
-        isHovered={isHovered}
-        isPrevSelected={isSelected && isPrevSelected}
-        isNextSelected={isSelected && isNextSelected}
-      />
-    </DayAvailabilityIndicator>
+    <ConnectedPickersDay
+      {...other}
+      day={day}
+      disableMargin
+      selected={false}
+      outsideCurrentMonth={outsideCurrentMonth}
+      isSelected={isSelected}
+      isHovered={isHovered}
+      isPrevSelected={isSelected && isPrevSelected}
+      isNextSelected={isSelected && isNextSelected}
+    />
   )
 }
 
-interface MultiDayCalendarProps {
+interface MultiDaySelectProps {
   selectedDays: Date[]
   onSelectedDaysChange: (days: Date[]) => void
-  dayAvailability?: CalendarDayAvailability[]
-  onMonthChange?: (date: Date) => void
 }
 
-export default function MultiDayCalendar({
+export default function MultiDaySelect({
   selectedDays,
   onSelectedDaysChange,
-  dayAvailability,
-  onMonthChange,
-}: MultiDayCalendarProps) {
+}: MultiDaySelectProps) {
   const [dragging, setDragging] = useState(false)
   const [dragStart, setDragStart] = useState<Date | null>(null)
   const [dragCurrent, setDragCurrent] = useState<Date | null>(null)
@@ -167,15 +154,12 @@ export default function MultiDayCalendar({
             selectedDays,
             tempDays,
             hoveredDay,
-            dayAvailability,
             onPointerDown: () => handleDayPointerDown(ownerState.day),
             onPointerEnter: () => handleDayPointerEnter(ownerState.day),
             onMouseEnter: () => setHoveredDay(ownerState.day),
             onMouseLeave: () => setHoveredDay(null),
           }),
         }}
-        onMonthChange={onMonthChange}
-        onYearChange={onMonthChange}
         showDaysOutsideCurrentMonth
       />
     </div>

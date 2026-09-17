@@ -26,7 +26,7 @@ import { dateToTimestamp } from '@/utils/dateTime'
 import { useQuery } from 'react-query'
 import { transformChartData } from './transformData'
 
-export const TypeApiMap: Partial<Record<ChartType, string>> = {
+export const TypeApiMap: Record<ChartType, string> = {
   [ChartType.ApproachDelay]: '/api/v1/ApproachDelay/GetReportData',
   [ChartType.ApproachSpeed]: '/api/v1/ApproachSpeed/GetReportData',
   [ChartType.ApproachVolume]: '/api/v1/ApproachVolume/GetReportData',
@@ -40,6 +40,7 @@ export const TypeApiMap: Partial<Record<ChartType, string>> = {
   [ChartType.PurduePhaseTermination]:
     '/api/v1/PurduePhaseTermination/GetReportData',
   [ChartType.PreemptionDetails]: '/api/v1/PreemptDetail/GetReportData',
+    [ChartType.PrioritySummary]: '/api/v1/PrioritySummary/GetReportData',
   [ChartType.PurdueSplitFailure]: '/api/v1/SplitFail/GetReportData',
   [ChartType.SplitMonitor]: '/api/v1/SplitMonitor/GetReportData',
   [ChartType.TimingAndActuation]: '/api/v1/TimingAndActuation/GetReportData',
@@ -50,7 +51,7 @@ export const TypeApiMap: Partial<Record<ChartType, string>> = {
   [ChartType.WaitTime]: '/api/v1/WaitTime/GetReportData',
   [ChartType.YellowAndRedActuations]:
     '/api/v1/YellowRedActivations/GetReportData', // Todo: Fix spelling
-  [ChartType.RampMetering]: '/api/v1/RampMetering/GetReportData',
+    [ChartType.RampMetering]: '/api/v1/RampMetering/GetReportData',
 }
 
 type StringBooleanMap = Record<string, boolean | string | Date>
@@ -80,10 +81,6 @@ export const getCharts = async (
   options: ChartOptions
 ): Promise<TransformedChartResponse> => {
   const endpoint = TypeApiMap[type]
-  if (!endpoint) {
-    throw new Error(`No report endpoint configured for ${type}.`)
-  }
-
   const transformedOptions = mapStringBooleansToBoolean(options)
   transformedOptions.start = dateToTimestamp(transformedOptions.start as Date)
   transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)

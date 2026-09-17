@@ -31,28 +31,6 @@ type GraphicNode = {
   children?: GraphicNode[]
 }
 
-function stripRichText(text: string): string {
-  return text.replace(/\{[^|}]+\|([^}]+)\}/g, '$1')
-}
-
-function collectRenderTexts(node: unknown): string[] {
-  if (!node || typeof node !== 'object') return []
-
-  const candidate = node as {
-    children?: unknown[]
-    style?: { text?: unknown }
-  }
-  const ownText =
-    typeof candidate.style?.text === 'string'
-      ? [stripRichText(candidate.style.text)]
-      : []
-  const childTexts = Array.isArray(candidate.children)
-    ? candidate.children.flatMap((child) => collectRenderTexts(child))
-    : []
-
-  return [...ownText, ...childTexts]
-}
-
 function buildHistoricLocation(
   phaseType: 'Primary' | 'Opposing',
   overrides: Partial<RawTimeSpaceHistoricData> = {}
@@ -105,7 +83,6 @@ function buildHistoricLocation(
     },
     order: phaseType === 'Primary' ? 1 : 2,
     cycleLength: null,
-    programmedSplit: 45,
     isPhaseOverLap: false,
     tspNumberCheckins: 0,
     tspNumberCheckouts: 0,
@@ -116,24 +93,6 @@ function buildHistoricLocation(
     srmEntityTracks: [],
     ...overrides,
   }
-}
-
-function buildHistoricRouteEnd(
-  phaseType: 'Primary' | 'Opposing'
-): RawTimeSpaceHistoricData {
-  return buildHistoricLocation(phaseType, {
-    locationIdentifier:
-      phaseType === 'Primary' ? 'primary-route-end' : 'opposing-route-end',
-    locationDescription: `${phaseType} route end`,
-    distanceToNextLocation: 0,
-    distanceToPreviousLocation: 100,
-    calculatedDistanceToNext: 0,
-    calculatedDistanceToPrevious: 100,
-    order: 2,
-    laneByLaneCountDetectors: [],
-    advanceCountDetectors: [],
-    stopBarPresenceDetectors: [],
-  })
 }
 
 function renderStopBarPresenceNode(
@@ -396,22 +355,12 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
         {
           isSuccess: true,
           error: null,
-          result: buildHistoricRouteEnd('Primary'),
-        },
-        {
-          isSuccess: true,
-          error: null,
           result: buildHistoricLocation('Opposing', {
             tmcForPhase: {
               leftTurnEvents: [{ start: '2026-04-07T08:27:00Z' }] as never[],
               rightTurnEvents: [{ start: '2026-04-07T08:28:00Z' }] as never[],
             },
           }),
-        },
-        {
-          isSuccess: true,
-          error: null,
-          result: buildHistoricRouteEnd('Opposing'),
         },
       ],
     }
@@ -886,11 +835,6 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
         {
           isSuccess: true,
           error: null,
-          result: buildHistoricRouteEnd('Primary'),
-        },
-        {
-          isSuccess: true,
-          error: null,
           result: buildHistoricLocation('Opposing', {
             srmEntityTracks: [
               {
@@ -912,11 +856,6 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
               },
             ],
           }),
-        },
-        {
-          isSuccess: true,
-          error: null,
-          result: buildHistoricRouteEnd('Opposing'),
         },
       ],
     }
@@ -932,71 +871,6 @@ describe('transformTimeSpaceHistoricData detection series interaction', () => {
     const data = srmCollection?.data as [string, number][]
 
     expect(data[1][1]).toBeLessThan(data[0][1])
-  })
-
-  it('draws the configured opposing lane forward when the route is reversed', () => {
-    const response: RawTimeSpaceDiagramResponse = {
-      type: ToolType.TimeSpaceHistoric,
-      data: [
-        {
-          isSuccess: true,
-          error: null,
-          result: buildHistoricLocation('Primary'),
-        },
-        {
-          isSuccess: true,
-          error: null,
-          result: buildHistoricRouteEnd('Primary'),
-        },
-        {
-          isSuccess: true,
-          error: null,
-          result: buildHistoricLocation('Opposing', {
-            srmEntityTracks: [
-              {
-                entityId: 'bus-42',
-                points: [
-                  {
-                    time: '2026-04-07T08:00:00Z',
-                    timestampMs: Date.parse('2026-04-07T08:00:00Z'),
-                    distance: 0,
-                    intersectionId: 'opposing-location',
-                  },
-                  {
-                    time: '2026-04-07T08:01:00Z',
-                    timestampMs: Date.parse('2026-04-07T08:01:00Z'),
-                    distance: 20,
-                    intersectionId: 'opposing-location',
-                  },
-                ],
-              },
-            ],
-          }),
-        },
-        {
-          isSuccess: true,
-          error: null,
-          result: buildHistoricRouteEnd('Opposing'),
-        },
-      ],
-    }
-
-    const result = transformTimeSpaceHistoricData(response, {
-      routeOrientation: 'reversed',
-    })
-    const chart = result.data.chart as EChartsOption
-    const series = Array.isArray(chart.series)
-      ? (chart.series as SeriesOption[])
-      : []
-    const srmCollection = series.find(
-      (entry) => String(entry.name) === 'SRM Collection SBT ph6'
-    )
-    const data = srmCollection?.data as [string, number][]
-
-    expect(
-      (chart.displayProps as { locations?: string[] } | undefined)?.locations
-    ).toEqual(['opposing-location', 'opposing-route-end'])
-    expect(data[1][1]).toBeGreaterThan(data[0][1])
   })
 
   it('renders stop-bar-presence continuations in striped grey', () => {

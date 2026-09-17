@@ -31,7 +31,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
-        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public PedDelayReportService(
@@ -40,8 +39,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             CycleService cycleService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService,
-            PlanService planService)
+            PhaseService phaseService)
         {
             this.pedDelayService = pedDelayService;
             this.pedPhaseService = pedPhaseService;
@@ -49,7 +47,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
-            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -61,19 +58,21 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
                 return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<PedDelayResult>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, plans, controllerEventLogs));
+                tasks.Add(GetChartDataForApproach(parameter, phase, planEvents, controllerEventLogs));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -92,7 +91,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private async Task<PedDelayResult> GetChartDataForApproach(
             PedDelayOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<Plan> plans,
+            IReadOnlyList<IndianaEvent>
+            planEvents,
             IReadOnlyList<IndianaEvent> events)
         {
             var cycleEvents = events.GetCycleEventsWithTimeExtension(phaseDetail.PhaseNumber, phaseDetail.UseOverlap, options.Start, options.End);
@@ -102,7 +102,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
                 options,
                 phaseDetail.Approach,
-                plans.ToList(),
+                planEvents.ToList(),
                 pedEvents.ToList());
 
             var cycles = cycleService.GetRedToRedCycles(

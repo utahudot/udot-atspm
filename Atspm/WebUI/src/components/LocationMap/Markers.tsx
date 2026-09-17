@@ -9,15 +9,13 @@ import {
 } from '@/api/config'
 import { generatePin } from '@/features/locations/utils'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Marker, Pane, Popup, Tooltip } from 'react-leaflet'
+import { Marker, Popup } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import LocationPopup, { type StreetViewAvailability } from './LocationPopup'
-import styles from './Markers.module.css'
 
 type MarkersProps = {
   locations: Location[] | undefined
   setLocation: (location: Location) => void
-  highlightedLocationId?: number
 }
 
 type MarkerItemProps = {
@@ -31,19 +29,7 @@ type MarkerItemProps = {
   regionName: string
   jurisdictionName: string
   areaNames: string[]
-  isHighlighted: boolean
-  hasHighlightedMarker: boolean
 }
-
-type MarkerDisplayDetails = {
-  regionName: string
-  jurisdictionName: string
-  areaNames: string[]
-}
-
-const POPUP_OFFSET: [number, number] = [0, -30]
-const LOCATION_LABEL_PANE = 'location-labels'
-const LOCATION_LABEL_PANE_STYLE = { zIndex: 550 }
 
 const MarkerItem = memo(
   ({
@@ -57,21 +43,7 @@ const MarkerItem = memo(
     regionName,
     jurisdictionName,
     areaNames,
-    isHighlighted,
-    hasHighlightedMarker,
   }: MarkerItemProps) => {
-    const position = useMemo<[number, number]>(
-      () => [marker.latitude, marker.longitude],
-      [marker.latitude, marker.longitude]
-    )
-    const locationTypeLabelClass =
-      marker.locationTypeId === 1
-        ? styles.intersectionLocationLabel
-        : marker.locationTypeId === 2
-          ? styles.rampMeterLocationLabel
-          : styles.defaultLocationLabel
-    const locationIdentifier = marker.locationIdentifier?.trim()
-
     const eventHandlers = useMemo(
       () => ({
         click: () => onSelect(marker),
@@ -82,25 +54,12 @@ const MarkerItem = memo(
 
     return (
       <Marker
-        position={position}
+        key={marker.id}
+        position={[marker.latitude, marker.longitude]}
         icon={icon}
         eventHandlers={eventHandlers}
-        opacity={hasHighlightedMarker && !isHighlighted ? 0.45 : 1}
-        zIndexOffset={isHighlighted ? 1000 : 0}
       >
-          <Tooltip
-            permanent
-            direction={'right'}
-            offset={[-8, -22]}
-            opacity={1}
-            pane={LOCATION_LABEL_PANE}
-            className={`${styles.locationIdentifierLabel} ${locationTypeLabelClass}`}
-          >
-            <span className={styles.locationIdentifierText}>
-              {locationIdentifier}
-            </span>
-          </Tooltip>
-        <Popup offset={POPUP_OFFSET} closeButton={false} autoPan>
+        <Popup offset={[0, -30]} closeButton={false} autoPan>
           <LocationPopup
             marker={marker}
             regionName={regionName}
@@ -117,11 +76,7 @@ const MarkerItem = memo(
 )
 MarkerItem.displayName = 'MarkerItem'
 
-const Markers = ({
-  locations,
-  setLocation,
-  highlightedLocationId,
-}: MarkersProps) => {
+const Markers = ({ locations, setLocation }: MarkersProps) => {
   const { data: regionsData } = useGetRegion()
   const { data: jurisdictionData } = useGetJurisdiction()
   const { data: areasData } = useGetArea()
@@ -131,9 +86,6 @@ const Markers = ({
     Record<string, StreetViewAvailability | undefined>
   >({})
 
-  const streetViewStatusByIdRef = useRef<
-    Record<string, StreetViewAvailability | undefined>
-  >({})
   const streetViewInFlightRef = useRef<Record<string, boolean>>({})
 
   const regionNameById = useMemo(() => {
@@ -159,28 +111,6 @@ const Markers = ({
     }
     return map
   }, [areasData])
-
-  const markerDisplayDetailsById = useMemo(() => {
-    const details: Record<string, MarkerDisplayDetails> = {}
-
-    for (const marker of locations ?? []) {
-      details[marker.id] = {
-        regionName:
-          marker.regionId != null
-            ? regionNameById[String(marker.regionId)]
-            : '',
-        jurisdictionName:
-          marker.jurisdictionId != null
-            ? jurisdictionNameById[String(marker.jurisdictionId)]
-            : '',
-        areaNames: (marker.areas ?? [])
-          .map((id) => areaNameById[String(id)])
-          .filter(Boolean),
-      }
-    }
-
-    return details
-  }, [areaNameById, jurisdictionNameById, locations, regionNameById])
 
   useEffect(() => {
     if (!locations) return
@@ -226,24 +156,16 @@ const Markers = ({
     [setLocation]
   )
 
-  const updateStreetViewStatus = useCallback(
-    (id: string, status: StreetViewAvailability) => {
-      streetViewStatusByIdRef.current[id] = status
-      setStreetViewStatusById((prev) =>
-        prev[id] === status ? prev : { ...prev, [id]: status }
-      )
-    },
-    []
-  )
-
   const checkStreetView = useCallback(
     async (id: string, lat: number, lng: number) => {
-      const existing = streetViewStatusByIdRef.current[id]
+      const existing = streetViewStatusById[id]
       if (existing === 'available' || existing === 'unavailable') return
       if (streetViewInFlightRef.current[id]) return
 
       streetViewInFlightRef.current[id] = true
-      updateStreetViewStatus(id, 'unknown')
+
+      // Optional: if you hate the extra “unknown” re-render, remove this line.
+      setStreetViewStatusById((prev) => ({ ...prev, [id]: 'unknown' }))
 
       try {
         const r = await fetch(
@@ -252,17 +174,17 @@ const Markers = ({
           )}&lng=${encodeURIComponent(lng)}`
         )
         const data = (await r.json()) as { available: boolean }
-        updateStreetViewStatus(
-          id,
-          data.available ? 'available' : 'unavailable'
-        )
+        setStreetViewStatusById((prev) => ({
+          ...prev,
+          [id]: data.available ? 'available' : 'unavailable',
+        }))
       } catch {
-        updateStreetViewStatus(id, 'unavailable')
+        setStreetViewStatusById((prev) => ({ ...prev, [id]: 'unavailable' }))
       } finally {
         streetViewInFlightRef.current[id] = false
       }
     },
-    [updateStreetViewStatus]
+    [streetViewStatusById]
   )
 
   const handlePopupOpen = useCallback(
@@ -275,40 +197,40 @@ const Markers = ({
   if (!locations) return null
 
   return (
-    <>
-      <Pane
-        name={LOCATION_LABEL_PANE}
-        style={LOCATION_LABEL_PANE_STYLE}
-      />
-      <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={16}>
-        {locations.map((marker) => {
-          const icon = icons[marker.id]
-          if (!icon) return null
+    <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={16}>
+      {locations.map((marker) => {
+        const icon = icons[marker.id]
+        if (!icon) return null
 
-          const streetViewStatus = streetViewStatusById[marker.id]
+        const streetViewStatus = streetViewStatusById[marker.id]
 
-          const displayDetails = markerDisplayDetailsById[marker.id]
+        const regionName =
+          marker.regionId != null ? regionNameById[String(marker.regionId)] : ''
+        const jurisdictionName =
+          marker.jurisdictionId != null
+            ? jurisdictionNameById[String(marker.jurisdictionId)]
+            : ''
+        const areaNames = (marker.areas ?? [])
+          .map((id) => areaNameById[String(id)])
+          .filter(Boolean)
 
-          return (
-            <MarkerItem
-              key={marker.id}
-              marker={marker}
-              icon={icon}
-              streetViewStatus={streetViewStatus}
-              onSelect={handleSelectLocation}
-              onPopupOpen={handlePopupOpen}
-              streetViewUrl={streetViewUrl}
-              googleMapsUrl={googleMapsUrl}
-              regionName={displayDetails.regionName}
-              jurisdictionName={displayDetails.jurisdictionName}
-              areaNames={displayDetails.areaNames}
-              isHighlighted={marker.id === highlightedLocationId}
-              hasHighlightedMarker={highlightedLocationId != null}
-            />
-          )
-        })}
-      </MarkerClusterGroup>
-    </>
+        return (
+          <MarkerItem
+            key={marker.id}
+            marker={marker}
+            icon={icon}
+            streetViewStatus={streetViewStatus}
+            onSelect={handleSelectLocation}
+            onPopupOpen={handlePopupOpen}
+            streetViewUrl={streetViewUrl}
+            googleMapsUrl={googleMapsUrl}
+            regionName={regionName}
+            jurisdictionName={jurisdictionName}
+            areaNames={areaNames}
+          />
+        )
+      })}
+    </MarkerClusterGroup>
   )
 }
 

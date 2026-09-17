@@ -200,7 +200,6 @@ export type ChartOptionType =
   | 'WaitTime'
   | 'YellowAndRedActuations'
   | 'RampMetering'
-  | 'TimeOfDay'
 
 export enum ChartType {
   ApproachDelay = 'ApproachDelay',
@@ -222,7 +221,6 @@ export enum ChartType {
   WaitTime = 'WaitTime',
   YellowAndRedActuations = 'YellowAndRedActuations',
   RampMetering = 'RampMetering',
-  TimeOfDay = 'TimeOfDay',
 }
 
 export enum ToolType {
@@ -271,7 +269,5 @@ export const chartTypeToString = (chartType: ChartType) => {
       return 'Priority Summary'
     case ChartType.RampMetering:
       return 'Ramp Metering'
-    case ChartType.TimeOfDay:
-      return 'Time Of Day'
   }
 }

@@ -2,9 +2,9 @@ import SelectTimeSpan from '@/components/selectTimeSpan'
 import { TSHistoricHandler } from '@/features/charts/timeSpaceDiagram/historic/TimeSpaceHistoricOptions/historicTimeSpaceOptions.handler'
 import TimeSpaceRouteSelect from '@/features/charts/timeSpaceDiagram/shared/components/TimeSpaceRouteSelect/TimeSpaceRouteSelect'
 import {
-  getDayAvailabilityCalendarRange,
-  useDayAvailability,
-} from '@/features/dataAvailability/useDayAvailability'
+  getTimeSpaceCalendarRange,
+  useTimeSpaceDayAvailability,
+} from '@/features/charts/timeSpaceDiagram/shared/hooks/useTimeSpaceMissingDays'
 import { Box, Paper } from '@mui/material'
 import { differenceInMinutes } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
@@ -15,11 +15,11 @@ interface Props {
 
 export const HistoricOptionsComponent = ({ handler }: Props) => {
   const [calendarRange, setCalendarRange] = useState(() =>
-    getDayAvailabilityCalendarRange(handler.startDateTime)
+    getTimeSpaceCalendarRange(handler.startDateTime)
   )
 
   useEffect(() => {
-    setCalendarRange(getDayAvailabilityCalendarRange(handler.startDateTime))
+    setCalendarRange(getTimeSpaceCalendarRange(handler.startDateTime))
   }, [handler.startDateTime])
 
   const routeLocationIdentifiers = useMemo(() => {
@@ -36,7 +36,7 @@ export const HistoricOptionsComponent = ({ handler }: Props) => {
     )
   }, [handler.routeId, handler.routes])
 
-  const dayAvailability = useDayAvailability(
+  const dayAvailability = useTimeSpaceDayAvailability(
     routeLocationIdentifiers,
     calendarRange.start,
     calendarRange.end
@@ -55,7 +55,7 @@ export const HistoricOptionsComponent = ({ handler }: Props) => {
   const handleCalendarDateChange = (date: Date | null) => {
     if (!date) return
 
-    setCalendarRange(getDayAvailabilityCalendarRange(date))
+    setCalendarRange(getTimeSpaceCalendarRange(date))
   }
 
   return (

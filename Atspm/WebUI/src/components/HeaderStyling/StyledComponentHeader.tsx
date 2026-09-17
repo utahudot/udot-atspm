@@ -1,8 +1,6 @@
 import { Box, Typography } from '@mui/material'
-import type { ReactNode } from 'react'
 
 interface styleComponentHeaderType {
-  action?: ReactNode
   header: string
 }
 export const commonPaperStyle = {
@@ -12,10 +10,7 @@ export const commonPaperStyle = {
   alignItems: 'center',
 }
 
-export const StyledComponentHeader = ({
-  action,
-  header,
-}: styleComponentHeaderType) => {
+export const StyledComponentHeader = ({ header }: styleComponentHeaderType) => {
   return (
     <Box
       sx={{
@@ -25,14 +20,9 @@ export const StyledComponentHeader = ({
         backgroundColor: '#f5f5f5',
         width: '100%',
         textAlign: 'left',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 1,
       }}
     >
       <Typography variant="subtitle2">{header}</Typography>
-      {action}
     </Box>
   )
 }

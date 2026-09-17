@@ -58,7 +58,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<TurningMovementCountsResult>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -66,7 +66,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<TurningMovementCountsResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
+            var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.LocationIdentifier, planEvents);
             var tasks = new List<Task<IEnumerable<TurningMovementCountsLanesResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
             {
@@ -108,8 +111,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         {
                             Direction = direction.GetAttributeOfType<DisplayAttribute>().Name,
                             LaneType = laneResultsByMovementType.FirstOrDefault().LaneType,
-                            MovementType = movementType,
-                            DetectorCount = laneResultsByMovementType.Sum(r => r.DetectorCount)
+                            MovementType = movementType
                         };
 
                         //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes

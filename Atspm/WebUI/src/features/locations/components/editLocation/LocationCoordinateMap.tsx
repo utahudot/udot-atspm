@@ -1,6 +1,3 @@
-import '@/components/LeafletMap/leafletGlobalSetup'
-
-import SmoothWheelZoom from '@/components/LeafletMap/SmoothWheelZoom'
 import { generatePin } from '@/features/locations/utils'
 import { getEnv } from '@/utils/getEnv'
 import { Box, Skeleton } from '@mui/material'
@@ -170,10 +167,9 @@ export default function LocationCoordinateMap({
       center={center}
       zoom={zoom}
       style={{ height: '100%', width: '100%' }}
-      scrollWheelZoom={false}
+      scrollWheelZoom
       ref={setMapRef}
     >
-      <SmoothWheelZoom />
       <TileLayer attribution={mapInfo.attribution} url={mapInfo.tileLayer} />
 
       {markerIcon && (

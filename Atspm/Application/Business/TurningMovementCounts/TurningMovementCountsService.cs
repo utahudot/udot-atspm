@@ -66,19 +66,21 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             var laneNumberVolumes = new Dictionary<int, VolumeCollection>();
             var lanes = new List<Lane>();
 
-            foreach (var laneGroup in tmcDetectors.GroupBy(d => d.LaneNumber ?? 1))
+            foreach (var laneNumber in tmcDetectors.Select(d => d.LaneNumber).Distinct())
             {
-                var laneVolume = new VolumeCollection(laneGroup.Select(d => laneVolumes[d]).ToList(), options.BinSize);
+                var volumes = laneVolumes.Where(l => l.Key.LaneNumber == laneNumber).ToList();
+                var laneVolume = new VolumeCollection(volumes.Select(l => l.Value).ToList(), options.BinSize);
+                var firstDetector = volumes.FirstOrDefault();
 
                 lanes.Add(new Lane
                 {
-                    LaneNumber = laneGroup.Key,
-                    DetectorCount = laneGroup.Count(),
+                    LaneNumber = laneNumber,
                     MovementType = resolvedMovementTypeLabel,
-                    LaneType = laneType,
+                    LaneType = firstDetector.Key?.LaneType ?? 0,
                     Volume = laneVolume.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList()
                 });
-                laneNumberVolumes.Add(laneGroup.Key, laneVolume);
+
+                laneNumberVolumes.Add(laneNumber.Value, laneVolume);
             }
 
             var highestDetectorCountByLane = laneNumberVolumes.Values.Max(l => l.TotalDetectorCounts);
@@ -122,10 +124,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 peakHour.Value / binMultiplier,
                 peakHourFactor,
                 laneUtilizationFactor
-            )
-            {
-                DetectorCount = tmcDetectors.Count
-            };
+            );
         }
 
         private static double? GetLaneUtilizationFactor(

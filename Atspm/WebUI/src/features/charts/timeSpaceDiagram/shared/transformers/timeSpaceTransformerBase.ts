@@ -81,12 +81,13 @@ type CycleIndication = {
 
 export const CYCLE_INDICATIONS: readonly CycleIndication[] = [
   {
-    name: 'Programmed Split Green',
+    name: 'Phase Begin Green (1)\nOverlap Begin Green (61)',
     codes: [1, 61],
     color: '#0CC078',
   },
   {
-    name: 'Early Green',
+    name:
+      'Phase Min Complete (3)\nOverlap Begin Trailing Green (Extension) (62)',
     codes: [3, 62],
     color: '#79DE79',
   },
@@ -624,20 +625,40 @@ export function generateGreenEventLines(
           return
         }
 
-        const points = [
-          api.coord([x1Ms, y1]),
-          api.coord([x2Ms, y2]),
+        const chartTimespanMs = getChartTimespanMs(location.start, location.end)
+
+        const buildPoints = (shiftMs = 0) => [
+          api.coord([x1Ms + shiftMs, y1]),
+          api.coord([x2Ms + shiftMs, y2]),
           api.coord([
-            nextPointFinalMs,
+            nextPointFinalMs + shiftMs,
             (y2 as number) + displayDistanceToNext,
           ]),
           api.coord([
-            currPointFinalMs,
+            currPointFinalMs + shiftMs,
             (y1 as number) + displayDistanceToNext,
           ]),
         ]
 
-        return buildGreenBandPolygon(points, isPrimary)
+        return chartTimespanMs == null
+          ? buildGreenBandPolygon(buildPoints(), false, isPrimary)
+          : {
+              type: 'group',
+              emphasisDisabled: true,
+              children: [
+                buildGreenBandPolygon(
+                  buildPoints(-chartTimespanMs),
+                  true,
+                  isPrimary
+                ),
+                buildGreenBandPolygon(buildPoints(), false, isPrimary),
+                buildGreenBandPolygon(
+                  buildPoints(chartTimespanMs),
+                  true,
+                  isPrimary
+                ),
+              ],
+            }
       },
     })
   }
@@ -647,21 +668,29 @@ export function generateGreenEventLines(
 
 function buildGreenBandPolygon(
   points: number[][],
+  isContinuation: boolean,
   isPrimary?: boolean
 ): CustomSeriesRenderItemReturn {
   return {
     type: 'polygon',
-    z2: TIME_SPACE_MOVEMENT_ELEMENT_Z2,
+    ...(isContinuation ? { name: TIME_SPACE_CONTINUATION_NODE_NAME } : null),
+    z2: isContinuation
+      ? TIME_SPACE_MOVEMENT_ELEMENT_Z2 - 1
+      : TIME_SPACE_MOVEMENT_ELEMENT_Z2,
     focus: 'none',
     transition: ['shape'],
     emphasisDisabled: true,
     shape: {
       points,
     },
-    style: {
-      opacity: isPrimary ? 0.3 : 0.2,
-      fill: isPrimary ? '#4f9bac' : '#202d30',
-    },
+    style: isContinuation
+      ? {
+          fill: getCycleContinuationPatternFill(),
+        }
+      : {
+          opacity: isPrimary ? 0.3 : 0.2,
+          fill: isPrimary ? '#4f9bac' : '#202d30',
+        },
   }
 }
 
@@ -686,7 +715,7 @@ function getGreenEventsDataPoints(
   start: string,
   end: string
 ) {
-  const result: Array<[string, number]> = []
+  const result = []
 
   for (let i = 0; i < greenEvents.length; ) {
     const currentPoint = greenEvents[i]
@@ -718,42 +747,7 @@ function getGreenEventsDataPoints(
     }
   }
 
-  const chartStartMs = getTimeLikeMs(start)
-  const chartEndMs = getTimeLikeMs(end)
-
-  if (chartStartMs == null || chartEndMs == null || chartEndMs <= chartStartMs) {
-    return result
-  }
-
-  const clippedResult: Array<[string, number]> = []
-
-  for (let i = 0; i < result.length - 1; i += 2) {
-    const intervalStart = result[i][0]
-    const intervalEnd = result[i + 1][0]
-    const intervalStartMs = getTimeLikeMs(intervalStart)
-    const intervalEndMs = getTimeLikeMs(intervalEnd)
-
-    if (intervalStartMs == null || intervalEndMs == null) {
-      continue
-    }
-
-    const clippedStartMs = Math.max(intervalStartMs, chartStartMs)
-    const clippedEndMs = Math.min(intervalEndMs, chartEndMs)
-
-    if (clippedEndMs <= clippedStartMs) {
-      continue
-    }
-
-    clippedResult.push(
-      [
-        clippedStartMs === intervalStartMs ? intervalStart : start,
-        currentDistance,
-      ],
-      [clippedEndMs === intervalEndMs ? intervalEnd : end, currentDistance]
-    )
-  }
-
-  return clippedResult
+  return result
 }
 
 function getArrivalTime(

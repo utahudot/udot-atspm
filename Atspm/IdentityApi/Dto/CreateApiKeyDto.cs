@@ -15,8 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Utah.Udot.ATSPM.IdentityApi.Dto
 {
     /// <summary>
@@ -28,9 +26,7 @@ namespace Utah.Udot.ATSPM.IdentityApi.Dto
         /// Gets or sets a descriptive name for the API key to help identify its purpose.
         /// </summary>
         /// <example>Internal Integration Service</example>
-        [Required]
-        [StringLength(200)]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the optional expiration date and time for the API key. 
@@ -42,8 +38,6 @@ namespace Utah.Udot.ATSPM.IdentityApi.Dto
         /// Gets or sets the list of permissions assigned to this API key.
         /// </summary>
         /// <value>A list of strings representing claim names.</value>
-        [Required]
-        [MinLength(1)]
-        public List<string> Claims { get; set; } = new();
+        public List<string> Claims { get; set; }
     }
 }

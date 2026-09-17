@@ -31,7 +31,7 @@ type PartnerSection = {
 }
 
 const udotLogo: Partner = {
-  path: '/images/udot.webp',
+  path: '/images/udot.png',
   title: 'UDOT logo',
 }
 

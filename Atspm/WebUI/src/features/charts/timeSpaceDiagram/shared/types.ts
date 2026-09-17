@@ -128,7 +128,6 @@ export interface RawTimeSpaceHistoricData extends TimeSpaceBaseData {
 
   order: number
   cycleLength: number | null
-  programmedSplit: number | null
   isPhaseOverLap: boolean
 
   tspNumberCheckins: number
@@ -198,11 +197,9 @@ export type TimeSpaceOptions =
   | TimeSpaceAverageOptions
 
 export type TimeSpaceDistanceSpacingMode = 'distance' | 'sequence' | 'hybrid'
-export type TimeSpaceRouteOrientation = 'configured' | 'reversed'
 
 export interface TimeSpaceTransformOptions {
   distanceSpacingMode?: TimeSpaceDistanceSpacingMode
-  routeOrientation?: TimeSpaceRouteOrientation
 }
 
 export interface RawTimeSpaceDiagramResponse {

@@ -226,7 +226,7 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     expect(cycleGraphic.children[1].style.opacity).toBe(1)
   })
 
-  it('styles green bands while preserving detection continuation fills', () => {
+  it('preserves continuation fills when applying custom series appearance', () => {
     const appearance = createDefaultTimeSpaceAppearanceSettings()
     appearance.greenBands.primary.color = '#234567'
     appearance.greenBands.primary.opacity = 0.4
@@ -239,11 +239,24 @@ describe('applyTimeSpaceAppearanceToOption', () => {
           name: 'Green Bands EB',
           type: 'custom',
           renderItem: jest.fn(() => ({
-            type: 'polygon',
-            style: {
-              fill: '#4F9BAC',
-              opacity: 0.3,
-            },
+            type: 'group',
+            children: [
+              {
+                type: 'polygon',
+                name: TIME_SPACE_CONTINUATION_NODE_NAME,
+                style: {
+                  fill: '#D5DBE3',
+                  opacity: 1,
+                },
+              },
+              {
+                type: 'polygon',
+                style: {
+                  fill: '#4F9BAC',
+                  opacity: 0.3,
+                },
+              },
+            ],
           })),
           data: [[0, 0]],
         },
@@ -291,10 +304,8 @@ describe('applyTimeSpaceAppearanceToOption', () => {
     const greenBandGraphic = (
       series[0] as SeriesOption & { renderItem: () => GraphicNode }
     ).renderItem()
-    expect(greenBandGraphic.style).toMatchObject({
-      fill: '#234567',
-      opacity: 0.4,
-    })
+    expect(greenBandGraphic.children?.[0]?.style?.fill).toBe('#D5DBE3')
+    expect(greenBandGraphic.children?.[1]?.style?.fill).toBe('#234567')
 
     const stopBarGraphic = (
       series[1] as SeriesOption & { renderItem: () => GraphicNode }

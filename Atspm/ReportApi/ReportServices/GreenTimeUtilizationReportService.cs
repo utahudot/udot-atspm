@@ -29,21 +29,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
-        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public GreenTimeUtilizationReportService(
             GreenTimeUtilizationService GreenTimeUtilizationService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService,
-            PlanService planService)
+            PhaseService phaseService)
         {
             greenTimeUtilizationService = GreenTimeUtilizationService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
-            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -55,19 +52,21 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
                 return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<GreenTimeUtilizationResult>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, plans, false));
+                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents, false));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -87,7 +86,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             GreenTimeUtilizationOptions options,
             PhaseDetail phaseDetail,
             IReadOnlyList<IndianaEvent> controllerEventLogs,
-            IReadOnlyList<Plan> plans,
+            IReadOnlyList<IndianaEvent> planEvents,
             bool usePermissivePhase)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false);
@@ -99,7 +98,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 options,
                 detectorEventsList,
                 cycleEvents,
-                plans,
+                planEvents.ToList(),
                 controllerEventLogs.ToList()
                 );
             viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();

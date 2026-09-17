@@ -30,15 +30,13 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         private readonly LocationPhaseService locationPhaseService;
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly PurdueCoordinationDiagramService purdueCoordinationDiagramService;
-        private readonly PlanService planService;
 
-        public LinkPivotPcdService(ILocationRepository locationRepository, IIndianaEventLogRepository controllerEventLogRepository, LocationPhaseService locationPhaseService, PurdueCoordinationDiagramService purdueCoordinationDiagramService, PlanService planService)
+        public LinkPivotPcdService(ILocationRepository locationRepository, IIndianaEventLogRepository controllerEventLogRepository, LocationPhaseService locationPhaseService, PurdueCoordinationDiagramService purdueCoordinationDiagramService)
         {
             this.locationRepository = locationRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.locationPhaseService = locationPhaseService;
             this.purdueCoordinationDiagramService = purdueCoordinationDiagramService;
-            this.planService = planService;
         }
 
         public async Task<LinkPivotPcdResult> GetData(LinkPivotPcdOptions options)
@@ -80,7 +78,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             if (!string.IsNullOrEmpty(approach.DirectionType.Description))
             {
                 var logs = controllerEventLogRepository.GetEventsBetweenDates(approach.Location.LocationIdentifier, startDate, endDate).ToList();
-                var plans = await planService.GetPlansAsync(approach.Location.LocationIdentifier, startDate, endDate, logs);
+                var plans = logs.GetPlanEvents(startDate, endDate).ToList();
                 var lp = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, startDate, endDate, 15, 13, logs, plans, true, null, 90);
                 var pcdOptions = new PurdueCoordinationDiagramOptions()
                 {

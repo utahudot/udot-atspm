@@ -15,53 +15,51 @@
 // limitations under the License.
 // #endregion
 module.exports = {
-  // config: {
-  //   input: {
-  //     target: './api-specs/config-spec.json',
-  //   },
-  //   output: {
-  //     workspace: './src/api/config',
-  //     target: './config-api.ts',
-  //     client: 'react-query',
-  //     httpClient: 'axios',
-  //     mock: true,
-  //     templates: './orval-templates',
-  //     mode: 'tags-split',
-  //     override: {
-  //       mutator: {
-  //         path: '../../lib/axios.ts',
-  //         name: 'configRequest',
-  //       },
-  //     },
-  //   },
-  // },
-  reports: {
+  config: {
     input: {
-      target: './api-specs/reports-spec.json',
+      target: './api-specs/config-spec.json',
     },
     output: {
-      workspace: './src/api/reports',
-      target: './report-api.ts',
+      workspace: './src/api/config',
+      target: './config-api.ts',
       client: 'react-query',
-      httpClient: 'axios',
       mock: true,
       templates: './orval-templates',
       mode: 'tags-split',
       override: {
         mutator: {
           path: '../../lib/axios.ts',
-          name: 'reportsRequest',
+          name: 'configRequest',
         },
       },
     },
   },
-  // data: {
+  // reports: {
   //   input: {
-  //     target: './data-spec.json',
+  //     target: './api-specs/reports-spec.json',
   //   },
   //   output: {
-  //     workspace: './src/api/data',
-  //     target: './data-api.ts',
+  //     workspace: './src/api/reports',
+  //     target: './report-api.ts',
+  //     client: 'react-query',
+  //     mock: true,
+  //     templates: './orval-templates',
+  //     mode: 'tags-split',
+  //     override: {
+  //       mutator: {
+  //         path: '../../lib/axios.ts',
+  //         name: 'reportsRequest',
+  //       },
+  //     },
+  //   },
+  // },
+  // data: {
+  //   input: {
+  //     target: './api-specs/reports-spec.json',
+  //   },
+  //   output: {
+  //     workspace: './src/api/reports',
+  //     target: './report-api.ts',
   //     client: 'react-query',
   //     httpClient: 'axios',
   //     mock: true,
@@ -70,7 +68,7 @@ module.exports = {
   //     override: {
   //       mutator: {
   //         path: '../../lib/axios.ts',
-  //         name: 'dataRequest',
+  //         name: 'reportsRequest',
   //       },
   //     },
   //   },
@@ -83,7 +81,6 @@ module.exports = {
   //     workspace: './src/api/data',
   //     target: './data-api.ts',
   //     client: 'react-query',
-  //     httpClient: 'axios',
   //     mock: true,
   //     templates: './orval-templates',
   //     mode: 'tags-split',

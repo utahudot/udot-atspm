@@ -7,21 +7,14 @@ export default function RightSidebar({
   children,
   width = 420,
   title,
-  subtitle,
-  dismissOnBackdrop = false,
-}: PropsWithChildren<{
-  width?: number
-  title: string
-  subtitle?: string
-  dismissOnBackdrop?: boolean
-}>) {
+}: PropsWithChildren<{ width?: number; title: string }>) {
   const theme = useTheme()
   const { isRightSidebarOpen, closeRightSidebar } = useSidebarStore()
 
   return (
     <Drawer
       anchor="right"
-      variant={dismissOnBackdrop ? 'temporary' : 'persistent'}
+      variant="persistent"
       open={isRightSidebarOpen}
       onClose={closeRightSidebar}
       PaperProps={{
@@ -40,29 +33,15 @@ export default function RightSidebar({
       <Box
         sx={{
           p: 2,
-          pb: subtitle ? 1.5 : 0,
+          pb: 0,
           display: 'flex',
-          alignItems: 'flex-start',
           gap: 1,
           justifyContent: 'space-between',
-          borderBottom: subtitle ? 1 : 0,
-          borderColor: 'divider',
         }}
       >
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: subtitle ? 0.25 : 0 }}>
-            {title}
-          </Typography>
-          {subtitle && (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: 'block', lineHeight: 1.4 }}
-            >
-              {subtitle}
-            </Typography>
-          )}
-        </Box>
+        <Typography variant="subtitle2" gutterBottom>
+          {title}
+        </Typography>
 
         <IconButton
           size="small"

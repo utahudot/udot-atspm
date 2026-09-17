@@ -1,6 +1,3 @@
-import '@/components/LeafletMap/leafletGlobalSetup'
-
-import SmoothWheelZoom from '@/components/LeafletMap/SmoothWheelZoom'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { getEnv } from '@/utils/getEnv'
 import { Box } from '@mui/material'
@@ -145,10 +142,8 @@ function ReportMap(props: Props) {
         ref={setMapRef}
         renderer={renderer}
         doubleClickZoom={false}
-        scrollWheelZoom={false}
         preferCanvas={true}
       >
-        <SmoothWheelZoom />
         <TileLayer
           id="ReportMapId"
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'

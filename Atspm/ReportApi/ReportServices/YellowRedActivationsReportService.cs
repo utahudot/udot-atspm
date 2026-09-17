@@ -29,21 +29,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
-        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public YellowRedActivationsReportService(
             YellowRedActivationsService yellowRedActivationsService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService,
-            PlanService planService)
+            PhaseService phaseService)
         {
             this.yellowRedActivationsService = yellowRedActivationsService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
-            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -57,7 +54,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -65,12 +62,14 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<YellowRedActivationsResult>>();
             foreach (var phaseDetail in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phaseDetail, controllerEventLogs, plans, Location.LocationDescription()));
+                tasks.Add(GetChartDataForApproach(parameter, phaseDetail, controllerEventLogs, planEvents, Location.LocationDescription()));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -95,7 +94,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             YellowRedActivationsOptions options,
             PhaseDetail phaseDetail,
             List<IndianaEvent> controllerEventLogs,
-            IReadOnlyList<Plan> plans,
+            List<IndianaEvent> planEvents,
             string LocationDescription)
         {
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(
@@ -118,7 +117,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 phaseDetail,
                 cycleEvents,
                 detectorEvents,
-                plans);
+                planEvents);
             viewModel.LocationDescription = LocationDescription;
             viewModel.ApproachDescription = phaseDetail.GetApproachDescription();
             return viewModel;

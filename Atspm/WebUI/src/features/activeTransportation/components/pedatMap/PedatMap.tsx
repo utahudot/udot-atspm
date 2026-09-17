@@ -1,7 +1,4 @@
-import '@/components/LeafletMap/leafletGlobalSetup'
-
 import { PedatChartsContainerProps } from '@/features/activeTransportation/components/PedatChartsContainer'
-import SmoothWheelZoom from '@/components/LeafletMap/SmoothWheelZoom'
 import ControlsPanel from '@/features/activeTransportation/components/pedatMap/PedatMapControls'
 import { getEnv } from '@/utils/getEnv'
 import { Box } from '@mui/material'
@@ -290,13 +287,12 @@ function PedatLeafletMap({
     <MapContainer
       center={[mapCoords.lat, mapCoords.lng]}
       zoom={mapCoords.zoom}
-      scrollWheelZoom={false}
+      scrollWheelZoom
       style={{ height: '100%', width: '100%' }}
       renderer={L.canvas({ tolerance: 5 })}
       ref={setMapRef}
       doubleClickZoom={false}
     >
-      <SmoothWheelZoom />
       <TileLayer
         attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
         url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"

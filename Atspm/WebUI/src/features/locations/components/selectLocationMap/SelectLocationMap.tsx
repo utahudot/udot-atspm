@@ -14,7 +14,6 @@ type SelectLocationMapProps = {
   mapHeight?: number | string
   filters: Filters
   updateFilters: (filters: Partial<Filters>) => void
-  highlightedLocationId?: number
 }
 
 function SelectLocationMap({
@@ -27,7 +26,6 @@ function SelectLocationMap({
   mapHeight,
   filters,
   updateFilters,
-  highlightedLocationId,
 }: SelectLocationMapProps) {
   const LocationMap = useMemo(
     () =>
@@ -51,7 +49,6 @@ function SelectLocationMap({
       mapHeight,
       filters,
       updateFilters,
-      highlightedLocationId,
     }),
     [
       location,
@@ -63,7 +60,6 @@ function SelectLocationMap({
       mapHeight,
       filters,
       updateFilters,
-      highlightedLocationId,
     ]
   )
 

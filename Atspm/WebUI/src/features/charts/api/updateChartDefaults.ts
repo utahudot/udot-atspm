@@ -35,39 +35,22 @@ type UseUpdateChartDefaultsOptions = {
   config?: MutationConfig<typeof updateChartDefaults>
 }
 
-type UpdateChartDefaultsContext = {
-  previousChartDefaults?: UpdateChartDefault[]
-}
-
-const isUpdateChartDefaultsContext = (
-  context: unknown
-): context is UpdateChartDefaultsContext =>
-  typeof context === 'object' &&
-  context !== null &&
-  'previousChartDefaults' in context
-
 export const useUpdateChartDefaults = ({
   config,
 }: UseUpdateChartDefaultsOptions = {}) => {
   const { addNotification } = useNotificationStore()
-  const chartDefaultsQueryKey = ['chartdefaults']
-
   return useMutation({
     onMutate: async () => {
-      await queryClient.cancelQueries(chartDefaultsQueryKey)
+      await queryClient.cancelQueries('chartDefaults')
 
-      const previousChartDefaults = queryClient.getQueryData<
-        UpdateChartDefault[]
-      >(chartDefaultsQueryKey)
+      const previousChartDefaults =
+        queryClient.getQueryData<UpdateChartDefault[]>('chartDefaults')
 
       return { previousChartDefaults }
     },
-    onError: (_, __, context) => {
-      if (isUpdateChartDefaultsContext(context)) {
-        queryClient.setQueryData(
-          chartDefaultsQueryKey,
-          context.previousChartDefaults
-        )
+    onError: (_, __, context: any) => {
+      if (context?.previousChartDefaults) {
+        queryClient.setQueryData('chartDefaults', context.previousChartDefaults)
       }
       addNotification({
         type: 'error',
@@ -75,7 +58,7 @@ export const useUpdateChartDefaults = ({
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(chartDefaultsQueryKey)
+      queryClient.invalidateQueries('chartDefaults')
       addNotification({
         type: 'success',
         title: 'Chart Default Updated',

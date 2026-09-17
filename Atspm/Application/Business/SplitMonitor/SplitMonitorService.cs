@@ -44,7 +44,7 @@ namespace Utah.Udot.Atspm.Business.SplitMonitor
 
         public async Task<IEnumerable<SplitMonitorResult>> GetChartData(
             SplitMonitorOptions options,
-            IReadOnlyList<Plan> plans,
+            IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> cycleEvents,
             IReadOnlyList<IndianaEvent> pedEvents,
             IReadOnlyList<IndianaEvent> splitsEvents,
@@ -55,7 +55,7 @@ namespace Utah.Udot.Atspm.Business.SplitMonitor
                 Location.LocationIdentifier,
                 options.Start,
                 options.End,
-                plans,
+                planEvents,
                 cycleEvents,
                 splitsEvents,
                 pedEvents,

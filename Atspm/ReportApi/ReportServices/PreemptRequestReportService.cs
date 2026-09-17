@@ -27,19 +27,16 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly PreemptServiceRequestService preemptServiceRequestService;
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
-        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public PreemptRequestReportService(
             PreemptServiceRequestService preemptServiceRequestService,
             IIndianaEventLogRepository controllerEventLogRepository,
-            ILocationRepository LocationRepository,
-            PlanService planService)
+            ILocationRepository LocationRepository)
         {
             this.preemptServiceRequestService = preemptServiceRequestService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
-            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -51,15 +48,17 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<PreemptServiceRequestResult>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(parameter.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(parameter.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
                 return await Task.FromException<PreemptServiceRequestResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
             var events = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<short>() { 102 });
-            PreemptServiceRequestResult result = preemptServiceRequestService.GetChartData(parameter, plans, events);
+            PreemptServiceRequestResult result = preemptServiceRequestService.GetChartData(parameter, planEvents, events);
             result.LocationDescription = Location.LocationDescription();
             //return Ok(viewModel);
 

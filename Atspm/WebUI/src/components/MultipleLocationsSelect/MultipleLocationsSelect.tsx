@@ -8,6 +8,7 @@ import {
 import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
+import { ChevronRight } from '@mui/icons-material'
 import AddIcon from '@mui/icons-material/Add'
 import {
   Box,
@@ -17,10 +18,8 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  ToggleButton,
-  ToggleButtonGroup,
 } from '@mui/material'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 interface MultipleLocationsSelectProps {
   selectedLocations: Location[]
@@ -30,23 +29,12 @@ interface MultipleLocationsSelectProps {
   mapHeight?: number | string
   route?: number[][]
   removeRouteSelect?: boolean
-  focusedLocation?: Location | null
-  highlightedLocationId?: number
-  showSelectionModeToggle?: boolean
-  size?: 'small' | 'medium'
-  fillAvailableHeight?: boolean
 }
 
 const MultipleLocationsSelect = ({
   selectedLocations,
   setLocations,
   removeRouteSelect,
-  focusedLocation,
-  highlightedLocationId,
-  mapHeight,
-  showSelectionModeToggle = false,
-  size = 'medium',
-  fillAvailableHeight = false,
 }: MultipleLocationsSelectProps) => {
   const { data: routesData } = useGetRoute({ expand: 'routeLocations' })
   const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
@@ -59,16 +47,7 @@ const MultipleLocationsSelect = ({
 
   const [selectedLocation, setSelectedLocation] = useState<Location>()
   const [selectedRoute, setSelectedRoute] = useState<Route>()
-  const [selectionMode, setSelectionMode] = useState<'route' | 'location'>(
-    'route'
-  )
   const [filters, setFilters] = useState<Filters>({})
-
-  useEffect(() => {
-    if (focusedLocation) {
-      setSelectedLocation(focusedLocation)
-    }
-  }, [focusedLocation])
 
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }))
@@ -137,171 +116,78 @@ const MultipleLocationsSelect = ({
   }
 
   return (
-    <Box
-      sx={
-        fillAvailableHeight
-          ? {
-              height: '100%',
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column',
-            }
-          : undefined
-      }
-    >
-      {!removeRouteSelect && showSelectionModeToggle && (
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={selectionMode}
-          onChange={(_, mode: 'route' | 'location' | null) => {
-            if (mode) setSelectionMode(mode)
-          }}
-          aria-label="Location selection method"
+    <Box>
+      {!removeRouteSelect && (
+        <Box
           sx={{
-            mb: 1.5,
-            width: 168,
-            '& .MuiToggleButton-root': {
-              flex: 1,
-              py: 0.5,
-              textTransform: 'none',
-              fontWeight: 500,
-            },
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            mb: 2,
           }}
         >
-          <ToggleButton value="route">Route</ToggleButton>
-          <ToggleButton value="location">Location</ToggleButton>
-        </ToggleButtonGroup>
-      )}
-      {!removeRouteSelect &&
-        (!showSelectionModeToggle || selectionMode === 'route') && (
-          <>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                mb: 1.5,
-              }}
+          <FormControl fullWidth>
+            <InputLabel htmlFor="route-select">Route</InputLabel>
+            <Select
+              label="Route"
+              variant="outlined"
+              fullWidth
+              value={selectedRoute?.id || ''}
+              onChange={onRouteChange}
+              inputProps={{ id: 'route-select' }}
             >
-              <FormControl fullWidth size={size}>
-                {!showSelectionModeToggle && (
-                  <InputLabel htmlFor="route-select">Route</InputLabel>
-                )}
-                <Select
-                  label={showSelectionModeToggle ? undefined : 'Route'}
-                  variant="outlined"
-                  fullWidth
-                  displayEmpty={showSelectionModeToggle}
-                  value={selectedRoute?.id || ''}
-                  onChange={onRouteChange}
-                  renderValue={() =>
-                    !selectedRoute && showSelectionModeToggle ? (
-                      <Box component="span" sx={{ color: 'text.secondary' }}>
-                        Select a route
-                      </Box>
-                    ) : (
-                      selectedRoute?.name
-                    )
-                  }
-                  inputProps={{
-                    id: 'route-select',
-                    'aria-label': showSelectionModeToggle ? 'Route' : undefined,
-                  }}
-                >
-                  {routes?.map((route) => (
-                    <MenuItem key={route.id} value={route.id}>
-                      {route.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
-                variant="contained"
-                size={size}
-                startIcon={<AddIcon />}
-                onClick={onAddRoute}
-                sx={{
-                  ml: 1,
-                  minWidth: 108,
-                  whiteSpace: 'nowrap',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                }}
-              >
-                Add Route
-              </Button>
-            </Box>
-          </>
-        )}
-      {(!showSelectionModeToggle ||
-        removeRouteSelect ||
-        selectionMode === 'location') && (
-        <>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              mb: 1.5,
-            }}
+              {routes?.map((route) => (
+                <MenuItem key={route.id} value={route.id}>
+                  {route.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={onAddRoute}
+            sx={{ ml: 2, width: 100 }}
           >
-            <Box
-              sx={{
-                flex: 1,
-                '& .MuiAutocomplete-root': { mb: 0 },
-              }}
-            >
-              <LocationInput
-                location={selectedLocation}
-                locations={filteredLocations}
-                handleChange={handleLocationInputChange}
-                filters={filters}
-                size={size}
-                label={showSelectionModeToggle ? '' : 'Location'}
-                placeholder={
-                  showSelectionModeToggle ? 'Select a location' : undefined
-                }
-              />
-            </Box>
-            <Button
-              variant="contained"
-              size={size}
-              startIcon={<AddIcon />}
-              onClick={onAddLocation}
-              sx={{
-                ml: 1,
-                minWidth: 124,
-                whiteSpace: 'nowrap',
-                textTransform: 'none',
-                fontWeight: 600,
-              }}
-              disabled={!selectedLocation}
-            >
-              Add Location
-            </Button>
-          </Box>
-        </>
+            Add
+          </Button>
+        </Box>
       )}
       <Box
-        sx={
-          fillAvailableHeight
-            ? {
-                flex: 1,
-                minHeight: mapHeight ?? 300,
-              }
-            : undefined
-        }
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          mb: 2,
+        }}
       >
+        <Box sx={{ flex: 1 }}>
+          <LocationInput
+            location={selectedLocation}
+            locations={filteredLocations}
+            handleChange={handleLocationInputChange}
+            filters={filters}
+          />
+        </Box>
+        <Button
+          variant="contained"
+          endIcon={<ChevronRight />}
+          onClick={onAddLocation}
+          sx={{ ml: 2 }}
+          disabled={!selectedLocation}
+        >
+          Add
+        </Button>
+      </Box>
+      <Box>
         <SelectLocationMap
           location={selectedLocation || null}
           setLocation={setSelectedLocation}
           locations={locations}
           filteredLocations={filteredLocations}
-          mapHeight={fillAvailableHeight ? '100%' : (mapHeight ?? 300)}
+          mapHeight={300}
           filters={filters}
           updateFilters={updateFilters}
-          highlightedLocationId={highlightedLocationId}
         />
       </Box>
     </Box>

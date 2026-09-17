@@ -29,22 +29,19 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
-        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public SplitFailReportService(
             SplitFailPhaseService splitFailPhaseService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService,
-            PlanService planService
+            PhaseService phaseService
             )
         {
             this.splitFailPhaseService = splitFailPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
-            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -58,7 +55,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -66,12 +63,14 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
+            var planEvents = controllerEventLogs.GetPlanEvents(
+            parameter.Start.AddHours(-12),
+               parameter.End.AddHours(12)).ToList();
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, plans));
+                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -90,7 +89,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             SplitFailOptions options,
             PhaseDetail phaseDetail,
             List<IndianaEvent> controllerEventLogs,
-            IReadOnlyList<Plan> plans)
+            List<IndianaEvent> planEvents)
         {
             //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
@@ -117,7 +116,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             .FirstOrDefault(dt => dt.Id == Data.Enums.DetectionTypes.SBP);
             if (stopbarDetector != null)
             {
-                tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, plans, cycleEvents, terminationEvents, detectors, stopbarDetector));
+                tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, stopbarDetector));
             }
             var results = await Task.WhenAll(tasks);
             return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);
@@ -127,7 +126,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             SplitFailOptions options,
             PhaseDetail phaseDetail,
             List<IndianaEvent> controllerEventLogs,
-            IReadOnlyList<Plan> plans,
+            List<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> cycleEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
             List<Detector> detectors,
@@ -150,7 +149,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(
                 options,
                 cycleEvents,
-                plans,
+                planEvents,
                 terminationEvents,
                 detectorEvents,
                 phaseDetail.Approach,
