@@ -1,0 +1,88 @@
+{
+  "$schema": "./container-config-map.schema.json",
+  "schemaVersion": 1,
+  "sourcePaths": [
+    "Atspm/Infrastructure/Configuration",
+    "Atspm/Data/Enums"
+  ],
+  "containers": [
+    {
+      "name": "Config API",
+      "slug": "config-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc",
+        "GitHubReleaseConfiguration"
+      ]
+    },
+    {
+      "name": "Data API",
+      "slug": "data-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc"
+      ]
+    },
+    {
+      "name": "Identity API",
+      "slug": "identity-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc",
+        "IdentityConfiguration"
+      ]
+    },
+    {
+      "name": "Report API",
+      "slug": "report-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc"
+      ]
+    },
+    {
+      "name": "Event Log Utility",
+      "slug": "event-log-utility",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "DecodeEventsConfiguration",
+        "DeviceDownloaderConfiguration",
+        "DeviceEventLoggingConfiguration",
+        "EventLogAggregateConfiguration",
+        "EventLogExtractConfiguration",
+        "EventLogImporterConfiguration",
+        "EventLogTransferOptions"
+      ]
+    },
+    {
+      "name": "Watchdog",
+      "slug": "watchdog",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "WatchdogConfiguration"
+      ]
+    }
+  ]
+}
