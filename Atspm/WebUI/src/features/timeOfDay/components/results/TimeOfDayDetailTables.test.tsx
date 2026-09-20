@@ -1,5 +1,5 @@
 import type { TimeOfDayMovementPressureDto } from '@/api/reports'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MovementPressureList } from './TimeOfDayDetailTables'
 
 const movements = [
@@ -33,7 +33,7 @@ const movements = [
   },
 ] as TimeOfDayMovementPressureDto[]
 
-const renderList = () =>
+const renderList = (onSelectDetail = () => undefined) =>
   render(
     <MovementPressureList
       title="AM Movement Demand"
@@ -41,7 +41,7 @@ const renderList = () =>
       movements={movements}
       locationNumberMap={{ '7621': 1, '7016': 2 }}
       seriesVisible
-      onSelectDetail={() => undefined}
+      onSelectDetail={onSelectDetail}
       onSetSeriesVisibility={() => undefined}
     />
   )
@@ -62,6 +62,20 @@ describe('MovementPressureList', () => {
     expect(locationCell.getAttribute('rowspan')).toBe('3')
     expect(locationLabelCell.getAttribute('rowspan')).toBe('3')
     expect(locationLabelCell.textContent).toBe('7621')
+  })
+
+  test('selects a movement row from the keyboard', () => {
+    const onSelectDetail = jest.fn()
+    renderList(onSelectDetail)
+    const rows = within(
+      screen.getByRole('table', { name: 'AM Movement Demand movement demand' })
+    ).getAllByRole('row')
+
+    fireEvent.keyDown(rows[1], { key: 'Enter' })
+    fireEvent.keyDown(rows[2], { key: ' ' })
+
+    expect(onSelectDetail).toHaveBeenCalledTimes(2)
+    expect(onSelectDetail).toHaveBeenCalledWith(expect.any(String))
   })
 
   test('keeps every movement on its own row', () => {

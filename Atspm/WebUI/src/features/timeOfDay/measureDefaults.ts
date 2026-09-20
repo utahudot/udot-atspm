@@ -47,6 +47,14 @@ const parseNumberDefault = (
   fallback: number
 ) => {
   const value = defaults?.[key]?.value
+  if (
+    value === null ||
+    value === undefined ||
+    (typeof value === 'string' && value.trim() === '')
+  ) {
+    return fallback
+  }
+
   const parsed = typeof value === 'number' ? value : Number(value)
 
   return Number.isFinite(parsed) ? parsed : fallback

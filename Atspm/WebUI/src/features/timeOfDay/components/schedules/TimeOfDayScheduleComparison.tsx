@@ -33,12 +33,15 @@ const timeTicks = Array.from({ length: 25 }, (_, hour) => ({
   label: `${String(hour).padStart(2, '0')}:00`,
 }))
 
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 const formatScheduleLocation = ({
   identifier,
   description,
 }: ScheduleLocation) => {
   const locationDescription = description
-    ?.replace(new RegExp(`^#?${identifier}\\s*[-–—:]\\s*`), '')
+    ?.replace(new RegExp(`^#?${escapeRegExp(identifier)}\\s*[-–—:]\\s*`), '')
     .trim()
 
   return locationDescription

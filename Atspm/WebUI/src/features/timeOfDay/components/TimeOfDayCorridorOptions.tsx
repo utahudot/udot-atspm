@@ -28,6 +28,20 @@ interface TimeOfDayCorridorOptionsProps {
   onChange: (options: TimeOfDayFormState) => void
 }
 
+export const isSameLocation = (
+  left: TimeOfDayFormState['selectedLocations'][number] | null,
+  right: TimeOfDayFormState['selectedLocations'][number]
+) => {
+  if (!left) return false
+  if (left === right) return true
+  if (left.id != null && right.id != null) return left.id === right.id
+
+  const leftIdentifier = left.locationIdentifier?.trim()
+  return Boolean(
+    leftIdentifier && leftIdentifier === right.locationIdentifier?.trim()
+  )
+}
+
 export default function TimeOfDayCorridorOptions({
   options,
   onChange,
@@ -287,7 +301,7 @@ export default function TimeOfDayCorridorOptions({
                                 borderColor: 'divider',
                                 bgcolor: dragSnapshot.isDragging
                                   ? 'action.selected'
-                                  : focusedLocation?.id === location.id
+                                  : isSameLocation(focusedLocation, location)
                                     ? 'action.selected'
                                     : 'background.paper',
                                 cursor: 'pointer',

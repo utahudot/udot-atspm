@@ -4,7 +4,7 @@ import { Box, Slider, Stack, TextField, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { TimePicker } from '@mui/x-date-pickers'
 import { format } from 'date-fns'
-import type { ChangeEvent, ReactNode } from 'react'
+import { useState, type ChangeEvent, type ReactNode } from 'react'
 import type { TimeOfDaySchedulePreset } from '../measureDefaults'
 import type { TimeOfDayFormState, TimeOfDayTuningOptionKey } from '../types'
 import TimeOfDaySchedulePresetSelect from './TimeOfDaySchedulePresetSelect'
@@ -135,16 +135,40 @@ export default function TimeOfDayAdvancedSidebar({
   onChange,
   schedulePresets = [],
 }: TimeOfDayAdvancedSidebarProps) {
+  const [numberDrafts, setNumberDrafts] = useState<
+    Partial<Record<TimeOfDayTuningOptionKey, string>>
+  >({})
+
   const updateOptions = (patch: Partial<TimeOfDayFormState>) =>
     onChange({ ...options, ...patch })
 
   const handleTuningFieldChange =
     (field: TuningFieldDefinition) =>
     (event: ChangeEvent<HTMLInputElement>) => {
+      const rawValue = event.target.value
+      setNumberDrafts((current) => ({
+        ...current,
+        [field.option]: rawValue,
+      }))
+      if (rawValue.trim() === '') return
+
+      const value = Number(rawValue)
+      if (!Number.isFinite(value)) return
+
       updateOptions({
-        [field.option]: Number(event.target.value),
+        [field.option]: value,
       } as Partial<TimeOfDayFormState>)
     }
+
+  const clearTuningFieldDraft = (field: TuningFieldDefinition) => {
+    setNumberDrafts((current) => {
+      if (!(field.option in current)) return current
+
+      const next = { ...current }
+      delete next[field.option]
+      return next
+    })
+  }
 
   const handleLaneCountChange = (direction: string, rawValue: string) => {
     const directionLaneCounts = { ...options.directionLaneCounts }
@@ -296,8 +320,9 @@ export default function TimeOfDayAdvancedSidebar({
         <TextField
           size="small"
           type="number"
-          value={options[field.option]}
+          value={numberDrafts[field.option] ?? options[field.option]}
           onChange={handleTuningFieldChange(field)}
+          onBlur={() => clearTuningFieldDraft(field)}
           inputProps={{
             ...field.inputProps,
             'aria-label': field.label,
@@ -338,8 +363,9 @@ export default function TimeOfDayAdvancedSidebar({
         fullWidth
         size="small"
         type="number"
-        value={options[field.option]}
+        value={numberDrafts[field.option] ?? options[field.option]}
         onChange={handleTuningFieldChange(field)}
+        onBlur={() => clearTuningFieldDraft(field)}
         inputProps={{
           ...field.inputProps,
           'aria-label': [field.label, field.unitLabel]

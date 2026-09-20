@@ -2,8 +2,8 @@ import type { TimeOfDayResult } from '@/api/reports'
 import { Alert, Box, Paper, Stack, Tab, Tabs } from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
 import {
-  buildSplitPressureLocationNumberMap,
   buildTimeOfDayAnalysisModel,
+  buildTimeOfDayLocationNumberMap,
   hasPlanProfileData,
   hasSplitPressureData,
 } from '../transformers'
@@ -26,8 +26,8 @@ export default function TimeOfDayResults({ result }: TimeOfDayResultsProps) {
     () => buildTimeOfDayAnalysisModel(result),
     [result]
   )
-  const splitPressureLocationNumberMap = useMemo(
-    () => buildSplitPressureLocationNumberMap(result),
+  const locationNumberMap = useMemo(
+    () => buildTimeOfDayLocationNumberMap(result),
     [result]
   )
   const hasChartData =
@@ -54,13 +54,13 @@ export default function TimeOfDayResults({ result }: TimeOfDayResultsProps) {
         result={result}
         detailTab={detailTab}
         selectedSeries={selectedSeries}
-        locationNumberMap={splitPressureLocationNumberMap}
+        locationNumberMap={locationNumberMap}
         selectedDetailKey={selectedDetailKey}
         onSelectDetail={onSelectDetail}
         onSetSeriesVisibility={onSetSeriesVisibility}
       />
     ),
-    [result, splitPressureLocationNumberMap]
+    [result, locationNumberMap]
   )
 
   return (

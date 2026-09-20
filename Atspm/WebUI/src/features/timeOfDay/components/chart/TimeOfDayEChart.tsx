@@ -271,10 +271,11 @@ export default function TimeOfDayEChart({
     if (!chart) return
 
     chart.dispatchAction({ type: 'downplay' })
+    chart.dispatchAction({ type: 'hideTip' })
     if (!selectedDetail) return
 
     const target = {
-      seriesName: selectedDetail.seriesName,
+      seriesIndex: selectedDetail.seriesIndex,
       dataIndex: selectedDetail.dataIndex,
     }
     chart.dispatchAction({ type: 'highlight', ...target })

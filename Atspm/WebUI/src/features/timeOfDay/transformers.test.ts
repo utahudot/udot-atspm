@@ -2,13 +2,20 @@ import type { TimeOfDayResult } from '@/api/reports'
 import type { SeriesOption } from 'echarts'
 
 import {
+  buildTimeOfDaySchedulesModel,
+  getTimeOfDayPlanColorMap,
+} from './components/schedules/timeOfDayScheduleModel'
+import {
   buildPlanProfileOption,
   buildScheduleRows,
   buildSplitPressureOption,
   buildTimeOfDayAnalysisModel,
+  buildTimeOfDayLocationNumberMap,
+  getLocationNumber,
   getLocationPeakEvents,
   getMovementPressures,
   getTimeOfDayPresetSeriesSelection,
+  getTimeOfDaySignalPeakDetailKey,
 } from './transformers'
 
 const result = {
@@ -29,6 +36,119 @@ describe('time-of-day chart titles', () => {
         }),
       ])
     )
+  })
+
+  test('uses the corridor peak time that belongs to the displayed value', () => {
+    const model = buildTimeOfDayAnalysisModel({
+      recommendation: {
+        amPeakTime: '08:15',
+      },
+      planProfile: {
+        peaks: [
+          {
+            period: 'AM',
+            series: 'Corridor',
+            minutes: 510,
+            value: 2685,
+            valueUnits: 'vph',
+          },
+        ],
+      },
+    } as TimeOfDayResult)
+
+    expect(
+      model.header.summaryItems.find(
+        (item) => item.label === 'AM Corridor Peak'
+      )?.value
+    ).toBe('08:30 - 2,685 vph')
+  })
+
+  test('keeps location badges stable across modes without identifier collisions', () => {
+    const sharedResult = {
+      locationIdentifiers: ['100-1', '1001'],
+      planProfile: {
+        peaks: [
+          {
+            period: 'AM',
+            locationIdentifier: '1001',
+            minutes: 480,
+            value: 1200,
+          },
+          {
+            period: 'AM',
+            locationIdentifier: '100-1',
+            minutes: 495,
+            value: 1100,
+          },
+        ],
+      },
+      splitPressure: {
+        movementPressures: [
+          {
+            period: 'AM',
+            locationIdentifier: '100-1',
+            movementLabel: 'Left',
+            volume: 200,
+          },
+          {
+            period: 'AM',
+            locationIdentifier: '1001',
+            movementLabel: 'Left',
+            volume: 300,
+          },
+        ],
+      },
+    } as TimeOfDayResult
+    const locationNumberMap = buildTimeOfDayLocationNumberMap(sharedResult)
+    const signalPeaks = getLocationPeakEvents(
+      sharedResult.planProfile?.peaks,
+      'AM',
+      locationNumberMap
+    )
+
+    expect(getLocationNumber(locationNumberMap, '100-1')).toBe(1)
+    expect(getLocationNumber(locationNumberMap, '1001')).toBe(2)
+    expect(getLocationNumber({}, 'constructor')).toBeUndefined()
+    expect(
+      Object.fromEntries(
+        signalPeaks.map((peak) => [peak.locationIdentifier, peak.badgeNumber])
+      )
+    ).toEqual({ '100-1': 1, 1001: 2 })
+    expect(
+      getTimeOfDaySignalPeakDetailKey({
+        period: 'AM',
+        locationIdentifier: '100-1',
+        minutes: 495,
+        value: 1100,
+      })
+    ).not.toBe(
+      getTimeOfDaySignalPeakDetailKey({
+        period: 'AM',
+        locationIdentifier: '1001',
+        minutes: 495,
+        value: 1100,
+      })
+    )
+  })
+
+  test('records the concrete series index for selectable chart details', () => {
+    const peak = {
+      period: 'AM',
+      locationIdentifier: '100-1',
+      minutes: 495,
+      value: 1100,
+    }
+    const model = buildTimeOfDayAnalysisModel({
+      locationIdentifiers: ['100-1'],
+      planProfile: { peaks: [peak] },
+    } as TimeOfDayResult)
+    const target = model.detailTargets[getTimeOfDaySignalPeakDetailKey(peak)]
+    const series = model.option.series as Array<{ name?: string }>
+
+    expect(target.seriesIndex).toBe(
+      series.findIndex(({ name }) => name === 'AM Signal Peaks')
+    )
+    expect(target.dataIndex).toBe(0)
   })
 
   test('includes the split pressure title', () => {
@@ -327,7 +447,7 @@ describe('time-of-day chart titles', () => {
         },
       ],
       'AM',
-      { location1: 2, location2: 1 }
+      { 'location 1': 2, 'location 2': 1 }
     )
 
     expect(
@@ -344,184 +464,108 @@ describe('time-of-day chart titles', () => {
     ])
   })
 
-  test.each([
-    ['plan recommendation', buildPlanProfileOption],
-    ['split pressure', buildSplitPressureOption],
-  ])(
-    'overlays synchronized existing and proposed schedule rails on the %s chart',
-    (_, buildOption) => {
-      const option = buildOption({
-        locationIdentifiers: ['7192', '7191', '7190'],
-        recommendation: {
-          recommendedSchedule: [
-            {
-              planNumber: 'Free',
-              planDescription: 'Free',
-              start: '2026-01-01T00:00:00',
-              end: '2026-01-01T07:00:00',
-            },
-            {
-              planNumber: '1',
-              planDescription: 'Plan 1',
-              start: '2026-01-01T07:00:00',
-              end: '2026-01-01T09:00:00',
-            },
-          ],
-        },
-        planComparison: {
-          commonCurrentSchedule: [
-            {
-              planNumber: 'Free',
-              planDescription: 'Free',
-              start: '2026-01-01T00:00:00',
-              end: '2026-01-01T06:00:00',
-            },
-            {
-              planNumber: '7',
-              planDescription: 'Plan 7',
-              start: '2026-01-01T06:00:00',
-              end: '2026-01-01T09:00:00',
-            },
-          ],
-          exceptionLocationIdentifiers: ['7191', '7190'],
-        },
-      } as TimeOfDayResult)
-      const series = option.series as Array<{
-        name?: string
-        data?: unknown[][]
-        markArea?: {
-          data?: Array<[{ name?: string; xAxis?: number }, { xAxis?: number }]>
-        }
-      }>
-      const existingRail = series.find(
-        (seriesOption) => seriesOption.name === 'Existing schedule rail'
-      )
-      const proposedRail = series.find(
-        (seriesOption) => seriesOption.name === 'Proposed schedule rail'
-      )
-      const scheduleContextSeries = series.find(
-        (seriesOption) => seriesOption.markArea?.data?.length
-      )
-      const dataZoom = option.dataZoom as Array<{
-        xAxisIndex?: number | number[]
-      }>
-
-      expect(Array.isArray(option.grid)).toBe(true)
-      expect(option.grid).toHaveLength(2)
-      expect(dataZoom.map((zoom) => zoom.xAxisIndex)).toEqual([
-        [0, 1],
-        [0, 1],
-      ])
-      expect(existingRail?.data?.map((datum) => datum.slice(0, 4))).toEqual([
-        [0, 360, 0, 'FREE'],
-        [360, 540, 0, '7'],
-      ])
-      expect(proposedRail?.data?.map((datum) => datum.slice(0, 4))).toEqual([
-        [0, 420, 1, 'FREE'],
-        [420, 540, 1, '1'],
-      ])
-      expect(scheduleContextSeries?.markArea?.data).toEqual(
-        expect.arrayContaining([
-          [
-            expect.objectContaining({
-              name: 'Existing and proposed plans differ',
-              xAxis: 360,
-            }),
-            { xAxis: 420 },
-          ],
-          [
-            expect.objectContaining({
-              name: 'Existing and proposed plans differ',
-              xAxis: 420,
-            }),
-            { xAxis: 540 },
-          ],
-        ])
-      )
-      expect(option.graphic).toBeUndefined()
-    }
-  )
-
-  test('paints plan windows opaque so overlapping schedules do not darken', () => {
-    const option = buildPlanProfileOption({
+  test('colors chart plans the same way as the Schedules tab', () => {
+    const plan = (planNumber: string, start: string, end: string) => ({
+      planNumber,
+      start: `2026-07-15T${start}:00`,
+      end: end === '24:00' ? '2026-07-16T00:00:00' : `2026-07-15T${end}:00`,
+    })
+    // A reported schedule that runs plan 7 twice, where the old peak-time
+    // coloring painted both plan 7 windows orange. The existing schedule adds
+    // a 30-minute special plan between plans 7 and 13.
+    const scheduleResult = {
+      selectedDates: [],
       recommendation: {
-        amPeakTime: '08:00',
-        middayValleyTime: '12:00',
-        pmPeakTime: '17:00',
+        amPeakTime: '08:15',
+        middayValleyTime: '10:00',
+        pmPeakTime: '17:15',
         recommendedSchedule: [
-          {
-            planNumber: 'Free',
-            start: '2026-01-01T00:00:00',
-            end: '2026-01-01T07:30:00',
-          },
-          {
-            planNumber: '1',
-            start: '2026-01-01T07:30:00',
-            end: '2026-01-01T09:45:00',
-          },
-          {
-            planNumber: '7',
-            start: '2026-01-01T09:45:00',
-            end: '2026-01-01T15:00:00',
-          },
-          {
-            planNumber: '13',
-            start: '2026-01-01T15:00:00',
-            end: '2026-01-01T18:45:00',
-          },
-          {
-            planNumber: '7',
-            start: '2026-01-01T18:45:00',
-            end: '2026-01-01T22:30:00',
-          },
-          {
-            planNumber: 'Free',
-            start: '2026-01-01T22:30:00',
-            end: '2026-01-02T00:00:00',
-          },
+          plan('254', '00:00', '06:00'),
+          plan('1', '06:00', '08:15'),
+          plan('7', '08:15', '16:45'),
+          plan('13', '16:45', '18:00'),
+          plan('7', '18:00', '22:45'),
+          plan('254', '22:45', '24:00'),
+        ],
+      },
+      planComparison: {
+        commonCurrentSchedule: [
+          plan('254', '00:00', '06:00'),
+          plan('1', '06:00', '09:00'),
+          plan('7', '09:00', '15:00'),
+          plan('5', '15:00', '15:30'),
+          plan('13', '15:30', '18:00'),
+          plan('7', '18:00', '22:00'),
+          plan('254', '22:00', '24:00'),
         ],
       },
       planProfile: {
         corridorProfile: {
-          points: [{ minutes: 480, averageVolume: 3000 }],
+          points: [{ minutes: 495, averageVolume: 2685 }],
         },
       },
-    } as TimeOfDayResult)
-    const series = option.series as Array<{
+    } as TimeOfDayResult
+    const model = buildTimeOfDayAnalysisModel(scheduleResult)
+    const series = model.option.series as Array<{
+      name?: string
+      data?: unknown[][]
       markArea?: {
-        data?: Array<
-          [
-            {
-              xAxis?: number
-              itemStyle?: { color?: string; opacity?: number }
-            },
-            { xAxis?: number },
-          ]
-        >
+        data?: Array<[{ xAxis?: number; itemStyle?: { color?: string } }]>
       }
     }>
-    const planWindows = series.find(
-      (seriesOption) => seriesOption.markArea?.data?.length === 6
-    )?.markArea?.data
-    const styleByStart = new Map(
-      planWindows?.map(([start]) => [start.xAxis, start.itemStyle])
-    )
+    const getSeries = (name: string) =>
+      series.find((seriesOption) => seriesOption.name === name)
+    const getWindowColors = (name: string) =>
+      Object.fromEntries(
+        getSeries(name)?.markArea?.data?.map(([start]) => [
+          start.xAxis,
+          start.itemStyle?.color,
+        ]) ?? []
+      )
+    const getRailColors = (name: string) =>
+      Object.fromEntries(
+        getSeries(name)?.data?.map((datum) => [datum[3], datum[4]]) ?? []
+      )
+    const free = '#607d8b'
+    const orange = '#ef6c00'
+    const green = '#2e7d32'
+    const blue = '#1565c0'
+    const purple = '#6a1b9a'
 
-    expect(styleByStart.get(0)).toEqual({ color: '#ffffff', opacity: 0 })
-    expect(styleByStart.get(450)).toEqual({
-      color: 'rgb(251, 217, 189)',
-      opacity: 1,
+    expect(
+      Object.fromEntries(
+        getTimeOfDayPlanColorMap(buildTimeOfDaySchedulesModel(scheduleResult))
+      )
+    ).toEqual({ FREE: free, 1: orange, 7: green, 13: blue, 5: purple })
+    expect(getRailColors('Proposed schedule rail')).toEqual({
+      FREE: free,
+      1: orange,
+      7: green,
+      13: blue,
     })
-    expect(styleByStart.get(585)).toEqual({
-      color: 'rgb(201, 221, 202)',
-      opacity: 1,
+    expect(getRailColors('Existing schedule rail')).toEqual({
+      FREE: free,
+      1: orange,
+      7: green,
+      5: purple,
+      13: blue,
     })
-    expect(styleByStart.get(900)).toEqual({
-      color: 'rgb(194, 215, 239)',
-      opacity: 1,
+    expect(getWindowColors('Proposed plan windows')).toEqual({
+      0: '#ffffff',
+      360: 'rgb(251, 217, 189)',
+      495: 'rgb(201, 221, 202)',
+      1005: 'rgb(194, 215, 239)',
+      1080: 'rgb(201, 221, 202)',
+      1365: '#ffffff',
     })
-    expect(styleByStart.get(1125)?.color).toBe('rgb(201, 221, 202)')
-    expect(styleByStart.get(1350)).toEqual({ color: '#ffffff', opacity: 0 })
+    expect(getWindowColors('Existing plan windows')[900]).toBe(
+      'rgb(216, 196, 229)'
+    )
+    expect(
+      model.layers
+        .find((layer) => layer.id === 'existing-schedule')
+        ?.legendItems?.map(({ label }) => label)
+    ).toEqual(['Plan 1', 'Plan 7', 'Plan 5', 'Plan 13', 'FREE'])
   })
 
   test('aligns recommended and current plans by shared time windows', () => {
@@ -783,35 +827,23 @@ describe('time-of-day chart titles', () => {
           id: 'proposed-schedule',
           label: 'Proposed',
           color: '#ef6c00',
-          additionalColors: ['#2e7d32', '#1565c0'],
+          additionalColors: [],
           seriesNames: ['Proposed plan windows', 'Proposed schedule rail'],
           legendItems: [
-            {
-              label: 'AM peak plan',
-              color: '#ef6c00',
-              preview: 'area',
-            },
-            {
-              label: 'Midday plan',
-              color: '#2e7d32',
-              preview: 'area',
-            },
-            {
-              label: 'PM peak plan',
-              color: '#1565c0',
-              preview: 'area',
-            },
-            {
-              label: 'FREE operation',
-              color: '#607d8b',
-              preview: 'area',
-            },
+            { label: 'Plan 1', color: '#ef6c00', preview: 'area' },
+            { label: 'FREE', color: '#607d8b', preview: 'area' },
           ],
         }),
         expect.objectContaining({
           id: 'existing-schedule',
           label: 'Existing',
+          color: '#2e7d32',
+          additionalColors: [],
           seriesNames: ['Existing plan windows', 'Existing schedule rail'],
+          legendItems: [
+            { label: 'Plan 7', color: '#2e7d32', preview: 'area' },
+            { label: 'FREE', color: '#607d8b', preview: 'area' },
+          ],
         }),
         expect.objectContaining({
           id: 'schedule-differences',

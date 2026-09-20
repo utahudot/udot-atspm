@@ -15,6 +15,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import type { KeyboardEvent } from 'react'
 import type {
   TimeOfDayLocationNumberMap,
   TimeOfDayNumberedPeakEvent,
@@ -38,6 +39,17 @@ import {
   groupedReportTableRowSx,
   numericReportTableCellSx,
 } from './timeOfDayReportTableStyles'
+
+const selectDetailFromKeyboard = (
+  event: KeyboardEvent<HTMLTableRowElement>,
+  detailKey: string,
+  onSelectDetail: (detailKey: string) => void
+) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+
+  event.preventDefault()
+  onSelectDetail(detailKey)
+}
 
 function SignalPeakBadge({
   badgeNumber,
@@ -177,7 +189,11 @@ export function PeakList({
                     hover
                     selected={selectedDetailKey === detailKey}
                     aria-selected={selectedDetailKey === detailKey}
+                    tabIndex={0}
                     onClick={() => onSelectDetail(detailKey)}
+                    onKeyDown={(event) =>
+                      selectDetailFromKeyboard(event, detailKey, onSelectDetail)
+                    }
                     sx={{ ...compactReportTableRowSx, cursor: 'pointer' }}
                   >
                     <TableCell>
@@ -277,7 +293,11 @@ export function CrossTrafficLocationList({
                     hover
                     selected={selectedDetailKey === detailKey}
                     aria-selected={selectedDetailKey === detailKey}
+                    tabIndex={0}
                     onClick={() => onSelectDetail(detailKey)}
+                    onKeyDown={(event) =>
+                      selectDetailFromKeyboard(event, detailKey, onSelectDetail)
+                    }
                     sx={{ ...compactReportTableRowSx, cursor: 'pointer' }}
                   >
                     <TableCell>
@@ -418,7 +438,15 @@ export function MovementPressureList({
                       hover
                       selected={selectedDetailKey === detailKey}
                       aria-selected={selectedDetailKey === detailKey}
+                      tabIndex={0}
                       onClick={() => onSelectDetail(detailKey)}
+                      onKeyDown={(event) =>
+                        selectDetailFromKeyboard(
+                          event,
+                          detailKey,
+                          onSelectDetail
+                        )
+                      }
                       sx={[
                         groupedReportTableRowSx,
                         {

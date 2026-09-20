@@ -196,6 +196,27 @@ describe('TimeOfDaySchedules', () => {
     expect(screen.queryByText(/Schedule data is unavailable for/)).toBeNull()
   })
 
+  test('renders identifiers containing regular-expression characters', () => {
+    render(
+      <TimeOfDaySchedules
+        result={{
+          locationIdentifiers: ['10(1)'],
+          recommendation: { recommendedSchedule: proposedSchedule },
+          planComparison: { commonCurrentSchedule: commonSchedule },
+          locations: [
+            {
+              locationIdentifier: '10(1)',
+              locationDescription: '#10(1) - Main Street',
+              currentPlanSchedule: commonSchedule,
+            },
+          ],
+        }}
+      />
+    )
+
+    expect(screen.getByText(/#10\(1\).*Main Street/)).toBeTruthy()
+  })
+
   test('shows why a recommendation is unavailable while retaining current schedules', () => {
     const reason =
       'Recommended schedule unavailable because primary direction data is unavailable for AM: Northbound.'

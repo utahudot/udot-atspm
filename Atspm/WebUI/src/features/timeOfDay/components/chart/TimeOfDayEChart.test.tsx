@@ -40,6 +40,45 @@ describe('TimeOfDayEChart resizing', () => {
     jest.clearAllMocks()
   })
 
+  test('targets a selected detail by series index and hides a cleared tooltip', () => {
+    const commonProps = {
+      option: {},
+      selectedSeries: {},
+      showPercentAxis: false,
+      onSelectDetail: jest.fn(),
+      onToggleScheduleView: jest.fn(),
+    }
+    const { rerender } = render(
+      <TimeOfDayEChart
+        {...commonProps}
+        selectedDetail={{
+          detailKey: 'signalpeak:am:1001:480:1200',
+          layerId: 'signal-peaks',
+          seriesName: 'AM Signal Peaks',
+          seriesIndex: 4,
+          dataIndex: 2,
+        }}
+      />
+    )
+
+    expect(mockChart.dispatchAction).toHaveBeenCalledWith({
+      type: 'highlight',
+      seriesIndex: 4,
+      dataIndex: 2,
+    })
+    expect(mockChart.dispatchAction).toHaveBeenCalledWith({
+      type: 'showTip',
+      seriesIndex: 4,
+      dataIndex: 2,
+    })
+
+    mockChart.dispatchAction.mockClear()
+    rerender(<TimeOfDayEChart {...commonProps} />)
+
+    expect(mockChart.dispatchAction).toHaveBeenCalledWith({ type: 'downplay' })
+    expect(mockChart.dispatchAction).toHaveBeenCalledWith({ type: 'hideTip' })
+  })
+
   test('resizes synchronously to each distinct observed size and cleans up', () => {
     const { unmount } = render(
       <TimeOfDayEChart

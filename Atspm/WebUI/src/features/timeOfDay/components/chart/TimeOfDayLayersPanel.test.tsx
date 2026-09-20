@@ -93,10 +93,10 @@ const scheduleSeriesNames = [
 ]
 
 const planColorLegendItems = [
-  { label: 'AM peak plan', color: '#ef6c00', preview: 'area' as const },
-  { label: 'Midday plan', color: '#2e7d32', preview: 'area' as const },
-  { label: 'PM peak plan', color: '#1565c0', preview: 'area' as const },
-  { label: 'FREE operation', color: '#607d8b', preview: 'area' as const },
+  { label: 'Plan 1', color: '#ef6c00', preview: 'area' as const },
+  { label: 'Plan 7', color: '#2e7d32', preview: 'area' as const },
+  { label: 'Plan 13', color: '#1565c0', preview: 'area' as const },
+  { label: 'FREE', color: '#607d8b', preview: 'area' as const },
 ]
 
 const scheduleLayers: TimeOfDayChartLayer[] = [

@@ -44,7 +44,11 @@ export default function TimeOfDayDetailsPanel({
         >
           <PeakList
             title="AM Signal Peaks"
-            peaks={getLocationPeakEvents(result.planProfile?.peaks, 'AM')}
+            peaks={getLocationPeakEvents(
+              result.planProfile?.peaks,
+              'AM',
+              locationNumberMap
+            )}
             seriesVisible={Boolean(selectedSeries['AM Signal Peaks'])}
             selectedDetailKey={selectedDetailKey}
             onSelectDetail={onSelectDetail}
@@ -54,7 +58,11 @@ export default function TimeOfDayDetailsPanel({
           />
           <PeakList
             title="PM Signal Peaks"
-            peaks={getLocationPeakEvents(result.planProfile?.peaks, 'PM')}
+            peaks={getLocationPeakEvents(
+              result.planProfile?.peaks,
+              'PM',
+              locationNumberMap
+            )}
             seriesVisible={Boolean(selectedSeries['PM Signal Peaks'])}
             selectedDetailKey={selectedDetailKey}
             onSelectDetail={onSelectDetail}

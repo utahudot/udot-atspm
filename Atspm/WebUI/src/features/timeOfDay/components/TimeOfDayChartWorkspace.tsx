@@ -157,7 +157,7 @@ export default function TimeOfDayChartWorkspace({
         tab === 'layers' ? tab : getTimeOfDayDefaultDetailTab(mode)
       )
       setSelectedSeries((currentSelection) =>
-        getAnalysisModeSeriesSelection(model.layers, [mode], currentSelection)
+        getAnalysisModeSeriesSelection(model.layers, mode, currentSelection)
       )
     },
     [activeMode, model.layers]
@@ -192,7 +192,7 @@ export default function TimeOfDayChartWorkspace({
     (seriesName) => selectedSeries[seriesName]
   )
   const sidebarLayers = useMemo(
-    () => getSidebarLayers(model.layers, [activeMode]),
+    () => getSidebarLayers(model.layers, activeMode),
     [activeMode, model.layers]
   )
   const sidebarWidth =

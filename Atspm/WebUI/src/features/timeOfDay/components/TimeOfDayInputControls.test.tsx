@@ -10,6 +10,7 @@ import {
   type TimeOfDayFormState,
 } from '../types'
 import TimeOfDayAdvancedSidebar from './TimeOfDayAdvancedSidebar'
+import { isSameLocation } from './TimeOfDayCorridorOptions'
 import TimeOfDayDirectionSelector from './TimeOfDayDirectionSelector'
 import { TimeOfDayMeasureOptions } from './TimeOfDayMeasureOptions'
 import TimeOfDaySchedulePresetSelect from './TimeOfDaySchedulePresetSelect'
@@ -66,6 +67,22 @@ const schedulePresets: TimeOfDaySchedulePreset[] = [
 ]
 
 describe('time-of-day inputs', () => {
+  test('does not treat every id-less corridor location as selected', () => {
+    const first = {
+      locationIdentifier: '100-1',
+    } as TimeOfDayFormState['selectedLocations'][number]
+    const second = {
+      locationIdentifier: '1001',
+    } as TimeOfDayFormState['selectedLocations'][number]
+
+    const anonymous = {} as TimeOfDayFormState['selectedLocations'][number]
+
+    expect(isSameLocation(first, second)).toBe(false)
+    expect(isSameLocation(first, { ...first })).toBe(true)
+    expect(isSameLocation(anonymous, anonymous)).toBe(true)
+    expect(isSameLocation(anonymous, { ...anonymous })).toBe(false)
+  })
+
   test('defaults to separate AM and PM primary directions', () => {
     render(
       <TimeOfDayDirectionSelector options={options} onChange={jest.fn()} />
@@ -221,6 +238,28 @@ describe('time-of-day inputs', () => {
     ).toBeTruthy()
     expect(screen.getByText(/Used as the total lane count/)).toBeTruthy()
     expect(screen.getAllByPlaceholderText('Auto')).toHaveLength(2)
+  })
+
+  test('keeps a cleared numeric field blank without writing zero', () => {
+    const handleChange = jest.fn()
+    render(
+      <TimeOfDayAdvancedSidebar
+        activeSidebar="occupancy"
+        options={options}
+        onChange={handleChange}
+      />
+    )
+    const capacityInput = screen.getByRole('spinbutton', {
+      name: 'Per-lane capacity (veh/hr)',
+    }) as HTMLInputElement
+
+    fireEvent.change(capacityInput, { target: { value: '' } })
+
+    expect(capacityInput.value).toBe('')
+    expect(handleChange).not.toHaveBeenCalled()
+
+    fireEvent.blur(capacityInput)
+    expect(capacityInput.value).toBe('800')
   })
 
   test('displays measure-default threshold fractions as percents', () => {

@@ -187,4 +187,13 @@ export const getScheduleSummary = (schedule: Plan[]) =>
     )
     .join(', ')
 
-export const getScheduleColorMap = getSchedulePlanColorMap
+/**
+ * The one plan-number color map for time-of-day. The Schedules tab and the
+ * analysis chart both read it so a plan is the same color everywhere.
+ */
+export const getTimeOfDayPlanColorMap = (model: TimeOfDaySchedulesModel) =>
+  getSchedulePlanColorMap([
+    model.proposedSchedule,
+    model.commonSchedule,
+    ...model.exceptions.map((exception) => exception.schedule),
+  ])

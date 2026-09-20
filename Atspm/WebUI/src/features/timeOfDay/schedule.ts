@@ -38,13 +38,8 @@ export const minutesToTimeLabel = (minutes: number) => {
 export const formatPlanTime = (value?: string) => {
   if (!value) return '-'
 
-  const date = new Date(value)
-  if (!Number.isNaN(date.getTime())) {
-    return minutesToTimeLabel(date.getHours() * 60 + date.getMinutes())
-  }
-
-  const timeMatch = value.match(/(\d{1,2}):(\d{2})/)
-  return timeMatch ? timeMatch[0].padStart(5, '0') : value
+  const minutes = getPlanBoundaryMinutes(value)
+  return minutes === null ? value : minutesToTimeLabel(minutes)
 }
 
 export const formatPlanNumber = (planNumber?: string | null) => {
@@ -65,6 +60,10 @@ export const schedulePlanPalette = [
   '#6a1b9a',
   '#c62828',
   '#00796b',
+  '#ad1457',
+  '#4527a0',
+  '#00838f',
+  '#6d4c41',
 ] as const
 
 export const freeSchedulePlanColor = '#607d8b'
@@ -97,19 +96,31 @@ export const getSchedulePlanColorMap = (schedules: Plan[][]) => {
 export const getPlanBoundaryMinutes = (value?: string) => {
   if (!value) return null
 
+  // Plan timestamps describe a wall-clock schedule. Read the clock portion
+  // directly so the browser does not normalize nonexistent DST times.
+  const timeMatch = value.match(/(?:^|T|\s)(\d{1,2}):(\d{2})/)
+  if (timeMatch) {
+    const hours = Number(timeMatch[1])
+    const minutes = Number(timeMatch[2])
+    if (hours <= 23 && minutes <= 59) return hours * 60 + minutes
+  }
+
   const date = new Date(value)
   if (!Number.isNaN(date.getTime())) {
     return date.getHours() * 60 + date.getMinutes()
   }
 
-  const timeMatch = value.match(/(\d{1,2}):(\d{2})/)
-  if (!timeMatch) return null
-
-  return Number(timeMatch[1]) * 60 + Number(timeMatch[2])
+  return null
 }
 
 const crossesMidnight = (start?: string, end?: string) => {
   if (!start || !end) return false
+
+  const startDateMatch = /^(\d{4}-\d{2}-\d{2})/.exec(start)
+  const endDateMatch = /^(\d{4}-\d{2}-\d{2})/.exec(end)
+  if (startDateMatch && endDateMatch) {
+    return endDateMatch[1] > startDateMatch[1]
+  }
 
   const startDate = new Date(start)
   const endDate = new Date(end)

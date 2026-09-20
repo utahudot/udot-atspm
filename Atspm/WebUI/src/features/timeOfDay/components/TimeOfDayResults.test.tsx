@@ -280,14 +280,12 @@ describe('TimeOfDayResults unified workspace', () => {
     fireEvent.click(
       screen.getByRole('button', { name: 'Show Proposed details' })
     )
-    ;['AM peak plan', 'Midday plan', 'PM peak plan', 'FREE operation'].forEach(
-      (label) => {
-        expect(screen.getByText(label)).toBeTruthy()
-        expect(
-          screen.queryByRole('checkbox', { name: `Toggle ${label}` })
-        ).toBeNull()
-      }
-    )
+    ;['Plan 1', 'FREE'].forEach((label) => {
+      expect(screen.getByText(label)).toBeTruthy()
+      expect(
+        screen.queryByRole('checkbox', { name: `Toggle ${label}` })
+      ).toBeNull()
+    })
 
     expect(
       screen.getByRole('checkbox', { name: 'Toggle Median raw volume' })
@@ -536,7 +534,8 @@ describe('TimeOfDayResults unified workspace', () => {
     expect(mockChart.dispatchAction).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'highlight',
-        seriesName: 'AM Signal Peaks',
+        seriesIndex: expect.any(Number),
+        dataIndex: expect.any(Number),
       })
     )
 
@@ -603,7 +602,8 @@ describe('TimeOfDayResults unified workspace', () => {
     expect(mockChart.dispatchAction).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'highlight',
-        seriesName: 'AM Cross Traffic Locations',
+        seriesIndex: expect.any(Number),
+        dataIndex: expect.any(Number),
       })
     )
 

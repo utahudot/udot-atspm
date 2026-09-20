@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import TimeOfDayScheduleComparison from './schedules/TimeOfDayScheduleComparison'
 import {
   buildTimeOfDaySchedulesModel,
-  getScheduleColorMap,
+  getTimeOfDayPlanColorMap,
 } from './schedules/timeOfDayScheduleModel'
 
 export {
@@ -18,15 +18,7 @@ export default function TimeOfDaySchedules({
   result: TimeOfDayResult
 }) {
   const model = useMemo(() => buildTimeOfDaySchedulesModel(result), [result])
-  const colorMap = useMemo(
-    () =>
-      getScheduleColorMap([
-        model.proposedSchedule,
-        model.commonSchedule,
-        ...model.exceptions.map((exception) => exception.schedule),
-      ]),
-    [model]
-  )
+  const colorMap = useMemo(() => getTimeOfDayPlanColorMap(model), [model])
   const hasScheduleData =
     model.proposedSchedule.length > 0 ||
     model.commonSchedule.length > 0 ||

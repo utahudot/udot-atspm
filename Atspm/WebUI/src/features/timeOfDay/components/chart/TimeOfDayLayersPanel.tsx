@@ -10,7 +10,7 @@ import type {
 } from '../../transformers'
 import { getTimeOfDayPresetSeriesSelection } from '../../transformers'
 
-export type TimeOfDayAnalysisMode = Exclude<TimeOfDayChartPreset, 'combined'>
+export type TimeOfDayAnalysisMode = TimeOfDayChartPreset
 
 interface TimeOfDayLayersPanelProps {
   layers: TimeOfDayChartLayer[]
@@ -37,41 +37,17 @@ export const getLayerAnalysisMode = (
 
 export const getAnalysisModeSeriesSelection = (
   layers: TimeOfDayChartLayer[],
-  activeModes: TimeOfDayAnalysisMode[],
+  activeMode: TimeOfDayAnalysisMode,
   currentSelection: Record<string, boolean>
-) => {
-  if (activeModes.length > 0) {
-    const preset: TimeOfDayChartPreset =
-      activeModes.length === 2 ? 'combined' : activeModes[0]
-
-    return getTimeOfDayPresetSeriesSelection(layers, preset, currentSelection)
-  }
-
-  const nextSelection: Record<string, boolean> = {}
-  layers.forEach((layer) => {
-    const scheduleVisible =
-      layer.group === 'Schedules' &&
-      layer.available &&
-      layer.seriesNames.every(
-        (seriesName) => currentSelection[seriesName] === true
-      )
-
-    layer.seriesNames.forEach((seriesName) => {
-      nextSelection[seriesName] =
-        layer.group === 'Schedules' ? scheduleVisible : false
-    })
-  })
-
-  return nextSelection
-}
+) => getTimeOfDayPresetSeriesSelection(layers, activeMode, currentSelection)
 
 export const getSidebarLayers = (
   layers: TimeOfDayChartLayer[],
-  activeModes: TimeOfDayAnalysisMode[]
+  activeMode: TimeOfDayAnalysisMode
 ) =>
   layers.filter((layer) => {
     const mode = getLayerAnalysisMode(layer)
-    return mode === undefined || activeModes.includes(mode)
+    return mode === undefined || mode === activeMode
   })
 
 const dashedLineSvgPath = DashedLineSeriesSymbol.replace(
