@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { format } from 'date-fns'
 import { Fragment } from 'react'
+import { getChangeBackgroundColor } from './changeColors'
 
 type HotspotTableProps = {
   hotspots: Array<any>
@@ -179,12 +180,7 @@ const StyledTableCell = ({
     : compareDates && roundedValue > 0
       ? `+${formattedValue}`
       : formattedValue
-  let backgroundColor = 'inherit'
-  if (roundedValue > 0) {
-    backgroundColor = 'rgba(173, 216, 230, 0.3)'
-  } else if (roundedValue < 0) {
-    backgroundColor = 'rgba(255, 143, 10, 0.3)'
-  }
+  const backgroundColor = getChangeBackgroundColor(roundedValue)
   return (
     <TableCell
       align="right"
