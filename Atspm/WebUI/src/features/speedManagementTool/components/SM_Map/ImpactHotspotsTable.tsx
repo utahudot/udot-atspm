@@ -236,9 +236,20 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
 }) => {
   const { zoomToHotspot, mapRef } = useSpeedManagementStore()
 
-  if (!hotspots || hotspots.length === 0) {
+  if (!isLoading && (!hotspots || hotspots.length === 0)) {
     return (
-      <Box>
+      <Box
+        role="status"
+        sx={{
+          p: 2,
+          height: '100%',
+          boxSizing: 'border-box',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }}
+      >
         <Typography>No hotspots found</Typography>
       </Box>
     )
