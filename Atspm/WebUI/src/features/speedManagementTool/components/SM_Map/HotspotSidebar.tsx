@@ -190,8 +190,10 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
   const isDragging = useRef(false)
   const initialMouseX = useRef(0)
   const initialWidth = useRef(0)
+  const latestHotspotRequest = useRef(0)
 
   const fetchHotspots = useCallback(async () => {
+    const requestId = ++latestHotspotRequest.current
     try {
       setIsLoading(true)
       setHotspotRoutes([])
@@ -227,7 +229,9 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
           flipHotspotCoordinates(await fetchImpactHotspots({ data: payload })),
           'impact'
         )
-        setHotspotRoutes(impactHotspots)
+        if (requestId === latestHotspotRequest.current) {
+          setHotspotRoutes(impactHotspots)
+        }
       } else {
         const hotspots = tagHotspotSource(
           flipHotspotCoordinates(
@@ -253,13 +257,18 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
           ),
           'monthly'
         )
-        setHotspotRoutes(hotspots)
+        if (requestId === latestHotspotRequest.current) {
+          setHotspotRoutes(hotspots)
+        }
       }
     } catch (error) {
+      if (requestId !== latestHotspotRequest.current) return
       console.error('Failed to fetch hotspots', error)
       setHotspotRoutes([])
     } finally {
-      setIsLoading(false)
+      if (requestId === latestHotspotRequest.current) {
+        setIsLoading(false)
+      }
     }
   }, [
     fetchHotspotsAsync,
@@ -278,6 +287,10 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
 
   useEffect(() => {
     fetchHotspots()
+    return () => {
+      // Ignore responses from previous filters or an unmounted sidebar.
+      latestHotspotRequest.current += 1
+    }
   }, [
     submittedRouteSpeedRequest,
     order,
