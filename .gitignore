@@ -67,8 +67,8 @@ dkms.conf
 *.vbproj.user
 
 # Generated code files
-*.Designer.cs
-*.designer.cs
+#*.Designer.cs
+#*.designer.cs
 *.g.cs
 *.g.i.cs
 *.generated.cs
