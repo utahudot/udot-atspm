@@ -23,8 +23,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     public class TimeOfDayReportService : ReportServiceBase<TimeOfDayOptions, TimeOfDayResult>
     {
-        private const int PlanLookbackDays = 7;
-        private const int DetectorPaddingHours = 1;
+        private const int EventPaddingHours = 12;
 
         private record LoadWindow(DateTime Start, DateTime End);
 
@@ -81,12 +80,11 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 });
             }
 
-            var firstDate = selectedDates[0].ToDateTime(TimeOnly.MinValue);
-            var locations = LoadLocations(locationIdentifiers, firstDate);
-
-            var locationData = locations
-                .Select(location => LoadLocationData(parameter, location, selectedDates, warnings))
-                .ToList();
+            var locationData = new List<TimeOfDayLocationReportData>();
+            foreach (var identifier in locationIdentifiers)
+            {
+                locationData.Add(LoadLocationData(parameter, identifier, selectedDates, warnings));
+            }
 
             return Task.FromResult(timeOfDayService.GetChartData(
                 parameter,
@@ -106,6 +104,12 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             if (parameter.SelectedDates == null || parameter.SelectedDates.Count == 0)
             {
                 throw new ArgumentException("At least one selected date is required.");
+            }
+
+            // Leave room for the raw-event padding and the following midnight.
+            if (parameter.SelectedDates.Any(date => date == DateOnly.MinValue || date == DateOnly.MaxValue))
+            {
+                throw new ArgumentException("Selected dates must be between 0001-01-02 and 9999-12-30 to allow event padding.");
             }
 
             if (parameter.LaneCapacityVehiclesPerHour <= 0)
@@ -142,18 +146,27 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             parameter.DirectionLaneCounts ??= new();
         }
 
-        private IReadOnlyList<Location> LoadLocations(IReadOnlyList<string> locationIdentifiers, DateTime firstDate)
+        private Dictionary<DateOnly, Location> LoadLocationsByDate(
+            string locationIdentifier,
+            IReadOnlyList<DateOnly> selectedDates,
+            List<TimeOfDayWarningDto> warnings)
         {
-            var locations = new List<Location>();
-            foreach (var locationIdentifier in locationIdentifiers)
+            var locations = new Dictionary<DateOnly, Location>();
+            foreach (var date in selectedDates)
             {
-                var location = locationRepository.GetLatestVersionOfLocation(locationIdentifier, firstDate);
+                var location = locationRepository.GetLatestVersionOfLocation(locationIdentifier, date.ToDateTime(TimeOnly.MinValue));
                 if (location == null)
                 {
-                    throw new NullReferenceException($"Location {locationIdentifier} not found");
+                    warnings.Add(new TimeOfDayWarningDto
+                    {
+                        Code = "MissingLocationConfiguration",
+                        LocationIdentifier = locationIdentifier,
+                        Message = $"No location configuration is available for {locationIdentifier} on {date:yyyy-MM-dd}; volume analysis for that date was skipped."
+                    });
+                    continue;
                 }
 
-                locations.Add(location);
+                locations.Add(date, location);
             }
 
             return locations;
@@ -161,36 +174,42 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
         private TimeOfDayLocationReportData LoadLocationData(
             TimeOfDayOptions options,
-            Location location,
+            string locationIdentifier,
             IReadOnlyList<DateOnly> selectedDates,
             List<TimeOfDayWarningDto> warnings)
         {
+            var locationsByDate = LoadLocationsByDate(locationIdentifier, selectedDates, warnings);
+            var location = locationsByDate.Values.FirstOrDefault()
+                ?? new Location { LocationIdentifier = locationIdentifier, Approaches = new List<Approach>() };
             var data = new TimeOfDayLocationReportData
             {
                 Location = location,
-                LocationDescription = BuildLocationDescription(location)
+                LocationDescription = locationsByDate.Count > 0 ? BuildLocationDescription(location) : $"#{locationIdentifier}",
+                LocationsByDate = locationsByDate
             };
 
-            if (options.DataSource == TimeOfDayDataSource.Aggregated)
+            foreach (var selectedDate in selectedDates)
             {
-                foreach (var selectedDate in selectedDates)
-                {
-                    var start = selectedDate.ToDateTime(TimeOnly.MinValue);
-                    var end = start.AddDays(1);
+                var start = selectedDate.ToDateTime(TimeOnly.MinValue);
+                var end = start.AddDays(1);
 
+                data.SignalTimingPlans.AddRange(
+                    signalTimingPlanRepository.GetList()
+                        .Where(p => p.LocationIdentifier == location.LocationIdentifier
+                            && p.Start < end
+                            && (p.End == DateTime.MinValue || p.End > start))
+                        .ToList());
+
+                if (options.DataSource == TimeOfDayDataSource.Aggregated && locationsByDate.ContainsKey(selectedDate))
+                {
                     data.DetectorEventCountAggregations.AddRange(
                         detectorEventCountAggregationRepository.GetAggregationsBetweenDates(location.LocationIdentifier, start, end));
-                    data.SignalTimingPlans.AddRange(
-                        signalTimingPlanRepository.GetList()
-                            .Where(p => p.LocationIdentifier == location.LocationIdentifier
-                                && p.Start < end
-                                && (p.End == DateTime.MinValue || p.End > start))
-                            .ToList());
                 }
             }
-            else
+
+            if (options.DataSource != TimeOfDayDataSource.Aggregated)
             {
-                LoadIndianaEvents(location.LocationIdentifier, selectedDates, data);
+                LoadIndianaEvents(locationIdentifier, locationsByDate.Keys.ToList(), data);
             }
 
             if (data.SignalTimingPlans.Count > 0)
@@ -211,39 +230,24 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             IReadOnlyList<DateOnly> selectedDates,
             TimeOfDayLocationReportData data)
         {
-            var detectorWindows = selectedDates
+            var queryWindows = MergeWindows(selectedDates
                 .Select(selectedDate =>
                 {
                     var start = selectedDate.ToDateTime(TimeOnly.MinValue);
                     return new LoadWindow(
-                        start.AddHours(-DetectorPaddingHours),
-                        start.AddDays(1).AddHours(DetectorPaddingHours));
-                })
-                .ToList();
-            var planWindows = selectedDates
-                .Select(selectedDate =>
-                {
-                    var start = selectedDate.ToDateTime(TimeOnly.MinValue);
-                    return new LoadWindow(start.AddDays(-PlanLookbackDays), start.AddDays(1));
-                })
-                .ToList();
-            var queryWindows = MergeWindows(detectorWindows.Concat(planWindows));
+                        start.AddHours(-EventPaddingHours),
+                        start.AddDays(1).AddHours(EventPaddingHours));
+                }));
 
             foreach (var queryWindow in queryWindows)
             {
                 var controllerEventLogs = eventLogRepository
                     .GetEventsBetweenDates(locationIdentifier, queryWindow.Start, queryWindow.End);
-
                 data.IndianaEvents.AddRange(controllerEventLogs
-                    .Where(e => e.EventCode == (short)IndianaEnumerations.VehicleDetectorOn)
-                    .Where(e => IsWithinAnyWindow(e.Timestamp, detectorWindows)));
-                data.IndianaPlanEvents.AddRange(controllerEventLogs
-                    .Where(e => e.EventCode == (short)IndianaEnumerations.CoordPatternChange)
-                    .Where(e => IsWithinAnyWindow(e.Timestamp, planWindows)));
+                    .Where(entry => entry.EventCode == (short)IndianaEnumerations.VehicleDetectorOn));
             }
 
             ReplaceWithDistinctChronologicalEvents(data.IndianaEvents);
-            ReplaceWithDistinctChronologicalEvents(data.IndianaPlanEvents);
         }
 
         private static List<LoadWindow> MergeWindows(IEnumerable<LoadWindow> windows)
@@ -268,11 +272,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             }
 
             return mergedWindows;
-        }
-
-        private static bool IsWithinAnyWindow(DateTime timestamp, IReadOnlyList<LoadWindow> windows)
-        {
-            return windows.Any(window => timestamp >= window.Start && timestamp < window.End);
         }
 
         private static void ReplaceWithDistinctChronologicalEvents(List<IndianaEvent> events)

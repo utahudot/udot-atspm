@@ -200,7 +200,9 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
             if (inferredDirections.Count > 0)
             {
-                return inferredDirections;
+                return inferredDirections
+                    .Where(d => !normalizedPrimaryDirections.Contains(d, StringComparer.OrdinalIgnoreCase))
+                    .ToList();
             }
 
             return availableDirections

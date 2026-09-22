@@ -149,7 +149,17 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         public List<TimeOfDayProfileDto> MovementProfiles { get; set; } = new();
         public TimeOfDayLocationSummaryDto Summary { get; set; } = new();
         public List<Plan> CurrentPlanSchedule { get; set; } = new();
+        /// <summary>
+        /// Actual plan intervals clipped to each selected date, before representative bin sampling.
+        /// </summary>
+        public List<TimeOfDayDailyPlanScheduleDto> DailyPlanSchedules { get; set; } = new();
         public string DataQualityFlag { get; set; } = string.Empty;
+    }
+
+    public class TimeOfDayDailyPlanScheduleDto
+    {
+        public DateOnly Date { get; set; }
+        public List<Plan> Plans { get; set; } = new();
     }
 
     public class TimeOfDayLocationSummaryDto

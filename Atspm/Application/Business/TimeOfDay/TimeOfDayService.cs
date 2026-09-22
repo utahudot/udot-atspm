@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Models.MeasureOptions;
@@ -29,6 +30,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         public List<TimeOfDayVolumeObservation> Observations { get; init; } = new();
         public List<Plan> CurrentPlanSchedule { get; set; } = new();
         public bool HasCurrentPlanData { get; set; }
+        public List<TimeOfDayDailyPlanScheduleDto> DailyPlanSchedules { get; set; } = new();
+        public double? CapacityVehiclesPerHour { get; init; }
     }
 
     public class TimeOfDayLocationReportData
@@ -36,9 +39,9 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         public Location Location { get; init; }
         public string LocationDescription { get; init; } = string.Empty;
         public List<IndianaEvent> IndianaEvents { get; } = new();
-        public List<IndianaEvent> IndianaPlanEvents { get; } = new();
         public List<DetectorEventCountAggregation> DetectorEventCountAggregations { get; } = new();
         public List<SignalTimingPlan> SignalTimingPlans { get; } = new();
+        public IReadOnlyDictionary<DateOnly, Location> LocationsByDate { get; init; }
     }
 
     public class TimeOfDayService
@@ -74,7 +77,6 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             List<TimeOfDayWarningDto> warnings)
         {
             var planScheduleResult = planScheduleService.BuildCurrentSchedules(
-                options.DataSource,
                 reportData,
                 selectedDates,
                 options.BinSizeMinutes);
@@ -86,6 +88,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             {
                 data.CurrentPlanSchedule = planScheduleResult.LocationSchedules.GetValueOrDefault(data.Location.LocationIdentifier) ?? new();
                 data.HasCurrentPlanData = planScheduleResult.HasPlanDataByLocation.GetValueOrDefault(data.Location.LocationIdentifier);
+                data.DailyPlanSchedules = planScheduleResult.DailySchedules.GetValueOrDefault(data.Location.LocationIdentifier) ?? new();
             }
 
             var usableLocationData = locationData
@@ -182,19 +185,57 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             IReadOnlyList<DateOnly> selectedDates,
             List<TimeOfDayWarningDto> warnings)
         {
-            var observationResult = options.DataSource == TimeOfDayDataSource.Aggregated
+            TimeOfDayObservationBuildResult BuildObservations(Location location, IReadOnlyList<DateOnly> dates) =>
+                options.DataSource == TimeOfDayDataSource.Aggregated
                 ? observationService.BuildAggregatedObservations(
-                    data.Location,
+                    location,
                     data.LocationDescription,
-                    selectedDates,
+                    dates,
                     options.BinSizeMinutes,
                     data.DetectorEventCountAggregations)
                 : observationService.BuildIndianaEventObservations(
-                    data.Location,
+                    location,
                     data.LocationDescription,
-                    selectedDates,
+                    dates,
                     options.BinSizeMinutes,
                     data.IndianaEvents);
+
+            var observations = new List<TimeOfDayVolumeObservation>();
+            var hasEligibleDetectors = false;
+            if (data.LocationsByDate == null)
+            {
+                var result = BuildObservations(data.Location, selectedDates);
+                observations.AddRange(result.Observations);
+                hasEligibleDetectors = result.HasEligibleDetectors;
+            }
+            else
+            {
+                // A configuration may cover several dates; do not remap the same events for each date.
+                foreach (var group in data.LocationsByDate.GroupBy(pair => pair.Value,
+                    (IEqualityComparer<Location>)ReferenceEqualityComparer.Instance))
+                {
+                    var result = BuildObservations(group.Key, group.Select(pair => pair.Key).ToList());
+                    observations.AddRange(result.Observations);
+                    hasEligibleDetectors |= result.HasEligibleDetectors;
+                }
+            }
+            var observationResult = new TimeOfDayObservationBuildResult(observations, hasEligibleDetectors);
+
+            var capacities = (data.LocationsByDate == null
+                    ? new[] { data.Location }
+                    : data.LocationsByDate.Values)
+                .Select(location => CalculateCapacity(options, location))
+                .Distinct()
+                .ToList();
+            if (capacities.Count > 1)
+            {
+                warnings.Add(new TimeOfDayWarningDto
+                {
+                    Code = "CapacityVariesByDate",
+                    LocationIdentifier = data.Location.LocationIdentifier,
+                    Message = "Configured lane capacity differs across selected dates; capacity percentages are unavailable for the combined profile."
+                });
+            }
 
             if (!observationResult.HasEligibleDetectors)
             {
@@ -232,7 +273,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             {
                 Location = data.Location,
                 LocationDescription = data.LocationDescription,
-                Observations = observationResult.Observations
+                Observations = observationResult.Observations,
+                CapacityVehiclesPerHour = capacities.Count == 1 ? capacities[0] : null
             };
         }
 
@@ -307,8 +349,9 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                     CoverageFallbackUsed = false,
                     Profile = profile,
                     MovementProfiles = movementProfiles,
-                    Summary = BuildLocationSummary(options, data.Location, data.Observations, profile, missingDates),
+                    Summary = BuildLocationSummary(options, data.CapacityVehiclesPerHour, data.Observations, profile, missingDates),
                     CurrentPlanSchedule = data.CurrentPlanSchedule,
+                    DailyPlanSchedules = data.DailyPlanSchedules,
                     DataQualityFlag = daysWithData == 0
                         ? "NoData"
                         : missingDates.Count == 0
@@ -365,12 +408,11 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
         private static TimeOfDayLocationSummaryDto BuildLocationSummary(
             TimeOfDayOptions options,
-            Location location,
+            double? capacity,
             IReadOnlyList<TimeOfDayVolumeObservation> observations,
             TimeOfDayProfileDto profile,
             IReadOnlyList<DateOnly> missingDates)
         {
-            var capacity = CalculateCapacity(options, location);
             var peakRaw = profile.Points.Select(p => p.AverageVolume).DefaultIfEmpty(0).Max();
             var peakSmoothed = profile.Points.Select(p => p.SmoothedVolume).DefaultIfEmpty(0).Max();
             var peakHourly = profile.Points.Select(p => p.RollingHourVph ?? 0).DefaultIfEmpty(0).Max();
@@ -390,9 +432,9 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 PeakRawVolume = peakRaw,
                 PeakSmoothedVolume = peakSmoothed,
                 PeakHourlyRate = peakHourly > 0 ? peakHourly : null,
-                PeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(peakSmoothed / capacity * 100) : null,
-                AmPeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(amPeak / capacity * 100) : null,
-                PmPeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(pmPeak / capacity * 100) : null,
+                PeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(peakSmoothed / capacity.Value * 100) : null,
+                AmPeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(amPeak / capacity.Value * 100) : null,
+                PmPeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(pmPeak / capacity.Value * 100) : null,
                 AmDirectionExceptionMessage = BuildDirectionExceptionMessage(
                     options.AmPrimaryDirections.Count > 0 ? options.AmPrimaryDirections : options.AllDayPrimaryDirections,
                     observations,
@@ -483,26 +525,30 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
         private static double CalculateCapacity(TimeOfDayOptions options, Location location)
         {
-            var laneCount = options.DirectionLaneCounts
-                .Where(kvp => location.Approaches
-                    .Select(a => TimeOfDayDirectionHelper.GetDisplayName(a.DirectionTypeId))
-                    .Contains(TimeOfDayDirectionHelper.NormalizeDirection(kvp.Key), StringComparer.OrdinalIgnoreCase))
-                .Sum(kvp => kvp.Value);
-
-            if (laneCount <= 0)
+            var overrides = options.DirectionLaneCounts
+                .Where(pair => double.IsFinite(pair.Value) && pair.Value > 0)
+                .GroupBy(pair => TimeOfDayDirectionHelper.NormalizeDirection(pair.Key), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.First().Value, StringComparer.OrdinalIgnoreCase);
+            var laneCount = 0d;
+            foreach (var direction in (location.Approaches ?? new List<Approach>())
+                .GroupBy(approach => TimeOfDayDirectionHelper.GetDisplayName(approach.DirectionTypeId)))
             {
-                laneCount = TimeOfDayDetectorHelper.GetVehicleDetectors(location)
-                    .Where(d => d.LaneNumber.HasValue)
-                    .Select(d => new { d.Approach.DirectionTypeId, d.LaneNumber })
-                    .Distinct()
-                    .Count();
-            }
+                if (overrides.TryGetValue(direction.Key, out var overriddenLanes))
+                {
+                    laneCount += overriddenLanes;
+                    continue;
+                }
 
-            if (laneCount <= 0)
-            {
-                laneCount = options.ApproachVolumeAssumedLanes;
+                foreach (var approach in direction)
+                {
+                    var detectedLanes = (approach.Detectors ?? new List<Detector>())
+                        .Where(detector => detector.LaneType == LaneTypes.V && detector.LaneNumber.HasValue)
+                        .Select(detector => detector.LaneNumber.Value)
+                        .Distinct()
+                        .Count();
+                    laneCount += detectedLanes > 0 ? detectedLanes : options.ApproachVolumeAssumedLanes;
+                }
             }
-
             return Math.Max(laneCount, 1) * options.LaneCapacityVehiclesPerHour;
         }
     }

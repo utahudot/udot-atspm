@@ -24,6 +24,9 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public List<string> LocationIdentifiers { get; set; } = new();
         public List<DateOnly> SelectedDates { get; set; } = new();
         public int BinSizeMinutes { get; set; } = FixedBinSizeMinutes;
+        /// <summary>
+        /// Selects the volume data source. Current plans always use SignalTimingPlan aggregations.
+        /// </summary>
         public TimeOfDayDataSource DataSource { get; set; } = TimeOfDayDataSource.IndianaEvents;
         public List<string> AllDayPrimaryDirections { get; set; } = new();
         public List<string> AmPrimaryDirections { get; set; } = new();

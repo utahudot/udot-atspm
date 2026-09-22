@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Business.TimeOfDay;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Models.MeasureOptions;
@@ -97,8 +96,8 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                     LocationDescription = id
                 })
                 .ToList();
-            reportData.Single(data => data.Location.LocationIdentifier == "1003").IndianaPlanEvents.Add(
-                IndianaPlanEvent(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1003"));
+            reportData.Single(data => data.Location.LocationIdentifier == "1003").SignalTimingPlans.Add(
+                TimingPlan(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1003"));
             var warnings = new List<TimeOfDayWarningDto>();
 
             var result = CreateService(observationsByLocation).GetChartData(
@@ -137,8 +136,8 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 Location = new Location { LocationIdentifier = "1001" },
                 LocationDescription = "1001"
             };
-            reportData.IndianaPlanEvents.Add(
-                IndianaPlanEvent(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1001"));
+            reportData.SignalTimingPlans.Add(
+                TimingPlan(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1001"));
 
             var result = CreateService(observationsByLocation).GetChartData(
                 new TimeOfDayOptions(),
@@ -211,14 +210,14 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 count);
         }
 
-        private static IndianaEvent IndianaPlanEvent(DateTime timestamp, short planNumber, string locationIdentifier)
+        private static SignalTimingPlan TimingPlan(DateTime start, short planNumber, string locationIdentifier)
         {
-            return new IndianaEvent
+            return new SignalTimingPlan
             {
                 LocationIdentifier = locationIdentifier,
-                EventCode = (short)IndianaEnumerations.CoordPatternChange,
-                EventParam = planNumber,
-                Timestamp = timestamp
+                PlanNumber = planNumber,
+                Start = start,
+                End = DateTime.MinValue
             };
         }
 

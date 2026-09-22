@@ -19,10 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Business.TimeOfDay;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
@@ -58,7 +55,6 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
             });
 
             var result = service.BuildCurrentSchedules(
-                TimeOfDayDataSource.Aggregated,
                 new List<TimeOfDayLocationReportData> { reportData },
                 new List<DateOnly> { selectedDate },
                 15);
@@ -77,16 +73,15 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
         }
 
         [Fact]
-        public void BuildCurrentSchedules_SeedsMidnightFromSevenDayIndianaLookback()
+        public void BuildCurrentSchedules_UsesOverlappingPlanRegardlessOfStartDate()
         {
             var selectedDate = new DateOnly(2026, 1, 8);
             var dayStart = selectedDate.ToDateTime(TimeOnly.MinValue);
-            var reportData = IndianaReportData(
-                IndianaPlanEvent(dayStart.AddDays(-6).AddHours(-2), 7),
-                IndianaPlanEvent(dayStart.AddHours(7), 1));
+            var reportData = ReportData(
+                TimingPlan(dayStart.AddDays(-30), dayStart.AddHours(7), 7),
+                TimingPlan(dayStart.AddHours(7), DateTime.MinValue, 1));
 
             var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                TimeOfDayDataSource.IndianaEvents,
                 new List<TimeOfDayLocationReportData> { reportData },
                 new List<DateOnly> { selectedDate },
                 15);
@@ -99,14 +94,15 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
         }
 
         [Fact]
-        public void BuildCurrentSchedules_IgnoresIndianaPlanHistoryOlderThanSevenDays()
+        public void BuildCurrentSchedules_IgnoresPlansOutsideSelectedDate()
         {
             var selectedDate = new DateOnly(2026, 1, 8);
             var dayStart = selectedDate.ToDateTime(TimeOnly.MinValue);
-            var reportData = IndianaReportData(IndianaPlanEvent(dayStart.AddDays(-8), 7));
+            var reportData = ReportData(
+                TimingPlan(dayStart.AddDays(-1), dayStart, 7),
+                TimingPlan(dayStart.AddDays(1), DateTime.MinValue, 9));
 
             var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                TimeOfDayDataSource.IndianaEvents,
                 new List<TimeOfDayLocationReportData> { reportData },
                 new List<DateOnly> { selectedDate },
                 15);
@@ -124,18 +120,17 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 new(2026, 1, 6),
                 new(2026, 1, 7)
             };
-            var events = new List<IndianaEvent>();
+            var plans = new List<SignalTimingPlan>();
             for (var i = 0; i < selectedDates.Count; i++)
             {
                 var start = selectedDates[i].ToDateTime(TimeOnly.MinValue);
-                events.Add(IndianaPlanEvent(start.AddHours(-1), 7));
-                events.Add(IndianaPlanEvent(start.AddHours(7), i < 2 ? (short)1 : (short)13));
-                events.Add(IndianaPlanEvent(start.AddHours(9), 7));
+                plans.Add(TimingPlan(start, start.AddHours(7), 7));
+                plans.Add(TimingPlan(start.AddHours(7), start.AddHours(9), i < 2 ? (short)1 : (short)13));
+                plans.Add(TimingPlan(start.AddHours(9), start.AddDays(1), 7));
             }
 
-            var reportData = IndianaReportData(events.ToArray());
+            var reportData = ReportData(plans.ToArray());
             var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                TimeOfDayDataSource.IndianaEvents,
                 new List<TimeOfDayLocationReportData> { reportData },
                 selectedDates,
                 15);
@@ -145,24 +140,49 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
             Assert.Equal(9, schedule.Single(plan => plan.PlanNumber == "1").End.Hour);
         }
 
-        private static TimeOfDayLocationReportData IndianaReportData(params IndianaEvent[] events)
+        [Fact]
+        public void BuildCurrentSchedules_PreservesShortDailyIntervalsBeforeSampling()
+        {
+            var date = new DateOnly(2026, 3, 18);
+            var start = date.ToDateTime(TimeOnly.MinValue);
+            var reportData = ReportData(
+                TimingPlan(start.AddDays(-1), start.AddHours(8).AddMinutes(2), 1),
+                TimingPlan(start.AddHours(8).AddMinutes(2), start.AddHours(8).AddMinutes(10), 3),
+                TimingPlan(start.AddHours(8).AddMinutes(10), DateTime.MinValue, 7));
+            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
+                new[] { reportData }, new[] { date, date.AddDays(1) }, 15);
+
+            var days = result.DailySchedules["1001"];
+            Assert.Equal(2, days.Count);
+            var shortPlan = Assert.Single(days[0].Plans.Where(plan => plan.PlanNumber == "3"));
+            Assert.Equal(start.AddHours(8).AddMinutes(2), shortPlan.Start);
+            Assert.Equal(start.AddHours(8).AddMinutes(10), shortPlan.End);
+            Assert.Equal(start, days[0].Plans[0].Start);
+            Assert.Equal(start.AddDays(1), days[0].Plans.Last().End);
+            Assert.Equal(start.AddDays(1), Assert.Single(days[1].Plans).Start);
+            Assert.Equal(start.AddDays(2), days[1].Plans[0].End);
+            // The representative policy is unchanged; the exact intervals are a separate output.
+            Assert.DoesNotContain(result.LocationSchedules["1001"], plan => plan.PlanNumber == "3");
+        }
+
+        private static TimeOfDayLocationReportData ReportData(params SignalTimingPlan[] plans)
         {
             var reportData = new TimeOfDayLocationReportData
             {
                 Location = new Location { LocationIdentifier = "1001" }
             };
-            reportData.IndianaPlanEvents.AddRange(events);
+            reportData.SignalTimingPlans.AddRange(plans);
             return reportData;
         }
 
-        private static IndianaEvent IndianaPlanEvent(DateTime timestamp, short planNumber)
+        private static SignalTimingPlan TimingPlan(DateTime start, DateTime end, short planNumber)
         {
-            return new IndianaEvent
+            return new SignalTimingPlan
             {
                 LocationIdentifier = "1001",
-                EventCode = (short)IndianaEnumerations.CoordPatternChange,
-                EventParam = planNumber,
-                Timestamp = timestamp
+                PlanNumber = planNumber,
+                Start = start,
+                End = end
             };
         }
     }

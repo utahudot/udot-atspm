@@ -232,6 +232,30 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
             Assert.Contains("Eastbound", result.SummaryText);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void BuildSplitPressure_MixedAxisPrimaryDirectionsNeverOverlapCrossTraffic(bool hasSouthbound)
+        {
+            var profiles = new List<TimeOfDayProfileDto>
+            {
+                BuildProfile("Eastbound", "Eastbound", 480, 600),
+                BuildProfile("Westbound", "Westbound", 480, 500),
+                BuildProfile("Northbound", "Northbound", 480, 300)
+            };
+            if (hasSouthbound) profiles.Add(BuildProfile("Southbound", "Southbound", 480, 200));
+            var result = CreateService().BuildSplitPressure(
+                new TimeOfDayOptions { AllDayPrimaryDirections = new List<string> { "Eastbound", "Northbound" } },
+                profiles, new List<TimeOfDayLocationAnalysisData>(), new List<DateOnly> { TestDate }, 15);
+
+            Assert.Empty(result.PrimaryDirections.Intersect(result.CrossDirections));
+            Assert.Equal(hasSouthbound ? new[] { "Southbound" } : Array.Empty<string>(), result.CrossDirections);
+            var share = Assert.Single(result.CrossTrafficShare);
+            Assert.Equal(900, share.PrimaryVolume);
+            Assert.Equal(hasSouthbound ? 200 : 0, share.CrossStreetVolume);
+            Assert.DoesNotContain("Westbound", result.CrossDirections);
+        }
+
         private static TimeOfDaySplitPressureService CreateService()
         {
             return new TimeOfDaySplitPressureService(new TimeOfDayProfileService());

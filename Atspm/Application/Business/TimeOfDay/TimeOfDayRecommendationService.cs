@@ -218,46 +218,14 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                     Math.Max(amPeak.Minutes, 9 * 60 + 30),
                     Math.Min(pmPeak.Minutes, 16 * 60))
                 : null;
-            int? middayStart = amExit;
-            int? middayEnd = pmEntry;
-
-            if (middayValley != null)
+            if (middayValley != null && pmEntry.Value < middayValley.Minutes)
             {
-                if (!middayStart.HasValue)
-                {
-                    middayStart = Math.Max(9 * 60 + 30, Math.Min(middayValley.Minutes, 13 * 60));
-                }
-
-                if (pmEntry.Value < middayValley.Minutes)
-                {
-                    pmEntry = Math.Max(14 * 60, middayValley.Minutes);
-                    middayEnd = pmEntry;
-                }
-            }
-
-            if (!middayStart.HasValue && amPeak != null)
-            {
-                middayStart = FindValley(corridorProfile, amPeak.Minutes, 14 * 60)?.Minutes;
-            }
-
-            if (middayStart.HasValue && middayStart.Value < 9 * 60)
-            {
-                middayStart = 9 * 60;
+                pmEntry = Math.Max(14 * 60, middayValley.Minutes);
             }
 
             if (pmEntry.Value < 14 * 60)
             {
                 pmEntry = 14 * 60;
-                middayEnd = pmEntry;
-            }
-
-            middayStart = amExit;
-            middayEnd = pmEntry;
-
-            if (middayStart.HasValue && middayEnd.HasValue && middayEnd.Value <= middayStart.Value)
-            {
-                middayStart = null;
-                middayEnd = null;
             }
 
             var eveningStart = pmExit.Value;
