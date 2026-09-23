@@ -8515,6 +8515,23 @@
         },
         "additionalProperties": false
       },
+      "TimeOfDayDailyPlanScheduleDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "plans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "TimeOfDayDataSource": {
         "enum": [
           0,
@@ -8574,6 +8591,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Plan"
+            },
+            "nullable": true
+          },
+          "dailyPlanSchedules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayDailyPlanScheduleDto"
             },
             "nullable": true
           },
@@ -9047,6 +9071,28 @@
             "type": "array",
             "items": {
               "type": "string"
+            },
+            "nullable": true
+          },
+          "primaryDirectionsByPeriod": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "crossDirectionsByPeriod": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true
             },
             "nullable": true
           },

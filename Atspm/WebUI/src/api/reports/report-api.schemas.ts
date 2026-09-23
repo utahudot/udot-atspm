@@ -1359,239 +1359,6 @@ export interface Plan {
   readonly planDescription?: string | null
 }
 
-export interface TimeOfDayOptions {
-  locationIdentifiers?: string[] | null
-  selectedDates?: string[] | null
-  binSizeMinutes?: number
-  dataSource?: number | null
-  allDayPrimaryDirections?: string[] | null
-  amPrimaryDirections?: string[] | null
-  pmPrimaryDirections?: string[] | null
-  amEntryPctOfPeak?: number
-  amExitPctOfPeak?: number
-  pmEntryPctOfPeak?: number
-  pmExitPctOfPeak?: number
-  freeEntryPctOfDailyPeak?: number
-  freeEntryPctOfDynamicRange?: number
-  entrySustainedBins?: number
-  freeSustainedBins?: number
-  freeFallbackTime?: string | null
-  maxAmEndTime?: string | null
-  maxPmEndTime?: string | null
-  laneCapacityVehiclesPerHour?: number
-  approachVolumeAssumedLanes?: number
-  splitReviewThresholdPercent?: number
-  shoulderReviewThresholdPercent?: number
-  directionLaneCounts?: { [key: string]: number } | null
-}
-
-export interface TimeOfDayResult {
-  locationIdentifiers?: string[] | null
-  selectedDates?: string[] | null
-  binSizeMinutes?: number
-  /** @nullable */
-  dataSource?: string | null
-  recommendation?: TimeOfDayRecommendationDto
-  planProfile?: TimeOfDayPlanProfileDto
-  splitPressure?: TimeOfDaySplitPressureDto
-  planComparison?: TimeOfDayPlanComparisonDto
-  locations?: TimeOfDayLocationResult[] | null
-  warnings?: TimeOfDayWarningDto[] | null
-  /** @nullable */
-  notes?: string | null
-}
-
-export interface TimeOfDayPlanProfileDto {
-  corridorProfile?: TimeOfDayProfileDto
-  directionalProfiles?: TimeOfDayProfileDto[] | null
-  peaks?: TimeOfDayPeakEventDto[] | null
-}
-
-export interface TimeOfDayProfileDto {
-  /** @nullable */
-  label?: string | null
-  /** @nullable */
-  units?: string | null
-  /** @nullable */
-  direction?: string | null
-  /** @nullable */
-  movement?: string | null
-  /** @nullable */
-  movementLabel?: string | null
-  points?: TimeOfDayProfilePointDto[] | null
-}
-
-export interface TimeOfDayProfilePointDto {
-  /** @nullable */
-  timeOfDay?: string | null
-  minutes?: number
-  averageVolume?: number
-  smoothedVolume?: number
-  /** @nullable */
-  rollingHourVph?: number | null
-  delta?: number
-  /** @nullable */
-  participatingLocations?: number | null
-}
-
-export interface TimeOfDayPeakEventDto {
-  /** @nullable */
-  label?: string | null
-  /** @nullable */
-  series?: string | null
-  /** @nullable */
-  period?: string | null
-  /** @nullable */
-  locationIdentifier?: string | null
-  /** @nullable */
-  locationDescription?: string | null
-  /** @nullable */
-  timeOfDay?: string | null
-  minutes?: number
-  value?: number
-  /** @nullable */
-  valueUnits?: string | null
-}
-
-export interface TimeOfDaySplitPressureDto {
-  primaryDirections?: string[] | null
-  crossDirections?: string[] | null
-  primaryProfile?: TimeOfDayProfileDto
-  crossStreetProfile?: TimeOfDayProfileDto
-  crossTrafficShare?: TimeOfDayCrossTrafficSharePointDto[] | null
-  thresholdPercentByName?: { [key: string]: number } | null
-  periodPeaks?: TimeOfDayPeakEventDto[] | null
-  crossTrafficLocations?: TimeOfDayCrossTrafficLocationDto[] | null
-  movementPressures?: TimeOfDayMovementPressureDto[] | null
-  /** @nullable */
-  primaryPeakVolume?: number | null
-  /** @nullable */
-  primaryPeakTime?: string | null
-  /** @nullable */
-  crossStreetPeakVolume?: number | null
-  /** @nullable */
-  crossStreetPeakTime?: string | null
-  /** @nullable */
-  peakCrossTrafficPercent?: number | null
-  /** @nullable */
-  peakCrossTrafficPercentTime?: string | null
-  primaryStreetRemainsDominant?: boolean
-  /** @nullable */
-  summaryText?: string | null
-  /** @nullable */
-  reviewText?: string | null
-}
-
-export interface TimeOfDayCrossTrafficSharePointDto {
-  /** @nullable */
-  timeOfDay?: string | null
-  minutes?: number
-  primaryVolume?: number
-  crossStreetVolume?: number
-  totalVolume?: number
-  /** @nullable */
-  crossTrafficPercent?: number | null
-}
-
-export interface TimeOfDayCrossTrafficLocationDto {
-  /** @nullable */
-  locationIdentifier?: string | null
-  /** @nullable */
-  locationDescription?: string | null
-  /** @nullable */
-  period?: string | null
-  /** @nullable */
-  peakTime?: string | null
-  minutes?: number
-  totalVehiclesPerHour?: number
-  /** @nullable */
-  percentOfCrossTraffic?: number | null
-}
-
-export interface TimeOfDayRecommendationDto {
-  recommendedSchedule?: Plan[] | null
-  /** @nullable */
-  amPeakTime?: string | null
-  /** @nullable */
-  middayValleyTime?: string | null
-  /** @nullable */
-  pmPeakTime?: string | null
-  /** @nullable */
-  summaryText?: string | null
-}
-
-export interface TimeOfDayPlanComparisonDto {
-  commonCurrentSchedule?: Plan[] | null
-  exceptionLocationIdentifiers?: string[] | null
-  /** @nullable */
-  summaryText?: string | null
-  /** @nullable */
-  exceptionsText?: string | null
-}
-
-export interface TimeOfDayLocationResult {
-  /** @nullable */
-  locationIdentifier?: string | null
-  /** @nullable */
-  locationDescription?: string | null
-  daysWithData?: number
-  datesWithData?: string[] | null
-  missingDates?: string[] | null
-  coverageFallbackUsed?: boolean
-  profile?: TimeOfDayProfileDto
-  movementProfiles?: TimeOfDayProfileDto[] | null
-  summary?: TimeOfDayLocationSummaryDto
-  currentPlanSchedule?: Plan[] | null
-  /** @nullable */
-  dataQualityFlag?: string | null
-}
-
-export interface TimeOfDayLocationSummaryDto {
-  /** @nullable */
-  peakRawVolume?: number | null
-  /** @nullable */
-  peakSmoothedVolume?: number | null
-  /** @nullable */
-  peakHourlyRate?: number | null
-  /** @nullable */
-  peakOccupancyPercent?: number | null
-  /** @nullable */
-  amPeakOccupancyPercent?: number | null
-  /** @nullable */
-  pmPeakOccupancyPercent?: number | null
-  /** @nullable */
-  amDirectionExceptionMessage?: string | null
-  /** @nullable */
-  pmDirectionExceptionMessage?: string | null
-  /** @nullable */
-  crossTrafficReview?: string | null
-  /** @nullable */
-  notes?: string | null
-}
-
-export interface TimeOfDayMovementPressureDto {
-  /** @nullable */
-  period?: string | null
-  /** @nullable */
-  locationIdentifier?: string | null
-  /** @nullable */
-  movement?: string | null
-  /** @nullable */
-  movementLabel?: string | null
-  /** @nullable */
-  peakTime?: string | null
-  volume?: number
-}
-
-export interface TimeOfDayWarningDto {
-  /** @nullable */
-  code?: string | null
-  /** @nullable */
-  message?: string | null
-  /** @nullable */
-  locationIdentifier?: string | null
-}
-
 export interface PhaseTerminationResult {
   start?: string
   end?: string
@@ -2048,6 +1815,12 @@ export interface TimeOfDayCrossTrafficSharePointDto {
   crossTrafficPercent?: number | null
 }
 
+export interface TimeOfDayDailyPlanScheduleDto {
+  date?: string
+  /** @nullable */
+  plans?: Plan[] | null
+}
+
 export type TimeOfDayDataSource =
   (typeof TimeOfDayDataSource)[keyof typeof TimeOfDayDataSource]
 
@@ -2113,7 +1886,9 @@ export interface TimeOfDayLocationResult {
   /** @nullable */
   locationDescription?: string | null
   daysWithData?: number
+  /** @nullable */
   datesWithData?: string[] | null
+  /** @nullable */
   missingDates?: string[] | null
   coverageFallbackUsed?: boolean
   profile?: TimeOfDayProfileDto
@@ -2122,6 +1897,8 @@ export interface TimeOfDayLocationResult {
   summary?: TimeOfDayLocationSummaryDto
   /** @nullable */
   currentPlanSchedule?: Plan[] | null
+  /** @nullable */
+  dailyPlanSchedules?: TimeOfDayDailyPlanScheduleDto[] | null
   /** @nullable */
   dataQualityFlag?: string | null
 }
@@ -2236,6 +2013,20 @@ export interface TimeOfDayRecommendationDto {
 /**
  * @nullable
  */
+export type TimeOfDaySplitPressureDtoPrimaryDirectionsByPeriod = {
+  [key: string]: string[] | null
+} | null
+
+/**
+ * @nullable
+ */
+export type TimeOfDaySplitPressureDtoCrossDirectionsByPeriod = {
+  [key: string]: string[] | null
+} | null
+
+/**
+ * @nullable
+ */
 export type TimeOfDaySplitPressureDtoThresholdPercentByName = {
   [key: string]: number
 } | null
@@ -2245,6 +2036,10 @@ export interface TimeOfDaySplitPressureDto {
   primaryDirections?: string[] | null
   /** @nullable */
   crossDirections?: string[] | null
+  /** @nullable */
+  primaryDirectionsByPeriod?: TimeOfDaySplitPressureDtoPrimaryDirectionsByPeriod
+  /** @nullable */
+  crossDirectionsByPeriod?: TimeOfDaySplitPressureDtoCrossDirectionsByPeriod
   primaryProfile?: TimeOfDayProfileDto
   crossStreetProfile?: TimeOfDayProfileDto
   /** @nullable */
