@@ -165,6 +165,52 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
             Assert.DoesNotContain(result.LocationSchedules["1001"], plan => plan.PlanNumber == "3");
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void BuildCurrentSchedules_EndsEachPlanAtTheNextPlanChange(bool openEnded)
+        {
+            var date = new DateOnly(2026, 4, 6);
+            var start = date.ToDateTime(TimeOnly.MinValue);
+            var reportData = ReportData(
+                TimingPlan(start.AddHours(-2), openEnded ? DateTime.MinValue : start.AddHours(22), 254),
+                TimingPlan(start.AddHours(6), openEnded ? DateTime.MinValue : start.AddDays(1).AddHours(6), 1),
+                TimingPlan(start.AddHours(10), openEnded ? DateTime.MinValue : start.AddDays(1).AddHours(10), 7),
+                TimingPlan(start.AddHours(22), DateTime.MinValue, 254));
+
+            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
+                new[] { reportData }, new[] { date }, 15);
+
+            foreach (var schedule in new[] { result.LocationSchedules["1001"], result.DailySchedules["1001"].Single().Plans })
+            {
+                Assert.Equal(new[] { "254", "1", "7", "254" }, schedule.Select(plan => plan.PlanNumber));
+                Assert.Equal(new[] { start, start.AddHours(6), start.AddHours(10), start.AddHours(22) },
+                    schedule.Select(plan => plan.Start));
+                Assert.Equal(new[] { start.AddHours(6), start.AddHours(10), start.AddHours(22), start.AddDays(1) },
+                    schedule.Select(plan => plan.End));
+            }
+        }
+
+        [Fact]
+        public void BuildCurrentSchedules_UsesLatestPlanBeforeMidnightWhenRecordsOverlap()
+        {
+            var date = new DateOnly(2026, 4, 6);
+            var start = date.ToDateTime(TimeOnly.MinValue);
+            var reportData = ReportData(
+                TimingPlan(start.AddDays(-2), DateTime.MinValue, 254),
+                TimingPlan(start.AddDays(-1), DateTime.MinValue, 7));
+
+            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
+                new[] { reportData }, new[] { date }, 15);
+
+            var representative = Assert.Single(result.LocationSchedules["1001"]);
+            var daily = Assert.Single(result.DailySchedules["1001"].Single().Plans);
+            Assert.Equal("7", representative.PlanNumber);
+            Assert.Equal("7", daily.PlanNumber);
+            Assert.Equal(start, daily.Start);
+            Assert.Equal(start.AddDays(1), daily.End);
+        }
+
         private static TimeOfDayLocationReportData ReportData(params SignalTimingPlan[] plans)
         {
             var reportData = new TimeOfDayLocationReportData

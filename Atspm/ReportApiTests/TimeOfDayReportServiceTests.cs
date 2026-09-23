@@ -180,6 +180,7 @@ namespace ReportApiTests
             var dailySchedule = Assert.Single(location.DailyPlanSchedules);
             Assert.Equal(selectedDate, dailySchedule.Date);
             Assert.Equal(new[] { "3", "7" }, dailySchedule.Plans.Select(plan => plan.PlanNumber));
+            Assert.DoesNotContain(result.Warnings, warning => warning.Code == "PlanScheduleCarriedForward");
             Assert.Equal(dataSource == TimeOfDayDataSource.Aggregated ? 8 : 4,
                 location.Profile.Points.Single(point => point.Minutes == 8 * 60).AverageVolume);
             planRepository.Verify(repository => repository.GetList(), Times.Once);
@@ -188,6 +189,47 @@ namespace ReportApiTests
                 dataSource == TimeOfDayDataSource.IndianaEvents ? Times.Once() : Times.Never());
             aggregationRepository.Verify(repository => repository.GetAggregationsBetweenDates("1001", start, end),
                 dataSource == TimeOfDayDataSource.Aggregated ? Times.Once() : Times.Never());
+        }
+
+        [Theory]
+        [InlineData(TimeOfDayDataSource.IndianaEvents, 254)]
+        [InlineData(TimeOfDayDataSource.Aggregated, 254)]
+        [InlineData(TimeOfDayDataSource.IndianaEvents, 100)]
+        [InlineData(TimeOfDayDataSource.Aggregated, 100)]
+        public async Task ExecuteAsync_IdentifiesPlansCarriedForwardFromAnEarlierDate(
+            TimeOfDayDataSource dataSource, short planNumber)
+        {
+            var date = new DateOnly(2026, 4, 6);
+            var lastRecordedStart = new DateTime(2026, 4, 4, 22, 30, 0);
+            var plans = new Mock<ISignalTimingPlanRepository>();
+            plans.Setup(repository => repository.GetList()).Returns(new[]
+            {
+                new SignalTimingPlan
+                {
+                    LocationIdentifier = "1001", PlanNumber = planNumber,
+                    Start = lastRecordedStart, End = DateTime.MinValue
+                }
+            }.AsQueryable());
+            var events = EventRepository(Array.Empty<IndianaEvent>());
+            var aggregations = new Mock<IDetectorEventCountAggregationRepository>();
+            aggregations.Setup(repository => repository.GetAggregationsBetweenDates(
+                "1001", date.ToDateTime(TimeOnly.MinValue), date.AddDays(1).ToDateTime(TimeOnly.MinValue)))
+                .Returns(new List<DetectorEventCountAggregation>());
+            var service = CreateService(events, LocationWithDetector(), plans, aggregations);
+
+            var result = await service.ExecuteAsync(new TimeOfDayOptions
+            {
+                LocationIdentifiers = new() { "1001" },
+                SelectedDates = new() { date },
+                DataSource = dataSource
+            }, CancellationToken.None);
+
+            // A constant plan is possible; expose the source date without inventing a new plan.
+            Assert.Equal(planNumber.ToString(), Assert.Single(Assert.Single(result.Locations).CurrentPlanSchedule).PlanNumber);
+            var warning = Assert.Single(result.Warnings.Where(warning => warning.Code == "PlanScheduleCarriedForward"));
+            Assert.Equal("1001", warning.LocationIdentifier);
+            Assert.Contains("2026-04-06", warning.Message);
+            Assert.Contains("2026-04-04 22:30:00", warning.Message);
         }
 
         [Theory]

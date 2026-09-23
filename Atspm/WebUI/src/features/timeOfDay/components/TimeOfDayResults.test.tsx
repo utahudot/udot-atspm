@@ -124,6 +124,29 @@ describe('TimeOfDayResults unified workspace', () => {
     mockChartHandlers.clear()
   })
 
+  test('shows carried-forward plan coverage on the chart and schedules tabs', () => {
+    const message =
+      'No plan changes are recorded for 7174 on 2026-04-06; the existing schedule carries forward the last recorded plan from 2026-04-04 22:30:00.'
+    render(
+      <TimeOfDayResults
+        result={{
+          ...result,
+          warnings: [
+            {
+              code: 'PlanScheduleCarriedForward',
+              locationIdentifier: '7174',
+              message,
+            },
+          ],
+        }}
+      />
+    )
+
+    expect(screen.getByText(message).closest('[role="alert"]')).toBeTruthy()
+    fireEvent.click(screen.getByRole('tab', { name: 'Schedules' }))
+    expect(screen.getByText(message).closest('[role="alert"]')).toBeTruthy()
+  })
+
   test('uses top-level chart and location data tabs', () => {
     render(<TimeOfDayResults result={result} />)
 

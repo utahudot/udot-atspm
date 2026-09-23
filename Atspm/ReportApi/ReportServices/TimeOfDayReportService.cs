@@ -193,12 +193,23 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 var start = selectedDate.ToDateTime(TimeOnly.MinValue);
                 var end = start.AddDays(1);
 
-                data.SignalTimingPlans.AddRange(
-                    signalTimingPlanRepository.GetList()
-                        .Where(p => p.LocationIdentifier == location.LocationIdentifier
-                            && p.Start < end
-                            && (p.End == DateTime.MinValue || p.End > start))
-                        .ToList());
+                var plans = signalTimingPlanRepository.GetList()
+                    .Where(p => p.LocationIdentifier == location.LocationIdentifier
+                        && p.Start < end
+                        && (p.End == DateTime.MinValue || p.End > start))
+                    .ToList();
+                data.SignalTimingPlans.AddRange(plans);
+
+                if (plans.Count > 0 && plans.All(plan => plan.Start < start))
+                {
+                    var lastRecordedStart = plans.Max(plan => plan.Start);
+                    warnings.Add(new TimeOfDayWarningDto
+                    {
+                        Code = "PlanScheduleCarriedForward",
+                        LocationIdentifier = locationIdentifier,
+                        Message = $"No plan changes are recorded for {locationIdentifier} on {selectedDate:yyyy-MM-dd}; the existing schedule carries forward the last recorded plan from {lastRecordedStart:yyyy-MM-dd HH:mm:ss}. Verify plan aggregation coverage for the selected date."
+                    });
+                }
 
                 if (options.DataSource == TimeOfDayDataSource.Aggregated && locationsByDate.ContainsKey(selectedDate))
                 {

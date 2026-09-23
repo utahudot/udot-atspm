@@ -82,11 +82,23 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                     continue;
                 }
 
+                // Aggregation end times are reconciled per plan number, so different
+                // plans can overlap. A later plan start supersedes the previous plan.
+                // Resolve this before clipping starts to midnight to retain their order.
                 var daily = plans
-                    .Select(a => new Plan(
-                        a.PlanNumber.ToString(),
-                        a.Start < start ? start : a.Start,
-                        a.End == DateTime.MinValue || a.End > end ? end : a.End))
+                    .Select((plan, index) =>
+                    {
+                        var planEnd = plan.End == DateTime.MinValue || plan.End > end ? end : plan.End;
+                        if (index + 1 < plans.Count && plans[index + 1].Start < planEnd)
+                        {
+                            planEnd = plans[index + 1].Start;
+                        }
+
+                        return new Plan(
+                            plan.PlanNumber.ToString(),
+                            plan.Start < start ? start : plan.Start,
+                            planEnd);
+                    })
                     .Where(p => p.End > p.Start)
                     .ToList();
 

@@ -22,6 +22,9 @@ type TimeOfDayResultsTab = 'chart' | 'location-data' | 'schedules'
 
 export default function TimeOfDayResults({ result }: TimeOfDayResultsProps) {
   const [activeTab, setActiveTab] = useState<TimeOfDayResultsTab>('chart')
+  const carriedForwardPlanWarnings = (result.warnings ?? []).filter(
+    (warning) => warning.code === 'PlanScheduleCarriedForward' && warning.message
+  )
   const analysisModel = useMemo(
     () => buildTimeOfDayAnalysisModel(result),
     [result]
@@ -75,6 +78,18 @@ export default function TimeOfDayResults({ result }: TimeOfDayResultsProps) {
         ml: { xs: -1, sm: -3 },
       }}
     >
+      {carriedForwardPlanWarnings.length > 0 && (
+        <Alert severity="warning" sx={{ mt: 2, mx: 2 }}>
+          Existing plan coverage needs review.
+          <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            {carriedForwardPlanWarnings.map((warning, index) => (
+              <li key={`${warning.locationIdentifier}-${index}`}>
+                {warning.message}
+              </li>
+            ))}
+          </Box>
+        </Alert>
+      )}
       <Tabs
         value={activeTab}
         onChange={(_, value: TimeOfDayResultsTab) => setActiveTab(value)}
