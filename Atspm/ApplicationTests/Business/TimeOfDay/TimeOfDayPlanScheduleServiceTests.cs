@@ -61,7 +61,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
 
             var schedule = result.LocationSchedules["1001"];
 
-            Assert.True(result.HasPlanDataByLocation["1001"]);
+            Assert.NotEmpty(result.DailySchedules["1001"]);
             Assert.Equal(2, schedule.Count);
             Assert.Equal("3", schedule[0].PlanNumber);
             Assert.Equal(dayStart, schedule[0].Start);
@@ -87,7 +87,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 15);
 
             var schedule = result.LocationSchedules["1001"];
-            Assert.True(result.HasPlanDataByLocation["1001"]);
+            Assert.NotEmpty(result.DailySchedules["1001"]);
             Assert.Equal("7", schedule[0].PlanNumber);
             Assert.Equal(dayStart, schedule[0].Start);
             Assert.Equal(dayStart.AddHours(7), schedule[0].End);
@@ -107,7 +107,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 new List<DateOnly> { selectedDate },
                 15);
 
-            Assert.False(result.HasPlanDataByLocation["1001"]);
+            Assert.Empty(result.DailySchedules["1001"]);
             Assert.Empty(result.LocationSchedules["1001"]);
         }
 

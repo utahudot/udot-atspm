@@ -138,12 +138,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            return options.AllDayPrimaryDirections
-                .Select(TimeOfDayDirectionHelper.NormalizeDirection)
-                .Where(direction => !string.IsNullOrWhiteSpace(direction))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Where(direction => !availableDirections.Contains(direction, StringComparer.OrdinalIgnoreCase))
-                .ToList();
+            return TimeOfDayDirectionHelper.FindMissingDirections(options.AllDayPrimaryDirections, availableDirections);
         }
 
         private static Dictionary<string, double> BuildThresholds(TimeOfDayOptions options)
@@ -159,11 +154,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             TimeOfDayOptions options,
             IReadOnlyList<TimeOfDayProfileDto> directionalProfiles)
         {
-            var requested = options.AllDayPrimaryDirections
-                .Select(TimeOfDayDirectionHelper.NormalizeDirection)
-                .Where(d => !string.IsNullOrWhiteSpace(d))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var requested = TimeOfDayDirectionHelper.NormalizeDirections(options.AllDayPrimaryDirections);
 
             if (requested.Count > 0)
             {
@@ -189,11 +180,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 .Where(d => !string.IsNullOrWhiteSpace(d))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
-            var normalizedPrimaryDirections = primaryDirections
-                .Select(TimeOfDayDirectionHelper.NormalizeDirection)
-                .Where(d => !string.IsNullOrWhiteSpace(d))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var normalizedPrimaryDirections = TimeOfDayDirectionHelper.NormalizeDirections(primaryDirections);
             var inferredDirections = InferOppositeAxisDirections(normalizedPrimaryDirections)
                 .Where(d => availableDirections.Contains(d, StringComparer.OrdinalIgnoreCase))
                 .ToList();
@@ -235,42 +222,18 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             IReadOnlyList<DateOnly> selectedDates,
             int binSizeMinutes)
         {
-            var normalizedDirections = directions
-                .Select(TimeOfDayDirectionHelper.NormalizeDirection)
-                .Where(d => !string.IsNullOrWhiteSpace(d))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            var perLocationProfiles = new List<TimeOfDayProfileDto>();
+            var normalizedDirections = TimeOfDayDirectionHelper.NormalizeDirections(directions);
+            var representativeProfile = profileService.BuildRepresentativeProfile(
+                label,
+                locationData,
+                selectedDates,
+                binSizeMinutes,
+                location => location.Observations
+                    .Where(o => normalizedDirections.Contains(o.Direction, StringComparer.OrdinalIgnoreCase)));
 
-            foreach (var location in locationData)
+            if (representativeProfile.Points.Count > 0)
             {
-                var observations = location.Observations
-                    .Where(o => normalizedDirections.Contains(o.Direction, StringComparer.OrdinalIgnoreCase))
-                    .ToList();
-
-                if (observations.Count == 0)
-                {
-                    continue;
-                }
-
-                var profile = profileService.BuildProfile(
-                    $"{location.Location.LocationIdentifier} {label}",
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    observations,
-                    selectedDates,
-                    binSizeMinutes);
-
-                if (profile.Points.Any(p => p.AverageVolume > 0 || p.SmoothedVolume > 0))
-                {
-                    perLocationProfiles.Add(profile);
-                }
-            }
-
-            if (perLocationProfiles.Count > 0)
-            {
-                return profileService.MedianProfiles(label, perLocationProfiles);
+                return representativeProfile;
             }
 
             return profileService.SumProfiles(
@@ -405,20 +368,21 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         {
             var result = new List<TimeOfDayCrossTrafficLocationDto>();
 
-            foreach (var period in Periods())
+            foreach (var location in locationData)
             {
-                foreach (var location in locationData)
+                var profile = profileService.BuildProfile(
+                    $"{location.Location.LocationIdentifier} cross traffic",
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    location.Observations
+                        .Where(o => crossDirections.Contains(o.Direction, StringComparer.OrdinalIgnoreCase))
+                        .ToList(),
+                    selectedDates,
+                    binSizeMinutes);
+
+                foreach (var period in Periods())
                 {
-                    var profile = profileService.BuildProfile(
-                        $"{location.Location.LocationIdentifier} cross traffic",
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        location.Observations
-                            .Where(o => crossDirections.Contains(o.Direction, StringComparer.OrdinalIgnoreCase))
-                            .ToList(),
-                        selectedDates,
-                        binSizeMinutes);
                     var peak = profile.Points
                         .Where(p => p.Minutes >= period.Start && p.Minutes < period.End)
                         .OrderByDescending(p => p.AverageVolume)
@@ -473,22 +437,23 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             var result = new List<TimeOfDayMovementPressureDto>();
             var movementNames = new[] { "Left", "Thru", "Right" };
 
-            foreach (var period in Periods().Where(p => p.Name is "AM" or "PM"))
+            foreach (var location in locationData)
             {
-                foreach (var location in locationData)
+                foreach (var movement in movementNames)
                 {
-                    foreach (var movement in movementNames)
+                    var profile = profileService.BuildProfile(
+                        $"{location.Location.LocationIdentifier} {movement}",
+                        string.Empty,
+                        movement,
+                        movement,
+                        location.Observations
+                            .Where(o => string.Equals(o.MovementLabel, movement, StringComparison.OrdinalIgnoreCase))
+                            .ToList(),
+                        selectedDates,
+                        binSizeMinutes);
+
+                    foreach (var period in Periods().Where(p => p.Name is "AM" or "PM"))
                     {
-                        var profile = profileService.BuildProfile(
-                            $"{location.Location.LocationIdentifier} {movement}",
-                            string.Empty,
-                            movement,
-                            movement,
-                            location.Observations
-                                .Where(o => string.Equals(o.MovementLabel, movement, StringComparison.OrdinalIgnoreCase))
-                                .ToList(),
-                            selectedDates,
-                            binSizeMinutes);
                         var peak = profile.Points
                             .Where(p => p.Minutes >= period.Start && p.Minutes < period.End)
                             .OrderByDescending(p => p.AverageVolume)

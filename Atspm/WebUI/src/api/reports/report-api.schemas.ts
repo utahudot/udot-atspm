@@ -1518,10 +1518,6 @@ export interface TimeOfDayRecommendationDto {
   pmPeakTime?: string | null
   /** @nullable */
   summaryText?: string | null
-  /** @nullable */
-  algorithmVersion?: string | null
-  /** @nullable */
-  thresholdConfigurationName?: string | null
 }
 
 export interface TimeOfDayPlanComparisonDto {
@@ -2235,10 +2231,6 @@ export interface TimeOfDayRecommendationDto {
   pmPeakTime?: string | null
   /** @nullable */
   summaryText?: string | null
-  /** @nullable */
-  algorithmVersion?: string | null
-  /** @nullable */
-  thresholdConfigurationName?: string | null
 }
 
 /**

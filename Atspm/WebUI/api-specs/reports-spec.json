@@ -8970,14 +8970,6 @@
           "summaryText": {
             "type": "string",
             "nullable": true
-          },
-          "algorithmVersion": {
-            "type": "string",
-            "nullable": true
-          },
-          "thresholdConfigurationName": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false

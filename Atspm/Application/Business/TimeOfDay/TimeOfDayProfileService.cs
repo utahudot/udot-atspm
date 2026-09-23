@@ -28,6 +28,14 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             IReadOnlyList<DateOnly> selectedDates,
             int binSizeMinutes);
 
+        TimeOfDayProfileDto BuildRepresentativeProfile(
+            string label,
+            IReadOnlyList<TimeOfDayLocationAnalysisData> locationData,
+            IReadOnlyList<DateOnly> selectedDates,
+            int binSizeMinutes,
+            Func<TimeOfDayLocationAnalysisData, IEnumerable<TimeOfDayVolumeObservation>> observationSelector,
+            string direction = "");
+
         TimeOfDayProfileDto SumProfiles(
             string label,
             IReadOnlyList<TimeOfDayProfileDto> profiles,
@@ -121,6 +129,45 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 MovementLabel = movementLabel,
                 Points = rawPoints
             };
+        }
+
+        public TimeOfDayProfileDto BuildRepresentativeProfile(
+            string label,
+            IReadOnlyList<TimeOfDayLocationAnalysisData> locationData,
+            IReadOnlyList<DateOnly> selectedDates,
+            int binSizeMinutes,
+            Func<TimeOfDayLocationAnalysisData, IEnumerable<TimeOfDayVolumeObservation>> observationSelector,
+            string direction = "")
+        {
+            var perLocationProfiles = new List<TimeOfDayProfileDto>();
+
+            foreach (var location in locationData)
+            {
+                var observations = observationSelector(location).ToList();
+                if (observations.Count == 0)
+                {
+                    continue;
+                }
+
+                var profile = BuildProfile(
+                    $"{location.Location.LocationIdentifier} {label}",
+                    direction,
+                    string.Empty,
+                    string.Empty,
+                    observations,
+                    selectedDates,
+                    binSizeMinutes);
+
+                if (profile.Points.Any(p => p.AverageVolume > 0 || p.SmoothedVolume > 0))
+                {
+                    perLocationProfiles.Add(profile);
+                }
+            }
+
+            return MedianProfiles(
+                label,
+                perLocationProfiles,
+                direction);
         }
 
         public TimeOfDayProfileDto SumProfiles(

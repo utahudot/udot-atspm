@@ -202,7 +202,6 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 TestDate);
 
             Assert.Empty(result.RecommendedSchedule);
-            Assert.Equal("tod-v2", result.AlgorithmVersion);
             Assert.Contains("AM: Northbound", result.SummaryText);
         }
 

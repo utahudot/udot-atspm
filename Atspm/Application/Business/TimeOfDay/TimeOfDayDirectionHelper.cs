@@ -22,6 +22,25 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 {
     internal static class TimeOfDayDirectionHelper
     {
+        public static List<string> NormalizeDirections(IEnumerable<string> directions)
+        {
+            return directions
+                .Select(NormalizeDirection)
+                .Where(direction => !string.IsNullOrWhiteSpace(direction))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        public static List<string> FindMissingDirections(
+            IEnumerable<string> requestedDirections,
+            IEnumerable<string> availableDirections)
+        {
+            var available = NormalizeDirections(availableDirections);
+            return NormalizeDirections(requestedDirections)
+                .Where(direction => !available.Contains(direction, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+        }
+
         public static string NormalizeDirection(string direction)
         {
             if (string.IsNullOrWhiteSpace(direction))

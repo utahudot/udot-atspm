@@ -345,7 +345,7 @@ namespace ReportApiTests
             }
             var profileService = new TimeOfDayProfileService();
             var timeOfDayService = new TimeOfDayService(
-                new TimeOfDayObservationService(),
+                new TimeOfDayLocationService(new TimeOfDayObservationService(), profileService),
                 profileService,
                 new TimeOfDayRecommendationService(profileService),
                 new TimeOfDayPlanScheduleService(),

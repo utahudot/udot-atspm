@@ -24,7 +24,6 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
     {
         public Dictionary<string, List<Plan>> LocationSchedules { get; set; } = new();
         public Dictionary<string, List<TimeOfDayDailyPlanScheduleDto>> DailySchedules { get; set; } = new();
-        public Dictionary<string, bool> HasPlanDataByLocation { get; set; } = new();
         public TimeOfDayPlanComparisonDto Comparison { get; set; } = new();
     }
 
@@ -57,7 +56,6 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
                 result.DailySchedules[data.Location.LocationIdentifier] = schedulesByDate;
                 result.LocationSchedules[data.Location.LocationIdentifier] = schedule;
-                result.HasPlanDataByLocation[data.Location.LocationIdentifier] = schedulesByDate.Count > 0;
             }
 
             result.Comparison = BuildComparison(result.LocationSchedules, locationData.Select(d => d.Location).ToList());

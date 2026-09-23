@@ -125,8 +125,6 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         public string MiddayValleyTime { get; set; } = string.Empty;
         public string PmPeakTime { get; set; } = string.Empty;
         public string SummaryText { get; set; } = string.Empty;
-        public string AlgorithmVersion { get; set; } = string.Empty;
-        public string ThresholdConfigurationName { get; set; } = string.Empty;
     }
 
     public class TimeOfDayPlanComparisonDto

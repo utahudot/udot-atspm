@@ -41,7 +41,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 ["1003"] = new() { BuildObservation("1003", "Eastbound", 225) }
             };
             var service = new TimeOfDayService(
-                new StubObservationService(observationsByLocation),
+                new TimeOfDayLocationService(new StubObservationService(observationsByLocation), profileService),
                 profileService,
                 new StubRecommendationService(),
                 new TimeOfDayPlanScheduleService(),
@@ -185,7 +185,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
         {
             var profileService = new TimeOfDayProfileService();
             return new TimeOfDayService(
-                new StubObservationService(observationsByLocation),
+                new TimeOfDayLocationService(new StubObservationService(observationsByLocation), profileService),
                 profileService,
                 new StubRecommendationService(),
                 new TimeOfDayPlanScheduleService(),

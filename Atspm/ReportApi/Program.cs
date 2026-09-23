@@ -170,6 +170,7 @@ builder.Host
         s.AddScoped<TimeSpaceDiagramSrmService>();
         s.AddScoped<TimeSpaceAverageService>();
         s.AddScoped<TimeOfDayService>();
+        s.AddScoped<TimeOfDayLocationService>();
         s.AddScoped<ITimeOfDayObservationService, TimeOfDayObservationService>();
         s.AddScoped<ITimeOfDayProfileService, TimeOfDayProfileService>();
         s.AddScoped<ITimeOfDayRecommendationService, TimeOfDayRecommendationService>();

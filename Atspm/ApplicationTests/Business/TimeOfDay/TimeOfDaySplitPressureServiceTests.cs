@@ -256,6 +256,45 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
             Assert.DoesNotContain("Westbound", result.CrossDirections);
         }
 
+        [Fact]
+        public void BuildSplitPressure_PreservesPeriodBoundariesAndLocationOrderForTiedPeaks()
+        {
+            var locations = new[] { "1002", "1001" }
+                .Select(identifier => new TimeOfDayLocationAnalysisData
+                {
+                    Location = new Location { LocationIdentifier = identifier },
+                    Observations = new[] { 480, 495, 600, 900, 1140 }
+                        .SelectMany(minutes => new[] { "Eastbound", "Northbound" }
+                            .Select(direction => BuildObservation(identifier, direction, minutes == 1140 ? 1000 : 25)
+                                with { Minutes = minutes }))
+                        .ToList()
+                })
+                .ToList();
+
+            var result = CreateService().BuildSplitPressure(
+                new TimeOfDayOptions { AllDayPrimaryDirections = new() { "Eastbound" } },
+                BuildDirectionalProfiles(),
+                locations,
+                new[] { TestDate },
+                15);
+
+            Assert.Equal(
+                new[] { ("AM", "1002", 480), ("AM", "1001", 480),
+                    ("Midday", "1002", 600), ("Midday", "1001", 600),
+                    ("PM", "1002", 900), ("PM", "1001", 900) },
+                result.CrossTrafficLocations.Select(row => (row.Period, row.LocationIdentifier, row.Minutes)));
+            Assert.All(result.CrossTrafficLocations, row =>
+            {
+                Assert.Equal(100, row.TotalVehiclesPerHour);
+                Assert.Equal(50, row.PercentOfCrossTraffic);
+            });
+            Assert.Equal(
+                new[] { ("AM", "1002", "08:00"), ("AM", "1001", "08:00"),
+                    ("PM", "1002", "15:00"), ("PM", "1001", "15:00") },
+                result.MovementPressures.Select(row => (row.Period, row.LocationIdentifier, row.PeakTime)));
+            Assert.All(result.MovementPressures, row => Assert.Equal(200, row.Volume));
+        }
+
         private static TimeOfDaySplitPressureService CreateService()
         {
             return new TimeOfDaySplitPressureService(new TimeOfDayProfileService());
