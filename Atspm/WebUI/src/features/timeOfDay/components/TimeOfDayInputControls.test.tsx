@@ -1,6 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import type { TimeOfDaySchedulePreset } from '../measureDefaults'
+import type {
+  TimeOfDayMeasureDefaults,
+  TimeOfDaySchedulePreset,
+} from '../measureDefaults'
 import {
   defaultPrimaryDirections,
   timeOfDayDefaultTuningOptions,
@@ -10,6 +13,7 @@ import TimeOfDayAdvancedSidebar from './TimeOfDayAdvancedSidebar'
 import TimeOfDayAnalysisOptions from './TimeOfDayAnalysisOptions'
 import { isSameLocation } from './TimeOfDayCorridorOptions'
 import TimeOfDayDirectionSelector from './TimeOfDayDirectionSelector'
+import { TimeOfDayMeasureOptions } from './TimeOfDayMeasureOptions'
 import TimeOfDaySchedulePresetSelect from './TimeOfDaySchedulePresetSelect'
 
 jest.mock('@/components/RightSidebar', () => ({
@@ -290,5 +294,37 @@ describe('time-of-day inputs', () => {
     expect(handleChange).toHaveBeenLastCalledWith(
       expect.objectContaining({ laneCapacityVehiclesPerHour: 900 })
     )
+  })
+
+  test('displays measure-default threshold fractions as percents', () => {
+    const handleUpdate = jest.fn()
+    const chartDefaults: TimeOfDayMeasureDefaults = {
+      amEntryPctOfPeak: {
+        id: 1,
+        option: 'amEntryPctOfPeak',
+        value: 0.55,
+      },
+    }
+
+    render(
+      <TimeOfDayMeasureOptions
+        chartDefaults={chartDefaults}
+        handleChartOptionsUpdate={handleUpdate}
+      />
+    )
+
+    const amStart = screen.getByRole('spinbutton', {
+      name: 'AM start threshold as percent of AM peak',
+    })
+    expect((amStart as HTMLInputElement).value).toBe('55')
+    expect(amStart.getAttribute('max')).toBe('100')
+
+    fireEvent.change(amStart, { target: { value: '60' } })
+
+    expect(handleUpdate).toHaveBeenLastCalledWith({
+      id: 1,
+      option: 'amEntryPctOfPeak',
+      value: '0.6',
+    })
   })
 })

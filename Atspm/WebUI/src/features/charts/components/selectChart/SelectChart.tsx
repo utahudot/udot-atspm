@@ -21,6 +21,7 @@ import { Default } from '@/features/charts/types'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
 import { WaitTimeChartOptions } from '@/features/charts/waitTime/components/WaitTimeOptions'
 import { YellowAndRedActuationsChartOptions } from '@/features/charts/yellowAndRedActuations/components/YellowAndRedActuationsChartOptions'
+import { TimeOfDayMeasureOptions } from '@/features/timeOfDay/components/TimeOfDayMeasureOptions'
 import {
   Box,
   Divider,
@@ -73,6 +74,7 @@ export const chartComponents: Record<string, ChartOptionsComponent> = {
   YellowAndRedActuations:
     YellowAndRedActuationsChartOptions as unknown as ChartOptionsComponent,
   RampMetering: RampMeteringChartOptions as unknown as ChartOptionsComponent,
+  TimeOfDay: TimeOfDayMeasureOptions as unknown as ChartOptionsComponent,
 } as const
 
 const abbreviationToChartType: Record<string, ChartType> = {

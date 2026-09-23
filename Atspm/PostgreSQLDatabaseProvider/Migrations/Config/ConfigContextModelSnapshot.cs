@@ -1688,6 +1688,111 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             MeasureTypeId = 40,
                             Option = "binSize",
                             Value = "15"
+                        },
+                        new
+                        {
+                            Id = 127,
+                            MeasureTypeId = 41,
+                            Option = "amEntryPctOfPeak",
+                            Value = "0.55"
+                        },
+                        new
+                        {
+                            Id = 128,
+                            MeasureTypeId = 41,
+                            Option = "amExitPctOfPeak",
+                            Value = "0.40"
+                        },
+                        new
+                        {
+                            Id = 129,
+                            MeasureTypeId = 41,
+                            Option = "pmEntryPctOfPeak",
+                            Value = "0.68"
+                        },
+                        new
+                        {
+                            Id = 130,
+                            MeasureTypeId = 41,
+                            Option = "pmExitPctOfPeak",
+                            Value = "0.38"
+                        },
+                        new
+                        {
+                            Id = 131,
+                            MeasureTypeId = 41,
+                            Option = "freeEntryPctOfDailyPeak",
+                            Value = "0.22"
+                        },
+                        new
+                        {
+                            Id = 132,
+                            MeasureTypeId = 41,
+                            Option = "freeEntryPctOfDynamicRange",
+                            Value = "0.18"
+                        },
+                        new
+                        {
+                            Id = 133,
+                            MeasureTypeId = 41,
+                            Option = "entrySustainedBins",
+                            Value = "2"
+                        },
+                        new
+                        {
+                            Id = 134,
+                            MeasureTypeId = 41,
+                            Option = "freeSustainedBins",
+                            Value = "4"
+                        },
+                        new
+                        {
+                            Id = 135,
+                            MeasureTypeId = 41,
+                            Option = "freeFallbackTime",
+                            Value = "23:30"
+                        },
+                        new
+                        {
+                            Id = 136,
+                            MeasureTypeId = 41,
+                            Option = "maxAmEndTime",
+                            Value = "10:00"
+                        },
+                        new
+                        {
+                            Id = 137,
+                            MeasureTypeId = 41,
+                            Option = "maxPmEndTime",
+                            Value = "20:00"
+                        },
+                        new
+                        {
+                            Id = 138,
+                            MeasureTypeId = 41,
+                            Option = "laneCapacityVehiclesPerHour",
+                            Value = "800"
+                        },
+                        new
+                        {
+                            Id = 139,
+                            MeasureTypeId = 41,
+                            Option = "approachVolumeAssumedLanes",
+                            Value = "2"
+                        },
+                        new
+                        {
+                            Id = 140,
+                            MeasureTypeId = 41,
+                            Option = "splitReviewThresholdPercent",
+                            Value = "35"
+                        },
+                        new
+                        {
+                            Id = 141,
+                            MeasureTypeId = 41,
+                            Option = "shoulderReviewThresholdPercent",
+                            Value = "45"
                         });
                 });
 
