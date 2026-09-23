@@ -79,21 +79,21 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         protected override int GetAverageByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, options);
+                new PcdAggregationBySignal(this, signal, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override double GetSumByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, options);
+                new PcdAggregationBySignal(this, signal, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override int GetAverageByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, direction, options);
+                new PcdAggregationBySignal(this, signal, direction, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.Average;
         }
 
@@ -101,20 +101,20 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         protected override double GetSumByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, direction, options);
+                new PcdAggregationBySignal(this, signal, direction, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override List<BinsContainer> GetBinsContainersBySignal(Location signal, AggregationOptions options)
         {
-            var splitFailAggregationBySignal = new PcdAggregationBySignal(this, signal, options);
+            var splitFailAggregationBySignal = new PcdAggregationBySignal(this, signal, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.BinsContainers;
         }
 
         protected override List<BinsContainer> GetBinsContainersByDirection(DirectionTypes directionType, Location signal, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, directionType, options);
+                new PcdAggregationBySignal(this, signal, directionType, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.BinsContainers;
         }
 
@@ -128,7 +128,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         public override List<BinsContainer> GetBinsContainersByRoute(List<Location> signals, AggregationOptions options)
         {
             var aggregations = new ConcurrentBag<PcdAggregationBySignal>();
-            Parallel.ForEach(signals, signal => { aggregations.Add(new PcdAggregationBySignal(this, signal, options)); });
+            Parallel.ForEach(signals, signal => { aggregations.Add(new PcdAggregationBySignal(this, signal, approachPcdAggregationRepository, options)); });
             var binsContainers = BinFactory.GetBins(options.TimeOptions);
             foreach (var splitFailAggregationBySignal in aggregations)
                 for (var i = 0; i < binsContainers.Count; i++)

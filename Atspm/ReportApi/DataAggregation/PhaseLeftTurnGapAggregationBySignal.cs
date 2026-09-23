@@ -44,9 +44,11 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
             Location signal,
             int phaseNumber,
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
             AggregationOptions options
             ) : base(phaseLeftTurnGapAggregationOptions, signal, options)
         {
+            this.phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
             ApproachLeftTurnGaps = new List<PhaseLeftTurnGapAggregationByApproach>();
             foreach (var approach in signal.Approaches)
                 if (approach.ProtectedPhaseNumber == phaseNumber)
@@ -81,9 +83,11 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
             Location signal,
             DirectionTypes direction,
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
             AggregationOptions options
             ) : base(phaseLeftTurnGapAggregationOptions, signal, options)
         {
+            this.phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
             ApproachLeftTurnGaps = new List<PhaseLeftTurnGapAggregationByApproach>();
             foreach (var approach in signal.Approaches)
                 if (approach.DirectionType.Id == direction)
