@@ -9,6 +9,7 @@ import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import FaqEditorModal from '@/features/faq/components/FaqEditorModal'
+import { stripTableWhitespace } from '@/features/faq/utils/stripTableWhitespace'
 import {
   PageNames,
   useUserHasClaim,
@@ -109,19 +110,20 @@ const FaqAdmin = () => {
   }) => {
     const [expanded, setExpanded] = useState(false)
 
-    const { preview, needsTruncate } = useMemo(() => {
-      const chars = Array.from(value)
+    const { html, preview, needsTruncate } = useMemo(() => {
+      const html = stripTableWhitespace(value)
+      const chars = Array.from(html)
       if (chars.length <= maxChars) {
-        return { preview: value, needsTruncate: false }
+        return { html, preview: html, needsTruncate: false }
       }
       const sliced = chars.slice(0, maxChars).join('').replace(/\s+$/, '')
-      return { preview: `${sliced}...`, needsTruncate: true }
+      return { html, preview: `${sliced}...`, needsTruncate: true }
     }, [value, maxChars])
 
     return (
       <Box sx={{ minWidth: 400, display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-          <Markup content={expanded || !needsTruncate ? value : preview} />
+          <Markup content={expanded || !needsTruncate ? html : preview} />
         </Box>
 
         {needsTruncate && (
