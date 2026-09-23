@@ -23,7 +23,7 @@ using Utah.Udot.NetStandardToolkit.Workflows;
 namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
 {
     /// <summary>
-    /// A workflow step that groups Indiana events by location and parameter to generate initial signal timing plans.
+    /// A workflow step that groups Indiana events by location to generate initial signal timing plans.
     /// </summary>
     public class GenerateSignalPlansStep(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<IEnumerable<IndianaEvent>, IEnumerable<SignalTimingPlan>>(dataflowBlockOptions)
     {
@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
         {
             var groups = input
                 .FromSpecification(new IndianaPlanDataSpecification())
-                .GroupBy(e => (e.LocationIdentifier, e.EventParam));
+                .GroupBy(e => e.LocationIdentifier);
 
             foreach (var g in groups)
             {
