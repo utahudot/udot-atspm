@@ -10,6 +10,7 @@ import {
   type TimeOfDayFormState,
 } from '../types'
 import TimeOfDayAdvancedSidebar from './TimeOfDayAdvancedSidebar'
+import TimeOfDayAnalysisOptions from './TimeOfDayAnalysisOptions'
 import { isSameLocation } from './TimeOfDayCorridorOptions'
 import TimeOfDayDirectionSelector from './TimeOfDayDirectionSelector'
 import { TimeOfDayMeasureOptions } from './TimeOfDayMeasureOptions'
@@ -260,6 +261,39 @@ describe('time-of-day inputs', () => {
 
     fireEvent.blur(capacityInput)
     expect(capacityInput.value).toBe('800')
+  })
+
+  test('tells the user volumes are counted in 15-minute bins', () => {
+    render(<TimeOfDayAnalysisOptions options={options} onChange={jest.fn()} />)
+
+    expect(
+      screen.getByText('Volumes are counted in 15-minute bins.')
+    ).toBeTruthy()
+  })
+
+  test('flags a zero capacity without writing it', () => {
+    const handleChange = jest.fn()
+    render(
+      <TimeOfDayAdvancedSidebar
+        activeSidebar="occupancy"
+        options={options}
+        onChange={handleChange}
+      />
+    )
+    const capacityInput = screen.getByRole('spinbutton', {
+      name: 'Per-lane capacity (veh/hr)',
+    }) as HTMLInputElement
+
+    fireEvent.change(capacityInput, { target: { value: '0' } })
+
+    expect(handleChange).not.toHaveBeenCalled()
+    expect(capacityInput.getAttribute('aria-invalid')).toBe('true')
+    expect(screen.getByText('Min 1')).toBeTruthy()
+
+    fireEvent.change(capacityInput, { target: { value: '900' } })
+    expect(handleChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ laneCapacityVehiclesPerHour: 900 })
+    )
   })
 
   test('displays measure-default threshold fractions as percents', () => {

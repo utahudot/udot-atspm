@@ -92,13 +92,13 @@ describe('TimeOfDaySchedules', () => {
 
     expect(
       model.commonLocations.map((location) => location.identifier)
-    ).toEqual(['7174', '7621', '7015'])
+    ).toEqual(['7174', '7621'])
     expect(model.exceptions.map(({ location }) => location.identifier)).toEqual(
       ['1005', '7618']
     )
     expect(
       model.unavailableLocations.map((location) => location.identifier)
-    ).toEqual(['7077'])
+    ).toEqual(['7015', '7077'])
   })
 
   test('derives the most-used schedule when no common schedule is reported', () => {
@@ -133,7 +133,7 @@ describe('TimeOfDaySchedules', () => {
     ).toBeTruthy()
     expect(
       screen.getByRole('region', {
-        name: 'Common schedule — 3 locations',
+        name: 'Common schedule — 2 locations',
       })
     ).toBeTruthy()
     expect(
@@ -177,13 +177,13 @@ describe('TimeOfDaySchedules', () => {
     ).toHaveLength(2)
     expect(
       screen.getAllByRole('img', { name: /Common existing schedule for/ })
-    ).toHaveLength(3)
-    expect(screen.getAllByTestId('proposed-boundary-guide')).toHaveLength(24)
+    ).toHaveLength(2)
+    expect(screen.getAllByTestId('proposed-boundary-guide')).toHaveLength(20)
     expect(screen.queryByText('Different existing')).toBeNull()
     expect(screen.queryByText('All selected locations')).toBeNull()
     expect(
       screen.getByRole('region', {
-        name: 'Unavailable schedules — 1 location',
+        name: 'Unavailable schedules — 2 locations',
       })
     ).toBeTruthy()
     expect(screen.getByText('#7077 — No Schedule Ave')).toBeTruthy()
@@ -192,7 +192,7 @@ describe('TimeOfDaySchedules', () => {
         name: 'No current schedule for #7077 — No Schedule Ave: No data',
       })
     ).toBeTruthy()
-    expect(screen.getByText('No data')).toBeTruthy()
+    expect(screen.getAllByText('No data')).toHaveLength(2)
     expect(screen.queryByText(/Schedule data is unavailable for/)).toBeNull()
   })
 
@@ -200,13 +200,13 @@ describe('TimeOfDaySchedules', () => {
     render(
       <TimeOfDaySchedules
         result={{
-          locationIdentifiers: ['10(1)'],
+          locationIdentifiers: ['10('],
           recommendation: { recommendedSchedule: proposedSchedule },
           planComparison: { commonCurrentSchedule: commonSchedule },
           locations: [
             {
-              locationIdentifier: '10(1)',
-              locationDescription: '#10(1) - Main Street',
+              locationIdentifier: '10(',
+              locationDescription: '#10( - Main Street',
               currentPlanSchedule: commonSchedule,
             },
           ],
@@ -214,7 +214,8 @@ describe('TimeOfDaySchedules', () => {
       />
     )
 
-    expect(screen.getByText(/#10\(1\).*Main Street/)).toBeTruthy()
+    // An unescaped '10(' is an invalid pattern and used to crash rendering.
+    expect(screen.getByText(/#10\(.*Main Street/)).toBeTruthy()
   })
 
   test('shows why a recommendation is unavailable while retaining current schedules', () => {
@@ -234,7 +235,7 @@ describe('TimeOfDaySchedules', () => {
 
     expect(screen.getByRole('alert').textContent).toContain(reason)
     expect(
-      screen.getByRole('region', { name: 'Common schedule — 3 locations' })
+      screen.getByRole('region', { name: 'Common schedule — 2 locations' })
     ).toBeTruthy()
   })
 
@@ -253,7 +254,7 @@ describe('TimeOfDaySchedules', () => {
     expect(screen.getByRole('tabpanel', { name: 'Schedules' })).toBeTruthy()
     expect(
       screen.getByRole('region', {
-        name: 'Common schedule — 3 locations',
+        name: 'Common schedule — 2 locations',
       })
     ).toBeTruthy()
   })

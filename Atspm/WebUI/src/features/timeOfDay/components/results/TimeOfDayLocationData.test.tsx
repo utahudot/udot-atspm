@@ -77,7 +77,8 @@ describe('TimeOfDayLocationData', () => {
                 missingDates: ['2026-04-15'],
                 dataQualityFlag: 'NoData',
                 summary: {
-                  notes: 'No usable volume observations for the selected dates.',
+                  notes:
+                    'No usable volume observations for the selected dates.',
                 },
               },
             ],
@@ -97,5 +98,34 @@ describe('TimeOfDayLocationData', () => {
       )
     ).toBeTruthy()
     expect(within(table).getAllByText('-').length).toBeGreaterThan(0)
+  })
+
+  test('uses a dash for empty review messages', () => {
+    render(
+      <TimeOfDayLocationData
+        result={
+          {
+            locations: [
+              {
+                locationIdentifier: '7190',
+                locationDescription: 'Main St & Center St',
+                summary: {
+                  amDirectionExceptionMessage: '',
+                  pmDirectionExceptionMessage: ' ',
+                  crossTrafficReview: '',
+                  notes: 'Reviewed.',
+                },
+              },
+            ],
+          } as TimeOfDayResult
+        }
+      />
+    )
+
+    const row = screen.getByText('7190 - Main St & Center St').closest('tr')
+    expect(row).toBeTruthy()
+    const cells = within(row as HTMLElement).getAllByRole('cell')
+    const reviewCells = cells.slice(-5, -2)
+    expect(reviewCells.map((cell) => cell.textContent)).toEqual(['-', '-', '-'])
   })
 })

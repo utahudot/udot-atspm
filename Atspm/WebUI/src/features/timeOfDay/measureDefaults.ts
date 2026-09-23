@@ -41,6 +41,14 @@ const stringOptionKeys = new Set<TimeOfDayTuningOptionKey>([
   'maxPmEndTime',
 ])
 
+// The backend rejects zero or negative values for these options.
+const positiveNumberOptionKeys = new Set<TimeOfDayTuningOptionKey>([
+  'laneCapacityVehiclesPerHour',
+  'approachVolumeAssumedLanes',
+  'entrySustainedBins',
+  'freeSustainedBins',
+])
+
 const parseNumberDefault = (
   defaults: TimeOfDayMeasureDefaults | undefined,
   key: TimeOfDayTuningOptionKey,
@@ -57,7 +65,9 @@ const parseNumberDefault = (
 
   const parsed = typeof value === 'number' ? value : Number(value)
 
-  return Number.isFinite(parsed) ? parsed : fallback
+  if (!Number.isFinite(parsed)) return fallback
+
+  return positiveNumberOptionKeys.has(key) && parsed <= 0 ? fallback : parsed
 }
 
 const parseStringDefault = (

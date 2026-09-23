@@ -10,15 +10,10 @@ import type {
 import {
   createDataZoom,
   createGrid,
-  createInfoString,
   createLegend,
   createTitle,
   createYAxis,
 } from '@/features/charts/common/transformers'
-import {
-  DashedLineSeriesSymbol,
-  SolidLineSeriesSymbol,
-} from '@/features/charts/utils'
 import type {
   CustomSeriesRenderItemAPI,
   CustomSeriesRenderItemParams,
@@ -41,6 +36,7 @@ import {
   getScheduleEntries,
   minutesToTimeLabel,
 } from './schedule'
+import { timeOfDayBinSizeMinutes } from './types'
 
 export {
   buildScheduleRows,
@@ -266,12 +262,6 @@ const formatPeakInfoValue = (
   [time, formatPeakMeasurement(value, units, maximumFractionDigits)]
     .filter(Boolean)
     .join(' - ')
-
-const formatPeakInfo = (items: Array<[string, string]>) => {
-  const populatedItems = items.filter(([, value]) => Boolean(value))
-
-  return populatedItems.length ? createInfoString(...populatedItems) : undefined
-}
 
 const normalizeToken = (value?: string | null) =>
   value?.toLowerCase().replace(/[^a-z0-9]/g, '') ?? ''
@@ -610,16 +600,28 @@ const formatAxisTooltipValue = (value: unknown, isPercent: boolean) => {
 }
 
 const buildAxisTooltipFormatter =
-  (percentSeriesNames: Set<string>, starSeriesNames: Set<string>) =>
+  (
+    percentSeriesNames: Set<string>,
+    starSeriesNames: Set<string>,
+    binSizeMinutes: number
+  ) =>
   (params: unknown) => {
     const entries = (Array.isArray(params) ? params : [params]).filter(
       (entry): entry is TimeOfDayAxisTooltipParam => Boolean(entry)
     )
     if (!entries.length) return ''
 
+    // Each point is a whole bin, so show the period it covers. Threshold lines
+    // end at 24:00, which belongs to the day's last bin.
     const axisValue = Number(entries[0].axisValue)
+    const binStart = Math.min(
+      Math.floor(axisValue / binSizeMinutes) * binSizeMinutes,
+      1440 - binSizeMinutes
+    )
     const header = Number.isFinite(axisValue)
-      ? minutesToTimeLabel(axisValue)
+      ? `${minutesToTimeLabel(binStart)}–${minutesToTimeLabel(
+          binStart + binSizeMinutes
+        )}`
       : ''
     const rows = entries.map((entry) => {
       const seriesName = entry.seriesName ?? ''
@@ -1255,7 +1257,8 @@ const buildBaseOption = ({
       trigger: 'axis',
       formatter: buildAxisTooltipFormatter(
         getPercentSeriesNames(series),
-        getStarSeriesNames(series)
+        getStarSeriesNames(series),
+        result.binSizeMinutes || timeOfDayBinSizeMinutes
       ),
     },
     xAxis: hasScheduleRails
@@ -1337,11 +1340,36 @@ const formatDirectionProfileName = (
 const formatDirectionList = (directions?: string[] | null) =>
   directions?.filter(Boolean).join(', ') ?? ''
 
+// Split pressure keys each period's directions as AM, PM, and AllDay (all
+// other hours).
+const directionPeriodLabels = [
+  ['AM', 'AM'],
+  ['PM', 'PM'],
+  ['AllDay', 'Other hours'],
+] as const
+
 const formatRepresentativeSeriesName = (
   directions: string[] | null | undefined,
+  directionsByPeriod: Record<string, string[] | null> | null | undefined,
   role: string,
   fallback: string
 ) => {
+  const periodLists = directionPeriodLabels
+    .filter(([key]) => directionsByPeriod?.[key])
+    .map(([key, label]) => ({
+      label,
+      directionList: formatDirectionList(directionsByPeriod?.[key]),
+    }))
+
+  if (
+    periodLists.length > 1 &&
+    new Set(periodLists.map(({ directionList }) => directionList)).size > 1
+  ) {
+    return `Representative ${fallback} (${periodLists
+      .map(({ label, directionList }) => `${label}: ${directionList || '-'}`)
+      .join(' · ')})`
+  }
+
   const directionList = formatDirectionList(directions)
 
   return directionList
@@ -1429,34 +1457,6 @@ const getNumberedSignalPeakEvents = (
   })
 }
 
-const createLegendItem = (name: string, icon: string, color: string) => ({
-  name,
-  icon,
-  itemStyle: { color },
-})
-
-const getPlanProfileLegendData = (
-  directionalSeriesNames: string[]
-): LegendComponentOption['data'] => [
-  createLegendItem('Median Raw Volume', SolidLineSeriesSymbol, chartColors.raw),
-  createLegendItem(
-    'Smoothed For Breakpoints',
-    SolidLineSeriesSymbol,
-    chartColors.smooth
-  ),
-  ...directionalSeriesNames.map((name, index) =>
-    createLegendItem(
-      name,
-      DashedLineSeriesSymbol,
-      directionalColors[index % directionalColors.length]
-    )
-  ),
-  createLegendItem('AM Corridor Peak', StarSeriesSymbol, chartColors.amPeak),
-  createLegendItem('PM Corridor Peak', StarSeriesSymbol, chartColors.pmPeak),
-  createLegendItem('AM Signal Peaks', 'circle', chartColors.amSignalPeak),
-  createLegendItem('PM Signal Peaks', 'circle', chartColors.pmSignalPeak),
-]
-
 const formatPercentThresholdName = (value: number, label: string) =>
   `${formatNumber(value, 1)}% ${label}`
 
@@ -1502,9 +1502,10 @@ const buildPercentThresholdSeries = (
   },
 })
 
-export const buildPlanProfileOption = (
+// Only the series feed the unified analysis chart.
+export const buildPlanProfileSeries = (
   result: TimeOfDayResult
-): EChartsOption => {
+): SeriesOption[] => {
   const corridorProfile = result.planProfile?.corridorProfile
   const directionalProfiles = result.planProfile?.directionalProfiles ?? []
   const locationNumberMap = buildTimeOfDayLocationNumberMap(result)
@@ -1590,58 +1591,13 @@ export const buildPlanProfileOption = (
     pmSignalPeakSeries,
   ]
 
-  const plans = result.recommendation?.recommendedSchedule
-  const sharedVolumeAxisMax = getSharedVolumeAxisMax(result)
-  const yAxis = createYAxis(Boolean(plans?.length), {
-    name: 'Volume (vph)',
-    nameGap: 60,
-    max: sharedVolumeAxisMax,
-    splitLine: {
-      lineStyle: { color: valueGridLineColor },
-    },
-  })
-
-  const titleDateRange = formatSelectedDateRange(result.selectedDates)
-  const titleInfo = formatPeakInfo([
-    [
-      'AM Corridor Peak:',
-      formatPeakInfoValue(
-        getCorridorPeakTime(
-          amCorridorPeaks[0],
-          result.recommendation?.amPeakTime
-        ),
-        amCorridorPeaks[0]?.value,
-        amCorridorPeaks[0]?.valueUnits ?? 'vph'
-      ),
-    ],
-    [
-      'PM Corridor Peak:',
-      formatPeakInfoValue(
-        getCorridorPeakTime(
-          pmCorridorPeaks[0],
-          result.recommendation?.pmPeakTime
-        ),
-        pmCorridorPeaks[0]?.value,
-        pmCorridorPeaks[0]?.valueUnits ?? 'vph'
-      ),
-    ],
-  ])
-
-  return buildBaseOption({
-    result,
-    title: 'Corridor Plan Recommendation',
-    dateRange: titleDateRange,
-    info: titleInfo,
-    series,
-    legendData: getPlanProfileLegendData(directionalSeriesNames),
-    right: 250,
-    yAxis,
-  })
+  return series
 }
 
-export const buildSplitPressureOption = (
+// Only the series feed the unified analysis chart.
+export const buildSplitPressureSeries = (
   result: TimeOfDayResult
-): EChartsOption => {
+): SeriesOption[] => {
   const splitPressure = result.splitPressure
   const crossTrafficPercentData =
     splitPressure?.crossTrafficShare
@@ -1678,11 +1634,13 @@ export const buildSplitPressureOption = (
   )
   const primarySeriesName = formatRepresentativeSeriesName(
     splitPressure?.primaryDirections,
+    splitPressure?.primaryDirectionsByPeriod,
     'primary',
     'primary street'
   )
   const crossSeriesName = formatRepresentativeSeriesName(
     splitPressure?.crossDirections,
+    splitPressure?.crossDirectionsByPeriod,
     'cross street',
     'cross street'
   )
@@ -1780,119 +1738,7 @@ export const buildSplitPressureOption = (
       : []),
   ]
 
-  const plans = result.recommendation?.recommendedSchedule
-  const sharedVolumeAxisMax = getSharedVolumeAxisMax(result)
-  const yAxis = createYAxis(
-    Boolean(plans?.length),
-    {
-      name: 'Volume (vph)',
-      nameGap: 60,
-      max: sharedVolumeAxisMax,
-      splitLine: {
-        lineStyle: { color: valueGridLineColor },
-      },
-    },
-    {
-      name: 'Cross Traffic (%)',
-      nameGap: 48,
-      min: 0,
-      max: (value) => Math.max(100, Math.ceil(value.max / 10) * 10),
-      position: 'right',
-      axisLabel: {
-        formatter: formatPercentAxisLabel,
-      },
-      axisLine: { show: false },
-    }
-  )
-
-  const titleDateRange = formatSelectedDateRange(result.selectedDates)
-  const titleInfo = formatPeakInfo([
-    [
-      'Primary Peak:',
-      formatPeakInfoValue(
-        splitPressure?.primaryPeakTime,
-        splitPressure?.primaryPeakVolume,
-        'vph'
-      ),
-    ],
-    [
-      'Cross Peak:',
-      formatPeakInfoValue(
-        splitPressure?.crossStreetPeakTime,
-        splitPressure?.crossStreetPeakVolume,
-        'vph'
-      ),
-    ],
-    [
-      'Peak Cross Traffic:',
-      formatPeakInfoValue(
-        splitPressure?.peakCrossTrafficPercentTime,
-        splitPressure?.peakCrossTrafficPercent,
-        '%',
-        1
-      ),
-    ],
-  ])
-
-  return buildBaseOption({
-    result,
-    title: 'Corridor Movement Demand',
-    dateRange: titleDateRange,
-    info: titleInfo,
-    series,
-    right: 410,
-    legendData: [
-      createLegendItem(
-        primarySeriesName,
-        SolidLineSeriesSymbol,
-        chartColors.primary
-      ),
-      createLegendItem(
-        crossSeriesName,
-        SolidLineSeriesSymbol,
-        chartColors.cross
-      ),
-      createLegendItem(
-        'Cross-traffic percent',
-        DashedLineSeriesSymbol,
-        chartColors.percent
-      ),
-      createLegendItem(
-        splitReviewName,
-        DashedLineSeriesSymbol,
-        chartColors.splitReview
-      ),
-      createLegendItem(
-        shoulderReviewName,
-        DashedLineSeriesSymbol,
-        chartColors.shoulderReview
-      ),
-      createLegendItem(
-        'AM Cross Traffic Locations',
-        'circle',
-        chartColors.amSignalPeak
-      ),
-      createLegendItem(
-        'Midday Cross Traffic Locations',
-        'circle',
-        chartColors.middaySignalPeak
-      ),
-      createLegendItem(
-        'PM Cross Traffic Locations',
-        'circle',
-        chartColors.pmSignalPeak
-      ),
-      createLegendItem('AM Movement Demand', 'rect', chartColors.amSignalPeak),
-      createLegendItem('PM Movement Demand', 'rect', chartColors.pmSignalPeak),
-    ],
-    legendConfig: {
-      selected: {
-        'AM Movement Demand': false,
-        'PM Movement Demand': false,
-      },
-    },
-    yAxis,
-  })
+  return series
 }
 
 type ScheduleTimelineDatum = [number, number, number, string, string, string]
@@ -2546,10 +2392,8 @@ const withStableSeriesIdentity = (
     id: `tod-${prefix}-${normalizeToken(getSeriesName(series)) || index}`,
   }) as SeriesOption
 
-const getUnifiedSourceSeries = (option: EChartsOption, prefix: string) =>
-  getOptionSeries(option)
-    .filter((series) => !getSeriesName(series).endsWith('schedule rail'))
-    .map((series, index) => withStableSeriesIdentity(series, prefix, index))
+const getUnifiedSourceSeries = (series: SeriesOption[], prefix: string) =>
+  series.map((entry, index) => withStableSeriesIdentity(entry, prefix, index))
 
 const seriesHasData = (series?: SeriesOption) => {
   if (!series) return false
@@ -2608,11 +2452,11 @@ export const buildTimeOfDayAnalysisModel = (
   result: TimeOfDayResult
 ): TimeOfDayAnalysisModel => {
   const planSeries = getUnifiedSourceSeries(
-    buildPlanProfileOption(result),
+    buildPlanProfileSeries(result),
     'recommendation'
   )
   const pressureSeries = getUnifiedSourceSeries(
-    buildSplitPressureOption(result),
+    buildSplitPressureSeries(result),
     'pressure'
   )
   const contextSeries = buildScheduleContextSeries(result)
@@ -2624,11 +2468,13 @@ export const buildTimeOfDayAnalysisModel = (
   const splitPressure = result.splitPressure
   const primarySeriesName = formatRepresentativeSeriesName(
     splitPressure?.primaryDirections,
+    splitPressure?.primaryDirectionsByPeriod,
     'primary',
     'primary street'
   )
   const crossSeriesName = formatRepresentativeSeriesName(
     splitPressure?.crossDirections,
+    splitPressure?.crossDirectionsByPeriod,
     'cross street',
     'cross street'
   )

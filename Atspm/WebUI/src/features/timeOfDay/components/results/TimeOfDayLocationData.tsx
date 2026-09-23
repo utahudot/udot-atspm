@@ -37,6 +37,9 @@ const formatRatio = (value?: number | null) => {
   return (value / 100).toFixed(2)
 }
 
+// The backend sends an empty string when there is nothing to report.
+const formatText = (value?: string | null) => value?.trim() || '-'
+
 const formatLocation = (
   identifier?: string | null,
   description?: string | null
@@ -189,17 +192,17 @@ export default function TimeOfDayLocationData({
                     {formatPercent(location.summary?.pmPeakOccupancyPercent)}
                   </TableCell>
                   <TableCell sx={{ minWidth: 160 }}>
-                    {location.summary?.amDirectionExceptionMessage ?? '-'}
+                    {formatText(location.summary?.amDirectionExceptionMessage)}
                   </TableCell>
                   <TableCell sx={{ minWidth: 160 }}>
-                    {location.summary?.pmDirectionExceptionMessage ?? '-'}
+                    {formatText(location.summary?.pmDirectionExceptionMessage)}
                   </TableCell>
                   <TableCell sx={{ minWidth: 160 }}>
-                    {location.summary?.crossTrafficReview ?? '-'}
+                    {formatText(location.summary?.crossTrafficReview)}
                   </TableCell>
                   <TableCell>{location.dataQualityFlag ?? '-'}</TableCell>
                   <TableCell sx={{ minWidth: 180 }}>
-                    {location.summary?.notes?.trim() || '-'}
+                    {formatText(location.summary?.notes)}
                   </TableCell>
                 </TableRow>
               ))}

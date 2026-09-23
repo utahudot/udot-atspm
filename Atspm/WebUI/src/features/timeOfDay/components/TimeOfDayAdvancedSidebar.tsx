@@ -109,6 +109,20 @@ const occupancyReviewFields: TuningFieldDefinition[] = [
   },
 ]
 
+// Out-of-range values stay as a draft so they never reach the request; the
+// backend rejects non-positive capacities, lane counts, and bin counts.
+const getRangeError = (field: TuningFieldDefinition, rawValue?: string) => {
+  if (rawValue === undefined || rawValue.trim() === '') return undefined
+
+  const value = Number(rawValue)
+  const { min, max } = field.inputProps ?? {}
+  if (!Number.isFinite(value)) return 'Enter a number'
+  if (typeof min === 'number' && value < min) return `Min ${min}`
+  if (typeof max === 'number' && value > max) return `Max ${max}`
+
+  return undefined
+}
+
 const parseTimeString = (value: unknown) => {
   if (typeof value !== 'string') return null
 
@@ -150,13 +164,10 @@ export default function TimeOfDayAdvancedSidebar({
         ...current,
         [field.option]: rawValue,
       }))
-      if (rawValue.trim() === '') return
-
-      const value = Number(rawValue)
-      if (!Number.isFinite(value)) return
+      if (rawValue.trim() === '' || getRangeError(field, rawValue)) return
 
       updateOptions({
-        [field.option]: value,
+        [field.option]: Number(rawValue),
       } as Partial<TimeOfDayFormState>)
     }
 
@@ -323,6 +334,8 @@ export default function TimeOfDayAdvancedSidebar({
           value={numberDrafts[field.option] ?? options[field.option]}
           onChange={handleTuningFieldChange(field)}
           onBlur={() => clearTuningFieldDraft(field)}
+          error={Boolean(getRangeError(field, numberDrafts[field.option]))}
+          helperText={getRangeError(field, numberDrafts[field.option])}
           inputProps={{
             ...field.inputProps,
             'aria-label': field.label,
@@ -366,6 +379,8 @@ export default function TimeOfDayAdvancedSidebar({
         value={numberDrafts[field.option] ?? options[field.option]}
         onChange={handleTuningFieldChange(field)}
         onBlur={() => clearTuningFieldDraft(field)}
+        error={Boolean(getRangeError(field, numberDrafts[field.option]))}
+        helperText={getRangeError(field, numberDrafts[field.option])}
         inputProps={{
           ...field.inputProps,
           'aria-label': [field.label, field.unitLabel]

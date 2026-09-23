@@ -58,10 +58,13 @@ export const timeOfDayDefaultTuningOptions: TimeOfDayTuningOptions = {
   shoulderReviewThresholdPercent: 45,
 }
 
+// The backend counts volumes in fixed 15-minute bins.
+export const timeOfDayBinSizeMinutes = 15
+
 export interface TimeOfDayOptions extends TimeOfDayTuningOptions {
   locationIdentifiers: string[]
   selectedDates: string[]
-  binSizeMinutes: 15
+  binSizeMinutes: typeof timeOfDayBinSizeMinutes
   dataSource: TimeOfDayDataSourceOption
   allDayPrimaryDirections: string[]
   amPrimaryDirections: string[]

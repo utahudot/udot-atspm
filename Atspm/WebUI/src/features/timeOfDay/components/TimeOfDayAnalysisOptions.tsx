@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import type { TimeOfDaySchedulePreset } from '../measureDefaults'
 import type { TimeOfDayDataSourceOption, TimeOfDayFormState } from '../types'
-import { timeOfDayDataSourceLabels } from '../types'
+import { timeOfDayBinSizeMinutes, timeOfDayDataSourceLabels } from '../types'
 import TimeOfDayAdvancedSidebar, {
   type AnalysisSidebar,
 } from './TimeOfDayAdvancedSidebar'
@@ -102,6 +102,14 @@ export default function TimeOfDayAnalysisOptions({
                   )}
                 </ToggleButtonGroup>
               </Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                component="p"
+                sx={{ mt: 1, textAlign: 'center' }}
+              >
+                Volumes are counted in {timeOfDayBinSizeMinutes}-minute bins.
+              </Typography>
             </Box>
 
             <Box component="section">

@@ -38,6 +38,7 @@ import type {
 } from '@/features/timeOfDay/types'
 import {
   defaultPrimaryDirections,
+  timeOfDayBinSizeMinutes,
   timeOfDayDefaultTuningOptions,
   timeOfDayTuningOptionKeys,
 } from '@/features/timeOfDay/types'
@@ -404,7 +405,7 @@ export default function TimeOfDayPage() {
       allDayPrimaryDirections: formState.allDayPrimaryDirections,
       amPrimaryDirections: formState.amPrimaryDirections,
       pmPrimaryDirections: formState.pmPrimaryDirections,
-      binSizeMinutes: 15,
+      binSizeMinutes: timeOfDayBinSizeMinutes,
       ...getTuningOptions(formState),
       directionLaneCounts: formState.directionLaneCounts,
     }

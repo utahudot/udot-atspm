@@ -92,6 +92,28 @@ describe('time-of-day schedule presets', () => {
     )
   })
 
+  test('treats a zero or negative capacity default as missing', () => {
+    const options = buildTimeOfDayTuningOptionsFromDefaults({
+      laneCapacityVehiclesPerHour: {
+        id: 1,
+        option: 'laneCapacityVehiclesPerHour',
+        value: '0',
+      },
+      approachVolumeAssumedLanes: {
+        id: 2,
+        option: 'approachVolumeAssumedLanes',
+        value: '-2',
+      },
+    })
+
+    expect(options.laneCapacityVehiclesPerHour).toBe(
+      timeOfDayDefaultTuningOptions.laneCapacityVehiclesPerHour
+    )
+    expect(options.approachVolumeAssumedLanes).toBe(
+      timeOfDayDefaultTuningOptions.approachVolumeAssumedLanes
+    )
+  })
+
   test('matches a preset only while all schedule values remain unchanged', () => {
     const presets = buildTimeOfDaySchedulePresets(presetRecords)
 

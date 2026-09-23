@@ -15,6 +15,42 @@ const apiDataSourceByName: Record<
   Aggregated: 1 as ApiTimeOfDayOptions['dataSource'],
 }
 
+const directionAxis: Record<string, string> = {
+  Northbound: 'NorthSouth',
+  Southbound: 'NorthSouth',
+  Eastbound: 'EastWest',
+  Westbound: 'EastWest',
+  NorthEast: 'NorthEastSouthWest',
+  SouthWest: 'NorthEastSouthWest',
+  NorthWest: 'NorthWestSouthEast',
+  SouthEast: 'NorthWestSouthEast',
+}
+
+/**
+ * The backend applies the all-day directions to every hour outside the AM and
+ * PM windows, but the form hides that list while AM/PM directions are edited
+ * separately. Derive it from the visible AM and PM picks so midday never uses
+ * a stale street. Matching AM and PM picks are the user's all-day choice and
+ * pass through as-is. When differing picks span more than one street, send none
+ * and let the backend infer the strongest street.
+ */
+export const deriveAllDayPrimaryDirections = (
+  amDirections: string[],
+  pmDirections: string[]
+) => {
+  const directions = [...new Set([...amDirections, ...pmDirections])]
+  const sameSelection =
+    amDirections.length === pmDirections.length &&
+    amDirections.every((direction) => pmDirections.includes(direction))
+  if (sameSelection) return amDirections
+
+  const axes = new Set(
+    directions.map((direction) => directionAxis[direction] ?? direction)
+  )
+
+  return axes.size <= 1 ? directions : []
+}
+
 export const toApiTimeOfDayOptions = (
   options: TimeOfDayOptions
 ): ApiTimeOfDayOptions => {
@@ -29,7 +65,10 @@ export const toApiTimeOfDayOptions = (
     selectedDates: options.selectedDates,
     binSizeMinutes: options.binSizeMinutes,
     dataSource: apiDataSourceByName[options.dataSource],
-    allDayPrimaryDirections: options.allDayPrimaryDirections,
+    allDayPrimaryDirections: deriveAllDayPrimaryDirections(
+      options.amPrimaryDirections,
+      options.pmPrimaryDirections
+    ),
     amPrimaryDirections: options.amPrimaryDirections,
     pmPrimaryDirections: options.pmPrimaryDirections,
     amEntryPctOfPeak: options.amEntryPctOfPeak,

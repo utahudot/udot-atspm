@@ -1,3 +1,7 @@
+// Pin a zone that observes DST; under UTC the spring-forward gap never occurs
+// and a Date-based parser would pass by accident.
+process.env.TZ = 'America/Denver'
+
 import type { Plan } from '@/api/reports'
 import {
   formatPlanTime,

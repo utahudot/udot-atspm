@@ -6,9 +6,9 @@ import {
   getTimeOfDayPlanColorMap,
 } from './components/schedules/timeOfDayScheduleModel'
 import {
-  buildPlanProfileOption,
+  buildPlanProfileSeries,
   buildScheduleRows,
-  buildSplitPressureOption,
+  buildSplitPressureSeries,
   buildTimeOfDayAnalysisModel,
   buildTimeOfDayLocationNumberMap,
   getLocationNumber,
@@ -18,26 +18,7 @@ import {
   getTimeOfDaySignalPeakDetailKey,
 } from './transformers'
 
-const result = {
-  selectedDates: [],
-} as TimeOfDayResult
-
 describe('time-of-day chart titles', () => {
-  test('includes the plan recommendation title', () => {
-    const option = buildPlanProfileOption(result)
-
-    expect(Array.isArray(option.title)).toBe(true)
-    expect(option.title).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          text: 'Corridor Plan Recommendation',
-          left: 0,
-          textAlign: 'left',
-        }),
-      ])
-    )
-  })
-
   test('uses the corridor peak time that belongs to the displayed value', () => {
     const model = buildTimeOfDayAnalysisModel({
       recommendation: {
@@ -151,23 +132,8 @@ describe('time-of-day chart titles', () => {
     expect(target.dataIndex).toBe(0)
   })
 
-  test('includes the split pressure title', () => {
-    const option = buildSplitPressureOption(result)
-
-    expect(Array.isArray(option.title)).toBe(true)
-    expect(option.title).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          text: 'Corridor Movement Demand',
-          left: 0,
-          textAlign: 'left',
-        }),
-      ])
-    )
-  })
-
   test('uses red and purple for the AM and PM corridor peak stars', () => {
-    const option = buildPlanProfileOption({
+    const builtSeries = buildPlanProfileSeries({
       planProfile: {
         peaks: [
           {
@@ -185,7 +151,7 @@ describe('time-of-day chart titles', () => {
         ],
       },
     } as TimeOfDayResult)
-    const series = option.series as Array<{
+    const series = builtSeries as Array<{
       name?: string
       symbol?: string
       z?: number
@@ -208,19 +174,7 @@ describe('time-of-day chart titles', () => {
     })
   })
 
-  test('uses compact spacing for the title, date, and info rows', () => {
-    const option = buildPlanProfileOption({
-      selectedDates: ['2026-04-14', '2026-04-16'],
-      recommendation: { amPeakTime: '08:30' },
-    } as TimeOfDayResult)
-    const titles = option.title as Array<{
-      top?: number | string
-    }>
-
-    expect(titles.map((title) => title.top)).toEqual([0, 32, 58])
-  })
-
-  test('uses one padded volume-axis maximum for both analysis charts', () => {
+  test('pads the volume axis to cover plan and movement demand peaks', () => {
     const sharedResult = {
       selectedDates: [],
       planProfile: {
@@ -261,16 +215,61 @@ describe('time-of-day chart titles', () => {
         ],
       },
     } as TimeOfDayResult
-    const getVolumeAxisMax = (
-      option: ReturnType<typeof buildPlanProfileOption>
-    ) => (option.yAxis as Array<{ max?: number }>)[0].max
+    const { option } = buildTimeOfDayAnalysisModel(sharedResult)
 
-    expect(getVolumeAxisMax(buildPlanProfileOption(sharedResult))).toBe(6000)
-    expect(getVolumeAxisMax(buildSplitPressureOption(sharedResult))).toBe(6000)
+    expect((option.yAxis as Array<{ max?: number }>)[0].max).toBe(6000)
+  })
+
+  test('names representative series by period when period directions differ', () => {
+    const getSeriesNames = (splitPressure: TimeOfDayResult['splitPressure']) =>
+      buildSplitPressureSeries({ selectedDates: [], splitPressure }).map(
+        (series) => series.name
+      )
+    const primaryProfile = { points: [{ minutes: 480, averageVolume: 900 }] }
+    const crossStreetProfile = {
+      points: [{ minutes: 480, averageVolume: 300 }],
+    }
+
+    expect(
+      getSeriesNames({
+        primaryDirections: ['Northbound', 'Southbound'],
+        crossDirections: ['Eastbound', 'Westbound'],
+        primaryDirectionsByPeriod: {
+          AllDay: ['Northbound', 'Southbound'],
+          AM: ['Eastbound', 'Westbound'],
+          PM: ['Northbound', 'Southbound'],
+        },
+        crossDirectionsByPeriod: {
+          AllDay: ['Eastbound', 'Westbound'],
+          AM: ['Northbound', 'Southbound'],
+          PM: ['Eastbound', 'Westbound'],
+        },
+        primaryProfile,
+        crossStreetProfile,
+      })
+    ).toEqual(
+      expect.arrayContaining([
+        'Representative primary street (AM: Eastbound, Westbound · PM: Northbound, Southbound · Other hours: Northbound, Southbound)',
+        'Representative cross street (AM: Northbound, Southbound · PM: Eastbound, Westbound · Other hours: Eastbound, Westbound)',
+      ])
+    )
+
+    const sameDirections = ['Northbound', 'Southbound']
+    expect(
+      getSeriesNames({
+        primaryDirections: sameDirections,
+        primaryDirectionsByPeriod: {
+          AllDay: sameDirections,
+          AM: sameDirections,
+          PM: sameDirections,
+        },
+        primaryProfile,
+      })
+    ).toContain('Representative Northbound, Southbound primary')
   })
 
   test('uses square chart markers for movement pressure', () => {
-    const option = buildSplitPressureOption({
+    const builtSeries = buildSplitPressureSeries({
       selectedDates: [],
       splitPressure: {
         crossTrafficLocations: [
@@ -292,7 +291,7 @@ describe('time-of-day chart titles', () => {
         ],
       },
     } as TimeOfDayResult)
-    const series = option.series as Array<{
+    const series = builtSeries as Array<{
       name?: string
       z?: number
       data?: Array<{ name?: string; symbol?: string; value?: unknown[] }>
@@ -303,10 +302,6 @@ describe('time-of-day chart titles', () => {
     const amMovementPressure = series.find(
       (seriesOption) => seriesOption.name === 'AM Movement Demand'
     )
-    const legend = option.legend as {
-      data?: Array<{ name?: string }>
-      selected?: Record<string, boolean>
-    }
 
     expect(amCrossTraffic?.data).toEqual([
       expect.objectContaining({ name: '1', symbol: 'circle' }),
@@ -319,20 +314,10 @@ describe('time-of-day chart titles', () => {
       'movement-pressure · Left'
     )
     expect(amMovementPressure?.z).toBe(50)
-    expect(legend.data).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'AM Cross Traffic Locations' }),
-        expect.objectContaining({ name: 'AM Movement Demand' }),
-      ])
-    )
-    expect(legend.selected).toMatchObject({
-      'AM Movement Demand': false,
-      'PM Movement Demand': false,
-    })
   })
 
   test('uses star chart markers for peaks without a location', () => {
-    const planOption = buildPlanProfileOption({
+    const planSeries = buildPlanProfileSeries({
       selectedDates: [],
       planProfile: {
         peaks: [
@@ -345,7 +330,7 @@ describe('time-of-day chart titles', () => {
         ],
       },
     } as TimeOfDayResult)
-    const pressureOption = buildSplitPressureOption({
+    const pressureSeries = buildSplitPressureSeries({
       selectedDates: [],
       splitPressure: {
         periodPeaks: [
@@ -372,11 +357,11 @@ describe('time-of-day chart titles', () => {
       },
     } as TimeOfDayResult)
     const getPeakSeries = (
-      option: ReturnType<typeof buildPlanProfileOption>,
+      series: ReturnType<typeof buildPlanProfileSeries>,
       name: string
     ) =>
       (
-        option.series as Array<{
+        series as Array<{
           name?: string
           symbol?: string
           z?: number
@@ -384,13 +369,13 @@ describe('time-of-day chart titles', () => {
             itemStyle?: { color?: string }
           }>
         }>
-      ).find((series) => series.name === name)
+      ).find((entry) => entry.name === name)
 
-    expect(getPeakSeries(planOption, 'AM Corridor Peak')).toMatchObject({
+    expect(getPeakSeries(planSeries, 'AM Corridor Peak')).toMatchObject({
       symbol: expect.stringMatching(/^path:\/\//),
       z: 100,
     })
-    const volumePeaks = getPeakSeries(pressureOption, 'Volume Peaks')
+    const volumePeaks = getPeakSeries(pressureSeries, 'Volume Peaks')
     expect(volumePeaks).toMatchObject({
       symbol: expect.stringMatching(/^path:\/\//),
       z: 100,
@@ -400,7 +385,7 @@ describe('time-of-day chart titles', () => {
       expect.objectContaining({ itemStyle: { color: '#1b5e20' } }),
     ])
     const percentPeaks = getPeakSeries(
-      pressureOption,
+      pressureSeries,
       'Cross Traffic Percent Peaks'
     )
     expect(percentPeaks).toMatchObject({
@@ -677,12 +662,21 @@ describe('time-of-day chart titles', () => {
       },
     ])
 
-    expect(tooltipHtml).toContain('08:30')
+    expect(tooltipHtml).toContain('08:30–08:45')
     expect(tooltipHtml).toContain('AM peak - 7621 - 9000 South and Monroe')
     expect(tooltipHtml).not.toContain('AM Signal Peaks')
     expect(tooltipHtml).toContain('2,824')
     expect(tooltipHtml).toContain('81.9%')
     expect(tooltipHtml).not.toContain('510.00')
+    expect(
+      formatter([
+        {
+          axisValue: 1440,
+          seriesName: 'Cross-traffic percent',
+          value: [1440, 35],
+        },
+      ])
+    ).toContain('23:45–24:00')
   })
 
   test('names the profile a volume peak belongs to and marks it with a star', () => {
