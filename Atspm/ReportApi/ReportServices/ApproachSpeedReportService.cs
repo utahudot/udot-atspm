@@ -31,6 +31,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly ISpeedEventLogRepository speedEventRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
+        private readonly PlanService planService;
         private readonly ILogger<ApproachSpeedReportService> logger;
 
         /// <inheritdoc/>
@@ -41,6 +42,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             ISpeedEventLogRepository speedEventRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService,
+            PlanService planService,
             ILogger<ApproachSpeedReportService> logger)
         {
             this.approachSpeedService = approachSpeedService;
@@ -49,6 +51,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.speedEventRepository = speedEventRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
+            this.planService = planService;
             this.logger = logger;
         }
 
@@ -56,7 +59,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         public override async Task<IEnumerable<ApproachSpeedResult>> ExecuteAsync(ApproachSpeedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -64,14 +67,14 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("No Controller Event Logs found for this signal on this date"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
 
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachSpeedResult>>();
 
             foreach (var phaseDetail in phaseDetails)
             {
-                tasks.Add(GetChartDataByApproach(parameter, controllerEventLogs, planEvents, phaseDetail, Location.LocationDescription()));
+                tasks.Add(GetChartDataByApproach(parameter, controllerEventLogs, plans, phaseDetail, Location.LocationDescription()));
             }
             var results = await Task.WhenAll(tasks);
             var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
@@ -89,7 +92,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private async Task<ApproachSpeedResult> GetChartDataByApproach(
             ApproachSpeedOptions options,
             List<IndianaEvent> controllerEventLogs,
-            List<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> plans,
             PhaseDetail phaseDetail,
             string LocationDescription)
         {
@@ -120,7 +123,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             ApproachSpeedResult viewModel = approachSpeedService.GetChartData(
                 options,
                 cycleEvents.ToList(),
-                planEvents,
+                plans,
                 speedEvents,
                 detector,
                 logger);

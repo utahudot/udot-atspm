@@ -80,9 +80,11 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         public YellowRedActivationsAggregationBySignal(ApproachYellowRedActivationsAggregationOptions approachYellowRedActivationsAggregationOptions,
             Location signal,
             DirectionTypes direction,
+            IApproachYellowRedActivationAggregationRepository approachYellowRedActivationAggregationRepository,
             AggregationOptions options
             ) : base(approachYellowRedActivationsAggregationOptions, signal, options)
         {
+            this.approachYellowRedActivationAggregationRepository = approachYellowRedActivationAggregationRepository;
             ApproachYellowRedActivationsures = new List<YellowRedActivationsAggregationByApproach>();
             foreach (var approach in signal.Approaches)
                 if (approach.DirectionType.Id == direction)

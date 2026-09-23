@@ -26,10 +26,12 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         public PcdAggregationBySignal(
             ApproachPcdAggregationOptions approachPcdAggregationOptions,
             Location signal,
+            IApproachPcdAggregationRepository approachPcdAggregationRepository,
             AggregationOptions options
             ) : base(
             approachPcdAggregationOptions, signal, options)
         {
+            this.approachPcdAggregationRepository = approachPcdAggregationRepository;
             ApproachPcds = new List<PcdAggregationByApproach>();
             GetApproachPcdAggregationContainersForAllApporaches(approachPcdAggregationOptions, signal, options);
             LoadBins(null, null, options);
@@ -79,9 +81,11 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             ApproachPcdAggregationOptions approachPcdAggregationOptions,
             Location signal,
             DirectionTypes direction,
+            IApproachPcdAggregationRepository approachPcdAggregationRepository,
             AggregationOptions options
             ) : base(approachPcdAggregationOptions, signal, options)
         {
+            this.approachPcdAggregationRepository = approachPcdAggregationRepository;
             ApproachPcds = new List<PcdAggregationByApproach>();
             foreach (var approach in signal.Approaches)
                 if (approach.DirectionType.Id == direction)

@@ -29,8 +29,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
 
         public int AmStartHour { get; set; } = 1;
         public int AmEndHour { get; set; } = 5;
-        public int PmPeakStartHour { get; set; } = 18;
-        public int PmPeakEndHour { get; set; } = 17;
+        public int PmPeakStartHour { get; set; } = 17;
+        public int PmPeakEndHour { get; set; } = 18;
         public int RampDetectorStartHour { get; set; } = 7;
         public int RampDetectorEndHour { get; set; } = 8;
         public int RampMissedDetectorHitStartHour { get; set; } = 15;

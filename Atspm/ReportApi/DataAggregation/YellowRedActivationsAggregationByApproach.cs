@@ -35,8 +35,8 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             ) : base(approach, approachYellowRedActivationsAggregationOptions, startDate, endDate,
             getProtectedPhase, dataType, options)
         {
-            LoadBins(approach, approachYellowRedActivationsAggregationOptions, getProtectedPhase, dataType, options);
             this.approachYellowRedActivationAggregationRepository = approachYellowRedActivationAggregationRepository;
+            LoadBins(approach, approachYellowRedActivationsAggregationOptions, getProtectedPhase, dataType, options);
         }
 
         protected override void LoadBins(
