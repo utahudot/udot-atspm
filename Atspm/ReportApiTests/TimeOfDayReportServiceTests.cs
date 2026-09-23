@@ -1,4 +1,5 @@
 using Moq;
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.TimeOfDay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
@@ -60,7 +61,7 @@ namespace ReportApiTests
 
             var location = Assert.Single(result.Locations);
             Assert.Equal(4, location.Profile.Points.Single(point => point.Minutes == 23 * 60 + 30).AverageVolume);
-            Assert.Empty(location.CurrentPlanSchedule);
+            Assert.Equal("7", Assert.Single(location.CurrentPlanSchedule).PlanNumber);
             eventRepository.Verify(repository => repository.GetEventsBetweenDates(
                 "1001",
                 firstStart.AddHours(-12),
@@ -124,7 +125,7 @@ namespace ReportApiTests
 
             var location = Assert.Single(result.Locations);
             Assert.Equal(4, location.Profile.Points.Single(point => point.Minutes == 8 * 60).AverageVolume);
-            Assert.Empty(location.CurrentPlanSchedule);
+            Assert.Equal("7", Assert.Single(location.CurrentPlanSchedule).PlanNumber);
             foreach (var date in selectedDates)
             {
                 var start = date.ToDateTime(TimeOnly.MinValue);
@@ -137,101 +138,84 @@ namespace ReportApiTests
         [Theory]
         [InlineData(TimeOfDayDataSource.IndianaEvents)]
         [InlineData(TimeOfDayDataSource.Aggregated)]
-        public async Task ExecuteAsync_AlwaysUsesStoredPlansAndSelectsVolumeDataSource(TimeOfDayDataSource dataSource)
+        public async Task ExecuteAsync_AlwaysUsesControllerPlanEventsAndSelectsVolumeDataSource(TimeOfDayDataSource dataSource)
         {
-            var selectedDate = new DateOnly(2026, 3, 18);
-            var start = selectedDate.ToDateTime(TimeOnly.MinValue);
+            var date = new DateOnly(2026, 3, 18);
+            var start = date.ToDateTime(TimeOnly.MinValue);
             var end = start.AddDays(1);
-            var eventRepository = EventRepository(new[]
+            var events = EventRepository(new[]
             {
-                IndianaEvent(start, IndianaEnumerations.CoordPatternChange, 9),
-                IndianaEvent(start.AddHours(8), IndianaEnumerations.VehicleDetectorOn, 7)
+                IndianaEvent(start.AddHours(-12), IndianaEnumerations.CoordPatternChange, 254),
+                IndianaEvent(start.AddHours(-1), IndianaEnumerations.CoordPatternChange, 3),
+                IndianaEvent(start.AddHours(7), IndianaEnumerations.CoordPatternChange, 7),
+                IndianaEvent(start.AddHours(8), IndianaEnumerations.VehicleDetectorOn, 7),
+                IndianaEvent(end, IndianaEnumerations.CoordPatternChange, 9)
             });
-            var planRepository = new Mock<ISignalTimingPlanRepository>();
-            planRepository.Setup(repository => repository.GetList()).Returns(new[]
-            {
-                new SignalTimingPlan { LocationIdentifier = "1001", PlanNumber = 3, Start = start.AddDays(-30), End = start.AddHours(7) },
-                new SignalTimingPlan { LocationIdentifier = "1001", PlanNumber = 7, Start = start.AddHours(7), End = DateTime.MinValue },
-                new SignalTimingPlan { LocationIdentifier = "1002", PlanNumber = 11, Start = start, End = end },
-                new SignalTimingPlan { LocationIdentifier = "1001", PlanNumber = 12, Start = start.AddDays(-1), End = start },
-                new SignalTimingPlan { LocationIdentifier = "1001", PlanNumber = 13, Start = end, End = end.AddDays(1) }
-            }.AsQueryable());
-            var aggregationRepository = new Mock<IDetectorEventCountAggregationRepository>();
-            aggregationRepository.Setup(repository => repository.GetAggregationsBetweenDates("1001", start, end))
+            var aggregations = new Mock<IDetectorEventCountAggregationRepository>();
+            aggregations.Setup(repository => repository.GetAggregationsBetweenDates("1001", start, end))
                 .Returns(new List<DetectorEventCountAggregation>
                 {
                     new() { DetectorPrimaryId = 7, Start = start.AddHours(8), EventCount = 2 }
                 });
-            var service = CreateService(eventRepository, LocationWithDetector(), planRepository, aggregationRepository);
-
-            var result = await service.ExecuteAsync(new TimeOfDayOptions
+            var result = await CreateService(events, LocationWithDetector(), aggregations).ExecuteAsync(new TimeOfDayOptions
             {
-                LocationIdentifiers = new List<string> { "1001" },
-                SelectedDates = new List<DateOnly> { selectedDate },
-                DataSource = dataSource
+                LocationIdentifiers = new() { "1001" }, SelectedDates = new() { date }, DataSource = dataSource
             }, CancellationToken.None);
 
             var location = Assert.Single(result.Locations);
             Assert.Equal(new[] { "3", "7" }, location.CurrentPlanSchedule.Select(plan => plan.PlanNumber));
             Assert.Equal(start, location.CurrentPlanSchedule[0].Start);
             Assert.Equal(start.AddHours(7), location.CurrentPlanSchedule[0].End);
-            Assert.Equal(start.AddHours(7), location.CurrentPlanSchedule[1].Start);
             Assert.Equal(end, location.CurrentPlanSchedule[1].End);
-            var dailySchedule = Assert.Single(location.DailyPlanSchedules);
-            Assert.Equal(selectedDate, dailySchedule.Date);
-            Assert.Equal(new[] { "3", "7" }, dailySchedule.Plans.Select(plan => plan.PlanNumber));
-            Assert.DoesNotContain(result.Warnings, warning => warning.Code == "PlanScheduleCarriedForward");
             Assert.Equal(dataSource == TimeOfDayDataSource.Aggregated ? 8 : 4,
-                location.Profile.Points.Single(point => point.Minutes == 8 * 60).AverageVolume);
-            planRepository.Verify(repository => repository.GetList(), Times.Once);
-            eventRepository.Verify(repository => repository.GetEventsBetweenDates(
-                "1001", start.AddHours(-12), end.AddHours(12)),
-                dataSource == TimeOfDayDataSource.IndianaEvents ? Times.Once() : Times.Never());
-            aggregationRepository.Verify(repository => repository.GetAggregationsBetweenDates("1001", start, end),
+                location.Profile.Points.Single(point => point.Minutes == 480).AverageVolume);
+            Assert.DoesNotContain(result.Warnings, warning => warning.Code is "MissingPlanData" or "PartialPlanData");
+            events.Verify(repository => repository.GetEventsBetweenDates("1001", start.AddHours(-12), end.AddHours(12)), Times.Once);
+            aggregations.Verify(repository => repository.GetAggregationsBetweenDates("1001", start, end),
                 dataSource == TimeOfDayDataSource.Aggregated ? Times.Once() : Times.Never());
         }
 
         [Theory]
-        [InlineData(TimeOfDayDataSource.IndianaEvents, 254)]
-        [InlineData(TimeOfDayDataSource.Aggregated, 254)]
-        [InlineData(TimeOfDayDataSource.IndianaEvents, 100)]
-        [InlineData(TimeOfDayDataSource.Aggregated, 100)]
-        public async Task ExecuteAsync_IdentifiesPlansCarriedForwardFromAnEarlierDate(
-            TimeOfDayDataSource dataSource, short planNumber)
+        [InlineData(TimeOfDayDataSource.IndianaEvents)]
+        [InlineData(TimeOfDayDataSource.Aggregated)]
+        public async Task ExecuteAsync_DoesNotCarryOldOrFuturePlansIntoMissingDate(TimeOfDayDataSource dataSource)
         {
             var date = new DateOnly(2026, 4, 6);
-            var lastRecordedStart = new DateTime(2026, 4, 4, 22, 30, 0);
-            var plans = new Mock<ISignalTimingPlanRepository>();
-            plans.Setup(repository => repository.GetList()).Returns(new[]
+            var start = date.ToDateTime(TimeOnly.MinValue);
+            var events = EventRepository(new[]
             {
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = "1001", PlanNumber = planNumber,
-                    Start = lastRecordedStart, End = DateTime.MinValue
-                }
-            }.AsQueryable());
-            var events = EventRepository(Array.Empty<IndianaEvent>());
+                IndianaEvent(start.AddDays(-2).AddHours(22), IndianaEnumerations.CoordPatternChange, 254),
+                IndianaEvent(start.AddDays(1).AddHours(2), IndianaEnumerations.CoordPatternChange, 7)
+            });
             var aggregations = new Mock<IDetectorEventCountAggregationRepository>();
-            aggregations.Setup(repository => repository.GetAggregationsBetweenDates(
-                "1001", date.ToDateTime(TimeOnly.MinValue), date.AddDays(1).ToDateTime(TimeOnly.MinValue)))
+            aggregations.Setup(repository => repository.GetAggregationsBetweenDates("1001", start, start.AddDays(1)))
                 .Returns(new List<DetectorEventCountAggregation>());
-            var service = CreateService(events, LocationWithDetector(), plans, aggregations);
-
-            var result = await service.ExecuteAsync(new TimeOfDayOptions
+            var result = await CreateService(events, LocationWithDetector(), aggregations).ExecuteAsync(new TimeOfDayOptions
             {
-                LocationIdentifiers = new() { "1001" },
-                SelectedDates = new() { date },
-                DataSource = dataSource
+                LocationIdentifiers = new() { "1001" }, SelectedDates = new() { date }, DataSource = dataSource
             }, CancellationToken.None);
 
-            // A constant plan is possible; expose the source date without inventing a new plan.
-            Assert.Equal(planNumber.ToString(), Assert.Single(Assert.Single(result.Locations).CurrentPlanSchedule).PlanNumber);
-            var warning = Assert.Single(result.Warnings.Where(warning => warning.Code == "PlanScheduleCarriedForward"));
-            Assert.Equal("1001", warning.LocationIdentifier);
-            Assert.Contains("2026-04-06", warning.Message);
-            Assert.Contains("2026-04-04 22:30:00", warning.Message);
+            Assert.Empty(Assert.Single(result.Locations).CurrentPlanSchedule);
+            Assert.Empty(result.PlanComparison.ExceptionLocationIdentifiers);
+            Assert.Contains(result.Warnings, warning => warning.Code == "MissingPlanData" && warning.Message.Contains("2026-04-06"));
         }
 
+        [Fact]
+        public async Task ExecuteAsync_WarnsWhenPlanAtMidnightIsUnknown()
+        {
+            var date = new DateOnly(2026, 4, 6);
+            var start = date.ToDateTime(TimeOnly.MinValue);
+            var events = EventRepository(new[] { IndianaEvent(start.AddHours(8), IndianaEnumerations.CoordPatternChange, 7) });
+            var result = await CreateService(events, LocationWithDetector()).ExecuteAsync(new TimeOfDayOptions
+            {
+                LocationIdentifiers = new() { "1001" }, SelectedDates = new() { date }
+            }, CancellationToken.None);
+
+            var plan = Assert.Single(Assert.Single(result.Locations).CurrentPlanSchedule);
+            Assert.Equal("7", plan.PlanNumber);
+            Assert.Equal(start.AddHours(8), plan.Start);
+            Assert.Contains(result.Warnings, warning => warning.Code == "PartialPlanData");
+        }
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -325,7 +309,8 @@ namespace ReportApiTests
             Assert.Equal(new[] { secondDate }, valid.DatesWithData);
             Assert.Equal("NoData", result.Locations.Single(location => location.LocationIdentifier == "missing").DataQualityFlag);
             Assert.Equal(3, result.Warnings.Count(warning => warning.Code == "MissingLocationConfiguration"));
-            events.Verify(repository => repository.GetEventsBetweenDates("1001", secondStart.AddHours(-12), secondStart.AddDays(1).AddHours(12)), Times.Once);
+            events.Verify(repository => repository.GetEventsBetweenDates("1001", firstDate.ToDateTime(TimeOnly.MinValue).AddHours(-12), secondStart.AddDays(1).AddHours(12)), Times.Once);
+            events.Verify(repository => repository.GetEventsBetweenDates("missing", firstDate.ToDateTime(TimeOnly.MinValue).AddHours(-12), secondStart.AddDays(1).AddHours(12)), Times.Once);
             events.VerifyNoOtherCalls();
         }
 
@@ -369,16 +354,9 @@ namespace ReportApiTests
         private static TimeOfDayReportService CreateService(
             Mock<IIndianaEventLogRepository> eventRepository,
             Location location,
-            Mock<ISignalTimingPlanRepository>? planRepository = null,
             Mock<IDetectorEventCountAggregationRepository>? detectorAggregationRepository = null,
             Mock<ILocationRepository>? locationRepository = null)
         {
-            if (planRepository == null)
-            {
-                planRepository = new Mock<ISignalTimingPlanRepository>();
-                planRepository.Setup(repository => repository.GetList())
-                    .Returns(new List<SignalTimingPlan>().AsQueryable());
-            }
             if (locationRepository == null)
             {
                 locationRepository = new Mock<ILocationRepository>();
@@ -390,7 +368,7 @@ namespace ReportApiTests
                 new TimeOfDayLocationService(new TimeOfDayObservationService(), profileService),
                 profileService,
                 new TimeOfDayRecommendationService(profileService),
-                new TimeOfDayPlanScheduleService(),
+                new TimeOfDayPlanScheduleService(new PlanService()),
                 new TimeOfDayPlanProfileService(),
                 new TimeOfDaySplitPressureService(profileService));
 
@@ -398,7 +376,6 @@ namespace ReportApiTests
                 locationRepository.Object,
                 eventRepository.Object,
                 (detectorAggregationRepository ?? new Mock<IDetectorEventCountAggregationRepository>()).Object,
-                planRepository.Object,
                 timeOfDayService);
         }
 

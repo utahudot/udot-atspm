@@ -37,6 +37,13 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
     public class TimeOfDayPlanScheduleService : ITimeOfDayPlanScheduleService
     {
+        private readonly PlanService planService;
+
+        public TimeOfDayPlanScheduleService(PlanService planService)
+        {
+            this.planService = planService;
+        }
+
         public TimeOfDayPlanScheduleResult BuildCurrentSchedules(
             IReadOnlyList<TimeOfDayLocationReportData> locationData,
             IReadOnlyList<DateOnly> selectedDates,
@@ -47,7 +54,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
             foreach (var data in locationData)
             {
-                var schedulesByDate = GetAggregatedDailySchedules(data.SignalTimingPlans, selectedDates);
+                var schedulesByDate = GetDailySchedules(data, selectedDates);
 
                 var schedule = BuildRepresentativeSchedule(
                     schedulesByDate,
@@ -62,8 +69,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             return result;
         }
 
-        private List<TimeOfDayDailyPlanScheduleDto> GetAggregatedDailySchedules(
-            IReadOnlyList<SignalTimingPlan> signalTimingPlans,
+        private List<TimeOfDayDailyPlanScheduleDto> GetDailySchedules(
+            TimeOfDayLocationReportData data,
             IReadOnlyList<DateOnly> selectedDates)
         {
             var schedules = new List<TimeOfDayDailyPlanScheduleDto>();
@@ -72,34 +79,13 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             {
                 var start = selectedDate.ToDateTime(TimeOnly.MinValue);
                 var end = start.AddDays(1);
-                var plans = signalTimingPlans
-                    .Where(a => a.Start < end && (a.End == DateTime.MinValue || a.End > start))
-                    .OrderBy(a => a.Start)
-                    .ToList();
-
-                if (plans.Count == 0)
+                if (!data.PlanEventsByDate.TryGetValue(selectedDate, out var planEvents) || planEvents.Count == 0)
                 {
                     continue;
                 }
 
-                // Aggregation end times are reconciled per plan number, so different
-                // plans can overlap. A later plan start supersedes the previous plan.
-                // Resolve this before clipping starts to midnight to retain their order.
-                var daily = plans
-                    .Select((plan, index) =>
-                    {
-                        var planEnd = plan.End == DateTime.MinValue || plan.End > end ? end : plan.End;
-                        if (index + 1 < plans.Count && plans[index + 1].Start < planEnd)
-                        {
-                            planEnd = plans[index + 1].Start;
-                        }
-
-                        return new Plan(
-                            plan.PlanNumber.ToString(),
-                            plan.Start < start ? start : plan.Start,
-                            planEnd);
-                    })
-                    .Where(p => p.End > p.Start)
+                var daily = planService.GetBasicPlans(start, end, data.Location.LocationIdentifier, planEvents)
+                    .Where(p => p.End > p.Start && p.PlanNumber != "0")
                     .ToList();
 
                 if (daily.Count > 0)
@@ -131,16 +117,17 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                     .Select(schedule =>
                     {
                         var binStart = schedule.Date.ToDateTime(TimeOnly.MinValue).AddMinutes(minutes);
-                        return schedule.Plans.FirstOrDefault(p => p.Start <= binStart && p.End > binStart)?.PlanNumber ?? "0";
+                        return schedule.Plans.FirstOrDefault(p => p.Start <= binStart && p.End > binStart)?.PlanNumber;
                     })
+                    .Where(plan => plan != null)
                     .ToList();
 
                 representativePlans[i] = plansAtBin
                     .GroupBy(p => p)
                     .OrderByDescending(g => g.Count())
                     .ThenBy(g => plansAtBin.IndexOf(g.Key))
-                    .First()
-                    .Key;
+                    .FirstOrDefault()
+                    ?.Key;
             }
 
             var representativeStart = representativeDate.ToDateTime(TimeOnly.MinValue);
@@ -169,12 +156,18 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 }
 
                 var segmentEnd = representativeStart.AddMinutes(i * binSizeMinutes);
-                result.Add(new Plan(currentPlan, segmentStart, segmentEnd));
+                if (currentPlan != null)
+                {
+                    result.Add(new Plan(currentPlan, segmentStart, segmentEnd));
+                }
                 currentPlan = planNumbers[i];
                 segmentStart = segmentEnd;
             }
 
-            result.Add(new Plan(currentPlan, segmentStart, representativeStart.AddDays(1)));
+            if (currentPlan != null)
+            {
+                result.Add(new Plan(currentPlan, segmentStart, representativeStart.AddDays(1)));
+            }
             return CollapsePlans(result);
         }
 
@@ -201,18 +194,19 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             var commonSchedule = grouped.First().Value;
             var commonKey = grouped.Key;
             var exceptions = schedules
-                .Where(kvp => BuildScheduleKey(kvp.Value) != commonKey)
+                .Where(kvp => kvp.Value.Count > 0 && BuildScheduleKey(kvp.Value) != commonKey)
                 .Select(kvp => kvp.Key)
                 .OrderBy(id => orderedLocationIds.IndexOf(id))
                 .ToList();
 
+            var availableCount = schedules.Count(schedule => schedule.Value.Count > 0);
             return new TimeOfDayPlanComparisonDto
             {
                 CommonCurrentSchedule = commonSchedule,
                 ExceptionLocationIdentifiers = exceptions,
-                SummaryText = exceptions.Count == 0
+                SummaryText = exceptions.Count == 0 && availableCount == schedules.Count
                     ? "Current schedule is common across selected locations."
-                    : $"Common current schedule found for {schedules.Count - exceptions.Count} of {schedules.Count} selected locations.",
+                    : $"Common current schedule found for {availableCount - exceptions.Count} of {availableCount} locations with plan data; {schedules.Count - availableCount} selected locations have no plan data.",
                 ExceptionsText = exceptions.Count == 0
                     ? string.Empty
                     : $"Locations with current schedule exceptions: {string.Join(", ", exceptions)}."

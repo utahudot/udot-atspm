@@ -125,6 +125,25 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 selectedDates,
                 options.BinSizeMinutes);
 
+            foreach (var location in result.Locations)
+            {
+                var peak = result.SplitPressure.CrossTrafficLocations
+                    .Where(row => row.LocationIdentifier == location.LocationIdentifier && row.PercentOfCrossTraffic.HasValue)
+                    .OrderByDescending(row => row.PercentOfCrossTraffic)
+                    .ThenBy(row => row.Minutes)
+                    .FirstOrDefault();
+                if (peak != null)
+                {
+                    location.Summary.CrossTrafficReview = $"{peak.Period}: " + TimeOfDaySplitPressureService.BuildReviewText(
+                        peak.PercentOfCrossTraffic, peak.PeakTime,
+                        options.SplitReviewThresholdPercent, options.ShoulderReviewThresholdPercent);
+                }
+                else if (result.SplitPressure.CrossTrafficLocations.Count == 0 && !string.IsNullOrWhiteSpace(result.SplitPressure.SummaryText))
+                {
+                    location.Summary.CrossTrafficReview = result.SplitPressure.SummaryText;
+                }
+            }
+
             return result;
         }
 

@@ -26,7 +26,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         public string LocationDescription { get; init; } = string.Empty;
         public List<IndianaEvent> IndianaEvents { get; } = new();
         public List<DetectorEventCountAggregation> DetectorEventCountAggregations { get; } = new();
-        public List<SignalTimingPlan> SignalTimingPlans { get; } = new();
+        public Dictionary<DateOnly, IReadOnlyList<IndianaEvent>> PlanEventsByDate { get; } = new();
         public IReadOnlyDictionary<DateOnly, Location> LocationsByDate { get; init; }
     }
 }

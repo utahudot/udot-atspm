@@ -30,20 +30,17 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly ILocationRepository locationRepository;
         private readonly IIndianaEventLogRepository eventLogRepository;
         private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
-        private readonly ISignalTimingPlanRepository signalTimingPlanRepository;
         private readonly TimeOfDayService timeOfDayService;
 
         public TimeOfDayReportService(
             ILocationRepository locationRepository,
             IIndianaEventLogRepository eventLogRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
-            ISignalTimingPlanRepository signalTimingPlanRepository,
             TimeOfDayService timeOfDayService)
         {
             this.locationRepository = locationRepository;
             this.eventLogRepository = eventLogRepository;
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
-            this.signalTimingPlanRepository = signalTimingPlanRepository;
             this.timeOfDayService = timeOfDayService;
         }
 
@@ -193,24 +190,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 var start = selectedDate.ToDateTime(TimeOnly.MinValue);
                 var end = start.AddDays(1);
 
-                var plans = signalTimingPlanRepository.GetList()
-                    .Where(p => p.LocationIdentifier == location.LocationIdentifier
-                        && p.Start < end
-                        && (p.End == DateTime.MinValue || p.End > start))
-                    .ToList();
-                data.SignalTimingPlans.AddRange(plans);
-
-                if (plans.Count > 0 && plans.All(plan => plan.Start < start))
-                {
-                    var lastRecordedStart = plans.Max(plan => plan.Start);
-                    warnings.Add(new TimeOfDayWarningDto
-                    {
-                        Code = "PlanScheduleCarriedForward",
-                        LocationIdentifier = locationIdentifier,
-                        Message = $"No plan changes are recorded for {locationIdentifier} on {selectedDate:yyyy-MM-dd}; the existing schedule carries forward the last recorded plan from {lastRecordedStart:yyyy-MM-dd HH:mm:ss}. Verify plan aggregation coverage for the selected date."
-                    });
-                }
-
                 if (options.DataSource == TimeOfDayDataSource.Aggregated && locationsByDate.ContainsKey(selectedDate))
                 {
                     data.DetectorEventCountAggregations.AddRange(
@@ -218,28 +197,17 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 }
             }
 
-            if (options.DataSource != TimeOfDayDataSource.Aggregated)
-            {
-                LoadIndianaEvents(locationIdentifier, locationsByDate.Keys.ToList(), data);
-            }
-
-            if (data.SignalTimingPlans.Count > 0)
-            {
-                var distinctPlans = data.SignalTimingPlans
-                    .DistinctBy(p => new { p.LocationIdentifier, p.PlanNumber, p.Start })
-                    .ToList();
-
-                data.SignalTimingPlans.Clear();
-                data.SignalTimingPlans.AddRange(distinctPlans);
-            }
+            LoadControllerEvents(options, locationIdentifier, selectedDates, data, warnings);
 
             return data;
         }
 
-        private void LoadIndianaEvents(
+        private void LoadControllerEvents(
+            TimeOfDayOptions options,
             string locationIdentifier,
             IReadOnlyList<DateOnly> selectedDates,
-            TimeOfDayLocationReportData data)
+            TimeOfDayLocationReportData data,
+            List<TimeOfDayWarningDto> warnings)
         {
             var queryWindows = MergeWindows(selectedDates
                 .Select(selectedDate =>
@@ -253,9 +221,55 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             foreach (var queryWindow in queryWindows)
             {
                 var controllerEventLogs = eventLogRepository
-                    .GetEventsBetweenDates(locationIdentifier, queryWindow.Start, queryWindow.End);
-                data.IndianaEvents.AddRange(controllerEventLogs
-                    .Where(entry => entry.EventCode == (short)IndianaEnumerations.VehicleDetectorOn));
+                    .GetEventsBetweenDates(locationIdentifier, queryWindow.Start, queryWindow.End).ToList();
+                if (options.DataSource != TimeOfDayDataSource.Aggregated)
+                {
+                    data.IndianaEvents.AddRange(controllerEventLogs
+                        .Where(entry => entry.EventCode == (short)IndianaEnumerations.VehicleDetectorOn));
+                }
+
+                var planEvents = controllerEventLogs
+                    .Where(entry => entry.EventCode == (short)IndianaEnumerations.CoordPatternChange)
+                    .ToList();
+                foreach (var date in selectedDates)
+                {
+                    var start = date.ToDateTime(TimeOnly.MinValue);
+                    var end = start.AddDays(1);
+                    if (start < queryWindow.Start || start >= queryWindow.End)
+                    {
+                        continue;
+                    }
+
+                    var paddedStart = start.AddHours(-EventPaddingHours);
+                    var paddedEnd = end.AddHours(EventPaddingHours);
+                    var dailyEvents = planEvents
+                        .Where(entry => entry.Timestamp >= paddedStart && entry.Timestamp < paddedEnd)
+                        .ToList();
+                    // The shared helper adds boundary events even without recorded plans.
+                    // Keep dates without a plan observation out of the representative vote.
+                    if (dailyEvents.Any(entry => entry.Timestamp < end))
+                    {
+                        data.PlanEventsByDate[date] = dailyEvents.GetPlanEvents(paddedStart, paddedEnd);
+                        if (!dailyEvents.Any(entry => entry.Timestamp <= start))
+                        {
+                            warnings.Add(new TimeOfDayWarningDto
+                            {
+                                Code = "PartialPlanData",
+                                LocationIdentifier = locationIdentifier,
+                                Message = $"The plan at midnight is unknown for {locationIdentifier} on {date:yyyy-MM-dd}; the existing schedule starts at the first recorded plan change."
+                            });
+                        }
+                    }
+                    else
+                    {
+                        warnings.Add(new TimeOfDayWarningDto
+                        {
+                            Code = "MissingPlanData",
+                            LocationIdentifier = locationIdentifier,
+                            Message = $"No plan events are available for {locationIdentifier} on {date:yyyy-MM-dd}, including the preceding 12 hours; that date is excluded from the existing representative schedule."
+                        });
+                    }
+                }
             }
 
             ReplaceWithDistinctChronologicalEvents(data.IndianaEvents);

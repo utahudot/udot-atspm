@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.Business.TimeOfDay
 {
@@ -35,8 +36,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             IReadOnlyList<TimeOfDayLocationResult> locations)
         {
             var peaks = new List<TimeOfDayPeakEventDto>();
-            AddPeak(peaks, "AM corridor peak", "Corridor", "AM", corridorProfile, 4 * 60, 11 * 60);
-            AddPeak(peaks, "PM corridor peak", "Corridor", "PM", corridorProfile, 12 * 60, 19 * 60);
+            AddPeak(peaks, "AM corridor peak", "Corridor", "AM", corridorProfile, TimeOfDayOptions.AmPeakStartMinutes, TimeOfDayOptions.AmPeakEndMinutes);
+            AddPeak(peaks, "PM corridor peak", "Corridor", "PM", corridorProfile, TimeOfDayOptions.PmPeakStartMinutes, TimeOfDayOptions.PmPeakEndMinutes);
 
             foreach (var directionalProfile in directionalProfiles)
             {
@@ -45,8 +46,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
             foreach (var location in locations)
             {
-                AddLocationPeak(peaks, location, "AM", 5 * 60, 10 * 60);
-                AddLocationPeak(peaks, location, "PM", 14 * 60, 19 * 60);
+                AddLocationPeak(peaks, location, "AM", TimeOfDayOptions.AmPeakStartMinutes, TimeOfDayOptions.AmPeakEndMinutes);
+                AddLocationPeak(peaks, location, "PM", TimeOfDayOptions.PmPeakStartMinutes, TimeOfDayOptions.PmPeakEndMinutes);
             }
 
             return new TimeOfDayPlanProfileDto
@@ -66,7 +67,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             int startMinutes,
             int endMinutes)
         {
-            var peak = FindPeak(profile, startMinutes, endMinutes);
+            var peak = TimeOfDayProfileService.FindPeak(profile, startMinutes, endMinutes);
             if (peak == null)
             {
                 return;
@@ -91,7 +92,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             int startMinutes,
             int endMinutes)
         {
-            var peak = FindPeak(location.Profile, startMinutes, endMinutes);
+            var peak = TimeOfDayProfileService.FindPeak(location.Profile, startMinutes, endMinutes);
             if (peak == null || (peak.SmoothedVolume <= 0 && peak.AverageVolume <= 0))
             {
                 return;
@@ -111,13 +112,5 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             });
         }
 
-        private static TimeOfDayProfilePointDto FindPeak(TimeOfDayProfileDto profile, int startMinutes, int endMinutes)
-        {
-            return profile.Points
-                .Where(p => p.Minutes >= startMinutes && p.Minutes < endMinutes)
-                .OrderByDescending(p => p.SmoothedVolume)
-                .ThenBy(p => p.Minutes)
-                .FirstOrDefault();
-        }
     }
 }

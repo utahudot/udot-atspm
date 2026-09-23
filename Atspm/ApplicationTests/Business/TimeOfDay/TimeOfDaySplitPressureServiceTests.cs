@@ -105,6 +105,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 15);
 
             var row = Assert.Single(result.CrossTrafficLocations.Where(row => row.Period == "AM"));
+            Assert.Equal(250, row.TotalVehiclesPerHour);
             Assert.Equal(25, row.PercentOfCrossTraffic);
         }
 
@@ -134,7 +135,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
         }
 
         [Fact]
-        public void BuildSplitPressure_UsesOnlyAllDayPrimaryDirectionsForSplitPressure()
+        public void BuildSplitPressure_UsesAmDirectionsForAmProfile()
         {
             var service = CreateService();
             var result = service.BuildSplitPressure(
@@ -155,6 +156,11 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
 
             Assert.Equal(new[] { "Eastbound" }, result.PrimaryDirections);
             Assert.Equal(new[] { "Northbound" }, result.CrossDirections);
+            Assert.Equal(new[] { "Northbound" }, result.PrimaryDirectionsByPeriod["AM"]);
+            var share = Assert.Single(result.CrossTrafficShare);
+            Assert.Equal(400, share.PrimaryVolume);
+            Assert.Equal(600, share.CrossStreetVolume);
+            Assert.Equal(60, share.CrossTrafficPercent);
         }
 
         [Fact]
@@ -293,6 +299,52 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                     ("PM", "1002", "15:00"), ("PM", "1001", "15:00") },
                 result.MovementPressures.Select(row => (row.Period, row.LocationIdentifier, row.PeakTime)));
             Assert.All(result.MovementPressures, row => Assert.Equal(200, row.Volume));
+        }
+
+        [Fact]
+        public void BuildSplitPressure_InfersBothDirectionsOfPrimaryAxisWhenSelectionIsEmpty()
+        {
+            var result = CreateService().BuildSplitPressure(new TimeOfDayOptions(), new[]
+            {
+                BuildProfile("Eastbound", "Eastbound", 480, 600),
+                BuildProfile("Westbound", "Westbound", 480, 600),
+                BuildProfile("Northbound", "Northbound", 480, 200),
+                BuildProfile("Southbound", "Southbound", 480, 200)
+            }, Array.Empty<TimeOfDayLocationAnalysisData>(), new[] { TestDate }, 15);
+
+            Assert.Equal(new[] { "Eastbound", "Westbound" }, result.PrimaryDirections);
+            Assert.Equal(25, Assert.Single(result.CrossTrafficShare).CrossTrafficPercent);
+        }
+
+        [Fact]
+        public void BuildSplitPressure_AppliesPeriodDirectionsToProfilesAndLocationRows()
+        {
+            var location = BuildLocation("1001", 150, 100);
+            foreach (var minute in new[] { 600, 840, 1140 })
+            {
+                location.Observations.Add(BuildObservation("1001", "Eastbound", 150) with { Minutes = minute });
+                location.Observations.Add(BuildObservation("1001", "Northbound", 100) with { Minutes = minute });
+            }
+            var result = CreateService().BuildSplitPressure(new TimeOfDayOptions
+            {
+                AllDayPrimaryDirections = new() { "Eastbound" },
+                AmPrimaryDirections = new() { "Northbound" },
+                PmPrimaryDirections = new() { "Northbound" }
+            }, BuildDirectionalProfiles(), new[] { location }, new[] { TestDate }, 15);
+
+            foreach (var minute in new[] { 480, 840 })
+            {
+                var point = result.CrossTrafficShare.Single(point => point.Minutes == minute);
+                Assert.Equal(400, point.PrimaryVolume);
+                Assert.Equal(600, point.CrossStreetVolume);
+            }
+            foreach (var minute in new[] { 600, 1140 })
+            {
+                Assert.Equal(600, result.CrossTrafficShare.Single(point => point.Minutes == minute).PrimaryVolume);
+            }
+            Assert.Equal(60, result.CrossTrafficLocations.Single(row => row.Period == "AM").PercentOfCrossTraffic);
+            Assert.Equal(40, result.CrossTrafficLocations.Single(row => row.Period == "Midday").PercentOfCrossTraffic);
+            Assert.Equal(60, result.CrossTrafficLocations.Single(row => row.Period == "PM").PercentOfCrossTraffic);
         }
 
         private static TimeOfDaySplitPressureService CreateService()

@@ -79,6 +79,9 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
     {
         public List<string> PrimaryDirections { get; set; } = new();
         public List<string> CrossDirections { get; set; } = new();
+        /// <summary>Effective directions for AM, PM, and all other hours. Legacy direction lists describe all-day selection.</summary>
+        public Dictionary<string, List<string>> PrimaryDirectionsByPeriod { get; set; } = new();
+        public Dictionary<string, List<string>> CrossDirectionsByPeriod { get; set; } = new();
         public TimeOfDayProfileDto PrimaryProfile { get; set; } = new();
         public TimeOfDayProfileDto CrossStreetProfile { get; set; } = new();
         public List<TimeOfDayCrossTrafficSharePointDto> CrossTrafficShare { get; set; } = new();

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Business.TimeOfDay;
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Models.MeasureOptions;
@@ -44,9 +45,9 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 new TimeOfDayLocationService(new StubObservationService(observationsByLocation), profileService),
                 profileService,
                 new StubRecommendationService(),
-                new TimeOfDayPlanScheduleService(),
+                new TimeOfDayPlanScheduleService(new PlanService()),
                 new TimeOfDayPlanProfileService(),
-                new StubSplitPressureService());
+                new TimeOfDaySplitPressureService(profileService));
 
             var result = service.GetChartData(
                 new TimeOfDayOptions(),
@@ -96,8 +97,8 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                     LocationDescription = id
                 })
                 .ToList();
-            reportData.Single(data => data.Location.LocationIdentifier == "1003").SignalTimingPlans.Add(
-                TimingPlan(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1003"));
+            reportData.Single(data => data.Location.LocationIdentifier == "1003").PlanEventsByDate.Add(TestDate, new[] {
+                TimingPlan(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1003") });
             var warnings = new List<TimeOfDayWarningDto>();
 
             var result = CreateService(observationsByLocation).GetChartData(
@@ -136,8 +137,8 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 Location = new Location { LocationIdentifier = "1001" },
                 LocationDescription = "1001"
             };
-            reportData.SignalTimingPlans.Add(
-                TimingPlan(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1001"));
+            reportData.PlanEventsByDate.Add(TestDate, new[] {
+                TimingPlan(TestDate.ToDateTime(TimeOnly.MinValue), 7, "1001") });
 
             var result = CreateService(observationsByLocation).GetChartData(
                 new TimeOfDayOptions(),
@@ -180,6 +181,26 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 warning.Message.Contains("Northbound"));
         }
 
+        [Fact]
+        public void GetChartData_PopulatesLocationCrossTrafficReview()
+        {
+            var observations = new Dictionary<string, List<TimeOfDayVolumeObservation>>
+            {
+                ["1001"] = new()
+                {
+                    BuildObservation("1001", "Eastbound", 75),
+                    BuildObservation("1001", "Northbound", 25)
+                }
+            };
+            var result = CreateService(observations).GetChartData(
+                new TimeOfDayOptions { AllDayPrimaryDirections = new() { "Eastbound" } },
+                new[] { "1001" }, new[] { TestDate },
+                new[] { new TimeOfDayLocationReportData { Location = new Location { LocationIdentifier = "1001" } } },
+                new List<TimeOfDayWarningDto>());
+
+            Assert.Contains("25%", Assert.Single(result.Locations).Summary.CrossTrafficReview);
+        }
+
         private static TimeOfDayService CreateService(
             IReadOnlyDictionary<string, List<TimeOfDayVolumeObservation>> observationsByLocation)
         {
@@ -188,9 +209,9 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 new TimeOfDayLocationService(new StubObservationService(observationsByLocation), profileService),
                 profileService,
                 new StubRecommendationService(),
-                new TimeOfDayPlanScheduleService(),
+                new TimeOfDayPlanScheduleService(new PlanService()),
                 new TimeOfDayPlanProfileService(),
-                new StubSplitPressureService());
+                new TimeOfDaySplitPressureService(profileService));
         }
 
         private static TimeOfDayVolumeObservation BuildObservation(
@@ -210,14 +231,14 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 count);
         }
 
-        private static SignalTimingPlan TimingPlan(DateTime start, short planNumber, string locationIdentifier)
+        private static IndianaEvent TimingPlan(DateTime start, short planNumber, string locationIdentifier)
         {
-            return new SignalTimingPlan
+            return new IndianaEvent
             {
                 LocationIdentifier = locationIdentifier,
-                PlanNumber = planNumber,
-                Start = start,
-                End = DateTime.MinValue
+                EventCode = 131,
+                EventParam = planNumber,
+                Timestamp = start
             };
         }
 
@@ -271,17 +292,5 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
             }
         }
 
-        private class StubSplitPressureService : ITimeOfDaySplitPressureService
-        {
-            public TimeOfDaySplitPressureDto BuildSplitPressure(
-                TimeOfDayOptions options,
-                IReadOnlyList<TimeOfDayProfileDto> directionalProfiles,
-                IReadOnlyList<TimeOfDayLocationAnalysisData> locationData,
-                IReadOnlyList<DateOnly> selectedDates,
-                int binSizeMinutes)
-            {
-                return new TimeOfDaySplitPressureDto();
-            }
-        }
     }
 }

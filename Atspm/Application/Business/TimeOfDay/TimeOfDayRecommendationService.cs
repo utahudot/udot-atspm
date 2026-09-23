@@ -81,21 +81,20 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 corridorProfile,
                 "PM primary");
 
-            var maxAmEnd = ParseTimeOrDefault(options.MaxAmEndTime, 10 * 60);
+            var maxAmEnd = ParseTimeOrDefault(options.MaxAmEndTime, TimeOfDayOptions.AmPeakEndMinutes);
             var maxPmEnd = ParseTimeOrDefault(options.MaxPmEndTime, 20 * 60);
             var freeFallback = ParseTimeOrDefault(options.FreeFallbackTime, 23 * 60 + 30);
             var binSize = InferBinSize(corridorProfile);
+            // A bin-aligned boundary must not round past the configured limit.
+            maxAmEnd = maxAmEnd / binSize * binSize;
+            maxPmEnd = maxPmEnd / binSize * binSize;
 
-            var amPeak = FindPeak(amProfile, 5 * 60, 10 * 60);
-            var pmPeak = FindPeak(pmProfile, 14 * 60, 19 * 60);
+            var amPeak = TimeOfDayProfileService.FindPeak(amProfile, TimeOfDayOptions.AmPeakStartMinutes, TimeOfDayOptions.AmPeakEndMinutes);
+            var pmPeak = TimeOfDayProfileService.FindPeak(pmProfile, TimeOfDayOptions.PmPeakStartMinutes, TimeOfDayOptions.PmPeakEndMinutes);
             var dailyPeak = corridorProfile.Points.Max(p => p.SmoothedVolume);
             var baseline = Percentile(corridorProfile.Points.Select(p => p.SmoothedVolume).ToList(), 0.15);
-            var amPeakValue = amPeak != null
-                ? FindMaxSmoothed(amProfile, 5 * 60, 12 * 60, dailyPeak)
-                : dailyPeak;
-            var pmPeakValue = pmPeak != null
-                ? FindMaxSmoothed(pmProfile, 12 * 60, 19 * 60, dailyPeak)
-                : dailyPeak;
+            var amPeakValue = amPeak?.SmoothedVolume ?? dailyPeak;
+            var pmPeakValue = pmPeak?.SmoothedVolume ?? dailyPeak;
 
             var amEntryThreshold = baseline + (amPeakValue - baseline) * options.AmEntryPctOfPeak;
             var amExitThreshold = baseline + (amPeakValue - baseline) * options.AmExitPctOfPeak;
@@ -117,12 +116,12 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 : null;
             if (middayValley != null && pmEntry < middayValley.Minutes)
             {
-                pmEntry = Math.Max(14 * 60, middayValley.Minutes);
+                pmEntry = Math.Max(TimeOfDayOptions.PmPeakStartMinutes, middayValley.Minutes);
             }
 
-            if (pmEntry < 14 * 60)
+            if (pmEntry < TimeOfDayOptions.PmPeakStartMinutes)
             {
-                pmEntry = 14 * 60;
+                pmEntry = TimeOfDayOptions.PmPeakStartMinutes;
             }
 
             var freeStart = FindFreeStart(corridorProfile, pm.End, freeThreshold, options.FreeSustainedBins, freeFallback);
@@ -151,7 +150,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             var amEntry = FindFirstSustained(
                 amProfile,
                 4 * 60,
-                amPeak?.Minutes ?? 10 * 60,
+                amPeak?.Minutes ?? TimeOfDayOptions.AmPeakEndMinutes,
                 sustainedBins,
                 point => point.SmoothedVolume >= amEntryThreshold);
             var amExit = amPeak != null
@@ -209,8 +208,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         {
             var pmEntry = FindFirstSustained(
                 pmProfile,
-                Math.Max(amEnd, 14 * 60),
-                pmPeak?.Minutes ?? 19 * 60,
+                Math.Max(amEnd, TimeOfDayOptions.PmPeakStartMinutes),
+                pmPeak?.Minutes ?? TimeOfDayOptions.PmPeakEndMinutes,
                 sustainedBins,
                 point => point.SmoothedVolume >= pmEntryThreshold);
             var pmExit = pmPeak != null
@@ -241,18 +240,18 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             {
                 pmEntry = FindFirstSustained(
                     pmProfile,
-                    14 * 60,
+                    TimeOfDayOptions.PmPeakStartMinutes,
                     maxPmEnd - 60,
                     sustainedBins,
                     point => point.SmoothedVolume >= pmEntryThreshold);
 
                 if (pmEntry.HasValue && pmEntry.Value >= pmExit.Value)
                 {
-                    pmEntry = Math.Max(14 * 60, maxPmEnd - 180);
+                    pmEntry = Math.Max(TimeOfDayOptions.PmPeakStartMinutes, maxPmEnd - 180);
                 }
             }
 
-            pmEntry ??= 14 * 60;
+            pmEntry ??= TimeOfDayOptions.PmPeakStartMinutes;
             pmExit ??= maxPmEnd;
             return (pmEntry.Value, pmExit.Value);
         }
@@ -335,15 +334,6 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             }
         }
 
-        private static TimeOfDayProfilePointDto FindPeak(TimeOfDayProfileDto profile, int startMinutes, int endMinutes)
-        {
-            return profile.Points
-                .Where(p => p.Minutes >= startMinutes && p.Minutes <= endMinutes)
-                .OrderByDescending(p => p.SmoothedVolume)
-                .ThenBy(p => p.Minutes)
-                .FirstOrDefault();
-        }
-
         private static TimeOfDayProfilePointDto FindValley(TimeOfDayProfileDto profile, int startMinutes, int endMinutes)
         {
             return profile.Points
@@ -351,20 +341,6 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 .OrderBy(p => p.SmoothedVolume)
                 .ThenBy(p => p.Minutes)
                 .FirstOrDefault();
-        }
-
-        private static double FindMaxSmoothed(
-            TimeOfDayProfileDto profile,
-            int startMinutes,
-            int endMinutes,
-            double fallback)
-        {
-            var values = profile.Points
-                .Where(p => p.Minutes >= startMinutes && p.Minutes <= endMinutes)
-                .Select(p => p.SmoothedVolume)
-                .ToList();
-
-            return values.Count > 0 ? values.Max() : fallback;
         }
 
         private static int? FindFirstSustained(
@@ -412,15 +388,22 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 .OrderBy(p => p.Minutes)
                 .ToList();
             var runLength = 0;
+            var runEnd = 0;
+            var binSize = InferBinSize(profile);
 
             for (var i = points.Count - 1; i >= 0; i--)
             {
                 if (points[i].SmoothedVolume >= threshold)
                 {
+                    if (runLength == 0 || points[i + 1].Minutes - points[i].Minutes != binSize)
+                    {
+                        runLength = 0;
+                        runEnd = Math.Min(points[i].Minutes + binSize, endMinutes);
+                    }
                     runLength++;
                     if (runLength >= sustainedBins)
                     {
-                        return points[i].Minutes;
+                        return runEnd;
                     }
                 }
                 else

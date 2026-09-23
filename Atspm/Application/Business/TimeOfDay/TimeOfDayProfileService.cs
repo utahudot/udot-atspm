@@ -299,6 +299,15 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             };
         }
 
+        internal static TimeOfDayProfilePointDto FindPeak(TimeOfDayProfileDto profile, int startMinutes, int endMinutes)
+        {
+            return profile.Points
+                .Where(point => point.Minutes >= startMinutes && point.Minutes < endMinutes)
+                .OrderByDescending(point => point.SmoothedVolume)
+                .ThenBy(point => point.Minutes)
+                .FirstOrDefault();
+        }
+
         internal static string FormatTime(int minutes)
         {
             var normalized = ((minutes % (24 * 60)) + (24 * 60)) % (24 * 60);

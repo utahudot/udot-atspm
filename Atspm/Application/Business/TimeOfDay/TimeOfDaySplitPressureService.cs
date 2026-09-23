@@ -32,11 +32,33 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
     public class TimeOfDaySplitPressureService : ITimeOfDaySplitPressureService
     {
+        private static readonly (string Name, int Start, int End)[] DaytimePeriods =
+        {
+            ("AM", TimeOfDayOptions.AmPeakStartMinutes, TimeOfDayOptions.AmPeakEndMinutes),
+            ("Midday", TimeOfDayOptions.AmPeakEndMinutes, TimeOfDayOptions.PmPeakStartMinutes),
+            ("PM", TimeOfDayOptions.PmPeakStartMinutes, TimeOfDayOptions.PmPeakEndMinutes)
+        };
+
         private readonly ITimeOfDayProfileService profileService;
 
         public TimeOfDaySplitPressureService(ITimeOfDayProfileService profileService)
         {
             this.profileService = profileService;
+        }
+
+        private static string GetDirectionPeriod(int minutes)
+        {
+            if (minutes >= TimeOfDayOptions.AmPeakStartMinutes && minutes < TimeOfDayOptions.AmPeakEndMinutes)
+            {
+                return "AM";
+            }
+
+            if (minutes >= TimeOfDayOptions.PmPeakStartMinutes && minutes < TimeOfDayOptions.PmPeakEndMinutes)
+            {
+                return "PM";
+            }
+
+            return "AllDay";
         }
 
         public TimeOfDaySplitPressureDto BuildSplitPressure(
@@ -46,36 +68,40 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             IReadOnlyList<DateOnly> selectedDates,
             int binSizeMinutes)
         {
-            var primaryDirections = ResolvePrimaryDirections(options, directionalProfiles);
-            var crossDirections = ResolveCrossDirections(primaryDirections, directionalProfiles);
-            var missingExplicitPrimaryDirections = FindMissingExplicitPrimaryDirections(options, directionalProfiles, locationData);
+            var allDay = ResolvePrimaryDirections(options.AllDayPrimaryDirections, directionalProfiles);
+            var primaryByPeriod = new Dictionary<string, List<string>>
+            {
+                ["AllDay"] = allDay,
+                ["AM"] = options.AmPrimaryDirections.Count > 0
+                    ? ResolvePrimaryDirections(options.AmPrimaryDirections, directionalProfiles) : allDay,
+                ["PM"] = options.PmPrimaryDirections.Count > 0
+                    ? ResolvePrimaryDirections(options.PmPrimaryDirections, directionalProfiles) : allDay
+            };
+            var crossByPeriod = primaryByPeriod.ToDictionary(pair => pair.Key,
+                pair => ResolveCrossDirections(pair.Value, directionalProfiles));
+            var missingDirections = primaryByPeriod.Select(pair => new
+            {
+                Period = pair.Key,
+                Directions = FindMissingExplicitPrimaryDirections(pair.Value, directionalProfiles, locationData)
+            }).Where(period => period.Directions.Count > 0).ToList();
 
-            if (missingExplicitPrimaryDirections.Count > 0)
+            if (missingDirections.Count > 0)
             {
                 return new TimeOfDaySplitPressureDto
                 {
-                    PrimaryDirections = primaryDirections,
-                    CrossDirections = crossDirections,
+                    PrimaryDirections = allDay,
+                    CrossDirections = crossByPeriod["AllDay"],
+                    PrimaryDirectionsByPeriod = primaryByPeriod,
+                    CrossDirectionsByPeriod = crossByPeriod,
                     ThresholdPercentByName = BuildThresholds(options),
-                    SummaryText = $"Split-pressure analysis unavailable because primary direction data is unavailable for {string.Join(", ", missingExplicitPrimaryDirections)}."
+                    SummaryText = $"Split-pressure analysis unavailable because primary direction data is unavailable for {string.Join("; ", missingDirections.Select(period => $"{period.Period}: {string.Join(", ", period.Directions)}"))}."
                 };
             }
 
-            var primaryProfile = BuildRepresentativeDirectionProfile(
-                "Primary street",
-                primaryDirections,
-                directionalProfiles,
-                locationData,
-                selectedDates,
-                binSizeMinutes);
-            var crossProfile = BuildRepresentativeDirectionProfile(
-                "Cross street",
-                crossDirections,
-                directionalProfiles,
-                locationData,
-                selectedDates,
-                binSizeMinutes);
-
+            var primaryProfile = BuildPeriodDirectionProfile("Primary street", primaryByPeriod,
+                directionalProfiles, locationData, selectedDates, binSizeMinutes);
+            var crossProfile = BuildPeriodDirectionProfile("Cross street", crossByPeriod,
+                directionalProfiles, locationData, selectedDates, binSizeMinutes);
             var share = BuildCrossTrafficShare(primaryProfile, crossProfile);
             var periodPeaks = BuildPeriodPeaks(primaryProfile, crossProfile, share);
             var peakShare = share
@@ -87,8 +113,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             var crossPeak = crossProfile.Points.OrderByDescending(p => p.AverageVolume).ThenBy(p => p.Minutes).FirstOrDefault();
             var crossTrafficLocations = BuildCrossTrafficLocations(
                 locationData,
-                primaryDirections,
-                crossDirections,
+                primaryByPeriod,
+                crossByPeriod,
                 selectedDates,
                 binSizeMinutes);
             var movementPressures = BuildMovementPressures(
@@ -98,8 +124,10 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
             return new TimeOfDaySplitPressureDto
             {
-                PrimaryDirections = primaryDirections,
-                CrossDirections = crossDirections,
+                PrimaryDirections = allDay,
+                CrossDirections = crossByPeriod["AllDay"],
+                PrimaryDirectionsByPeriod = primaryByPeriod,
+                CrossDirectionsByPeriod = crossByPeriod,
                 PrimaryProfile = primaryProfile,
                 CrossStreetProfile = crossProfile,
                 CrossTrafficShare = share,
@@ -124,7 +152,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         }
 
         private static List<string> FindMissingExplicitPrimaryDirections(
-            TimeOfDayOptions options,
+            IReadOnlyList<string> requestedDirections,
             IReadOnlyList<TimeOfDayProfileDto> directionalProfiles,
             IReadOnlyList<TimeOfDayLocationAnalysisData> locationData)
         {
@@ -138,7 +166,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            return TimeOfDayDirectionHelper.FindMissingDirections(options.AllDayPrimaryDirections, availableDirections);
+            return TimeOfDayDirectionHelper.FindMissingDirections(requestedDirections, availableDirections);
         }
 
         private static Dictionary<string, double> BuildThresholds(TimeOfDayOptions options)
@@ -151,26 +179,32 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
         }
 
         private static List<string> ResolvePrimaryDirections(
-            TimeOfDayOptions options,
+            IReadOnlyList<string> requestedDirections,
             IReadOnlyList<TimeOfDayProfileDto> directionalProfiles)
         {
-            var requested = TimeOfDayDirectionHelper.NormalizeDirections(options.AllDayPrimaryDirections);
+            var requested = TimeOfDayDirectionHelper.NormalizeDirections(requestedDirections);
 
             if (requested.Count > 0)
             {
                 return requested;
             }
 
-            var strongestDirection = directionalProfiles
-                .OrderByDescending(p => p.Points.Sum(x => x.AverageVolume))
-                .Select(p => p.Direction)
+            // Infer the strongest street axis, not just one travel direction.
+            var strongestAxis = directionalProfiles
+                .Where(profile => !string.IsNullOrWhiteSpace(profile.Direction))
+                .GroupBy(profile => Axis(TimeOfDayDirectionHelper.NormalizeDirection(profile.Direction)))
+                .OrderByDescending(group => group.Sum(profile => profile.Points.Sum(point => point.AverageVolume)))
                 .FirstOrDefault();
-
-            return string.IsNullOrWhiteSpace(strongestDirection)
-                ? new List<string>()
-                : new List<string> { strongestDirection };
+            return strongestAxis == null ? new List<string>()
+                : TimeOfDayDirectionHelper.NormalizeDirections(strongestAxis.Select(profile => profile.Direction));
         }
 
+        private static string Axis(string direction) => direction switch
+        {
+            "Eastbound" or "Westbound" => "EastWest",
+            "Northbound" or "Southbound" => "NorthSouth",
+            _ => direction
+        };
         private static List<string> ResolveCrossDirections(
             IReadOnlyList<string> primaryDirections,
             IReadOnlyList<TimeOfDayProfileDto> directionalProfiles)
@@ -214,6 +248,24 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             return Array.Empty<string>();
         }
 
+        private TimeOfDayProfileDto BuildPeriodDirectionProfile(
+            string label,
+            IReadOnlyDictionary<string, List<string>> directionsByPeriod,
+            IReadOnlyList<TimeOfDayProfileDto> directionalProfiles,
+            IReadOnlyList<TimeOfDayLocationAnalysisData> locationData,
+            IReadOnlyList<DateOnly> selectedDates,
+            int binSizeMinutes)
+        {
+            var points = new List<TimeOfDayProfilePointDto>();
+            foreach (var group in directionsByPeriod.GroupBy(pair => string.Join("|", pair.Value.OrderBy(direction => direction))))
+            {
+                var profile = BuildRepresentativeDirectionProfile(label, group.First().Value,
+                    directionalProfiles, locationData, selectedDates, binSizeMinutes);
+                var periods = group.Select(pair => pair.Key).ToHashSet();
+                points.AddRange(profile.Points.Where(point => periods.Contains(GetDirectionPeriod(point.Minutes))));
+            }
+            return new TimeOfDayProfileDto { Label = label, Points = points.OrderBy(point => point.Minutes).ToList() };
+        }
         private TimeOfDayProfileDto BuildRepresentativeDirectionProfile(
             string label,
             IReadOnlyList<string> directions,
@@ -298,7 +350,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             IReadOnlyList<TimeOfDayCrossTrafficSharePointDto> share)
         {
             var result = new List<TimeOfDayPeakEventDto>();
-            foreach (var period in Periods())
+            foreach (var period in DaytimePeriods)
             {
                 AddProfilePeak(result, $"{period.Name} primary peak", "Primary", period.Name, primaryProfile, period.Start, period.End);
                 AddProfilePeak(result, $"{period.Name} cross-street peak", "CrossStreet", period.Name, crossProfile, period.Start, period.End);
@@ -361,8 +413,8 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
         private List<TimeOfDayCrossTrafficLocationDto> BuildCrossTrafficLocations(
             IReadOnlyList<TimeOfDayLocationAnalysisData> locationData,
-            IReadOnlyList<string> primaryDirections,
-            IReadOnlyList<string> crossDirections,
+            IReadOnlyDictionary<string, List<string>> primaryByPeriod,
+            IReadOnlyDictionary<string, List<string>> crossByPeriod,
             IReadOnlyList<DateOnly> selectedDates,
             int binSizeMinutes)
         {
@@ -370,19 +422,24 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
 
             foreach (var location in locationData)
             {
-                var profile = profileService.BuildProfile(
-                    $"{location.Location.LocationIdentifier} cross traffic",
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    location.Observations
-                        .Where(o => crossDirections.Contains(o.Direction, StringComparer.OrdinalIgnoreCase))
-                        .ToList(),
-                    selectedDates,
-                    binSizeMinutes);
-
-                foreach (var period in Periods())
+                var daysWithData = location.Observations.Where(observation => selectedDates.Contains(observation.LocalDate))
+                    .Select(observation => observation.LocalDate).Distinct().Count();
+                var profiles = new Dictionary<string, TimeOfDayProfileDto>();
+                foreach (var period in DaytimePeriods)
                 {
+                    var selection = period.Name == "Midday" ? "AllDay" : period.Name;
+                    var primaryDirections = primaryByPeriod[selection];
+                    var crossDirections = crossByPeriod[selection];
+                    var key = string.Join("|", crossDirections.OrderBy(direction => direction));
+                    if (!profiles.TryGetValue(key, out var profile))
+                    {
+                        profile = profileService.BuildProfile(
+                            $"{location.Location.LocationIdentifier} cross traffic", string.Empty, string.Empty, string.Empty,
+                            location.Observations.Where(observation => crossDirections.Contains(observation.Direction, StringComparer.OrdinalIgnoreCase)).ToList(),
+                            selectedDates, binSizeMinutes);
+                        profiles.Add(key, profile);
+                    }
+
                     var peak = profile.Points
                         .Where(p => p.Minutes >= period.Start && p.Minutes < period.End)
                         .OrderByDescending(p => p.AverageVolume)
@@ -415,7 +472,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                         Period = period.Name,
                         PeakTime = peak.TimeOfDay,
                         Minutes = peak.Minutes,
-                        TotalVehiclesPerHour = peak.AverageVolume,
+                        TotalVehiclesPerHour = TimeOfDayProfileService.Round(crossCount / Math.Max(daysWithData, 1) * 60d / binSizeMinutes),
                         PercentOfCrossTraffic = totalCount > 0
                             ? TimeOfDayProfileService.Round(crossCount / totalCount * 100)
                             : null
@@ -452,7 +509,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                         selectedDates,
                         binSizeMinutes);
 
-                    foreach (var period in Periods().Where(p => p.Name is "AM" or "PM"))
+                    foreach (var period in DaytimePeriods.Where(p => p.Name is "AM" or "PM"))
                     {
                         var peak = profile.Points
                             .Where(p => p.Minutes >= period.Start && p.Minutes < period.End)
@@ -484,7 +541,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 .ToList();
         }
 
-        private static string BuildReviewText(
+        internal static string BuildReviewText(
             double? peakCrossTrafficPercent,
             string peakTime,
             double splitReviewThresholdPercent,
@@ -521,14 +578,5 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             return $"Primary peak {primaryPeak?.TimeOfDay ?? "unavailable"}; cross-street peak {crossPeak?.TimeOfDay ?? "unavailable"}; peak cross-traffic share {peakShare?.CrossTrafficPercent?.ToString("0.#") ?? "unavailable"}%.";
         }
 
-        private static IReadOnlyList<(string Name, int Start, int End)> Periods()
-        {
-            return new List<(string Name, int Start, int End)>
-            {
-                ("AM", 5 * 60, 10 * 60),
-                ("Midday", 10 * 60, 15 * 60),
-                ("PM", 15 * 60, 19 * 60)
-            };
-        }
     }
 }

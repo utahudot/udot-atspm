@@ -240,12 +240,12 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
             var peakSmoothed = profile.Points.Select(p => p.SmoothedVolume).DefaultIfEmpty(0).Max();
             var peakHourly = profile.Points.Select(p => p.RollingHourVph ?? 0).DefaultIfEmpty(0).Max();
             var amPeak = profile.Points
-                .Where(p => p.Minutes >= 5 * 60 && p.Minutes < 10 * 60)
+                .Where(p => p.Minutes >= TimeOfDayOptions.AmPeakStartMinutes && p.Minutes < TimeOfDayOptions.AmPeakEndMinutes)
                 .Select(p => p.SmoothedVolume)
                 .DefaultIfEmpty(0)
                 .Max();
             var pmPeak = profile.Points
-                .Where(p => p.Minutes >= 15 * 60 && p.Minutes < 19 * 60)
+                .Where(p => p.Minutes >= TimeOfDayOptions.PmPeakStartMinutes && p.Minutes < TimeOfDayOptions.PmPeakEndMinutes)
                 .Select(p => p.SmoothedVolume)
                 .DefaultIfEmpty(0)
                 .Max();
@@ -258,6 +258,7 @@ namespace Utah.Udot.Atspm.Business.TimeOfDay
                 PeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(peakSmoothed / capacity.Value * 100) : null,
                 AmPeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(amPeak / capacity.Value * 100) : null,
                 PmPeakOccupancyPercent = capacity > 0 ? TimeOfDayProfileService.Round(pmPeak / capacity.Value * 100) : null,
+                CrossTrafficReview = "Cross-traffic review unavailable: no usable cross-traffic data.",
                 AmDirectionExceptionMessage = BuildDirectionExceptionMessage(
                     options.AmPrimaryDirections.Count > 0 ? options.AmPrimaryDirections : options.AllDayPrimaryDirections,
                     observations,

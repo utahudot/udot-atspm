@@ -18,218 +18,130 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.TimeOfDay;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.TempExtensions;
 using Xunit;
 
 namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
 {
     public class TimeOfDayPlanScheduleServiceTests
     {
-        [Fact]
-        public void BuildCurrentSchedules_UsesAggregatedSignalTimingPlans()
-        {
-            var service = new TimeOfDayPlanScheduleService();
-            var selectedDate = new DateOnly(2026, 1, 1);
-            var dayStart = selectedDate.ToDateTime(TimeOnly.MinValue);
-            var reportData = new TimeOfDayLocationReportData
-            {
-                Location = new Location { LocationIdentifier = "1001" }
-            };
-            reportData.SignalTimingPlans.AddRange(new[]
-            {
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = "1001",
-                    PlanNumber = 3,
-                    Start = dayStart.AddHours(-1),
-                    End = dayStart.AddHours(7)
-                },
-                new SignalTimingPlan
-                {
-                    LocationIdentifier = "1001",
-                    PlanNumber = 7,
-                    Start = dayStart.AddHours(7),
-                    End = DateTime.MinValue
-                }
-            });
-
-            var result = service.BuildCurrentSchedules(
-                new List<TimeOfDayLocationReportData> { reportData },
-                new List<DateOnly> { selectedDate },
-                15);
-
-            var schedule = result.LocationSchedules["1001"];
-
-            Assert.NotEmpty(result.DailySchedules["1001"]);
-            Assert.Equal(2, schedule.Count);
-            Assert.Equal("3", schedule[0].PlanNumber);
-            Assert.Equal(dayStart, schedule[0].Start);
-            Assert.Equal(dayStart.AddHours(7), schedule[0].End);
-            Assert.Equal("7", schedule[1].PlanNumber);
-            Assert.Equal(dayStart.AddHours(7), schedule[1].Start);
-            Assert.Equal(dayStart.AddDays(1), schedule[1].End);
-            Assert.Empty(result.Comparison.ExceptionLocationIdentifiers);
-        }
+        private static readonly DateOnly Date = new(2026, 4, 6);
+        private static readonly DateTime Start = Date.ToDateTime(TimeOnly.MinValue);
 
         [Fact]
-        public void BuildCurrentSchedules_UsesOverlappingPlanRegardlessOfStartDate()
+        public void BuildCurrentSchedules_UsesControllerPlanChangesAndLatestPlanBeforeMidnight()
         {
-            var selectedDate = new DateOnly(2026, 1, 8);
-            var dayStart = selectedDate.ToDateTime(TimeOnly.MinValue);
-            var reportData = ReportData(
-                TimingPlan(dayStart.AddDays(-30), dayStart.AddHours(7), 7),
-                TimingPlan(dayStart.AddHours(7), DateTime.MinValue, 1));
+            var data = ReportData("1001");
+            AddEvents(data, Date, PlanEvent(Start.AddHours(-10), 254), PlanEvent(Start.AddHours(-1), 7),
+                PlanEvent(Start.AddHours(6), 1), PlanEvent(Start.AddHours(10), 7), PlanEvent(Start.AddHours(22), 254));
 
-            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                new List<TimeOfDayLocationReportData> { reportData },
-                new List<DateOnly> { selectedDate },
-                15);
-
-            var schedule = result.LocationSchedules["1001"];
-            Assert.NotEmpty(result.DailySchedules["1001"]);
-            Assert.Equal("7", schedule[0].PlanNumber);
-            Assert.Equal(dayStart, schedule[0].Start);
-            Assert.Equal(dayStart.AddHours(7), schedule[0].End);
-        }
-
-        [Fact]
-        public void BuildCurrentSchedules_IgnoresPlansOutsideSelectedDate()
-        {
-            var selectedDate = new DateOnly(2026, 1, 8);
-            var dayStart = selectedDate.ToDateTime(TimeOnly.MinValue);
-            var reportData = ReportData(
-                TimingPlan(dayStart.AddDays(-1), dayStart, 7),
-                TimingPlan(dayStart.AddDays(1), DateTime.MinValue, 9));
-
-            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                new List<TimeOfDayLocationReportData> { reportData },
-                new List<DateOnly> { selectedDate },
-                15);
-
-            Assert.Empty(result.DailySchedules["1001"]);
-            Assert.Empty(result.LocationSchedules["1001"]);
-        }
-
-        [Fact]
-        public void BuildCurrentSchedules_SelectsMostCommonPlanForEachInterval()
-        {
-            var selectedDates = new List<DateOnly>
-            {
-                new(2026, 1, 5),
-                new(2026, 1, 6),
-                new(2026, 1, 7)
-            };
-            var plans = new List<SignalTimingPlan>();
-            for (var i = 0; i < selectedDates.Count; i++)
-            {
-                var start = selectedDates[i].ToDateTime(TimeOnly.MinValue);
-                plans.Add(TimingPlan(start, start.AddHours(7), 7));
-                plans.Add(TimingPlan(start.AddHours(7), start.AddHours(9), i < 2 ? (short)1 : (short)13));
-                plans.Add(TimingPlan(start.AddHours(9), start.AddDays(1), 7));
-            }
-
-            var reportData = ReportData(plans.ToArray());
-            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                new List<TimeOfDayLocationReportData> { reportData },
-                selectedDates,
-                15);
-
-            var schedule = result.LocationSchedules["1001"];
-            Assert.Equal("1", schedule.Single(plan => plan.Start.Hour == 7).PlanNumber);
-            Assert.Equal(9, schedule.Single(plan => plan.PlanNumber == "1").End.Hour);
-        }
-
-        [Fact]
-        public void BuildCurrentSchedules_PreservesShortDailyIntervalsBeforeSampling()
-        {
-            var date = new DateOnly(2026, 3, 18);
-            var start = date.ToDateTime(TimeOnly.MinValue);
-            var reportData = ReportData(
-                TimingPlan(start.AddDays(-1), start.AddHours(8).AddMinutes(2), 1),
-                TimingPlan(start.AddHours(8).AddMinutes(2), start.AddHours(8).AddMinutes(10), 3),
-                TimingPlan(start.AddHours(8).AddMinutes(10), DateTime.MinValue, 7));
-            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                new[] { reportData }, new[] { date, date.AddDays(1) }, 15);
-
-            var days = result.DailySchedules["1001"];
-            Assert.Equal(2, days.Count);
-            var shortPlan = Assert.Single(days[0].Plans.Where(plan => plan.PlanNumber == "3"));
-            Assert.Equal(start.AddHours(8).AddMinutes(2), shortPlan.Start);
-            Assert.Equal(start.AddHours(8).AddMinutes(10), shortPlan.End);
-            Assert.Equal(start, days[0].Plans[0].Start);
-            Assert.Equal(start.AddDays(1), days[0].Plans.Last().End);
-            Assert.Equal(start.AddDays(1), Assert.Single(days[1].Plans).Start);
-            Assert.Equal(start.AddDays(2), days[1].Plans[0].End);
-            // The representative policy is unchanged; the exact intervals are a separate output.
-            Assert.DoesNotContain(result.LocationSchedules["1001"], plan => plan.PlanNumber == "3");
-        }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void BuildCurrentSchedules_EndsEachPlanAtTheNextPlanChange(bool openEnded)
-        {
-            var date = new DateOnly(2026, 4, 6);
-            var start = date.ToDateTime(TimeOnly.MinValue);
-            var reportData = ReportData(
-                TimingPlan(start.AddHours(-2), openEnded ? DateTime.MinValue : start.AddHours(22), 254),
-                TimingPlan(start.AddHours(6), openEnded ? DateTime.MinValue : start.AddDays(1).AddHours(6), 1),
-                TimingPlan(start.AddHours(10), openEnded ? DateTime.MinValue : start.AddDays(1).AddHours(10), 7),
-                TimingPlan(start.AddHours(22), DateTime.MinValue, 254));
-
-            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                new[] { reportData }, new[] { date }, 15);
+            var result = Build(data, Date);
 
             foreach (var schedule in new[] { result.LocationSchedules["1001"], result.DailySchedules["1001"].Single().Plans })
             {
-                Assert.Equal(new[] { "254", "1", "7", "254" }, schedule.Select(plan => plan.PlanNumber));
-                Assert.Equal(new[] { start, start.AddHours(6), start.AddHours(10), start.AddHours(22) },
-                    schedule.Select(plan => plan.Start));
-                Assert.Equal(new[] { start.AddHours(6), start.AddHours(10), start.AddHours(22), start.AddDays(1) },
-                    schedule.Select(plan => plan.End));
+                Assert.Equal(new[] { "7", "1", "7", "254" }, schedule.Select(plan => plan.PlanNumber));
+                Assert.Equal(new[] { Start, Start.AddHours(6), Start.AddHours(10), Start.AddHours(22) }, schedule.Select(plan => plan.Start));
+                Assert.Equal(new[] { Start.AddHours(6), Start.AddHours(10), Start.AddHours(22), Start.AddDays(1) }, schedule.Select(plan => plan.End));
             }
         }
 
         [Fact]
-        public void BuildCurrentSchedules_UsesLatestPlanBeforeMidnightWhenRecordsOverlap()
+        public void BuildCurrentSchedules_SelectsMostCommonPlanAndIgnoresMissingDays()
         {
-            var date = new DateOnly(2026, 4, 6);
+            var data = ReportData("1001");
+            var dates = Enumerable.Range(0, 5).Select(Date.AddDays).ToArray();
+            for (var i = 0; i < 3; i++)
+            {
+                var start = dates[i].ToDateTime(TimeOnly.MinValue);
+                AddEvents(data, dates[i], PlanEvent(start, 7), PlanEvent(start.AddHours(7), i < 2 ? (short)1 : (short)13),
+                    PlanEvent(start.AddHours(9), 7));
+            }
+
+            var result = Build(data, dates);
+
+            var schedule = result.LocationSchedules["1001"];
+            Assert.Equal(new[] { "7", "1", "7" }, schedule.Select(plan => plan.PlanNumber));
+            Assert.Equal(Start.AddHours(7), schedule[1].Start);
+            Assert.Equal(Start.AddHours(9), schedule[1].End);
+        }
+
+        [Fact]
+        public void BuildCurrentSchedules_PreservesShortIntervalsButKeepsRepresentativeSampling()
+        {
+            var data = ReportData("1001");
+            AddEvents(data, Date, PlanEvent(Start, 1), PlanEvent(Start.AddHours(8).AddMinutes(2), 3),
+                PlanEvent(Start.AddHours(8).AddMinutes(10), 7));
+
+            var result = Build(data, Date);
+
+            var shortPlan = Assert.Single(result.DailySchedules["1001"].Single().Plans.Where(plan => plan.PlanNumber == "3"));
+            Assert.Equal(Start.AddHours(8).AddMinutes(2), shortPlan.Start);
+            Assert.Equal(Start.AddHours(8).AddMinutes(10), shortPlan.End);
+            Assert.DoesNotContain(result.LocationSchedules["1001"], plan => plan.PlanNumber == "3");
+        }
+
+        [Fact]
+        public void BuildCurrentSchedules_DoesNotInventPlanZeroBeforeFirstRecordedPlan()
+        {
+            var data = ReportData("1001");
+            AddEvents(data, Date, PlanEvent(Start.AddHours(8), 7));
+
+            var result = Build(data, Date);
+
+            var plan = Assert.Single(result.LocationSchedules["1001"]);
+            Assert.Equal("7", plan.PlanNumber);
+            Assert.Equal(Start.AddHours(8), plan.Start);
+            Assert.Equal(Start.AddDays(1), plan.End);
+        }
+
+        [Fact]
+        public void BuildCurrentSchedules_MissingLocationsAreNotScheduleExceptions()
+        {
+            var data = ReportData("1001");
+            AddEvents(data, Date, PlanEvent(Start, 7));
+            var different = ReportData("1002");
+            AddEvents(different, Date, PlanEvent(Start, 9));
+            var missing = ReportData("1003");
+
+            var result = new TimeOfDayPlanScheduleService(new PlanService())
+                .BuildCurrentSchedules(new[] { data, different, missing }, new[] { Date }, 15);
+
+            Assert.Empty(result.LocationSchedules["1003"]);
+            Assert.Equal(new[] { "1002" }, result.Comparison.ExceptionLocationIdentifiers);
+            Assert.Contains("1 selected locations have no plan data", result.Comparison.SummaryText);
+        }
+
+        [Fact]
+        public void BuildCurrentSchedules_AllMissingPlansRemainUnavailable()
+        {
+            var result = Build(ReportData("1001"), Date);
+
+            Assert.Empty(result.LocationSchedules["1001"]);
+            Assert.Empty(result.Comparison.CommonCurrentSchedule);
+            Assert.Empty(result.Comparison.ExceptionLocationIdentifiers);
+        }
+
+        private static TimeOfDayPlanScheduleResult Build(TimeOfDayLocationReportData data, params DateOnly[] dates) =>
+            new TimeOfDayPlanScheduleService(new PlanService()).BuildCurrentSchedules(new[] { data }, dates, 15);
+
+        private static TimeOfDayLocationReportData ReportData(string identifier) => new()
+        {
+            Location = new Location { LocationIdentifier = identifier }
+        };
+
+        private static void AddEvents(TimeOfDayLocationReportData data, DateOnly date, params IndianaEvent[] events)
+        {
             var start = date.ToDateTime(TimeOnly.MinValue);
-            var reportData = ReportData(
-                TimingPlan(start.AddDays(-2), DateTime.MinValue, 254),
-                TimingPlan(start.AddDays(-1), DateTime.MinValue, 7));
-
-            var result = new TimeOfDayPlanScheduleService().BuildCurrentSchedules(
-                new[] { reportData }, new[] { date }, 15);
-
-            var representative = Assert.Single(result.LocationSchedules["1001"]);
-            var daily = Assert.Single(result.DailySchedules["1001"].Single().Plans);
-            Assert.Equal("7", representative.PlanNumber);
-            Assert.Equal("7", daily.PlanNumber);
-            Assert.Equal(start, daily.Start);
-            Assert.Equal(start.AddDays(1), daily.End);
+            data.PlanEventsByDate[date] = events.GetPlanEvents(start.AddHours(-12), start.AddDays(1).AddHours(12));
         }
 
-        private static TimeOfDayLocationReportData ReportData(params SignalTimingPlan[] plans)
+        private static IndianaEvent PlanEvent(DateTime timestamp, short planNumber) => new()
         {
-            var reportData = new TimeOfDayLocationReportData
-            {
-                Location = new Location { LocationIdentifier = "1001" }
-            };
-            reportData.SignalTimingPlans.AddRange(plans);
-            return reportData;
-        }
-
-        private static SignalTimingPlan TimingPlan(DateTime start, DateTime end, short planNumber)
-        {
-            return new SignalTimingPlan
-            {
-                LocationIdentifier = "1001",
-                PlanNumber = planNumber,
-                Start = start,
-                End = end
-            };
-        }
+            LocationIdentifier = "1001", Timestamp = timestamp, EventCode = 131, EventParam = planNumber
+        };
     }
 }

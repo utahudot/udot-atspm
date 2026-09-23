@@ -30,7 +30,7 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
         private static readonly DateOnly TestDate = new(2026, 1, 1);
 
         [Fact]
-        public void BuildRecommendation_SelectsPythonStyleCommuteBoundaries()
+        public void BuildRecommendation_KeepsPlansThroughLastQualifyingBin()
         {
             var result = CreateService().BuildRecommendation(
                 new TimeOfDayOptions(),
@@ -52,9 +52,9 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
                 TestDate);
 
             Assert.Equal(360, StartMinutes(FindPlan(result.RecommendedSchedule, "1")));
-            Assert.Equal(495, EndMinutes(FindPlan(result.RecommendedSchedule, "1")));
+            Assert.Equal(525, EndMinutes(FindPlan(result.RecommendedSchedule, "1")));
             Assert.Equal(900, StartMinutes(FindPlan(result.RecommendedSchedule, "13")));
-            Assert.Equal(1065, EndMinutes(FindPlan(result.RecommendedSchedule, "13")));
+            Assert.Equal(1095, EndMinutes(FindPlan(result.RecommendedSchedule, "13")));
             Assert.Equal(1140, StartMinutes(result.RecommendedSchedule.Last(p => p.PlanNumber == "254")));
         }
 
@@ -203,6 +203,38 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Business.TimeOfDay
 
             Assert.Empty(result.RecommendedSchedule);
             Assert.Contains("AM: Northbound", result.SummaryText);
+        }
+
+        [Fact]
+        public void BuildRecommendation_LunchSurgeDoesNotSetCommuteThresholds()
+        {
+            var result = CreateService().BuildRecommendation(new TimeOfDayOptions(), BuildProfile(minutes =>
+            {
+                if (minutes is >= 420 and < 540) return minutes == 480 ? 500 : 450;
+                if (minutes is >= 660 and < 780) return 5000;
+                if (minutes is >= 960 and < 1110) return minutes == 1020 ? 700 : 650;
+                return 100;
+            }), new List<TimeOfDayProfileDto>(), TestDate);
+
+            Assert.Equal(420, StartMinutes(FindPlan(result.RecommendedSchedule, "1")));
+            Assert.Equal(960, StartMinutes(FindPlan(result.RecommendedSchedule, "13")));
+            Assert.Equal("08:00", result.AmPeakTime);
+            Assert.Equal("17:00", result.PmPeakTime);
+        }
+
+        [Theory]
+        [InlineData("09:30", "18:00")]
+        [InlineData("09:38", "18:08")]
+        public void BuildRecommendation_CapsBothSustainedRunsAtConfiguredEnds(string maxAmEnd, string maxPmEnd)
+        {
+            var result = CreateService().BuildRecommendation(new TimeOfDayOptions
+            {
+                MaxAmEndTime = maxAmEnd, MaxPmEndTime = maxPmEnd
+            }, BuildProfile(minutes => minutes is >= 360 and < 660 or >= 900 and < 1200 ? 500 : 100),
+                new List<TimeOfDayProfileDto>(), TestDate);
+
+            Assert.Equal(570, EndMinutes(FindPlan(result.RecommendedSchedule, "1")));
+            Assert.Equal(1080, EndMinutes(FindPlan(result.RecommendedSchedule, "13")));
         }
 
         private static TimeOfDayRecommendationService CreateService()
