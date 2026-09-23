@@ -29,24 +29,25 @@ using Xunit.Abstractions;
 
 namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 {
-    public class GenerateSignalPlansStepTests(ITestOutputHelper output) : IDisposable
+    public class GenerateSignalPlansStepTests : IDisposable
     {
-        private readonly ITestOutputHelper _output = output;
+        private readonly ITestOutputHelper _output;
+
+        public GenerateSignalPlansStepTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Fact]
         [Trait(nameof(GenerateSignalPlansStep), "Cancellation")]
         public async Task GenerateSignalPlansStep_Cancellation_ClosesBlocks()
         {
-            // Arrange
             var source = new CancellationTokenSource();
             var options = new ExecutionDataflowBlockOptions { CancellationToken = source.Token };
             var sut = new GenerateSignalPlansStep(options);
 
-            // Act
             source.Cancel();
 
-            // Assert
-            // In TPL steps, cancellation usually leads to the Completion task being canceled
             await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await sut.Completion);
             Assert.True(sut.Completion.IsCanceled);
         }
@@ -55,7 +56,6 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         [Trait(nameof(GenerateSignalPlansStep), "Process")]
         public async Task Process_GroupsByLocation_PreservesReturningPlanNumbers()
         {
-            // Arrange
             var sut = new GenerateSignalPlansStep();
             var startTime = DateTime.Now.Date;
 
@@ -67,12 +67,9 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 new() { LocationIdentifier = "L2", EventParam = 1, EventCode = 131, Timestamp = startTime }
             };
 
-            // Act
-            // Post the input to the step's target block
             sut.Post(inputEvents);
-            sut.Complete(); // Signal that no more data is coming
+            sut.Complete();
 
-            // Receive the results from the source block
             var results = new List<IEnumerable<SignalTimingPlan>>();
             while (await sut.OutputAvailableAsync())
             {
@@ -99,17 +96,15 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         [Trait(nameof(GenerateSignalPlansStep), "Process")]
         public async Task Process_FiltersOutNonPlanEvents_YieldsCorrectPlans()
         {
-            // Arrange
             var sut = new GenerateSignalPlansStep();
             var startTime = DateTime.Now.Date;
 
             var inputEvents = new List<IndianaEvent>
-            {
-                new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime }, // Valid
-                new() { LocationIdentifier = "L1", EventParam = 99, EventCode = 1, Timestamp = startTime.AddSeconds(1) } // Invalid code
-            };
+        {
+            new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
+            new() { LocationIdentifier = "L1", EventParam = 99, EventCode = 1, Timestamp = startTime.AddSeconds(1) }
+        };
 
-            // Act
             sut.Post(inputEvents);
             sut.Complete();
 
@@ -119,7 +114,6 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 if (sut.TryReceive(out var chunk)) results.Add(chunk);
             }
 
-            // Assert
             var flatPlans = results.SelectMany(c => c).ToList();
             Assert.Single(flatPlans);
             Assert.Equal(1, flatPlans[0].PlanNumber);
@@ -129,18 +123,16 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         [Trait(nameof(GenerateSignalPlansStep), "Process")]
         public async Task Process_HandlesSequentialDuplicatesWithinGroup()
         {
-            // Arrange
             var sut = new GenerateSignalPlansStep();
             var startTime = DateTime.Now.Date;
 
             // These events share a location and plan number.
             var inputEvents = new List<IndianaEvent>
-            {
-                new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
-                new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime.AddMinutes(1) } // Sequential Duplicate
-            };
+        {
+            new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
+            new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime.AddMinutes(1) }
+        };
 
-            // Act
             sut.Post(inputEvents);
             sut.Complete();
 
@@ -150,10 +142,44 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 if (sut.TryReceive(out var chunk)) results.Add(chunk);
             }
 
-            // Assert
-            // KeepFirstSequentialParam should reduce the 2 events into 1 SignalTimingPlan
             var flatPlans = results.SelectMany(c => c).ToList();
             Assert.Single(flatPlans);
+        }
+
+        // ==========================================
+        // TEST 5: THE BACKPRESSURE DRAINAGE VERIFIER
+        // ==========================================
+        [Fact]
+        [Trait(nameof(GenerateSignalPlansStep), "Faults")]
+        public async Task Process_WithCorruptedDataPayload_VerifiesSwallowedStreamCompletion()
+        {
+            var sut = new GenerateSignalPlansStep();
+
+            var corruptedEvents = new List<IndianaEvent>
+        {
+            new() { LocationIdentifier = null, EventParam = 1, EventCode = 131, Timestamp = DateTime.MinValue }
+        };
+
+            sut.Post(corruptedEvents);
+            sut.Complete();
+
+            // FIX: We must actively drain the output buffer loop context, otherwise the
+            // underlying block will suspend itself on backpressure limits and timeout
+            while (await sut.OutputAvailableAsync())
+            {
+                while (sut.TryReceive(out _)) { }
+            }
+
+            try
+            {
+                await sut.Completion.WaitAsync(TimeSpan.FromSeconds(5));
+            }
+            catch (TimeoutException)
+            {
+                Assert.Fail("The step deadlocked inside its processing lifecycle even when fully drained.");
+            }
+
+            Assert.True(sut.Completion.IsCompletedSuccessfully);
         }
 
         public void Dispose()

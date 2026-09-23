@@ -48,6 +48,7 @@ export default function TimingAndActuationChartsResults({
           sx={{
             maxHeight: '1000px',
             transition: 'max-height .3s',
+            overflow: 'hidden',
           }}
         >
           <Paper

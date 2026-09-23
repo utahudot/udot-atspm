@@ -124,9 +124,6 @@ export default function timeSeriesByHourByLocationTransformer(
   const toolbox: ToolboxComponentOption = {
     feature: {
       saveAsImage: { name: title },
-      magicType: {
-        type: ['stack', 'line', 'bar'],
-      },
       dataView: {
         readOnly: true,
       },

@@ -33,6 +33,12 @@ using Utah.Udot.ATSPM.WatchDog.Commands;
 
 //gitactions: IIII
 
+if (args.Length == 0)
+{
+    Console.Error.WriteLine("Required command was not provided. Use 'generate' to run the watchdog scan.");
+    return 1;
+}
+
 var rootCmd = new WatchdogCommand();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
@@ -50,7 +56,6 @@ cmdBuilder.UseHost(hostBuilder =>
     {
         c.AddUserSecrets<Program>(optional: true); // Load secrets first
         //c.AddCommandLine(args);                    // Override with command-line args
-
     })
     .ConfigureServices((h, s) =>
     {
@@ -92,4 +97,4 @@ host =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync(args);
+return await cmdParser.InvokeAsync(args);

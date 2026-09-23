@@ -46,6 +46,7 @@ import {
   RawTimeSpaceAverageData,
   RawTimeSpaceDiagramResponse,
   TimeSpaceDiagramPhaseResult,
+  TimeSpaceTransformOptions,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import { SolidLineSeriesSymbol } from '@/features/charts/utils'
@@ -53,7 +54,8 @@ import { format, isSameDay } from 'date-fns'
 import { EChartsOption, SeriesOption } from 'echarts'
 
 export default function transformTimeSpaceAverageData(
-  response: RawTimeSpaceDiagramResponse
+  response: RawTimeSpaceDiagramResponse,
+  options?: TimeSpaceTransformOptions
 ): TransformedTimeSpaceResponse & { errors?: string[] } {
   const wrappedData =
     response.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceAverageData>[]
@@ -69,15 +71,19 @@ export default function transformTimeSpaceAverageData(
 
   return buildTimeSpaceTransformResult(
     ToolType.TimeSpaceAverage,
-    transformData(successfulData),
+    transformData(successfulData, options),
     errorMessages
   )
 }
 
-function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
+function transformData(
+  data: RawTimeSpaceAverageData[],
+  options?: TimeSpaceTransformOptions
+): EChartsOption {
   const {
     chartHeight,
     distanceScale,
+    getDisplayDistanceOffset,
     locationCenterDistanceData,
     maxDisplayDistance,
     minDisplayDistance,
@@ -88,8 +94,17 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     primaryDistanceData,
     primaryPhaseData,
   } = buildTimeSpacePhaseLayout(data, {
+    distanceSpacingMode: options?.distanceSpacingMode,
     sortByOrder: true,
   })
+  const getPrimaryDisplayDistanceOffset = getDisplayDistanceOffset
+  const getOpposingDisplayDistanceOffset = (
+    index: number,
+    rawDistanceOffset: number
+  ) => {
+    const reverseIndex = primaryPhaseData.length - 1 - index
+    return getDisplayDistanceOffset(reverseIndex, rawDistanceOffset)
+  }
   const chartStart = new Date(data[0].start)
   const rawEnd = new Date(data[0].end)
   const chartEnd = new Date(chartStart)
@@ -193,6 +208,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryDirection,
       true,
       distanceScale,
+      getPrimaryDisplayDistanceOffset,
       'primary'
     )
   )
@@ -205,7 +221,8 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryPhaseData,
       locationCenterDistanceData,
       grid.left as number,
-      distanceScale
+      distanceScale,
+      getPrimaryDisplayDistanceOffset
     )
   )
   series.push(
@@ -214,9 +231,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       primaryDirection,
       undefined,
       primaryPhaseData.map((p) => p.approachDescription),
-      primaryPhaseData.map((p) => [
-        `Split: ${formatSecondsDetail(p.programmedSplit)}`,
-      ]),
+      undefined,
       'left',
       primaryPhaseData.map((p) => Boolean(p.isIgnoredLocation))
     )
@@ -238,6 +253,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       opposingDirection,
       false,
       distanceScale,
+      getOpposingDisplayDistanceOffset,
       'opposing'
     )
   )
@@ -248,9 +264,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
       opposingDirection,
       undefined,
       [...opposingPhaseData].reverse().map((p) => p.approachDescription),
-      [...opposingPhaseData]
-        .reverse()
-        .map((p) => [`Split: ${formatSecondsDetail(p.programmedSplit)}`]),
+      undefined,
       'right',
       [...opposingPhaseData].reverse().map((p) => Boolean(p.isIgnoredLocation))
     )
@@ -286,12 +300,4 @@ function buildAverageHeaderRange(rawStart: Date, rawEnd: Date, chartEnd: Date) {
       )}`
 
   return `${dateRange} - ${format(rawStart, 'HH:mm')}-${format(chartEnd, 'HH:mm')}`
-}
-
-function formatSecondsDetail(value: number | null | undefined) {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    return 'unknown'
-  }
-
-  return `${value}s`
 }

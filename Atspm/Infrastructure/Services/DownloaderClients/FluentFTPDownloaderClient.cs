@@ -16,6 +16,7 @@
 #endregion
 
 using FluentFTP;
+using FluentFTP.Exceptions;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -61,6 +62,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             _client.Credentials = credentials;
             _client.Config.ConnectTimeout = connectionTimeout;
             _client.Config.ReadTimeout = operationTimeout;
+            _client.Config.DataConnectionConnectTimeout = connectionTimeout;
+            _client.Config.DataConnectionReadTimeout = operationTimeout;
 
             //https://github.com/robinrodricks/FluentFTP/wiki/Timeouts
             if (connectionProperties != null && connectionProperties.TryGetValue("DataConnectionConnectTimeout", out string v1) && int.TryParse(v1, out int r1))
@@ -112,13 +115,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 _client.Config.NoopInterval = r8;
             }
 
-
-
-
             if (connectionProperties != null && connectionProperties.TryGetValue("AutoConnect", out string v4) && bool.TryParse(v4, out bool r4) && r4)
             {
                 var result = await _client.AutoConnect(token);
             }
+
             else
             {
                 await _client.Connect(token);
@@ -144,8 +145,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             if (result == FtpStatus.Success)
                 return file;
-            else
-                return null;
+
+            throw new FtpException($"FluentFTP failed to download resource. Status: {result}");
         }
 
         ///<inheritdoc/>

@@ -32,6 +32,10 @@ export enum PageNames {
   Routes = 'Routes',
   Users = ' Users',
   WatchdogDashboard = 'Watchdog Dashboard',
+  Impacts = 'Impacts',
+  ImpactTypes = 'Impact Types',
+  Segments = 'Segments',
+  UpdateNewEntityVersion = 'Versions',
 }
 
 const generalConfigListToLink: Map<string, string> = new Map([
@@ -39,14 +43,25 @@ const generalConfigListToLink: Map<string, string> = new Map([
   [PageNames.MenuItems, '/admin/menu-items'],
   [PageNames.MeasureDefaults, '/admin/measure-defaults'],
 ])
+
 const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Areas, '/admin/areas'],
   [PageNames.Jurisdiction, '/admin/jurisdictions'],
   [PageNames.Location, '/admin/locations'],
   [PageNames.Region, '/admin/regions'],
   [PageNames.Routes, '/admin/routes'],
+])
+
+const deviceConfigListToLink: Map<string, string> = new Map([
   [PageNames.Products, '/admin/products'],
   [PageNames.DeviceConfigurations, '/admin/device-configurations'],
+])
+
+const speedManagementConfigToLink: Map<string, string> = new Map([
+  [PageNames.Impacts, '/admin/impacts'],
+  [PageNames.ImpactTypes, '/admin/impact-types'],
+  [PageNames.Segments, '/admin/segments'],
+  [PageNames.UpdateNewEntityVersion, '/admin/versions'],
 ])
 
 const userConfigToLink: Map<string, string> = new Map([
@@ -60,8 +75,10 @@ const rolesConfigToLink: Map<string, string> = new Map([
 const adminAccessToLinks = new Map([
   ['GeneralConfiguration:View', generalConfigListToLink],
   ['LocationConfiguration:View', locationConfigListToLink],
+  ['Device:View', deviceConfigListToLink],
   ['User:View', userConfigToLink],
   ['Role:View', rolesConfigToLink],
+  ['SpeedConfiguration:View', speedManagementConfigToLink],
 ])
 
 export const useGetAdminPagesList = () => {
@@ -78,7 +95,6 @@ export const useGetAdminPagesList = () => {
         pagesToView.set(key, value)
       })
     })
-    return pagesToView
   } else {
     const claimsList = claims.split(',')
     claimsList.forEach((claim) => {
@@ -90,8 +106,8 @@ export const useGetAdminPagesList = () => {
         }
       })
     })
-    return pagesToView
   }
+  return pagesToView
 }
 
 export const useViewPage = (page: string) => {
@@ -160,8 +176,6 @@ export const useSideBarPermission = (
 
 export const useUserHasClaim = (claim: string) => {
   const [hasPermission, setHasPermission] = useState(false)
-  const claims = Cookies.get('claims')
-  const userClaims = claims ? claims.split(',') : []
 
   useEffect(() => {
     const checkPermission = () => {
@@ -169,6 +183,9 @@ export const useUserHasClaim = (claim: string) => {
         setHasPermission(false)
         return
       }
+
+      const claims = Cookies.get('claims')
+      const userClaims = claims ? claims.split(',') : []
 
       if (userClaims.includes(claim) || userClaims.includes('Admin')) {
         setHasPermission(true)
@@ -178,7 +195,7 @@ export const useUserHasClaim = (claim: string) => {
     }
 
     checkPermission()
-  }, [claim, userClaims])
+  }, [claim])
 
   return hasPermission
 }

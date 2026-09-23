@@ -19,10 +19,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     public class WatchdogConfiguration
     {
-        public DateTime PmScanDate { get; set; } = DateTime.Today.AddDays(-1);
-        public DateTime AmScanDate { get; set; } = DateTime.Today;
-        public DateTime RampMissedDetectorHitsStartScanDate { get; set; } = DateTime.Today.AddDays(-1);
-        public DateTime RampMissedDetectorHitsEndScanDate { get; set; } = DateTime.Today;
+        public const string DefaultTimeZoneId = "America/Denver";
+
+        public DateTime PmScanDate { get; set; }
+        public DateTime AmScanDate { get; set; }
+        public DateTime RampMissedDetectorHitsStartScanDate { get; set; }
+        public DateTime RampMissedDetectorHitsEndScanDate { get; set; }
+        public string TimeZoneId { get; set; } = DefaultTimeZoneId;
 
         public int AmStartHour { get; set; } = 1;
         public int AmEndHour { get; set; } = 5;
@@ -54,5 +57,49 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         public string DefaultEmailAddress { get; set; }
 
         public string Sort { get; set; }
+
+        public DateTime GetPmScanDate(TimeProvider timeProvider) =>
+            GetConfiguredOrDefaultDate(PmScanDate, -1, timeProvider);
+
+        public DateTime GetAmScanDate(TimeProvider timeProvider) =>
+            GetConfiguredOrDefaultDate(AmScanDate, 0, timeProvider);
+
+        public DateTime GetRampMissedDetectorHitsStartScanDate(TimeProvider timeProvider) =>
+            GetConfiguredOrDefaultDate(RampMissedDetectorHitsStartScanDate, -1, timeProvider);
+
+        public DateTime GetRampMissedDetectorHitsEndScanDate(TimeProvider timeProvider) =>
+            GetConfiguredOrDefaultDate(RampMissedDetectorHitsEndScanDate, 0, timeProvider);
+
+        private DateTime GetConfiguredOrDefaultDate(DateTime configuredDate, int dayOffset, TimeProvider timeProvider)
+        {
+            if (configuredDate != default)
+            {
+                return AsDatabaseDate(configuredDate);
+            }
+
+            var timeZone = GetTimeZoneInfo(TimeZoneId);
+            var localToday = TimeZoneInfo.ConvertTimeFromUtc(timeProvider.GetUtcNow().UtcDateTime, timeZone).Date;
+
+            return AsDatabaseDate(localToday.AddDays(dayOffset));
+        }
+
+        private static DateTime AsDatabaseDate(DateTime date) =>
+            DateTime.SpecifyKind(date.Date, DateTimeKind.Unspecified);
+
+        private static TimeZoneInfo GetTimeZoneInfo(string timeZoneId)
+        {
+            var configuredTimeZoneId = string.IsNullOrWhiteSpace(timeZoneId)
+                ? DefaultTimeZoneId
+                : timeZoneId;
+
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(configuredTimeZoneId);
+            }
+            catch (TimeZoneNotFoundException) when (configuredTimeZoneId == DefaultTimeZoneId)
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
+            }
+        }
     }
 }

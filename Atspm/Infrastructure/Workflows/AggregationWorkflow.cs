@@ -58,7 +58,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         /// <inheritdoc/>
         public override async Task Initialize()
         {
-            Steps = new();
+            //Steps = new();
             Input = new(null, blockOptions);
             Output = new(blockOptions);
 

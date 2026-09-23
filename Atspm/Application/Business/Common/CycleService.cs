@@ -865,7 +865,7 @@ namespace Utah.Udot.Atspm.Business.Common
                     var detectorEvents = new List<DetectorEventBase>();
                     for (var i = 0; i < pedEventsForDetector.Count; i++)
                     {
-                        detectorEvents.Add(new DetectorEventBase(pedEvents[i].Timestamp, pedEvents[i].Timestamp));
+                        detectorEvents.Add(new DetectorEventBase(pedEventsForDetector[i].Timestamp, pedEventsForDetector[i].Timestamp));
                     }
                     pedestrianEvents.Add(new DetectorEventDto(lableName, detectorEvents));
                 }

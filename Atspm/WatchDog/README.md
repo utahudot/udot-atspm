@@ -48,6 +48,7 @@ The `generate` command accepts command-line overrides for watchdog settings such
 - `--amScanDate`
 - `--rampMissedDetectorHitsStartScanDate`
 - `--rampMissedDetectorHitsEndScanDate`
+- `--timeZoneId`
 - `--emailPmErrors`
 - `--emailAmErrors`
 - `--emailRampErrors`
@@ -161,6 +162,7 @@ Typical required watchdog settings:
     "AmScanDate": "2026-04-24",
     "RampMissedDetectorHitsStartScanDate": "2026-04-24",
     "RampMissedDetectorHitsEndScanDate": "2026-04-24",
+    "TimeZoneId": "America/Denver",
     "AmStartHour": 1,
     "AmEndHour": 5,
     "PmPeakStartHour": 18,
@@ -194,6 +196,9 @@ Typical required watchdog settings:
 
 Important:
 
+- if scan dates are omitted, automatic dates are calculated in `TimeZoneId`
+- the default `TimeZoneId` is `America/Denver`
+- automatic PM and ramp start dates are previous day; automatic AM and ramp end dates are current day
 - `Sort` controls the ordering within each watchdog bucket only
 - the email sections stay in this fixed order: `New Errors`, `Daily Recurring Errors`, `Recurring Errors`
 - `Sort` should be a plain string such as `Error`, `Consecutive`, or `Location`

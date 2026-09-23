@@ -17,7 +17,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 type SessionResponse = {
-  session: string
+  session: string | null
   expiry?: string
 }
 
@@ -28,8 +28,10 @@ export default async function handler(
   if (req.method !== 'POST') return res.status(405).end()
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY
-  if (!apiKey)
-    return res.status(500).json({ error: 'Missing GOOGLE_MAPS_API_KEY' })
+  if (!apiKey) {
+    res.setHeader('Cache-Control', 'no-store')
+    return res.status(200).json({ session: null } satisfies SessionResponse)
+  }
 
   const mapType = process.env.GOOGLE_MAPS_MAPTYPE ?? 'roadmap'
   const language = process.env.GOOGLE_MAPS_LANGUAGE ?? 'en-US'

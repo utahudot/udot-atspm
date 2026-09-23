@@ -1,7 +1,7 @@
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
-import { getEnv } from '@/utils/getEnv'
+import { useEnv } from '@/hooks/useEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
   Box,
@@ -52,6 +52,7 @@ const LocationMap = ({
   updateFilters,
 }: LocationMapProps) => {
   const theme = useTheme()
+  const env = useEnv()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [googleSession, setGoogleSession] = useState<string | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
@@ -69,27 +70,22 @@ const LocationMap = ({
   const locationsEnabledLength = locations.filter((l) => l.chartEnabled).length
 
   useEffect(() => {
-    const fetchEnv = async () => {
-      const env = await getEnv()
-      if (!env) return
-      setMapInfo({
-        tile_layer: env.MAP_TILE_LAYER,
-        attribution: env.MAP_TILE_ATTRIBUTION,
-        initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE ?? '0'),
-        initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE ?? '0'),
-        zoomLevel: parseInt(env.MAP_DEFAULT_ZOOM ?? '0'),
-      })
-    }
-    fetchEnv()
-  }, [])
+    setMapInfo({
+      tile_layer: env.MAP_TILE_LAYER ?? undefined,
+      attribution: env.MAP_TILE_ATTRIBUTION ?? undefined,
+      initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE ?? '0'),
+      initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE ?? '0'),
+      zoomLevel: parseInt(env.MAP_DEFAULT_ZOOM ?? '6', 10),
+    })
+  }, [env])
 
   useEffect(() => {
     const run = async () => {
       try {
         const r = await fetch('/api/google/tiles/session', { method: 'POST' })
         if (!r.ok) return
-        const data = (await r.json()) as { session: string }
-        setGoogleSession(data.session)
+        const data = (await r.json()) as { session?: string | null }
+        setGoogleSession(data.session ?? null)
       } catch {}
     }
     run()
@@ -240,13 +236,12 @@ const LocationMap = ({
       {googleSession ? (
         <TileLayer
           attribution={
-            mapInfo.attribution /* or hardcode Google attribution string */
+            mapInfo.attribution
           }
           url={`/api/google/tiles/{z}/{x}/{y}?session=${encodeURIComponent(googleSession)}`}
           crossOrigin
         />
       ) : (
-        // optional: keep your old layer as fallback or show skeleton
         <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
       )}
       <Markers locations={filteredLocations} setLocation={setLocation} />

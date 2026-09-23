@@ -17,6 +17,11 @@
 import { dateToTimestamp } from '@/utils/dateTime'
 
 export const PASSIVE_DETECTION_SERIES_PROPS = {
+  animation: false,
+  animationDelay: 0,
+  animationDelayUpdate: 0,
+  animationDuration: 0,
+  animationDurationUpdate: 0,
   silent: true,
   tooltip: { show: false },
 } as const

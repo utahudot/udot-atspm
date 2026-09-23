@@ -6,6 +6,7 @@ import {
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
+import { useFlags } from '@/feature-flags/FeatureFlagContext'
 import { useAddRoleClaims } from '@/features/identity/api/addRoleClaims'
 import {
   PageNames,
@@ -18,17 +19,13 @@ import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, Box, CircularProgress, Typography } from '@mui/material'
 
 const RolesAdmin = () => {
+  const flags = useFlags()
   const pageAccess = useViewPage(PageNames.Roles)
   const hasRoleEditClaim = useUserHasClaim('Role:Edit')
   const hasRolesDeleteClaim = useUserHasClaim('Role:Delete')
   const { addNotification } = useNotificationStore()
 
-  const {
-    data: allRolesData,
-    isLoading,
-    refetch: refetchRoles,
-  } = useGetApiV1Roles()
-  const roles = allRolesData
+  const { data: roles, isLoading, refetch: refetchRoles } = useGetApiV1Roles()
 
   const { mutateAsync: createMutation } = usePostApiV1Roles()
   const { mutateAsync: deleteMutation } = useDeleteApiV1RolesRoleName()
@@ -54,6 +51,10 @@ const RolesAdmin = () => {
       description: 'Can manage location-specific settings and configurations.',
     },
     {
+      role: 'DeviceAdmin',
+      description: 'Can manage devices, products, and device configurations.',
+    },
+    {
       role: 'RoleAdmin',
       description: 'Can manage roles and permissions.',
     },
@@ -66,22 +67,40 @@ const RolesAdmin = () => {
       description: 'Privileges are granted to access restricted reports.',
     },
     {
+      role: 'UsageAdmin',
+      description: 'Can view, edit, and delete usage reports.',
+    },
+    {
       role: 'WatchdogSubscriber',
       description:
         'Can view Watchdog reports and is subscribed to email notifications for Watchdog alerts.',
     },
   ]
 
+  if (flags.speedManagementTool) {
+    builtInRoles.push({
+      role: 'SpeedConfigurationAdmin',
+      description:
+        'Can manage speed configurations, impacts, impact types, segments, and versions.',
+    })
+  }
+
   const protectedRoles: string[] = [
     'Admin',
     'DataAdmin',
     'GeneralConfigurationAdmin',
     'LocationConfigurationAdmin',
+    'DeviceAdmin',
     'RoleAdmin',
     'UserAdmin',
     'ReportAdmin',
+    'UsageAdmin',
     'WatchdogSubscriber',
   ]
+
+  if (flags.speedManagementTool) {
+    protectedRoles.push('SpeedConfigurationAdmin')
+  }
 
   const HandleDeleteRole = async (roleName: string) => {
     if (protectedRoles.includes(roleName)) {
@@ -234,7 +253,7 @@ const RolesAdmin = () => {
             objectType="Role"
             deleteByKey="role"
             open={false}
-            onClose={() => {}}
+            onClose={onModalClose}
             onConfirm={HandleDeleteRole}
             deleteLabel={(selectedRow: Role) => selectedRow.role}
           />

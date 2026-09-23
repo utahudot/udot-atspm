@@ -31,10 +31,10 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             int speed,
-            double refPoint,
+            double? refPoint,
             int programmedSplit,
             bool coordinatedPhases,
-            int cycleLength,
+            int? cycleLength,
             List<CycleEventsDto> cycleAllEvents,
             List<DataPointWithDetectorCheckBase> greenTimeEvents) : base(approachId, locationId, start, end)
         {
@@ -53,10 +53,10 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         public bool CoordinatedPhases { get; set; }
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
-        public double Offset { get; }
+        public double? Offset { get; }
         public int ProgrammedSplit { get; set; }
         public string PhaseType { get; set; }
-        public int CycleLength { get; }
+        public int? CycleLength { get; }
         public string Direction { get; set; }
         public double DistanceToNextLocation { get; set; }
         public double DistanceToPreviousLocation { get; set; }

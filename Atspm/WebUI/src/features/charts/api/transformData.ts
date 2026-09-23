@@ -43,7 +43,10 @@ import {
 } from '@/features/charts/types'
 import transformWaitTimeData from '@/features/charts/waitTime/waitTime.transformer'
 import transformYellowAndRedActuationsData from '@/features/charts/yellowAndRedActuations/yellowAndRedActuations.transformer'
-import { RawTimeSpaceDiagramResponse } from '../timeSpaceDiagram/shared/types'
+import {
+  RawTimeSpaceDiagramResponse,
+  TimeSpaceTransformOptions,
+} from '../timeSpaceDiagram/shared/types'
 
 export const transformChartData = (
   response: RawChartResponse
@@ -91,13 +94,14 @@ export const transformChartData = (
 }
 
 export const transformTimeSpaceData = (
-  response: RawTimeSpaceDiagramResponse
+  response: RawTimeSpaceDiagramResponse,
+  options?: TimeSpaceTransformOptions
 ): TransformedTimeSpaceResponse => {
   switch (response.type) {
     case ToolType.TimeSpaceHistoric:
-      return transformTimeSpaceHistoricData(response)
+      return transformTimeSpaceHistoricData(response, options)
     case ToolType.TimeSpaceAverage:
-      return transformTimeSpaceAverageData(response)
+      return transformTimeSpaceAverageData(response, options)
     default:
       throw new Error('Unknown chart type')
   }

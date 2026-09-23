@@ -1,5 +1,6 @@
 import NavItemWithSubMenu from '@/components/sidebar/NavItemWithSubMenu'
 import { topbarHeight } from '@/components/topbar'
+import { useFlags } from '@/feature-flags/FeatureFlagContext'
 import { useSideBarPermission } from '@/features/identity/pagesCheck'
 import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
@@ -9,6 +10,7 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
 import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
+import SpeedOutlinedIcon from '@mui/icons-material/SpeedOutlined'
 import { Box, Drawer, List, useTheme } from '@mui/material'
 import Image from 'next/image'
 import React from 'react'
@@ -20,6 +22,7 @@ export const sidebarWidth = 300
 
 export default function Sidebar() {
   const theme = useTheme()
+  const { speedManagementTool } = useFlags()
   const { isSidebarOpen, toggleSidebar } = useSidebarStore()
   const hasDataViewPermission = useSideBarPermission('data:view')
   const hasWatchDogPermission = useSideBarPermission('watchdog:view')
@@ -104,6 +107,14 @@ export default function Sidebar() {
               text={'Aggregate Charts'}
               url={'/aggregate-charts'}
             />
+            {/* TODO: need to add permission check for this */}
+            {speedManagementTool && (
+              <NavItem
+                icon={<SpeedOutlinedIcon />}
+                text={'Speed Management Tool'}
+                url={'/speed-management-tool'}
+              />
+            )}
             {hasWatchDogPermission && (
               <NavItem
                 icon={

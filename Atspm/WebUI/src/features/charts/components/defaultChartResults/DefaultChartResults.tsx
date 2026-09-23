@@ -24,6 +24,7 @@ export default function DefaultChartResults({
           sx={{
             maxHeight: '1000px',
             transition: 'max-height .5s',
+            overflow: 'hidden',
             minWidth: '600px',
           }}
         >

@@ -12,6 +12,10 @@ import { Box, Button, Divider, Paper, Typography } from '@mui/material'
 import { addDays, format } from 'date-fns'
 import { useEffect, useState } from 'react'
 
+interface WatchdogEditorProps {
+  hasEditPermission: boolean
+}
+
 interface WatchdogOption {
   id: number
   locationId: number
@@ -76,7 +80,7 @@ const watchdogOptions = [
   },
 ]
 
-const WatchdogEditor = () => {
+const WatchdogEditor = ({ hasEditPermission }: WatchdogEditorProps) => {
   const { addNotification } = useNotificationStore()
   const { location } = useLocationStore()
   const [ignoreEvents, setIgnoreEvents] = useState<WatchdogOption[]>([])
@@ -115,6 +119,8 @@ const WatchdogEditor = () => {
     option: WatchdogOption,
     event: React.MouseEvent<HTMLElement>
   ) => {
+    if (!hasEditPermission) return
+
     setAnchorEl(event.currentTarget)
     setSelectedOption(option)
     const ignoreEvent = ignoreEvents.find(
@@ -235,6 +241,7 @@ const WatchdogEditor = () => {
                 onClick={(e) => handlePillClick(option, e)}
                 color={isIgnored ? 'warning' : 'success'}
                 variant="contained"
+                disabled={!hasEditPermission}
                 sx={{
                   px: 2,
                   textTransform: 'none',

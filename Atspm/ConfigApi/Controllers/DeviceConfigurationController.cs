@@ -69,14 +69,22 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<string>), Status200OK)]
         public IActionResult GetEventLogDecoders()
         {
-            var result = AppDomain
-                .CurrentDomain
-                .GetAssemblies()
-                .SelectMany(m => m.GetTypes()
-                .Where(w => w.GetInterfaces()
-                .Contains(typeof(IEventLogDecoder))))
-                .Where(w => !w.IsAbstract)
-                .Where(w => !w.IsInterface)
+            var result = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => a.FullName != null && a.FullName.StartsWith("Utah.Udot.Atspm"))
+                .SelectMany(m => {
+                    try
+                    {
+                        return m.GetTypes();
+                    }
+                    catch (System.Reflection.ReflectionTypeLoadException ex)
+                    {
+                        return ex.Types.Where(t => t != null)!;
+                    }
+                })
+                .Where(w => !w.IsAbstract && !w.IsInterface)
+                .Where(w => w.GetInterfaces().Any(i =>
+                    i.IsGenericType &&
+                    i.GetGenericTypeDefinition() == typeof(IEventLogDecoder<>)))
                 .Select(s => s.Name)
                 .ToList();
 

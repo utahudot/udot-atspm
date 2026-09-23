@@ -60,6 +60,7 @@ import {
   RawTimeSpaceDiagramResponse,
   RawTimeSpaceHistoricData,
   TimeSpaceDiagramPhaseResult,
+  TimeSpaceTransformOptions,
 } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { TransformedTimeSpaceResponse } from '@/features/charts/types'
 import {
@@ -72,7 +73,8 @@ import {
 import { EChartsOption, SeriesOption } from 'echarts'
 
 export default function transformTimeSpaceHistoricData(
-  response: RawTimeSpaceDiagramResponse
+  response: RawTimeSpaceDiagramResponse,
+  options?: TimeSpaceTransformOptions
 ): TransformedTimeSpaceResponse & { errors?: string[] } {
   const wrappedData =
     response.data as TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>[]
@@ -88,14 +90,18 @@ export default function transformTimeSpaceHistoricData(
 
   return buildTimeSpaceTransformResult(
     ToolType.TimeSpaceHistoric,
-    transformData(successfulData),
+    transformData(successfulData, options),
     errorMessages
   )
 }
-function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
+function transformData(
+  data: RawTimeSpaceHistoricData[],
+  options?: TimeSpaceTransformOptions
+): EChartsOption {
   const {
     chartHeight,
     distanceScale,
+    getDisplayDistanceOffset,
     locationCenterDistanceData,
     maxDisplayDistance,
     minDisplayDistance,
@@ -105,7 +111,17 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     primaryDirection,
     primaryDistanceData,
     primaryPhaseData,
-  } = buildTimeSpacePhaseLayout(data)
+  } = buildTimeSpacePhaseLayout(data, {
+    distanceSpacingMode: options?.distanceSpacingMode,
+  })
+  const getPrimaryDisplayDistanceOffset = getDisplayDistanceOffset
+  const getOpposingDisplayDistanceOffset = (
+    index: number,
+    rawDistanceOffset: number
+  ) => {
+    const reverseIndex = primaryPhaseData.length - 1 - index
+    return getDisplayDistanceOffset(reverseIndex, rawDistanceOffset)
+  }
 
   const dateRange = formatChartDateTimeRange(data[0].start, data[0].end)
 
@@ -154,7 +170,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       'orange',
       opposingDirection,
       false,
-      distanceScale
+      distanceScale,
+      getOpposingDisplayDistanceOffset
     )
   )
 
@@ -165,7 +182,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       'orange',
       opposingDirection,
       false,
-      distanceScale
+      distanceScale,
+      getOpposingDisplayDistanceOffset
     )
   )
 
@@ -176,7 +194,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       'orange',
       opposingDirection,
       false,
-      distanceScale
+      distanceScale,
+      getOpposingDisplayDistanceOffset
     )
   )
 
@@ -187,7 +206,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       'darkblue',
       primaryDirection,
       true,
-      distanceScale
+      distanceScale,
+      getPrimaryDisplayDistanceOffset
     )
   )
 
@@ -198,7 +218,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       'darkblue',
       primaryDirection,
       true,
-      distanceScale
+      distanceScale,
+      getPrimaryDisplayDistanceOffset
     )
   )
 
@@ -209,7 +230,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       'darkblue',
       primaryDirection,
       true,
-      distanceScale
+      distanceScale,
+      getPrimaryDisplayDistanceOffset
     )
   )
 
@@ -220,6 +242,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryDirection,
       true,
       distanceScale,
+      getPrimaryDisplayDistanceOffset,
       'primary'
     )
   )
@@ -238,6 +261,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryDistanceData,
       primaryDirection,
       distanceScale,
+      getPrimaryDisplayDistanceOffset,
       'primary'
     )
   )
@@ -248,6 +272,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryDistanceData,
       primaryDirection,
       distanceScale,
+      getPrimaryDisplayDistanceOffset,
       'primary'
     )
   )
@@ -279,7 +304,8 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       primaryPhaseData,
       locationCenterDistanceData,
       grid.left as number,
-      distanceScale
+      distanceScale,
+      getPrimaryDisplayDistanceOffset
     )
   )
   series.push(
@@ -298,6 +324,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingDirection,
       false,
       distanceScale,
+      getOpposingDisplayDistanceOffset,
       'opposing'
     )
   )
@@ -317,6 +344,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingDistanceData,
       opposingDirection,
       distanceScale,
+      getOpposingDisplayDistanceOffset,
       'opposing'
     )
   )
@@ -327,6 +355,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
       opposingDistanceData,
       opposingDirection,
       distanceScale,
+      getOpposingDisplayDistanceOffset,
       'opposing'
     )
   )

@@ -114,14 +114,13 @@ export function recomputeWrappedTimeSpaceData(
   type WrappedResult =
     | TimeSpaceDiagramPhaseResult<RawTimeSpaceHistoricData>
     | TimeSpaceDiagramPhaseResult<RawTimeSpaceAverageData>
-  type SuccessfulWrappedResult = WrappedResult & {
-    isSuccess: true
+  type WrappedResultWithData = WrappedResult & {
     result: RawTimeSpaceHistoricData | RawTimeSpaceAverageData
   }
 
   const unwrappedData = wrappedData
     .filter(
-      (item): item is SuccessfulWrappedResult => item.isSuccess && !!item.result
+      (item): item is WrappedResultWithData => !!item.result
     )
     .map((item) => item.result)
 
@@ -129,15 +128,14 @@ export function recomputeWrappedTimeSpaceData(
 
   let recomputedIndex = 0
   return wrappedData.map((item) => {
-    if (!item.isSuccess || !item.result) {
+    if (!item.result) {
       return item
     }
 
     const nextResult = recomputed[recomputedIndex++] ?? item.result
     return {
-      error: null,
+      ...item,
       result: nextResult,
-      isSuccess: true,
     }
   }) as RawTimeSpaceDiagramResponse['data']
 }
@@ -166,7 +164,7 @@ export function mergeSrmOverlaysIntoWrappedData(
   )
 
   return wrappedData.map((item) => {
-    if (!item.isSuccess || !item.result) {
+    if (!item.result) {
       return item
     }
 
@@ -186,7 +184,7 @@ export function addDefaultTimeSpaceValues(
   timeSpaceData: RawTimeSpaceDiagramResponse
 ): RawTimeSpaceDiagramResponse {
   const processedData = timeSpaceData.data.map((wrappedItem) => {
-    if (!wrappedItem.isSuccess || !wrappedItem.result) {
+    if (!wrappedItem.result) {
       return wrappedItem
     }
 
@@ -214,7 +212,6 @@ export function getPrimaryTimeSpaceLocations(
   return timeSpaceData.data
     .filter(
       (phase) =>
-        phase.isSuccess &&
         !!phase.result &&
         phase.result.phaseType === 'Primary'
     )

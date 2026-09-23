@@ -46,7 +46,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             var devices = repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions);
             int targetInstances = _options.Value.WorkflowBatchSize;
-
             int devicesPerWorkflow;
 
             if (_options.Value.DevicesBatchSize > 0)
@@ -59,7 +58,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 devicesPerWorkflow = (int)Math.Ceiling((double)totalDevices / targetInstances);
             }
 
-            Func<DeviceEventLogWorkflow> workflowFactory = () => new DeviceEventLogWorkflow(scopeFactory, _options.Value.ProcessingBatchSize, _options.Value.ParallelProcesses, cancellationToken);
+            Func<DeviceEventLogWorkflow> workflowFactory = () =>
+                new DeviceEventLogWorkflow(
+                    scopeFactory,
+                    _options.Value.ProcessingBatchSize,
+                    _options.Value.ParallelProcesses,
+                    cancellationToken
+                );
 
             await workflowFactory.BatchRunAsync(devices, devicesPerWorkflow, targetInstances, cancellationToken);
         }

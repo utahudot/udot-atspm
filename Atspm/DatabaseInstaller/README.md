@@ -70,24 +70,27 @@ Imports configuration records from the ATSPM Config API into the target database
 ### Options
 
 - `--api-base-url`
-- `--bearer-token`
+- `--api-key`
 - `--delete`
 - `--update-locations`
 - `--update-speed`
 
 ### Notes
 
-- `--bearer-token` is required when importing configuration.
-- `--delete` clears existing target records before inserting new data.
+- `--api-key` is required when importing configuration. The key is sent to the Config API in the `X-API-KEY` header.
+- With only `--update-speed`, `--delete` removes only existing speed devices before importing them again. Speed products, device configurations, locations, and other device types are preserved.
+- With `--update-locations`, `--delete` clears the existing target configuration before inserting new data.
 - `--update-locations` imports locations and related configuration data.
 - `--update-speed` imports speed devices.
+- Without `--delete`, `--update-speed` preserves existing device records and IDs. Each new device is attached to the current active target version of its location. A speed device is skipped when its ID, location, or device identifier already exists; only new speed devices are inserted.
+- Before inserting speed devices, the command verifies that their shared speed product and device configuration exist in the target database. Either dependency is inserted from the source when its ID is missing.
 
 ### Example
 
 ```bash
 dotnet run --project DatabaseInstaller -- transfer-config \
-  --api-base-url "https://atspm.udot.utah.gov/" \
-  --bearer-token "<token>" \
+  --api-base-url "https://atspm.udot.utah.gov/config/" \
+  --api-key "<key>" \
   --update-locations true
 ```
 
@@ -127,6 +130,8 @@ dotnet run --project DatabaseInstaller -- transfer \
 ## `transfer-speed`
 
 Transfers speed events from SQL Server into compressed event logs.
+
+The command reads all speed events for one hour in a single timestamp-range query and groups them by configured location in memory. Source timestamps are used as stored; the command does not apply a UTC or local-time conversion. A failed hourly query is retried once after five seconds, then the skipped hour is logged clearly.
 
 ### Options
 

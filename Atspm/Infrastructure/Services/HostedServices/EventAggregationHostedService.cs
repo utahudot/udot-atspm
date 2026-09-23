@@ -43,7 +43,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 var workflow = new AggregationWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), tl, _options.Value.ParallelProcesses, cancellationToken);
 
-                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                //await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+
+                await workflow.Initialize();
 
                 var result = new ActionBlock<CompressedAggregationBase>(a => Console.WriteLine($"output: {a}"));
                 workflow.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });

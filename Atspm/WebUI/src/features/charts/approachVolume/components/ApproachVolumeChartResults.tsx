@@ -22,6 +22,7 @@ export default function ApproachVolumeChartResults({
           sx={{
             maxHeight: '1500px',
             transition: 'max-height .5s',
+            overflow: 'hidden',
           }}
         >
           <Paper sx={{ p: 2, my: 2, width: '100%', marginLeft: '2px' }}>

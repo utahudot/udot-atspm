@@ -141,6 +141,7 @@ export function TimeSpaceOffsetResetOverlay({
         <Tooltip
           key={`offset-reset-${button.location}`}
           title="double click to reset"
+          disableInteractive
           placement="top"
           enterDelay={0}
           PopperProps={{

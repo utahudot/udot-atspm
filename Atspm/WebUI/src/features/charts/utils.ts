@@ -98,7 +98,38 @@ export const DottedLineSeriesSymbol =
 export const SolidLineSeriesSymbol =
   'path://M180 1000 l0 -20 200 0 200 0 0 20 0 20 -200 0 -200 0 0 -20z'
 
-export function formatChartDateTimeRange(startDate: string, endDate: string) {
+export const dateTimeFormat: Intl.DateTimeFormatOptions = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+}
+
+const chartDateFormat: Intl.DateTimeFormatOptions = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+}
+
+const chartMonthFormat: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+}
+
+type ChartDateRangeGranularity = 'date' | 'month'
+
+export function formatChartDateTimeRange(
+  startDate: string,
+  endDate: string,
+  granularity?: ChartDateRangeGranularity
+) {
+  if (granularity) return formatChartDateRange(startDate, endDate, granularity)
+
   const start = new Date(startDate)
   const end = new Date(endDate)
 
@@ -149,40 +180,112 @@ export function formatChartDateTimeRange(startDate: string, endDate: string) {
   return `${startFull} - ${endFull}`
 }
 
+export function formatChartDateRange(
+  startDate: string,
+  endDate: string,
+  granularity: ChartDateRangeGranularity = 'date'
+) {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return `${startDate} - ${endDate}`
+  }
+
+  const format = granularity === 'month' ? chartMonthFormat : chartDateFormat
+
+  return `${start.toLocaleString('en-US', format)} - ${end.toLocaleString(
+    'en-US',
+    format
+  )}`
+}
+
 export function adjustPlanPositions(chart: ECharts) {
   const options = chart.getOption()
 
   if (!Array.isArray(options.dataZoom) || !Array.isArray(options.series)) return
 
-  const viewRange = extractViewRange(options.dataZoom[0])
+  const viewRange = extractViewRange(options.dataZoom[0], options.xAxis)
+  if (viewRange == null) return
 
-  const planSeries = options.series[options.series.length - 1]
+  const planSeries = options.series[options.series.length - 1] as SeriesOption
+  const markAreaData = planSeries.markArea?.data as MarkAreaData[] | undefined
+  const planData = planSeries.data as PlanData[] | undefined
 
-  if (
-    !planSeries.markArea ||
-    !planSeries.markArea.data.length ||
-    !planSeries.data
-  )
+  if (!Array.isArray(markAreaData) || !Array.isArray(planData)) return
+  if (markAreaData.length === 0 || planData.length === 0) {
     return
+  }
 
-  const planData: PlanData[] = planSeries.data
-
-  planData.forEach((_, i) => {
-    const markData = planSeries.markArea.data[i]
-    adjustMarkDataForViewRange(markData, viewRange, planData[i])
+  planData.forEach((plan, i) => {
+    const markData = markAreaData[i]
+    if (markData == null || plan == null) return
+    adjustMarkDataForViewRange(markData, viewRange, plan)
   })
 
   chart.setOption(options)
 }
 
-function extractViewRange(dataZoom: DataZoomComponentOption): {
+function extractViewRange(
+  dataZoom: DataZoomComponentOption | undefined,
+  xAxis: unknown
+): {
   start: number
   end: number
-} {
-  return {
-    start: new Date(dataZoom.startValue as string).getTime(),
-    end: new Date(dataZoom.endValue as string).getTime(),
+} | null {
+  if (dataZoom == null) return null
+
+  const startValue = toTimestamp(dataZoom.startValue)
+  const endValue = toTimestamp(dataZoom.endValue)
+  if (startValue != null && endValue != null) {
+    return { start: startValue, end: endValue }
   }
+
+  const startPercent = toFiniteNumber(dataZoom.start)
+  const endPercent = toFiniteNumber(dataZoom.end)
+  const axisRange = getXAxisTimeRange(xAxis)
+  if (startPercent == null || endPercent == null || axisRange == null) {
+    return null
+  }
+
+  const span = axisRange.end - axisRange.start
+  return {
+    start: axisRange.start + span * (startPercent / 100),
+    end: axisRange.start + span * (endPercent / 100),
+  }
+}
+
+function getXAxisTimeRange(
+  xAxis: unknown
+): { start: number; end: number } | null {
+  const primaryXAxis = Array.isArray(xAxis) ? xAxis[0] : xAxis
+  const axisRange = primaryXAxis as
+    | { min?: unknown; max?: unknown }
+    | undefined
+  const start = toTimestamp(axisRange?.min)
+  const end = toTimestamp(axisRange?.max)
+
+  return start == null || end == null ? null : { start, end }
+}
+
+function toTimestamp(value: unknown): number | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+  if (typeof value !== 'string' && !(value instanceof Date)) return null
+
+  const timestamp =
+    value instanceof Date ? value.getTime() : new Date(value).getTime()
+  return Number.isFinite(timestamp) ? timestamp : null
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  const number =
+    typeof value === 'number'
+      ? value
+      : typeof value === 'string'
+        ? Number(value)
+        : Number.NaN
+
+  return Number.isFinite(number) ? number : null
 }
 
 // const determineDecimals = (binWidth: number) => {

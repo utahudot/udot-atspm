@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -32,19 +33,45 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
     /// the <see cref="ScanService"/> to perform the scan operation, typically used for monitoring and reporting
     /// on traffic signal performance and anomalies.
     /// </summary>
-    public class ScanHostedService(ILogger<ScanHostedService> log, IServiceScopeFactory serviceProvider, IOptions<WatchdogConfiguration> options) : HostedServiceBase(log, serviceProvider)
+    public class ScanHostedService(ILogger<ScanHostedService> log, IServiceScopeFactory serviceProvider, IOptions<WatchdogConfiguration> options, TimeProvider timeProvider) : HostedServiceBase(log, serviceProvider)
     {
         private readonly WatchdogConfiguration _options = options.Value;
+        private readonly ScanHostedServiceLogMessages logMessages = new(log, nameof(ScanHostedService));
 
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
+            var amScanDate = _options.GetAmScanDate(timeProvider);
+            var pmScanDate = _options.GetPmScanDate(timeProvider);
+            var rampMissedDetectorHitsStartScanDate = _options.GetRampMissedDetectorHitsStartScanDate(timeProvider);
+            var rampMissedDetectorHitsEndScanDate = _options.GetRampMissedDetectorHitsEndScanDate(timeProvider);
+
+            logMessages.ResolvedWatchdogScanOptions(
+                _options.TimeZoneId,
+                pmScanDate.Kind.ToString(),
+                pmScanDate,
+                pmScanDate.Date + new TimeSpan(_options.PmPeakStartHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.PmPeakEndHour, 0, 0),
+                amScanDate,
+                amScanDate.Date + new TimeSpan(_options.AmStartHour, 0, 0),
+                amScanDate.Date + new TimeSpan(_options.AmEndHour, 0, 0),
+                rampMissedDetectorHitsStartScanDate,
+                rampMissedDetectorHitsEndScanDate,
+                rampMissedDetectorHitsStartScanDate.Date + new TimeSpan(_options.RampDetectorStartHour, 0, 0),
+                rampMissedDetectorHitsEndScanDate.Date + new TimeSpan(_options.RampDetectorEndHour, 0, 0),
+                rampMissedDetectorHitsStartScanDate.Date + new TimeSpan(_options.RampMissedDetectorHitStartHour, 0, 0),
+                rampMissedDetectorHitsEndScanDate.Date + new TimeSpan(_options.RampMissedDetectorHitEndHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampMainlineStartHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampMainlineEndHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampStuckQueueStartHour, 0, 0),
+                pmScanDate.Date + new TimeSpan(_options.RampStuckQueueEndHour, 0, 0));
+
             var options = new WatchdogLoggingOptions
             {
-                AmScanDate = _options.AmScanDate,
-                PmScanDate = _options.PmScanDate,
-                RampMissedDetectorHitsStartScanDate = _options.RampMissedDetectorHitsStartScanDate,
-                RampMissedDetectorHitsEndScanDate = _options.RampMissedDetectorHitsEndScanDate,
+                AmScanDate = amScanDate,
+                PmScanDate = pmScanDate,
+                RampMissedDetectorHitsStartScanDate = rampMissedDetectorHitsStartScanDate,
+                RampMissedDetectorHitsEndScanDate = rampMissedDetectorHitsEndScanDate,
                 AmStartHour = _options.AmStartHour,
                 AmEndHour = _options.AmEndHour,
                 PmPeakStartHour = _options.PmPeakStartHour,
@@ -70,9 +97,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var emailOptions = new WatchdogEmailOptions
             {
                 //EmailScanDate = _options.PmScanDate,
-                AmScanDate = _options.AmScanDate,
-                PmScanDate = _options.PmScanDate,
-                RampMissedDetectorHitsStartScanDate = _options.RampMissedDetectorHitsStartScanDate,
+                AmScanDate = amScanDate,
+                PmScanDate = pmScanDate,
+                RampMissedDetectorHitsStartScanDate = rampMissedDetectorHitsStartScanDate,
                 AmStartHour = _options.AmStartHour,
                 AmEndHour = _options.AmEndHour,
                 PmPeakStartHour = _options.PmPeakStartHour,

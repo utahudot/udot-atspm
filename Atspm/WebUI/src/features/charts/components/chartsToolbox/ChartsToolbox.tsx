@@ -1,3 +1,5 @@
+import { supportsBinStepLineToggle } from '@/features/charts/common/chartFeatureFlags'
+import { ChartType } from '@/features/charts/common/types'
 import { useChartsStore } from '@/stores/charts'
 import {
   Box,
@@ -16,6 +18,7 @@ import IndividualChartControls from './IndividualChartControls'
 interface GeneralChartsControllerProps {
   chartRefs: React.RefObject<HTMLDivElement>[]
   chartData: any
+  chartType: ChartType
   toggleConfigLabel: string
   toggleConfig: () => void
 }
@@ -23,12 +26,21 @@ interface GeneralChartsControllerProps {
 export default function ChartsToolbox({
   chartRefs,
   chartData,
+  chartType,
   toggleConfigLabel,
   toggleConfig,
 }: GeneralChartsControllerProps) {
   const theme = useTheme()
 
-  const { syncZoom, setSyncZoom } = useChartsStore()
+  const {
+    syncZoom,
+    setSyncZoom,
+    showBinStepLines,
+    setShowBinStepLines,
+  } =
+    useChartsStore()
+  const showBinStepLineToggle = supportsBinStepLineToggle(chartType)
+
   return (
     <Paper
       sx={{
@@ -48,7 +60,7 @@ export default function ChartsToolbox({
               <Checkbox
                 checked={syncZoom}
                 onChange={() => setSyncZoom(!syncZoom)}
-                name="showPermissivePhases"
+                name="syncZoom"
                 color="default"
                 size="small"
               />
@@ -64,6 +76,29 @@ export default function ChartsToolbox({
             }
             sx={{ flexGrow: 1 }}
           />
+          {showBinStepLineToggle && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={showBinStepLines}
+                  onChange={() => setShowBinStepLines(!showBinStepLines)}
+                  name="showBinStepLines"
+                  color="default"
+                  size="small"
+                />
+              }
+              label={
+                <Typography
+                  fontWeight={400}
+                  fontSize={'.8rem'}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Bin Step Lines
+                </Typography>
+              }
+              sx={{ flexGrow: 1 }}
+            />
+          )}
           <Button
             onClick={toggleConfig}
             sx={{

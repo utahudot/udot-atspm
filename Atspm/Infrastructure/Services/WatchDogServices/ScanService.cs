@@ -17,10 +17,12 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -45,6 +47,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private readonly IWatchdogEmailService emailService;
         private readonly SegmentedErrorsService segmentedErrorsService;
         private readonly ILogger<ScanService> logger;
+        private readonly ScanServiceLogMessages logMessages;
 
         public ScanService(
             ILocationRepository LocationRepository,
@@ -82,15 +85,24 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.logger = logger;
             this.segmentedErrorsService = segmentedErrorsService;
             this.ignoreEventService = ignoreEventService;
+            this.logMessages = new ScanServiceLogMessages(logger, nameof(ScanService));
         }
         public async Task StartScan(
             WatchdogLoggingOptions loggingOptions,
             WatchdogEmailOptions emailOptions,
             CancellationToken cancellationToken)
         {
+            if (!(emailOptions.EmailAmErrors || emailOptions.EmailPmErrors || emailOptions.EmailRampErrors))
+            {
+                logMessages.NoEmailOptionsEnabled();
+                throw new InvalidOperationException("No email options are enabled.");
+            }
+
             DateTime scanDate = emailOptions.EmailAmErrors ? emailOptions.AmScanDate : emailOptions.EmailPmErrors
-                ? emailOptions.PmScanDate : emailOptions.EmailRampErrors ? emailOptions.RampMissedDetectorHitsStartScanDate
-                : throw new InvalidOperationException("No email options are enabled.");
+                ? emailOptions.PmScanDate : emailOptions.RampMissedDetectorHitsStartScanDate;
+
+            var stopwatch = Stopwatch.StartNew();
+            logMessages.ScanStarted(scanDate, emailOptions.EmailAmErrors, emailOptions.EmailPmErrors, emailOptions.EmailRampErrors);
 
             //need a version of this that gets the Location version for date of the scan
             var locations = LocationRepository.GetLatestVersionOfAllLocations(scanDate).ToList();
@@ -133,6 +145,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     var pmOptions = BreakOutPmOptions(loggingOptions);
                     pmErrors = await logPmService.GetWatchDogIssues(pmOptions, locations, cancellationToken);
                     SaveErrorLogs(pmErrors);
+                    logMessages.SegmentErrorsComputed("PM", pmErrors.Count);
+                }
+                else
+                {
+                    logMessages.SegmentErrorsReused("PM", pmErrors.Count);
                 }
 
                 errors.AddRange(pmErrors);
@@ -147,6 +164,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 finalDaily.AddRange(pmResult.DailyRecurring);
                 finalRecurring.AddRange(pmResult.Recurring);
                 finalDayBefore.AddRange(pmResult.DayBefore);
+                logMessages.SegmentSummary("PM", pmResult.NewIssues.Count, pmResult.DailyRecurring.Count, pmResult.Recurring.Count, pmResult.DayBefore.Count);
             }
 
             // AM
@@ -164,6 +182,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     var amOptions = BreakOutAmOptions(loggingOptions);
                     amErrors = await logAmService.GetWatchDogIssues(amOptions, locations, cancellationToken);
                     SaveErrorLogs(amErrors);
+                    logMessages.SegmentErrorsComputed("AM", amErrors.Count);
+                }
+                else
+                {
+                    logMessages.SegmentErrorsReused("AM", amErrors.Count);
                 }
 
                 errors.AddRange(amErrors);
@@ -178,6 +201,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 finalDaily.AddRange(amResult.DailyRecurring);
                 finalRecurring.AddRange(amResult.Recurring);
                 finalDayBefore.AddRange(amResult.DayBefore);
+                logMessages.SegmentSummary("AM", amResult.NewIssues.Count, amResult.DailyRecurring.Count, amResult.Recurring.Count, amResult.DayBefore.Count);
             }
 
             // Ramp
@@ -195,6 +219,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     var rampOptions = BreakOutRampOptions(loggingOptions);
                     rampErrors = await logRampService.GetWatchDogIssues(rampOptions, locations, cancellationToken);
                     SaveErrorLogs(rampErrors);
+                    logMessages.SegmentErrorsComputed("Ramp", rampErrors.Count);
+                }
+                else
+                {
+                    logMessages.SegmentErrorsReused("Ramp", rampErrors.Count);
                 }
 
                 errors.AddRange(rampErrors);
@@ -209,12 +238,16 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 finalDaily.AddRange(rampResult.DailyRecurring);
                 finalRecurring.AddRange(rampResult.Recurring);
                 finalDayBefore.AddRange(rampResult.DayBefore);
+                logMessages.SegmentSummary("Ramp", rampResult.NewIssues.Count, rampResult.DailyRecurring.Count, rampResult.Recurring.Count, rampResult.DayBefore.Count);
             }
+
+            stopwatch.Stop();
+            logMessages.ScanCompleted(scanDate, errors.Count, stopwatch.ElapsedMilliseconds);
 
             var isWeekend = scanDate.DayOfWeek == DayOfWeek.Saturday || scanDate.DayOfWeek == DayOfWeek.Sunday;
             if (emailOptions.WeekdayOnly && isWeekend)
             {
-                logger.LogInformation("Skipping watchdog email: WeekdayOnly is enabled and scan date {Date} falls on a weekend.", scanDate);
+                logMessages.SkippingWeekendEmail(scanDate);
                 return;
             }
 
@@ -302,7 +335,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     retryCount++;
 
                     // Log the exception (optional, based on your logging implementation)
-                    logger.LogError($"Attempt {retryCount} failed: {ex.Message}");
+                    logMessages.SaveErrorLogsAttemptFailed(retryCount, ex);
 
                     if (retryCount == maxRetryAttempts)
                     {
@@ -311,7 +344,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     }
 
                     // Exponential backoff delay before retrying
-                    logger.LogInformation($"Retrying in {delay} ms...");
+                    logMessages.SaveErrorLogsRetrying(delay);
                     Thread.Sleep(delay);
                     delay *= 2; // Double the delay time
                 }

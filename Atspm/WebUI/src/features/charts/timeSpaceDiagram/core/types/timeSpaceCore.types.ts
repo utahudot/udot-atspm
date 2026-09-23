@@ -30,6 +30,13 @@ export interface TimeSpaceCoreRow {
   order?: number
 }
 
+export type TimeSpaceDistanceSpacingMode = 'distance' | 'sequence' | 'hybrid'
+
+export type TimeSpaceDisplayDistanceOffset = (
+  index: number,
+  rawDistanceOffset: number
+) => number
+
 export interface TimeSpacePhaseLayout<T extends TimeSpaceCoreRow> {
   primaryDirection: string
   opposingDirection: string
@@ -40,6 +47,7 @@ export interface TimeSpacePhaseLayout<T extends TimeSpaceCoreRow> {
   locationCenterDistanceData: number[]
   primaryDistanceData: number[]
   opposingDistanceData: number[]
+  getDisplayDistanceOffset: TimeSpaceDisplayDistanceOffset
   minDisplayDistance: number
   maxDisplayDistance: number
   chartHeight: number

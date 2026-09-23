@@ -25,10 +25,8 @@ import { Backdrop, CircularProgress } from '@mui/material'
 const DevicesAdmin = () => {
   const pageAccess = useViewPage(PageNames.DeviceConfigurations)
   const { addNotification } = useNotificationStore()
-  const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
-  const hasLocationsDeleteClaim = useUserHasClaim(
-    'LocationConfiguration:Delete'
-  )
+  const hasDeviceEditClaim = useUserHasClaim('Device:Edit')
+  const hasDeviceDeleteClaim = useUserHasClaim('Device:Delete')
 
   const { mutateAsync: createMutation } = usePostDeviceConfiguration()
   const { mutateAsync: deleteMutation } = useDeleteDeviceConfigurationFromKey()
@@ -180,8 +178,8 @@ const DevicesAdmin = () => {
         pageName="Device Configuration"
         cells={cells}
         data={filteredData}
-        hasEditPrivileges={hasLocationsEditClaim}
-        hasDeletePrivileges={hasLocationsDeleteClaim}
+        hasEditPrivileges={hasDeviceEditClaim}
+        hasDeletePrivileges={hasDeviceDeleteClaim}
         editModal={
           <DeviceConfigModal
             isOpen={true}
@@ -190,11 +188,13 @@ const DevicesAdmin = () => {
           />
         }
         createModal={
-          <DeviceConfigModal
-            isOpen={true}
-            onSave={handleCreateDeviceConfiguration}
-            onClose={onModalClose}
-          />
+          hasDeviceEditClaim ? (
+            <DeviceConfigModal
+              isOpen={true}
+              onSave={handleCreateDeviceConfiguration}
+              onClose={onModalClose}
+            />
+          ) : undefined
         }
         deleteModal={
           <DeleteModal

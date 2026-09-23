@@ -25,6 +25,7 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
 {
     public class TimeSpaceDiagramForPhaseService
     {
+        private const short PhaseEndRedClearanceEventCode = 11;
         //private static readonly double FeetPerMile = 5280;
         //private static readonly double SecondsInHour = 3600;
         private readonly CycleService _cycleService;
@@ -512,6 +513,10 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
         {
 
             List<short> cycleEventCodes = TimeSpaceService.GetCycleCodes(phaseDetail.UseOverlap);
+            if (!phaseDetail.UseOverlap && !cycleEventCodes.Contains(PhaseEndRedClearanceEventCode))
+            {
+                cycleEventCodes.Add(PhaseEndRedClearanceEventCode);
+            }
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
@@ -531,17 +536,21 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
                     }
                     return result;
                 });
+                var cycleDetectionEvents = tempEvents
+                    .Where(e => e.EventCode != PhaseEndRedClearanceEventCode)
+                    .ToList();
+
                 if (phaseDetail.UseOverlap)
                 {
-                    bool has64 = tempEvents.Any(e => e.EventCode == 64);
+                    bool has64 = cycleDetectionEvents.Any(e => e.EventCode == 64);
                     if (has64)
                     {
-                        tempEvents = tempEvents
+                        cycleDetectionEvents = cycleDetectionEvents
                             .Where(e => e.EventCode != 65)
                             .ToList();
                     }
                 }
-                cycles = _cycleService.GetGreenToGreenCycles(options.Start.AddMinutes(-2), options.End.AddMinutes(2), tempEvents).ToList();
+                cycles = _cycleService.GetGreenToGreenCycles(options.Start.AddMinutes(-2), options.End.AddMinutes(2), cycleDetectionEvents).ToList();
 
                 for (int i = 0; i < cycles.Count; i++)
                 {
@@ -562,9 +571,17 @@ namespace Utah.Udot.Atspm.Business.TimeSpaceDiagram
 
                     events.Add(new CycleEventsDto(cycle.YellowEvent, 8));
                     events.Add(new CycleEventsDto(cycle.RedEvent, 9));
+                    events.AddRange(tempEvents
+                        .Where(e => e.EventCode == PhaseEndRedClearanceEventCode
+                                    && e.Timestamp >= cycle.RedEvent
+                                    && e.Timestamp < cycle.EndTime)
+                        .Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)));
                 }
             }
-            return events;
+            return events
+                .OrderBy(e => e.Start)
+                .ThenBy(e => e.Value)
+                .ToList();
         }
 
         //private string GetPhaseSort(PhaseDetail phaseDetail)

@@ -15,6 +15,10 @@
 // limitations under the License.
 // #endregion
 import { createXAxis } from '@/features/charts/common/transformers'
+import {
+  TIME_SPACE_GRID_BOTTOM,
+  TIME_SPACE_GRID_TOP,
+} from '@/features/charts/timeSpaceDiagram/core/math/timeSpaceLayout'
 import type {
   DataZoomComponentOption,
   EChartsOption,
@@ -72,10 +76,10 @@ export function buildTimeSpaceGrid(
   overrides?: Partial<GridComponentOption>
 ): GridComponentOption {
   return {
-    top: 30,
+    top: TIME_SPACE_GRID_TOP,
     left: 220,
     right: 195,
-    bottom: 80,
+    bottom: TIME_SPACE_GRID_BOTTOM,
     show: true,
     borderWidth: 1,
     ...overrides,

@@ -147,9 +147,9 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   const info = createInfoString(
     ['Total Volume: ', `${data.totalVolume.toLocaleString()}`],
     ['Peak Hour: ', peakHour ?? 'N/A'],
-    ['Peak Hour Volume: ', peakHourVolume.toLocaleString() ?? 'N/A'],
-    ['Peak Hour Factor: ', peakHourFactor?.toFixed(2) ?? 'N/A'],
-    ['fLU: ', laneUtilizationFactor.toFixed(2)]
+    ['Peak Hour Volume: ', formatNullableNumber(peakHourVolume)],
+    ['Peak Hour Factor: ', formatNullableNumber(peakHourFactor, 2)],
+    ['fLU: ', formatNullableNumber(laneUtilizationFactor, 2)]
   )
 
   const titleHeader = `Turning Movement Counts\n${data.locationDescription} - ${data.direction} ${data.movementType} - ${data.laneType}`
@@ -221,6 +221,7 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
         name: `Total Volume`,
         data: transformSeriesData(totalHourlyVolumes),
         type: 'line',
+        binStepLineToggle: true,
         color: Color.Red,
         tooltip: {
           valueFormatter: (val) => `${Math.round(val as number)} vph`,
@@ -235,6 +236,7 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
         name: `Lane ${lane.laneNumber}`,
         data: transformSeriesData(lane.volume),
         type: 'line',
+        binStepLineToggle: true,
         color: colorValues[i % colorValues.length],
         tooltip: {
           valueFormatter: (val) => `${Math.round(val as number)} vph`,
@@ -263,6 +265,14 @@ function transformData(data: RawTurningMovementCountsData): EChartsOption {
   }
 
   return chartOptions
+}
+
+function formatNullableNumber(value: number | null | undefined, decimals?: number) {
+  if (value == null) {
+    return 'N/A'
+  }
+
+  return decimals == null ? value.toLocaleString() : value.toFixed(decimals)
 }
 
 function formatTime(timestamp: string | Date) {

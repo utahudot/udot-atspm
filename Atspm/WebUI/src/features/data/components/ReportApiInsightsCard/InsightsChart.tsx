@@ -31,6 +31,14 @@ function InsightsChart({
   const valueLabel = (n: number) =>
     isBytes ? formatBytes(n) : `${Math.round(n)}`
 
+  const chartAnimation = {
+    animation: true,
+    animationDuration: 650,
+    animationDurationUpdate: 450,
+    animationEasing: 'cubicOut',
+    animationEasingUpdate: 'cubicOut',
+  } as const
+
   if (loading)
     return (
       <Box>
@@ -57,6 +65,7 @@ function InsightsChart({
         option={
           horizontal
             ? {
+                ...chartAnimation,
                 title: title
                   ? {
                       text: title,
@@ -104,6 +113,7 @@ function InsightsChart({
                 ],
               }
             : {
+                ...chartAnimation,
                 title: title
                   ? {
                       text: title,

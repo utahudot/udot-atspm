@@ -135,6 +135,56 @@ function findTextStyle(
   return null
 }
 
+function findTextStyles(
+  node: unknown,
+  text: string
+): Array<{
+  fill?: unknown
+  fontSize?: unknown
+  fontWeight?: unknown
+  rich?: unknown
+  textAlign?: unknown
+  x?: unknown
+}> {
+  if (!node || typeof node !== 'object') {
+    return []
+  }
+
+  const candidate = node as {
+    children?: unknown[]
+    style?: {
+      text?: unknown
+      fill?: unknown
+      fontSize?: unknown
+      fontWeight?: unknown
+      rich?: unknown
+      textAlign?: unknown
+      x?: unknown
+    }
+  }
+
+  const matches =
+    candidate.style?.text === text
+      ? [
+          {
+            fill: candidate.style.fill,
+            fontSize: candidate.style.fontSize,
+            fontWeight: candidate.style.fontWeight,
+            rich: candidate.style.rich,
+            textAlign: candidate.style.textAlign,
+            x: candidate.style.x,
+          },
+        ]
+      : []
+
+  return Array.isArray(candidate.children)
+    ? [
+        ...matches,
+        ...candidate.children.flatMap((child) => findTextStyles(child, text)),
+      ]
+    : matches
+}
+
 function renderLocationCardNode(
   location: RawTimeSpaceAverageData,
   options?: {
@@ -253,7 +303,9 @@ function renderCycleLabelTexts(
   return collectRenderTexts(renderCycleLabelNode(isIgnored, options))
 }
 
-function renderCycleContinuationNode(location: RawTimeSpaceAverageData): unknown {
+function renderCycleContinuationNode(
+  location: RawTimeSpaceAverageData
+): unknown {
   const series = generateCycles([location], [0], 'NB', 'test').find((entry) =>
     String(entry.id).startsWith('Cycle Continuation ')
   ) as {
@@ -269,7 +321,9 @@ function renderCycleContinuationNode(location: RawTimeSpaceAverageData): unknown
     ) => unknown
   }
 
-  const dataPoints = Array.isArray(series.data) ? (series.data as unknown[][]) : []
+  const dataPoints = Array.isArray(series.data)
+    ? (series.data as unknown[][])
+    : []
   const renderResult = series.renderItem?.(
     {
       dataIndex: 0,
@@ -289,6 +343,16 @@ function renderCycleContinuationNode(location: RawTimeSpaceAverageData): unknown
   return renderResult
 }
 
+function getCycleDurationLabelData(
+  location: RawTimeSpaceAverageData
+): unknown[] {
+  const series = generateCycles([location], [0], 'NB', 'test').find((entry) =>
+    String(entry.id).startsWith('Cycle Duration Labels ')
+  ) as { data?: unknown[] } | undefined
+
+  return Array.isArray(series?.data) ? series.data : []
+}
+
 function renderGreenBandNode(
   location: RawTimeSpaceAverageData,
   { dataIndex = 0 }: { dataIndex?: number } = {}
@@ -306,7 +370,9 @@ function renderGreenBandNode(
     ) => unknown
   }
 
-  const dataPoints = Array.isArray(series.data) ? (series.data as unknown[][]) : []
+  const dataPoints = Array.isArray(series.data)
+    ? (series.data as unknown[][])
+    : []
   const renderResult = series.renderItem?.(
     {
       dataIndex,
@@ -378,11 +444,13 @@ describe('timeSpaceTransformerBase offset formatting', () => {
       })
     )
 
+    expect(visibleTexts).toContain('Programmed Offset')
+    expect(visibleTexts).toContain('User-Adjusted Offset')
     expect(visibleTexts).toContain('Cycle Length')
-    expect(visibleTexts).toContain('Offset (User-Adjusted)')
-    expect(visibleTexts).toContain('100s')
     expect(visibleTexts).toContain('12s')
+    expect(visibleTexts).toContain('100s')
     expect(visibleTexts.join(' ')).not.toContain('(+')
+    expect(hiddenTexts).not.toContain('Programmed Offset')
     expect(hiddenTexts).not.toContain('Cycle Length')
     expect(hiddenTexts).not.toContain('Offset')
     expect(hiddenTexts.join(' ')).not.toContain('NaN')
@@ -395,6 +463,9 @@ describe('timeSpaceTransformerBase offset formatting', () => {
       })
     )
 
+    expect(texts).toContain('Programmed Offset')
+    expect(texts).toContain('User-Adjusted Offset')
+    expect(texts).toContain('12s')
     expect(texts).toContain('Cycle Length')
     expect(texts).toContain('unknown')
   })
@@ -406,7 +477,8 @@ describe('timeSpaceTransformerBase offset formatting', () => {
       })
     )
 
-    expect(texts).toContain('Offset (User-Adjusted)')
+    expect(texts).toContain('Programmed Offset')
+    expect(texts).toContain('User-Adjusted Offset')
     expect(texts).toContain('12s')
   })
 
@@ -418,11 +490,12 @@ describe('timeSpaceTransformerBase offset formatting', () => {
       })
     )
 
-    expect(texts).toContain('Offset (User-Adjusted)')
+    expect(texts).toContain('Programmed Offset')
+    expect(texts).toContain('User-Adjusted Offset')
     expect(texts).toContain('unknown')
   })
 
-  it('uses the same font size for base and adjusted offset text', () => {
+  it('uses the same font size for programmed and adjusted offset text', () => {
     const locationCardNode = renderLocationCardNode(buildLocation(), {
       mutateDataPoint: (dataPoint) => {
         dataPoint[5] = 17
@@ -431,7 +504,7 @@ describe('timeSpaceTransformerBase offset formatting', () => {
       },
     })
     const baseOffsetStyle = findTextStyle(locationCardNode, '12s')
-    const adjustedOffsetStyle = findTextStyle(locationCardNode, '(+17s)')
+    const adjustedOffsetStyle = findTextStyle(locationCardNode, '17s')
 
     expect(baseOffsetStyle).toMatchObject({
       fontSize: 11,
@@ -460,7 +533,7 @@ describe('timeSpaceTransformerBase offset formatting', () => {
           return dataPoint
         },
       }),
-      '(+17s)'
+      '17s'
     )
 
     expect(unmodifiedOffsetStyle).toMatchObject({
@@ -492,6 +565,23 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     expect(cycleNode?.children).toHaveLength(2)
     expect(cycleNode.children?.[0]?.children?.[0]?.shape?.width).toBe(60000)
     expect(cycleNode.children?.[1]?.children?.[0]?.shape?.width).toBe(60000)
+  })
+
+  it('combines yellow and red clearance labels into the programmed split green label', () => {
+    const labelData = getCycleDurationLabelData(
+      buildLocation({
+        cycleAllEvents: [
+          { start: '2026-03-20T00:00:00Z', value: 1 },
+          { start: '2026-03-20T00:01:08Z', value: 8 },
+          { start: '2026-03-20T00:01:14Z', value: 9 },
+          { start: '2026-03-20T00:01:16Z', value: 11 },
+        ],
+      })
+    ) as Array<[number, number, string]>
+    const labels = labelData.map((datum) => datum[2])
+
+    expect(labels).toEqual(['76'])
+    expect(labelData[0]?.[0]).toBe(Date.parse('2026-03-20T00:00:34Z'))
   })
 
   it('renders green-band continuations in striped grey instead of the band color', () => {
@@ -548,6 +638,65 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     expect(series?.tooltip).toMatchObject({ show: false })
   })
 
+  it('uses row-to-row distance, not calculated travel distance, for green-band display offsets', () => {
+    const displayDistanceOffset = jest.fn(() => 42)
+    const location = buildLocation({
+      calculatedDistanceToNext: 250,
+      distanceToNextLocation: 100,
+      greenTimeEvents: [
+        {
+          initialX: '2026-03-20T00:00:10Z',
+          isDetectorOn: true,
+        },
+        {
+          initialX: '2026-03-20T00:00:20Z',
+          isDetectorOn: false,
+        },
+      ],
+    })
+    const series = generateGreenEventLines(
+      [location],
+      [0],
+      'NB',
+      true,
+      1,
+      displayDistanceOffset,
+      'test'
+    )[0] as {
+      data?: unknown[]
+      renderItem?: (
+        params: {
+          dataIndex: number
+        },
+        api: {
+          coord: (value: unknown[]) => [number, number]
+          value: (index: number, dataIndex?: number) => unknown
+        }
+      ) => unknown
+    }
+    const dataPoints = Array.isArray(series.data)
+      ? (series.data as unknown[][])
+      : []
+
+    series.renderItem?.(
+      {
+        dataIndex: 0,
+      },
+      {
+        coord: (value) => [
+          typeof value[0] === 'number'
+            ? value[0]
+            : Date.parse(String(value[0] ?? '')),
+          Number(value[1] ?? 0),
+        ],
+        value: (index, renderDataIndex) =>
+          dataPoints[renderDataIndex ?? 0]?.[index],
+      }
+    )
+
+    expect(displayDistanceOffset).toHaveBeenCalledWith(0, 100)
+  })
+
   it('keeps a full-cycle user adjustment visible even when the displayed offset matches the base value', () => {
     const locationCardNode = renderLocationCardNode(buildLocation(), {
       mutateDataPoint: (dataPoint) => {
@@ -556,12 +705,36 @@ describe('timeSpaceTransformerBase offset formatting', () => {
       },
     })
     const texts = collectRenderTexts(locationCardNode)
-    const adjustedOffsetStyle = findTextStyle(locationCardNode, '(+12s)')
+    const adjustedOffsetStyles = findTextStyles(locationCardNode, '12s')
 
     expect(texts).toContain('12s')
-    expect(texts).toContain('(+12s)')
-    expect(adjustedOffsetStyle).toMatchObject({
-      fill: '#475569',
+    expect(texts.join(' ')).not.toContain('(+')
+    expect(adjustedOffsetStyles.some((style) => style.fill === '#357A60')).toBe(
+      true
+    )
+  })
+
+  it('colors a wrapped leftward adjusted offset red without showing a sign', () => {
+    const locationCardNode = renderLocationCardNode(
+      buildLocation({
+        offset: 80,
+        cycleLength: 100,
+      }),
+      {
+        mutateDataPoint: (dataPoint) => {
+          dataPoint[5] = -1
+          dataPoint[7] = -81
+          return dataPoint
+        },
+      }
+    )
+    const texts = collectRenderTexts(locationCardNode)
+    const wrappedOffsetStyle = findTextStyle(locationCardNode, '99s')
+
+    expect(texts).toContain('99s')
+    expect(texts.join(' ')).not.toContain('-99s')
+    expect(wrappedOffsetStyle).toMatchObject({
+      fill: '#B45757',
     })
   })
 
@@ -580,7 +753,7 @@ describe('timeSpaceTransformerBase offset formatting', () => {
   it('styles the AOG label like the location-card metric labels', () => {
     const cycleMetricStyle = findTextStyle(
       renderLocationCardNode(buildLocation()),
-      'Cycle Length'
+      'Programmed Offset'
     )
     const aogStyle = findTextStyle(renderCycleLabelNode(false), 'AOG')
 

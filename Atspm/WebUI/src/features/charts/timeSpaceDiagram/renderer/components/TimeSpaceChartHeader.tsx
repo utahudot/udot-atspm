@@ -1,6 +1,7 @@
 import { TIME_SPACE_GUIDE_WIDTH } from '@/features/charts/timeSpaceDiagram/renderer/sidebar/timeSpaceSidebar.constants'
 import { TimeSpaceSidebarTabs } from '@/features/charts/timeSpaceDiagram/renderer/sidebar/TimeSpaceSidebarTabs'
 import type { TimeSpaceRendererTab } from '@/features/charts/timeSpaceDiagram/renderer/types/timeSpaceRenderer.types'
+import type { TimeSpaceDistanceSpacingMode } from '@/features/charts/timeSpaceDiagram/shared/types'
 import {
   CHART_CONTENT_PADDING,
   FULLSCREEN_PADDING_X,
@@ -9,6 +10,8 @@ import {
 } from '@/features/charts/timeSpaceDiagram/renderer/utils/timeSpaceChartLayout'
 import {
   Box,
+  Button,
+  ButtonGroup,
   Divider,
   IconButton,
   SvgIcon,
@@ -29,13 +32,93 @@ type TimeSpaceChartHeaderProps = {
   onDownloadChart: () => void
   onResetChart: () => void
   onSidebarTabChange: (tab: TimeSpaceRendererTab) => void
+  onToggleDistanceSpacingMode?: (mode: TimeSpaceDistanceSpacingMode) => void
   onToggleFullscreen: () => void | Promise<void>
   onToggleGuide: () => void
   onTogglePhaseInfo: () => void
+  distanceSpacingMode: TimeSpaceDistanceSpacingMode
   rangeText: string
   showPhaseInfo: boolean
   sidebarTab: TimeSpaceRendererTab
   titleText: string
+}
+
+const DISTANCE_SPACING_OPTIONS: Array<{
+  ariaLabel: string
+  mode: TimeSpaceDistanceSpacingMode
+  tooltip: string
+}> = [
+  {
+    ariaLabel: 'Distance-based spacing',
+    mode: 'distance',
+    tooltip: 'Use distance-based spacing',
+  },
+  {
+    ariaLabel: 'Equal location spacing',
+    mode: 'sequence',
+    tooltip: 'Use equal location spacing',
+  },
+  {
+    ariaLabel: 'Hybrid location spacing',
+    mode: 'hybrid',
+    tooltip: 'Use hybrid location spacing',
+  },
+]
+
+function SpacingModeIcon({ mode }: { mode: TimeSpaceDistanceSpacingMode }) {
+  if (mode === 'sequence') {
+    return (
+      <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
+        <path
+          d="M6 6h12M6 12h12M6 18h12"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
+          strokeLinecap="round"
+        />
+      </SvgIcon>
+    )
+  }
+
+  if (mode === 'hybrid') {
+    return (
+      <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
+        <path
+          d="M5 18h4M5 12h8M5 6h13"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
+          strokeLinecap="round"
+        />
+        <path
+          d="M5 6v12"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
+          strokeLinecap="round"
+        />
+      </SvgIcon>
+    )
+  }
+
+  return (
+    <SvgIcon sx={{ fontSize: HEADER_TOOLBAR_ICON_SIZE }} viewBox="0 0 24 24">
+      <path
+        d="M5 18 19 6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
+        strokeLinecap="round"
+      />
+      <path
+        d="M5 18h4M15 6h4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={HEADER_TOOLBAR_ICON_STROKE_WIDTH}
+        strokeLinecap="round"
+      />
+    </SvgIcon>
+  )
 }
 
 function PanelSidebarIcon({ side }: { side: 'left' | 'right' }) {
@@ -281,9 +364,11 @@ export function TimeSpaceChartHeader({
   onDownloadChart,
   onResetChart,
   onSidebarTabChange,
+  onToggleDistanceSpacingMode,
   onToggleFullscreen,
   onToggleGuide,
   onTogglePhaseInfo,
+  distanceSpacingMode,
   rangeText,
   showPhaseInfo,
   sidebarTab,
@@ -361,6 +446,66 @@ export function TimeSpaceChartHeader({
             flexShrink: 0,
           }}
         >
+          {onToggleDistanceSpacingMode ? (
+            <>
+              <ButtonGroup
+                size="small"
+                variant="outlined"
+                aria-label="Distance spacing mode"
+                sx={{
+                  mr: 0.75,
+                  '& .MuiButton-root': {
+                    minWidth: 30,
+                    width: 30,
+                    px: 0,
+                    py: 0.35,
+                    borderColor: '#CBD5E1',
+                    color: '#475569',
+                    lineHeight: 1,
+                    '&:hover': {
+                      borderColor: '#94A3B8',
+                      backgroundColor: 'rgba(15, 23, 42, 0.05)',
+                    },
+                  },
+                  '& .MuiButton-root.is-active': {
+                    borderColor: '#334155',
+                    backgroundColor: '#334155',
+                    color: '#FFFFFF',
+                    '&:hover': {
+                      borderColor: '#334155',
+                      backgroundColor: '#1F2937',
+                    },
+                  },
+                }}
+              >
+                {DISTANCE_SPACING_OPTIONS.map((option) => {
+                  const isActive = distanceSpacingMode === option.mode
+
+                  return (
+                    <Tooltip
+                      key={option.mode}
+                      title={option.tooltip}
+                      placement="bottom"
+                    >
+                      <Button
+                        className={isActive ? 'is-active' : undefined}
+                        onClick={() => onToggleDistanceSpacingMode(option.mode)}
+                        aria-label={option.ariaLabel}
+                        aria-pressed={isActive}
+                      >
+                        <SpacingModeIcon mode={option.mode} />
+                      </Button>
+                    </Tooltip>
+                  )
+                })}
+              </ButtonGroup>
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ mx: 0.75, borderColor: '#CBD5E1' }}
+              />
+            </>
+          ) : null}
           <Tooltip
             title={isGuideCollapsed ? 'Show right sidebar' : 'Hide right sidebar'}
             placement="bottom"

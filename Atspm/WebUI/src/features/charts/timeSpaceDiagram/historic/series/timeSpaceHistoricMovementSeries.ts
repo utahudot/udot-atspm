@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import { TSP_CODES } from '@/features/charts/prioritySummary/priorityDetails.transformer'
+import type { TimeSpaceDisplayDistanceOffset } from '@/features/charts/timeSpaceDiagram/core/types/timeSpaceCore.types'
 import { TIME_SPACE_MOVEMENT_SERIES_Z } from '@/features/charts/timeSpaceDiagram/shared/transformers/timeSpaceTransformerBase'
 import { RawTimeSpaceHistoricData } from '@/features/charts/timeSpaceDiagram/shared/types'
 import { Color, triangleSvgSymbol } from '@/features/charts/utils'
@@ -37,6 +38,18 @@ const TSP_REQUEST_OFFSET_PX = 20
 const TSP_MARKER_OFFSET_PX = 20
 const TSP_MARKER_Z = TSP_SERVICE_OVERLAY_Z + 1
 
+function getDisplayDistanceOffset(
+  index: number,
+  rawDistanceOffset: number,
+  distanceScale: number,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset
+) {
+  return (
+    displayDistanceOffset?.(index, rawDistanceOffset) ??
+    rawDistanceOffset * distanceScale
+  )
+}
+
 type TspHistoricEvent = {
   code: number
   timestamp: string
@@ -55,6 +68,7 @@ export function generateTMCEvent(
   distanceData: number[],
   phaseType?: string,
   distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset,
   idScope = 'default'
 ) {
   const seriesOptions: SeriesOption[] = []
@@ -63,8 +77,12 @@ export function generateTMCEvent(
   data.forEach((location, i) => {
     if (!location.tmcForPhase) return
 
-    const displayDistanceToNext =
-      directionMultiplier * location.calculatedDistanceToNext * distanceScale
+    const displayDistanceToNext = getDisplayDistanceOffset(
+      i,
+      directionMultiplier * location.distanceToNextLocation,
+      distanceScale,
+      displayDistanceOffset
+    )
 
     const leftTurnEvents = location.tmcForPhase.leftTurnEvents.flatMap(
       (leftTurnEvent) => {
@@ -135,6 +153,7 @@ export function generateSrmEntityLines(
   distanceData: number[],
   phaseType?: string,
   distanceScale = 1,
+  displayDistanceOffset?: TimeSpaceDisplayDistanceOffset,
   idScope = 'default'
 ): SeriesOption[] {
   const isOpposing =
@@ -153,7 +172,13 @@ export function generateSrmEntityLines(
       const baseDistance = distanceData[i] ?? 0
       const points = track.points.map((point) => [
         point.time,
-        baseDistance + directionMultiplier * point.distance * distanceScale,
+        baseDistance +
+          getDisplayDistanceOffset(
+            i,
+            directionMultiplier * point.distance,
+            distanceScale,
+            displayDistanceOffset
+          ),
       ]) as SrmSeriesPoint[]
 
       const segments = splitSrmTrackByIntersection(track.points, points)

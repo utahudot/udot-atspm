@@ -145,6 +145,8 @@ const findClosestGroup = (
   let closest: { groupKey: string; distance: number } | null = null
 
   for (const s of baseSeries) {
+    if (isMissingCyclePlaceholderSeries(s)) continue
+
     const id = String(s.id ?? '')
     const yValue = (s.data as any[])?.[0]?.[1]
     if (yValue == null) continue
@@ -161,6 +163,17 @@ const findClosestGroup = (
   }
 
   return closest
+}
+
+function isMissingCyclePlaceholderSeries(series: SeriesOption) {
+  const data = Array.isArray(series.data) ? series.data : []
+  if (data.length !== 1) {
+    return false
+  }
+
+  const value = getSeriesDatumValue(data[0])
+
+  return Array.isArray(value) && value[0] === 0 && value[2] === 0
 }
 
 function shiftTimeLike(value: unknown, offsetMs: number) {
@@ -388,7 +401,16 @@ function getSeriesDatumValue(datum: unknown) {
   return null
 }
 
-export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
+type TimeSpaceHandlerOptions = {
+  enableCycleDragging?: boolean
+}
+
+export const useTimeSpaceHandler = (
+  chart: ECharts | null,
+  syncVersion = 0,
+  options: TimeSpaceHandlerOptions = {}
+) => {
+  const enableCycleDragging = options.enableCycleDragging ?? true
   const draggingRef = useRef(false)
   const draggingGroupKeyRef = useRef<string | null>(null)
   const lastXRef = useRef<number | null>(null)
@@ -622,6 +644,10 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
     }
 
     const onMouseDown = (e: any) => {
+      if (!enableCycleDragging) {
+        return
+      }
+
       const [xData] = chart.convertFromPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
         e.offsetX,
         e.offsetY,
@@ -686,6 +712,10 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
     }
 
     const onDoubleClick = (e: any) => {
+      if (!enableCycleDragging) {
+        return
+      }
+
       const targetGroupKey = findOffsetResetTarget(e.offsetX, e.offsetY)
       if (!targetGroupKey) {
         return
@@ -740,5 +770,5 @@ export const useTimeSpaceHandler = (chart: ECharts | null, syncVersion = 0) => {
       chart.off('restore', onRestore)
       chart.off('finished', onFinished)
     }
-  }, [chart, syncVersion])
+  }, [chart, enableCycleDragging, syncVersion])
 }

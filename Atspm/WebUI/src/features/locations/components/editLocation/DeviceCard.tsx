@@ -50,11 +50,19 @@ const StyledLabel = ({ children }: { children: React.ReactNode }) => (
 
 interface DeviceCardProps {
   device: Device
+  canEdit: boolean
+  canDelete: boolean
   onEdit: (device: Device) => void
   onDelete: (deviceId: string) => void
 }
 
-const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
+const DeviceCard = ({
+  device,
+  canEdit,
+  canDelete,
+  onEdit,
+  onDelete,
+}: DeviceCardProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
@@ -74,6 +82,8 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
   const handleMenuClose = () => {
     setAnchorEl(null)
   }
+
+  const canManageDevice = canEdit || canDelete
 
   return (
     <Card
@@ -106,36 +116,44 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
             color={statusColorMap[device.deviceStatus]?.color}
             variant="outlined"
           />
-          <IconButton
-            id="device-options"
-            onClick={handleMenuClick}
-            aria-label="device-options"
-          >
-            <MoreVertIcon />
-          </IconButton>
-          <Menu
-            MenuListProps={{ 'aria-labelledby': 'device-options' }}
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleMenuClose()
-                onEdit(device)
-              }}
-            >
-              Edit
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleMenuClose()
-                onDelete(device.id)
-              }}
-            >
-              Delete
-            </MenuItem>
-          </Menu>
+          {canManageDevice && (
+            <>
+              <IconButton
+                id="device-options"
+                onClick={handleMenuClick}
+                aria-label="device-options"
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                MenuListProps={{ 'aria-labelledby': 'device-options' }}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                {canEdit && (
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose()
+                      onEdit(device)
+                    }}
+                  >
+                    Edit
+                  </MenuItem>
+                )}
+                {canDelete && (
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose()
+                      onDelete(device.id)
+                    }}
+                  >
+                    Delete
+                  </MenuItem>
+                )}
+              </Menu>
+            </>
+          )}
         </Box>
         <Box
           sx={{

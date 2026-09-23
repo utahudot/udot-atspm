@@ -237,8 +237,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   const toolbox = createToolbox(
     { title: titleHeader1, dateRange },
-    data.locationIdentifier,
-    ChartType.ApproachVolume
+    data.locationIdentifier
   )
 
   const tooltip = createTooltip()
