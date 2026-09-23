@@ -1,0 +1,13 @@
+name: Validate path casing
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  validate-path-casing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject incorrectly cased project paths
+        run: sh Atspm/WebUI/.husky/check-path-casing.sh

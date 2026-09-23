@@ -1659,6 +1659,111 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             MeasureTypeId = 40,
                             Option = "binSize",
                             Value = "15"
+                        },
+                        new
+                        {
+                            Id = 127,
+                            MeasureTypeId = 41,
+                            Option = "amEntryPctOfPeak",
+                            Value = "0.55"
+                        },
+                        new
+                        {
+                            Id = 128,
+                            MeasureTypeId = 41,
+                            Option = "amExitPctOfPeak",
+                            Value = "0.40"
+                        },
+                        new
+                        {
+                            Id = 129,
+                            MeasureTypeId = 41,
+                            Option = "pmEntryPctOfPeak",
+                            Value = "0.68"
+                        },
+                        new
+                        {
+                            Id = 130,
+                            MeasureTypeId = 41,
+                            Option = "pmExitPctOfPeak",
+                            Value = "0.38"
+                        },
+                        new
+                        {
+                            Id = 131,
+                            MeasureTypeId = 41,
+                            Option = "freeEntryPctOfDailyPeak",
+                            Value = "0.22"
+                        },
+                        new
+                        {
+                            Id = 132,
+                            MeasureTypeId = 41,
+                            Option = "freeEntryPctOfDynamicRange",
+                            Value = "0.18"
+                        },
+                        new
+                        {
+                            Id = 133,
+                            MeasureTypeId = 41,
+                            Option = "entrySustainedBins",
+                            Value = "2"
+                        },
+                        new
+                        {
+                            Id = 134,
+                            MeasureTypeId = 41,
+                            Option = "freeSustainedBins",
+                            Value = "4"
+                        },
+                        new
+                        {
+                            Id = 135,
+                            MeasureTypeId = 41,
+                            Option = "freeFallbackTime",
+                            Value = "23:30"
+                        },
+                        new
+                        {
+                            Id = 136,
+                            MeasureTypeId = 41,
+                            Option = "maxAmEndTime",
+                            Value = "10:00"
+                        },
+                        new
+                        {
+                            Id = 137,
+                            MeasureTypeId = 41,
+                            Option = "maxPmEndTime",
+                            Value = "20:00"
+                        },
+                        new
+                        {
+                            Id = 138,
+                            MeasureTypeId = 41,
+                            Option = "laneCapacityVehiclesPerHour",
+                            Value = "800"
+                        },
+                        new
+                        {
+                            Id = 139,
+                            MeasureTypeId = 41,
+                            Option = "approachVolumeAssumedLanes",
+                            Value = "2"
+                        },
+                        new
+                        {
+                            Id = 140,
+                            MeasureTypeId = 41,
+                            Option = "splitReviewThresholdPercent",
+                            Value = "35"
+                        },
+                        new
+                        {
+                            Id = 141,
+                            MeasureTypeId = 41,
+                            Option = "shoulderReviewThresholdPercent",
+                            Value = "45"
                         });
                 });
 
@@ -1702,6 +1807,36 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.ToTable("MeasureOptionPresets", t =>
                         {
                             t.HasComment("Measure Option Presets");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 4101,
+                            MeasureTypeId = 41,
+                            Name = "Commuter Arterial",
+                            Option = BuildTimeOfDayPresetJson("0.60", "0.42", "0.72", "0.40", "0.20", "0.16", 2, 4)
+                        },
+                        new
+                        {
+                            Id = 4102,
+                            MeasureTypeId = 41,
+                            Name = "Suburban Mixed-Use",
+                            Option = BuildTimeOfDayPresetJson("0.55", "0.40", "0.68", "0.38", "0.22", "0.18", 2, 4)
+                        },
+                        new
+                        {
+                            Id = 4103,
+                            MeasureTypeId = 41,
+                            Name = "Retail / Commercial",
+                            Option = BuildTimeOfDayPresetJson("0.50", "0.38", "0.62", "0.36", "0.25", "0.20", 3, 4)
+                        },
+                        new
+                        {
+                            Id = 4104,
+                            MeasureTypeId = 41,
+                            Name = "Weekend / Recreation",
+                            Option = BuildTimeOfDayPresetJson("0.48", "0.36", "0.60", "0.34", "0.24", "0.20", 3, 5)
                         });
                 });
 
@@ -2093,6 +2228,15 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             Abbreviation = "TSPD",
                             DisplayOrder = 134,
                             Name = "Transit Signal Priority Details",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Abbreviation = "TOD",
+                            DisplayOrder = 135,
+                            Name = "Time Of Day",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = true
                         });
@@ -3017,6 +3161,44 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Navigation("PreviousLocations");
                 });
 #pragma warning restore 612, 618
+        }
+
+        private static string BuildTimeOfDayPresetJson(
+            string amEntryPctOfPeak,
+            string amExitPctOfPeak,
+            string pmEntryPctOfPeak,
+            string pmExitPctOfPeak,
+            string freeEntryPctOfDailyPeak,
+            string freeEntryPctOfDynamicRange,
+            int entrySustainedBins,
+            int freeSustainedBins)
+        {
+            return "{" +
+                "\"$type\":\"TimeOfDayOptions\"," +
+                "\"LocationIdentifiers\":[]," +
+                "\"SelectedDates\":[]," +
+                "\"BinSizeMinutes\":15," +
+                "\"DataSource\":0," +
+                "\"AllDayPrimaryDirections\":[]," +
+                "\"AmPrimaryDirections\":[]," +
+                "\"PmPrimaryDirections\":[]," +
+                "\"AmEntryPctOfPeak\":" + amEntryPctOfPeak + "," +
+                "\"AmExitPctOfPeak\":" + amExitPctOfPeak + "," +
+                "\"PmEntryPctOfPeak\":" + pmEntryPctOfPeak + "," +
+                "\"PmExitPctOfPeak\":" + pmExitPctOfPeak + "," +
+                "\"FreeEntryPctOfDailyPeak\":" + freeEntryPctOfDailyPeak + "," +
+                "\"FreeEntryPctOfDynamicRange\":" + freeEntryPctOfDynamicRange + "," +
+                "\"EntrySustainedBins\":" + entrySustainedBins + "," +
+                "\"FreeSustainedBins\":" + freeSustainedBins + "," +
+                "\"FreeFallbackTime\":\"23:30\"," +
+                "\"MaxAmEndTime\":\"10:00\"," +
+                "\"MaxPmEndTime\":\"20:00\"," +
+                "\"LaneCapacityVehiclesPerHour\":800.0," +
+                "\"ApproachVolumeAssumedLanes\":2.0," +
+                "\"SplitReviewThresholdPercent\":35.0," +
+                "\"ShoulderReviewThresholdPercent\":45.0," +
+                "\"DirectionLaneCounts\":{}" +
+                "}";
         }
     }
 }

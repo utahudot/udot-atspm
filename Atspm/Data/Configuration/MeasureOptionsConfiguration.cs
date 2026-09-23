@@ -94,7 +94,22 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 new MeasureOption() { Id = 120, Option = "yAxisDefault", Value = "300", MeasureTypeId = 5 },
                 new MeasureOption() { Id = 121, Option = "combineThruRight", Value = "FALSE", MeasureTypeId = 5 },
                 new MeasureOption() { Id = 122, Option = "binSize", Value = "15", MeasureTypeId = 39 },
-                new MeasureOption() { Id = 123, Option = "binSize", Value = "15", MeasureTypeId = 40 }
+                new MeasureOption() { Id = 123, Option = "binSize", Value = "15", MeasureTypeId = 40 },
+                new MeasureOption() { Id = 127, Option = "amEntryPctOfPeak", Value = "0.55", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 128, Option = "amExitPctOfPeak", Value = "0.40", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 129, Option = "pmEntryPctOfPeak", Value = "0.68", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 130, Option = "pmExitPctOfPeak", Value = "0.38", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 131, Option = "freeEntryPctOfDailyPeak", Value = "0.22", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 132, Option = "freeEntryPctOfDynamicRange", Value = "0.18", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 133, Option = "entrySustainedBins", Value = "2", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 134, Option = "freeSustainedBins", Value = "4", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 135, Option = "freeFallbackTime", Value = "23:30", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 136, Option = "maxAmEndTime", Value = "10:00", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 137, Option = "maxPmEndTime", Value = "20:00", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 138, Option = "laneCapacityVehiclesPerHour", Value = "800", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 139, Option = "approachVolumeAssumedLanes", Value = "2", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 140, Option = "splitReviewThresholdPercent", Value = "35", MeasureTypeId = 41 },
+                new MeasureOption() { Id = 141, Option = "shoulderReviewThresholdPercent", Value = "45", MeasureTypeId = 41 }
                 );
         }
     }

@@ -1,3 +1,6 @@
+import '@/components/LeafletMap/leafletGlobalSetup'
+
+import SmoothWheelZoom from '@/components/LeafletMap/SmoothWheelZoom'
 import RouteModeIndicator from '@/features/speedManagementTool/components/SegmentEditor/SegmentEditorMap/RouteModeIndicator'
 import { useMapSetup } from '@/features/speedManagementTool/components/SegmentEditor/SegmentEditorMap/hooks/useMapSetup'
 import DisplayNearBySegments from '@/features/speedManagementTool/components/SegmentEditor/SegmentEditorMap/mapFeatures/DisplayNearBySegments'
@@ -272,8 +275,9 @@ const SegmentEditorMap = () => {
         dragging
         trackResize
         touchZoom={false}
-        scrollWheelZoom
+        scrollWheelZoom={false}
       >
+        <SmoothWheelZoom />
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"

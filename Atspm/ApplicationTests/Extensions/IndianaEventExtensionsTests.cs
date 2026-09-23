@@ -66,6 +66,25 @@ namespace Utah.Udot.ATSPM.ApplicationTests.Extensions
 
         #region IdentifyRedToRedCycles
 
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void GetPlanEvents_KeepsLatestPlanAtOrBeforeStart(int lastPlanOffsetMinutes)
+        {
+            var start = new DateTime(2026, 4, 6);
+            var events = new[]
+            {
+                CreateEvent(Location, 254, start.AddHours(-2), 131),
+                CreateEvent(Location, 7, start.AddMinutes(lastPlanOffsetMinutes), 131)
+            };
+
+            var plans = events.GetPlanEvents(start, start.AddDays(1));
+
+            var first = Assert.Single(plans.Where(plan => plan.Timestamp == start));
+            Assert.Equal(7, first.EventParam);
+            Assert.Equal(start.AddMinutes(lastPlanOffsetMinutes), events[1].Timestamp);
+        }
+
         [Fact]
         public void ReturnsEmptyList_WhenNoEventsMatchSpecification()
         {

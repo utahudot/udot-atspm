@@ -190,8 +190,10 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
   const isDragging = useRef(false)
   const initialMouseX = useRef(0)
   const initialWidth = useRef(0)
+  const latestHotspotRequest = useRef(0)
 
   const fetchHotspots = useCallback(async () => {
+    const requestId = ++latestHotspotRequest.current
     try {
       setIsLoading(true)
       setHotspotRoutes([])
@@ -227,7 +229,9 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
           flipHotspotCoordinates(await fetchImpactHotspots({ data: payload })),
           'impact'
         )
-        setHotspotRoutes(impactHotspots)
+        if (requestId === latestHotspotRequest.current) {
+          setHotspotRoutes(impactHotspots)
+        }
       } else {
         const hotspots = tagHotspotSource(
           flipHotspotCoordinates(
@@ -253,13 +257,18 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
           ),
           'monthly'
         )
-        setHotspotRoutes(hotspots)
+        if (requestId === latestHotspotRequest.current) {
+          setHotspotRoutes(hotspots)
+        }
       }
     } catch (error) {
+      if (requestId !== latestHotspotRequest.current) return
       console.error('Failed to fetch hotspots', error)
       setHotspotRoutes([])
     } finally {
-      setIsLoading(false)
+      if (requestId === latestHotspotRequest.current) {
+        setIsLoading(false)
+      }
     }
   }, [
     fetchHotspotsAsync,
@@ -278,6 +287,10 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
 
   useEffect(() => {
     fetchHotspots()
+    return () => {
+      // Ignore responses from previous filters or an unmounted sidebar.
+      latestHotspotRequest.current += 1
+    }
   }, [
     submittedRouteSpeedRequest,
     order,
@@ -469,17 +482,17 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
                 </Typography>
               </Box>
             </Popover>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                position: 'relative',
-                width: isCompareDates ? '364px' : 'auto',
-                transition: 'width 0.3s ease',
-              }}
-            >
-              {sortBy !== 100 && (
+            {sortBy !== 100 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  position: 'relative',
+                  width: isCompareDates ? '364px' : 'auto',
+                  transition: 'width 0.3s ease',
+                }}
+              >
                 <Button
                   onClick={() => setIsCompareDates((prev) => !prev)}
                   aria-label="compare dates"
@@ -501,43 +514,43 @@ const HotspotSidebar = ({ handleRouteSelection }) => {
                 >
                   Compare Dates
                 </Button>
-              )}
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  position: 'absolute',
-                  left: '48px',
-                  transition: 'opacity 0.3s ease',
-                  opacity: isCompareDates ? 1 : 0,
-                  pointerEvents: isCompareDates ? 'auto' : 'none',
-                }}
-              >
-                <DatePicker
-                  label="Base Month"
-                  views={['month', 'year']}
-                  format="MMM yyyy"
-                  value={baseMonth}
-                  onChange={(val) => setBaseMonth(val)}
-                  slotProps={{
-                    textField: { size: 'small' },
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    position: 'absolute',
+                    left: '48px',
+                    transition: 'opacity 0.3s ease',
+                    opacity: isCompareDates ? 1 : 0,
+                    pointerEvents: isCompareDates ? 'auto' : 'none',
                   }}
-                  sx={{ width: 140 }}
-                />
-                <ArrowForwardIcon sx={{ mx: 1 }} fontSize="small" />
-                <DatePicker
-                  label="Comparison Month"
-                  views={['month', 'year']}
-                  format="MMM yyyy"
-                  value={comparisonMonth}
-                  onChange={(val) => setComparisonMonth(val)}
-                  slotProps={{
-                    textField: { size: 'small' },
-                  }}
-                  sx={{ width: 140 }}
-                />
+                >
+                  <DatePicker
+                    label="Base Month"
+                    views={['month', 'year']}
+                    format="MMM yyyy"
+                    value={baseMonth}
+                    onChange={(val) => setBaseMonth(val)}
+                    slotProps={{
+                      textField: { size: 'small' },
+                    }}
+                    sx={{ width: 140 }}
+                  />
+                  <ArrowForwardIcon sx={{ mx: 1 }} fontSize="small" />
+                  <DatePicker
+                    label="Comparison Month"
+                    views={['month', 'year']}
+                    format="MMM yyyy"
+                    value={comparisonMonth}
+                    onChange={(val) => setComparisonMonth(val)}
+                    slotProps={{
+                      textField: { size: 'small' },
+                    }}
+                    sx={{ width: 140 }}
+                  />
+                </Box>
               </Box>
-            </Box>
+            )}
           </Box>
           <Divider />
           <Box

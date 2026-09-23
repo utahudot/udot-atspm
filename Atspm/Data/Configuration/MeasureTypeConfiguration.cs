@@ -380,6 +380,15 @@ namespace Utah.Udot.Atspm.Data.Configuration
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 134
+                },
+                new MeasureType
+                {
+                    Id = 41,
+                    Name = "Time Of Day",
+                    Abbreviation = "TOD",
+                    ShowOnWebsite = true,
+                    ShowOnAggregationSite = false,
+                    DisplayOrder = 135
                 });
         }
     }

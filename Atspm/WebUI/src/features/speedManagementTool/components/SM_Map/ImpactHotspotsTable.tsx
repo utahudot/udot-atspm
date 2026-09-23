@@ -1,3 +1,4 @@
+import { toDateStamp } from '@/utils/dateTime'
 import {
   Box,
   Divider,
@@ -8,10 +9,11 @@ import {
   TableCellProps,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
-  useTheme,
 } from '@mui/material'
 import React, { Fragment, ReactNode } from 'react'
+import { getChangeBackgroundColor } from './changeColors'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 
 interface Column {
@@ -55,12 +57,18 @@ interface ImpactHotspotTableProps {
 }
 
 const alwaysColumns: Column[] = [
+  { key: 'start', label: 'Start Date' },
+  { key: 'end', label: 'End Date' },
   { key: 'startMile', label: 'Start Mile' },
   { key: 'endMile', label: 'End Mile' },
   { key: 'speedLimit', label: 'Speed Limit' },
 ]
 
-const baseColumns: Column[] = [{ key: 'rank', label: 'Rank' }, ...alwaysColumns]
+const baseColumns: Column[] = [
+  { key: 'rank', label: 'Rank' },
+  { key: 'description', label: 'Impact' },
+  ...alwaysColumns,
+]
 
 const variableGroups: VariableGroup[] = [
   {
@@ -115,6 +123,16 @@ const formatValue = (value: unknown): string => {
     return value.toLocaleString()
   }
   return value ? String(value) : 'N/A'
+}
+
+const formatImpactDate = (value: unknown): string => {
+  if (typeof value !== 'string' || !value.trim()) return 'N/A'
+
+  try {
+    return toDateStamp(value)
+  } catch {
+    return 'N/A'
+  }
 }
 
 const getHotspotRouteId = (hotspot: Hotspot): string | null => {
@@ -191,18 +209,17 @@ const StyledHeaderCell: React.FC<StyledHeaderCellProps> = ({
 
 interface StyledBodyCellProps extends Omit<TableCellProps, 'children'> {
   children: ReactNode
-  highlight?: boolean
+  changeValue?: unknown
   isLoading: boolean
 }
 
 const StyledBodyCell: React.FC<StyledBodyCellProps> = ({
   children,
   align = 'center',
-  highlight = false,
+  changeValue,
   isLoading,
   ...props
 }) => {
-  const theme = useTheme()
   if (isLoading) {
     return (
       <TableCell align="right">
@@ -216,7 +233,7 @@ const StyledBodyCell: React.FC<StyledBodyCellProps> = ({
       sx={{
         borderRight: '1px solid #d0d0d0',
         height: 50,
-        ...(highlight && { backgroundColor: theme.palette.grey[200] }),
+        backgroundColor: getChangeBackgroundColor(changeValue),
       }}
       {...props}
     >
@@ -236,9 +253,20 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
 }) => {
   const { zoomToHotspot, mapRef } = useSpeedManagementStore()
 
-  if (!hotspots || hotspots.length === 0) {
+  if (!isLoading && (!hotspots || hotspots.length === 0)) {
     return (
-      <Box>
+      <Box
+        role="status"
+        sx={{
+          p: 2,
+          height: '100%',
+          boxSizing: 'border-box',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }}
+      >
         <Typography>No hotspots found</Typography>
       </Box>
     )
@@ -397,13 +425,33 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                     <StyledBodyCell colSpan={1} isLoading={false}>
                       {index + 1}
                     </StyledBodyCell>
+                    <TableCell
+                      align="left"
+                      sx={{
+                        minWidth: 220,
+                        maxWidth: 220,
+                        borderRight: '1px solid #d0d0d0',
+                      }}
+                    >
+                      <Tooltip
+                        title={formatValue(hotspot.properties?.description)}
+                        placement="top"
+                        arrow
+                      >
+                        <Typography noWrap fontSize=".7rem">
+                          {formatValue(hotspot.properties?.description)}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
                     {alwaysColumns.map((col) => (
                       <StyledBodyCell
                         key={col.key}
                         colSpan={1}
                         isLoading={false}
                       >
-                        {formatValue(hotspot.properties?.[col.key])}
+                        {col.key === 'start' || col.key === 'end'
+                          ? formatImpactDate(hotspot.properties?.[col.key])
+                          : formatValue(hotspot.properties?.[col.key])}
                       </StyledBodyCell>
                     ))}
 
@@ -430,7 +478,7 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                             {changeCol && (
                               <StyledBodyCell
                                 colSpan={1}
-                                highlight
+                                changeValue={properties[changeCol]}
                                 isLoading={false}
                               >
                                 {formatValue(properties[changeCol])}
@@ -443,6 +491,11 @@ const ImpactHotspotTable: React.FC<ImpactHotspotTableProps> = ({
                           <StyledBodyCell
                             key={colKey}
                             colSpan={1}
+                            changeValue={
+                              colKey === group.change
+                                ? properties[colKey]
+                                : undefined
+                            }
                             isLoading={false}
                           >
                             {formatValue(properties[colKey])}

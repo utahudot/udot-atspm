@@ -287,9 +287,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         [Theory]
-        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData1.json")]
-        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData2.json")]
-        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData3.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData1.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData2.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData3.json")]
         public async void IdentifyandAdjustVehicleActivationsFromFileTest(string file)
         {
             var json = File.ReadAllText(new FileInfo(file).FullName);

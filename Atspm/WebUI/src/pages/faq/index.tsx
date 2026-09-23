@@ -1,6 +1,7 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useGetFaqs } from '@/features/faq/api'
 import { Faq } from '@/features/faq/types'
+import { stripTableWhitespace } from '@/features/faq/utils/stripTableWhitespace'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Accordion,
@@ -35,7 +36,7 @@ const FAQ = () => {
           </AccordionSummary>
           <Divider />
           <AccordionDetails>
-            <Markup content={faq.body} />
+            <Markup content={stripTableWhitespace(faq.body)} />
           </AccordionDetails>
         </Accordion>
       ))}
