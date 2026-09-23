@@ -1,12 +1,9 @@
 import TimeOfDayPage from '@/pages/time-of-day'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import type { TimeOfDayMeasureDefaults } from './measureDefaults'
-import type { TimeOfDayFormState } from './types'
+import { timeOfDayDefaultTuningOptions, type TimeOfDayFormState } from './types'
 
-let mockDefaults:
-  | { value: Array<{ id: number; measureOptions: TimeOfDayMeasureDefaults }> }
-  | undefined
+const mockUseChartDefaults = jest.fn()
 let mockQuery: Record<string, unknown> = {}
 
 jest.mock('@/api/config', () => ({
@@ -14,7 +11,7 @@ jest.mock('@/api/config', () => ({
   getLocationLocationsForSearch: jest.fn(async () => []),
 }))
 jest.mock('@/features/charts/api', () => ({
-  useChartDefaults: () => ({ data: mockDefaults }),
+  useChartDefaults: () => mockUseChartDefaults(),
 }))
 jest.mock('@/features/timeOfDay/api/getTimeOfDay', () => ({
   useTimeOfDayReport: () => ({ mutateAsync: jest.fn(), isLoading: false }),
@@ -89,26 +86,6 @@ jest.mock('nuqs', () => {
   }
 })
 
-const defaults = (capacity: number, lanes: number) => ({
-  value: [
-    {
-      id: 41,
-      measureOptions: {
-        laneCapacityVehiclesPerHour: {
-          id: 1,
-          option: 'laneCapacityVehiclesPerHour',
-          value: String(capacity),
-        },
-        approachVolumeAssumedLanes: {
-          id: 2,
-          option: 'approachVolumeAssumedLanes',
-          value: String(lanes),
-        },
-      },
-    },
-  ],
-})
-
 const capacityInput = () =>
   screen.getByRole('spinbutton', {
     name: 'Per-lane capacity',
@@ -119,62 +96,54 @@ const editCapacity = () =>
 
 describe('TimeOfDayPage form synchronization', () => {
   beforeEach(() => {
-    mockDefaults = undefined
+    mockUseChartDefaults.mockClear()
     mockQuery = {}
   })
 
-  test.each([false, true])(
-    'applies explicit URL values after a local edit (defaults loaded: %p)',
-    (defaultsLoaded) => {
-      if (defaultsLoaded) mockDefaults = defaults(1200, 2)
-      const { rerender } = render(<TimeOfDayPage />)
-      editCapacity()
+  test('initializes from code defaults without requesting database defaults', () => {
+    render(<TimeOfDayPage />)
 
-      mockQuery = { laneCapacity: 1300 }
-      rerender(<TimeOfDayPage />)
-
-      expect(capacityInput().value).toBe('1300')
-    }
-  )
-
-  test('restores the default when a URL parameter is removed after an edit', () => {
-    mockDefaults = defaults(1200, 2)
-    mockQuery = { laneCapacity: 1300 }
-    const { rerender } = render(<TimeOfDayPage />)
-    editCapacity()
-
-    mockQuery = {}
-    rerender(<TimeOfDayPage />)
-
-    expect(capacityInput().value).toBe('1200')
+    expect(capacityInput().value).toBe(
+      String(timeOfDayDefaultTuningOptions.laneCapacityVehiclesPerHour)
+    )
+    expect(screen.getByTestId('fallback-lanes').textContent).toBe(
+      String(timeOfDayDefaultTuningOptions.approachVolumeAssumedLanes)
+    )
+    expect(mockUseChartDefaults).not.toHaveBeenCalled()
   })
 
-  test('preserves edits while applying delayed defaults to untouched fields', () => {
-    const { rerender } = render(<TimeOfDayPage />)
-    editCapacity()
-
-    mockDefaults = defaults(1200, 3)
-    rerender(<TimeOfDayPage />)
-
-    expect(capacityInput().value).toBe('950')
-    expect(screen.getByTestId('fallback-lanes').textContent).toBe('3')
-
-    mockDefaults = defaults(1400, 4)
-    rerender(<TimeOfDayPage />)
-
-    expect(capacityInput().value).toBe('950')
-    expect(screen.getByTestId('fallback-lanes').textContent).toBe('4')
-  })
-
-  test('honors a URL change arriving together with delayed defaults', () => {
+  test('applies explicit URL values after a local edit', () => {
     const { rerender } = render(<TimeOfDayPage />)
     editCapacity()
 
     mockQuery = { laneCapacity: 1300 }
-    mockDefaults = defaults(1200, 3)
     rerender(<TimeOfDayPage />)
 
     expect(capacityInput().value).toBe('1300')
-    expect(screen.getByTestId('fallback-lanes').textContent).toBe('3')
+  })
+
+  test('restores the default when a URL parameter is removed after an edit', () => {
+    mockQuery = { laneCapacity: 1300 }
+    const { rerender } = render(<TimeOfDayPage />)
+    editCapacity()
+
+    mockQuery = {}
+    rerender(<TimeOfDayPage />)
+
+    expect(capacityInput().value).toBe(
+      String(timeOfDayDefaultTuningOptions.laneCapacityVehiclesPerHour)
+    )
+  })
+
+  test('preserves local edits across rerenders', () => {
+    const { rerender } = render(<TimeOfDayPage />)
+    editCapacity()
+
+    rerender(<TimeOfDayPage />)
+
+    expect(capacityInput().value).toBe('950')
+    expect(screen.getByTestId('fallback-lanes').textContent).toBe(
+      String(timeOfDayDefaultTuningOptions.approachVolumeAssumedLanes)
+    )
   })
 })

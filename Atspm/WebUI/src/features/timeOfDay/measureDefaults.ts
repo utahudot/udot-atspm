@@ -1,17 +1,7 @@
 import type { MeasureOptionPreset } from '@/api/config'
-import type { Default } from '@/features/charts/types'
-import {
-  timeOfDayDefaultTuningOptions,
-  TimeOfDayTuningOptionKey,
-  timeOfDayTuningOptionKeys,
-  TimeOfDayTuningOptions,
-} from './types'
+import { TimeOfDayTuningOptionKey, TimeOfDayTuningOptions } from './types'
 
 export const timeOfDayMeasureTypeId = 41
-
-export type TimeOfDayMeasureDefaults = Partial<
-  Record<TimeOfDayTuningOptionKey, Default>
->
 
 export const timeOfDaySchedulePresetOptionKeys = [
   'amEntryPctOfPeak',
@@ -34,76 +24,6 @@ export interface TimeOfDaySchedulePreset {
   name: string
   options: TimeOfDaySchedulePresetOptions
 }
-
-const stringOptionKeys = new Set<TimeOfDayTuningOptionKey>([
-  'freeFallbackTime',
-  'maxAmEndTime',
-  'maxPmEndTime',
-])
-
-// The backend rejects zero or negative values for these options.
-const positiveNumberOptionKeys = new Set<TimeOfDayTuningOptionKey>([
-  'laneCapacityVehiclesPerHour',
-  'approachVolumeAssumedLanes',
-  'entrySustainedBins',
-  'freeSustainedBins',
-])
-
-const parseNumberDefault = (
-  defaults: TimeOfDayMeasureDefaults | undefined,
-  key: TimeOfDayTuningOptionKey,
-  fallback: number
-) => {
-  const value = defaults?.[key]?.value
-  if (
-    value === null ||
-    value === undefined ||
-    (typeof value === 'string' && value.trim() === '')
-  ) {
-    return fallback
-  }
-
-  const parsed = typeof value === 'number' ? value : Number(value)
-
-  if (!Number.isFinite(parsed)) return fallback
-
-  return positiveNumberOptionKeys.has(key) && parsed <= 0 ? fallback : parsed
-}
-
-const parseStringDefault = (
-  defaults: TimeOfDayMeasureDefaults | undefined,
-  key: TimeOfDayTuningOptionKey,
-  fallback: string
-) => {
-  const value = defaults?.[key]?.value
-
-  return typeof value === 'string' && value.trim() ? value : fallback
-}
-
-export const buildTimeOfDayTuningOptionsFromDefaults = (
-  defaults: TimeOfDayMeasureDefaults | undefined
-): TimeOfDayTuningOptions =>
-  timeOfDayTuningOptionKeys.reduce((options, key) => {
-    if (stringOptionKeys.has(key)) {
-      return {
-        ...options,
-        [key]: parseStringDefault(
-          defaults,
-          key,
-          timeOfDayDefaultTuningOptions[key] as string
-        ),
-      }
-    }
-
-    return {
-      ...options,
-      [key]: parseNumberDefault(
-        defaults,
-        key,
-        timeOfDayDefaultTuningOptions[key] as number
-      ),
-    }
-  }, {} as TimeOfDayTuningOptions)
 
 const parseSchedulePresetOptions = (
   option: MeasureOptionPreset['option']

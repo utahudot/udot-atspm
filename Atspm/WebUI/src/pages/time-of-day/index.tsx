@@ -3,7 +3,6 @@ import {
   useGetMeasureTypeMeasureOptionPresetsFromKey,
 } from '@/api/config'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { useChartDefaults } from '@/features/charts/api'
 import ChartMessages from '@/features/charts/components/chartMessages/ChartMessages'
 import { useTimeOfDayReport } from '@/features/timeOfDay/api/getTimeOfDay'
 import TimeOfDayOptions from '@/features/timeOfDay/components/TimeOfDayOptions'
@@ -13,10 +12,8 @@ import {
   mergeUntouchedTimeOfDayFormState,
   type TimeOfDayFormField,
 } from '@/features/timeOfDay/formState'
-import type { TimeOfDayMeasureDefaults } from '@/features/timeOfDay/measureDefaults'
 import {
   buildTimeOfDaySchedulePresets,
-  buildTimeOfDayTuningOptionsFromDefaults,
   timeOfDayMeasureTypeId,
 } from '@/features/timeOfDay/measureDefaults'
 import {
@@ -61,16 +58,14 @@ type PageError =
   | { type: 'VALIDATION'; message: string }
   | { type: 'API'; message: string }
 
-const getDefaultFormState = (
-  tuningOptions: TimeOfDayTuningOptions = timeOfDayDefaultTuningOptions
-): TimeOfDayFormState => ({
+const getDefaultFormState = (): TimeOfDayFormState => ({
   selectedLocations: [],
   selectedDates: [subDays(startOfYesterday(), 1), startOfYesterday()],
   dataSource: 'IndianaEvents',
   allDayPrimaryDirections: defaultPrimaryDirections,
   amPrimaryDirections: defaultPrimaryDirections,
   pmPrimaryDirections: defaultPrimaryDirections,
-  ...tuningOptions,
+  ...timeOfDayDefaultTuningOptions,
   directionLaneCounts: {},
 })
 
@@ -115,7 +110,6 @@ const getSchedulePresetRecords = (data: unknown): MeasureOptionPreset[] => {
 }
 
 export default function TimeOfDayPage() {
-  const { data: chartDefaultsData } = useChartDefaults()
   const { data: schedulePresetData } =
     useGetMeasureTypeMeasureOptionPresetsFromKey(timeOfDayMeasureTypeId)
   const schedulePresets = useMemo(
@@ -125,21 +119,7 @@ export default function TimeOfDayPage() {
       ),
     [schedulePresetData]
   )
-  const measureDefaultOptions = useMemo(() => {
-    const timeOfDayMeasureType = chartDefaultsData?.value.find(
-      (measureType) => measureType.id === timeOfDayMeasureTypeId
-    )
-
-    return buildTimeOfDayTuningOptionsFromDefaults(
-      timeOfDayMeasureType?.measureOptions as unknown as
-        | TimeOfDayMeasureDefaults
-        | undefined
-    )
-  }, [chartDefaultsData])
-  const defaultFormState = useMemo(
-    () => getDefaultFormState(measureDefaultOptions),
-    [measureDefaultOptions]
-  )
+  const defaultFormState = useMemo(() => getDefaultFormState(), [])
   const [qs, setQs] = useQueryStates(
     {
       locations: parseAsArrayOf(parseAsString, ',').withDefault([]),
@@ -178,7 +158,7 @@ export default function TimeOfDayPage() {
   const [formState, setFormState] =
     useState<TimeOfDayFormState>(defaultFormState)
   const editedFormFieldsRef = useRef(new Set<TimeOfDayFormField>())
-  // Keep dynamic defaults out of qs so only URL edits change this key.
+  // Only URL edits should reset locally edited fields.
   const queryStateKey = JSON.stringify(qs)
   const previousQueryStateKeyRef = useRef(queryStateKey)
   const [pageError, setPageError] = useState<PageError>({ type: 'NONE' })
@@ -216,37 +196,40 @@ export default function TimeOfDayPage() {
     const directionLaneCounts = normalizeLaneCounts(qs.laneCounts)
     const tuningOptions = {
       amEntryPctOfPeak:
-        qs.amEntryPctOfPeak ?? measureDefaultOptions.amEntryPctOfPeak,
+        qs.amEntryPctOfPeak ?? timeOfDayDefaultTuningOptions.amEntryPctOfPeak,
       amExitPctOfPeak:
-        qs.amExitPctOfPeak ?? measureDefaultOptions.amExitPctOfPeak,
+        qs.amExitPctOfPeak ?? timeOfDayDefaultTuningOptions.amExitPctOfPeak,
       pmEntryPctOfPeak:
-        qs.pmEntryPctOfPeak ?? measureDefaultOptions.pmEntryPctOfPeak,
+        qs.pmEntryPctOfPeak ?? timeOfDayDefaultTuningOptions.pmEntryPctOfPeak,
       pmExitPctOfPeak:
-        qs.pmExitPctOfPeak ?? measureDefaultOptions.pmExitPctOfPeak,
+        qs.pmExitPctOfPeak ?? timeOfDayDefaultTuningOptions.pmExitPctOfPeak,
       freeEntryPctOfDailyPeak:
         qs.freeEntryPctOfDailyPeak ??
-        measureDefaultOptions.freeEntryPctOfDailyPeak,
+        timeOfDayDefaultTuningOptions.freeEntryPctOfDailyPeak,
       freeEntryPctOfDynamicRange:
         qs.freeEntryPctOfDynamicRange ??
-        measureDefaultOptions.freeEntryPctOfDynamicRange,
+        timeOfDayDefaultTuningOptions.freeEntryPctOfDynamicRange,
       entrySustainedBins:
-        qs.entrySustainedBins ?? measureDefaultOptions.entrySustainedBins,
+        qs.entrySustainedBins ??
+        timeOfDayDefaultTuningOptions.entrySustainedBins,
       freeSustainedBins:
-        qs.freeSustainedBins ?? measureDefaultOptions.freeSustainedBins,
+        qs.freeSustainedBins ?? timeOfDayDefaultTuningOptions.freeSustainedBins,
       freeFallbackTime:
-        qs.freeFallbackTime ?? measureDefaultOptions.freeFallbackTime,
-      maxAmEndTime: qs.maxAmEndTime ?? measureDefaultOptions.maxAmEndTime,
-      maxPmEndTime: qs.maxPmEndTime ?? measureDefaultOptions.maxPmEndTime,
+        qs.freeFallbackTime ?? timeOfDayDefaultTuningOptions.freeFallbackTime,
+      maxAmEndTime:
+        qs.maxAmEndTime ?? timeOfDayDefaultTuningOptions.maxAmEndTime,
+      maxPmEndTime:
+        qs.maxPmEndTime ?? timeOfDayDefaultTuningOptions.maxPmEndTime,
       laneCapacityVehiclesPerHour,
       approachVolumeAssumedLanes:
         qs.approachVolumeAssumedLanes ??
-        measureDefaultOptions.approachVolumeAssumedLanes,
+        timeOfDayDefaultTuningOptions.approachVolumeAssumedLanes,
       splitReviewThresholdPercent:
         qs.splitReviewThresholdPercent ??
-        measureDefaultOptions.splitReviewThresholdPercent,
+        timeOfDayDefaultTuningOptions.splitReviewThresholdPercent,
       shoulderReviewThresholdPercent:
         qs.shoulderReviewThresholdPercent ??
-        measureDefaultOptions.shoulderReviewThresholdPercent,
+        timeOfDayDefaultTuningOptions.shoulderReviewThresholdPercent,
     }
 
     const resolvedFormState: Partial<TimeOfDayFormState> = {
@@ -294,9 +277,7 @@ export default function TimeOfDayPage() {
     qs.shoulderReviewThresholdPercent,
     qs.laneCounts,
     queryStateKey,
-    chartDefaultsData,
     defaultFormState,
-    measureDefaultOptions,
   ])
 
   useEffect(() => {

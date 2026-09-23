@@ -1,6 +1,5 @@
 import {
   buildTimeOfDaySchedulePresets,
-  buildTimeOfDayTuningOptionsFromDefaults,
   findMatchingTimeOfDaySchedulePreset,
 } from './measureDefaults'
 import { timeOfDayDefaultTuningOptions } from './types'
@@ -76,42 +75,6 @@ describe('time-of-day schedule presets', () => {
       { id: 4104, name: 'Weekend / Recreation' },
     ])
     expect(presets[3].options).toEqual(presetRecords[3].option)
-  })
-
-  test('treats a blank numeric default as missing', () => {
-    const options = buildTimeOfDayTuningOptionsFromDefaults({
-      laneCapacityVehiclesPerHour: {
-        id: 1,
-        option: 'laneCapacityVehiclesPerHour',
-        value: '',
-      },
-    })
-
-    expect(options.laneCapacityVehiclesPerHour).toBe(
-      timeOfDayDefaultTuningOptions.laneCapacityVehiclesPerHour
-    )
-  })
-
-  test('treats a zero or negative capacity default as missing', () => {
-    const options = buildTimeOfDayTuningOptionsFromDefaults({
-      laneCapacityVehiclesPerHour: {
-        id: 1,
-        option: 'laneCapacityVehiclesPerHour',
-        value: '0',
-      },
-      approachVolumeAssumedLanes: {
-        id: 2,
-        option: 'approachVolumeAssumedLanes',
-        value: '-2',
-      },
-    })
-
-    expect(options.laneCapacityVehiclesPerHour).toBe(
-      timeOfDayDefaultTuningOptions.laneCapacityVehiclesPerHour
-    )
-    expect(options.approachVolumeAssumedLanes).toBe(
-      timeOfDayDefaultTuningOptions.approachVolumeAssumedLanes
-    )
   })
 
   test('matches a preset only while all schedule values remain unchanged', () => {
