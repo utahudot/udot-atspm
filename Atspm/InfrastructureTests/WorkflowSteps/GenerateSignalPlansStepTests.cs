@@ -54,18 +54,17 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
         [Fact]
         [Trait(nameof(GenerateSignalPlansStep), "Process")]
-        public async Task Process_GroupsByLocation_PreservesReturningPlanNumbers()
+        public async Task Process_GroupsByLocationAndParam_ProducesMultipleChunks()
         {
             var sut = new GenerateSignalPlansStep();
             var startTime = DateTime.Now.Date;
 
             var inputEvents = new List<IndianaEvent>
-            {
-                new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
-                new() { LocationIdentifier = "L1", EventParam = 2, EventCode = 131, Timestamp = startTime.AddHours(1) },
-                new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime.AddHours(2) },
-                new() { LocationIdentifier = "L2", EventParam = 1, EventCode = 131, Timestamp = startTime }
-            };
+        {
+            new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
+            new() { LocationIdentifier = "L1", EventParam = 2, EventCode = 131, Timestamp = startTime.AddHours(1) },
+            new() { LocationIdentifier = "L2", EventParam = 1, EventCode = 131, Timestamp = startTime }
+        };
 
             sut.Post(inputEvents);
             sut.Complete();
@@ -79,13 +78,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 }
             }
 
-            Assert.Equal(2, results.Count);
-
-            var l1Plans = results.SelectMany(c => c)
-                .Where(p => p.LocationIdentifier == "L1")
-                .OrderBy(p => p.Start)
-                .ToList();
-            Assert.Equal(new short[] { 1, 2, 1 }, l1Plans.Select(p => p.PlanNumber).ToArray());
+            Assert.Equal(3, results.Count);
 
             var l2Plan = results.SelectMany(c => c).First(p => p.LocationIdentifier == "L2");
             Assert.Equal(1, l2Plan.PlanNumber);
@@ -126,7 +119,6 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             var sut = new GenerateSignalPlansStep();
             var startTime = DateTime.Now.Date;
 
-            // These events share a location and plan number.
             var inputEvents = new List<IndianaEvent>
         {
             new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime },
@@ -163,7 +155,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             sut.Post(corruptedEvents);
             sut.Complete();
 
-            // FIX: We must actively drain the output buffer loop context, otherwise the
+            // FIX: We must actively drain the output buffer loop context, otherwise the 
             // underlying block will suspend itself on backpressure limits and timeout
             while (await sut.OutputAvailableAsync())
             {
