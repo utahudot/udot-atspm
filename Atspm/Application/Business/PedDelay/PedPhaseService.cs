@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         }
 
         public PedPhaseData GetPedPhaseData(PedDelayOptions options, Approach approach, //int timeBuffer, DateTime startDate, DateTime endDate,
-            List<IndianaEvent> plansData, List<IndianaEvent> pedEvents)
+            List<Plan> plansData, List<IndianaEvent> pedEvents)
         {
             var mainEvents = pedEvents.Where(p => p.Timestamp >= options.Start && p.Timestamp <= options.End).ToList();
             var previousEvents = pedEvents.Where(p => p.Timestamp < options.Start).ToList();
@@ -67,22 +67,18 @@ namespace Utah.Udot.Atspm.Business.PedDelay
 
         private List<PedPlan> GetPedPlans(
             PedDelayOptions options,
-            List<IndianaEvent> plansData,
+            List<Plan> plansData,
             List<IndianaEvent> pedEvents,
             List<IndianaEvent> mainEvents,
             PedPhaseData pedPhaseData)
         {
             var planService = new PlanService();
             var pedPlans = new List<PedPlan>();
-            var planEvents = planService.SetFirstAndLastPlan(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
-            for (var i = 0; i < planEvents.Count; i++)
+            var plans = planService.GetBasicPlans(options.Start, options.End, plansData);
+            foreach (var planData in plans)
             {
-                //if this is the last plan then we want the end of the plan
-                //to coincide with the end of the graph
-                var endTime = i == planEvents.Count - 1 ? options.End : planEvents[i + 1].Timestamp;
-
-                var plan = new PedPlan(pedPhaseData.PhaseNumber, planEvents[i].Timestamp, endTime,
-                    planEvents[i].EventParam);
+                var planNumber = int.TryParse(planData.PlanNumber, out var parsedPlanNumber) ? parsedPlanNumber : 0;
+                var plan = new PedPlan(pedPhaseData.PhaseNumber, planData.Start, planData.End, planNumber);
 
                 plan.Events = mainEvents.Where(e => e.Timestamp > plan.Start && e.Timestamp < plan.End).ToList();
 

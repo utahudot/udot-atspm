@@ -50,8 +50,10 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
   if (phases.length === 0) {
     return null
   }
-  const createHeaderLabel = (planNumber: string) => {
-    return planNumber === '254' ? 'Free' : `Plan ${planNumber}`
+  const createHeaderLabel = (plan: SplitMonitorPlan) => {
+    if (plan.planDescription) return plan.planDescription
+    if (!plan.planNumber) return ''
+    return plan.planNumber === '254' ? 'Free' : `Plan ${plan.planNumber}`
   }
 
   const resolveForceOffsOrMaxOuts = (plan: SplitMonitorPlan) => {
@@ -112,9 +114,7 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
   const createClipboardText = () => {
     let clipboardText = 'Phase\tMetric'
     phases[0].chart.displayProps.plans.forEach((plan) => {
-      clipboardText += `\t${
-        plan.planNumber === '254' ? 'Free' : `Plan ${plan.planNumber}`
-      }`
+      clipboardText += `\t${createHeaderLabel(plan)}`
     })
     clipboardText += '\n'
 
@@ -236,6 +236,7 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
       return (
         matchingPlan || {
           planNumber: '',
+          planDescription: '',
           start: '',
           end: '',
           percentSkips: '',
@@ -286,7 +287,7 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                 <BorderedCell>Metric</BorderedCell>
                 {maxPhase.chart.displayProps.plans.map((plan, i) => (
                   <BorderedCell key={`${plan.planNumber}-${i}`}>
-                    {createHeaderLabel(plan.planNumber)}
+                    {createHeaderLabel(plan)}
                   </BorderedCell>
                 ))}
               </TableRow>

@@ -29,6 +29,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
+        private readonly PlanService planService;
 
         /// <inheritdoc/>
         public WaitTimeReportService(
@@ -36,7 +37,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             WaitTimeService waitTimeService,
             IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService
+            PhaseService phaseService,
+            PlanService planService
             )
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
@@ -44,6 +46,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
+            this.planService = planService;
         }
 
         /// <inheritdoc/>
@@ -57,7 +60,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<WaitTimeResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start, parameter.End).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -65,9 +68,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<WaitTimeResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(
-            parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
+            var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
             var eventCodes = new List<short>() {
                     82,
                     1,
@@ -91,7 +92,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 Location.LocationIdentifier,
                 parameter.Start,
                 parameter.End,
-                planEvents,
+                plans,
                 events,
                 splitsEvents,
                 null,
