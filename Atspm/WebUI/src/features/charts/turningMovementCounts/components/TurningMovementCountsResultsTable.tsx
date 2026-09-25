@@ -263,7 +263,7 @@ export default function TurningMovementCountsResultsTable({
             color="textSecondary"
             sx={{ mt: 2, textAlign: 'center' }}
           >
-            Select a time range 1 hour or greater to view peak hour data.
+            Peak hour: N/A. A complete hour with traffic is required.
           </Typography>
         </Box>
       )}

@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.NetStandardToolkit.Interfaces;
@@ -306,12 +307,21 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public List<short>? PhaseEventCodesList { get; set; }
     }
 
-    public class TurningMovementCountsOptions : MeasureOptionsBase, IBinSize
+    public class TurningMovementCountsOptions : MeasureOptionsBase, IBinSize, IValidatableObject
     {
+        [Range(1, 60)]
         public int BinSize { get; set; }
         public bool CombineThruRight { get; set; }
         public int MetricTypeId { get; internal set; } = 5;
-        //public string LocationIdentifier { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (BinSize > 0 && 60 % BinSize != 0)
+                yield return new ValidationResult("Bin size must divide evenly into 60 minutes.", new[] { nameof(BinSize) });
+
+            if (End <= Start)
+                yield return new ValidationResult("End must be after start.", new[] { nameof(End) });
+        }
     }
 
     public class WaitTimeOptions : MeasureOptionsBase, IBinSize

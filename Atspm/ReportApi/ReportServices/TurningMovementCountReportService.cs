@@ -50,6 +50,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<TurningMovementCountsResult> ExecuteAsync(TurningMovementCountsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            Validator.ValidateObject(parameter, new ValidationContext(parameter), true);
+            cancelToken.ThrowIfCancellationRequested();
             var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
@@ -66,6 +68,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<TurningMovementCountsResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
+            // Capture activity before plan processing can move a boundary event to the report start.
+            var hasControllerActivityInRange = controllerEventLogs.Any(e =>
+                e.Timestamp >= parameter.Start && e.Timestamp < parameter.End);
+
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
@@ -73,18 +79,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var tasks = new List<Task<IEnumerable<TurningMovementCountsLanesResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
             {
-                tasks.Add(
-                    GetChartDataForLaneType(
-                    Location,
-                (LaneTypes)laneType,
-                    parameter,
-                    controllerEventLogs,
-                    plans.ToList())
-                    );
+                cancelToken.ThrowIfCancellationRequested();
+                tasks.Add(GetChartDataForLaneType(
+                    Location, (LaneTypes)laneType, parameter, controllerEventLogs, plans.ToList()));
             }
             var results = await Task.WhenAll(tasks);
 
             var finalLaneResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+
+            // Logs in the query padding alone do not establish zero traffic in the requested interval.
+            // Corrected detector events may still supply counts even when their raw timestamps are outside it.
+            if (!hasControllerActivityInRange && finalLaneResultcheck.All(chart => chart.TotalVolume == 0))
+                finalLaneResultcheck.Clear();
 
             var finalResultcheck = new TurningMovementCountsResult
             {
@@ -131,138 +137,43 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
         private void SetPeakHourVolume(TurningMovementCountsResult result)
         {
-            if (!result.PeakHour.HasValue)
+            foreach (var row in result.Table)
             {
-                foreach (var lane in result.Table)
-                    lane.PeakHourVolume = null;
-                return;
-            }
-
-            var peakStart = result.PeakHour.Value.Key;
-            const int AGG = 15;
-            const int QUARTS = 4;
-
-            foreach (var lane in result.Table)
-            {
-                int hourTotal = 0;
-
-                for (int i = 0; i < QUARTS; i++)
+                if (!result.PeakHour.HasValue)
                 {
-                    var binStart = peakStart.AddMinutes(i * AGG);
-                    var binEnd = binStart.AddMinutes(AGG);
-
-                    hourTotal += lane.Volumes
-                        .Where(v => v.Timestamp >= binStart && v.Timestamp < binEnd)
-                        .Sum(v => v.Value);
+                    row.PeakHourVolume = null;
+                    continue;
                 }
 
-                lane.PeakHourVolume = new DataPointForInt(peakStart, hourTotal);
+                var start = result.PeakHour.Value.Key;
+                var total = result.Charts
+                    .Where(c => c.Direction == row.Direction && c.LaneType == row.LaneType && c.MovementType == row.MovementType)
+                    .SelectMany(c => c.MinuteVolumes)
+                    .Where(v => v.Timestamp >= start && v.Timestamp < start.AddHours(1))
+                    .Sum(v => v.Value);
+                row.PeakHourVolume = new DataPointForInt(start, total);
             }
         }
 
-
-        private void ComputePeakHourAndFactor(
-             TurningMovementCountsResult result,
-             DateTime periodStart,
-             DateTime periodEnd,
-             int binSizeMinutes)
+        private void ComputePeakHourAndFactor(TurningMovementCountsResult result, DateTime start, DateTime end, int binSize)
         {
-            if (60 % binSizeMinutes != 0 || (periodEnd - periodStart).TotalMinutes < 60)
-            {
-                result.PeakHour = null;
-                result.PeakHourFactor = null;
-                return;
-            }
-
-            var allBins = result.Table
-                .Where(l => l.LaneType == "Vehicle")
-                .SelectMany(l => l.Volumes)
-                .Where(v => v.Timestamp >= periodStart && v.Timestamp < periodEnd)
-                .GroupBy(v => v.Timestamp)
-                .Select(g => new { Time = g.Key, Sum = g.Sum(v => v.Value) })
-                .OrderBy(x => x.Time)
-                .ToList();
-
-            int binsPerHour = 60 / binSizeMinutes;
-            if (allBins.Count < binsPerHour)
-            {
-                result.PeakHour = null;
-                result.PeakHourFactor = null;
-                return;
-            }
-
-            int bestSum = 0;
-            DateTime bestStart = DateTime.MinValue;
-            for (int i = 0; i + binsPerHour <= allBins.Count; i++)
-            {
-                int windowSum = 0;
-                for (int j = 0; j < binsPerHour; j++)
-                    windowSum += allBins[i + j].Sum;
-
-                if (windowSum > bestSum)
-                {
-                    bestSum = windowSum;
-                    bestStart = allBins[i].Time;
-                }
-            }
-
-            result.PeakHour = new KeyValuePair<DateTime, int>(bestStart, bestSum);
-
-            if (15 % binSizeMinutes != 0)
-            {
-                result.PeakHourFactor = null;
-                return;
-            }
-
-            var hourBins = allBins
-                .Where(x => x.Time >= bestStart && x.Time < bestStart.AddHours(1))
-                .Select(x => x.Sum)
-                .ToList();
-
-            if (hourBins.Count == 0)
-            {
-                result.PeakHourFactor = null;
-                return;
-            }
-
-            var quarterSums = new int[4];
-            foreach (var x in allBins.Where(b => b.Time >= bestStart && b.Time < bestStart.AddHours(1)))
-            {
-                int minsPast = (int)(x.Time - bestStart).TotalMinutes;
-                int idx = Math.Min(3, minsPast / 15);
-                quarterSums[idx] += x.Sum;
-            }
-
-            int peakQuarter = quarterSums.Max();
-            int denom = peakQuarter * 4;
-
-            result.PeakHourFactor = denom == 0
-                ? (double?)null
-                : Math.Round((double)bestSum / denom, 2);
+            var vehicleLaneType = LaneTypes.V.GetAttributeOfType<DisplayAttribute>().Name;
+            var minutes = result.Charts.Where(c => c.LaneType == vehicleLaneType)
+                .SelectMany(c => c.MinuteVolumes).ToList();
+            var statistics = TurningMovementCountsStatistics.Calculate(minutes, start, end, binSize);
+            result.PeakHour = statistics.PeakHour;
+            result.PeakHourFactor = statistics.PeakHourFactor;
         }
 
-        private static IReadOnlyList<(string DisplayName, MovementTypes[] MovementTypes)> GetMovementTypeGroups(
-            bool combineThruRight)
+        private static IReadOnlyList<(string DisplayName, MovementTypes[] MovementTypes)> GetMovementTypeGroups(bool combineThruRight)
         {
+            var groups = Enum.GetValues<MovementTypes>()
+                .Where(m => !combineThruRight || (m != MovementTypes.T && m != MovementTypes.TR))
+                .Select(m => (m.GetAttributeOfType<DisplayAttribute>().Name, new[] { m }))
+                .ToList();
             if (combineThruRight)
-            {
-                return new List<(string DisplayName, MovementTypes[] MovementTypes)>
-                {
-                    (MovementTypes.L.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.L }),
-                    (MovementTypes.TL.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.TL }),
-                    (CombinedThruRightMovementType, new[] { MovementTypes.T, MovementTypes.TR }),
-                    (MovementTypes.R.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.R }),
-                };
-            }
-
-            return new List<(string DisplayName, MovementTypes[] MovementTypes)>
-            {
-                (MovementTypes.L.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.L }),
-                (MovementTypes.TL.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.TL }),
-                (MovementTypes.T.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.T }),
-                (MovementTypes.TR.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.TR }),
-                (MovementTypes.R.GetAttributeOfType<DisplayAttribute>().Name, new[] { MovementTypes.R }),
-            };
+                groups.Add((CombinedThruRightMovementType, new[] { MovementTypes.T, MovementTypes.TR }));
+            return groups;
         }
 
         private async Task<IEnumerable<TurningMovementCountsLanesResult>> GetChartDataForLaneType(
@@ -320,8 +231,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             string LocationDescription,
             DirectionTypes directionType)
         {
+            detectors = detectors.Where(d => d.LaneType == laneType).ToList();
             var detectorEvents = new List<IndianaEvent>();
-            foreach (var detector in detectors)
+            // Correct each channel once within this movement and lane type, even if configured more than once.
+            foreach (var detector in detectors.OrderBy(d => d.Id).DistinctBy(d => d.DetectorChannel))
             {
                 detectorEvents.AddRange(controllerEventLogs.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
                     options.Start,

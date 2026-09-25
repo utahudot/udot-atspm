@@ -459,17 +459,17 @@ namespace Utah.Udot.Atspm.TempExtensions
             return events
                 .Where(e =>
                     eventCodes.Contains(e.EventCode) &&
-                    e.EventParam == param &&
-                    e.Timestamp >= startTime &&
-                    e.Timestamp < endTime)
+                    e.EventParam == param)
                 .Select(e => new IndianaEvent
                 {
+                    LocationIdentifier = e.LocationIdentifier,
                     EventCode = e.EventCode,
                     EventParam = e.EventParam,
                     Timestamp = e.Timestamp
                         .AddMilliseconds(offset)
                         .AddSeconds(-latencyCorrection),
                 })
+                .Where(e => e.Timestamp >= startTime && e.Timestamp < endTime)
                 .ToList();
         }
 
