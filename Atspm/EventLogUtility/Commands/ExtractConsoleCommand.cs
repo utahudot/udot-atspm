@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     {
         public ExtractConsoleCommand() : base("extract", "Extract compressed controller event logs")
         {
-            FileCommandOption.FromAmong(".csv", ".json", ".parquet");
+            FileCommandOption.FromAmong("csv", "json");
 
             IncludeOption.AddValidator(r =>
             {
@@ -47,34 +47,9 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddOption(IncludeOption);
             AddOption(ExcludeOption);
             AddOption(PathCommandOption);
-
-            //this.SetHandler((f, d, i, e, p) =>
-            //{
-            //    Console.WriteLine($"{this.Name} is executing");
-
-            //    Console.WriteLine($"file type {f}");
-
-            //    foreach (var s in d)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-            //    }
-
-            //    foreach (var s in i)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for Location {s}");
-            //    }
-
-            //    foreach (var s in e)
-            //    {
-            //        Console.WriteLine($"Excluding event logs for Location {s}");
-            //    }
-
-            //    Console.WriteLine($"Extraction path {p}");
-
-            //}, FileCommandOption, DateOption, IncludeLocationOption, ExcludeLocationOption, PathCommandOption);
         }
 
-        public Option<string> FileCommandOption { get; set; } = new("--filetype", () => ".csv", "File type format to export to");
+        public Option<string> FileCommandOption { get; set; } = new("--filetype", () => "csv", "File type format to export to");
 
         public Option<string> DateTimeFormatOption { get; set; } = new("--datetimeformat", () => "yyyy-MM-dd'T'HH:mm:ss.f", "Date/Time format string to use");
 
@@ -104,7 +79,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<EventLogExtractConfiguration>().BindCommandLine();
-            services.AddHostedService<ExportUtilityService>();
+            services.AddHostedService<ExtractEventLogHostedService>();
         }
     }
 }

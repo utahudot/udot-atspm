@@ -15,124 +15,92 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using System.Globalization;
+using System.Text;
+using System.Text.Json;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
-    public class ExportUtilityService : IHostedService
+    public class ExtractEventLogHostedService(ILogger<ExtractEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<EventLogExtractConfiguration> options) : HostedServiceBase(log, serviceProvider)
     {
-        private readonly ILogger _log;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IOptions<EventLogExtractConfiguration> _options;
+        private readonly IOptions<EventLogExtractConfiguration> _options = options;
 
-        public ExportUtilityService(ILogger<ExportUtilityService> log, IServiceProvider serviceProvider, IOptions<EventLogExtractConfiguration> options) =>
-                (_log, _serviceProvider, _options) = (log, serviceProvider, options);
-
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)
         {
-            //_services.PrintHostInformation();
+            var eventRepo = scope.ServiceProvider.GetRequiredService<IEventLogRepository>();
 
-            try
+            var dates = _options.Value.Dates;
+            var tsFormat = _options.Value.DateTimeFormat;
+            var path = _options.Value.Path;
+            var includedLocations = _options.Value.Included;
+            var excludedLocations = _options.Value.Excluded;
+            var fileFormat = _options.Value.FileFormat;
+
+            Console.WriteLine($"Exporting event logs to {path} in {fileFormat} format with timestamp format {tsFormat}");
+
+            foreach (var d in dates)
             {
-                _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
-                _log.LogInformation("Extraction File Formate: {format}", _options.Value.FileFormat);
+                var locs = eventRepo.GetList().Select(s => s.LocationIdentifier)
+                    .Distinct()
+                    .AsEnumerable()
+                    .Where(w => !(includedLocations?.Count() > 0) || includedLocations.Any(a => w == a))
+                    .Where(w => !(excludedLocations?.Count() > 0) || !excludedLocations.Any(a => w == a))
+                    .ToList();
 
-                //using (var scope = _services.CreateAsyncScope())
-                //{
-                //    var eventRepository = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
+                foreach (var l in locs)
+                {
+                    Console.WriteLine($"Processing {l} for {d.ToShortDateString()}");
 
-                //    foreach (var s in _options.Value.Dates)
-                //    {
-                //        _log.LogInformation("Extracting Event Logs for Date(s): {date}", s.ToString("dd/MM/yyyy"));
-                //    }
+                    var compressedEvents = await eventRepo.GetData<IndianaEvent>(l, d, d.AddDays(1).AddTicks(-1)).ToListAsync(cancellationToken: cancellationToken);
 
-                //    var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
+                    Console.WriteLine($"Found {compressedEvents.Count} events for {l} on {d.ToShortDateString()}");
 
-                //    if (_options.Value.IncludedLocations != null)
-                //    {
-                //        foreach (var s in _options.Value.IncludedLocations)
-                //        {
-                //            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
-                //        }
+                    foreach (var c in compressedEvents)
+                    {
+                        var dir = new DirectoryInfo(Path.Combine(path, l));
 
-                //        archiveQuery = archiveQuery.Where(i => _options.Value.IncludedLocations.Any(d => i.SignalIdentifier == d));
-                //    }
+                        if (!dir.Exists)
+                        {
+                            dir.Create();
+                        }
 
-                //    if (_options.Value.ExcludedLocations != null)
-                //    {
-                //        foreach (var s in _options.Value.ExcludedLocations)
-                //        {
-                //            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
-                //        }
+                        switch (fileFormat)
+                        {
+                            case "csv":
 
-                //        archiveQuery = archiveQuery.Where(i => !_options.Value.ExcludedLocations.Contains(i.SignalIdentifier));
-                //    }
+                                var csvBuilder = new StringBuilder();
 
-                //    int processedCount = 0;
+                                csvBuilder.AppendLine("Location,Timestamp,Event,Param");
 
-                //    var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalIdentifier = s.SignalIdentifier, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
+                                foreach (var e in c.Data)
+                                {
+                                    string formattedDate = e.Timestamp.ToString(tsFormat, CultureInfo.InvariantCulture);
 
-                //    _log.LogInformation("Number of Event Log Archives to Process: {count}", archives.Count);
+                                    csvBuilder.AppendLine($"{e.LocationIdentifier},{formattedDate},{e.EventCode},{e.EventParam}");
+                                }
 
-                //    foreach (var archive in archives)
-                //    {
-                //        if (cancellationToken.IsCancellationRequested) break;
+                                await File.WriteAllTextAsync(Path.Combine(dir.FullName, $"{l} - {d:yyyy-MM-dd}.csv"), csvBuilder.ToString(), Encoding.UTF8, cancellationToken);
 
-                //        Console.Write($"Writing... {archive.SignalIdentifier} ({archives.IndexOf(archive) + 1} of {archives.Count})");
+                                break;
+                            case "json":
 
-                //        var log = await eventRepository.LookupAsync(archive);
+                                var json = JsonSerializer.Serialize(c.Data, new JsonSerializerOptions { WriteIndented = true });
 
-                //        var file = await WriteLog(log);
+                                await File.WriteAllTextAsync(Path.Combine(dir.FullName, $"{l} - {d:yyyy-MM-dd}.json"), json, Encoding.UTF8, cancellationToken);
 
-                //        do { Console.Write("\b \b"); } while (Console.CursorLeft > 0);
-                //        Console.WriteLine($"Completed {file.FullName} ({archives.IndexOf(archive) + 1} of {archives.Count})");
-
-                //        processedCount++;
-                //    }
-
-                //    _log.LogInformation("Log Archives Processed: {count}", processedCount);
-                //}
-            }
-            catch (Exception e)
-            {
-
-                _log.LogError("Exception: {e}", e);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            Console.WriteLine();
-            Console.WriteLine($"Operation Completed or Cancelled...");
-
-            return Task.CompletedTask;
-        }
-
-        //public async Task<FileInfo> WriteLog(ControllerLogArchive archive)
-        //{
-        //    try
-        //    {
-        //        DirectoryInfo dir = new DirectoryInfo(Path.Combine(_options.Value.Path.FullName, archive.ArchiveDate.ToString("MM-dd-yyyy")));
-
-        //        dir.Create();
-
-        //        var path = Path.Combine(dir.FullName, $"{archive.SignalIdentifier}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
-
-        //        await File.WriteAllLinesAsync(path, new string[] { "LocationId, Timestamp, EventCode, EventParam" });
-
-        //        var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
-
-        //        await File.AppendAllLinesAsync(path, csv);
-
-        //        return new FileInfo(path);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _log.LogError("WriteLog Exception: {e}", e);
-        //        return await Task.FromException<FileInfo>(e);
-        //    }
-        //}
     }
 }

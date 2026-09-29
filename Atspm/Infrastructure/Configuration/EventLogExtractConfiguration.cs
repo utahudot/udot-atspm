@@ -24,6 +24,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         public IEnumerable<DateTime> Dates { get; set; }
         public IEnumerable<string> Included { get; set; }
         public IEnumerable<string> Excluded { get; set; }
-        public DirectoryInfo Path { get; set; }
+        public string Path { get; set; }
     }
 }
