@@ -1,11 +1,11 @@
+import DayAvailabilityIndicator from '@/components/date-selection/DayAvailabilityIndicator'
+import type { CalendarDayAvailability } from '@/features/dataAvailability/types'
 import {
   Alert,
-  Badge,
   Box,
   Button,
   Divider,
   Skeleton,
-  Tooltip,
   Typography,
 } from '@mui/material'
 import {
@@ -18,18 +18,6 @@ import {
 } from '@mui/x-date-pickers'
 import { add, isSameDay, startOfToday, startOfYesterday } from 'date-fns'
 import { useEffect, useState } from 'react'
-
-export interface CalendarDayLocationAvailability {
-  locationIdentifier: string
-  hasData: boolean
-}
-
-export interface CalendarDayAvailability {
-  date: Date
-  availableLocationCount: number
-  totalLocationCount: number
-  locations: CalendarDayLocationAvailability[]
-}
 
 export interface SelectDateTimeProps {
   startDateTime: Date | null
@@ -272,124 +260,13 @@ function MarkedDay(props: MarkedDayProps) {
     isSameDay(missing, day)
   )
 
-  // If there are no highlighted days or availability details, render normally.
-  if (!isMissing && !availability) {
-    return (
+  return (
+    <DayAvailabilityIndicator availability={availability} isMissing={isMissing}>
       <PickersDay
         {...other}
         outsideCurrentMonth={outsideCurrentMonth}
         day={day}
       />
-    )
-  }
-
-  const missingLocationCount = availability
-    ? availability.totalLocationCount - availability.availableLocationCount
-    : 0
-  const isFullRouteMissing =
-    !!availability && availability.availableLocationCount === 0
-  const badgeContent =
-    isMissing || isFullRouteMissing ? (
-      <span
-        style={{
-          color: 'red',
-          fontSize: '0.65rem',
-          transform: 'translate(-50%, 50%)',
-        }}
-      >
-        ✖
-      </span>
-    ) : availability && missingLocationCount > 0 ? (
-      <span
-        style={{
-          color: '#ed6c02',
-          fontSize: '0.65rem',
-          transform: 'translate(-50%, 50%)',
-        }}
-      >
-        ◐
-      </span>
-    ) : null
-  const hasPartialRouteAvailability =
-    !!availability &&
-    availability.availableLocationCount > 0 &&
-    missingLocationCount > 0
-  const tooltipTitle = isMissing ? (
-    'No data available'
-  ) : hasPartialRouteAvailability ? (
-    <DayAvailabilityTooltip availability={availability} />
-  ) : (
-    ''
-  )
-
-  return (
-    <Tooltip
-      title={tooltipTitle}
-      enterDelay={500}
-      arrow
-      disableInteractive
-      componentsProps={{
-        tooltip: {
-          sx: {
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-            boxShadow: 3,
-            color: 'text.primary',
-          },
-        },
-        arrow: {
-          sx: {
-            color: 'background.paper',
-          },
-        },
-      }}
-    >
-      <Badge overlap="circular" badgeContent={badgeContent}>
-        <PickersDay
-          {...other}
-          outsideCurrentMonth={outsideCurrentMonth}
-          day={day}
-        />
-      </Badge>
-    </Tooltip>
-  )
-}
-
-function DayAvailabilityTooltip({
-  availability,
-}: {
-  availability: CalendarDayAvailability
-}) {
-  return (
-    <Box sx={{ py: 0.25 }}>
-      <Typography variant="caption" sx={{ display: 'block', fontWeight: 700 }}>
-        {availability.availableLocationCount} of{' '}
-        {availability.totalLocationCount} locations have data
-      </Typography>
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, mt: 0.5 }}
-      >
-        {availability.locations.map((location) => (
-          <Box key={location.locationIdentifier}>
-            <Typography
-              variant="caption"
-              component="span"
-              sx={{
-                alignItems: 'center',
-                color: location.hasData ? 'success.dark' : 'error.dark',
-                display: 'inline-flex',
-                gap: 0.75,
-              }}
-            >
-              <Box component="span" sx={{ width: '1em' }}>
-                {location.hasData ? '✓' : '✖'}
-              </Box>
-              {location.locationIdentifier}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-    </Box>
+    </DayAvailabilityIndicator>
   )
 }

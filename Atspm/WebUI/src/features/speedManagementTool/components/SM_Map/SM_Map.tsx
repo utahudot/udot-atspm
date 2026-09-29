@@ -1,3 +1,6 @@
+import '@/components/LeafletMap/leafletGlobalSetup'
+
+import SmoothWheelZoom from '@/components/LeafletMap/SmoothWheelZoom'
 import RouteDisplayToggle from '@/features/speedManagementTool/components/SM_Map/RouteDisplayToggle'
 import { SM_Height } from '@/features/speedManagementTool/components/SM_Map/SM_MapWrapper'
 import VectorRoutesSlicerLayer from '@/features/speedManagementTool/components/SM_Map/VectorSliceLayer'
@@ -289,7 +292,7 @@ const SM_Map = ({
       <MapContainer
         center={initialLatLong}
         zoom={zoomLevel}
-        scrollWheelZoom={true}
+        scrollWheelZoom={false}
         style={{
           minHeight: SM_Height,
           height: '100%',
@@ -299,6 +302,7 @@ const SM_Map = ({
         ref={setMapRef}
         doubleClickZoom={false}
       >
+        <SmoothWheelZoom />
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"

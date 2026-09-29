@@ -1,3 +1,6 @@
+import '@/components/LeafletMap/leafletGlobalSetup'
+
+import SmoothWheelZoom from '@/components/LeafletMap/SmoothWheelZoom'
 import type { AllSegmentsSegment } from '@/features/speedManagementTool/api/getSegments'
 import { useSegmentEditorStore } from '@/features/speedManagementTool/components/SegmentEditor/segmentEditorStore'
 import { SegmentSelectMapProps } from '@/features/speedManagementTool/components/SegmentSelectMap'
@@ -174,7 +177,7 @@ const SegmentSelectMap = ({
       <MapContainer
         center={[mapCenter.lat, mapCenter.lng]}
         zoom={mapCenter.zoom}
-        scrollWheelZoom={true}
+        scrollWheelZoom={false}
         style={{
           height: '100%',
           width: '100%',
@@ -183,6 +186,7 @@ const SegmentSelectMap = ({
         ref={setMapRef}
         doubleClickZoom={false}
       >
+        <SmoothWheelZoom />
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"

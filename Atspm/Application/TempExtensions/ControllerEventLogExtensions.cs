@@ -355,8 +355,8 @@ namespace Utah.Udot.Atspm.TempExtensions
 
         public static void UpdateEventsBeforeDateForPlans(List<IndianaEvent> events, DateTime date)
         {
-            // Find the first event that occurred before the specified date
-            var index = events.FindIndex(e => e.Timestamp < date);
+            // Keep the latest plan at or before the boundary, including an exact match.
+            var index = events.FindLastIndex(e => e.Timestamp <= date);
 
             if (index >= 0)
             {
@@ -459,17 +459,17 @@ namespace Utah.Udot.Atspm.TempExtensions
             return events
                 .Where(e =>
                     eventCodes.Contains(e.EventCode) &&
-                    e.EventParam == param &&
-                    e.Timestamp >= startTime &&
-                    e.Timestamp < endTime)
+                    e.EventParam == param)
                 .Select(e => new IndianaEvent
                 {
+                    LocationIdentifier = e.LocationIdentifier,
                     EventCode = e.EventCode,
                     EventParam = e.EventParam,
                     Timestamp = e.Timestamp
                         .AddMilliseconds(offset)
                         .AddSeconds(-latencyCorrection),
                 })
+                .Where(e => e.Timestamp >= startTime && e.Timestamp < endTime)
                 .ToList();
         }
 

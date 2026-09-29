@@ -625,40 +625,20 @@ export function generateGreenEventLines(
           return
         }
 
-        const chartTimespanMs = getChartTimespanMs(location.start, location.end)
-
-        const buildPoints = (shiftMs = 0) => [
-          api.coord([x1Ms + shiftMs, y1]),
-          api.coord([x2Ms + shiftMs, y2]),
+        const points = [
+          api.coord([x1Ms, y1]),
+          api.coord([x2Ms, y2]),
           api.coord([
-            nextPointFinalMs + shiftMs,
+            nextPointFinalMs,
             (y2 as number) + displayDistanceToNext,
           ]),
           api.coord([
-            currPointFinalMs + shiftMs,
+            currPointFinalMs,
             (y1 as number) + displayDistanceToNext,
           ]),
         ]
 
-        return chartTimespanMs == null
-          ? buildGreenBandPolygon(buildPoints(), false, isPrimary)
-          : {
-              type: 'group',
-              emphasisDisabled: true,
-              children: [
-                buildGreenBandPolygon(
-                  buildPoints(-chartTimespanMs),
-                  true,
-                  isPrimary
-                ),
-                buildGreenBandPolygon(buildPoints(), false, isPrimary),
-                buildGreenBandPolygon(
-                  buildPoints(chartTimespanMs),
-                  true,
-                  isPrimary
-                ),
-              ],
-            }
+        return buildGreenBandPolygon(points, isPrimary)
       },
     })
   }
@@ -668,29 +648,21 @@ export function generateGreenEventLines(
 
 function buildGreenBandPolygon(
   points: number[][],
-  isContinuation: boolean,
   isPrimary?: boolean
 ): CustomSeriesRenderItemReturn {
   return {
     type: 'polygon',
-    ...(isContinuation ? { name: TIME_SPACE_CONTINUATION_NODE_NAME } : null),
-    z2: isContinuation
-      ? TIME_SPACE_MOVEMENT_ELEMENT_Z2 - 1
-      : TIME_SPACE_MOVEMENT_ELEMENT_Z2,
+    z2: TIME_SPACE_MOVEMENT_ELEMENT_Z2,
     focus: 'none',
     transition: ['shape'],
     emphasisDisabled: true,
     shape: {
       points,
     },
-    style: isContinuation
-      ? {
-          fill: getCycleContinuationPatternFill(),
-        }
-      : {
-          opacity: isPrimary ? 0.3 : 0.2,
-          fill: isPrimary ? '#4f9bac' : '#202d30',
-        },
+    style: {
+      opacity: isPrimary ? 0.3 : 0.2,
+      fill: isPrimary ? '#4f9bac' : '#202d30',
+    },
   }
 }
 
@@ -715,7 +687,7 @@ function getGreenEventsDataPoints(
   start: string,
   end: string
 ) {
-  const result = []
+  const result: Array<[string, number]> = []
 
   for (let i = 0; i < greenEvents.length; ) {
     const currentPoint = greenEvents[i]
@@ -747,7 +719,42 @@ function getGreenEventsDataPoints(
     }
   }
 
-  return result
+  const chartStartMs = getTimeLikeMs(start)
+  const chartEndMs = getTimeLikeMs(end)
+
+  if (chartStartMs == null || chartEndMs == null || chartEndMs <= chartStartMs) {
+    return result
+  }
+
+  const clippedResult: Array<[string, number]> = []
+
+  for (let i = 0; i < result.length - 1; i += 2) {
+    const intervalStart = result[i][0]
+    const intervalEnd = result[i + 1][0]
+    const intervalStartMs = getTimeLikeMs(intervalStart)
+    const intervalEndMs = getTimeLikeMs(intervalEnd)
+
+    if (intervalStartMs == null || intervalEndMs == null) {
+      continue
+    }
+
+    const clippedStartMs = Math.max(intervalStartMs, chartStartMs)
+    const clippedEndMs = Math.min(intervalEndMs, chartEndMs)
+
+    if (clippedEndMs <= clippedStartMs) {
+      continue
+    }
+
+    clippedResult.push(
+      [
+        clippedStartMs === intervalStartMs ? intervalStart : start,
+        currentDistance,
+      ],
+      [clippedEndMs === intervalEndMs ? intervalEnd : end, currentDistance]
+    )
+  }
+
+  return clippedResult
 }
 
 function getArrivalTime(

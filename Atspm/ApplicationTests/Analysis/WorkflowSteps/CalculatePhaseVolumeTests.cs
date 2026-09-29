@@ -360,8 +360,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         }
 
         [Theory]
-        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json")]
-        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json")]
         [Trait(nameof(CalculatePhaseVolume), "From File")]
         public async void CalculatePhaseVolumeFromFileTest(string file)
         {

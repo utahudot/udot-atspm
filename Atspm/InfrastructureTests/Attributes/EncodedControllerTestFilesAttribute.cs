@@ -24,7 +24,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.Attributes
 {
     public class EncodedControllerTestFilesAttribute : DataAttribute
     {
-        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\TestData";
+        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\Atspm\\InfrastructureTexts\\TestData";
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {

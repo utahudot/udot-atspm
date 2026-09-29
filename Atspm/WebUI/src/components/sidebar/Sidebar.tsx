@@ -3,6 +3,7 @@ import { topbarHeight } from '@/components/topbar'
 import { useFlags } from '@/feature-flags/FeatureFlagContext'
 import { useSideBarPermission } from '@/features/identity/pagesCheck'
 import { useSidebarStore } from '@/stores/sidebar'
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
@@ -89,6 +90,11 @@ export default function Sidebar() {
               icon={<ShowChartOutlinedIcon />}
               text={'Time-Space Diagrams'}
               url={'/time-space-diagrams'}
+            />
+            <NavItem
+              icon={<AccessTimeOutlinedIcon />}
+              text={'Time-of-Day'}
+              url={'/time-of-day'}
             />
             <NavItem
               icon={<RouteOutlinedIcon />}

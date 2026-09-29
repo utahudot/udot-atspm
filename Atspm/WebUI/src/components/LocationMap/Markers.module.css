@@ -1,0 +1,34 @@
+.locationIdentifierLabel.locationIdentifierLabel {
+  box-sizing: border-box;
+  min-width: 52px;
+  max-width: 120px;
+  padding: 3px 8px 3px 16px;
+  border: 2px solid;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.locationIdentifierText {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.locationIdentifierLabel.intersectionLocationLabel {
+  border-color: #d73131;
+}
+
+.locationIdentifierLabel.rampMeterLocationLabel {
+  border-color: #0072b2;
+}
+
+.locationIdentifierLabel.defaultLocationLabel {
+  border-color: #808080;
+}
+
+.locationIdentifierLabel.locationIdentifierLabel::before {
+  display: none;
+}

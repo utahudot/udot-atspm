@@ -64,12 +64,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
         [Fact]
         public async void TestingStuff()
         {
-            //var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData";
+            //var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData";
 
             //var logs1 = IndianaEventHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
             ////var logs2 = IndianaEventHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
-            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
             //var Location = JsonConvert.DeserializeObject<Location>(json);
 
 
@@ -363,13 +363,13 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 
             //var json = JsonConvert.SerializeObject(logs);
 
-            //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.json", json);
+            //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.json", json);
 
-            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
             //var Location = JsonConvert.DeserializeObject<Location>(json);
 
-            //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RawCycleData.json").FullName);
-            //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
+            //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\RawCycleData.json").FullName);
+            //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
 
             //var data1 = JsonConvert.DeserializeObject<List<IndianaEvent>>(json1);
             //var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
@@ -391,7 +391,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 
         //private async void TempGeneratePreemtTestData()
         //{
-        //    var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\PreemptDetaildata.csv");
+        //    var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\PreemptDetaildata.csv");
 
         //    var logs = File.ReadAllLines(file1.FullName)
         //           .Skip(1)
@@ -426,7 +426,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
         //    {
         //        TypeNameHandling = TypeNameHandling.All
         //    });
-        //    File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateDwellTimeTestData1.json", test);
+        //    File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\CalculateDwellTimeTestData1.json", test);
         //}
     }
 
