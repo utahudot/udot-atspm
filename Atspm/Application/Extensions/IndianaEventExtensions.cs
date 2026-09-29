@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Extensions/IndianaEventExtensions.cs
 // 
@@ -470,6 +470,54 @@ namespace Utah.Udot.Atspm.Extensions
             return events
                 .Where(e => codeToParamType.ContainsKey(e.EventCode))
                 .ToLookup(e => codeToParamType[e.EventCode]);
+        }
+
+        /// <summary>
+        /// Parses raw vehicle detector transition events into continuous presence intervals.
+        /// </summary>
+        /// <param name="events">The collection of detector events.</param>
+        /// <param name="start">The start time of the analysis window.</param>
+        /// <param name="end">The end time of the analysis window.</param>
+        /// <returns>A collection of continuous presence intervals as start and end timestamps.</returns>
+        public static IEnumerable<Tuple<DateTime, DateTime>> GetPresenceIntervals(this IEnumerable<IndianaEvent> events, DateTime start, DateTime end)
+        {
+            var sorted = events
+                .Where(e => e.EventCode == (short)IndianaEnumerations.VehicleDetectorOn || e.EventCode == (short)IndianaEnumerations.VehicleDetectorOff)
+                .OrderBy(e => e.Timestamp)
+                .ToList();
+
+            if (!sorted.Any())
+            {
+                yield break;
+            }
+
+            DateTime? currentOnTime = null;
+
+            if (sorted[0].EventCode == (short)IndianaEnumerations.VehicleDetectorOff)
+            {
+                currentOnTime = start;
+            }
+
+            foreach (var ev in sorted)
+            {
+                if (ev.EventCode == (short)IndianaEnumerations.VehicleDetectorOn)
+                {
+                    if (!currentOnTime.HasValue)
+                    {
+                        currentOnTime = ev.Timestamp;
+                    }
+                }
+                else if (ev.EventCode == (short)IndianaEnumerations.VehicleDetectorOff && currentOnTime.HasValue)
+                {
+                    yield return Tuple.Create(currentOnTime.Value, ev.Timestamp);
+                    currentOnTime = null;
+                }
+            }
+
+            if (currentOnTime.HasValue)
+            {
+                yield return Tuple.Create(currentOnTime.Value, end);
+            }
         }
     }
 }

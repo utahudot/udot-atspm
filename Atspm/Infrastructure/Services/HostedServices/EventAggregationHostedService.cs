@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/EventAggregationHostedService.cs
 // 
@@ -25,9 +25,19 @@ using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
+    /// <summary>
+    /// Hosted service for running the event log aggregation workflow.
+    /// </summary>
+    /// <remarks>
+    /// Hosted service for running the event log aggregation workflow.
+    /// </remarks>
+    /// <param name="log">The logger service.</param>
+    /// <param name="serviceProvider">The service scope factory provider.</param>
+    /// <param name="options">The event log aggregation options and configurations.</param>
     public class EventAggregationHostedService(ILogger<EventAggregationHostedService> log, IServiceScopeFactory serviceProvider, IOptions<EventLogAggregateConfiguration> options) : HostedServiceBase(log, serviceProvider)
     {
         private readonly IOptions<EventLogAggregateConfiguration> _options = options;
+
 
         /// <inheritdoc/>
         public override async Task Process(IServiceScope scope, Stopwatch stopwatch = null, CancellationToken cancellationToken = default)

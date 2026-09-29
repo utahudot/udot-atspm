@@ -71,7 +71,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             var result = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => a.FullName != null && a.FullName.StartsWith("Utah.Udot.Atspm"))
-                .SelectMany(m => {
+                .SelectMany(m =>
+                {
                     try
                     {
                         return m.GetTypes();

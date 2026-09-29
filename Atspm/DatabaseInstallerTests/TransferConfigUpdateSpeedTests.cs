@@ -7,7 +7,6 @@ using System.CommandLine;
 using System.Reflection;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Xunit;
 

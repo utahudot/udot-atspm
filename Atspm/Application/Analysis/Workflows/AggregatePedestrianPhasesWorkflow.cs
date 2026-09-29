@@ -39,19 +39,13 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
     /// </param>
     public class AggregatePedestrianPhasesWorkflow(AggregationWorkflowOptions options = default) : AggregationWorkflowBase<PhasePedAggregation>(options)
     {
-        /// <summary>
-        /// Gets the step that filters events by type, specifically <see cref="IndianaEvent"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public FilterEventsByTypeStep<IndianaEvent> FilterEventsByTypeStep { get; private set; }
 
-        /// <summary>
-        /// Gets the step that processes and filters pedestrian-specific data.
-        /// </summary>
+        /// <inheritdoc/>
         public FilterPedDataProcessStep FilterPedDataProcessStep { get; private set; }
 
-        /// <summary>
-        /// Gets the step that aggregates pedestrian phase data into <see cref="PhasePedAggregation"/> results.
-        /// </summary>
+        /// <inheritdoc/>
         public AggregatePedestrianPhasesStep AggregatePedestrianPhasesStep { get; private set; }
 
         /// <inheritdoc/>

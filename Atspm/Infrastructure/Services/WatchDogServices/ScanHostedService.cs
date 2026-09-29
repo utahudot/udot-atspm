@@ -20,7 +20,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using Utah.Udot.Atspm.Business.Watchdog;
-using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
