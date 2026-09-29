@@ -44,12 +44,25 @@ namespace Utah.Udot.Atspm.Business.Common
         public VolumeCollection(DateTime startTime, DateTime endTime, List<IndianaEvent> detectorEvents,
             int binSize)
         {
+            if (binSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(binSize), "Bin size must be positive.");
+
+            var duration = TimeSpan.FromMinutes(binSize);
+            var counts = detectorEvents
+                .Where(e => e.Timestamp >= startTime && e.Timestamp < endTime)
+                .GroupBy(e => (e.Timestamp - startTime).Ticks / duration.Ticks)
+                .ToDictionary(g => g.Key, g => g.Count());
+
             Items = new List<Volume>();
-            for (DateTime start = startTime; start < endTime; start = start.AddMinutes(binSize))
+            long index = 0;
+            for (var start = startTime; start < endTime;)
             {
-                var v = new Volume(start, start.AddMinutes(binSize), binSize);
-                v.DetectorCount = detectorEvents.Count(d => d.Timestamp >= v.StartTime && d.Timestamp < v.EndTime);
-                Items.Add(v);
+                var end = endTime - start > duration ? start.Add(duration) : endTime;
+                Items.Add(new Volume(start, end, binSize)
+                {
+                    DetectorCount = counts.GetValueOrDefault(index++)
+                });
+                start = end;
             }
         }
 

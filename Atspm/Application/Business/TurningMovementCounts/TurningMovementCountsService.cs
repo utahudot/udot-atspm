@@ -31,15 +31,12 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
         public DateTime Timestamp { get; set; }
         public int Count { get; set; }
     }
+
     public class TurningMovementCountsService
     {
         private const string CombinedThruRightMovementType = "Thru + Thru-Right";
 
-        public TurningMovementCountsService()
-        {
-        }
-
-        public async Task<TurningMovementCountsLanesResult> GetChartData(
+        public Task<TurningMovementCountsLanesResult> GetChartData(
             List<Detector> detectorsByMovementType,
             LaneTypes laneType,
             string movementTypeLabel,
@@ -50,64 +47,62 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             string locationIdentifier,
             string LocationDescription)
         {
+            Validator.ValidateObject(options, new ValidationContext(options), true);
+
             var tmcDetectors = detectorsByMovementType
                 .Where(detector => detector.LaneType == laneType)
                 .ToList();
-            var resolvedMovementTypeLabel = GetMovementTypeLabel(
-                tmcDetectors,
-                movementTypeLabel,
-                options.CombineThruRight);
+            if (tmcDetectors.Count == 0)
+                return Task.FromResult<TurningMovementCountsLanesResult>(null);
 
-            if (tmcDetectors.Count == 0 || detectorEvents.Count == 0)
-                return null;
-
-            var laneVolumes = GetVolumeDictionaryByDetector(tmcDetectors, options.Start, options.End, detectorEvents, options.BinSize);
-            var allLanesMovementVolumes = new VolumeCollection(laneVolumes.Values.ToList(), options.BinSize);
-            var laneNumberVolumes = new Dictionary<int, VolumeCollection>();
-            var lanes = new List<Lane>();
-
-            foreach (var laneNumber in tmcDetectors.Select(d => d.LaneNumber).Distinct())
+            var resolvedMovementTypeLabel = GetMovementTypeLabel(tmcDetectors, movementTypeLabel, options.CombineThruRight);
+            var eventsByChannel = detectorEvents.Where(e => e.EventCode == 82).ToLookup(e => (int)e.EventParam);
+            var channelVolumes = tmcDetectors.GroupBy(d => d.DetectorChannel).Select(group =>
             {
-                var volumes = laneVolumes.Where(l => l.Key.LaneNumber == laneNumber).ToList();
-                var laneVolume = new VolumeCollection(volumes.Select(l => l.Value).ToList(), options.BinSize);
-                var firstDetector = volumes.FirstOrDefault();
-
-                lanes.Add(new Lane
+                // A channel is one count source. Conflicting assignments cannot identify a physical lane.
+                var laneNumbers = group.Select(d => d.LaneNumber).Distinct().ToList();
+                return new
                 {
-                    LaneNumber = laneNumber,
-                    MovementType = resolvedMovementTypeLabel,
-                    LaneType = firstDetector.Key?.LaneType ?? 0,
-                    Volume = laneVolume.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList()
-                });
+                    LaneNumber = laneNumbers.Count == 1 ? laneNumbers[0] : null,
+                    Volume = new VolumeCollection(options.Start, options.End, eventsByChannel[group.Key].ToList(), options.BinSize)
+                };
+            }).ToList();
+            var allLanesMovementVolumes = new VolumeCollection(channelVolumes.Select(c => c.Volume).ToList(), options.BinSize);
+            var laneVolumes = channelVolumes.GroupBy(c => c.LaneNumber).Select(group => new
+            {
+                LaneNumber = group.Key,
+                Volume = new VolumeCollection(group.Select(c => c.Volume).ToList(), options.BinSize)
+            }).ToList();
+            var lanes = laneVolumes.Select(lane => new Lane
+            {
+                LaneNumber = lane.LaneNumber,
+                MovementType = resolvedMovementTypeLabel,
+                LaneType = laneType,
+                Volume = lane.Volume.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList()
+            }).ToList();
 
-                laneNumberVolumes.Add(laneNumber.Value, laneVolume);
+            var totalDetectorCounts = allLanesMovementVolumes.TotalDetectorCounts;
+            var highestLaneCount = laneVolumes.Max(l => l.Volume.TotalDetectorCounts);
+            double? laneUtilizationFactor = laneVolumes.All(l => l.LaneNumber.HasValue) && highestLaneCount > 0
+                ? totalDetectorCounts / (laneVolumes.Count * (double)highestLaneCount)
+                : null;
+
+            var channels = tmcDetectors.Select(d => d.DetectorChannel).ToHashSet();
+            var minuteVolumes = new VolumeCollection(options.Start, options.End,
+                detectorEvents.Where(e => e.EventCode == 82 && channels.Contains(e.EventParam)).ToList(), 1)
+                .Items.Select(i => new DataPointForInt(i.StartTime, i.DetectorCount)).ToList();
+            var statistics = TurningMovementCountsStatistics.Calculate(minuteVolumes, options.Start, options.End, options.BinSize);
+
+            string peakHourLabel = null;
+            if (statistics.PeakHour.HasValue)
+            {
+                var peakStart = statistics.PeakHour.Value.Key;
+                var peakEnd = peakStart.AddHours(1);
+                var format = options.Start.Date == options.End.AddTicks(-1).Date ? "HH:mm" : "yyyy-MM-dd HH:mm";
+                peakHourLabel = $"{peakStart.ToString(format)} - {peakEnd.ToString(format)}";
             }
 
-            var highestDetectorCountByLane = laneNumberVolumes.Values.Max(l => l.TotalDetectorCounts);
-            var totalDetectorCounts = allLanesMovementVolumes.TotalDetectorCounts;
-            var laneUtilizationFactor = GetLaneUtilizationFactor(
-                totalDetectorCounts,
-                tmcDetectors.Count,
-                highestDetectorCountByLane);
-
-            var peakHour = GetPeakHour(allLanesMovementVolumes, 60 / options.BinSize);
-            var peakHourEnd = peakHour.Key.AddHours(1);
-            var binMultiplier = 60 / options.BinSize;
-
-            var peakHourMaxVolume = allLanesMovementVolumes.Items
-                .Where(i => i.StartTime >= peakHour.Key && i.StartTime < peakHourEnd)
-                .Select(i => i.HourlyVolume)
-                .DefaultIfEmpty(0)
-                .Max();
-
-
-            var peakHourFactor = GetPeakHourFactor(peakHour.Value, peakHourMaxVolume, binMultiplier);
-
-            var peakHourDetectorCount = allLanesMovementVolumes.Items
-                .Where(i => i.StartTime >= peakHour.Key && i.StartTime < peakHourEnd)
-                .Sum(i => i.DetectorCount);
-
-            return new TurningMovementCountsLanesResult(
+            var result = new TurningMovementCountsLanesResult(
                 locationIdentifier,
                 LocationDescription,
                 options.Start,
@@ -120,23 +115,14 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.DetectorCount)).ToList(),
                 totalDetectorCounts,
-                $"{peakHour.Key:HH:mm} - {peakHourEnd:HH:mm}",
-                peakHour.Value / binMultiplier,
-                peakHourFactor,
-                laneUtilizationFactor
-            );
-        }
-
-        private static double? GetLaneUtilizationFactor(
-            int totalDetectorCounts,
-            int detectorCount,
-            int highestDetectorCountByLane)
-        {
-            var denominator = detectorCount * (double)highestDetectorCountByLane;
-
-            return denominator > 0
-                ? totalDetectorCounts / denominator
-                : null;
+                peakHourLabel,
+                statistics.PeakHour?.Value,
+                statistics.PeakHourFactor,
+                laneUtilizationFactor)
+            {
+                MinuteVolumes = minuteVolumes
+            };
+            return Task.FromResult(result);
         }
 
         private static string GetMovementTypeLabel(
@@ -168,69 +154,6 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             }
 
             return movementTypeLabel;
-        }
-
-        private Dictionary<Detector, VolumeCollection> GetVolumeDictionaryByDetector(
-            List<Detector> tmcDetectors,
-            DateTime start,
-            DateTime end,
-            List<IndianaEvent> detectorEvents,
-            int binSize)
-        {
-            var laneVolumes = new Dictionary<Detector, VolumeCollection>();
-            foreach (var detector in tmcDetectors)
-            {
-                laneVolumes.Add(detector, new VolumeCollection(start, end, detectorEvents.Where(e => e.EventCode == 82 && e.EventParam == detector.DetectorChannel).ToList(), binSize));
-            }
-            return laneVolumes;
-        }
-
-
-        public double? GetPeakHourFactor(int PHV, int PeakHourMAXVolume, int binMultiplier)
-        {
-            if (PHV > 0 && PeakHourMAXVolume > 0 && binMultiplier > 0)
-            {
-                return SetSigFigs(
-                    Convert.ToDouble(PHV) / (Convert.ToDouble(PeakHourMAXVolume) * Convert.ToDouble(binMultiplier)), 2);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public KeyValuePair<DateTime, int> GetPeakHour(VolumeCollection volumeCollection, int binMultiplier)
-        {
-            var subTotal = 0;
-            var peakHourValue = new KeyValuePair<DateTime, int>();
-
-            var startTime = new DateTime();
-            var iteratedVolumes = new SortedDictionary<DateTime, int>();
-
-            for (var i = 0; i <= volumeCollection.Items.Count - binMultiplier; i++)
-            {
-                startTime = volumeCollection.Items.ElementAt(i).StartTime;
-                subTotal = 0;
-                for (var x = 0; x < binMultiplier; x++)
-                    subTotal = subTotal + volumeCollection.Items.ElementAt(i + x).HourlyVolume;
-                iteratedVolumes.Add(startTime, subTotal);
-            }
-
-            //Find the highest value in the iterated Volumes dictionary.
-            //This should bee the peak hour.
-            foreach (var kvp in iteratedVolumes)
-                if (kvp.Value > peakHourValue.Value)
-                    peakHourValue = kvp;
-
-            return peakHourValue;
-        }
-
-
-        public double SetSigFigs(double d, int digits)
-        {
-            var scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(d))) + 1);
-
-            return scale * Math.Round(d / scale, digits);
         }
     }
 }

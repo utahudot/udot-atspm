@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.TurningMovementCounts
@@ -72,6 +73,9 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
         public IReadOnlyList<Lane> Lanes { get; set; }
         public IReadOnlyList<DataPointForInt> TotalHourlyVolumes { get; set; }
         public IReadOnlyList<DataPointForInt> TotalVolumes { get; set; }
+        // Retain fine-grained counts for report-wide statistics without enlarging the API response.
+        [JsonIgnore]
+        public IReadOnlyList<DataPointForInt> MinuteVolumes { get; set; } = Array.Empty<DataPointForInt>();
         public int TotalVolume { get; set; }
         public string PeakHour { get; }
         public double? PeakHourVolume { get; set; }
