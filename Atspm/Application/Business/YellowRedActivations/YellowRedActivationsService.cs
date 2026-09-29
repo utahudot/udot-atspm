@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Business.YellowRedActivations
             PhaseDetail phaseDetail,
             IReadOnlyList<IndianaEvent> cycleEvents,
             IReadOnlyList<IndianaEvent> detectorEvents,
-            IReadOnlyList<IndianaEvent> planEvents)
+            IReadOnlyList<Plan> planData)
         {
 
             var cycles = cycleService.GetYellowRedActivationsCycles(
@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Business.YellowRedActivations
                 cycles,
                 phaseDetail.Approach.Location.LocationIdentifier,
                 options.SevereLevelSeconds,
-                planEvents).ToList();
+                planData).ToList();
 
             var detectorActivations = cycles.SelectMany(c => c.DetectorActivations).ToList();
 

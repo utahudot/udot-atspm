@@ -30,11 +30,11 @@ namespace Utah.Udot.Atspm.Business.PreemptService
 
         public PreemptServiceResult GetChartData(
             PreemptServiceOptions options,
-            IReadOnlyList<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> plans,
             IReadOnlyList<IndianaEvent> preemptEvents)
         {
-            IReadOnlyList<Plan> plans = planService.GetBasicPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
-            var preemptPlans = plans.Select(pl => new PreemptPlan(
+            IReadOnlyList<Plan> planData = planService.GetBasicPlans(options.Start, options.End, plans);
+            var preemptPlans = planData.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),
                 pl.Start,
                 pl.End,

@@ -32,6 +32,9 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
 
         public string LaneType { get; set; }
 
+        /// <summary>Number of detectors included in this movement and lane type.</summary>
+        public int DetectorCount { get; set; }
+
         public List<DataPointForInt> Volumes { get; set; }
 
         public DataPointForInt PeakHourVolume { get; set; }

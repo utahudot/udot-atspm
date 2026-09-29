@@ -91,7 +91,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
 
             _processPlansBlock = new TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
-                input => ProcessPlans(input),
+                input => ProcessPlansAsync(input),
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
@@ -510,29 +510,19 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         }
 
 
-        private (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) ProcessPlans((TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>) input)
+        private async Task<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> ProcessPlansAsync((TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>) input)
         {
             var (inputParameters, cycles, eventGroups) = input;
-            var planEvents = eventGroups["planEvents"];
             var splitsEvents = eventGroups["splitsEvents"];
-            if (planEvents.Count == 0)
-            {
-                return (inputParameters, new List<TransitSignalPriorityPlan>());
-            }
-            var firstPlanEvent = planEvents.Min(p => p.Timestamp);
             var firstDate = inputParameters.Dates.OrderBy(d => d).First();
-            firstDate = firstPlanEvent < firstDate ? firstPlanEvent : firstDate;
-            var endDate = inputParameters.Dates.OrderBy(d => d).Last();
-            if (firstDate == endDate)
-            {
-                endDate = endDate.AddDays(1);
-            }
+            var endDate = inputParameters.Dates.OrderBy(d => d).Last().AddDays(1);
+            var planData = await _planService.GetPlansAsync(inputParameters.LocationPhases.LocationIdentifier, firstDate, endDate, splitsEvents);
 
             var plans = GetTransitSignalPriorityPlans(
                 firstDate,
                 endDate,
                 inputParameters.LocationPhases,
-                planEvents,
+                planData,
                 splitsEvents,
                 cycles
             ).OrderBy(p => p.PlanNumber).ToList();
@@ -545,7 +535,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 var (location, events) = tuple;
                 var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
                     {
-                        { "planEvents", new List<IndianaEvent>() },
                         { "cycleEvents", new List<IndianaEvent>() },
                         { "splitsEvents", new List<IndianaEvent>() },
                         { "minGreenEvents", new List<IndianaEvent>() },
@@ -554,9 +543,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                 foreach (var ev in events)
                 {
-                    if (new List<short> { 131 }.Contains(ev.EventCode))
-                        categorizedEvents["planEvents"].Add(ev);
-
                     if (new List<short> { 1, 8, 10, 11 }.Contains(ev.EventCode))
                         categorizedEvents["cycleEvents"].Add(ev);
 
@@ -593,7 +579,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             var eventTask = GetEvents(input.LocationPhases.LocationIdentifier, date);
                             if (datesWithGaps.Contains(date))
                             {
-                                events.AddRange(await GetPlanAndSplitEventsForTheLastPlanOfThePreviousDay(input.LocationPhases.LocationIdentifier, date.AddDays(-1)));
+                                events.AddRange(await GetSplitEventsForThePreviousDay(input.LocationPhases.LocationIdentifier, date.AddDays(-1)));
                             }
                             events.AddRange(await eventTask);
                             return events ?? new List<IndianaEvent>(); // Ensure non-null
@@ -661,19 +647,15 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             }
         }
 
-        private async Task<List<IndianaEvent>> GetPlanAndSplitEventsForTheLastPlanOfThePreviousDay(string locationIdentifier, DateTime date)
+        private async Task<List<IndianaEvent>> GetSplitEventsForThePreviousDay(string locationIdentifier, DateTime date)
         {
             using (var innerScope = _serviceProvider.CreateScope())
             {
                 var eventLogRepository = innerScope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
                 var events = eventLogRepository
-                    .GetEventsByEventCodes(locationIdentifier, date, date.AddDays(1), (new short[] { 131 }).Concat(Enumerable.Range(130, 20).Select(x => (short)x)).ToArray())
+                    .GetEventsByEventCodes(locationIdentifier, date, date.AddDays(1), Enumerable.Range(130, 20).Select(x => (short)x).ToArray())
                     .OrderBy(e => e.Timestamp)
                     .ToList();
-                if (!events.Any())
-                    return new List<IndianaEvent>();
-                var lastPlanTime = events.LastOrDefault(e => e.EventCode == 131).Timestamp;
-                events = events.Where(e => e.Timestamp >= lastPlanTime).ToList();
                 _logger.LogInformation($"Found {events.Count} events for location {locationIdentifier} on {date}");
 
                 // Perform manual garbage collection after retrieving event logs.
@@ -689,17 +671,17 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             DateTime startDate,
             DateTime endDate,
             LocationPhases locationPhases,
-            IReadOnlyList<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> planData,
             IReadOnlyList<IndianaEvent> splitEvents,
             List<TransitSignalPriorityCycle> cycles)
         {
-            if (planEvents == null)
-                throw new ArgumentNullException(nameof(planEvents));
+            if (planData == null)
+                throw new ArgumentNullException(nameof(planData));
             if (splitEvents == null)
                 throw new ArgumentNullException(nameof(splitEvents));
             if (cycles == null)
                 throw new ArgumentNullException(nameof(cycles));
-            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationPhases.LocationIdentifier, planEvents).OrderBy(p => p.Start).ToList();
+            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationPhases.LocationIdentifier, planData).OrderBy(p => p.Start).ToList();
             var validSplitEvents = new List<IndianaEvent>();
             for (int i = 0; i < plans.Count(); i++)
             {

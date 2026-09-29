@@ -90,30 +90,47 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                                       }))
                     .ToDictionary(x => x.Key, x => x.Sum);
 
-                var pedWalk = phasePedAggEvent.Sum(i => i.PedBeginWalkCount);
-                var pedCallsRegisered = phasePedAggEvent.Sum(i => i.ImputedPedCallsRegistered);
-                bool recall = pedWalk >= pedCallsRegisered;
+                // The volume model selects an equation based on recall, activity, and
+                // cycle length. These inputs must be calculated per phase so an "all"
+                // request produces the same result as calculating and adding each phase.
+                var calculationParametersByPhase = phasePedAggEvent
+                    .GroupBy(p => p.PhaseNumber)
+                    .ToDictionary(
+                        phaseGroup => phaseGroup.Key,
+                        phaseGroup =>
+                        {
+                            var phasePedAggregations = phaseGroup.ToList();
+                            var phaseCycleAggregations = phaseCycleAggEvent
+                                .Where(c => c.PhaseNumber == phaseGroup.Key)
+                                .ToList();
 
-                double cycleLength = 0; //Verify this is what we want to do in the case where the cycles dont exist
-                if (!phaseCycleAggEvent.IsNullOrEmpty())
-                {
-                    int allCycles = phaseCycleAggEvent.Sum(i => i.PhaseBeginCount);
-                    if (allCycles <= 0)
-                    {
-                        allCycles = 1;
-                    }
-                    var totalMinutes = (int)(phaseCycleAggEvent.Max(p => p.End) - phaseCycleAggEvent.Min(p => p.Start)).TotalMinutes;
-                    cycleLength = totalMinutes / (double)allCycles;
-                }
-                var totalDays = 1;
-                if (!phasePedAggEvent.IsNullOrEmpty())
-                {
-                    totalDays = (int)(phasePedAggEvent.Max(p => p.End) - phasePedAggEvent.Min(p => p.Start)).TotalDays;
-                    if (totalDays == 0)
-                        totalDays = 1;
-                }
+                            var pedWalk = phasePedAggregations.Sum(i => i.PedBeginWalkCount);
+                            var pedCallsRegistered = phasePedAggregations.Sum(i => i.ImputedPedCallsRegistered);
+                            var recall = pedWalk >= pedCallsRegistered;
 
-                var activity = phasePedAggEvent.Sum(i => i.ImputedPedCallsRegistered) / (double)totalDays;
+                            double cycleLength = 0;
+                            if (!phaseCycleAggregations.IsNullOrEmpty())
+                            {
+                                var phaseCycles = phaseCycleAggregations.Sum(i => i.PhaseBeginCount);
+                                if (phaseCycles <= 0)
+                                {
+                                    phaseCycles = 1;
+                                }
+
+                                var totalMinutes = (int)(phaseCycleAggregations.Max(p => p.End) - phaseCycleAggregations.Min(p => p.Start)).TotalMinutes;
+                                cycleLength = totalMinutes / (double)phaseCycles;
+                            }
+
+                            var totalDays = (int)(phasePedAggregations.Max(p => p.End) - phasePedAggregations.Min(p => p.Start)).TotalDays;
+                            if (totalDays == 0)
+                            {
+                                totalDays = 1;
+                            }
+
+                            var activity = pedCallsRegistered / (double)totalDays;
+
+                            return new PhaseCalculationParameters(recall, cycleLength, activity);
+                        });
 
                 var combinedHourly = phasePedAggEvent
                     .GroupBy(p => new { Hour = new DateTime(p.Start.Year, p.Start.Month, p.Start.Day, p.Start.Hour, 0, 0), p.PhaseNumber })
@@ -125,7 +142,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                         // Lookup cycle sum in O(1)
                         cycleDict.TryGetValue((g.Key.Hour, g.Key.PhaseNumber), out var cycleSum);
 
-                        var volume = EquationCalculation(recall, cycleLength, activity, pedSumCalls, pedSumUnique);
+                        var phaseParameters = calculationParametersByPhase[g.Key.PhaseNumber];
+                        var volume = EquationCalculation(
+                            phaseParameters.Recall,
+                            phaseParameters.CycleLength,
+                            phaseParameters.Activity,
+                            pedSumCalls,
+                            pedSumUnique);
 
                         return new CombinedHourlyAggregation
                         {
@@ -520,6 +543,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             public int Time { get; set; }
             public double CalculatedVolume { get; set; }
         }
+
+        private record PhaseCalculationParameters(bool Recall, double CycleLength, double Activity);
 
     }
 }

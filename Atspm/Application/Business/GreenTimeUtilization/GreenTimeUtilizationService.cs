@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
             GreenTimeUtilizationOptions options,
             List<IndianaEvent> detectorEvents, //DetectorType 4
             List<IndianaEvent> cycleEvents, //PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW
-            List<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> planData,
             List<IndianaEvent> controllerEventLogs
             ) // the plans/splits input is still TBD
         {
@@ -146,7 +146,7 @@ namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
             }
 
             //get plans
-            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
+            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.LocationIdentifier, planData);
             var durYellowRed = GetYellowRedTimeSeconds(options, phaseDetail.PhaseNumber, cycleEvents);
             var programmedSplits = new List<ProgrammedSplit>();
             foreach (Plan analysisplan in plans)

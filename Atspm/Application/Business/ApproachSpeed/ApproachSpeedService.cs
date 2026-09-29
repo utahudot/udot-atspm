@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Business.ApproachSpeed
         public ApproachSpeedResult GetChartData(
             ApproachSpeedOptions options,
             List<IndianaEvent> cycleEvents,
-            List<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> plans,
             List<SpeedEvent> speedEvents,
             Detector detector,
             ILogger logger)
@@ -49,7 +49,7 @@ namespace Utah.Udot.Atspm.Business.ApproachSpeed
             var speedDetector = GetSpeedDetector(
                 options,
                 detector,
-                planEvents,
+                plans,
                 cycleEvents,
                 speedEventsForDetector,
                 logger);
@@ -106,7 +106,7 @@ namespace Utah.Udot.Atspm.Business.ApproachSpeed
         public SpeedDetector GetSpeedDetector(
             ApproachSpeedOptions options,
             Detector detector,
-            List<IndianaEvent> planEvents,
+            IReadOnlyList<Plan> plans,
             List<IndianaEvent> cycleEvents,
             List<SpeedEvent> speedEventsForDetector,
             ILogger logger)
@@ -117,11 +117,11 @@ namespace Utah.Udot.Atspm.Business.ApproachSpeed
                 foreach (var cycle in cycles)
                     cycle.FindSpeedEventsForCycle(speedEventsForDetector);
             }
-            var plans = planService.GetSpeedPlans(cycles, options.Start, options.End, detector.Approach, planEvents);
+            var speedPlans = planService.GetSpeedPlans(cycles, options.Start, options.End, detector.Approach, plans);
             if (speedEventsForDetector.IsNullOrEmpty())
             {
                 return new SpeedDetector(
-                    plans,
+                    speedPlans,
                     0,
                     options.Start,
                     options.End,
@@ -137,7 +137,7 @@ namespace Utah.Udot.Atspm.Business.ApproachSpeed
                 movementDelay = detector.MovementDelay.Value;
             var avgSpeedBucketCollection = new AvgSpeedBucketCollection(options.Start, options.End, options.BinSize, movementDelay, cycles, logger);
             return new SpeedDetector(
-                plans,
+                speedPlans,
                 totalDetectorHits,
                 options.Start,
                 options.End,

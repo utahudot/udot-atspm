@@ -95,6 +95,38 @@ namespace Utah.Udot.Atspm.Business.Common
             PhaseDetail phaseDetail,
             DateTime start,
             DateTime end,
+            bool showVolume,
+            int? pcdCycleTime,
+            int binSize,
+            List<IndianaEvent> cycleEvents,
+            IReadOnlyList<Plan> planData,
+            List<IndianaEvent> detectorEvents)
+        {
+            if (phaseDetail == null || phaseDetail.Approach == null)
+            {
+                logger.LogError("Approach cannot be null");
+                throw new ArgumentNullException("Approach cannot be null");
+            }
+
+            if (!cycleEvents.Any())
+                return new LocationPhase();
+            var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
+            var plans = planService.GetPcdPlans(cycles, start, end, phaseDetail.Approach, planData);
+            return new LocationPhase(
+                showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
+                plans,
+                cycles,
+                detectorEvents,
+                phaseDetail.Approach,
+                start,
+                end
+                );
+        }
+
+        public async Task<LocationPhase> GetLocationPhaseData(
+            PhaseDetail phaseDetail,
+            DateTime start,
+            DateTime end,
             int binSize,
             DetectionType detectionType,
             List<IndianaEvent> controllerEventLogs,
@@ -134,6 +166,49 @@ namespace Utah.Udot.Atspm.Business.Common
             return LocationPhase;
         }
 
+        public async Task<LocationPhase> GetLocationPhaseData(
+            PhaseDetail phaseDetail,
+            DateTime start,
+            DateTime end,
+            int binSize,
+            DetectionType detectionType,
+            List<IndianaEvent> controllerEventLogs,
+            IReadOnlyList<Plan> planData,
+            bool getVolume)
+        {
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
+                8,
+                phaseDetail.Approach,
+                start,
+                end,
+                true,
+                false,
+                detectionType);
+            if (detectorEvents == null)
+            {
+                return null;
+            }
+
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                phaseDetail.PhaseNumber,
+                phaseDetail.UseOverlap,
+                start,
+                end);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var LocationPhase = await GetLocationPhaseData(
+                phaseDetail,
+                start,
+                end,
+                getVolume,
+                null,
+                binSize,
+                cycleEvents.ToList(),
+                planData,
+                detectorEvents.ToList());
+            return LocationPhase;
+        }
+
         public async Task<LocationPhase> GetLocationPhaseDataWithApporach(
             Approach approach,
             DateTime start,
@@ -155,6 +230,38 @@ namespace Utah.Udot.Atspm.Business.Common
                 return new LocationPhase();
             var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
+            return new LocationPhase(
+                showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
+                plans,
+                cycles,
+                detectorEvents,
+                approach,
+                start,
+                end
+                );
+        }
+
+        public async Task<LocationPhase> GetLocationPhaseDataWithApporach(
+            Approach approach,
+            DateTime start,
+            DateTime end,
+            bool showVolume,
+            int? pcdCycleTime,
+            int binSize,
+            List<IndianaEvent> cycleEvents,
+            IReadOnlyList<Plan> planData,
+            List<IndianaEvent> detectorEvents)
+        {
+            if (approach == null)
+            {
+                logger.LogError("Approach cannot be null");
+                throw new ArgumentNullException("Approach cannot be null");
+            }
+
+            if (!cycleEvents.Any())
+                return new LocationPhase();
+            var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
+            var plans = planService.GetPcdPlans(cycles, start, end, approach, planData);
             return new LocationPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
                 plans,
@@ -207,6 +314,51 @@ namespace Utah.Udot.Atspm.Business.Common
                 binSize,
                 cycleEvents.ToList(),
                 planEvents.ToList(),
+                detectorEvents.ToList());
+            return LocationPhase;
+        }
+
+        public async Task<LocationPhase> GetLocationPhaseDataWithApproach(
+           Approach approach,
+           DateTime start,
+           DateTime end,
+           int binSize,
+           int metricTypeId,
+           List<IndianaEvent> controllerEventLogs,
+           IReadOnlyList<Plan> planData,
+           bool getVolume,
+           DetectionType detectionType,
+           int? cycleTime)
+        {
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
+                metricTypeId,
+                approach,
+                start,
+                end,
+                true,
+                false,
+                detectionType);
+            if (detectorEvents == null)
+            {
+                return null;
+            }
+
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                approach.ProtectedPhaseNumber,
+                approach.IsProtectedPhaseOverlap,
+                start,
+                end);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var LocationPhase = await GetLocationPhaseDataWithApporach(
+                approach,
+                start,
+                end,
+                getVolume,
+                cycleTime ?? null,
+                binSize,
+                cycleEvents.ToList(),
+                planData,
                 detectorEvents.ToList());
             return LocationPhase;
         }
