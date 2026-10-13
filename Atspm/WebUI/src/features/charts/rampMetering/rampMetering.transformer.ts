@@ -17,6 +17,7 @@
 import { EChartsOption, SeriesOption } from 'echarts'
 import {
   createDataZoom,
+  createDisplayProps,
   createGrid,
   createLegend,
   createPolyLines,
@@ -27,6 +28,7 @@ import {
   createXAxis,
   createYAxis,
   formatDataPointForStepView,
+  formatExportFileName,
   transformSeriesData,
 } from '../common/transformers'
 import { ChartType, MarkAreaData } from '../common/types'
@@ -34,6 +36,7 @@ import { TimeSpaceDetectorEvent } from '../timeSpaceDiagram/types'
 import { TransformedChartResponse } from '../types'
 import {
   Color,
+  DashedLineSeriesSymbol,
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
   triangleSvgSymbol,
@@ -72,38 +75,46 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     lanesQueueOnAndOffEvents,
   } = data
 
-  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationDescription}`
-  const titleHeader2 = `Queue Override\n${data.locationDescription}`
-  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationDescription}`
-  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationDescription}`
+  const chartName1 = 'Ramp Rate vs. Mainline Occupancy'
+  const chartName2 = 'Queue Override'
+  const chartName3 = 'Ramp Rate vs. Mainline Volume'
+  const chartName4 = 'Ramp Rate vs. Mainline Speed'
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
   const title1 = createTitle({
-    title: titleHeader1,
+    title: `${chartName1} (Active Rate vs. Mainline Avg Occupancy)`,
+    location: data.locationDescription,
     dateRange,
   })
 
   const title2 = createTitle({
-    title: titleHeader2,
+    title: chartName2,
+    location: data.locationDescription,
     dateRange,
   })
 
   const title3 = createTitle({
-    title: titleHeader3,
+    title: `${chartName3} (Active Rate vs. Mainline Avg Flow)`,
+    location: data.locationDescription,
     dateRange,
   })
 
   const title4 = createTitle({
-    title: titleHeader4,
+    title: `${chartName4} (Active Rate vs. Mainline Avg Speed)`,
+    location: data.locationDescription,
     dateRange,
   })
+
+  // ECharts pushes the right axis name clear of its tick labels; a small gap and
+  // margin keep it tucked against them, away from the vertical zoom slider.
+  const rightAxisName = { nameGap: 20, nameTextStyle: { textMargin: 3 } }
 
   const yAxisOne = createYAxis(
     false,
     {
       name: 'Mainline Occupancy',
     },
-    { name: 'Meter Rate (vph)' }
+    { name: 'Meter Rate (vph)', ...rightAxisName }
   )
 
   const yAxisTwo = createYAxis(
@@ -126,7 +137,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       name: 'Mainline Flow (vph)',
       nameGap: 50,
     },
-    { name: 'Meter Rate (vph)' }
+    { name: 'Meter Rate (vph)', ...rightAxisName }
   )
 
   const yAxisFour = createYAxis(
@@ -135,14 +146,14 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       name: 'Mainline Speed (mph)',
       nameGap: 50,
     },
-    { name: 'Meter Rate (vph)' }
+    { name: 'Meter Rate (vph)', ...rightAxisName }
   )
 
   const xAxis = createXAxis(data.start, data.end)
   const grid = createGrid({
-    top: 150,
+    top: 120,
     left: 65,
-    right: 250,
+    right: 280,
   })
 
   const lanesActiveLegends = lanesActiveRate.map((lane) => {
@@ -163,7 +174,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         : `Base Rate: ${lane.description}`
     return {
       name: description,
-      icon: SolidLineSeriesSymbol,
+      icon: DashedLineSeriesSymbol,
     }
   })
 
@@ -235,14 +246,32 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     },
   ])
 
-  const toolbox = createToolbox(
-    { title: titleHeader1, dateRange },
-    data.locationIdentifier
-  )
+  const createChartToolbox = (chartName: string) =>
+    createToolbox(
+      {
+        title: formatExportFileName(
+          `${chartName} ${data.locationDescription}`,
+          data.start,
+          data.end
+        ),
+        dateRange,
+      },
+      data.locationIdentifier,
+      ChartType.RampMetering
+    )
 
   const tooltip = createTooltip()
 
-  const chartColors = Object.values(Color)
+  // Each lane keeps one color: solid for its active rate, dashed for its base rate.
+  // Yellow fades into the background and light blue reads as the blue mainline.
+  const laneColors = [Color.Green, Color.Orange, Color.Pink, Color.Red]
+  const laneDescriptions = [
+    ...new Set(
+      [...lanesActiveRate, ...lanesBaseRate].map((lane) => lane.description)
+    ),
+  ]
+  const laneColor = (description: string) =>
+    laneColors[laneDescriptions.indexOf(description) % laneColors.length]
 
   const seriesOne = createSeries({
     name: 'Mainline Avg Occ',
@@ -251,7 +280,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     color: Color.Blue,
   })
 
-  lanesActiveRate.forEach((lane, index) => {
+  lanesActiveRate.forEach((lane) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesActiveRate.length === 1
@@ -263,7 +292,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 1],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
@@ -285,7 +314,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   seriesTwo.push(...generateQueueSeriesData(lanesQueueOnAndOffEvents))
 
-  lanesActiveRate.forEach((lane, index) => {
+  lanesActiveRate.forEach((lane) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesActiveRate.length === 1
@@ -297,7 +326,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 0,
-        color: chartColors[index + 1],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
@@ -313,7 +342,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     )
   })
 
-  lanesBaseRate.forEach((lane, index) => {
+  lanesBaseRate.forEach((lane) => {
     const baseRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesBaseRate.length === 1
@@ -325,11 +354,11 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 0,
-        color: chartColors[index + 2],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
-            const polylines = createPolyLines(baseRateData, api)
+            const polylines = createPolyLines(baseRateData, api, 'dashed')
 
             return {
               type: 'group',
@@ -345,7 +374,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   const seriesThree: SeriesOption[] = []
 
-  lanesActiveRate.forEach((lane, index) => {
+  lanesActiveRate.forEach((lane) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesActiveRate.length === 1
@@ -357,7 +386,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 1],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
@@ -373,7 +402,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     )
   })
 
-  lanesBaseRate.forEach((lane, index) => {
+  lanesBaseRate.forEach((lane) => {
     const baseRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesBaseRate.length === 1
@@ -385,11 +414,11 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 2],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
-            const polylines = createPolyLines(baseRateData, api)
+            const polylines = createPolyLines(baseRateData, api, 'dashed')
 
             return {
               type: 'group',
@@ -414,7 +443,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   const seriesFour: SeriesOption[] = []
 
-  lanesActiveRate.forEach((lane, index) => {
+  lanesActiveRate.forEach((lane) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesActiveRate.length === 1
@@ -426,7 +455,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 1],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
@@ -442,7 +471,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     )
   })
 
-  lanesBaseRate.forEach((lane, index) => {
+  lanesBaseRate.forEach((lane) => {
     const baseRateData = formatDataPointForStepView(lane.value, data.end)
     const description =
       lanesBaseRate.length === 1
@@ -454,11 +483,11 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 2],
+        color: laneColor(lane.description),
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
-            const polylines = createPolyLines(baseRateData, api)
+            const polylines = createPolyLines(baseRateData, api, 'dashed')
 
             return {
               type: 'group',
@@ -489,9 +518,12 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       grid,
       legend: legendOne,
       dataZoom,
-      toolbox,
+      toolbox: createChartToolbox(chartName1),
       tooltip,
       series: seriesOne,
+      displayProps: createDisplayProps({
+        description: chartName1,
+      }),
     },
     {
       title: title2,
@@ -500,9 +532,10 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       grid,
       legend: legendTwo,
       dataZoom,
-      toolbox,
+      toolbox: createChartToolbox(chartName2),
       tooltip,
       series: seriesTwo,
+      displayProps: createDisplayProps({ description: chartName2 }),
     },
     {
       title: title3,
@@ -511,9 +544,12 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       grid,
       legend: legendThree,
       dataZoom,
-      toolbox,
+      toolbox: createChartToolbox(chartName3),
       tooltip,
       series: seriesThree,
+      displayProps: createDisplayProps({
+        description: chartName3,
+      }),
     },
     {
       title: title4,
@@ -522,9 +558,12 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       grid,
       legend: legendFour,
       dataZoom,
-      toolbox,
+      toolbox: createChartToolbox(chartName4),
       tooltip,
       series: seriesFour,
+      displayProps: createDisplayProps({
+        description: chartName4,
+      }),
     },
   ]
 
