@@ -169,9 +169,9 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               rowCount={rowCount}
               colCount={pedsAre1to1 ? null : getColumnCount()}
               value={
-                (approach.pedestrianPhaseNumber ?? pedsAre1to1)
+                pedsAre1to1
                   ? approach.protectedPhaseNumber
-                  : ''
+                  : (approach.pedestrianPhaseNumber ?? '')
               }
               onUpdate={(v) => handleUpdate('pedestrianPhaseNumber', v)}
               disabled={pedsAre1to1}

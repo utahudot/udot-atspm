@@ -21,6 +21,7 @@ import { Default } from '@/features/charts/types'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
 import { WaitTimeChartOptions } from '@/features/charts/waitTime/components/WaitTimeOptions'
 import { YellowAndRedActuationsChartOptions } from '@/features/charts/yellowAndRedActuations/components/YellowAndRedActuationsChartOptions'
+import { TimeOfDayMeasureOptions } from '@/features/timeOfDay/components/TimeOfDayMeasureOptions'
 import {
   Box,
   Divider,
@@ -30,31 +31,53 @@ import {
   Typography,
 } from '@mui/material'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
+import type { ComponentType, Dispatch, SetStateAction } from 'react'
 import { useEffect, useMemo } from 'react'
 import { RampMeteringChartOptions } from '../../rampMetering/components/RampMeteringChartOptions'
 
-export const chartComponents = {
-  ApproachDelay: ApproachDelayChartOptions,
-  ApproachSpeed: ApproachSpeedChartOptions,
-  ApproachVolume: ApproachVolumeChartOptions,
-  ArrivalsOnRed: ArrivalsOnRedChartOptions,
-  GreenTimeUtilization: GreenTimeUtilizationChartOptions,
-  LeftTurnGapAnalysis: LeftTurnGapAnalysisChartOptions,
-  PedestrianDelay: PedestrianDelayChartOptions,
-  PreemptionDetails: PreemptionDetailsChartOptions,
-  PrioritySummary: PrioritySummaryChartOptions,
-  PurdueCoordinationDiagram: PurdueCoordinationDiagramChartOptions,
-  PurduePhaseTermination: PurduePhaseTerminationChartOptions,
-  PurdueSplitFailure: PurdueSplitFailureChartOptions,
-  SplitMonitor: SplitMonitorChartOptions,
-  TimingAndActuation: TimingAndActuationChartOptions,
-  TurningMovementCounts: TurningMovementCountsChartOptions,
-  WaitTime: WaitTimeChartOptions,
-  YellowAndRedActuations: YellowAndRedActuationsChartOptions,
-  RampMetering: RampMeteringChartOptions,
+type ChartOptionsComponentProps = {
+  chartDefaults: unknown
+  handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
+}
+
+type ChartOptionsComponent = ComponentType<ChartOptionsComponentProps>
+
+export const chartComponents: Record<string, ChartOptionsComponent> = {
+  ApproachDelay: ApproachDelayChartOptions as unknown as ChartOptionsComponent,
+  ApproachSpeed: ApproachSpeedChartOptions as unknown as ChartOptionsComponent,
+  ApproachVolume:
+    ApproachVolumeChartOptions as unknown as ChartOptionsComponent,
+  ArrivalsOnRed: ArrivalsOnRedChartOptions as unknown as ChartOptionsComponent,
+  GreenTimeUtilization:
+    GreenTimeUtilizationChartOptions as unknown as ChartOptionsComponent,
+  LeftTurnGapAnalysis:
+    LeftTurnGapAnalysisChartOptions as unknown as ChartOptionsComponent,
+  PedestrianDelay:
+    PedestrianDelayChartOptions as unknown as ChartOptionsComponent,
+  PreemptionDetails:
+    PreemptionDetailsChartOptions as unknown as ChartOptionsComponent,
+  PrioritySummary:
+    PrioritySummaryChartOptions as unknown as ChartOptionsComponent,
+  PurdueCoordinationDiagram:
+    PurdueCoordinationDiagramChartOptions as unknown as ChartOptionsComponent,
+  PurduePhaseTermination:
+    PurduePhaseTerminationChartOptions as unknown as ChartOptionsComponent,
+  PurdueSplitFailure:
+    PurdueSplitFailureChartOptions as unknown as ChartOptionsComponent,
+  SplitMonitor: SplitMonitorChartOptions as unknown as ChartOptionsComponent,
+  TimingAndActuation:
+    TimingAndActuationChartOptions as unknown as ChartOptionsComponent,
+  TurningMovementCounts:
+    TurningMovementCountsChartOptions as unknown as ChartOptionsComponent,
+  WaitTime: WaitTimeChartOptions as unknown as ChartOptionsComponent,
+  YellowAndRedActuations:
+    YellowAndRedActuationsChartOptions as unknown as ChartOptionsComponent,
+  RampMetering: RampMeteringChartOptions as unknown as ChartOptionsComponent,
+  TimeOfDay: TimeOfDayMeasureOptions as unknown as ChartOptionsComponent,
 } as const
 
-const abbreviationToChartType = {
+const abbreviationToChartType: Record<string, ChartType> = {
   AD: ChartType.ApproachDelay,
   AV: ChartType.ApproachVolume,
   AoR: ChartType.ArrivalsOnRed,
@@ -78,7 +101,7 @@ const abbreviationToChartType = {
 interface SelectChartProps {
   chartType: ChartType | null
   setChartType: (chart: ChartType | null) => void
-  setChartOptions: (options: Partial<ChartOptions>) => void
+  setChartOptions: Dispatch<SetStateAction<Partial<ChartOptions>>>
   chartOptions?: Partial<ChartOptions>
   location: Location | null
 }
@@ -126,12 +149,17 @@ const SelectChart = ({
   }, [chartDefaultsRaw, chartOptions])
 
   const simplifyChartDefaults = (chartDefaults: Default[]) => {
-    return chartDefaults
-      ? Object.entries(chartDefaults).reduce((acc, [key, { value }]) => {
-          acc[key] = value
-          return acc
-        }, {} as ChartOptions)
+    const simplifiedDefaults = chartDefaults
+      ? Object.entries(chartDefaults).reduce<Record<string, unknown>>(
+          (acc, [key, { value }]) => {
+            acc[key] = value
+            return acc
+          },
+          {}
+        )
       : {}
+
+    return simplifiedDefaults as ChartOptions
   }
 
   const availableCharts = useMemo(() => {
@@ -140,7 +168,9 @@ const SelectChart = ({
     const unsortedCharts = measureTypesData.value.reduce(
       (acc, measureType) => {
         if (
-          location?.charts?.includes(measureType.id) &&
+          (location as unknown as { charts?: number[] })?.charts?.includes(
+            measureType.id
+          ) &&
           measureType.showOnWebsite
         ) {
           const chartType = abbreviationToChartType[measureType.abbreviation]
@@ -150,7 +180,7 @@ const SelectChart = ({
         }
         return acc
       },
-      {} as Record<ChartType, React.ComponentType<any>>
+      {} as Partial<Record<ChartType, ChartOptionsComponent>>
     )
 
     const sortedKeys = Object.keys(unsortedCharts).sort((a, b) =>
@@ -163,7 +193,7 @@ const SelectChart = ({
         acc[chartType] = unsortedCharts[chartType]
         return acc
       },
-      {} as Record<ChartType, React.ComponentType<any>>
+      {} as Partial<Record<ChartType, ChartOptionsComponent>>
     )
   }, [measureTypesData, location])
 
@@ -194,10 +224,7 @@ const SelectChart = ({
     }
   }, [location, chartType, availableCharts, setChartType, isChartTypeAvailable])
 
-  const handleChartOptionsUpdate = (update: {
-    option: string
-    value: string | number
-  }) => {
+  const handleChartOptionsUpdate = (update: Default) => {
     setChartOptions((prevOptions) => {
       return {
         ...prevOptions,

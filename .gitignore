@@ -42,7 +42,9 @@
 *.pdb
 
 # Kernel Module Compile Results
-*.mod*
+*.mod
+*.mod.c
+*.mod.o
 *.cmd
 .tmp_versions/
 modules.order

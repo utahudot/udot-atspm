@@ -43,7 +43,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.EventLogDecoderTests
 
     public class IEventLogDecoderTests : IDisposable
     {
-        private const string TestDataPath = "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\InfrastructureTests\\EventLogDecoderTests\\TestData";
+        private const string TestDataPath = "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\InfrastructureTests\\EventLogDecoderTests\\TestData";
 
         private readonly ITestOutputHelper _output;
         //private IEventLogDecoder _decoder;

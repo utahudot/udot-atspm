@@ -11,7 +11,7 @@ import MultipleLocationsSelect, {
   getLocationWithApproaches,
 } from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import MultiDaySelect from '@/features/tspReport/components/DateCalendar'
+import MultiDayCalendar from '@/components/date-selection/MultiDayCalendar'
 import TspReport from '@/features/tspReport/components/TspReport'
 import { DropResult } from '@hello-pangea/dnd'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -295,7 +295,7 @@ export default function TspReportPage() {
               Clear All
             </Button>
           </Box>
-          <MultiDaySelect
+          <MultiDayCalendar
             selectedDays={reportOptions.selectedDays}
             onSelectedDaysChange={(newSelectedDays) =>
               setReportOptions((prev) => ({

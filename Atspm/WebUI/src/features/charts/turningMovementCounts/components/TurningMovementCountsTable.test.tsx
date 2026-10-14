@@ -4,7 +4,7 @@ import TurningMovementCountsTable, {
   buildTurningMovementCountsCsvFilename,
 } from './TurningMovementCountsTable'
 
-const filtersMock = jest.fn(() => <div>Filters</div>)
+const filtersMock = jest.fn<JSX.Element, [unknown]>(() => <div>Filters</div>)
 
 jest.mock('./TurningMovementCountsFilters', () => ({
   __esModule: true,

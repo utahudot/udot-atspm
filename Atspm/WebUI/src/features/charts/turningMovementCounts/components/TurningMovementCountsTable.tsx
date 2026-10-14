@@ -10,7 +10,7 @@ import {
   Box,
   Typography,
 } from '@mui/material'
-import { format } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { useMemo, useState } from 'react'
 
 import { laneTypeOptions } from '@/features/locations/components/editDetector/LaneTypeCell'
@@ -53,8 +53,25 @@ interface TurningMovementCountsTableProps {
 
 type SelectionMode = 'combine' | 'split'
 
-function formatTime(ts: string) {
-  return format(new Date(ts), 'HH:mm')
+export function buildTurningMovementCountsCsvFilename(
+  exportFileName: string | undefined,
+  laneType: string,
+  directionMode: SelectionMode,
+  movementMode: SelectionMode
+) {
+  const parts = [
+    exportFileName || 'Turning_Movement_Counts',
+    laneType,
+    directionMode,
+    movementMode,
+  ]
+  return (
+    parts
+      .map((part) =>
+        part.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').replace(/\s+/g, '_')
+      )
+      .join('_') + '.csv'
+  )
 }
 
 function normalizeLaneTypeId(raw: string) {
@@ -253,6 +270,9 @@ export default function TurningMovementCountsTable({
           activeLaneRows.flatMap((row) => row.volumes.map((v) => v.timestamp))
         )
       ).sort((a, b) => a.localeCompare(b))
+      const includeDates = timestamps.some(
+        (timestamp) => !isSameDay(new Date(timestamp), new Date(timestamps[0]))
+      )
 
       const valueMap = new Map<string, number>()
       for (const row of activeLaneRows) {
@@ -337,7 +357,10 @@ export default function TurningMovementCountsTable({
       }> = []
 
       headerRow1.push({ label: '', colSpan: 1 })
-      headerRow2.push({ label: 'Hour', colSpan: 1 })
+      headerRow2.push({
+        label: includeDates ? 'Date / Time' : 'Hour',
+        colSpan: 1,
+      })
 
       for (const directionGroup of directionGroups) {
         const movementList = getMovementsForDirections(directionGroup.dirs)
@@ -412,7 +435,10 @@ export default function TurningMovementCountsTable({
 
       const bodyRows: TableRowT[] = timestamps.map((ts) => {
         const row: (string | number)[] = new Array(cols.length).fill(0)
-        row[0] = formatTime(ts)
+        row[0] = format(
+          new Date(ts),
+          includeDates ? 'yyyy-MM-dd HH:mm' : 'HH:mm'
+        )
 
         for (let i = 1; i < cols.length; i++) {
           const col = cols[i]
@@ -524,7 +550,12 @@ export default function TurningMovementCountsTable({
 
   const handleDownloadCsv = () => {
     const csv = buildCsv()
-    const filename = `${displayProps?.exportFileName}.csv`
+    const filename = buildTurningMovementCountsCsvFilename(
+      displayProps?.exportFileName,
+      resolvedActiveLaneType,
+      directionMode,
+      movementMode
+    )
 
     downloadTextFile(filename, csv)
   }

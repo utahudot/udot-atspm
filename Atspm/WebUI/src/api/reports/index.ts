@@ -51,3 +51,4 @@ export * from './yellow-red-activations/yellow-red-activations';
 export * from './report-api.schemas';
 export * from './priority-details/priority-details';
 export * from './priority-summary/priority-summary';
+export * from './time-of-day/time-of-day';

@@ -584,7 +584,7 @@ describe('timeSpaceTransformerBase offset formatting', () => {
     expect(labelData[0]?.[0]).toBe(Date.parse('2026-03-20T00:00:34Z'))
   })
 
-  it('renders green-band continuations in striped grey instead of the band color', () => {
+  it('renders only the requested green band without continuation copies', () => {
     const greenBandNode = renderGreenBandNode(
       buildLocation({
         end: '2026-03-20T00:01:00Z',
@@ -600,17 +600,91 @@ describe('timeSpaceTransformerBase offset formatting', () => {
         ],
       })
     ) as {
+      type?: unknown
       emphasisDisabled?: unknown
-      children?: Array<{
-        style?: { fill?: unknown }
-      }>
+      style?: { fill?: unknown; opacity?: unknown }
+      children?: unknown[]
     }
 
     expect(greenBandNode?.emphasisDisabled).toBe(true)
-    expect(greenBandNode?.children).toHaveLength(3)
-    expect(greenBandNode.children?.[0]?.style?.fill).toBe('#D5DBE3')
-    expect(greenBandNode.children?.[1]?.style?.fill).toBe('#4f9bac')
-    expect(greenBandNode.children?.[2]?.style?.fill).toBe('#D5DBE3')
+    expect(greenBandNode?.type).toBe('polygon')
+    expect(greenBandNode?.style).toMatchObject({
+      fill: '#4f9bac',
+      opacity: 0.3,
+    })
+    expect(greenBandNode?.children).toBeUndefined()
+  })
+
+  it('excludes buffered green intervals outside the requested chart range', () => {
+    const series = getGreenBandSeries(
+      buildLocation({
+        end: '2026-03-20T00:20:00Z',
+        greenTimeEvents: [
+          {
+            initialX: '2026-03-19T23:58:10Z',
+            isDetectorOn: true,
+          },
+          {
+            initialX: '2026-03-19T23:58:20Z',
+            isDetectorOn: false,
+          },
+          {
+            initialX: '2026-03-20T00:00:10Z',
+            isDetectorOn: true,
+          },
+          {
+            initialX: '2026-03-20T00:00:20Z',
+            isDetectorOn: false,
+          },
+          {
+            initialX: '2026-03-20T00:20:10Z',
+            isDetectorOn: true,
+          },
+          {
+            initialX: '2026-03-20T00:20:20Z',
+            isDetectorOn: false,
+          },
+        ],
+      })
+    ) as { data?: unknown[] }
+
+    expect(series.data).toEqual([
+      ['2026-03-20T00:00:10Z', 0],
+      ['2026-03-20T00:00:20Z', 0],
+    ])
+  })
+
+  it('clips green intervals that cross a requested chart boundary', () => {
+    const series = getGreenBandSeries(
+      buildLocation({
+        end: '2026-03-20T00:20:00Z',
+        greenTimeEvents: [
+          {
+            initialX: '2026-03-19T23:59:50Z',
+            isDetectorOn: true,
+          },
+          {
+            initialX: '2026-03-20T00:00:20Z',
+            isDetectorOn: false,
+          },
+          {
+            initialX: '2026-03-20T00:19:50Z',
+            isDetectorOn: true,
+          },
+          {
+            initialX: '2026-03-20T00:20:10Z',
+            isDetectorOn: false,
+          },
+        ],
+      })
+    ) as { data?: unknown[] }
+
+    expect(series.data).toEqual([
+      ['2026-03-20T00:00:00Z', 0],
+      ['2026-03-20T00:00:20Z', 0],
+      ['2026-03-20T00:19:50Z', 0],
+      ['2026-03-20T00:20:00Z', 0],
+    ])
   })
 
   it('marks green-band series as non-interactable', () => {

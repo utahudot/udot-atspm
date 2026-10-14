@@ -1,3 +1,5 @@
+import '@/components/LeafletMap/leafletGlobalSetup'
+
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
