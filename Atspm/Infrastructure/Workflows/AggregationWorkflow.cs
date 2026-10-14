@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Workflows/AggregationWorkflow.cs
 // 
@@ -20,10 +20,17 @@ using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.Workflows;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.WorkflowSteps;
-using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Workflows
 {
+    /// <summary>
+    /// Workflow for aggregating event logs into various traffic metrics and analysis results.
+    /// </summary>
+    /// <remarks>
+    /// This workflow coordinates multiple sub-workflows and processing steps to run in parallel,
+    /// including detector event counts, pedestrian phases, phase cycles, split monitoring,
+    /// preemption, and priority metrics, and saves the archived results.
+    /// </remarks>
     public class AggregationWorkflow : WorkflowBase<Tuple<Location, IEnumerable<CompressedEventLogBase>>, CompressedAggregationBase>
     {
         private readonly IServiceScopeFactory _services;
@@ -31,6 +38,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         private readonly int _parallelProcesses;
         private readonly CancellationToken _cancellationToken;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregationWorkflow"/> class.
+        /// </summary>
+        /// <param name="services">The service scope factory to resolve dependencies.</param>
+        /// <param name="timeline">The timeline specifying the start and end ranges for aggregation.</param>
+        /// <param name="parallelProcesses">The maximum degree of parallel processes to run.</param>
+        /// <param name="cancellationToken">The cancellation token to observe.</param>
         public AggregationWorkflow(IServiceScopeFactory services, Timeline<StartEndRange> timeline, int parallelProcesses = 1, CancellationToken cancellationToken = default)
         {
             _services = services;
@@ -39,20 +53,44 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             _cancellationToken = cancellationToken;
         }
 
-        ///<inheritdoc cref="RestorArchivedEventsProcess"/>
+        /// <inheritdoc/>
         public RestorArchivedEventsProcess RestorArchivedEventsProcess { get; private set; }
 
+        /// <inheritdoc/>
         public BroadcastBlock<Tuple<Location, IEnumerable<EventLogModelBase>>> BroadcastEvents { get; private set; }
 
 
+        /// <inheritdoc/>
         public AggregateDetectorEventCountWorkflow AggregateDetectorEventCountWorkflow { get; private set; }
+
+        /// <inheritdoc/>
         public AggregatePedestrianPhasesWorkflow AggregatePedestrianPhasesWorkflow { get; private set; }
+
+        /// <inheritdoc/>
         public AggregatePhaseCyclesWorkflow AggregatePhaseCyclesWorkflow { get; private set; }
+
+        /// <inheritdoc/>
         public AggregatePhaseSplitMonitorWorkflow AggregatePhaseSplitMonitorWorkflow { get; private set; }
 
+        /// <inheritdoc/>
+        public AggregatePreemptionWorkflow AggregatePreemptionWorkflow { get; private set; }
 
+        /// <inheritdoc/>
+        public AggregatePriorityWorkflow AggregatePriorityWorkflow { get; private set; }
+
+        /// <inheritdoc/>
+        public AggregatePhaseTerminationsWorkflow AggregatePhaseTerminationsWorkflow { get; private set; }
+
+        /// <inheritdoc/>
+        public AggregateSignalEventCountWorkflow AggregateSignalEventCountWorkflow { get; private set; }
+
+        /// <inheritdoc/>
+        public AggregateApproachSplitFailWorkflow AggregateApproachSplitFailWorkflow { get; private set; }
+
+        /// <inheritdoc/>
         public ArchiveAggregationsProcess ArchiveAggregationsProcess { get; private set; }
 
+        /// <inheritdoc/>
         public SaveArchivedAggregationsProcess SaveArchivedAggregationsProcess { get; private set; }
 
         /// <inheritdoc/>
@@ -68,7 +106,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
                 AggregateDetectorEventCountWorkflow.WhenInitialized(),
                 AggregatePedestrianPhasesWorkflow.WhenInitialized(),
                 AggregatePhaseCyclesWorkflow.WhenInitialized(),
-                AggregatePhaseSplitMonitorWorkflow.WhenInitialized()
+                AggregatePhaseSplitMonitorWorkflow.WhenInitialized(),
+                AggregatePreemptionWorkflow.WhenInitialized(),
+                AggregatePriorityWorkflow.WhenInitialized(),
+                AggregatePhaseTerminationsWorkflow.WhenInitialized(),
+                AggregateSignalEventCountWorkflow.WhenInitialized(),
+                AggregateApproachSplitFailWorkflow.WhenInitialized()
             );
 
 
@@ -87,6 +130,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             Steps.Add(AggregatePedestrianPhasesWorkflow.Output);
             Steps.Add(AggregatePhaseCyclesWorkflow.Output);
             Steps.Add(AggregatePhaseSplitMonitorWorkflow.Output);
+            Steps.Add(AggregatePreemptionWorkflow.Output);
+            Steps.Add(AggregatePriorityWorkflow.Output);
+            Steps.Add(AggregatePhaseTerminationsWorkflow.Output);
+            Steps.Add(AggregateSignalEventCountWorkflow.Output);
+            Steps.Add(AggregateApproachSplitFailWorkflow.Output);
 
             Steps.Add(ArchiveAggregationsProcess);
             Steps.Add(SaveArchivedAggregationsProcess);
@@ -109,6 +157,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             AggregatePedestrianPhasesWorkflow = new(aggregationOptions);
             AggregatePhaseCyclesWorkflow = new(aggregationOptions);
             AggregatePhaseSplitMonitorWorkflow = new(aggregationOptions);
+            AggregatePreemptionWorkflow = new(aggregationOptions);
+            AggregatePriorityWorkflow = new(aggregationOptions);
+            AggregatePhaseTerminationsWorkflow = new(aggregationOptions);
+            AggregateSignalEventCountWorkflow = new(aggregationOptions);
+            AggregateApproachSplitFailWorkflow = new(aggregationOptions);
 
             ArchiveAggregationsProcess = new ArchiveAggregationsProcess(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             SaveArchivedAggregationsProcess = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
@@ -124,17 +177,32 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
             BroadcastEvents.LinkTo(AggregatePedestrianPhasesWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(AggregatePhaseCyclesWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
             BroadcastEvents.LinkTo(AggregatePhaseSplitMonitorWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(AggregatePreemptionWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(AggregatePriorityWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(AggregatePhaseTerminationsWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(AggregateSignalEventCountWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+            BroadcastEvents.LinkTo(AggregateApproachSplitFailWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
 
             AggregateDetectorEventCountWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
             AggregatePedestrianPhasesWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
             AggregatePhaseCyclesWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
             AggregatePhaseSplitMonitorWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregatePreemptionWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregatePriorityWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregatePhaseTerminationsWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregateSignalEventCountWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
+            AggregateApproachSplitFailWorkflow.Output.LinkTo(ArchiveAggregationsProcess, new DataflowLinkOptions { PropagateCompletion = false });
 
             Task.WhenAll(
                 AggregateDetectorEventCountWorkflow.Output.Completion,
                 AggregatePedestrianPhasesWorkflow.Output.Completion,
                 AggregatePhaseCyclesWorkflow.Output.Completion,
-                AggregatePhaseSplitMonitorWorkflow.Output.Completion)
+                AggregatePhaseSplitMonitorWorkflow.Output.Completion,
+                AggregatePreemptionWorkflow.Output.Completion,
+                AggregatePriorityWorkflow.Output.Completion,
+                AggregatePhaseTerminationsWorkflow.Output.Completion,
+                AggregateSignalEventCountWorkflow.Output.Completion,
+                AggregateApproachSplitFailWorkflow.Output.Completion)
                 .ContinueWith(_ =>
                 {
                     ArchiveAggregationsProcess.Complete();

@@ -20,7 +20,6 @@ using System.Collections.Concurrent;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Infrastructure.LogMessages;
 using Utah.Udot.Atspm.TempExtensions;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices

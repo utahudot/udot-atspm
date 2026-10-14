@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects/IdentifyandAdjustVehicleActivationsTestData.cs
 // 
@@ -32,6 +32,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
 
     public class AggregateDetectorEventCountTestData : AnalysisTestDataBase { }
 
+    public class AggregateSignalEventCountTestData : AnalysisTestDataBase { }
+
 
     public class AggregatePedestrianPhasesTestData : AnalysisTestDataBase { }
 
@@ -39,6 +41,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
 
 
     public class AggregatePhaseSplitMonitorData : AnalysisTestDataBase { }
+
+
+    public class AggregatePreemptTestData : AnalysisTestDataBase { }
+
+    public class AggregatePriorityTestData : AnalysisTestDataBase { }
 
 
 
@@ -77,19 +84,5 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
         public Location Configuration { get; set; }
         public List<IndianaEvent> Input { get; set; }
         public List<PreempDetailValueBase> Output { get; set; }
-    }
-
-    public class AggregatePriorityCodesTestData
-    {
-        public Location Configuration { get; set; }
-        public List<IndianaEvent> Input { get; set; }
-        public List<PriorityAggregation> Output { get; set; }
-    }
-
-    public class AggregatePreemptCodesTestData
-    {
-        public Location Configuration { get; set; }
-        public List<IndianaEvent> Input { get; set; }
-        public List<PreemptionAggregation> Output { get; set; }
     }
 }

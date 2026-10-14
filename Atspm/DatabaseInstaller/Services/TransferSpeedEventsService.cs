@@ -26,7 +26,6 @@ using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
