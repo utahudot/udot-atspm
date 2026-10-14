@@ -1815,28 +1815,28 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                             Id = 4101,
                             MeasureTypeId = 41,
                             Name = "Commuter Arterial",
-                            Option = BuildTimeOfDayPresetJson("0.60", "0.42", "0.72", "0.40", "0.20", "0.16", 2, 4)
+                            Option = "{\"$type\":\"TimeOfDayOptions, \",\"LocationIdentifiers\":[],\"SelectedDates\":[],\"BinSizeMinutes\":15,\"DataSource\":0,\"AllDayPrimaryDirections\":[],\"AmPrimaryDirections\":[],\"PmPrimaryDirections\":[],\"AmEntryPctOfPeak\":0.6,\"AmExitPctOfPeak\":0.42,\"PmEntryPctOfPeak\":0.72,\"PmExitPctOfPeak\":0.4,\"FreeEntryPctOfDailyPeak\":0.2,\"FreeEntryPctOfDynamicRange\":0.16,\"EntrySustainedBins\":2,\"FreeSustainedBins\":4,\"FreeFallbackTime\":\"23:30\",\"MaxAmEndTime\":\"10:00\",\"MaxPmEndTime\":\"20:00\",\"LaneCapacityVehiclesPerHour\":800.0,\"ApproachVolumeAssumedLanes\":2.0,\"SplitReviewThresholdPercent\":35.0,\"ShoulderReviewThresholdPercent\":45.0,\"DirectionLaneCounts\":{\"$type\":\"System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Double, System.Private.CoreLib]], System.Private.CoreLib\"}}"
                         },
                         new
                         {
                             Id = 4102,
                             MeasureTypeId = 41,
                             Name = "Suburban Mixed-Use",
-                            Option = BuildTimeOfDayPresetJson("0.55", "0.40", "0.68", "0.38", "0.22", "0.18", 2, 4)
+                            Option = "{\"$type\":\"TimeOfDayOptions, \",\"LocationIdentifiers\":[],\"SelectedDates\":[],\"BinSizeMinutes\":15,\"DataSource\":0,\"AllDayPrimaryDirections\":[],\"AmPrimaryDirections\":[],\"PmPrimaryDirections\":[],\"AmEntryPctOfPeak\":0.55,\"AmExitPctOfPeak\":0.4,\"PmEntryPctOfPeak\":0.68,\"PmExitPctOfPeak\":0.38,\"FreeEntryPctOfDailyPeak\":0.22,\"FreeEntryPctOfDynamicRange\":0.18,\"EntrySustainedBins\":2,\"FreeSustainedBins\":4,\"FreeFallbackTime\":\"23:30\",\"MaxAmEndTime\":\"10:00\",\"MaxPmEndTime\":\"20:00\",\"LaneCapacityVehiclesPerHour\":800.0,\"ApproachVolumeAssumedLanes\":2.0,\"SplitReviewThresholdPercent\":35.0,\"ShoulderReviewThresholdPercent\":45.0,\"DirectionLaneCounts\":{\"$type\":\"System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Double, System.Private.CoreLib]], System.Private.CoreLib\"}}"
                         },
                         new
                         {
                             Id = 4103,
                             MeasureTypeId = 41,
                             Name = "Retail / Commercial",
-                            Option = BuildTimeOfDayPresetJson("0.50", "0.38", "0.62", "0.36", "0.25", "0.20", 3, 4)
+                            Option = "{\"$type\":\"TimeOfDayOptions, \",\"LocationIdentifiers\":[],\"SelectedDates\":[],\"BinSizeMinutes\":15,\"DataSource\":0,\"AllDayPrimaryDirections\":[],\"AmPrimaryDirections\":[],\"PmPrimaryDirections\":[],\"AmEntryPctOfPeak\":0.5,\"AmExitPctOfPeak\":0.38,\"PmEntryPctOfPeak\":0.62,\"PmExitPctOfPeak\":0.36,\"FreeEntryPctOfDailyPeak\":0.25,\"FreeEntryPctOfDynamicRange\":0.2,\"EntrySustainedBins\":3,\"FreeSustainedBins\":4,\"FreeFallbackTime\":\"23:30\",\"MaxAmEndTime\":\"10:00\",\"MaxPmEndTime\":\"20:00\",\"LaneCapacityVehiclesPerHour\":800.0,\"ApproachVolumeAssumedLanes\":2.0,\"SplitReviewThresholdPercent\":35.0,\"ShoulderReviewThresholdPercent\":45.0,\"DirectionLaneCounts\":{\"$type\":\"System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Double, System.Private.CoreLib]], System.Private.CoreLib\"}}"
                         },
                         new
                         {
                             Id = 4104,
                             MeasureTypeId = 41,
                             Name = "Weekend / Recreation",
-                            Option = BuildTimeOfDayPresetJson("0.48", "0.36", "0.60", "0.34", "0.24", "0.20", 3, 5)
+                            Option = "{\"$type\":\"TimeOfDayOptions, \",\"LocationIdentifiers\":[],\"SelectedDates\":[],\"BinSizeMinutes\":15,\"DataSource\":0,\"AllDayPrimaryDirections\":[],\"AmPrimaryDirections\":[],\"PmPrimaryDirections\":[],\"AmEntryPctOfPeak\":0.48,\"AmExitPctOfPeak\":0.36,\"PmEntryPctOfPeak\":0.6,\"PmExitPctOfPeak\":0.34,\"FreeEntryPctOfDailyPeak\":0.24,\"FreeEntryPctOfDynamicRange\":0.2,\"EntrySustainedBins\":3,\"FreeSustainedBins\":5,\"FreeFallbackTime\":\"23:30\",\"MaxAmEndTime\":\"10:00\",\"MaxPmEndTime\":\"20:00\",\"LaneCapacityVehiclesPerHour\":800.0,\"ApproachVolumeAssumedLanes\":2.0,\"SplitReviewThresholdPercent\":35.0,\"ShoulderReviewThresholdPercent\":45.0,\"DirectionLaneCounts\":{\"$type\":\"System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Double, System.Private.CoreLib]], System.Private.CoreLib\"}}"
                         });
                 });
 
@@ -3161,44 +3161,6 @@ namespace Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations
                     b.Navigation("PreviousLocations");
                 });
 #pragma warning restore 612, 618
-        }
-
-        private static string BuildTimeOfDayPresetJson(
-            string amEntryPctOfPeak,
-            string amExitPctOfPeak,
-            string pmEntryPctOfPeak,
-            string pmExitPctOfPeak,
-            string freeEntryPctOfDailyPeak,
-            string freeEntryPctOfDynamicRange,
-            int entrySustainedBins,
-            int freeSustainedBins)
-        {
-            return "{" +
-                "\"$type\":\"TimeOfDayOptions\"," +
-                "\"LocationIdentifiers\":[]," +
-                "\"SelectedDates\":[]," +
-                "\"BinSizeMinutes\":15," +
-                "\"DataSource\":0," +
-                "\"AllDayPrimaryDirections\":[]," +
-                "\"AmPrimaryDirections\":[]," +
-                "\"PmPrimaryDirections\":[]," +
-                "\"AmEntryPctOfPeak\":" + amEntryPctOfPeak + "," +
-                "\"AmExitPctOfPeak\":" + amExitPctOfPeak + "," +
-                "\"PmEntryPctOfPeak\":" + pmEntryPctOfPeak + "," +
-                "\"PmExitPctOfPeak\":" + pmExitPctOfPeak + "," +
-                "\"FreeEntryPctOfDailyPeak\":" + freeEntryPctOfDailyPeak + "," +
-                "\"FreeEntryPctOfDynamicRange\":" + freeEntryPctOfDynamicRange + "," +
-                "\"EntrySustainedBins\":" + entrySustainedBins + "," +
-                "\"FreeSustainedBins\":" + freeSustainedBins + "," +
-                "\"FreeFallbackTime\":\"23:30\"," +
-                "\"MaxAmEndTime\":\"10:00\"," +
-                "\"MaxPmEndTime\":\"20:00\"," +
-                "\"LaneCapacityVehiclesPerHour\":800.0," +
-                "\"ApproachVolumeAssumedLanes\":2.0," +
-                "\"SplitReviewThresholdPercent\":35.0," +
-                "\"ShoulderReviewThresholdPercent\":45.0," +
-                "\"DirectionLaneCounts\":{}" +
-                "}";
         }
     }
 }

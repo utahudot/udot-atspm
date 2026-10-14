@@ -67,5 +67,8 @@ namespace Utah.Udot.Atspm.Data.Enums
         NW = 6,
         [Display(Name = "left-thru-right", Order = 7)]
         LTR = 7,
+
+        [Display(Name = "Cross-Walk", Order = 8)]
+        XWALK = 8,
     }
 }
