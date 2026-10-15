@@ -207,61 +207,21 @@ namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
                 .FirstOrDefault();
         }
 
-        private static short? GetEventCodeForPhase(int PhaseNumber)
+        private static short? GetEventCodeForPhase(int phaseNumber)
         {
-            switch (PhaseNumber)
+            // Programmed split changes use event codes 134-149 for phases 1-16
+            // and 203-218 for phases 17-32.
+            if (phaseNumber >= 1 && phaseNumber <= 16)
             {
-                case 1:
-                    return 134;
-                case 2:
-                    return 135;
-                case 3:
-                    return 137;
-                case 4:
-                    return 138;
-                case 5:
-                    return 139;
-                case 6:
-                    return 140;
-                case 7:
-                    return 141;
-                case 8:
-                    return 142;
-                case 17:
-                    return 203;
-                case 18:
-                    return 204;
-                case 19:
-                    return 205;
-                case 20:
-                    return 206;
-                case 21:
-                    return 207;
-                case 22:
-                    return 208;
-                case 23:
-                    return 209;
-                case 24:
-                    return 210;
-                case 25:
-                    return 211;
-                case 26:
-                    return 212;
-                case 27:
-                    return 213;
-                case 28:
-                    return 214;
-                case 29:
-                    return 215;
-                case 30:
-                    return 216;
-                case 31:
-                    return 217;
-                case 32:
-                    return 218;
-                default:
-                    return null;
+                return (short)(133 + phaseNumber);
             }
+
+            if (phaseNumber >= 17 && phaseNumber <= 32)
+            {
+                return (short)(186 + phaseNumber);
+            }
+
+            return null;
         }
 
         private double GetYellowRedTimeSeconds(
