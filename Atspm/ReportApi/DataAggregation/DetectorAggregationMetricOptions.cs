@@ -32,32 +32,6 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 
         //public override string YAxisTitle { get; }
 
-        public override List<AggregationResult> CreateMetric(AggregationOptions options)
-        {
-            if (options.SelectedXAxisType == XAxisType.TimeOfDay &&
-                options.TimeOptions.TimeOption == TimeOptions.TimePeriodOptions.StartToEnd)
-            {
-                options.TimeOptions.TimeOption = TimeOptions.TimePeriodOptions.TimePeriod;
-                options.TimeOptions.TimeOfDayStartHour = 0;
-                options.TimeOptions.TimeOfDayStartMinute = 0;
-                options.TimeOptions.TimeOfDayEndHour = 23;
-                options.TimeOptions.TimeOfDayEndMinute = 59;
-                if (options.TimeOptions.DaysOfWeek == null)
-                    options.TimeOptions.DaysOfWeek = new List<DayOfWeek>
-                    {
-                        DayOfWeek.Sunday,
-                        DayOfWeek.Monday,
-                        DayOfWeek.Tuesday,
-                        DayOfWeek.Wednesday,
-                        DayOfWeek.Thursday,
-                        DayOfWeek.Friday,
-                        DayOfWeek.Saturday
-                    };
-            }
-            return base.CreateMetric(options);
-        }
-
-
         protected override List<AggregationResult> GetChartByXAxisAggregation(AggregationOptions options)
         {
             var signals = GetSignalObjects(options);
@@ -88,13 +62,13 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                 case SeriesType.PhaseNumber:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetApproachXAxisChart(signal, options));
+                        charts.Add(ForLocations(GetApproachXAxisChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Detector:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetApproachXAxisDetectorSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetApproachXAxisDetectorSeriesChart(signal, options), signal));
                     }
                     break;
                 default:
@@ -137,26 +111,26 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                 case SeriesType.PhaseNumber:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeXAxisApproachSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeXAxisApproachSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Direction:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeXAxisDirectionSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeXAxisDirectionSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Detector:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeXAxisDetectorSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeXAxisDetectorSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -200,7 +174,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             AggregationResult chart = new AggregationResult();
-            charts.Add(chart);
+            charts.Add(ForLocations(chart, signals));
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
@@ -227,25 +201,25 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                 case SeriesType.PhaseNumber:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeOfDayXAxisApproachSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeOfDayXAxisApproachSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Direction:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeOfDayXAxisDirectionSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeOfDayXAxisDirectionSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Detector:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeOfDayXAxisDetectorSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeOfDayXAxisDetectorSeriesChart(signal, options), signal));
                     }
                     break;
                 default:

@@ -29,7 +29,9 @@ export interface SelectDateTimeProps {
   noCalendar?: boolean
   calendarLocation?: 'bottom' | 'right'
   startDateOnly?: boolean
+  hideSameDay?: boolean
   timePeriod?: boolean
+  timePeriodDisabled?: boolean
   startTimePeriod?: Date
   endTimePeriod?: Date
   changeStartTimePeriod?(date: Date): void
@@ -51,9 +53,11 @@ export default function SelectDateTime({
   noCalendar,
   calendarLocation = 'bottom',
   timePeriod,
+  timePeriodDisabled,
   startTimePeriod,
   endTimePeriod,
   startDateOnly,
+  hideSameDay,
   changeStartTimePeriod,
   changeEndTimePeriod,
   markDays = [],
@@ -207,6 +211,7 @@ export default function SelectDateTime({
                   label="Start Time"
                   ampm={false}
                   closeOnSelect
+                  disabled={timePeriodDisabled}
                   value={startTimePeriod}
                   onChange={(value) => changeStartTimePeriod?.(value as Date)}
                 />
@@ -214,6 +219,7 @@ export default function SelectDateTime({
                   label="End Time"
                   ampm={false}
                   closeOnSelect
+                  disabled={timePeriodDisabled}
                   value={endTimePeriod}
                   onChange={(value) => changeEndTimePeriod?.(value as Date)}
                 />
@@ -221,7 +227,7 @@ export default function SelectDateTime({
             </>
           )}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            {!startDateOnly && (
+            {!startDateOnly && !hideSameDay && (
               <Button onClick={handleSameDay}>Same Day</Button>
             )}
             <Button onClick={handleResetDate}>Reset</Button>

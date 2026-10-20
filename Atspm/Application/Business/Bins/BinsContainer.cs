@@ -34,7 +34,8 @@ namespace Utah.Udot.Atspm.Business.Bins
 
         public int AverageValue
         {
-            get { return Convert.ToInt32(Math.Round(Bins.Average(b => b.Sum))); }
+            // No bins, as when no chosen day falls in the range, averages to zero instead of throwing.
+            get { return Bins.Count == 0 ? 0 : Convert.ToInt32(Math.Round(Bins.Average(b => b.Sum))); }
         }
 
         public DateTime Start { get; set; }
