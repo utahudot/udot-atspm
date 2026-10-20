@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "productName": "ATSPM",
   "repositoryUrl": "https://github.com/avenueconsultants/udot-atspm-development",
-  "sourceRevision": "82bc9983533671a00d92532289c438e54a5f60e5",
-  "sourceTimestamp": "2026-09-29T10:54:25-06:00",
+  "sourceRevision": "32a2358c0fee3a760eee5f4c39c62e3f5169970f",
+  "sourceTimestamp": "2026-10-20T15:40:08-06:00",
   "sections": [
     {
       "name": "DatabaseConfiguration:AggregationContext",
@@ -705,7 +705,7 @@
     {
       "name": "EventLogExtractConfiguration",
       "sourcePath": "Atspm/Infrastructure/Configuration/EventLogExtractConfiguration.cs",
-      "sourceLine": 20,
+      "sourceLine": 23,
       "services": [
         {
           "name": "Event Log Utility",
@@ -764,8 +764,18 @@
           ]
         },
         {
+          "name": "ParallelProcesses",
+          "type": "int",
+          "default": "1",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__ParallelProcesses"
+          ]
+        },
+        {
           "name": "Path",
-          "type": "DirectoryInfo",
+          "type": "string",
           "default": "Not set",
           "required": false,
           "options": [],
@@ -905,7 +915,7 @@
     },
     {
       "name": "GitHubReleaseConfiguration",
-      "sourcePath": "Atspm/Infrastructure/Configuration/Documentation/ApiConfigurationSections.cs",
+      "sourcePath": "docs/configuration-models/ApiConfigurationSections.cs",
       "sourceLine": 82,
       "services": [
         {
@@ -981,7 +991,7 @@
     },
     {
       "name": "Jwt",
-      "sourcePath": "Atspm/Infrastructure/Configuration/Documentation/ApiConfigurationSections.cs",
+      "sourcePath": "docs/configuration-models/ApiConfigurationSections.cs",
       "sourceLine": 26,
       "services": [
         {
@@ -1046,7 +1056,7 @@
     },
     {
       "name": "Oidc",
-      "sourcePath": "Atspm/Infrastructure/Configuration/Documentation/ApiConfigurationSections.cs",
+      "sourcePath": "docs/configuration-models/ApiConfigurationSections.cs",
       "sourceLine": 55,
       "services": [
         {
@@ -1112,7 +1122,7 @@
     {
       "name": "WatchdogConfiguration",
       "sourcePath": "Atspm/Infrastructure/Configuration/WatchdogConfiguration.cs",
-      "sourceLine": 23,
+      "sourceLine": 20,
       "services": [
         {
           "name": "Watchdog",
@@ -1273,7 +1283,7 @@
         {
           "name": "PmPeakEndHour",
           "type": "int",
-          "default": "17",
+          "default": "18",
           "required": false,
           "options": [],
           "environmentVariables": [
@@ -1283,7 +1293,7 @@
         {
           "name": "PmPeakStartHour",
           "type": "int",
-          "default": "18",
+          "default": "17",
           "required": false,
           "options": [],
           "environmentVariables": [

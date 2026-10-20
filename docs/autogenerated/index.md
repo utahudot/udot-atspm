@@ -2,7 +2,7 @@
 
 Configuration sections are grouped by the ATSPM service or utility that consumes them.
 
-<small>Generated on September 29, 2026 at 4:54 PM UTC.</small>
+<small>Generated on October 20, 2026 at 9:40 PM UTC.</small>
 
 ## Containers
 
@@ -15,6 +15,6 @@ Configuration sections are grouped by the ATSPM service or utility that consumes
 
 ## References
 
-- [Log messages](log-messages.md)
-- [Configuration changes](configuration-changes.md)
-- [Configuration templates](configuration-templates.md)
+- [Log messages](support/log-messages.md)
+- [Configuration changes](support/configuration-changes.md)
+- [Configuration templates](support/configuration-templates.md)

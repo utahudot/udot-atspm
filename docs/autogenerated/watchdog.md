@@ -2,7 +2,7 @@
 
 Configuration options available to the **Watchdog** container.
 
-<small>Generated on September 29, 2026 at 4:54 PM UTC.</small>
+<small>Generated on October 20, 2026 at 9:40 PM UTC.</small>
 
 ## Contents
 
@@ -16,7 +16,7 @@ Configuration options available to the **Watchdog** container.
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -33,7 +33,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,7 +50,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -82,46 +82,42 @@ Contains configuration settings for database connectivity and provides logic to 
 
 ## WatchdogConfiguration
 
-> Configuration for Watchdog scan behavior
-
-Configuration values used by Watchdog scans, report windows, thresholds, and email behavior.
-
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/WatchdogConfiguration.cs#L23)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/WatchdogConfiguration.cs#L20)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
-| `PmScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__PmScanDate` | Date whose evening period is checked for detector and record-count issues. |
-| `AmScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__AmScanDate` | Date whose early-morning period is checked for phase-termination and pedestrian issues. |
-| `RampMissedDetectorHitsStartScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__RampMissedDetectorHitsStartScanDate` | First date in the ramp-detector missed-event scan range. |
-| `RampMissedDetectorHitsEndScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__RampMissedDetectorHitsEndScanDate` | Last date in the ramp-detector missed-event scan range. |
-| `TimeZoneId` | `string` | `DefaultTimeZoneId` | No |  | `WatchdogConfiguration__TimeZoneId` | Time-zone identifier used to derive scan dates. |
-| `AmStartHour` | `int` | `1` | No |  | `WatchdogConfiguration__AmStartHour` | Inclusive start hour for the morning phase-termination scan. |
-| `AmEndHour` | `int` | `5` | No |  | `WatchdogConfiguration__AmEndHour` | Exclusive end hour for the morning phase-termination scan. |
-| `PmPeakStartHour` | `int` | `18` | No |  | `WatchdogConfiguration__PmPeakStartHour` | Inclusive start hour for the previous-day PM detector scan. |
-| `PmPeakEndHour` | `int` | `17` | No |  | `WatchdogConfiguration__PmPeakEndHour` | Exclusive end hour for the PM detector scan. |
-| `RampDetectorStartHour` | `int` | `7` | No |  | `WatchdogConfiguration__RampDetectorStartHour` | Inclusive start hour for ramp-detector volume checks. |
-| `RampDetectorEndHour` | `int` | `8` | No |  | `WatchdogConfiguration__RampDetectorEndHour` | Exclusive end hour for ramp-detector volume checks. |
-| `RampMissedDetectorHitStartHour` | `int` | `15` | No |  | `WatchdogConfiguration__RampMissedDetectorHitStartHour` | Inclusive start hour for the ramp missed-event analysis window. |
-| `RampMissedDetectorHitEndHour` | `int` | `7` | No |  | `WatchdogConfiguration__RampMissedDetectorHitEndHour` | Exclusive end hour for the ramp missed-event analysis window. |
-| `RampMainlineStartHour` | `int` | `15` | No |  | `WatchdogConfiguration__RampMainlineStartHour` | Inclusive start hour for ramp-mainline detector checks. |
-| `RampMainlineEndHour` | `int` | `19` | No |  | `WatchdogConfiguration__RampMainlineEndHour` | Exclusive end hour for ramp-mainline detector checks. |
-| `RampStuckQueueStartHour` | `int` | `1` | No |  | `WatchdogConfiguration__RampStuckQueueStartHour` | Inclusive start hour for ramp stuck-queue checks. |
-| `RampStuckQueueEndHour` | `int` | `4` | No |  | `WatchdogConfiguration__RampStuckQueueEndHour` | Exclusive end hour for ramp stuck-queue checks. |
-| `WeekdayOnly` | `bool` | `true` | No |  | `WatchdogConfiguration__WeekdayOnly` | Whether scheduled scans are skipped on Saturdays and Sundays. |
-| `ConsecutiveCount` | `int` | `3` | No |  | `WatchdogConfiguration__ConsecutiveCount` | Number of consecutive occurrences required to report a stuck-pedestrian issue. |
-| `MinPhaseTerminations` | `int` | `50` | No |  | `WatchdogConfiguration__MinPhaseTerminations` | Minimum non-gap or total phase terminations required before percentage thresholds are evaluated. |
-| `PercentThreshold` | `double` | `.9` | No |  | `WatchdogConfiguration__PercentThreshold` | Fraction of phase terminations that must be force-offs or max-outs to report an issue. |
-| `MinimumRecords` | `int` | `500` | No |  | `WatchdogConfiguration__MinimumRecords` | Minimum event records a location must have to pass the PM record-count check. |
-| `LowHitThreshold` | `int` | `50` | No |  | `WatchdogConfiguration__LowHitThreshold` | Detector-volume count below which a standard detector is reported as low-hit. |
-| `LowHitRampThreshold` | `int` | `10` | No |  | `WatchdogConfiguration__LowHitRampThreshold` | Detector-volume count below which a ramp detector is reported as low-hit. |
-| `MaximumPedestrianEvents` | `int` | `200` | No |  | `WatchdogConfiguration__MaximumPedestrianEvents` | Pedestrian-event count above which a phase is reported for excessive activations. |
-| `RampMissedEventsThreshold` | `int` | `3` | No |  | `WatchdogConfiguration__RampMissedEventsThreshold` | Number of missed ramp event buckets above which an issue is reported. |
-| `EmailAllErrors` | `bool` | `Not set` | No |  | `WatchdogConfiguration__EmailAllErrors` | Whether emails include recurring errors in addition to newly detected errors. |
-| `EmailPmErrors` | `bool` | `true` | No |  | `WatchdogConfiguration__EmailPmErrors` | Whether PM detector and record-count issues are analyzed and emailed. |
-| `EmailAmErrors` | `bool` | `true` | No |  | `WatchdogConfiguration__EmailAmErrors` | Whether AM phase-termination and pedestrian issues are analyzed and emailed. |
-| `EmailRampErrors` | `bool` | `true` | No |  | `WatchdogConfiguration__EmailRampErrors` | Whether ramp detector issues are analyzed and emailed. |
-| `DefaultEmailAddress` | `string` | `Not set` | No |  | `WatchdogConfiguration__DefaultEmailAddress` | Fallback recipient address used for watchdog email messages. |
-| `Sort` | `string` | `Not set` | No |  | `WatchdogConfiguration__Sort` | Sort expression applied when ordering watchdog errors in reports. |
+| `PmScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__PmScanDate` |  |
+| `AmScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__AmScanDate` |  |
+| `RampMissedDetectorHitsStartScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__RampMissedDetectorHitsStartScanDate` |  |
+| `RampMissedDetectorHitsEndScanDate` | `DateTime` | `Not set` | No |  | `WatchdogConfiguration__RampMissedDetectorHitsEndScanDate` |  |
+| `TimeZoneId` | `string` | `DefaultTimeZoneId` | No |  | `WatchdogConfiguration__TimeZoneId` |  |
+| `AmStartHour` | `int` | `1` | No |  | `WatchdogConfiguration__AmStartHour` |  |
+| `AmEndHour` | `int` | `5` | No |  | `WatchdogConfiguration__AmEndHour` |  |
+| `PmPeakStartHour` | `int` | `17` | No |  | `WatchdogConfiguration__PmPeakStartHour` |  |
+| `PmPeakEndHour` | `int` | `18` | No |  | `WatchdogConfiguration__PmPeakEndHour` |  |
+| `RampDetectorStartHour` | `int` | `7` | No |  | `WatchdogConfiguration__RampDetectorStartHour` |  |
+| `RampDetectorEndHour` | `int` | `8` | No |  | `WatchdogConfiguration__RampDetectorEndHour` |  |
+| `RampMissedDetectorHitStartHour` | `int` | `15` | No |  | `WatchdogConfiguration__RampMissedDetectorHitStartHour` |  |
+| `RampMissedDetectorHitEndHour` | `int` | `7` | No |  | `WatchdogConfiguration__RampMissedDetectorHitEndHour` |  |
+| `RampMainlineStartHour` | `int` | `15` | No |  | `WatchdogConfiguration__RampMainlineStartHour` |  |
+| `RampMainlineEndHour` | `int` | `19` | No |  | `WatchdogConfiguration__RampMainlineEndHour` |  |
+| `RampStuckQueueStartHour` | `int` | `1` | No |  | `WatchdogConfiguration__RampStuckQueueStartHour` |  |
+| `RampStuckQueueEndHour` | `int` | `4` | No |  | `WatchdogConfiguration__RampStuckQueueEndHour` |  |
+| `WeekdayOnly` | `bool` | `true` | No |  | `WatchdogConfiguration__WeekdayOnly` |  |
+| `ConsecutiveCount` | `int` | `3` | No |  | `WatchdogConfiguration__ConsecutiveCount` |  |
+| `MinPhaseTerminations` | `int` | `50` | No |  | `WatchdogConfiguration__MinPhaseTerminations` |  |
+| `PercentThreshold` | `double` | `.9` | No |  | `WatchdogConfiguration__PercentThreshold` |  |
+| `MinimumRecords` | `int` | `500` | No |  | `WatchdogConfiguration__MinimumRecords` |  |
+| `LowHitThreshold` | `int` | `50` | No |  | `WatchdogConfiguration__LowHitThreshold` |  |
+| `LowHitRampThreshold` | `int` | `10` | No |  | `WatchdogConfiguration__LowHitRampThreshold` |  |
+| `MaximumPedestrianEvents` | `int` | `200` | No |  | `WatchdogConfiguration__MaximumPedestrianEvents` |  |
+| `RampMissedEventsThreshold` | `int` | `3` | No |  | `WatchdogConfiguration__RampMissedEventsThreshold` |  |
+| `EmailAllErrors` | `bool` | `Not set` | No |  | `WatchdogConfiguration__EmailAllErrors` |  |
+| `EmailPmErrors` | `bool` | `true` | No |  | `WatchdogConfiguration__EmailPmErrors` |  |
+| `EmailAmErrors` | `bool` | `true` | No |  | `WatchdogConfiguration__EmailAmErrors` |  |
+| `EmailRampErrors` | `bool` | `true` | No |  | `WatchdogConfiguration__EmailRampErrors` |  |
+| `DefaultEmailAddress` | `string` | `Not set` | No |  | `WatchdogConfiguration__DefaultEmailAddress` |  |
+| `Sort` | `string` | `Not set` | No |  | `WatchdogConfiguration__Sort` |  |
 
 ## Example JSON configuration
 
@@ -179,8 +175,8 @@ This example includes every documented setting. Replace placeholder secrets, URL
     "TimeZoneId": "America/Denver",
     "AmStartHour": 1,
     "AmEndHour": 5,
-    "PmPeakStartHour": 18,
-    "PmPeakEndHour": 17,
+    "PmPeakStartHour": 17,
+    "PmPeakEndHour": 18,
     "RampDetectorStartHour": 7,
     "RampDetectorEndHour": 8,
     "RampMissedDetectorHitStartHour": 15,
@@ -210,7 +206,7 @@ This example includes every documented setting. Replace placeholder secrets, URL
 
 ## Download templates
 
-- [JSON example](watchdog.example.json)
-- [Environment example](watchdog.env.example)
+- [JSON example](support/watchdog.example.json)
+- [Environment example](support/watchdog.env.example)
 
 These are starting points from the source revision linked above. Replace placeholders before use.

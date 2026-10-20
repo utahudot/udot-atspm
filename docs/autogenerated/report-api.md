@@ -2,7 +2,7 @@
 
 Configuration options available to the **Report API** container.
 
-<small>Generated on September 29, 2026 at 4:54 PM UTC.</small>
+<small>Generated on October 20, 2026 at 9:40 PM UTC.</small>
 
 ## Contents
 
@@ -17,7 +17,7 @@ Configuration options available to the **Report API** container.
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,7 +51,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,7 +68,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -87,7 +87,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Configuration values used by the APIs to validate and issue JWT bearer tokens.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/Documentation/ApiConfigurationSections.cs#L26)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/docs/configuration-models/ApiConfigurationSections.cs#L26)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -102,7 +102,7 @@ Configuration values used by the APIs to validate and issue JWT bearer tokens.
 
 Optional OpenID Connect configuration used when an external identity provider is enabled.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/82bc9983533671a00d92532289c438e54a5f60e5/Atspm/Infrastructure/Configuration/Documentation/ApiConfigurationSections.cs#L55)
+[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/docs/configuration-models/ApiConfigurationSections.cs#L55)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -176,7 +176,7 @@ This example includes every documented setting. Replace placeholder secrets, URL
 
 ## Download templates
 
-- [JSON example](report-api.example.json)
-- [Environment example](report-api.env.example)
+- [JSON example](support/report-api.example.json)
+- [Environment example](support/report-api.env.example)
 
 These are starting points from the source revision linked above. Replace placeholders before use.

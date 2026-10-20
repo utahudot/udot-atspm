@@ -70,7 +70,8 @@
     "Dates": [],
     "Included": [],
     "Excluded": [],
-    "Path": "./data"
+    "Path": "REPLACE_ME",
+    "ParallelProcesses": 1
   },
   "EventLogImporterConfiguration": {
     "EarliestAcceptableDate": "2026-01-01T00:00:00Z",
