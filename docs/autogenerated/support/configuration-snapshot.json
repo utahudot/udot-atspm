@@ -1,0 +1,1461 @@
+{
+  "schemaVersion": 1,
+  "productName": "ATSPM",
+  "repositoryUrl": "https://github.com/opensourcetransportation/atspm",
+  "sourceRevision": "32a2358c0fee3a760eee5f4c39c62e3f5169970f",
+  "sourceTimestamp": "2026-10-20T15:40:08-06:00",
+  "sections": [
+    {
+      "name": "DatabaseConfiguration:AggregationContext",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs",
+      "sourceLine": 32,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        },
+        {
+          "name": "Data API",
+          "slug": "data-api"
+        },
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        },
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        },
+        {
+          "name": "Report API",
+          "slug": "report-api"
+        },
+        {
+          "name": "Watchdog",
+          "slug": "watchdog"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DBType",
+          "type": "DatabaseProvider",
+          "default": "DatabaseProvider.InMemory",
+          "required": false,
+          "options": [
+            "InMemory",
+            "MySql",
+            "Oracle",
+            "PostgreSql",
+            "SqlServer",
+            "Sqlite"
+          ],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__DBType"
+          ]
+        },
+        {
+          "name": "Database",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__Database"
+          ]
+        },
+        {
+          "name": "Host",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__Host"
+          ]
+        },
+        {
+          "name": "Options",
+          "type": "Dictionary\u003Cstring, string\u003E",
+          "default": "new()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__Options__KEY"
+          ]
+        },
+        {
+          "name": "Password",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__Password"
+          ]
+        },
+        {
+          "name": "Port",
+          "type": "int?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__Port"
+          ]
+        },
+        {
+          "name": "RunMigrations",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__RunMigrations"
+          ]
+        },
+        {
+          "name": "User",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__AggregationContext__User"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DatabaseConfiguration:ConfigContext",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs",
+      "sourceLine": 32,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        },
+        {
+          "name": "Data API",
+          "slug": "data-api"
+        },
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        },
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        },
+        {
+          "name": "Report API",
+          "slug": "report-api"
+        },
+        {
+          "name": "Watchdog",
+          "slug": "watchdog"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DBType",
+          "type": "DatabaseProvider",
+          "default": "DatabaseProvider.InMemory",
+          "required": false,
+          "options": [
+            "InMemory",
+            "MySql",
+            "Oracle",
+            "PostgreSql",
+            "SqlServer",
+            "Sqlite"
+          ],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__DBType"
+          ]
+        },
+        {
+          "name": "Database",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__Database"
+          ]
+        },
+        {
+          "name": "Host",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__Host"
+          ]
+        },
+        {
+          "name": "Options",
+          "type": "Dictionary\u003Cstring, string\u003E",
+          "default": "new()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__Options__KEY"
+          ]
+        },
+        {
+          "name": "Password",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__Password"
+          ]
+        },
+        {
+          "name": "Port",
+          "type": "int?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__Port"
+          ]
+        },
+        {
+          "name": "RunMigrations",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__RunMigrations"
+          ]
+        },
+        {
+          "name": "User",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__ConfigContext__User"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DatabaseConfiguration:EventLogContext",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs",
+      "sourceLine": 32,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        },
+        {
+          "name": "Data API",
+          "slug": "data-api"
+        },
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        },
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        },
+        {
+          "name": "Report API",
+          "slug": "report-api"
+        },
+        {
+          "name": "Watchdog",
+          "slug": "watchdog"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DBType",
+          "type": "DatabaseProvider",
+          "default": "DatabaseProvider.InMemory",
+          "required": false,
+          "options": [
+            "InMemory",
+            "MySql",
+            "Oracle",
+            "PostgreSql",
+            "SqlServer",
+            "Sqlite"
+          ],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__DBType"
+          ]
+        },
+        {
+          "name": "Database",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__Database"
+          ]
+        },
+        {
+          "name": "Host",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__Host"
+          ]
+        },
+        {
+          "name": "Options",
+          "type": "Dictionary\u003Cstring, string\u003E",
+          "default": "new()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__Options__KEY"
+          ]
+        },
+        {
+          "name": "Password",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__Password"
+          ]
+        },
+        {
+          "name": "Port",
+          "type": "int?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__Port"
+          ]
+        },
+        {
+          "name": "RunMigrations",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__RunMigrations"
+          ]
+        },
+        {
+          "name": "User",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__EventLogContext__User"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DatabaseConfiguration:IdentityContext",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs",
+      "sourceLine": 32,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        },
+        {
+          "name": "Data API",
+          "slug": "data-api"
+        },
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        },
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        },
+        {
+          "name": "Report API",
+          "slug": "report-api"
+        },
+        {
+          "name": "Watchdog",
+          "slug": "watchdog"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DBType",
+          "type": "DatabaseProvider",
+          "default": "DatabaseProvider.InMemory",
+          "required": false,
+          "options": [
+            "InMemory",
+            "MySql",
+            "Oracle",
+            "PostgreSql",
+            "SqlServer",
+            "Sqlite"
+          ],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__DBType"
+          ]
+        },
+        {
+          "name": "Database",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__Database"
+          ]
+        },
+        {
+          "name": "Host",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__Host"
+          ]
+        },
+        {
+          "name": "Options",
+          "type": "Dictionary\u003Cstring, string\u003E",
+          "default": "new()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__Options__KEY"
+          ]
+        },
+        {
+          "name": "Password",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__Password"
+          ]
+        },
+        {
+          "name": "Port",
+          "type": "int?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__Port"
+          ]
+        },
+        {
+          "name": "RunMigrations",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__RunMigrations"
+          ]
+        },
+        {
+          "name": "User",
+          "type": "string",
+          "default": "string.Empty",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DatabaseConfiguration__IdentityContext__User"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DecodeEventsConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DecodeEventsConfiguration.cs",
+      "sourceLine": 20,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "Path",
+          "type": "string",
+          "default": "System.IO.Path.GetTempPath()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DecodeEventsConfiguration__Path"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DeviceDownloaderConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DeviceDownloaderConfiguration.cs",
+      "sourceLine": 23,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "BasePath",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceDownloaderConfiguration__BasePath"
+          ]
+        },
+        {
+          "name": "DeleteRemoteFile",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceDownloaderConfiguration__DeleteRemoteFile"
+          ]
+        },
+        {
+          "name": "Ping",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceDownloaderConfiguration__Ping"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DeviceEventLoggingConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/DeviceEventLoggingConfiguration.cs",
+      "sourceLine": 25,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DeviceEventLoggingQueryOptions",
+          "type": "DeviceEventLoggingQueryOptions",
+          "default": "new()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__DeviceStatus",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__DeviceType",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__ExcludedLocations__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludeConfigurations__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludedAreas__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludedDevices__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludedJurisdictions__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludedLocationTypes__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludedLocations__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__IncludedRegions__0",
+            "DeviceEventLoggingConfiguration__DeviceEventLoggingQueryOptions__TransportProtocol"
+          ]
+        },
+        {
+          "name": "DevicesBatchSize",
+          "type": "int?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__DevicesBatchSize"
+          ]
+        },
+        {
+          "name": "ParallelProcesses",
+          "type": "int",
+          "default": "5",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__ParallelProcesses"
+          ]
+        },
+        {
+          "name": "Path",
+          "type": "string",
+          "default": "System.IO.Path.GetTempPath()",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__Path"
+          ]
+        },
+        {
+          "name": "ProcessingBatchSize",
+          "type": "int",
+          "default": "50000",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__ProcessingBatchSize"
+          ]
+        },
+        {
+          "name": "SignalTimingPlanOffsetHours",
+          "type": "int",
+          "default": "12",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__SignalTimingPlanOffsetHours"
+          ]
+        },
+        {
+          "name": "WorkflowBatchSize",
+          "type": "int",
+          "default": "20",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "DeviceEventLoggingConfiguration__WorkflowBatchSize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EventLogAggregateConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/EventLogAggregateConfiguration.cs",
+      "sourceLine": 23,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "AggregationType",
+          "type": "string",
+          "default": "\u0022all\u0022",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogAggregateConfiguration__AggregationType"
+          ]
+        },
+        {
+          "name": "Dates",
+          "type": "IEnumerable\u003CDateTime\u003E",
+          "default": "Not set",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "EventLogAggregateConfiguration__Dates__0"
+          ]
+        },
+        {
+          "name": "EventAggregationQueryOptions",
+          "type": "EventAggregationQueryOptions",
+          "default": "new()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogAggregateConfiguration__EventAggregationQueryOptions__ExcludedLocations__0",
+            "EventLogAggregateConfiguration__EventAggregationQueryOptions__IncludedAreas__0",
+            "EventLogAggregateConfiguration__EventAggregationQueryOptions__IncludedJurisdictions__0",
+            "EventLogAggregateConfiguration__EventAggregationQueryOptions__IncludedLocationTypes__0",
+            "EventLogAggregateConfiguration__EventAggregationQueryOptions__IncludedLocations__0",
+            "EventLogAggregateConfiguration__EventAggregationQueryOptions__IncludedRegions__0"
+          ]
+        },
+        {
+          "name": "ParallelProcesses",
+          "type": "int",
+          "default": "1",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogAggregateConfiguration__ParallelProcesses"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EventLogExtractConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/EventLogExtractConfiguration.cs",
+      "sourceLine": 23,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DateTimeFormat",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__DateTimeFormat"
+          ]
+        },
+        {
+          "name": "Dates",
+          "type": "IEnumerable\u003CDateTime\u003E",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__Dates__0"
+          ]
+        },
+        {
+          "name": "Excluded",
+          "type": "IEnumerable\u003Cstring\u003E",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__Excluded__0"
+          ]
+        },
+        {
+          "name": "FileFormat",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__FileFormat"
+          ]
+        },
+        {
+          "name": "Included",
+          "type": "IEnumerable\u003Cstring\u003E",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__Included__0"
+          ]
+        },
+        {
+          "name": "ParallelProcesses",
+          "type": "int",
+          "default": "1",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__ParallelProcesses"
+          ]
+        },
+        {
+          "name": "Path",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogExtractConfiguration__Path"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EventLogImporterConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/EventLogImporterConfiguration.cs",
+      "sourceLine": 23,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DeleteSource",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogImporterConfiguration__DeleteSource"
+          ]
+        },
+        {
+          "name": "EarliestAcceptableDate",
+          "type": "DateTime",
+          "default": "DateTime.Parse(\u002201/01/1980\u0022)",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogImporterConfiguration__EarliestAcceptableDate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EventLogTransferOptions",
+      "sourcePath": "Atspm/Infrastructure/Configuration/EventLogTransferOptions.cs",
+      "sourceLine": 25,
+      "services": [
+        {
+          "name": "Event Log Utility",
+          "slug": "event-log-utility"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DataType",
+          "type": "string",
+          "default": "\u0022all\u0022",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__DataType"
+          ]
+        },
+        {
+          "name": "DestinationRepository",
+          "type": "RepositoryConfiguration",
+          "default": "new RepositoryConfiguration()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__DestinationRepository__ConnectionString",
+            "EventLogTransferOptions__DestinationRepository__Provider"
+          ]
+        },
+        {
+          "name": "EndDate",
+          "type": "DateTime?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__EndDate"
+          ]
+        },
+        {
+          "name": "ExcludedLocations",
+          "type": "IEnumerable\u003Cstring\u003E",
+          "default": "[]",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__ExcludedLocations__0"
+          ]
+        },
+        {
+          "name": "IncludedDeviceIds",
+          "type": "IEnumerable\u003Cint\u003E",
+          "default": "[]",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__IncludedDeviceIds__0"
+          ]
+        },
+        {
+          "name": "IncludedLocations",
+          "type": "IEnumerable\u003Cstring\u003E",
+          "default": "[]",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__IncludedLocations__0"
+          ]
+        },
+        {
+          "name": "SourceRepository",
+          "type": "RepositoryConfiguration",
+          "default": "new RepositoryConfiguration()",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__SourceRepository__ConnectionString",
+            "EventLogTransferOptions__SourceRepository__Provider"
+          ]
+        },
+        {
+          "name": "StartDate",
+          "type": "DateTime?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "EventLogTransferOptions__StartDate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GitHubReleaseConfiguration",
+      "sourcePath": "docs/configuration-models/ApiConfigurationSections.cs",
+      "sourceLine": 82,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        }
+      ],
+      "properties": [
+        {
+          "name": "RepositoryName",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "GitHubReleaseConfiguration__RepositoryName"
+          ]
+        },
+        {
+          "name": "RepositoryOwner",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "GitHubReleaseConfiguration__RepositoryOwner"
+          ]
+        },
+        {
+          "name": "UserAgengt",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "GitHubReleaseConfiguration__UserAgengt"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IdentityConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/IdentityConfiguration.cs",
+      "sourceLine": 20,
+      "services": [
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        }
+      ],
+      "properties": [
+        {
+          "name": "DefaultEmailAddress",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "IdentityConfiguration__DefaultEmailAddress"
+          ]
+        },
+        {
+          "name": "Website",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "IdentityConfiguration__Website"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Jwt",
+      "sourcePath": "docs/configuration-models/ApiConfigurationSections.cs",
+      "sourceLine": 26,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        },
+        {
+          "name": "Data API",
+          "slug": "data-api"
+        },
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        },
+        {
+          "name": "Report API",
+          "slug": "report-api"
+        }
+      ],
+      "properties": [
+        {
+          "name": "Audience",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "Jwt__Audience"
+          ]
+        },
+        {
+          "name": "ExpireDays",
+          "type": "double?",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "Jwt__ExpireDays"
+          ]
+        },
+        {
+          "name": "Issuer",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "Jwt__Issuer"
+          ]
+        },
+        {
+          "name": "Key",
+          "type": "string",
+          "default": "string.Empty",
+          "required": true,
+          "options": [],
+          "environmentVariables": [
+            "Jwt__Key"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Oidc",
+      "sourcePath": "docs/configuration-models/ApiConfigurationSections.cs",
+      "sourceLine": 55,
+      "services": [
+        {
+          "name": "Config API",
+          "slug": "config-api"
+        },
+        {
+          "name": "Data API",
+          "slug": "data-api"
+        },
+        {
+          "name": "Identity API",
+          "slug": "identity-api"
+        },
+        {
+          "name": "Report API",
+          "slug": "report-api"
+        }
+      ],
+      "properties": [
+        {
+          "name": "Authority",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "Oidc__Authority"
+          ]
+        },
+        {
+          "name": "CallbackPath",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "Oidc__CallbackPath"
+          ]
+        },
+        {
+          "name": "ClientId",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "Oidc__ClientId"
+          ]
+        },
+        {
+          "name": "ClientSecret",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "Oidc__ClientSecret"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "WatchdogConfiguration",
+      "sourcePath": "Atspm/Infrastructure/Configuration/WatchdogConfiguration.cs",
+      "sourceLine": 20,
+      "services": [
+        {
+          "name": "Watchdog",
+          "slug": "watchdog"
+        }
+      ],
+      "properties": [
+        {
+          "name": "AmEndHour",
+          "type": "int",
+          "default": "5",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__AmEndHour"
+          ]
+        },
+        {
+          "name": "AmScanDate",
+          "type": "DateTime",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__AmScanDate"
+          ]
+        },
+        {
+          "name": "AmStartHour",
+          "type": "int",
+          "default": "1",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__AmStartHour"
+          ]
+        },
+        {
+          "name": "ConsecutiveCount",
+          "type": "int",
+          "default": "3",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__ConsecutiveCount"
+          ]
+        },
+        {
+          "name": "DefaultEmailAddress",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__DefaultEmailAddress"
+          ]
+        },
+        {
+          "name": "EmailAllErrors",
+          "type": "bool",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__EmailAllErrors"
+          ]
+        },
+        {
+          "name": "EmailAmErrors",
+          "type": "bool",
+          "default": "true",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__EmailAmErrors"
+          ]
+        },
+        {
+          "name": "EmailPmErrors",
+          "type": "bool",
+          "default": "true",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__EmailPmErrors"
+          ]
+        },
+        {
+          "name": "EmailRampErrors",
+          "type": "bool",
+          "default": "true",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__EmailRampErrors"
+          ]
+        },
+        {
+          "name": "LowHitRampThreshold",
+          "type": "int",
+          "default": "10",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__LowHitRampThreshold"
+          ]
+        },
+        {
+          "name": "LowHitThreshold",
+          "type": "int",
+          "default": "50",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__LowHitThreshold"
+          ]
+        },
+        {
+          "name": "MaximumPedestrianEvents",
+          "type": "int",
+          "default": "200",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__MaximumPedestrianEvents"
+          ]
+        },
+        {
+          "name": "MinPhaseTerminations",
+          "type": "int",
+          "default": "50",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__MinPhaseTerminations"
+          ]
+        },
+        {
+          "name": "MinimumRecords",
+          "type": "int",
+          "default": "500",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__MinimumRecords"
+          ]
+        },
+        {
+          "name": "PercentThreshold",
+          "type": "double",
+          "default": ".9",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__PercentThreshold"
+          ]
+        },
+        {
+          "name": "PmPeakEndHour",
+          "type": "int",
+          "default": "18",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__PmPeakEndHour"
+          ]
+        },
+        {
+          "name": "PmPeakStartHour",
+          "type": "int",
+          "default": "17",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__PmPeakStartHour"
+          ]
+        },
+        {
+          "name": "PmScanDate",
+          "type": "DateTime",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__PmScanDate"
+          ]
+        },
+        {
+          "name": "RampDetectorEndHour",
+          "type": "int",
+          "default": "8",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampDetectorEndHour"
+          ]
+        },
+        {
+          "name": "RampDetectorStartHour",
+          "type": "int",
+          "default": "7",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampDetectorStartHour"
+          ]
+        },
+        {
+          "name": "RampMainlineEndHour",
+          "type": "int",
+          "default": "19",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMainlineEndHour"
+          ]
+        },
+        {
+          "name": "RampMainlineStartHour",
+          "type": "int",
+          "default": "15",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMainlineStartHour"
+          ]
+        },
+        {
+          "name": "RampMissedDetectorHitEndHour",
+          "type": "int",
+          "default": "7",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMissedDetectorHitEndHour"
+          ]
+        },
+        {
+          "name": "RampMissedDetectorHitStartHour",
+          "type": "int",
+          "default": "15",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMissedDetectorHitStartHour"
+          ]
+        },
+        {
+          "name": "RampMissedDetectorHitsEndScanDate",
+          "type": "DateTime",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMissedDetectorHitsEndScanDate"
+          ]
+        },
+        {
+          "name": "RampMissedDetectorHitsStartScanDate",
+          "type": "DateTime",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMissedDetectorHitsStartScanDate"
+          ]
+        },
+        {
+          "name": "RampMissedEventsThreshold",
+          "type": "int",
+          "default": "3",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampMissedEventsThreshold"
+          ]
+        },
+        {
+          "name": "RampStuckQueueEndHour",
+          "type": "int",
+          "default": "4",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampStuckQueueEndHour"
+          ]
+        },
+        {
+          "name": "RampStuckQueueStartHour",
+          "type": "int",
+          "default": "1",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__RampStuckQueueStartHour"
+          ]
+        },
+        {
+          "name": "Sort",
+          "type": "string",
+          "default": "Not set",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__Sort"
+          ]
+        },
+        {
+          "name": "TimeZoneId",
+          "type": "string",
+          "default": "DefaultTimeZoneId",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__TimeZoneId"
+          ]
+        },
+        {
+          "name": "WeekdayOnly",
+          "type": "bool",
+          "default": "true",
+          "required": false,
+          "options": [],
+          "environmentVariables": [
+            "WatchdogConfiguration__WeekdayOnly"
+          ]
+        }
+      ]
+    }
+  ],
+  "report": {
+    "baselineRepositoryUrl": null,
+    "baselineRevision": null,
+    "changes": []
+  }
+}
