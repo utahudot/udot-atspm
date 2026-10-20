@@ -1,0 +1,78 @@
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "WatchdogConfiguration": {
+    "PmScanDate": "2026-01-01T00:00:00Z",
+    "AmScanDate": "2026-01-01T00:00:00Z",
+    "RampMissedDetectorHitsStartScanDate": "2026-01-01T00:00:00Z",
+    "RampMissedDetectorHitsEndScanDate": "2026-01-01T00:00:00Z",
+    "TimeZoneId": "REPLACE_ME",
+    "AmStartHour": 1,
+    "AmEndHour": 5,
+    "PmPeakStartHour": 18,
+    "PmPeakEndHour": 17,
+    "RampDetectorStartHour": 7,
+    "RampDetectorEndHour": 8,
+    "RampMissedDetectorHitStartHour": 15,
+    "RampMissedDetectorHitEndHour": 7,
+    "RampMainlineStartHour": 15,
+    "RampMainlineEndHour": 19,
+    "RampStuckQueueStartHour": 1,
+    "RampStuckQueueEndHour": 4,
+    "WeekdayOnly": true,
+    "ConsecutiveCount": 3,
+    "MinPhaseTerminations": 50,
+    "PercentThreshold": 0.9,
+    "MinimumRecords": 500,
+    "LowHitThreshold": 50,
+    "LowHitRampThreshold": 10,
+    "MaximumPedestrianEvents": 200,
+    "RampMissedEventsThreshold": 3,
+    "EmailAllErrors": false,
+    "EmailPmErrors": true,
+    "EmailAmErrors": true,
+    "EmailRampErrors": true,
+    "DefaultEmailAddress": "REPLACE_ME",
+    "Sort": "REPLACE_ME"
+  }
+}
