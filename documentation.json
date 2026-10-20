@@ -3,7 +3,8 @@
   "productName": "ATSPM",
   "sourcePaths": [
     "Atspm/Infrastructure/Configuration",
-    "Atspm/Data/Enums"
+    "Atspm/Data/Enums",
+    "docs/configuration-models"
   ],
   "configurationTypes": [
     {
