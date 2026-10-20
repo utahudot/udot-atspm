@@ -22,7 +22,7 @@ Configuration options available to the **Event Log Utility** container.
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -56,7 +56,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -73,7 +73,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Contains configuration settings for database connectivity and provides logic to generate provider-specific connection strings.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DatabaseConfiguration.cs#L32)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,7 +88,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 ## DecodeEventsConfiguration
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DecodeEventsConfiguration.cs#L20)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DecodeEventsConfiguration.cs#L20)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -98,7 +98,7 @@ Contains configuration settings for database connectivity and provides logic to 
 
 Options pattern model for services that implement IDeviceDownloader
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DeviceDownloaderConfiguration.cs#L23)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DeviceDownloaderConfiguration.cs#L23)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -110,7 +110,7 @@ Options pattern model for services that implement IDeviceDownloader
 
 Configuration options for the Device Event Logging background service.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DeviceEventLoggingConfiguration.cs#L25)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/DeviceEventLoggingConfiguration.cs#L25)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -124,7 +124,7 @@ Configuration options for the Device Event Logging background service.
 
 ## EventLogAggregateConfiguration
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogAggregateConfiguration.cs#L23)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogAggregateConfiguration.cs#L23)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -137,7 +137,7 @@ Configuration options for the Device Event Logging background service.
 
 Configuration options for extracting controller event logs.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogExtractConfiguration.cs#L23)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogExtractConfiguration.cs#L23)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -153,7 +153,7 @@ Configuration options for extracting controller event logs.
 
 Options pattern model for services that implement IEventLogImporter
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogImporterConfiguration.cs#L23)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogImporterConfiguration.cs#L23)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -164,7 +164,7 @@ Options pattern model for services that implement IEventLogImporter
 
 Options for transferring event logs between repositories.
 
-[View source](https://github.com/avenueconsultants/udot-atspm-development/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogTransferOptions.cs#L25)
+[View source](https://github.com/opensourcetransportation/atspm/blob/32a2358c0fee3a760eee5f4c39c62e3f5169970f/Atspm/Infrastructure/Configuration/EventLogTransferOptions.cs#L25)
 
 | Setting | Type | Default | Required | Options | Environment variable | Description |
 | --- | --- | --- | --- | --- | --- | --- |

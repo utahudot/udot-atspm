@@ -4,7 +4,7 @@ Downloadable examples for the documented configuration sections. They are starti
 
 <small>Generated on October 20, 2026 at 9:40 PM UTC.</small>
 
-Source revision: [32a2358c0fee3a760eee5f4c39c62e3f5169970f](https://github.com/avenueconsultants/udot-atspm-development/tree/32a2358c0fee3a760eee5f4c39c62e3f5169970f).
+Source revision: [32a2358c0fee3a760eee5f4c39c62e3f5169970f](https://github.com/opensourcetransportation/atspm/tree/32a2358c0fee3a760eee5f4c39c62e3f5169970f).
 
 String values and credentials use safe placeholders. Review the configuration reference and replace them before use. The generator never writes deployment configuration.
 

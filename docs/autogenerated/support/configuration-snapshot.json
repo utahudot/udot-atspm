@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productName": "ATSPM",
-  "repositoryUrl": "https://github.com/avenueconsultants/udot-atspm-development",
+  "repositoryUrl": "https://github.com/opensourcetransportation/atspm",
   "sourceRevision": "32a2358c0fee3a760eee5f4c39c62e3f5169970f",
   "sourceTimestamp": "2026-10-20T15:40:08-06:00",
   "sections": [
