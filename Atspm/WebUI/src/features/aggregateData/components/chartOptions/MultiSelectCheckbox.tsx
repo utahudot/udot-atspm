@@ -1,5 +1,5 @@
 import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
-import { Box, Checkbox, FormControlLabel, Paper } from '@mui/material'
+import { Box, Checkbox, FormControlLabel } from '@mui/material'
 
 interface MultiSelectCheckboxProps {
   itemList: string[]
@@ -7,6 +7,7 @@ interface MultiSelectCheckboxProps {
   setSelectedItems(items: number[]): void
   header: string
   direction?: 'vertical' | 'horizontal'
+  disabled?: boolean
 }
 
 export const MultiSelectCheckbox = ({
@@ -15,6 +16,7 @@ export const MultiSelectCheckbox = ({
   setSelectedItems,
   header,
   direction = 'vertical',
+  disabled,
 }: MultiSelectCheckboxProps) => {
   const handleChange = (itemIndex: number, isChecked: boolean): void => {
     const updatedItems = isChecked
@@ -31,6 +33,7 @@ export const MultiSelectCheckbox = ({
         <Checkbox
           sx={{ pt: direction === 'horizontal' ? 0.5 : 1 }}
           checked={selectedItems.includes(index)}
+          disabled={disabled}
           onChange={(e) => handleChange(index, e.currentTarget.checked)}
         />
       }

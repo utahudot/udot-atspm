@@ -194,6 +194,8 @@ export interface AggregationResult {
   identifier?: string | null
   /** @nullable */
   series?: Series[] | null
+  /** @nullable */
+  locationIdentifiers?: string[] | null
 }
 
 export interface ApproachDelayOptions {
@@ -612,6 +614,7 @@ export const LaneTypes = {
 export interface Lane {
   /** @nullable */
   laneNumber?: number | null
+  detectorCount?: number
   /** @nullable */
   movementType?: string | null
   /** @nullable */
@@ -2378,6 +2381,7 @@ export interface TurningMovementCountData {
   movementType?: string | null
   /** @nullable */
   laneType?: string | null
+  detectorCount?: number
   /** @nullable */
   volumes?: DataPointForInt[] | null
   peakHourVolume?: DataPointForInt
@@ -2396,6 +2400,7 @@ export interface TurningMovementCountsLanesResult {
   laneType?: string | null
   /** @nullable */
   movementType?: string | null
+  detectorCount?: number
   /** @nullable */
   plans?: Plan[] | null
   /** @nullable */
@@ -2420,6 +2425,10 @@ export interface TurningMovementCountsOptions {
   locationIdentifier?: string | null
   start?: string
   end?: string
+  /**
+   * @minimum 1
+   * @maximum 60
+   */
   binSize?: number
   combineThruRight?: boolean
   readonly metricTypeId?: number

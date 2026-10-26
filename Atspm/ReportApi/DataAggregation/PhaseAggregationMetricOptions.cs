@@ -58,7 +58,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                     {
                         chart.Series.Add(GetPhaseXAxisPhaseSeries(signal, options));
                     }
-                    charts.Add(chart);
+                    charts.Add(ForLocations(chart, signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -75,14 +75,14 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                     foreach (var signal in signals)
                     {
                         var availablePhaseNumbers = GetAvailablePhaseNumbers(signal, options);
-                        charts.Add(GetTimeXAxisApproachSeriesChart(signal, availablePhaseNumbers, options));
+                        charts.Add(ForLocations(GetTimeXAxisApproachSeriesChart(signal, availablePhaseNumbers, options), signal));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -97,12 +97,12 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    charts.Add(GetSignalsXAxisPhaseNumberSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetSignalsXAxisPhaseNumberSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Signal:
                     var chart = new AggregationResult();
                     chart.Series.Add(GetSignalsXAxisSignalSeries(signals, options));
-                    charts.Add(chart);
+                    charts.Add(ForLocations(chart, signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -144,14 +144,14 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                 case SeriesType.PhaseNumber:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeOfDayXAxisPhaseSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeOfDayXAxisPhaseSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");

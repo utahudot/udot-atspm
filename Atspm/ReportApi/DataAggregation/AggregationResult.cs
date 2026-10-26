@@ -34,6 +34,9 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 
         public string Identifier { get; set; }
         public List<Series> Series { get; set; }
+
+        // The locations the chart's data covers: one for a chart per location, all of them for a combined chart.
+        public List<string> LocationIdentifiers { get; set; } = new List<string>();
     }
 
 

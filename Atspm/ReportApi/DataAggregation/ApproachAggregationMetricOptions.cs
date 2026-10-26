@@ -54,7 +54,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         {
             var charts = new List<AggregationResult>();
             AggregationResult chart = new AggregationResult();
-            charts.Add(chart);
+            charts.Add(ForLocations(chart, signals));
             switch (options.SelectedSeries)
             {
                 case SeriesType.Direction:
@@ -100,7 +100,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                 case SeriesType.PhaseNumber:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetApproachXAxisChart(signal, options));
+                        charts.Add(ForLocations(GetApproachXAxisChart(signal, options), signal));
                     }
                     break;
                 default:
@@ -119,23 +119,23 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                     foreach (var signal in signals)
                     {
                         //chart = ChartFactory.CreateTimeXIntYChart(this, new List<Location> { signal });
-                        charts.Add(GetTimeXAxisApproachSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeXAxisApproachSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Direction:
                     foreach (var signal in signals)
                     {
                         //chart = ChartFactory.CreateTimeXIntYChart(this, new List<Location> { signal });
-                        charts.Add(GetTimeXAxisDirectionSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeXAxisDirectionSeriesChart(signal, options), signal));
                     }
                     ;
                     break;
                 case SeriesType.Signal:
                     //chart = ChartFactory.CreateTimeXIntYChart(this, Signals);
-                    charts.Add(GetTimeXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -148,7 +148,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         {
             var charts = new List<AggregationResult>();
             AggregationResult chart = new AggregationResult();
-            charts.Add(chart);
+            charts.Add(ForLocations(chart, signals));
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
@@ -233,20 +233,20 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                 case SeriesType.PhaseNumber:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeOfDayXAxisApproachSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeOfDayXAxisApproachSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Direction:
                     foreach (var signal in signals)
                     {
-                        charts.Add(GetTimeOfDayXAxisDirectionSeriesChart(signal, options));
+                        charts.Add(ForLocations(GetTimeOfDayXAxisDirectionSeriesChart(signal, options), signal));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -304,16 +304,14 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 
                 Parallel.For(0, approaches.Count, i =>
                 {
-                    var phaseDescription = GetPhaseDescription(approaches[i], true);
                     var binsContainers = GetBinsContainersByApproach(approaches[i], true, options);
-                    var series = CreateSeries(approaches[i].Description + phaseDescription);
+                    var series = CreateSeries(GetPhaseSeriesName(approaches[i], true));
                     SetTimeAggregateSeries(series, binsContainers, options);
                     seriesList.Add(series);
                     if (approaches[i].PermissivePhaseNumber != null)
                     {
-                        var permissivePhaseDescription = GetPhaseDescription(approaches[i], false);
                         var permissiveBinsContainers = GetBinsContainersByApproach(approaches[i], false, options);
-                        var permissiveSeries = CreateSeries(approaches[i].Description + permissivePhaseDescription);
+                        var permissiveSeries = CreateSeries(GetPhaseSeriesName(approaches[i], false));
                         SetTimeAggregateSeries(permissiveSeries, permissiveBinsContainers, options);
                         seriesList.Add(permissiveSeries);
                         i++;
@@ -388,7 +386,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                     else
                         dataPoint.Value = binsContainers.FirstOrDefault().AverageValue;
 
-                    dataPoint.Identifier = approach.Description;
+                    dataPoint.Identifier = GetPhaseSeriesName(approach, true);
                     series.DataPoints.Add(dataPoint);
                 }
 
@@ -402,7 +400,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                             dataPoint2.Value = binsContainers2.FirstOrDefault().SumValue;
                         else
                             dataPoint2.Value = binsContainers2.FirstOrDefault().AverageValue;
-                        dataPoint2.Identifier = approach.Description;
+                        dataPoint2.Identifier = GetPhaseSeriesName(approach, false);
                         series.DataPoints.Add(dataPoint2);
                     }
                 }
@@ -452,11 +450,11 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             return chart;
         }
 
-        private static string GetPhaseDescription(Approach approach, bool getProtectedPhase)
+        // Names the protected and permissive phases of one approach apart, e.g. "NBT - PH 2" and "NBT - PH 5".
+        internal static string GetPhaseSeriesName(Approach approach, bool getProtectedPhase)
         {
-            return getProtectedPhase
-                ? " Phase " + approach.ProtectedPhaseNumber
-                : " Phase " + approach.PermissivePhaseNumber;
+            return approach.Description + " - PH "
+                + (getProtectedPhase ? approach.ProtectedPhaseNumber.ToString() : approach.PermissivePhaseNumber.Value.ToString());
         }
 
         private void GetApproachTimeSeriesByProtectedPermissive(AggregationResult chart, Approach approach,
@@ -468,10 +466,8 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 
         private Series GetTimeXAxisPhaseSeries(Approach approach, bool getProtectedPhase, AggregationOptions options)
         {
-            var phaseDescription = GetPhaseDescription(approach, getProtectedPhase);
             var binsContainers = GetBinsContainersByApproach(approach, getProtectedPhase, options);
-            var series = CreateSeries(approach.Description
-                + " - PH " + (getProtectedPhase ? approach.ProtectedPhaseNumber.ToString() : approach.PermissivePhaseNumber.Value.ToString()));
+            var series = CreateSeries(GetPhaseSeriesName(approach, getProtectedPhase));
             if ((options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Month ||
                  options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Year) &&
                 options.TimeOptions.TimeOption == TimeOptions.TimePeriodOptions.TimePeriod)

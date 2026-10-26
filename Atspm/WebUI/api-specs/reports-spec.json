@@ -3820,6 +3820,13 @@
               "$ref": "#/components/schemas/Series"
             },
             "nullable": true
+          },
+          "locationIdentifiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4887,6 +4894,10 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "detectorCount": {
+            "type": "integer",
+            "format": "int32"
           },
           "movementType": {
             "type": "string",
@@ -10080,6 +10091,10 @@
             "type": "string",
             "nullable": true
           },
+          "detectorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
           "volumes": {
             "type": "array",
             "items": {
@@ -10123,6 +10138,10 @@
           "movementType": {
             "type": "string",
             "nullable": true
+          },
+          "detectorCount": {
+            "type": "integer",
+            "format": "int32"
           },
           "plans": {
             "type": "array",
@@ -10194,6 +10213,8 @@
             "format": "date-time"
           },
           "binSize": {
+            "maximum": 60,
+            "minimum": 1,
             "type": "integer",
             "format": "int32"
           },

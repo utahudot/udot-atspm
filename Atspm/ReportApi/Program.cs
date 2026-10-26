@@ -78,7 +78,8 @@ builder.Host
         {
             o.IncludeXmlComments(typeof(Program).Assembly);
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
-            o.CustomSchemaIds(type => type.Name);
+            // A generic type's name carries a backtick (KeyValuePair`2), which is not a valid schema name.
+            o.CustomSchemaIds(type => type.Name.Replace("`", ""));
             o.EnableAnnotations();
             o.AddAtspmSecurityDefinitions();
 

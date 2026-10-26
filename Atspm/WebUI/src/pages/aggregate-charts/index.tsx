@@ -7,7 +7,7 @@ import { useAggregateOptionsHandler } from '@/features/data/aggregate/handlers/a
 import transformAggregateData from '@/features/data/aggregate/transformers/aggregateTransformer'
 import { TransformedAggregateData } from '@/features/data/aggregate/types/aggregateData'
 import { LoadingButton } from '@mui/lab'
-import { Box } from '@mui/material'
+import { Alert, Box, Typography } from '@mui/material'
 import { RefObject, createRef, useEffect, useRef, useState } from 'react'
 
 const AggregateCharts = () => {
@@ -28,11 +28,10 @@ const AggregateCharts = () => {
   }, [chartData])
 
   useEffect(() => {
-    if (handler.aggregatedData.length) {
-      const data = transformAggregateData(handler)
-      setChartData(data)
-    }
-  }, [handler.aggregatedData])
+    setChartData(
+      handler.result ? transformAggregateData(handler.result) : undefined
+    )
+  }, [handler.result])
 
   return (
     <ResponsivePageLayout title={'Aggregate Charts'}>
@@ -59,11 +58,31 @@ const AggregateCharts = () => {
           variant="contained"
           onClick={handler.handleRunAnalysis}
           sx={{ margin: '20px 0', padding: '10px' }}
-          disabled={!handler.updatedLocations.length}
+          loading={handler.isLoading}
+          disabled={!!handler.validationMessage}
         >
           Run Analysis
         </LoadingButton>
+        {handler.validationMessage && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ alignSelf: 'center', ml: 2 }}
+          >
+            {handler.validationMessage}
+          </Typography>
+        )}
       </Box>
+      {handler.errorMessage && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {handler.errorMessage}
+        </Alert>
+      )}
+      {handler.noDataFound && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          No data was found for these options.
+        </Alert>
+      )}
       <Box>
         {areRefsReady && (
           <AggregateResults

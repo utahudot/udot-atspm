@@ -45,16 +45,38 @@ namespace Utah.Udot.Atspm.Business.Bins
         {
             var bins = new List<Bin>();
             for (var startTime = new DateTime(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0);
-                startTime.Date < endDate.Date;
+                startTime < endDate;
                 startTime = startTime.AddDays(1))
-                if (daysOfWeek.Contains(startTime.DayOfWeek))
-                    bins.Add(new Bin
-                    {
-                        Start = startTime.AddHours(startHour).AddMinutes(startMinute),
-                        End = startTime.AddHours(endHour).AddMinutes(endMinute)
-                    });
+                if (daysOfWeek == null || daysOfWeek.Contains(startTime.DayOfWeek))
+                    AddWindowInRange(bins, startTime.AddHours(startHour).AddMinutes(startMinute),
+                        startTime.Add(GetTimeOfDayEnd(endHour, endMinute)), startDate, endDate);
             return bins;
         }
+
+        // Adds the part of a day's time window that falls between start and end, if any, so the
+        // first and last days do not count time outside the range.
+        private static void AddWindowInRange(List<Bin> bins, DateTime windowStart, DateTime windowEnd,
+            DateTime start, DateTime end)
+        {
+            var bin = new Bin
+            {
+                Start = windowStart > start ? windowStart : start,
+                End = windowEnd < end ? windowEnd : end
+            };
+            if (bin.Start < bin.End)
+                bins.Add(bin);
+        }
+
+        // The days of a month or year that fall between Start and End, so the first and last
+        // containers do not count days outside the range.
+        private static List<Bin> GetDayBinsInRange(DateTime containerStart, DateTime containerEnd,
+            TimeOptions timeOptions) =>
+            GetDayBinsForRange(
+                containerStart > timeOptions.Start ? containerStart : timeOptions.Start,
+                containerEnd < timeOptions.End ? containerEnd : timeOptions.End,
+                timeOptions.TimeOfDayStartHour.Value, timeOptions.TimeOfDayStartMinute.Value,
+                timeOptions.TimeOfDayEndHour.Value, timeOptions.TimeOfDayEndMinute.Value,
+                timeOptions.DaysOfWeek);
 
         private static List<BinsContainer> GetDayBinsContainersForRange(TimeOptions timeOptions)
         {
@@ -71,9 +93,10 @@ namespace Utah.Udot.Atspm.Business.Bins
                     DayOfWeek.Saturday
                 };
             var binsContainer = new BinsContainer(timeOptions.Start, timeOptions.End);
+            // Each day that starts before the end is included, as in GetDaysToProcess.
             for (var startTime = new DateTime(timeOptions.Start.Year, timeOptions.Start.Month, timeOptions.Start.Day, 0,
                     0, 0);
-                startTime.Date < timeOptions.End.Date;
+                startTime < timeOptions.End;
                 startTime = startTime.AddDays(1))
                 if (timeOptions.TimeOption == TimeOptions.TimePeriodOptions.StartToEnd && timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek))
                 {
@@ -85,13 +108,12 @@ namespace Utah.Udot.Atspm.Business.Bins
                         timeOptions.TimeOfDayEndHour != null && timeOptions.TimeOfDayEndMinute != null &&
                         timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek))
                     {
-                        binsContainer.Bins.Add(new Bin
-                        {
-                            Start = startTime.AddHours(timeOptions.TimeOfDayStartHour.Value)
+                        AddWindowInRange(binsContainer.Bins,
+                            startTime.AddHours(timeOptions.TimeOfDayStartHour.Value)
                                 .AddMinutes(timeOptions.TimeOfDayStartMinute.Value),
-                            End = startTime.AddHours(timeOptions.TimeOfDayEndHour.Value)
-                                .AddMinutes(timeOptions.TimeOfDayEndMinute.Value)
-                        });
+                            startTime.Add(GetTimeOfDayEnd(timeOptions.TimeOfDayEndHour.Value,
+                                timeOptions.TimeOfDayEndMinute.Value)),
+                            timeOptions.Start, timeOptions.End);
                     }
                 }
             binsContainers.Add(binsContainer);
@@ -105,8 +127,9 @@ namespace Utah.Udot.Atspm.Business.Bins
             {
                 var binsContainer = new BinsContainer(timeOptions.Start, timeOptions.End);
 
+                // Each year that starts before the end is included, as for months.
                 for (var startTime = new DateTime(timeOptions.Start.Year, 1, 1);
-                    startTime.Date < new DateTime(timeOptions.End.Year, 1, 1);
+                    startTime < timeOptions.End;
                     startTime = startTime.AddYears(1))
                     binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddYears(1) });
                 binsContainers.Add(binsContainer);
@@ -114,14 +137,11 @@ namespace Utah.Udot.Atspm.Business.Bins
             else
             {
                 for (var startTime = new DateTime(timeOptions.Start.Year, 1, 1);
-                    startTime.Date < timeOptions.End.Date;
+                    startTime < timeOptions.End;
                     startTime = startTime.AddYears(1))
                     binsContainers.Add(new BinsContainer(startTime, startTime.AddYears(1))
                     {
-                        Bins = GetDayBinsForRange(startTime, startTime.AddYears(1),
-                            timeOptions.TimeOfDayStartHour.Value, timeOptions.TimeOfDayStartMinute.Value,
-                            timeOptions.TimeOfDayEndHour.Value, timeOptions.TimeOfDayEndMinute.Value,
-                            timeOptions.DaysOfWeek)
+                        Bins = GetDayBinsInRange(startTime, startTime.AddYears(1), timeOptions)
                     });
             }
             return binsContainers;
@@ -134,7 +154,7 @@ namespace Utah.Udot.Atspm.Business.Bins
             {
                 var binsContainer = new BinsContainer(timeOptions.Start, timeOptions.End);
                 for (var startTime = new DateTime(timeOptions.Start.Year, timeOptions.Start.Month, 1);
-                    startTime.Date < timeOptions.End.Date;
+                    startTime < timeOptions.End;
                     startTime = startTime.AddMonths(1))
                     binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMonths(1) });
                 binsContainers.Add(binsContainer);
@@ -142,14 +162,11 @@ namespace Utah.Udot.Atspm.Business.Bins
             else
             {
                 for (var startTime = new DateTime(timeOptions.Start.Year, timeOptions.Start.Month, 1);
-                    startTime.Date < timeOptions.End.Date;
+                    startTime < timeOptions.End;
                     startTime = startTime.AddMonths(1))
                     binsContainers.Add(new BinsContainer(startTime, startTime.AddMonths(1))
                     {
-                        Bins = GetDayBinsForRange(startTime, startTime.AddMonths(1),
-                            timeOptions.TimeOfDayStartHour.Value, timeOptions.TimeOfDayStartMinute.Value,
-                            timeOptions.TimeOfDayEndHour.Value, timeOptions.TimeOfDayEndMinute.Value,
-                            timeOptions.DaysOfWeek)
+                        Bins = GetDayBinsInRange(startTime, startTime.AddMonths(1), timeOptions)
                     });
             }
             return binsContainers;
@@ -172,8 +189,8 @@ namespace Utah.Udot.Atspm.Business.Bins
             {
                 startTimeSpan = new TimeSpan(0, timeOptions.TimeOfDayStartHour.Value,
                     timeOptions.TimeOfDayStartMinute.Value, 0);
-                endTimeSpan = new TimeSpan(0, timeOptions.TimeOfDayEndHour.Value,
-                    timeOptions.TimeOfDayEndMinute.Value, 0);
+                endTimeSpan = GetTimeOfDayEnd(timeOptions.TimeOfDayEndHour.Value,
+                    timeOptions.TimeOfDayEndMinute.Value);
             }
             var binsContainer = new BinsContainer(timeOptions.Start, timeOptions.End);
             var daysToProcess = GetDaysToProcess(timeOptions.Start, timeOptions.End, timeOptions.DaysOfWeek);
@@ -196,7 +213,10 @@ namespace Utah.Udot.Atspm.Business.Bins
                         while (start < end)
                         {
                             var endBin = start.AddMinutes(minutes);
-                            binsContainer.Bins.Add(new Bin { Start = start, End = endBin });
+                            // Only whole bins between Start and End: a bin cut short would chart
+                            // as a time of day of its own.
+                            if (start >= timeOptions.Start && endBin <= timeOptions.End)
+                                binsContainer.Bins.Add(new Bin { Start = start, End = endBin });
                             start = endBin;
                         }
                     }
@@ -206,15 +226,22 @@ namespace Utah.Udot.Atspm.Business.Bins
             return binsContainers;
         }
 
+        // A time period that ends at 00:00 runs to the end of the day.
+        public static TimeSpan GetTimeOfDayEnd(int hour, int minute)
+        {
+            var end = new TimeSpan(hour, minute, 0);
+            return end == TimeSpan.Zero ? TimeSpan.FromDays(1) : end;
+        }
+
         private static List<DateTime> GetDaysToProcess(DateTime startDate, DateTime endDate, List<DayOfWeek> daysOfWeek)
         {
             List<DateTime> datesToInclude = new List<DateTime>();
-            var days = endDate.DayOfYear - startDate.DayOfYear;
 
-            for (int i = 0; i <= days; i++)
+            // Each day that starts before the end is included, so an end of midnight leaves that day out
+            // and an end later in the day keeps it.
+            for (var date = startDate.Date; date < endDate; date = date.AddDays(1))
             {
-                var date = startDate.AddDays(i);
-                if (daysOfWeek.Contains(date.DayOfWeek))
+                if (daysOfWeek == null || daysOfWeek.Contains(date.DayOfWeek))
                 {
                     datesToInclude.Add(date);
                 }

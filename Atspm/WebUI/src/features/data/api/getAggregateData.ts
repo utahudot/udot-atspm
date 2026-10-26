@@ -28,6 +28,8 @@ export function usePostAggregateData() {
     url: route,
     axiosInstance: reportsAxios,
     headers,
+    // The page shows its own loading, error and no-data states.
+    notify: false,
   })
   return mutation
 }

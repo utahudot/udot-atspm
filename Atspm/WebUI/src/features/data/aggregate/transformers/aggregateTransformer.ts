@@ -26,9 +26,13 @@ import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
-import { EChartsOption, SeriesOption } from 'echarts'
+import { dateToTimestamp } from '@/utils/dateTime'
+import { EChartsOption, SeriesOption, XAXisComponentOption } from 'echarts'
 import { GroupedListDataItems } from '../components/aggregateTypeSelect'
-import { AggregateOptionsHandler } from '../handlers/aggregateDataHandler'
+import {
+  AggregateChartSettings,
+  AggregateResult,
+} from '../handlers/aggregateDataHandler'
 import {
   AggregateData,
   AggregateDataPointTypes,
@@ -37,15 +41,17 @@ import {
 import {
   MetricTypeOptionsList,
   YAxisOptions,
+  categoryXAxisTypes,
   chartTypeOptions,
+  xAxisOptions,
 } from '../types/aggregateOptionsData'
 
 export default function transformAggregateData(
-  handler: AggregateOptionsHandler
+  result: AggregateResult
 ): TransformedAggregateData {
-  const charts = handler.aggregatedData.map((data) => {
+  const charts = result.charts.map((data) => {
     return {
-      chart: transformData(handler, data),
+      chart: transformData(result.settings, data),
     }
   })
   return {
@@ -68,34 +74,76 @@ const getAggregateMetricType = (
   return aggregateType.options.find((item) => item.id === metricId)
 }
 
+// Names up to three locations and counts the rest, e.g. "7115, 7116, 7117 and
+// 17 more" for a route of 20.
+export const formatLocations = (locationIdentifiers: string[]) => {
+  const named = locationIdentifiers.slice(0, 3).join(', ')
+  const others = locationIdentifiers.length - 3
+  return others > 0 ? `${named} and ${others} more` : named
+}
+
 export const transformData = (
-  handler: AggregateOptionsHandler,
+  settings: AggregateChartSettings,
   data: AggregateData
 ): EChartsOption => {
-  const length = data.series[0].dataPoints.length
-  const start = data.series[0].dataPoints[0].start
-  const end = data.series[0].dataPoints[length - 1].start
-  const locationIdentifier = handler.updatedLocations[0].locationIdentifier
+  const isCategoryXAxis = categoryXAxisTypes.includes(settings.xAxisType)
+  const points =
+    data.series.find((series) => series.dataPoints.length)?.dataPoints ?? []
+  const start = points[0]?.start
+  const end = points[points.length - 1]?.start
 
-  const metric = handler.metricType.split('-')
+  const metric = settings.metricType.split('-')
   const aggregationType = getAggregationType(metric[0]) as GroupedListDataItems
   const aggregateMetricType = getAggregateMetricType(aggregationType, metric[1])
 
-  const titleHeader = `${handler.averageOrSum === 0 ? 'Sum:' : 'Average:'} ${
+  const locations = formatLocations(data.locationIdentifiers)
+  const titleHeader = `${settings.averageOrSum === 0 ? 'Sum:' : 'Average:'} ${
     aggregationType.id
-  } - ${aggregateMetricType?.label}\n${locationIdentifier}`
-  const dateRange = formatChartDateTimeRange(start, end)
+  } - ${aggregateMetricType?.label}${locations ? `\n${locations}` : ''}`
+  // Every title shows the Start and End the chart was run with: Time Of Day
+  // points all fall on the first day and the other X-Axis choices carry no
+  // dates.
+  const dateRange = formatChartDateTimeRange(
+    dateToTimestamp(settings.startDateTime),
+    dateToTimestamp(settings.endDateTime)
+  )
 
   const title = createTitle({
     title: titleHeader,
     dateRange,
   })
 
-  const xAxis = createXAxis(start, end)
+  const categories = isCategoryXAxis
+    ? [
+        ...new Set(
+          data.series.flatMap((series) =>
+            series.dataPoints.map((point) => point.identifier)
+          )
+        ),
+      ]
+    : []
+
+  const xAxis: XAXisComponentOption = isCategoryXAxis
+    ? {
+        type: 'category',
+        data: categories,
+        name: xAxisOptions.find((option) => option.id === settings.xAxisType)
+          ?.label,
+        nameGap: 30,
+        nameLocation: 'middle',
+      }
+    : createXAxis(start, end)
+
+  const toSeriesData = (
+    dataPoints: AggregateDataPointTypes
+  ): (string | null | (string | number)[])[] =>
+    isCategoryXAxis
+      ? transformCategorySeriesData(dataPoints, categories)
+      : transformSeriesData(dataPoints)
 
   const yAxis = [
     {
-      name: YAxisOptions.find((option) => option.id === handler.yAxisType)
+      name: YAxisOptions.find((option) => option.id === settings.yAxisType)
         ?.label,
       min: 0,
     },
@@ -124,7 +172,7 @@ export const transformData = (
   const dataZoom = createDataZoom()
 
   const seriesType = chartTypeOptions.find(
-    (c) => c.id === handler.visualChartType
+    (c) => c.id === settings.visualChartType
   )?.id
 
   const series: SeriesOption[] = []
@@ -132,7 +180,7 @@ export const transformData = (
   if (data.series.length === 1) {
     series.push({
       name: dataName,
-      data: transformSeriesData(data.series[0].dataPoints),
+      data: toSeriesData(data.series[0].dataPoints),
       type: seriesType ? seriesType : 'line',
       symbolSize: 5,
       color: Color.Green,
@@ -141,7 +189,7 @@ export const transformData = (
     data.series.forEach((arr) =>
       series.push({
         name: arr.identifier,
-        data: transformSeriesData(arr.dataPoints),
+        data: toSeriesData(arr.dataPoints),
         type: seriesType ? seriesType : 'line',
         symbolSize: 5,
       })
@@ -174,3 +222,16 @@ const transformSeriesData = (
   }
   return series
 }
+
+// One value per category, in the X-Axis order, blank where a series has no
+// point for that category.
+const transformCategorySeriesData = (
+  dataPoints: AggregateDataPointTypes,
+  categories: string[]
+): (string | null)[] =>
+  categories.map(
+    (category) =>
+      dataPoints
+        .find((dataPoint) => dataPoint.identifier === category)
+        ?.value.toFixed(2) ?? null
+  )
