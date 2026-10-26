@@ -67,6 +67,47 @@ namespace Utah.Udot.Atspm.Business.Bins
 
         public BinSize SelectedBinSize { get; set; }
 
+        /// <summary>
+        /// Explains why these options give nothing to chart, or returns null when they are usable.
+        /// </summary>
+        public string GetValidationError()
+        {
+            if (End <= Start)
+                return "End must be later than Start.";
+            if (TimeOption == TimePeriodOptions.TimePeriod)
+            {
+                if (TimeOfDayStartHour == null || TimeOfDayStartMinute == null ||
+                    TimeOfDayEndHour == null || TimeOfDayEndMinute == null)
+                    return "A time period needs a start and end time of day.";
+                if (!IsTimeOfDay(TimeOfDayStartHour.Value, TimeOfDayStartMinute.Value) ||
+                    !IsTimeOfDay(TimeOfDayEndHour.Value, TimeOfDayEndMinute.Value))
+                    return "Times of day must be between 00:00 and 23:59.";
+                if (BinFactory.GetTimeOfDayEnd(TimeOfDayEndHour.Value, TimeOfDayEndMinute.Value) <=
+                    new TimeSpan(TimeOfDayStartHour.Value, TimeOfDayStartMinute.Value, 0))
+                    return "The end time of day must be later than the start time of day.";
+            }
+            if (BinFactory.GetBins(this).All(container => container.Bins.Count == 0))
+            {
+                if (TimeOption == TimePeriodOptions.TimePeriod && HasChosenDayInRange())
+                    return "The chosen times of day do not fall between Start and End.";
+                return TimeOption == TimePeriodOptions.TimePeriod || DaysOfWeek != null
+                    ? "None of the chosen days fall in the date range."
+                    : "No bins fall in the date range.";
+            }
+            return null;
+        }
+
+        // Each day that starts before End counts, as when the bins are made.
+        private bool HasChosenDayInRange()
+        {
+            for (var date = Start.Date; date < End; date = date.AddDays(1))
+                if (DaysOfWeek == null || DaysOfWeek.Contains(date.DayOfWeek))
+                    return true;
+            return false;
+        }
+
+        private static bool IsTimeOfDay(int hour, int minute) => hour >= 0 && hour < 24 && minute >= 0 && minute < 60;
+
         public List<DateTime> GetDateList()
         {
             if (DaysOfWeek != null)

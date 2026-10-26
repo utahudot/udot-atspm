@@ -66,8 +66,8 @@ namespace Utah.Udot.Atspm.Business.RampMetering
             var mainlineAvgOccurrenceList = mainlineAvgOccurrenceEvents.Select(e => new DataPointForDouble(e.Timestamp, (e.EventParam / 10))).ToList();
             var mainlineAvgFlowList = mainlineAvgFlowEvents.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
 
-            var lanesActiveRateList = GetDescriptionWithDataPoints(activeRateEvents, options);
-            var lanesBaseRateList = GetDescriptionWithDataPoints(baseRateEvents, options);
+            var lanesActiveRateList = GetDescriptionWithDataPoints(activeRateEvents, options, activeRateCodes[0]);
+            var lanesBaseRateList = GetDescriptionWithDataPoints(baseRateEvents, options, baseRateCodes[0]);
             var queueList = GetQueueEvents(events, options, queueCodes);
 
             return new RampMeteringResult(location.LocationIdentifier, options.Start, options.End)
@@ -122,22 +122,22 @@ namespace Utah.Udot.Atspm.Business.RampMetering
             return dataPoints;
         }
 
-        private static List<DescriptionWithDataPoints> GetDescriptionWithDataPoints(IEnumerable<IndianaEvent> events, RampMeteringOptions options)
+        private static List<DescriptionWithDataPoints> GetDescriptionWithDataPoints(IEnumerable<IndianaEvent> events, RampMeteringOptions options, int firstLaneEventCode)
         {
             var descriptWithDataPointsEvents = new List<DescriptionWithDataPoints>();
 
-            var groupedEvents = events.GroupBy(e => e.EventCode);
-            int laneNumber = 1;
+            var groupedEvents = events.GroupBy(e => e.EventCode).OrderBy(group => group.Key);
 
             foreach (var group in groupedEvents)
             {
+                // Each consecutive rate event code identifies a lane, starting at lane 1.
+                var laneNumber = group.Key - firstLaneEventCode + 1;
                 var codeEvents = group.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
                 descriptWithDataPointsEvents.Add(new DescriptionWithDataPoints()
                 {
                     Description = laneNumber.ToString(),
                     Value = codeEvents
                 });
-                laneNumber++;
             }
 
             return options.CombineLanes ? descriptWithDataPointsEvents.Where(d => d.Description == "1").ToList() : descriptWithDataPointsEvents;

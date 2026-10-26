@@ -345,7 +345,8 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     chartInstanceRef.current?.dispose()
 
-    const nextChart = init(dom, theme, { useDirtyRect: true })
+    // Leave useDirtyRect off: echarts 6.1 flashes on hover with it (#21634)
+    const nextChart = init(dom, theme)
     chartInstanceRef.current = nextChart
     setChart(nextChart)
 
@@ -383,7 +384,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
 
     stickyBottomAxisChartRef.current?.dispose()
 
-    const stickyChart = init(dom, theme, { useDirtyRect: true })
+    const stickyChart = init(dom, theme)
     stickyBottomAxisChartRef.current = stickyChart
 
     return () => {
@@ -903,7 +904,7 @@ export default function TimeSpaceEChart(prop: TimeSpaceChartProps) {
     exportContainer.style.opacity = '0'
     document.body.appendChild(exportContainer)
 
-    const exportChart = init(exportContainer, theme, { useDirtyRect: true })
+    const exportChart = init(exportContainer, theme)
 
     try {
       const exportOption = buildTimeSpaceExportOption(

@@ -50,9 +50,8 @@ export default function PrioritySummaryDetailsChart({
     if (!chartRef.current) return
 
     chartInstance.current?.dispose()
-    chartInstance.current = init(chartRef.current, theme, {
-      useDirtyRect: true,
-    })
+    // Leave useDirtyRect off: echarts 6.1 flashes on hover with it (#21634)
+    chartInstance.current = init(chartRef.current, theme)
 
     chartInstance.current.setOption(effectiveOption, settings)
 

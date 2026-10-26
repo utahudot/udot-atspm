@@ -155,22 +155,179 @@ export const MetricTypeOptionsList = [
   },
 ]
 
+export enum XAxisType {
+  Time = 0,
+  TimeOfDay = 1,
+  Direction = 2,
+  Approach = 3,
+  Location = 4,
+  Detector = 5,
+}
+
+export enum YAxisType {
+  Location = 0,
+  PhaseNumber = 1,
+  Direction = 2,
+  Route = 3,
+  Detector = 4,
+}
+
 export const xAxisOptions = [
-  { id: 0, label: 'Time' },
-  { id: 1, label: 'Time Of Day' },
-  { id: 2, label: 'Direction' },
-  { id: 3, label: 'Approach' },
-  { id: 4, label: 'Location' },
-  { id: 5, label: 'Detector' },
+  { id: XAxisType.Time, label: 'Time' },
+  { id: XAxisType.TimeOfDay, label: 'Time Of Day' },
+  { id: XAxisType.Direction, label: 'Direction' },
+  { id: XAxisType.Approach, label: 'Approach' },
+  { id: XAxisType.Location, label: 'Location' },
+  { id: XAxisType.Detector, label: 'Detector' },
 ]
 
 export const YAxisOptions = [
-  { id: 0, label: 'Location' },
-  { id: 1, label: 'Phase Number' },
-  { id: 2, label: 'Direction' },
-  { id: 3, label: 'Route' },
-  { id: 4, label: 'Detector' },
+  { id: YAxisType.Location, label: 'Location' },
+  { id: YAxisType.PhaseNumber, label: 'Phase Number' },
+  { id: YAxisType.Direction, label: 'Direction' },
+  { id: YAxisType.Route, label: 'Route' },
+  { id: YAxisType.Detector, label: 'Detector' },
 ]
+
+// X-Axis choices whose points are named groups (a direction, approach,
+// location or detector) instead of dates.
+export const categoryXAxisTypes: number[] = [
+  XAxisType.Direction,
+  XAxisType.Approach,
+  XAxisType.Location,
+  XAxisType.Detector,
+]
+
+// The X-Axis and Y-Axis pairs the server accepts for each family of metric.
+// Any other pair fails with "Invalid X-Axis" or "Invalid X-Axis Series
+// Combination".
+type AxisPairs = Partial<Record<XAxisType, YAxisType[]>>
+
+const locationMetricAxes: AxisPairs = {
+  [XAxisType.Time]: [YAxisType.Location, YAxisType.Route],
+  [XAxisType.TimeOfDay]: [YAxisType.Location, YAxisType.Route],
+  [XAxisType.Location]: [YAxisType.Location],
+}
+
+const phaseMetricAxes: AxisPairs = {
+  [XAxisType.Time]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Route,
+  ],
+  [XAxisType.TimeOfDay]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Route,
+  ],
+  [XAxisType.Approach]: [YAxisType.PhaseNumber],
+  [XAxisType.Location]: [YAxisType.Location, YAxisType.PhaseNumber],
+}
+
+const approachMetricAxes: AxisPairs = {
+  [XAxisType.Time]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Direction,
+    YAxisType.Route,
+  ],
+  [XAxisType.TimeOfDay]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Direction,
+    YAxisType.Route,
+  ],
+  [XAxisType.Direction]: [YAxisType.Direction],
+  [XAxisType.Approach]: [YAxisType.PhaseNumber],
+  [XAxisType.Location]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Direction,
+  ],
+}
+
+const detectorMetricAxes: AxisPairs = {
+  ...approachMetricAxes,
+  [XAxisType.Time]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Direction,
+    YAxisType.Route,
+    YAxisType.Detector,
+  ],
+  [XAxisType.TimeOfDay]: [
+    YAxisType.Location,
+    YAxisType.PhaseNumber,
+    YAxisType.Direction,
+    YAxisType.Route,
+    YAxisType.Detector,
+  ],
+  [XAxisType.Detector]: [YAxisType.PhaseNumber, YAxisType.Detector],
+}
+
+const axisPairsByMetricGroup: Record<string, AxisPairs> = {
+  'Detector Activation Count': detectorMetricAxes,
+  'Approach PCD': approachMetricAxes,
+  'Approach Cycle': approachMetricAxes,
+  'Approach Split Fail': approachMetricAxes,
+  'Approach Speed': approachMetricAxes,
+  'Approach Yellow Red Activations': approachMetricAxes,
+  'Left Turn Gap': approachMetricAxes,
+  'Signal Preemption': locationMetricAxes,
+  'Signal Priority': locationMetricAxes,
+  'Signal Event Count': locationMetricAxes,
+  'Phase Termination': phaseMetricAxes,
+  'Phase Pedestrian Delay': phaseMetricAxes,
+  'Split Monitor': phaseMetricAxes,
+}
+
+// metricType is "<metric group>-<metric>"; with no metric chosen every
+// option is offered.
+const getAxisPairs = (metricType: string): AxisPairs | undefined =>
+  axisPairsByMetricGroup[metricType.split('-')[0]]
+
+// Time Of Day groups bins by the time they start, so it needs bins shorter
+// than a day.
+const allowsTimeOfDay = (binSize: number) => binSize < BinSize.Day
+
+export const getXAxisOptions = (metricType: string, binSize: number) => {
+  const pairs = getAxisPairs(metricType)
+  return xAxisOptions.filter(
+    (option) =>
+      (!pairs || option.id in pairs) &&
+      (option.id !== XAxisType.TimeOfDay || allowsTimeOfDay(binSize))
+  )
+}
+
+export const getYAxisOptions = (metricType: string, xAxisType: number) => {
+  const pairs = getAxisPairs(metricType)
+  if (!pairs) return YAxisOptions
+  const allowed = pairs[xAxisType as XAxisType] ?? []
+  return YAxisOptions.filter((option) => allowed.includes(option.id))
+}
+
+// Keeps the X-Axis and Y-Axis on a pair the server accepts for the metric and
+// Bin Size: an X-Axis that isn't offered falls back to Time, and a Y-Axis that
+// isn't offered falls back to the first one that is.
+export const getValidAxes = (
+  metricType: string,
+  xAxisType: number,
+  yAxisType: number,
+  binSize: number
+) => {
+  const validXAxisType = getXAxisOptions(metricType, binSize).some(
+    (option) => option.id === xAxisType
+  )
+    ? xAxisType
+    : XAxisType.Time
+  const yAxisOptions = getYAxisOptions(metricType, validXAxisType)
+  const validYAxisType =
+    yAxisOptions.length &&
+    !yAxisOptions.some((option) => option.id === yAxisType)
+      ? yAxisOptions[0].id
+      : yAxisType
+  return { xAxisType: validXAxisType, yAxisType: validYAxisType }
+}
 
 export const chartTypeOptions: {
   id: 'line' | 'bar' | 'pie'
@@ -181,12 +338,51 @@ export const chartTypeOptions: {
   { id: 'pie', label: 'Pie' },
 ]
 
+// The server's bin size numbers. Its year size is left off the page.
+export enum BinSize {
+  FifteenMinute = 0,
+  ThirtyMinute = 1,
+  Hour = 2,
+  Day = 3,
+  Month = 4,
+}
+
 export const binSizeMarks = [
-  { value: 0, label: '15 min' },
-  { value: 1, label: '30 min' },
-  { value: 2, label: 'hour' },
-  { value: 3, label: 'month' },
-  { value: 4, label: 'year' },
+  { value: BinSize.FifteenMinute, label: '15 min' },
+  { value: BinSize.ThirtyMinute, label: '30 min' },
+  { value: BinSize.Hour, label: 'hour' },
+  { value: BinSize.Day, label: 'day' },
+  { value: BinSize.Month, label: 'month' },
+]
+
+// The server's time options: every minute from start to end, or only a
+// daily time window on chosen days.
+export enum TimePeriodOption {
+  StartToEnd = 0,
+  TimePeriod = 1,
+}
+
+// Checkboxes in page order, each with the server's direction number.
+export const directionFilterOptions = [
+  { id: 3, label: 'Eastbound' },
+  { id: 4, label: 'Westbound' },
+  { id: 1, label: 'Northbound' },
+  { id: 2, label: 'Southbound' },
+  { id: 5, label: 'Northeast' },
+  { id: 6, label: 'Northwest' },
+  { id: 7, label: 'Southeast' },
+  { id: 8, label: 'Southwest' },
+]
+
+// Checkboxes in page order, each with the server's movement number.
+export const movementFilterOptions = [
+  { id: 3, label: 'Left' },
+  { id: 5, label: 'Thru-Left' },
+  { id: 1, label: 'Thru' },
+  { id: 4, label: 'Thru-Right' },
+  { id: 2, label: 'Right' },
+  { id: 7, label: 'Left-Thru-Right' },
+  { id: 0, label: 'None' },
 ]
 
 export const detectionTypes = [

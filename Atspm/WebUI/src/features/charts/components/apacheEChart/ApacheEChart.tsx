@@ -244,9 +244,9 @@ export default function ApacheEChart({
 
   const initChart = useCallback(() => {
     if (chartRef.current !== null) {
-      const currentChart = init(chartRef.current, theme, {
-        useDirtyRect: true,
-      })
+      // Leave useDirtyRect off: in echarts 6.1 it makes hovering flash the chart
+      // and whiten its background (apache/echarts#21634)
+      const currentChart = init(chartRef.current, theme)
       chartInstance.current = currentChart
 
       if (shouldSyncZoom) {

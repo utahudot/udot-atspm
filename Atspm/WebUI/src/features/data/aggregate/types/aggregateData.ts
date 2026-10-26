@@ -18,6 +18,9 @@ import { StandardChart } from '@/features/charts/types'
 
 export interface AggregateData {
   identifier: string
+  // The locations the chart's data covers: one for a chart per location, all
+  // of them for a chart that combines locations.
+  locationIdentifiers: string[]
   series: AggregateSeries[]
 }
 

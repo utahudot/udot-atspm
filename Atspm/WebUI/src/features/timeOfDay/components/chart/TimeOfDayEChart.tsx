@@ -78,7 +78,8 @@ export default function TimeOfDayEChart({
     const element = chartElementRef.current
     if (!element) return
 
-    const chart = init(element, undefined, { useDirtyRect: true })
+    // Leave useDirtyRect off: echarts 6.1 flashes on hover with it (#21634)
+    const chart = init(element)
     chartRef.current = chart
     const handleChartClick = (params: unknown) => {
       const scheduleView = getScheduleViewFromChartEvent(params)

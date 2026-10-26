@@ -84,6 +84,13 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<AggregationResult>> ExecuteAsync(AggregationOptions options, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            // Checked as the charts will use them, so a Time Of Day request over the whole
+            // range is checked with its chosen days.
+            SignalAggregationMetricOptions.SetTimeOfDayWindow(options);
+            var optionsError = GetOptionsError(options);
+            if (optionsError != null)
+                throw new ArgumentException(optionsError);
+
             switch (options.AggregationType)
             {
                 case AggregationType.DetectorEventCount:
@@ -116,6 +123,25 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     throw new Exception("Unknown Chart Type");
             }
 
+        }
+
+        // The report is open to any caller, so options the page would never send are
+        // turned away with a reason instead of charting nothing as zeros.
+        internal static string GetOptionsError(AggregationOptions options)
+        {
+            if (options.TimeOptions == null)
+                return "Time options are required.";
+            if (options.End <= options.Start)
+                return "End must be later than Start.";
+            // Data is fetched between Start and End but charted in the time options' slots.
+            if (options.Start != options.TimeOptions.Start || options.End != options.TimeOptions.End)
+                return "Start and End must match the time options' Start and End.";
+            // Only the location list is charted; the list of location numbers is not read.
+            if (options.Locations == null || !options.Locations.Any() || options.Locations.Contains(null))
+                return "Select at least one location.";
+            if (options.Locations.All(location => location.Exclude))
+                return "All of the selected locations are excluded.";
+            return options.TimeOptions.GetValidationError();
         }
 
         //private ActionResult GetLaneByLaneChart(AggregationOptions aggDataExportViewModel)

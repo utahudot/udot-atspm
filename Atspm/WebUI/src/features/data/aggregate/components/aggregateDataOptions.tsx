@@ -18,10 +18,10 @@ import {
 import { AggregateOptionsHandler } from '../handlers/aggregateDataHandler'
 import {
   MetricTypeOptionsList,
-  YAxisOptions,
   binSizeMarks,
   chartTypeOptions,
-  xAxisOptions,
+  directionFilterOptions,
+  movementFilterOptions,
 } from '../types/aggregateOptionsData'
 import { AggregateTypeSelect } from './aggregateTypeSelect'
 
@@ -29,25 +29,11 @@ interface props {
   handler: AggregateOptionsHandler
 }
 
-const movementList = [
-  'Left',
-  'Thru-Left',
-  'Thru',
-  'Thru-Right',
-  'Right',
-  'None',
-]
+const movementList = movementFilterOptions.map((movement) => movement.label)
 
-const directionFilter = [
-  'Eastbound',
-  'Westbound',
-  'Northbound',
-  'Southbound',
-  'Northeast',
-  'Northwest',
-  'Southeast',
-  'Southwest',
-]
+const directionFilter = directionFilterOptions.map(
+  (direction) => direction.label
+)
 
 const daysOfWeekList: string[] = [
   'Sunday',
@@ -75,6 +61,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
         onChange={(e) => onEdit(e.target.value)}
         displayProperty="label"
         value={value}
+        fullWidth
         sx={{
           marginRight: 2,
           marginBottom: 1,
@@ -122,7 +109,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
 
   const renderBinSizeSlider = () => {
     return (
-      <Box sx={{ paddingLeft: '5%', paddingRight: '20%', minWidth: '200px' }}>
+      <Box sx={{ paddingLeft: '5%', paddingRight: '5%', minWidth: '200px' }}>
         <label
           id="bin-size-slider-label"
           htmlFor="bin-size-slider"
@@ -137,9 +124,14 @@ export const AggregateDataOptions = ({ handler }: props) => {
           onChange={(e, val) => handler.changeBinSize(val as number)}
           marks={binSizeMarks}
           step={null}
-          min={1}
-          max={4}
+          min={binSizeMarks[0].value}
+          max={binSizeMarks[binSizeMarks.length - 1].value}
         />
+        {handler.wholeDaysOnly && (
+          <Typography variant="caption" color="text.secondary">
+            Month uses whole days on every day.
+          </Typography>
+        )}
       </Box>
     )
   }
@@ -169,7 +161,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
   const renderAggregateChartOptions = () => {
     return (
       <Paper sx={{ padding: 3 }}>
-        <Grid container sx={{}}>
+        <Grid container columns={14}>
           <Grid item md={4} lg={4} xl={4}>
             <AggregateTypeSelect
               label={'Metric Type'}
@@ -180,11 +172,11 @@ export const AggregateDataOptions = ({ handler }: props) => {
               value={handler.metricType}
             />
           </Grid>
-          <Grid item md={4} lg={4} xl={4}>
+          <Grid item md={6} lg={6} xl={6}>
             {renderSelect(
               'X-Axis',
               'X-Axis',
-              xAxisOptions,
+              handler.availableXAxisOptions,
               handler.changeXAxisType,
               handler.xAxisType
             )}
@@ -212,7 +204,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
             {renderSelect(
               'Y-Axis',
               'Y-Axis',
-              YAxisOptions,
+              handler.availableYAxisOptions,
               handler.changeYAxisType,
               handler.yAxisType
             )}
@@ -220,7 +212,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
           {/* <Grid item md={4} lg={4} xl={4}>
             {renderCountCheckbox()}
           </Grid> */}
-          <Grid item md={4} lg={4} xl={4}>
+          <Grid item md={6} lg={6} xl={6}>
             {renderBinSizeSlider()}
           </Grid>
           <Grid item md={4} lg={4} xl={4}>
@@ -260,12 +252,15 @@ export const AggregateDataOptions = ({ handler }: props) => {
           <StyledPaper sx={{ padding: 3, flexGrow: 1 }}>
             <SelectDateTime
               dateFormat={'MMM dd, yyyy'}
+              views={['year', 'month', 'day']}
               startDateTime={handler.startDateTime}
               endDateTime={handler.endDateTime}
               changeStartDate={handler.changeStartDate}
               changeEndDate={handler.changeEndDate}
+              hideSameDay
               timePeriod={true}
-              startTimePeriod={handler.startDateTime}
+              timePeriodDisabled={handler.wholeDaysOnly}
+              startTimePeriod={handler.startTime}
               endTimePeriod={handler.endTime}
               changeStartTimePeriod={handler.changeStartTime}
               changeEndTimePeriod={handler.changeEndTime}
@@ -287,6 +282,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
               selectedItems={handler.selectedDays}
               setSelectedItems={handler.changeSelectedDays}
               header="Days"
+              disabled={handler.wholeDaysOnly}
             />
           </StyledPaper>
           <StyledPaper sx={{ display: 'flex' }}>

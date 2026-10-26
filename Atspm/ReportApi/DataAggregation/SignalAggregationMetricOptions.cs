@@ -70,7 +70,16 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         public virtual List<AggregationResult> CreateMetric(AggregationOptions options)
         {
             //Y2AxisTitle = "Event Count";
-            if (options.SelectedXAxisType == XAxisType.TimeOfDay &&
+            SetTimeOfDayWindow(options);
+            return GetChartByXAxisAggregation(options);
+        }
+
+        // A Time Of Day chart needs a time of day, so a request over the whole range becomes
+        // one covering every hour of the chosen days.
+        internal static void SetTimeOfDayWindow(AggregationOptions options)
+        {
+            if (options.TimeOptions != null &&
+                options.SelectedXAxisType == XAxisType.TimeOfDay &&
                 options.TimeOptions.TimeOption == TimeOptions.TimePeriodOptions.StartToEnd)
             {
                 options.TimeOptions.TimeOption = TimeOptions.TimePeriodOptions.TimePeriod;
@@ -90,7 +99,6 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                         DayOfWeek.Saturday
                     };
             }
-            return GetChartByXAxisAggregation(options);
         }
 
         protected virtual List<AggregationResult> GetChartByXAxisAggregation(AggregationOptions options)
@@ -114,6 +122,9 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         {
             Type enumType = typeof(DirectionTypes);
             var enumValues = ((DirectionTypes[])Enum.GetValues(enumType)).ToList();
+            // Without direction filters every direction is charted, as when the page checks them all.
+            if (options.FilterDirections == null)
+                return enumValues.Where(d => d != DirectionTypes.NA).ToList();
             var includedDirections = options.FilterDirections.Where(f => f.Include).Select(f => f.DirectionTypeId).ToList();
             var directionsList = enumValues.Where(d => includedDirections.Contains((int)d)).ToList();
             return directionsList;
@@ -125,28 +136,29 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             var locations = new List<Location>();
             try
             {
-                if (options.LocationIdentifiers.Any())
-                {
-                    foreach (var filterSignal in options.Locations)
-                        if (!filterSignal.Exclude)
-                        {
-                            var signals =
-                                locationRepository.GetLocationsBetweenDates(filterSignal.LocationIdentifier, options.TimeOptions.Start, options.TimeOptions.End).ToList();
-                            foreach (var signal in signals)
-                            {
-                                RemoveApproachesByFilter(filterSignal, signal, options);
-                                signal.Approaches = signal.Approaches.OrderBy(a => a.ProtectedPhaseNumber).ToList();
-                            }
-                            locations.AddRange(signals);
-                        }
-                }
-                return locations;
+                foreach (var filterSignal in options.Locations)
+                    if (!filterSignal.Exclude)
+                    {
+                        // The version in effect on Start, as the other reports use, so a location
+                        // with several versions is charted once.
+                        var signal = locationRepository.GetLatestVersionOfLocation(filterSignal.LocationIdentifier, options.TimeOptions.Start);
+                        if (signal == null)
+                            continue;
+                        RemoveApproachesByFilter(filterSignal, signal, options);
+                        signal.Approaches = signal.Approaches.OrderBy(a => a.ProtectedPhaseNumber).ToList();
+                        locations.Add(signal);
+                    }
             }
             catch (Exception e)
             {
                 logger.LogError($"Unable to apply signal filter {e.Message}");
                 throw new Exception("Unable to apply signal filter");
             }
+            // The report is open to any caller, so a request that finds no location is turned
+            // away with a reason instead of charting nothing as zeros.
+            if (!locations.Any())
+                throw new ArgumentException("None of the selected locations were found for the chosen Start and End.");
+            return locations;
         }
 
 
@@ -157,10 +169,10 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             {
                 case SeriesType.Signal:
                     //chart = ChartFactory.CreateTimeXIntYChart(this, Signals);
-                    return new List<AggregationResult> { GetTimeXAxisSignalSeriesChart(signals, options) };
+                    return new List<AggregationResult> { ForLocations(GetTimeXAxisSignalSeriesChart(signals, options), signals) };
                 case SeriesType.Route:
                     //chart = ChartFactory.CreateTimeXIntYChart(this, Signals);
-                    return new List<AggregationResult> { GetTimeXAxisRouteSeriesChart(signals, options) };
+                    return new List<AggregationResult> { ForLocations(GetTimeXAxisRouteSeriesChart(signals, options), signals) };
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
             }
@@ -175,7 +187,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             var chart = new AggregationResult();
-            charts.Add(chart);
+            charts.Add(ForLocations(chart, signals));
             switch (options.SelectedSeries)
             {
                 case SeriesType.Signal:
@@ -243,10 +255,10 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             switch (options.SelectedSeries)
             {
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisSignalSeriesChart(signals, options), signals));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
+                    charts.Add(ForLocations(GetTimeOfDayXAxisRouteSeriesChart(signals, options), signals));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -373,34 +385,58 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
             return series;
         }
 
+        // Exclusions are picked on the latest version of the location, which can differ from the
+        // version in effect on Start, so each one is matched by what it is: an approach by its
+        // direction and phases, a detector by its channel.
         private void RemoveApproachesByFilter(FilterSignal filterSignal, Location signal, AggregationOptions options)
         {
-            RemoveApproachesFromSignalByDirection(signal, options);
-            RemoveDetectorsFromSignalByMovement(signal, options);
             var excludedApproachIds =
                 filterSignal.Approaches.Where(f => f.Exclude).Select(f => f.ApproachId).ToList();
-            var excludedApproaches = signal.Approaches.Where(a => excludedApproachIds.Contains(a.Id));
-            foreach (var excludedApproach in excludedApproaches)
-            {
-                var approachesToExclude = signal.Approaches.Where(a =>
-                        a.DirectionTypeId == excludedApproach.DirectionTypeId
-                        && a.ProtectedPhaseNumber == excludedApproach.ProtectedPhaseNumber
-                        && a.PermissivePhaseNumber == excludedApproach.PermissivePhaseNumber
-                        && a.IsPermissivePhaseOverlap ==
-                        excludedApproach.IsPermissivePhaseOverlap
-                        && a.IsProtectedPhaseOverlap ==
-                        excludedApproach.IsProtectedPhaseOverlap)
-                    .ToList();
-                foreach (var approachToExclude in approachesToExclude)
-                    signal.Approaches.Remove(approachToExclude);
-                foreach (var approach in signal.Approaches)
-                    foreach (var filterApproach in filterSignal.Approaches.Where(f => !f.Exclude))
-                        RemoveDetectorsFromApproachByFilter(filterApproach, approach);
-            }
+            var excludedDetectorIds = filterSignal.Approaches.SelectMany(f => f.Detectors)
+                .Where(f => f.Exclude).Select(f => f.Id).ToList();
+            var versions = GetVersionsWithExclusions(signal, excludedApproachIds, excludedDetectorIds);
+            var excludedApproaches = versions.SelectMany(v => v.Approaches)
+                .Where(a => excludedApproachIds.Contains(a.Id)).ToList();
+            var excludedChannels = versions.SelectMany(v => v.Approaches).SelectMany(a => a.Detectors)
+                .Where(d => excludedDetectorIds.Contains(d.Id)).Select(d => d.DetectorChannel).ToList();
+
+            RemoveApproachesFromSignalByDirection(signal, options);
+            RemoveDetectorsFromSignalByMovement(signal, options);
+            foreach (var approach in signal.Approaches.Where(a => excludedApproaches.Any(e => IsSameApproach(a, e))).ToList())
+                signal.Approaches.Remove(approach);
+            foreach (var approach in signal.Approaches)
+                foreach (var detector in approach.Detectors.Where(d => excludedChannels.Contains(d.DetectorChannel)).ToList())
+                    approach.Detectors.Remove(detector);
         }
+
+        // The latest version is fetched only when an exclusion names an approach or detector that
+        // the version in effect on Start does not have, and before anything is removed.
+        private List<Location> GetVersionsWithExclusions(Location signal, List<int> approachIds, List<int> detectorIds)
+        {
+            var versions = new List<Location> { signal };
+            var approaches = signal.Approaches.ToList();
+            var detectors = approaches.SelectMany(a => a.Detectors).ToList();
+            if (approachIds.All(id => approaches.Any(a => a.Id == id)) &&
+                detectorIds.All(id => detectors.Any(d => d.Id == id)))
+                return versions;
+            var latest = locationRepository.GetLatestVersionOfLocation(signal.LocationIdentifier);
+            if (latest != null && latest.Id != signal.Id)
+                versions.Add(latest);
+            return versions;
+        }
+
+        private static bool IsSameApproach(Approach approach, Approach other) =>
+            approach.DirectionTypeId == other.DirectionTypeId
+            && approach.ProtectedPhaseNumber == other.ProtectedPhaseNumber
+            && approach.PermissivePhaseNumber == other.PermissivePhaseNumber
+            && approach.IsPermissivePhaseOverlap == other.IsPermissivePhaseOverlap
+            && approach.IsProtectedPhaseOverlap == other.IsProtectedPhaseOverlap;
 
         private void RemoveApproachesFromSignalByDirection(Location signal, AggregationOptions options)
         {
+            // A request without direction filters removes no approach.
+            if (options.FilterDirections == null)
+                return;
             var approachesToRemove = new List<Approach>();
             foreach (var approach in signal.Approaches)
                 if (options.FilterDirections.Where(f => !f.Include).Select(f => f.DirectionTypeId).ToList()
@@ -412,6 +448,9 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 
         private void RemoveDetectorsFromSignalByMovement(Location signal, AggregationOptions options)
         {
+            // A request without movement filters removes no detector.
+            if (options.FilterMovements == null)
+                return;
             var detectorsToRemove = new List<Detector>();
             foreach (var approach in signal.Approaches)
             {
@@ -421,25 +460,6 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                         detectorsToRemove.Add(detector);
                 foreach (var detectorToRemove in detectorsToRemove)
                     approach.Detectors.Remove(detectorToRemove);
-            }
-        }
-
-        private static void RemoveDetectorsFromApproachByFilter(FilterApproach filterApproach, Approach approach)
-        {
-            var excludedDetectorIds =
-                filterApproach.Detectors.Where(f => f.Exclude).Select(f => f.Id).ToList();
-            var excludedDetectors = approach.Detectors.Where(d => excludedDetectorIds.Contains(d.Id));
-            foreach (var excludedDetector in excludedDetectors)
-            {
-                var detectorsToExclude = approach.Detectors.Where(d =>
-                    d.LaneNumber == excludedDetector.LaneNumber
-                    && d.LaneType == excludedDetector.LaneType
-                    && d.MovementType == excludedDetector.MovementType
-                    && d.DetectionHardware == excludedDetector.DetectionHardware
-                    && d.DetectorChannel == excludedDetector.DetectorChannel
-                ).ToList();
-                foreach (var detectorToExclude in detectorsToExclude)
-                    approach.Detectors.Remove(detectorToExclude);
             }
         }
 
@@ -477,8 +497,9 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 
         private void SetEndTimeAndMinutes(out DateTime endTime, out int minutes, AggregationOptions options)
         {
-            endTime = new DateTime(options.TimeOptions.Start.Year, options.TimeOptions.Start.Month, options.TimeOptions.Start.Day,
-                            options.TimeOptions.TimeOfDayEndHour ?? 0, options.TimeOptions.TimeOfDayEndMinute ?? 0, 0);
+            // A time period that ends at 00:00 runs to the end of the day, as its bins do.
+            endTime = options.TimeOptions.Start.Date.Add(BinFactory.GetTimeOfDayEnd(
+                options.TimeOptions.TimeOfDayEndHour ?? 0, options.TimeOptions.TimeOfDayEndMinute ?? 0));
             switch (options.TimeOptions.SelectedBinSize)
             {
                 case TimeOptions.BinSize.FifteenMinute:
@@ -549,7 +570,7 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                         for (var startTime = new DateTime(options.TimeOptions.Start.Year, options.TimeOptions.Start.Month,
                                 options.TimeOptions.Start.Day,
                                 options.TimeOptions.TimeOfDayStartHour ?? 0, options.TimeOptions.TimeOfDayStartMinute ?? 0, 0);
-                            startTime.Date <= options.TimeOptions.End.Date;
+                            startTime.Date < options.TimeOptions.End;
                             startTime = startTime.AddMinutes(minutes))
                         {
                             if (options.SelectedAggregationType == AggregationCalculationType.Sum)
@@ -600,6 +621,16 @@ namespace Utah.Udot.Atspm.ReportApi.DataAggregation
                     }
             }
         }
+
+        // Tags a chart with the locations its data covers, so callers can name it without relying on chart order.
+        internal static AggregationResult ForLocations(AggregationResult chart, IEnumerable<Location> locations)
+        {
+            chart.LocationIdentifiers = locations.Select(location => location.LocationIdentifier).Distinct().ToList();
+            return chart;
+        }
+
+        internal static AggregationResult ForLocations(AggregationResult chart, Location location) =>
+            ForLocations(chart, new[] { location });
 
         protected Series CreateSeries(string seriesName)
         {
