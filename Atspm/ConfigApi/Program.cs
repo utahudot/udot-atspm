@@ -96,7 +96,9 @@ builder.Host
         s.AddScoped<IApproachService, ApproachService>();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
-        s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();
+        //s.AddHttpClient<IGitHubReleaseService, GitHubReleaseService>();
+        s.AddGitHubVersioning();
+        s.AddHybridCache();
         s.Configure<GitHubReleaseConfiguration>(h.Configuration.GetSection(nameof(GitHubReleaseConfiguration)));
 
         s.AddAutoMapper(c =>

@@ -23,7 +23,7 @@
 		<PackageTags>C#; .net standard; .net core; efcore</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
-		<Version>5.4.0-rc1</Version>
+		<Version>5.4.0-rc2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -57,7 +57,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Npgsql" Version="8.0.6" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-		<PackageReference Include="Utah.Udot.NetStandardToolkit" Version="1.6.0" />
+		<PackageReference Include="Utah.Udot.NetStandardToolkit" Version="1.6.1" />
 	</ItemGroup>
 
 	<ItemGroup>
