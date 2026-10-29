@@ -1,5 +1,5 @@
 import { PedatChartsContainerProps } from '@/features/activeTransportation/components/PedatChartsContainer'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import React, { useMemo } from 'react'
 
 const PedestrianVolumeTimeSeriesTable = ({
@@ -7,6 +7,17 @@ const PedestrianVolumeTimeSeriesTable = ({
   phase,
   timeUnit,
 }: PedatChartsContainerProps) => {
+  const theme = useTheme()
+  const headerStyle: React.CSSProperties = {
+    ...thStyle,
+    backgroundColor:
+      theme.palette.mode === 'light' ? '#f2f2f2' : theme.palette.secondary.dark,
+    borderBottom: `2px solid ${theme.palette.mode === 'light' ? '#ccc' : theme.palette.divider}`,
+  }
+  const cellStyle: React.CSSProperties = {
+    ...tdStyle,
+    borderBottom: `1px solid ${theme.palette.mode === 'light' ? '#eee' : theme.palette.divider}`,
+  }
   const rows = useMemo(() => {
     return (data ?? [])
       .flatMap((loc) => {
@@ -56,42 +67,42 @@ const PedestrianVolumeTimeSeriesTable = ({
         sx={{
           overflow: 'auto',
           maxHeight: 600,
-          border: '1px solid #ccc',
+          border: `1px solid ${theme.palette.mode === 'light' ? '#ccc' : theme.palette.divider}`,
           borderRadius: 2,
         }}
       >
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={thStyle}>Signal ID</th>
-              {phase && phase !== 'All' && <th style={thStyle}>Phase</th>}
-              <th style={thStyle}>Address</th>
-              <th style={thStyle}>Timestamp</th>
-              <th style={thStyle}>Pedestrians</th>
-              <th style={thStyle}>City</th>
-              <th style={thStyle}>Latitude</th>
-              <th style={thStyle}>Longitude</th>
+              <th style={headerStyle}>Signal ID</th>
+              {phase && phase !== 'All' && <th style={headerStyle}>Phase</th>}
+              <th style={headerStyle}>Address</th>
+              <th style={headerStyle}>Timestamp</th>
+              <th style={headerStyle}>Pedestrians</th>
+              <th style={headerStyle}>City</th>
+              <th style={headerStyle}>Latitude</th>
+              <th style={headerStyle}>Longitude</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, idx) => (
               <tr key={`${row.locationIdentifier}-${row.timestamp}-${idx}`}>
-                <td style={tdStyle}>{row.locationIdentifier}</td>
+                <td style={cellStyle}>{row.locationIdentifier}</td>
                 {phase && phase !== 'All' && (
-                  <td style={tdStyle}>{row.phase}</td>
+                  <td style={cellStyle}>{row.phase}</td>
                 )}
-                <td style={tdStyle}>{row.address}</td>
-                <td style={tdStyle}>
+                <td style={cellStyle}>{row.address}</td>
+                <td style={cellStyle}>
                   {new Date(row.timestamp).toLocaleString()}
                 </td>
-                <td style={tdStyle}>{row.pedestrian}</td>
-                <td style={tdStyle}>{row.city}</td>
-                <td style={tdStyle}>
+                <td style={cellStyle}>{row.pedestrian}</td>
+                <td style={cellStyle}>{row.city}</td>
+                <td style={cellStyle}>
                   {Number.isFinite(row.latitude as number)
                     ? (row.latitude as number).toFixed(6)
                     : ''}
                 </td>
-                <td style={tdStyle}>
+                <td style={cellStyle}>
                   {Number.isFinite(row.longitude as number)
                     ? (row.longitude as number).toFixed(6)
                     : ''}
@@ -100,7 +111,7 @@ const PedestrianVolumeTimeSeriesTable = ({
             ))}
             {!rows.length && (
               <tr>
-                <td style={tdStyle} colSpan={7}>
+                <td style={cellStyle} colSpan={7}>
                   No data
                 </td>
               </tr>

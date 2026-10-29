@@ -74,7 +74,7 @@ export const SplitMonitorChartOptions = ({
     >
       <Box display="flex" justifyContent={'space-between'}>
         <InputLabel
-          sx={{ color: 'black' }}
+          sx={{ color: 'text.primary' }}
           htmlFor="percentile-split-input"
           id="percentile-split-input-label"
         >

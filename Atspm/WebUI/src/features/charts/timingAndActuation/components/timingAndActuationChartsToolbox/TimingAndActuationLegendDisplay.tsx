@@ -49,7 +49,7 @@ function TimingAndActuationLegendDisplay({
             p: 2,
             my: 1,
             width: '1050px',
-            border: '1px solid #d3d3d3',
+            border: `1px solid ${theme.palette.mode === 'light' ? '#d3d3d3' : theme.palette.divider}`,
           }}
         >
           <Typography variant="h4" sx={{ marginBottom: 2 }}>

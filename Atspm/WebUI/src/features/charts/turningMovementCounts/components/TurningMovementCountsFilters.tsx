@@ -1,5 +1,12 @@
 import CheckIcon from '@mui/icons-material/Check'
-import { Box, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import {
+  Box,
+  Paper,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material'
 
 export type FilterMode = 'combine' | 'split'
 export interface FilterOption {
@@ -106,8 +113,14 @@ export default function TurningMovementCountsFilters({
         sx={{
           p: 2,
           borderRadius: 2,
-          bgcolor: 'grey.50',
-          borderColor: 'grey.200',
+          bgcolor: (theme) =>
+            theme.palette.mode === 'light'
+              ? theme.palette.grey[50]
+              : theme.palette.action.hover,
+          borderColor: (theme) =>
+            theme.palette.mode === 'light'
+              ? theme.palette.grey[200]
+              : theme.palette.divider,
         }}
       >
         <Stack spacing={1.5}>
@@ -116,7 +129,11 @@ export default function TurningMovementCountsFilters({
             alignItems={{ xs: 'flex-start', lg: 'center' }}
             gap={1}
           >
-            <Typography variant="caption" color="text.secondary" sx={rowLabelSx}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={rowLabelSx}
+            >
               DIRECTION
             </Typography>
             <Stack direction="row" gap={1} flexWrap="wrap" sx={{ flex: 1 }}>
@@ -153,12 +170,18 @@ export default function TurningMovementCountsFilters({
             alignItems={{ xs: 'flex-start', lg: 'center' }}
             gap={1}
           >
-            <Typography variant="caption" color="text.secondary" sx={rowLabelSx}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={rowLabelSx}
+            >
               MOVEMENT
             </Typography>
             <Stack direction="row" gap={1} flexWrap="wrap" sx={{ flex: 1 }}>
               {movementOptions.map((movement) => {
-                const isSelected = selectedMovementTypes.includes(movement.value)
+                const isSelected = selectedMovementTypes.includes(
+                  movement.value
+                )
                 return (
                   <ToggleButton
                     key={movement.value}

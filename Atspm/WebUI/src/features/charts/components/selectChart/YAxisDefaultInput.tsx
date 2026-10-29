@@ -84,7 +84,9 @@ export const YAxisDefaultInput = ({
         marginRight: '29.3px',
       }}
     >
-      <InputLabel sx={{ color: 'black' }}>Y-Axis Chart Default</InputLabel>
+      <InputLabel sx={{ color: 'text.primary' }}>
+        Y-Axis Chart Default
+      </InputLabel>
       <Box sx={{ display: 'flex' }}>
         <FormControl sx={{ width: '60px' }}>
           <label htmlFor="yAxis-default" style={visuallyHidden}>
@@ -129,7 +131,7 @@ export const YAxisDefaultInput = ({
             alignItems: 'center',
           }}
         >
-          <InputLabel sx={{ color: 'black' }}>Y-Axis Max</InputLabel>
+          <InputLabel sx={{ color: 'text.primary' }}>Y-Axis Max</InputLabel>
           <Box sx={{ display: 'flex' }}>
             <FormControl sx={{ width: '60px' }}>
               <label htmlFor="yAxis-max" style={visuallyHidden}>

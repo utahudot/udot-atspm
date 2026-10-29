@@ -139,7 +139,10 @@ const AdminTable = <T extends BaseObj>({
         align={align}
         width={width}
         sx={{
-          backgroundColor: '#dae5f0',
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'light'
+              ? '#dae5f0'
+              : theme.palette.secondary.dark,
         }}
       >
         <TableSortLabel
@@ -270,7 +273,10 @@ const AdminTable = <T extends BaseObj>({
                       width: 100,
                       position: 'sticky',
                       top: 0,
-                      backgroundColor: '#dae5f0',
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === 'light'
+                          ? '#dae5f0'
+                          : theme.palette.secondary.dark,
                     }}
                   >
                     Actions

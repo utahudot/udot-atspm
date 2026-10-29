@@ -104,12 +104,25 @@ export default function TurningMovementCountsResultsTable({
           sx={{
             '& .MuiTableCell-body': {
               fontSize: '0.9rem',
-              borderRight: '1px solid #e0e0e0',
+              borderRight: '1px solid',
+              borderRightColor: 'divider',
               padding: '.7rem',
             },
             ...(isFooter
-              ? { bgcolor: '#e0e0e0' }
-              : { '&:nth-of-type(odd)': { backgroundColor: '#f4f4f4' } }),
+              ? {
+                  bgcolor: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? '#e0e0e0'
+                      : theme.palette.action.selected,
+                }
+              : {
+                  '&:nth-of-type(odd)': {
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? '#f4f4f4'
+                        : theme.palette.action.hover,
+                  },
+                }),
           }}
         >
           {row?.map((cell, ci) => (
@@ -132,7 +145,10 @@ export default function TurningMovementCountsResultsTable({
         variant="outlined"
         sx={{
           borderRadius: 2,
-          borderColor: 'grey.200',
+          borderColor: (theme) =>
+            theme.palette.mode === 'light'
+              ? theme.palette.grey[200]
+              : theme.palette.divider,
           maxHeight: '95vh',
           overflow: 'scroll',
         }}
@@ -143,7 +159,10 @@ export default function TurningMovementCountsResultsTable({
               '--tmc-header-row1-height': `${HEADER_ROW_1_HEIGHT_PX}px`,
               '& .MuiTableCell-head': {
                 fontSize: '0.8rem',
-                bgcolor: 'grey.100',
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[100]
+                    : theme.palette.secondary.dark,
                 lineHeight: '1rem',
                 padding: '0.5rem',
                 borderBottom: '1px solid',

@@ -57,7 +57,12 @@ export default function AuditBadge({
       <Chip
         size={dense ? 'small' : 'medium'}
         variant="outlined"
-        sx={{ backgroundColor: '#dae5f0' }}
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'light'
+              ? '#dae5f0'
+              : theme.palette.secondary.dark,
+        }}
         icon={
           nothing ? (
             <InfoOutlinedIcon fontSize="small" />

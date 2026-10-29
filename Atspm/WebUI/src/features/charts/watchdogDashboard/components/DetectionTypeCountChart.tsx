@@ -1,7 +1,7 @@
 import ApacheEChart from '@/features/charts/components/apacheEChart/ApacheEChart'
 import transformDetectionTypeCountData from '@/features/charts/watchdogDashboard/watchdogDetectionTypeCount.transformer'
 import { DetectionTypeCount } from '@/features/watchdog/types'
-import { Paper } from '@mui/material'
+import { Paper, useTheme } from '@mui/material'
 import React, { useEffect, useMemo, useRef } from 'react'
 
 interface DetectionTypeCountChartProps {
@@ -13,6 +13,7 @@ const DetectionTypeCountChart: React.FC<DetectionTypeCountChartProps> = ({
   data,
   isLoading,
 }) => {
+  const theme = useTheme()
   const chartRef = useRef<any>(null)
 
   const detectionTypeCountChartOption = useMemo(() => {
@@ -40,6 +41,7 @@ const DetectionTypeCountChart: React.FC<DetectionTypeCountChartProps> = ({
     <Paper elevation={3} sx={{ height: 375, padding: 1 }}>
       {!isLoading && detectionTypeCountChartOption && (
         <ApacheEChart
+          theme={theme.palette.mode}
           ref={chartRef}
           id="watchdog-detection-type-count-chart"
           option={detectionTypeCountChartOption}

@@ -7,7 +7,7 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 export interface GroupedListDataItems {
   id: string
@@ -34,7 +34,9 @@ export const AggregateTypeSelect = ({
     // Auto-set the first option as default if no value is selected
     if (!value && data.length > 0 && data[0].options.length > 0) {
       const defaultValue = `${data[0].id}-${data[0].options[0].id}`
-      onChange({ target: { value: defaultValue } } as SelectChangeEvent<unknown>)
+      onChange({
+        target: { value: defaultValue },
+      } as SelectChangeEvent<unknown>)
     }
   }, [value, data, onChange])
   const renderGroupedOptions = (group: GroupedListDataItems) => {
@@ -43,7 +45,7 @@ export const AggregateTypeSelect = ({
         sx={{
           fontSize: '1rem',
           fontWeight: 'bold',
-          color: 'black',
+          color: 'text.primary',
         }}
         key={group.id}
       >
@@ -61,7 +63,7 @@ export const AggregateTypeSelect = ({
     <FormControl>
       <InputLabel htmlFor={label}>{label}</InputLabel>
       <Select
-        inputProps={{id: label}}
+        inputProps={{ id: label }}
         name={name}
         value={value}
         onChange={onChange}

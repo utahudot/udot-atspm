@@ -71,6 +71,7 @@ const IssueTypeChart: React.FC<IssueTypeChartProps> = ({ data, isLoading }) => {
               loading={isLoading}
               style={{ width: '100%', height: '700px' }}
               hideInteractionMessage
+              theme={theme.palette.mode}
             />
           )}
         </Box>

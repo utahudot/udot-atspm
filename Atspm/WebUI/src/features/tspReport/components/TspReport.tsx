@@ -13,6 +13,7 @@ import {
   Tab,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Cookies from 'js-cookie'
@@ -25,6 +26,7 @@ interface TspReportProps {
 }
 
 export default function TspReport({ report, reportOptions }: TspReportProps) {
+  const theme = useTheme()
   const isLoggedIn = !!Cookies.get('loggedIn')
   const { addNotification } = useNotificationStore()
   const { data: measureTypesData } = useGetMeasureType()
@@ -380,7 +382,7 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                     hideFooter
                     sx={{
                       '& .MuiDataGrid-cell': {
-                        borderRight: '1px solid lightgray',
+                        borderRight: `1px solid ${theme.palette.mode === 'light' ? 'lightgray' : theme.palette.divider}`,
                       },
                       '& .purple-text': {
                         color: 'purple',

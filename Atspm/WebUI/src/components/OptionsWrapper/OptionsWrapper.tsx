@@ -14,7 +14,7 @@ function OptionsWrapper({ children, header, noPadding }: OptionsWrapperProps) {
           p: 1,
           pl: 2,
           mb: 1,
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'action.hover',
           width: '100%',
           textAlign: 'left',
         }}

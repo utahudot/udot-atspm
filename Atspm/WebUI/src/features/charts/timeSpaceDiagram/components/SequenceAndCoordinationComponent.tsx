@@ -137,7 +137,11 @@ const SequenceAndCoordinationComponent = ({
     <OptionsWrapper header="Sequence and Coordination">
       <Box display="flex" alignItems="center" marginBottom={2}>
         <InputLabel htmlFor="location-select">
-          <Typography color="black" marginRight="8px" variant="subtitle1">
+          <Typography
+            color="text.primary"
+            marginRight="8px"
+            variant="subtitle1"
+          >
             Select Location:
           </Typography>
         </InputLabel>
@@ -173,7 +177,11 @@ const SequenceAndCoordinationComponent = ({
                 marginBottom={2}
               >
                 <InputLabel htmlFor={`location-${index + 1}`}>
-                  <Typography color="black" variant="body1" marginRight={1}>
+                  <Typography
+                    color="text.primary"
+                    variant="body1"
+                    marginRight={1}
+                  >
                     Band {index + 1}:
                   </Typography>
                 </InputLabel>
@@ -189,7 +197,7 @@ const SequenceAndCoordinationComponent = ({
             ))}
             <Box marginTop={2}>
               <InputLabel htmlFor="coordinated-phases">
-                <Typography color="black" variant="subtitle1">
+                <Typography color="text.primary" variant="subtitle1">
                   Coordinated Phases:
                 </Typography>
               </InputLabel>

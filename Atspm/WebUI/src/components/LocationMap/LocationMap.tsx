@@ -108,7 +108,14 @@ const LocationMap = ({
         setHasFocusedRoute(true)
       }
     }
-  }, [location, mapRef, locations, route, hasFocusedRoute, selectedLocationZoom])
+  }, [
+    location,
+    mapRef,
+    locations,
+    route,
+    hasFocusedRoute,
+    selectedLocationZoom,
+  ])
 
   // Resize the map when the container resizes
   useEffect(() => {
@@ -165,7 +172,10 @@ const LocationMap = ({
       measureTypeId: null,
     })
     if (mapInfo?.initialLat && mapInfo?.initialLong) {
-      mapRef?.setView([mapInfo.initialLat, mapInfo.initialLong], mapInfo.zoomLevel)
+      mapRef?.setView(
+        [mapInfo.initialLat, mapInfo.initialLong],
+        mapInfo.zoomLevel
+      )
     }
   }, [updateFilters, mapInfo, mapRef])
 
@@ -213,7 +223,12 @@ const LocationMap = ({
               onClick={handleFiltersClearClick}
               disabled={!Object.values(filters).some((value) => value != null)}
               sx={{
-                '&:disabled': { backgroundColor: theme.palette.grey[300] },
+                '&:disabled': {
+                  backgroundColor:
+                    theme.palette.mode === 'light'
+                      ? theme.palette.grey[300]
+                      : theme.palette.action.disabledBackground,
+                },
               }}
             >
               <ClearIcon fontSize="small" sx={{ p: 0 }} />

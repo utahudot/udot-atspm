@@ -60,7 +60,10 @@ const SelectedLocationsDisplay = ({ handler }: Props) => {
       <TableRow
         key={index}
         sx={{
-          backgroundColor: '#f7f7f7', // Light gray background
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'light'
+              ? '#f7f7f7'
+              : theme.palette.action.hover,
         }}
       >
         <TableCell>
@@ -136,7 +139,8 @@ const SelectedLocationsDisplay = ({ handler }: Props) => {
             sx={{
               '& .MuiTableCell-body': {
                 fontSize: '1rem',
-                borderRight: '1px solid #e0e0e0',
+                borderRight: '1px solid',
+                borderRightColor: 'divider',
                 lineHeight: 'inherit',
               },
             }}

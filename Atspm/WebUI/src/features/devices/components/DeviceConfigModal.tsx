@@ -331,7 +331,8 @@ const DeviceConfigModal = ({
                   left: 0,
                   zIndex: 1000,
                   bgcolor: 'background.paper',
-                  border: '1px solid #ccc',
+                  border: (theme) =>
+                    `1px solid ${theme.palette.mode === 'light' ? '#ccc' : theme.palette.divider}`,
                   borderRadius: 1,
                   p: 1,
                   display: 'flex',
@@ -497,7 +498,8 @@ const DeviceConfigModal = ({
                     left: 0,
                     zIndex: 1000,
                     bgcolor: 'background.paper',
-                    border: '1px solid #ccc',
+                    border: (theme) =>
+                      `1px solid ${theme.palette.mode === 'light' ? '#ccc' : theme.palette.divider}`,
                     borderRadius: 1,
                     p: 1,
                     display: 'flex',

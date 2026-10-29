@@ -43,7 +43,16 @@ const deviceTypeMap = {
 }
 
 const StyledLabel = ({ children }: { children: React.ReactNode }) => (
-  <Typography variant="overline" color={'#3B3B3B'} sx={{ width: '160px' }}>
+  <Typography
+    variant="overline"
+    sx={{
+      width: '160px',
+      color: (theme) =>
+        theme.palette.mode === 'light'
+          ? '#3B3B3B'
+          : theme.palette.text.secondary,
+    }}
+  >
     {children}
   </Typography>
 )

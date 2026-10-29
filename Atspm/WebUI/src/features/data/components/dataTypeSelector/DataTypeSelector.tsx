@@ -98,7 +98,7 @@ export const DataTypeSelector = ({
         <Typography
           variant="caption"
           sx={{
-            color: 'black',
+            color: 'text.primary',
             lineHeight: 1.3,
             width: 'fit-content',
             ...(hasDesc

@@ -76,7 +76,8 @@ export const LinkPivotOptionsComponent = (props: Props) => {
           sx={{
             maxHeight: 350,
             overflowY: 'auto',
-            outline: '1px solid #ccc',
+            outline: (theme) =>
+              `1px solid ${theme.palette.mode === 'light' ? '#ccc' : theme.palette.divider}`,
             mb: 2,
             flexGrow: 1,
           }}

@@ -60,7 +60,7 @@ const LinkPivotEditableCell = ({
           borderRadius: '4px',
           outline: isEditing
             ? `2px solid ${theme.palette.primary.main}`
-            : '1px solid rgba(0, 0, 0, 0.3)',
+            : `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)'}`,
           display: 'flex',
           alignItems: 'center',
           width: '100%',

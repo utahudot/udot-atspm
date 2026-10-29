@@ -126,7 +126,7 @@ const SelectCell = ({
         height: 48,
         width: 140,
         boxSizing: 'border-box',
-        borderRight: '0.5px solid lightgrey',
+        borderRight: `0.5px solid ${theme.palette.mode === 'light' ? 'lightgrey' : theme.palette.divider}`,
         p: 0,
         position: 'relative',
         outline: 'none',

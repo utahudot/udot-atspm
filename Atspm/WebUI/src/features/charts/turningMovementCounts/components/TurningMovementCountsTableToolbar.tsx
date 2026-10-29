@@ -22,8 +22,14 @@ export default function TurningMovementCountsTableToolbar({
       sx={{
         mb: 2,
         borderRadius: 2,
-        bgcolor: 'grey.50',
-        borderColor: 'grey.200',
+        bgcolor: (theme) =>
+          theme.palette.mode === 'light'
+            ? theme.palette.grey[50]
+            : theme.palette.action.hover,
+        borderColor: (theme) =>
+          theme.palette.mode === 'light'
+            ? theme.palette.grey[200]
+            : theme.palette.divider,
       }}
     >
       <Stack direction="row" justifyContent="space-between" sx={{ mb: 1 }}>

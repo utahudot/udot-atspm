@@ -14,7 +14,33 @@ import type {
 } from 'echarts'
 import { connect, init } from 'echarts'
 import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+const blackColors = new Set(['black', '#000', '#000000'])
+const darkModeLineColor = '#e0e0e0'
+
+// Transformers hard-code black for lines, markers and labels, which vanish on
+// the dark theme. Swap those for a light grey in color/fill fields, including
+// the elements returned by custom series renderItem functions.
+function lightenBlackColors<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(lightenBlackColors) as T
+  if (!value || Object.getPrototypeOf(value) !== Object.prototype) return value
+  return Object.fromEntries(
+    Object.entries(value).map(([key, v]) => {
+      if (
+        typeof v === 'string' &&
+        /color|fill/i.test(key) &&
+        blackColors.has(v.toLowerCase())
+      ) {
+        return [key, darkModeLineColor]
+      }
+      if (key === 'renderItem' && typeof v === 'function') {
+        return [key, (...args: unknown[]) => lightenBlackColors(v(...args))]
+      }
+      return [key, lightenBlackColors(v)]
+    })
+  ) as T
+}
 
 export interface ApacheEChartsProps {
   id: string
@@ -29,7 +55,7 @@ export interface ApacheEChartsProps {
 
 export default function ApacheEChart({
   id,
-  option,
+  option: rawOption,
   chartType,
   style,
   settings,
@@ -43,6 +69,15 @@ export default function ApacheEChart({
   const [isHovered, setIsHovered] = useState(false)
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
+
+  // ECharts' dark theme paints its own background; let the card show through
+  const option = useMemo<EChartsOption>(
+    () =>
+      theme === 'dark'
+        ? { ...lightenBlackColors(rawOption), backgroundColor: 'transparent' }
+        : rawOption,
+    [rawOption, theme]
+  )
 
   const isActive = activeChart === id || hideInteractionMessage
 

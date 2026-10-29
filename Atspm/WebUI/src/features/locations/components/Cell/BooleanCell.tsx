@@ -78,7 +78,7 @@ const BooleanCell = ({
         position: 'relative',
         cursor: 'pointer',
         caretColor: 'transparent',
-        borderRight: '1px solid lightgrey',
+        borderRight: `1px solid ${theme.palette.mode === 'light' ? 'lightgrey' : theme.palette.divider}`,
         textAlign: 'center',
         verticalAlign: 'middle',
         outline: 'none',

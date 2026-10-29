@@ -129,7 +129,7 @@ export function MultiSelectCell<T>({
         outline: 'none',
         caretColor: isEditing ? theme.palette.text.primary : 'transparent',
         bgcolor: isEditing ? innerColor : undefined,
-        borderRight: '0.5px solid lightgrey',
+        borderRight: `0.5px solid ${theme.palette.mode === 'light' ? 'lightgrey' : theme.palette.divider}`,
         '&:focus-visible': { outline: 'none' },
       }}
     >

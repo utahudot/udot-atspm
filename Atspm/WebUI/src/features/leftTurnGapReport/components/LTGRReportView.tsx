@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab'
-import { Box } from '@mui/material'
+import { Box, useTheme } from '@mui/material'
 import { jsPDF } from 'jspdf'
 import Image from 'next/image'
 import React, { useRef } from 'react'
@@ -91,6 +91,9 @@ const LTGRReportView: React.FC<LTGRReportViewProps> = ({
   approaches = [],
 }) => {
   const reportRef = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
+  const sectionBackground =
+    theme.palette.mode === 'light' ? '#F0F0F0' : theme.palette.action.hover
 
   const downloadPDF = () => {
     const doc = new jsPDF('p', 'mm', 'letter')
@@ -544,7 +547,7 @@ const LTGRReportView: React.FC<LTGRReportViewProps> = ({
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  backgroundColor: '#F0F0F0',
+                  backgroundColor: sectionBackground,
                   gap: 1,
                   padding: '.5rem',
                 }}
@@ -678,7 +681,7 @@ const LTGRReportView: React.FC<LTGRReportViewProps> = ({
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                backgroundColor: '#F0F0F0',
+                backgroundColor: sectionBackground,
               }}
             >
               <div

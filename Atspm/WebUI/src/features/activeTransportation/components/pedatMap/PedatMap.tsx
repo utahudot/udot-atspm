@@ -149,6 +149,7 @@ function Legend({ vMin, vMax }: { vMin: number; vMax: number }) {
     control.onAdd = () => {
       const div = L.DomUtil.create('div', 'pedat-legend')
       div.style.background = 'rgba(255,255,255,0.9)'
+      div.style.color = 'rgba(0, 0, 0, 0.87)'
       div.style.padding = '6px 8px'
       div.style.borderRadius = '6px'
       div.style.boxShadow = '0 1px 3px rgba(0,0,0,0.3)'

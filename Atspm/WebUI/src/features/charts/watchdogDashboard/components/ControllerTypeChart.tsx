@@ -87,6 +87,7 @@ const ControllerTypeChart: React.FC<ControllerTypeChartProps> = ({
               loading={isLoading}
               style={{ width: '100%', height: '700px' }}
               hideInteractionMessage
+              theme={theme.palette.mode}
             />
           )}
         </Box>

@@ -7,13 +7,16 @@ import {
   transformPieChartTransformer,
 } from '@/features/charts/pedat/totalPedVolByLocationTransformer'
 import { roundTo } from '@/utils/numberFormat'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Paper, Typography, useTheme } from '@mui/material'
 import { useMemo } from 'react'
 
 const TotalPedVolByLocationCharts = ({
   data,
   printMode,
 }: PedatChartsContainerProps) => {
+  const theme = useTheme()
+  // Report captures render on white, so keep them on the light chart theme
+  const chartTheme = printMode ? 'light' : theme.palette.mode
   const totalVolume = data
     ?.map((loc) => loc.totalVolume || 0)
     .reduce((a, b) => a + b, 0)
@@ -59,6 +62,7 @@ const TotalPedVolByLocationCharts = ({
             option={pie}
             style={{ height: '100%' }}
             hideInteractionMessage
+            theme={chartTheme}
           />
         </Box>
         <Box sx={{ width: '50%', height: 400 }}>
@@ -67,6 +71,7 @@ const TotalPedVolByLocationCharts = ({
             option={block}
             style={{ height: '100%' }}
             hideInteractionMessage
+            theme={chartTheme}
           />
         </Box>
       </Box>

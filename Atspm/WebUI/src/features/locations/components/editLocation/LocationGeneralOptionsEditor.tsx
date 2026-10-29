@@ -161,7 +161,14 @@ const LocationGeneralOptionsEditor = () => {
           <Grid item xs={12} md={6}>
             <Paper
               elevation={0}
-              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+              sx={{
+                p: 2,
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[50]
+                    : theme.palette.action.hover,
+                borderRadius: 1,
+              }}
             >
               <Typography
                 variant="h5"
@@ -199,7 +206,14 @@ const LocationGeneralOptionsEditor = () => {
           <Grid item xs={12} md={6}>
             <Paper
               elevation={0}
-              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+              sx={{
+                p: 2,
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[50]
+                    : theme.palette.action.hover,
+                borderRadius: 1,
+              }}
             >
               <Typography
                 variant="h5"
@@ -262,7 +276,14 @@ const LocationGeneralOptionsEditor = () => {
           <Grid item xs={12} md={6}>
             <Paper
               elevation={0}
-              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+              sx={{
+                p: 2,
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[50]
+                    : theme.palette.action.hover,
+                borderRadius: 1,
+              }}
             >
               <Typography
                 variant="h5"
@@ -337,7 +358,14 @@ const LocationGeneralOptionsEditor = () => {
           <Grid item xs={12} md={6}>
             <Paper
               elevation={0}
-              sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}
+              sx={{
+                p: 2,
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[50]
+                    : theme.palette.action.hover,
+                borderRadius: 1,
+              }}
             >
               <Typography
                 variant="h5"

@@ -185,13 +185,17 @@ export const TextCell = ({
         height: 48,
         width: 140,
         boxSizing: 'border-box',
-        borderRight: '0.5px solid lightgrey',
+        borderRight: `0.5px solid ${theme.palette.mode === 'light' ? 'lightgrey' : theme.palette.divider}`,
         p: 0,
         position: 'relative',
         outline: 'none',
         caretColor: isEditing ? theme.palette.text.primary : 'transparent',
         '&:focus, &:focus-visible': { outline: 'none' },
-        bgcolor: disabled ? 'grey.300' : bgColor,
+        bgcolor: disabled
+          ? theme.palette.mode === 'light'
+            ? theme.palette.grey[300]
+            : theme.palette.action.disabledBackground
+          : bgColor,
       }}
     >
       <Tooltip

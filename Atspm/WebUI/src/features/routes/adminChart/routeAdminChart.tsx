@@ -1,4 +1,3 @@
-
 import { useGetRouteLocations } from '@/features/routes/api/getRouteLocations'
 import { RouteConfiguration } from '@/features/routes/routeConfiguration/routeConfiguration'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
@@ -165,13 +164,19 @@ export const RouteAdminChart = ({
               [`& .${gridClasses.columnHeaders}`]: {
                 position: 'sticky',
                 top: '40px',
-                backgroundColor: mode === 'light' ? 'aliceblue' : 'black',
+                backgroundColor:
+                  mode === 'light'
+                    ? 'aliceblue'
+                    : theme.palette.background.paper,
                 zIndex: '1',
               },
               [`& .${gridClasses.toolbarContainer}`]: {
                 position: 'sticky',
                 top: '0',
-                backgroundColor: mode === 'light' ? 'aliceblue' : 'black',
+                backgroundColor:
+                  mode === 'light'
+                    ? 'aliceblue'
+                    : theme.palette.background.paper,
                 zIndex: '1',
               },
               [`& .${gridClasses.main}`]: {

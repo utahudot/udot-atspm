@@ -36,7 +36,10 @@ export default function ChartsToolbox({
         top: -5,
         marginTop: '-50px',
         zIndex: 1000,
-        backgroundColor: '#D3D3D3',
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'light'
+            ? '#D3D3D3'
+            : theme.palette.secondary.dark,
         width: 'fit-content',
         mx: 'auto',
       }}
