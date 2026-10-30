@@ -10,6 +10,11 @@ on:
         description: 'JSON object mapping each Gilbert package name to its next numbered tag (for example, {"gilbertwebsite":"v16"})'
         required: true
         type: string
+      publish:
+        description: Push to GHCR (disable to download Docker image archives without package access)
+        required: false
+        default: true
+        type: boolean
       update_latest:
         description: Also tag these images as latest
         required: false
@@ -82,6 +87,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
+        if: ${{ github.event_name == 'release' || inputs.publish }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -96,7 +102,8 @@ jobs:
           context: ${{ matrix.project == 'WebUI' && 'Atspm/WebUI' || 'Atspm' }}
           file: Atspm/${{ matrix.project }}/Dockerfile
           platforms: linux/amd64
-          push: true
+          push: ${{ github.event_name == 'release' || inputs.publish }}
+          outputs: ${{ github.event_name == 'workflow_dispatch' && !inputs.publish && format('type=docker,dest={0}/{1}.tar', runner.temp, matrix.image) || '' }}
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
           tags: ${{ steps.meta.outputs.image_tags }}
@@ -105,9 +112,39 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.meta.outputs.image_version }}
 
-      - name: Record published image
+      - name: Verify image archive
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.publish }}
+        working-directory: ${{ runner.temp }}
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          IMAGE_TAGS: ${{ steps.meta.outputs.image_tags }}
+        run: |
+          tar -xOf "$IMAGE_NAME.tar" manifest.json > "$IMAGE_NAME-manifest.json"
+          IFS=',' read -ra TAGS <<< "$IMAGE_TAGS"
+          for tag in "${TAGS[@]}"; do
+            jq -e --arg tag "$tag" 'any(.[].RepoTags[]; . == $tag)' "$IMAGE_NAME-manifest.json"
+          done
+          IMAGE_CONFIG=$(jq -er '.[0].Config' "$IMAGE_NAME-manifest.json")
+          tar -xOf "$IMAGE_NAME.tar" "$IMAGE_CONFIG" | jq -e --arg sha "$GITHUB_SHA" '.os == "linux" and .architecture == "amd64" and .config.Labels["org.opencontainers.image.revision"] == $sha'
+          sha256sum "$IMAGE_NAME.tar" > "$IMAGE_NAME.sha256"
+
+      - name: Upload image archive
+        id: archive
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.publish }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.image }}-${{ steps.meta.outputs.image_version }}
+          path: |
+            ${{ runner.temp }}/${{ matrix.image }}.tar
+            ${{ runner.temp }}/${{ matrix.image }}.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+      - name: Record image result
         env:
           IMAGE_TAGS: ${{ steps.meta.outputs.image_tags }}
           IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE_ARCHIVE_URL: ${{ steps.archive.outputs.artifact-url }}
         run: |
-          printf 'Published: `%s`\n\nDigest: `%s`\n\nCommit: `%s`\n' "$IMAGE_TAGS" "$IMAGE_DIGEST" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          printf 'Image: `%s`\n\nDigest: `%s`\n\nCommit: `%s`\n\nArchive: %s\n' "$IMAGE_TAGS" "$IMAGE_DIGEST" "$GITHUB_SHA" "$IMAGE_ARCHIVE_URL" >> "$GITHUB_STEP_SUMMARY"
