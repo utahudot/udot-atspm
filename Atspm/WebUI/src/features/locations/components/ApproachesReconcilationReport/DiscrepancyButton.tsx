@@ -8,7 +8,7 @@ export interface DiscrepancyButtonProps {
   item: { id: string | number; label: string | number }
   selected?: boolean
   onToggle: () => void
-  width?: number
+  width?: number | string
 }
 
 const DiscrepancyButton = ({
@@ -23,6 +23,7 @@ const DiscrepancyButton = ({
     <Button
       variant="outlined"
       onClick={onToggle}
+      aria-pressed={!!selected}
       size="small"
       startIcon={
         selected ? (

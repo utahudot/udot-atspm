@@ -24,4 +24,7 @@ public record TmcCountSourceResult(string Label, IReadOnlyList<MovementCount> Co
     public IReadOnlyList<Plan> Plans { get; init; } = Array.Empty<Plan>();
     // A source with discrete events may bin from the selected start; fixed camera bins remain aligned.
     public DateTime? BinOrigin { get; init; }
+    public IReadOnlyList<TmcZoneEvidence> ZoneEvidence { get; init; } = Array.Empty<TmcZoneEvidence>();
+    /// <summary>Selected device IDs after the decoder resolves aliases, including devices without evidence.</summary>
+    public IReadOnlyList<int> SourceDeviceIds { get; init; } = Array.Empty<int>();
 }

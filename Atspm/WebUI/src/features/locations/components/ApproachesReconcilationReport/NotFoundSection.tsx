@@ -1,297 +1,467 @@
 import DeleteModal from '@/components/AdminTable/DeleteModal'
-import { parseApproachIdFromKey } from '@/features/locations/components/ApproachesReconcilationReport/discrepancyKeys'
-import DiscrepancySectionCard from '@/features/locations/components/ApproachesReconcilationReport/DiscrepancySectionCard'
-import type { ConfigApproach } from '@/features/locations/components/editLocation/locationStore'
-import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import { useNotificationStore } from '@/stores/notifications'
-import DeleteIcon from '@mui/icons-material/Delete'
-import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
-import { Box, Button, Paper, Typography, useTheme } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material'
 import React, { useMemo, useState } from 'react'
-import DiscrepancyRow, { DiscrepancyItem } from './DiscrepancyRow'
-import type { ItemStatus } from './useDiscrepancyStatuses'
+import { NavigationProvider } from '../Cell/CellNavigation'
+import { ApproachEditorGrid } from '../editApproach/ApproachEditorGrid'
+import type { ConfigApproach } from '../editLocation/locationStore'
+import { useLocationWizardStore } from '../LocationSetupWizard/locationSetupWizardStore'
+import { parseApproachIdFromKey } from './discrepancyKeys'
+import DiscrepancyRow, { type DiscrepancyItem } from './DiscrepancyRow'
+import DiscrepancySectionCard from './DiscrepancySectionCard'
+import {
+  assignmentFields,
+  assignmentKey,
+  type ItemStatus,
+  type MissingPhaseAssignment,
+} from './useDiscrepancyStatuses'
 
 export default function NotFoundSection({
   approaches,
   notFoundApproaches,
   notFoundDetectors,
+  missingAssignments,
   itemStatuses,
   updateStatus,
   selected,
   setSelected,
+  updateApproach,
   deleteApproach,
   deleteDetector,
+  onIgnore,
+  pedsAre1to1 = false,
+  errors,
 }: {
   approaches: ConfigApproach[]
   notFoundApproaches: DiscrepancyItem[]
   notFoundDetectors: DiscrepancyItem[]
+  missingAssignments: MissingPhaseAssignment[]
   itemStatuses: Record<string, ItemStatus>
   updateStatus: (id: string, status: ItemStatus) => void
   selected: Record<string, boolean>
   setSelected: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+  updateApproach: (approach: ConfigApproach) => void
   deleteApproach: (approach: ConfigApproach) => void
   deleteDetector: (id: number) => void
+  errors?: import('../editLocation/locationStore').LocationStore['errors']
+  pedsAre1to1?: boolean
+  onIgnore?: () => void
 }) {
-  const theme = useTheme()
   const { addNotification } = useNotificationStore()
   const { badApproaches, badDetectors, setBadApproaches, setBadDetectors } =
     useLocationWizardStore()
-
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-
-  const clearSelection = () => setSelected({})
-
-  const toggle = (key: string) => setSelected((p) => ({ ...p, [key]: !p[key] }))
-
-  const allItems = useMemo(
-    () => [...notFoundApproaches, ...notFoundDetectors],
-    [notFoundApproaches, notFoundDetectors]
+  const [confirmRemoval, setConfirmRemoval] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<ConfigApproach | null>(null)
+  const assignments = useMemo(
+    () =>
+      missingAssignments
+        .filter((a) => assignmentFields[a.role])
+        .map((a) => ({
+          id: assignmentKey(a),
+          kind: 'NOT_FOUND_ASSIGNMENT',
+          label: `${approaches.find((p) => p.id === a.approachId)?.description || `Approach ${a.approachId}`} - ${a.role} ${a.isOverlap ? 'overlap' : 'phase'} ${a.phaseNumber}`,
+          assignment: a,
+        })),
+    [missingAssignments, approaches]
+  )
+  // A retained approach needs a vehicle phase or overlap. Pedestrian-only
+  // assignments do not replace its protected/permissive vehicle configuration.
+  const retainsVehicleAssignment = (
+    approach: ConfigApproach,
+    removedRoles: string[]
+  ) =>
+    (['protected', 'permissive'] as const).some(
+      (role) =>
+        !removedRoles.includes(role) &&
+        Number(approach[assignmentFields[role][0]]) > 0
+    )
+  const canRemoveAssignment = (item: (typeof assignments)[number]) => {
+    const approach = approaches.find((a) => a.id === item.assignment.approachId)
+    return (
+      !!approach && retainsVehicleAssignment(approach, [item.assignment.role])
+    )
+  }
+  const allItems = [
+    ...assignments.filter(canRemoveAssignment),
+    ...notFoundDetectors,
+  ]
+  const pending = (item: DiscrepancyItem) =>
+    ['pending', 'unsaved'].includes(
+      itemStatuses[item.id.toString()] ?? 'pending'
+    )
+  const selectable = allItems.filter(pending)
+  const selectedItems = selectable.filter((i) => selected[i.id.toString()])
+  const validSelection = approaches.every((approach) => {
+    const roles = assignments
+      .filter((item) => selected[item.id] && pending(item))
+      .filter((item) => item.assignment.approachId === approach.id)
+      .map((item) => item.assignment.role)
+    return !roles.length || retainsVehicleAssignment(approach, roles)
+  })
+  const clear = () => setSelected({})
+  const toggle = (id: string) =>
+    setSelected((previous) => ({ ...previous, [id]: !previous[id] }))
+  const candidates = approaches.filter(
+    (a) =>
+      missingAssignments.some((m) => m.approachId === a.id) ||
+      notFoundApproaches.some(
+        (i) => parseApproachIdFromKey(i.id.toString()) === a.id
+      )
   )
 
-  const selectedItems = useMemo(
-    () => allItems.filter((it) => !!selected[it.id.toString()]),
-    [allItems, selected]
-  )
-
-  const selectableItems = useMemo(() => {
-    return allItems.filter((it) => {
-      const st = itemStatuses[it.id.toString()] ?? 'pending'
-      return st !== 'deleted'
-    })
-  }, [allItems, itemStatuses])
-
-  const deletableSelected = useMemo(() => {
-    return selectedItems.filter((it) => {
-      const st = itemStatuses[it.id.toString()] ?? 'pending'
-      return st !== 'ignored' && st !== 'deleted'
-    })
-  }, [selectedItems, itemStatuses])
-
-  const deleteItems = (items: DiscrepancyItem[]) => {
-    for (const item of items) {
-      const key = item.id.toString()
-      const st = itemStatuses[key] ?? 'pending'
-      if (st === 'ignored' || st === 'deleted') continue
-
-      if (item.kind === 'NOT_FOUND_APP') {
-        const approachId = parseApproachIdFromKey(key)
-        if (approachId == null) continue
-        const target = approaches.find((a) => a.id === approachId)
-        if (target) {
-          deleteApproach(target)
-          updateStatus(key, 'deleted')
-        }
-      } else if (item.kind === 'NOT_FOUND_DET') {
-        const channel = item.label.toString()
-        const storeDetectors = approaches.flatMap((a) => a.detectors)
-        const target = storeDetectors.find(
-          (d) => d.detectorChannel?.toString() === channel
-        )
-        if (target) {
-          deleteDetector(target.id)
-          updateStatus(key, 'deleted')
-        }
+  const removeSelected = () => {
+    if (!validSelection) return
+    // Build one update per approach so selecting multiple missing fields cannot
+    // overwrite an earlier removal. Verify the evidence still matches the draft.
+    const updates = new Map<number, ConfigApproach>()
+    for (const item of assignments.filter(
+      (i) => selected[i.id] && pending(i)
+    )) {
+      const a = item.assignment
+      const target =
+        updates.get(a.approachId) ??
+        approaches.find((p) => p.id === a.approachId)
+      const [numberField, overlapField] = assignmentFields[a.role]
+      if (
+        !target ||
+        Number(target[numberField]) !== a.phaseNumber ||
+        Boolean(target[overlapField]) !== a.isOverlap
+      )
+        continue
+      updates.set(target.id, {
+        ...target,
+        // Protected phase is required by the existing editor/API; zero means unassigned.
+        [numberField]: a.role === 'protected' ? 0 : null,
+        [overlapField]: false,
+      })
+      updateStatus(item.id, 'deleted')
+    }
+    for (const updated of updates.values()) updateApproach(updated)
+    for (const item of selectedItems.filter(
+      (i) => i.kind === 'NOT_FOUND_DET'
+    )) {
+      const detector = approaches
+        .flatMap((a) => a.detectors)
+        .find((d) => String(d.detectorChannel) === String(item.label))
+      if (detector) {
+        deleteDetector(detector.id)
+        updateStatus(String(item.id), 'deleted')
       }
     }
-  }
-
-  const confirmDelete = () => {
-    try {
-      deleteItems(deletableSelected)
-      addNotification({
-        title: 'Deleted selected discrepancy items',
-        type: 'success',
-      })
-      clearSelection()
-    } catch (err) {
-      console.error(err)
-      addNotification({
-        title: 'Error deleting discrepancy items',
-        type: 'error',
-      })
-    } finally {
-      setDeleteModalOpen(false)
-    }
-  }
-
-  const ignoreSelected = () => {
-    if (!selectedItems.length) return
-
-    const ignoreApproachIds = new Set<number>()
-    const ignoreDetChannels = new Set<string>()
-
-    for (const item of selectedItems) {
-      const key = item.id.toString()
-      const st = itemStatuses[key] ?? 'pending'
-      if (st === 'deleted') continue
-
-      updateStatus(key, 'ignored')
-
-      if (item.kind === 'NOT_FOUND_APP') {
-        const id = parseApproachIdFromKey(key)
-        if (id != null) ignoreApproachIds.add(id)
-      } else if (item.kind === 'NOT_FOUND_DET') {
-        ignoreDetChannels.add(item.label.toString())
-      }
-    }
-
-    if (ignoreApproachIds.size) {
-      setBadApproaches(
-        badApproaches.filter((approachId) => !ignoreApproachIds.has(approachId))
-      )
-    }
-
-    if (ignoreDetChannels.size) {
-      setBadDetectors(
-        badDetectors.filter(
-          (detectorChannel) => !ignoreDetChannels.has(detectorChannel)
-        )
-      )
-    }
-
-    clearSelection()
+    resolveSelectedWarnings()
+    clear()
+    setConfirmRemoval(false)
     addNotification({
-      title: `Ignored ${selectedItems.length} item(s)`,
+      title: selectedItems.some((i) => i.kind === 'NOT_FOUND_DET')
+        ? 'Detector deletions requested. Save any phase or overlap changes separately.'
+        : 'Removed selected assignments from the draft. Save to persist changes.',
       type: 'success',
     })
   }
 
-  const modalName = 'The Selected Discrepancy Items'
-  const modalObjectType = 'Items'
-
-  const modalId = 0
-
-  const selectedCount = selectedItems.length
-
-  const selectOrClearAll = () => {
-    if (!selectableItems.length) return
-
-    if (selectedCount > 0) {
-      clearSelection()
-      return
+  const resolveSelectedWarnings = () => {
+    if (onIgnore) onIgnore()
+    else {
+      const resolved = new Set(
+        assignments
+          .filter((i) => selected[i.id] || !pending(i))
+          .map((i) => i.id)
+      )
+      setBadApproaches(
+        badApproaches.filter(
+          (id) =>
+            !missingAssignments.some((a) => a.approachId === id) ||
+            assignments.some(
+              (i) => i.assignment.approachId === id && !resolved.has(i.id)
+            )
+        )
+      )
+      const ignoredChannels = new Set(
+        selectedItems
+          .filter((i) => i.kind === 'NOT_FOUND_DET')
+          .map((i) => String(i.label))
+      )
+      setBadDetectors(
+        badDetectors.filter((c) => !ignoredChannels.has(String(c)))
+      )
     }
-
-    const next: Record<string, boolean> = {}
-    for (const it of selectableItems) next[it.id.toString()] = true
-    setSelected(next)
   }
-
-  const actions = (
-    <>
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={selectOrClearAll}
-        disabled={selectableItems.length === 0}
-        sx={{ height: 28 }}
-      >
-        {selectedCount > 0 ? 'Clear All' : 'Select All'}
-      </Button>
-
-      <Button
-        variant="outlined"
-        color="error"
-        size="small"
-        onClick={() => setDeleteModalOpen(true)}
-        disabled={deletableSelected.length === 0}
-        startIcon={<DeleteIcon />}
-        sx={{ height: 28 }}
-      >
-        Delete
-      </Button>
-
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={ignoreSelected}
-        disabled={selectedItems.length === 0}
-        startIcon={<NotificationsPausedIcon />}
-        sx={{ height: 28 }}
-      >
-        Ignore Selected
-      </Button>
-    </>
+  const ignoreSelected = () => {
+    for (const item of selectedItems) updateStatus(String(item.id), 'ignored')
+    resolveSelectedWarnings()
+    clear()
+  }
+  const renderGroup = (
+    title: string,
+    items: DiscrepancyItem[],
+    label: string
+  ) => (
+    <Box component="section" aria-label={label}>
+      <DiscrepancySectionCard title={title}>
+        <DiscrepancyRow
+          items={items}
+          itemStatuses={itemStatuses}
+          isSelected={(i) => !!selected[String(i.id)]}
+          onToggleSelected={(i) => toggle(String(i.id))}
+          buttonWidth={260}
+        />
+      </DiscrepancySectionCard>
+    </Box>
   )
-
   return (
     <>
       <Box sx={{ mb: 2 }}>
         <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
           Not Found
         </Typography>
-
-        <Typography variant="body2" color="textSecondary">
-          No data was found for the following configured items
+        <Typography variant="body2">
+          No data was found for the following configured assignments. Verify the
+          observation period before removing them.
         </Typography>
       </Box>
-
-      <Paper sx={{ p: 2, backgroundColor: theme.palette.grey[50] }}>
-        <Box
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="center"
-          gap={1}
-          flexWrap="wrap"
-          sx={{ mb: 2 }}
-        >
-          {selectedItems.length > 0 ? (
-            <Typography
-              variant="body2"
-              sx={{
-                mr: 1,
-                color: theme.palette.text.secondary,
-                whiteSpace: 'nowrap',
-              }}
+      <Paper sx={{ p: 2, bgcolor: 'grey.50' }}>
+        <Stack spacing={2}>
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={!selectable.length}
+              onClick={() =>
+                selectedItems.length
+                  ? clear()
+                  : setSelected(
+                      Object.fromEntries(
+                        selectable.map((i) => [String(i.id), true])
+                      )
+                    )
+              }
             >
-              {selectedItems.length} selected
-            </Typography>
-          ) : null}
-
-          {actions}
-        </Box>
-
-        <DiscrepancySectionCard title="Approaches/Phases">
-          <DiscrepancyRow
-            items={notFoundApproaches}
-            itemStatuses={itemStatuses}
-            isSelected={(it) => selected[it.id.toString()]}
-            onToggleSelected={(it) => toggle(it.id.toString())}
-            buttonWidth={110}
-            getSortKey={(it) => getPhaseNumberFromLabel(it.label)}
-          />
-        </DiscrepancySectionCard>
-
-        <Box sx={{ mt: 2 }}>
-          <DiscrepancySectionCard title="Detectors">
-            <DiscrepancyRow
-              items={notFoundDetectors}
-              itemStatuses={itemStatuses}
-              isSelected={(it) => selected[it.id.toString()]}
-              onToggleSelected={(it) => toggle(it.id.toString())}
-              buttonWidth={65}
-            />
-          </DiscrepancySectionCard>
-        </Box>
+              {selectedItems.length ? 'Clear All' : 'Select All'}
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              color="error"
+              disabled={!selectedItems.length || !validSelection}
+              onClick={() => setConfirmRemoval(true)}
+            >
+              Remove selected
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={!selectedItems.length}
+              onClick={ignoreSelected}
+            >
+              Ignore Selected
+            </Button>
+          </Stack>
+          {!validSelection && (
+            <Alert severity="warning">
+              This selection would leave an approach without a vehicle phase or
+              overlap. Keep an assignment or use Delete entire approach.
+            </Alert>
+          )}
+          {candidates.map((approach) => (
+            <Paper
+              key={approach.id}
+              component="section"
+              aria-label={`Current configuration: ${approach.description || approach.id}`}
+              variant="outlined"
+              sx={{ p: 2 }}
+            >
+              <Typography variant="h6">
+                {approach.description || `Approach ${approach.id}`}
+              </Typography>
+              <NavigationProvider>
+                <ApproachEditorGrid
+                  errors={errors}
+                  approach={approach}
+                  pedsAre1to1={pedsAre1to1}
+                  updateApproach={updateApproach}
+                />
+              </NavigationProvider>
+              <Stack spacing={1} sx={{ mt: 2 }}>
+                {assignments
+                  .filter((item) => {
+                    const [numberField, overlapField] =
+                      assignmentFields[item.assignment.role]
+                    return (
+                      item.assignment.approachId === approach.id &&
+                      pending(item) &&
+                      Number(approach[numberField]) ===
+                        item.assignment.phaseNumber &&
+                      Boolean(approach[overlapField]) ===
+                        item.assignment.isOverlap
+                    )
+                  })
+                  .map((missing) => {
+                    const { role, isOverlap, phaseNumber } = missing.assignment
+                    const label = `${role} ${isOverlap ? 'overlap' : 'phase'} ${phaseNumber}`
+                    return (
+                      <Stack
+                        key={missing.id}
+                        direction="row"
+                        spacing={1}
+                        alignItems="center"
+                        flexWrap="wrap"
+                      >
+                        {canRemoveAssignment(missing) && (
+                          <Checkbox
+                            size="small"
+                            checked={!!selected[missing.id]}
+                            onChange={() => toggle(missing.id)}
+                            inputProps={{
+                              'aria-label': `Select ${approach.description || approach.id} - ${label}`,
+                            }}
+                          />
+                        )}
+                        <Typography variant="body2">
+                          Not observed: {label}.
+                        </Typography>
+                        {canRemoveAssignment(missing) ? (
+                          <Button
+                            size="small"
+                            color="error"
+                            variant="outlined"
+                            onClick={() => {
+                              setSelected({ [missing.id]: true })
+                              setConfirmRemoval(true)
+                            }}
+                          >
+                            Remove {label}
+                          </Button>
+                        ) : (
+                          <Typography variant="body2">
+                            Required vehicle assignment; delete the entire
+                            approach to remove it.
+                          </Typography>
+                        )}
+                      </Stack>
+                    )
+                  })}
+              </Stack>
+              <Typography variant="subtitle2" sx={{ mt: 2 }}>
+                Configured detectors
+              </Typography>
+              {approach.detectors.length ? (
+                <Table size="small" aria-label="Current detector configuration">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Channel</TableCell>
+                      <TableCell>Zone</TableCell>
+                      <TableCell>Lane</TableCell>
+                      <TableCell>Movement</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {approach.detectors.map((detector) => (
+                      <TableRow key={detector.id}>
+                        <TableCell>{detector.detectorChannel}</TableCell>
+                        <TableCell>
+                          {detector.dectectorIdentifier || 'Not configured'}
+                        </TableCell>
+                        <TableCell>
+                          {detector.laneNumber ?? 'Not configured'}
+                        </TableCell>
+                        <TableCell>
+                          {detector.movementType || 'Not configured'}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <Typography variant="body2">
+                  No detectors configured.
+                </Typography>
+              )}
+              <Stack spacing={1} alignItems="flex-start" sx={{ mt: 2 }}>
+                <Typography variant="body2">
+                  Removing a phase or overlap keeps this approach and its
+                  detectors. Deleting the entire approach also deletes all
+                  detectors shown above.
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setDeleteTarget(approach)}
+                >
+                  Delete entire approach: {approach.description || approach.id}
+                </Button>
+              </Stack>
+            </Paper>
+          ))}
+          {renderGroup(
+            'Detector Channels',
+            notFoundDetectors,
+            'Not Found detector channels'
+          )}
+        </Stack>
       </Paper>
-
+      <Dialog open={confirmRemoval} onClose={() => setConfirmRemoval(false)}>
+        <DialogTitle>Remove selected assignments and detectors?</DialogTitle>
+        <DialogContent>
+          <Alert severity="info">
+            Phase and overlap removal clears only the selected assignment.
+            Approaches and their detectors are retained only when a vehicle
+            phase or overlap remains. Existing detector deletions are saved
+            immediately when explicitly selected. Phase and overlap edits remain
+            in the draft until saved.
+          </Alert>
+          <ul>
+            {selectedItems.map((i) => (
+              <li key={i.id}>{i.label}</li>
+            ))}
+          </ul>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmRemoval(false)}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={!validSelection}
+            onClick={removeSelected}
+          >
+            Confirm removal
+          </Button>
+        </DialogActions>
+      </Dialog>
       <DeleteModal
-        id={modalId}
-        name={modalName}
-        objectType={modalObjectType}
-        open={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-        selectedRow={{ id: 0, name: 'the selected items' }}
-        associatedObjects={[]}
-        associatedObjectsLabel=""
+        id={deleteTarget?.id ?? 0}
+        name={`${deleteTarget?.description || 'this approach'} and all of its detectors`}
+        objectType="entire approach"
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          const current = approaches.find((a) => a.id === deleteTarget?.id)
+          if (current) deleteApproach(current)
+          clear()
+        }}
       />
     </>
   )
 }
 
 export const getPhaseNumberFromLabel = (label: string | number) => {
-  const s = label.toString()
-  const m = s.match(/ph\s*(\d+)/i)
-  const n = m ? Number(m[1]) : Number(s)
-  return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY
+  const match = String(label).match(/ph\s*(\d+)/i)
+  const value = match ? Number(match[1]) : Number(label)
+  return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY
 }

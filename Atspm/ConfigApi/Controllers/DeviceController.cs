@@ -16,6 +16,8 @@
 #endregion
 
 using Asp.Versioning;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
@@ -87,6 +89,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             return Ok(deviceGroups);
         }
 
+        [AuthorizePermission(AtspmAuthorization.Permissions.DeviceEdit)]
         [HttpPost("api/v1/Device/retrieveDeviceData")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

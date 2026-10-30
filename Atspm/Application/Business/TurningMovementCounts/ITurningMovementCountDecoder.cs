@@ -22,6 +22,9 @@ public interface ITurningMovementCountDecoder
     /// </summary>
     int MinimumBinMinutes { get; }
 
+    /// <summary>Optional capability, default false. Supports unfiltered zone evidence for lane review.</summary>
+    bool SupportsLaneReconciliation => false;
+
     /// <summary>
     /// Optional override. Singular noun used in report labels and duplicate-device warnings.
     /// Defaults to "device"; camera decoders use "camera". The adapter appends "s" for plural labels.
@@ -93,10 +96,19 @@ public record TmcDecodeRequest(Location Location, Device Device,
 /// <param name="Warnings">Required warning collection; use an empty collection when there are no warnings.</param>
 public record TmcDecodeResult(IReadOnlyList<MovementCount> Counts, IReadOnlyList<string> Warnings)
 {
+    /// <summary>Optional zone evidence, before chart filtering or cross-zone aggregation.</summary>
+    public IReadOnlyList<TmcZoneEvidence> ZoneEvidence { get; init; } = Array.Empty<TmcZoneEvidence>();
     /// <summary>
     /// Optional, defaults to true. Indicates that the source responded, even if it returned no counts.
     /// Set false when the source could not be read. If every selected device returns false, the adapter
     /// fails the report with HTTP 503. A true value does not guarantee complete data coverage.
     /// </summary>
     public bool Responded { get; init; } = true;
+}
+
+/// <summary>Source observations, independent of configured ATSPM lanes. Zero counts do not prove a prohibited movement.</summary>
+public record TmcZoneEvidence(int DeviceId, string ZoneName, long Through, long Left, long Right, int Bins)
+{
+    /// <summary>Optional source zone ID; identifies unnamed zones without inventing a matching name.</summary>
+    public long? ZoneId { get; init; }
 }

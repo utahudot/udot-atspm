@@ -31,7 +31,7 @@ import {
   Typography,
 } from '@mui/material'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { RampMeteringChartOptions } from '../../rampMetering/components/RampMeteringChartOptions'
 
 export const chartComponents = {
@@ -95,6 +95,9 @@ const SelectChart = ({
   const { data: measureTypesData } = useGetMeasureTypes()
   const { sources: tmcSources, loading: tmcSourcesLoading } = useTmcSources(location, !!location)
   const hasCameraTmc = tmcSources.length > 1
+  // Initial options may come from a shared TMC URL. Only retain them while
+  // staying on that chart; another chart's options must not override defaults.
+  const previousChartType = useRef(chartType)
 
   const chartDefaultsRaw =
     chartDefaultsData &&
@@ -178,7 +181,9 @@ const SelectChart = ({
   useEffect(() => {
     if (!isLoading && chartDefaultsRaw) {
       const simplifiedDefaults = simplifyChartDefaults(chartDefaultsRaw)
-      setChartOptions((previous) => chartType === ChartType.TurningMovementCounts
+      const keepOptions = chartType === ChartType.TurningMovementCounts && previousChartType.current === chartType
+      previousChartType.current = chartType
+      setChartOptions((previous) => keepOptions
         ? { ...simplifiedDefaults, ...previous }
         : simplifiedDefaults)
     }

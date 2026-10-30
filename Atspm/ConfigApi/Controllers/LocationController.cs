@@ -159,7 +159,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <param name="key">Location version to copy</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
         ///
-        //[Authorize(Policy = "CanEditLocationConfigurations")]
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         [HttpPost]
         [ProducesResponseType(typeof(TemplateLocationModifiedDto), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

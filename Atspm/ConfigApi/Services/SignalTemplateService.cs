@@ -38,13 +38,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             _eventLogRepository = eventLogRepository;
         }
 
-        //public ApproachDto SyncNewLocationEvents(int locationId)
-        //{
-        //    //Sync that puts data into the database (trigger the event logging workflow for the signal) successful or failure message.
-        //    //var workflow = new DetectorHourlySpeedAggregationWorkflow();
-        //    //await workflow.Input.SendAsync(locationId);
-        //}
-
         //Sync signal: From the data in the database return a list of phases and detector channels that are in the logs and compare the newly created signal.
         //Remove any phases or channels that dont exist on the signal, provide a list of non configured event phases. .
         public async Task<TemplateLocationModifiedDto> SyncNewLocationDetectorsAndApproaches(int locationId)
@@ -68,56 +61,90 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
 
         public static TemplateLocationModifiedDto ModifyLocationWithEvents(Location sourceLocation, IEnumerable<IndianaEvent> indianaEvents)
         {
-            var cycleEvents = indianaEvents.Where(e =>
-                new List<short>
-                {
-                    1,
-                    8,
-                    11,
-                    61, //Overlap
-                    63, //Overlap
-                    64, //Overlap
-                    90, //Ped
-                }.Contains(e.EventCode)).ToList();
+            // Phase and overlap identifiers are separate namespaces. A matching number
+            // in the other namespace must never validate a configured assignment.
+            var events = indianaEvents.ToList();
+            var protectedOrPermissivePhasesInUse = events.Where(e => e.EventCode is 1 or 8 or 11)
+                .Select(e => e.EventParam).ToHashSet();
+            var overlapPhasesInUse = events.Where(e => e.EventCode >= 61 && e.EventCode <= 64)
+                .Select(e => e.EventParam).ToHashSet();
+            var pedestrianPhasesInUse = events.Where(e => e.EventCode is 21 or 22 or 23)
+                .Select(e => e.EventParam).ToHashSet();
+            var pedestrianOverlapsInUse = events.Where(e => e.EventCode >= 67 && e.EventCode <= 69)
+                .Select(e => e.EventParam).ToHashSet();
+            var detectorChannelsInUse = events.Where(e => e.EventCode == 82)
+                .Select(e => e.EventParam).ToHashSet();
+            var warnings = new List<string>();
+            var fyaIdentifiers = events.Where(e => e.EventCode is 32 or 33)
+                .Select(e => e.EventParam).Distinct().OrderBy(p => p).ToList();
+            if (fyaIdentifiers.Count > 0)
+            {
+                // FYA indicates permissive operation, not whether protected service also
+                // exists. Keep the reported identifiers without assuming a phase mapping.
+                warnings.Add($"Flashing yellow arrow (FYA) events were observed for identifiers {string.Join(", ", fyaIdentifiers)}. Review the left-turn configuration manually to ensure the protected/permissive assignments and overlap settings are correct.");
+            }
 
-            var protectedOrPermissivePhasesInUse = cycleEvents.Where(d => ((d.EventCode == 1) || (d.EventCode == 8) || (d.EventCode == 11))).Select(d => d.EventParam).Distinct();
-            var overlapPhasesInUse = cycleEvents.Where(d => ((d.EventCode == 61) || (d.EventCode == 63) || (d.EventCode == 64))).Select(d => d.EventParam).Distinct();
-            var pedestrianPhasesInUse = cycleEvents.Where(d => (d.EventCode == 90)).Select(d => d.EventParam).Distinct();
+            // A null pedestrian assignment inherits the regular protected phase in
+            // one-to-one mode. Use the same effective value for retention and warnings.
+            int? PedestrianPhase(Approach approach)
+            {
+                if (approach.PedestrianPhaseNumber.HasValue)
+                    return approach.PedestrianPhaseNumber;
+                if (sourceLocation.PedsAre1to1 && !approach.IsProtectedPhaseOverlap && !approach.IsPedestrianPhaseOverlap)
+                    return approach.ProtectedPhaseNumber;
+                return null;
+            }
 
-            var detectorChannelsInUse = indianaEvents.Where(d => d.EventCode == 82).Select(d => d.EventParam).Distinct();
+            bool Observed(int? number, bool overlap, bool pedestrian = false)
+            {
+                if (!number.HasValue) return false;
+                if (pedestrian)
+                    return overlap
+                        ? pedestrianOverlapsInUse.Contains((short)number.Value)
+                        : pedestrianPhasesInUse.Contains((short)number.Value);
+                return overlap
+                    ? overlapPhasesInUse.Contains((short)number.Value)
+                    : protectedOrPermissivePhasesInUse.Contains((short)number.Value);
+            }
+
+            void CheckAssignment(int approachId, string role, int? number, bool overlap,
+                ICollection<MissingPhaseAssignmentDto> missingAssignments, bool pedestrian = false)
+            {
+                // Report each field independently even when another phase or detector
+                // keeps the approach active. Zero means unassigned, not a missing phase.
+                if (number > 0 && !Observed(number, overlap, pedestrian))
+                    missingAssignments.Add(new MissingPhaseAssignmentDto
+                    {
+                        ApproachId = approachId, Role = role,
+                        PhaseNumber = number.Value, IsOverlap = overlap
+                    });
+            }
+
+            var missingAssignments = new List<MissingPhaseAssignmentDto>();
+            foreach (var approach in sourceLocation.Approaches)
+            {
+                // One-to-one pedestrian settings must be checked against regular vehicle
+                // phases, never inferred from an overlap with the same numeric identifier.
+                if (sourceLocation.PedsAre1to1 && approach.ProtectedPhaseNumber > 0 && !approach.IsProtectedPhaseOverlap &&
+                    ((approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber) != approach.ProtectedPhaseNumber || approach.IsPedestrianPhaseOverlap))
+                    warnings.Add($"Approach {approach.Id} ({approach.Description}): pedestrian configuration does not match the one-to-one setting. Verify pedestrian phase {approach.ProtectedPhaseNumber} and its detector mapping.");
+                CheckAssignment(approach.Id, "protected", approach.ProtectedPhaseNumber, approach.IsProtectedPhaseOverlap, missingAssignments);
+                CheckAssignment(approach.Id, "permissive", approach.PermissivePhaseNumber, approach.IsPermissivePhaseOverlap, missingAssignments);
+                CheckAssignment(approach.Id, "pedestrian", approach.PedestrianPhaseNumber, approach.IsPedestrianPhaseOverlap, missingAssignments, pedestrian: true);
+            }
 
             var newVersion = (Location)sourceLocation.Clone();
-            // Detach the original entity
-            var ogApproaches = newVersion.Approaches;
-
-
-            // Step 1: Partition the approaches into kept and removed
-            var removedApproaches = newVersion.Approaches
-                .Where(approach =>
-                    !(((approach.PermissivePhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.PermissivePhaseNumber)) ||
-                      (approach.ProtectedPhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.ProtectedPhaseNumber)) ||
-                      (approach.PedestrianPhaseNumber == null ? false : pedestrianPhasesInUse.Contains((short)approach.PedestrianPhaseNumber)) ||
-                      (approach.PermissivePhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PermissivePhaseNumber) && approach.IsPermissivePhaseOverlap == true)) ||
-                      (approach.ProtectedPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.ProtectedPhaseNumber) && approach.IsProtectedPhaseOverlap == true)) ||
-                      (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true)))
-                      || (approach.Detectors.Where(det => detectorChannelsInUse.Contains((short)det.DetectorChannel)).ToList().Count >= 1)))
-                .ToList();
-
-            var savedApproaches = newVersion.Approaches
-                .Where(approach =>
-                    (((approach.PermissivePhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.PermissivePhaseNumber)) ||
-                      (approach.ProtectedPhaseNumber == null ? false : protectedOrPermissivePhasesInUse.Contains((short)approach.ProtectedPhaseNumber)) ||
-                      (approach.PedestrianPhaseNumber == null ? false : pedestrianPhasesInUse.Contains((short)approach.PedestrianPhaseNumber)) ||
-                      (approach.PermissivePhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PermissivePhaseNumber) && approach.IsPermissivePhaseOverlap == true)) ||
-                      (approach.ProtectedPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.ProtectedPhaseNumber) && approach.IsProtectedPhaseOverlap == true)) ||
-                      (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true)))
-                      || (approach.Detectors.Where(det => detectorChannelsInUse.Contains((short)det.DetectorChannel)).ToList().Count >= 1)))
-                .ToList();
-
+            bool ApproachObserved(Approach approach) =>
+                Observed(approach.ProtectedPhaseNumber, approach.IsProtectedPhaseOverlap) ||
+                Observed(approach.PermissivePhaseNumber, approach.IsPermissivePhaseOverlap) ||
+                Observed(PedestrianPhase(approach), approach.IsPedestrianPhaseOverlap, pedestrian: true) ||
+                // Preserve approaches supported by detector activity even when no phase
+                // transition occurred in the observation window.
+                approach.Detectors.Any(d => detectorChannelsInUse.Contains((short)d.DetectorChannel));
+            var removedApproaches = newVersion.Approaches.Where(a => !ApproachObserved(a)).ToList();
+            newVersion.Approaches = newVersion.Approaches.Where(ApproachObserved).ToList();
             var removedDetectors = new List<string>();
-            newVersion.Approaches = savedApproaches;
 
-            // Step 1: Filter and save the Detectors for each Approach
             foreach (var approach in newVersion.Approaches)
             {
                 removedDetectors.AddRange(approach.Detectors
@@ -139,200 +166,37 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             // Step 3: Find all detectorChannels from the input array that are not attached to any approach
             var unattachedDetectorChannels = detectorChannelsInUse.Except(usedDetectorChannels).ToList();
 
-            var usedProtectedOrPermissivePhases = newVersion.Approaches
-                .SelectMany(approach => new List<int?>
+            var usedProtectedOrPermissivePhases = newVersion.Approaches.SelectMany(a => new int?[]
                 {
-                    approach.PermissivePhaseNumber,
-                    approach.ProtectedPhaseNumber
-                })
-                .Where(phase => phase.HasValue) // Filter out null values
-                .Select(phase => (short)phase.Value) // Cast non-null values to short
-                .Where(phase => protectedOrPermissivePhasesInUse.Contains(phase))
-                .Distinct()
-                .ToList();
+                    a.IsProtectedPhaseOverlap ? null : a.ProtectedPhaseNumber,
+                    a.IsPermissivePhaseOverlap ? null : a.PermissivePhaseNumber
+                }).Where(p => p.HasValue).Select(p => (short)p.Value).ToHashSet();
+            var unattachedProtectedOrPermissivePhases = protectedOrPermissivePhasesInUse.Except(usedProtectedOrPermissivePhases).OrderBy(p => p).ToList();
 
-            var unattachedProtectedOrPermissivePhases = protectedOrPermissivePhasesInUse.Except(usedProtectedOrPermissivePhases).ToList();
-
-            // Step 2: Find shorts in overlapPhasesInUse that are not attached to any remaining approach
-            var usedOverlapPhases = newVersion.Approaches
-                .Where(approach => (approach.IsPermissivePhaseOverlap || approach.IsProtectedPhaseOverlap || approach.IsPedestrianPhaseOverlap))
-                .SelectMany(approach => new List<int?>
+            // Each field has its own overlap flag; one flagged field must not consume
+            // the regular phase number from another field on the same approach.
+            var usedOverlapPhases = newVersion.Approaches.SelectMany(a => new int?[]
                 {
-                    approach.PermissivePhaseNumber,
-                    approach.ProtectedPhaseNumber,
-                    approach.PedestrianPhaseNumber
-                })
-                .Where(phase => phase.HasValue) // Exclude nulls
-                .Select(phase => (short)phase.Value) // Cast non-null values to short
-                .Where(phase => overlapPhasesInUse.Contains(phase))
-                .Distinct()
-                .ToList();
-
-            var unattachedOverlapPhases = overlapPhasesInUse.Except(usedOverlapPhases).ToList();
-
-
-            // Step 3: Find shorts in pedestrianPhasesInUse that are not attached to any remaining approach
-            var usedPedestrianPhases = newVersion.Approaches
-                .SelectMany(approach => new List<int?> { approach.PedestrianPhaseNumber })
-                .Where(phase => phase.HasValue) // Exclude nulls
-                .Select(phase => (short)phase.Value) // Cast non-null values to short
-                .Where(phase => pedestrianPhasesInUse.Contains(phase))
-                .Distinct()
-                .ToList();
-
-            var unattachedPedestrianPhases = pedestrianPhasesInUse.Except(usedPedestrianPhases).ToList();
+                    a.IsProtectedPhaseOverlap ? a.ProtectedPhaseNumber : null,
+                    a.IsPermissivePhaseOverlap ? a.PermissivePhaseNumber : null
+                }).Where(p => p.HasValue).Select(p => (short)p.Value).ToHashSet();
+            var unattachedOverlapPhases = overlapPhasesInUse.Except(usedOverlapPhases).OrderBy(p => p).ToList();
+            var usedPedestrianPhases = newVersion.Approaches.Where(a => !a.IsPedestrianPhaseOverlap)
+                .Select(PedestrianPhase).Where(p => p > 0).Select(p => (short)p.Value);
+            var unattachedPedestrianPhases = pedestrianPhasesInUse.Except(usedPedestrianPhases).OrderBy(p => p).ToList();
+            foreach (var phase in unattachedPedestrianPhases)
+                warnings.Add($"Pedestrian phase {phase} was observed without a configured pedestrian phase assignment. Review the crosswalk mapping and one-to-one pedestrian setting manually; do not add it as a vehicle phase.");
+            var usedPedestrianOverlaps = newVersion.Approaches.Where(a => a.IsPedestrianPhaseOverlap)
+                .Select(PedestrianPhase).Where(p => p > 0).Select(p => (short)p.Value);
+            foreach (var overlap in pedestrianOverlapsInUse.Except(usedPedestrianOverlaps).OrderBy(p => p))
+                warnings.Add($"Pedestrian overlap {overlap} was observed without a configured pedestrian overlap assignment. Review the crosswalk mapping manually; do not add it as a vehicle phase.");
 
             return new TemplateLocationModifiedDto
             {
                 Id = sourceLocation.Id.ToString(),
                 LocationId = newVersion.Id,
-                //Location = new LocationDto
-                //{
-                //    Id = newVersion.Id,
-                //    Latitude = newVersion.Latitude,
-                //    Longitude = newVersion.Longitude,
-                //    PrimaryName = newVersion.PrimaryName,
-                //    SecondaryName = newVersion.SecondaryName,
-                //    ChartEnabled = newVersion.ChartEnabled,
-                //    VersionAction = newVersion.VersionAction,
-                //    Note = newVersion.Note,
-                //    Start = newVersion.Start,
-                //    PedsAre1to1 = newVersion.PedsAre1to1,
-                //    LocationIdentifier = newVersion.LocationIdentifier,
-                //    JurisdictionId = newVersion.JurisdictionId,
-                //    Jurisdiction = newVersion.Jurisdiction == null ? null : new JurisdictionDto
-                //    {
-                //        Id = newVersion.Jurisdiction.Id,
-                //        Name = newVersion.Jurisdiction.Name,
-                //        Mpo = newVersion.Jurisdiction.Mpo,
-                //        CountyParish = newVersion.Jurisdiction.CountyParish,
-                //        OtherPartners = newVersion.Jurisdiction.OtherPartners,
-                //        UserJurisdictions = newVersion.Jurisdiction.UserJurisdictions.Select(userJurisdiction => new UserJurisdictionDto
-                //        {
-                //            UserId = userJurisdiction.UserId,
-                //            JurisdictionId = userJurisdiction.JurisdictionId
-                //        }).ToList()
-                //    },
-                //    LocationTypeId = newVersion.LocationTypeId,
-                //    LocationType = newVersion.LocationType == null ? null : new LocationTypeDto
-                //    {
-                //        Id = newVersion.LocationType.Id,
-                //        Name = newVersion.LocationType.Name,
-                //        Icon = newVersion.LocationType.Icon
-                //    },
-                //    RegionId = newVersion.RegionId,
-                //    Region = newVersion.Region == null ? null : new RegionDto
-                //    {
-                //        Id = newVersion.Region.Id,
-                //        Description = newVersion.Region.Description,
-                //        UserRegions = newVersion.Region.UserRegions.Select(userRegion => new UserRegionDto
-                //        {
-                //            UserId = userRegion.UserId,
-                //            RegionId = userRegion.RegionId
-                //        }).ToList()
-                //    },
-                //    Approaches = newVersion.Approaches.Select(approach => new ApproachDto
-                //    {
-                //        Id = approach.Id,
-                //        Description = approach.Description,
-                //        Mph = approach.Mph,
-                //        ProtectedPhaseNumber = approach.ProtectedPhaseNumber,
-                //        IsProtectedPhaseOverlap = approach.IsProtectedPhaseOverlap,
-                //        PermissivePhaseNumber = approach.PermissivePhaseNumber,
-                //        IsPermissivePhaseOverlap = approach.IsPermissivePhaseOverlap,
-                //        PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
-                //        IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
-                //        PedestrianDetectors = approach.PedestrianDetectors,
-                //        LocationId = approach.LocationId,
-                //        DirectionTypeId = approach.DirectionTypeId,
-                //        Detectors = approach.Detectors.Select(detector => new DetectorDto
-                //        {
-                //            Id = detector.Id,
-                //            DectectorIdentifier = detector.DectectorIdentifier,
-                //            DetectorChannel = detector.DetectorChannel,
-                //            DistanceFromStopBar = detector.DistanceFromStopBar,
-                //            MinSpeedFilter = detector.MinSpeedFilter,
-                //            DateAdded = detector.DateAdded,
-                //            DateDisabled = detector.DateDisabled,
-                //            LaneNumber = detector.LaneNumber,
-                //            MovementType = detector.MovementType,
-                //            LaneType = detector.LaneType,
-                //            DetectionHardware = detector.DetectionHardware,
-                //            DecisionPoint = detector.DecisionPoint,
-                //            MovementDelay = detector.MovementDelay,
-                //            LatencyCorrection = detector.LatencyCorrection,
-                //            ApproachId = detector.ApproachId,
-                //            DetectionTypes = detector.DetectionTypes.Select(detectionType => new DetectionTypeDto
-                //            {
-                //                Id = detectionType.Id,
-                //                Description = detectionType.Description,
-                //                Abbreviation = detectionType.Abbreviation,
-                //                DisplayOrder = detectionType.DisplayOrder,
-                //                MeasureTypes = detectionType.MeasureTypes.Select(measureType => new MeasureTypeDto
-                //                {
-                //                    Id = measureType.Id,
-                //                    Name = measureType.Name,
-                //                    Abbreviation = measureType.Abbreviation,
-                //                    ShowOnWebsite = measureType.ShowOnWebsite,
-                //                    ShowOnAggregationSite = measureType.ShowOnAggregationSite,
-                //                    DisplayOrder = measureType.DisplayOrder,
-                //                    MeasureComments = measureType.MeasureComments.Select(comment => new MeasureCommentsDto
-                //                    {
-                //                        Id = comment.Id,
-                //                        TimeStamp = comment.TimeStamp,
-                //                        Comment = comment.Comment,
-                //                        LocationIdentifier = comment.LocationIdentifier
-                //                    }).ToList(),
-                //                    MeasureOptions = measureType.MeasureOptions.Select(option => new MeasureOptionDto
-                //                    {
-                //                        Id = option.Id,
-                //                        Option = option.Option,
-                //                        Value = option.Value,
-                //                        MeasureTypeId = option.MeasureTypeId
-                //                    }).ToList()
-                //                }).ToList()
-                //            }).ToList()
-                //        }).ToList()
-                //    }).ToList(),
-                //    Areas = newVersion.Areas.Select(area => new AreaDto
-                //    {
-                //        Id = area.Id,
-                //        Name = area.Name,
-                //        UserAreas = area.UserAreas.Select(userArea => new UserAreaDto
-                //        {
-                //            UserId = userArea.UserId,
-                //            AreaId = userArea.AreaId
-                //        }).ToList()
-                //    }).ToList(),
-                //    Devices = newVersion.Devices.Select(device => new DeviceDto
-                //    {
-                //        Id = device.Id,
-                //        LoggingEnabled = device.LoggingEnabled,
-                //        Ipaddress = device.Ipaddress,
-                //        DeviceStatus = device.DeviceStatus,
-                //        DeviceType = device.DeviceType,
-                //        Notes = device.Notes,
-                //        LocationId = device.LocationId,
-                //        DeviceConfigurationId = device.DeviceConfigurationId,
-                //        DeviceConfiguration = device.DeviceConfiguration == null ? null : new DeviceConfigurationDto
-                //        {
-                //            Id = device.DeviceConfiguration.Id,
-                //            Firmware = device.DeviceConfiguration.Firmware,
-                //            Notes = device.DeviceConfiguration.Notes,
-                //            Protocol = device.DeviceConfiguration.Protocol,
-                //            Port = device.DeviceConfiguration.Port,
-                //            Directory = device.DeviceConfiguration.Directory,
-                //            SearchTerms = device.DeviceConfiguration.SearchTerms,
-                //            ConnectionTimeout = device.DeviceConfiguration.ConnectionTimeout,
-                //            OperationTimeout = device.DeviceConfiguration.OperationTimeout,
-                //            Decoders = device.DeviceConfiguration.Decoders,
-                //            UserName = device.DeviceConfiguration.UserName,
-                //            Password = device.DeviceConfiguration.Password,
-                //            ProductId = device.DeviceConfiguration.ProductId,
-                //            Product = device.DeviceConfiguration.Product // Assuming Product has a mapping as well
-                //        }
-                //    }).ToList()
-                //},
+                ReconciliationWarnings = warnings,
+                MissingPhaseAssignments = missingAssignments,
                 LoggedButUnusedProtectedOrPermissivePhases = unattachedProtectedOrPermissivePhases,
                 LoggedButUnusedOverlapPhases = unattachedOverlapPhases,
                 LoggedButUnusedPedestrianPhases = unattachedPedestrianPhases,

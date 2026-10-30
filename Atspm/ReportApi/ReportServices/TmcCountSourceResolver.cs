@@ -11,10 +11,13 @@ public sealed class TmcCountSourceResolver(IDeviceRepository devices, IServicePr
     public (ITurningMovementCountSource Source, TmcCountSourceRequest Request) Resolve(Location location, TurningMovementCountsOptions options)
     {
         var key = options.Source ?? "atspm";
+        // Independent, default-off gate: lane review must not be enabled just by enabling TMC sources.
+        if (options.ReconcileLanes && (!configuration.GetValue<bool>("Features:LaneReconciliation") || key != "devices"))
+            throw new ReportException(400, "Lane reconciliation is disabled or no device source was selected.");
         var request = new TmcCountSourceRequest(location, options);
         if (key == "devices")
         {
-            if (!configuration.GetValue<bool>("Features:TmcDeviceSources")) throw new ReportException(400, "Device TMC sources are disabled.");
+            if (!options.ReconcileLanes && !configuration.GetValue<bool>("Features:TmcDeviceSources")) throw new ReportException(400, "Device TMC sources are disabled.");
             var ids = options.DeviceIds?.Distinct().ToArray() ?? Array.Empty<int>();
             if (ids.Length == 0) throw new ReportException(400, "Select at least one device.");
             var selected = devices.GetList().Where(d => ids.Contains(d.Id)).OrderBy(d => d.Id).ToList();

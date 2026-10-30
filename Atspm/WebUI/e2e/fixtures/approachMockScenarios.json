@@ -1,0 +1,2143 @@
+[
+  {
+    "name": "Already matching",
+    "explanation": "All configured phase and detector identifiers were observed. No discrepancy is expected.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured regular phase \u2014 event 1",
+    "explanation": "Offer a regular phase addition. Direction and lane mapping still require review.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 1,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured regular phase \u2014 event 8",
+    "explanation": "Offer a regular phase addition. Direction and lane mapping still require review.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 8,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured regular phase \u2014 event 11",
+    "explanation": "Offer a regular phase addition. Direction and lane mapping still require review.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 11,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Configured approach not observed",
+    "explanation": "Offer ignore or explicit deletion; no observation does not prove the approach is invalid.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 2,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Configured detector not observed",
+    "explanation": "Retain the observed approach; offer ignore or deletion of channel 118.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [
+        "118"
+      ],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured detector channel",
+    "explanation": "Offer assigning channel 119 to an existing approach.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 119
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [
+        119
+      ],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Detector activity retains approach",
+    "explanation": "Keep the approach even without phase transitions because its detector was observed.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 2,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Mixed additions and removals",
+    "explanation": "Add phase 3 and channel 119; review unobserved approach 2 and channel 118.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "description": "Mock approach 2",
+          "protectedPhaseNumber": 4,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 1,
+        "eventParam": 3
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 119
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [
+        119
+      ],
+      "removedDetectors": [
+        "118"
+      ],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 2,
+          "role": "protected",
+          "phaseNumber": 4,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        2
+      ]
+    }
+  },
+  {
+    "name": "FYA manual review \u2014 event 32",
+    "explanation": "Show a left-turn review warning. Do not infer protected service or change assignments from FYA alone.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 32,
+        "eventParam": 5
+      },
+      {
+        "eventCode": 32,
+        "eventParam": 5
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 1,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [
+        "Flashing yellow arrow (FYA) events were observed for identifiers 5. Review the left-turn configuration manually to ensure the protected/permissive assignments and overlap settings are correct."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "FYA manual review \u2014 event 33",
+    "explanation": "Show a left-turn review warning. Do not infer protected service or change assignments from FYA alone.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 33,
+        "eventParam": 5
+      },
+      {
+        "eventCode": 33,
+        "eventParam": 5
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 1,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [
+        "Flashing yellow arrow (FYA) events were observed for identifiers 5. Review the left-turn configuration manually to ensure the protected/permissive assignments and overlap settings are correct."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Multiple FYA identifiers",
+    "explanation": "Deduplicate and sort identifiers in one manual-review warning.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 32,
+        "eventParam": 5
+      },
+      {
+        "eventCode": 33,
+        "eventParam": 1
+      },
+      {
+        "eventCode": 32,
+        "eventParam": 5
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [
+        "Flashing yellow arrow (FYA) events were observed for identifiers 1, 5. Review the left-turn configuration manually to ensure the protected/permissive assignments and overlap settings are correct."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured vehicle overlap \u2014 event 61",
+    "explanation": "Offer a separate overlap addition with its overlap flag enabled.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 61,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured vehicle overlap \u2014 event 62",
+    "explanation": "Offer a separate overlap addition with its overlap flag enabled.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 62,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured vehicle overlap \u2014 event 63",
+    "explanation": "Offer a separate overlap addition with its overlap flag enabled.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 63,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured vehicle overlap \u2014 event 64",
+    "explanation": "Offer a separate overlap addition with its overlap flag enabled.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 64,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Inactive overlap - Off event 65",
+    "explanation": "Off/Dark observations do not establish an active overlap and must not offer an addition.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 65,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Inactive overlap - Dark event 66",
+    "explanation": "Off/Dark observations do not establish an active overlap and must not offer an addition.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 66,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Configured protected overlap",
+    "explanation": "The protected overlap assignment is satisfied by overlap events.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 3,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": true,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 61,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Configured permissive overlap",
+    "explanation": "The permissive overlap assignment is satisfied independently.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": 3,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": true,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 61,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Same number, separate phase and overlap",
+    "explanation": "Phase 3 and overlap 3 are different outputs. Both can be added independently.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 1,
+        "eventParam": 3
+      },
+      {
+        "eventCode": 61,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Each field uses its own overlap flag",
+    "explanation": "Regular phase 1 and overlap 2 are configured. Offer regular phase 2 and overlap 1 separately.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": true,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 1
+      },
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 61,
+        "eventParam": 1
+      },
+      {
+        "eventCode": 61,
+        "eventParam": 2
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        2
+      ],
+      "loggedButUnusedOverlapPhases": [
+        1
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Protected assignment \u2014 phase absent, overlap observed",
+    "explanation": "Phase and overlap identifiers are independent even when their numbers match. Report the missing configured assignment separately from the unconfigured observed output; do not infer an incorrect overlap setting.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 3,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 61,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 3,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Protected assignment \u2014 overlap absent, phase observed",
+    "explanation": "Phase and overlap identifiers are independent even when their numbers match. Report the missing configured assignment separately from the unconfigured observed output; do not infer an incorrect overlap setting.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 3,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": true,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 3,
+          "isOverlap": true
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Permissive assignment \u2014 phase absent, overlap observed",
+    "explanation": "Phase and overlap identifiers are independent even when their numbers match. Report the missing configured assignment separately from the unconfigured observed output; do not infer an incorrect overlap setting.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": 3,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 61,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        3
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "permissive",
+          "phaseNumber": 3,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Permissive assignment \u2014 overlap absent, phase observed",
+    "explanation": "Phase and overlap identifiers are independent even when their numbers match. Report the missing configured assignment separately from the unconfigured observed output; do not infer an incorrect overlap setting.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": 3,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": true,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [
+        3
+      ],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "permissive",
+          "phaseNumber": 3,
+          "isOverlap": true
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Pedestrian assignment \u2014 phase absent, overlap observed",
+    "explanation": "Phase and overlap identifiers are independent even when their numbers match. Report the missing configured assignment separately from the unconfigured observed output; do not infer an incorrect overlap setting.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 67,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "pedestrian",
+          "phaseNumber": 3,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [
+        "Pedestrian overlap 3 was observed without a configured pedestrian overlap assignment. Review the crosswalk mapping manually; do not add it as a vehicle phase."
+      ],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Pedestrian assignment \u2014 overlap absent, phase observed",
+    "explanation": "Phase and overlap identifiers are independent even when their numbers match. Report the missing configured assignment separately from the unconfigured observed output; do not infer an incorrect overlap setting.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": true,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 21,
+        "eventParam": 3
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [
+        3
+      ],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "pedestrian",
+          "phaseNumber": 3,
+          "isOverlap": true
+        }
+      ],
+      "reconciliationWarnings": [
+        "Pedestrian phase 3 was observed without a configured pedestrian phase assignment. Review the crosswalk mapping and one-to-one pedestrian setting manually; do not add it as a vehicle phase."
+      ],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  },
+  {
+    "name": "Unconfigured pedestrian overlap \u2014 event 67",
+    "explanation": "Warn about crosswalk mapping; do not offer a vehicle-phase addition.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 67,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [
+        "Pedestrian overlap 4 was observed without a configured pedestrian overlap assignment. Review the crosswalk mapping manually; do not add it as a vehicle phase."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured pedestrian overlap \u2014 event 68",
+    "explanation": "Warn about crosswalk mapping; do not offer a vehicle-phase addition.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 68,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [
+        "Pedestrian overlap 4 was observed without a configured pedestrian overlap assignment. Review the crosswalk mapping manually; do not add it as a vehicle phase."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured pedestrian overlap \u2014 event 69",
+    "explanation": "Warn about crosswalk mapping; do not offer a vehicle-phase addition.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 69,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [
+        "Pedestrian overlap 4 was observed without a configured pedestrian overlap assignment. Review the crosswalk mapping manually; do not add it as a vehicle phase."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Inactive pedestrian overlap - Dark event 70",
+    "explanation": "Off/Dark observations do not establish an active overlap and must not offer an addition.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 70,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Configured pedestrian overlap",
+    "explanation": "A pedestrian overlap is validated by pedestrian-overlap events.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": 4,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": true,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 67,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Pedestrian and vehicle overlap share a number",
+    "explanation": "Configured pedestrian overlap 4 must not consume vehicle overlap 4.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": 4,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": true,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 67,
+        "eventParam": 4
+      },
+      {
+        "eventCode": 61,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [
+        4
+      ],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Configured regular pedestrian phase",
+    "explanation": "Retain a regular pedestrian assignment when event 90 is present.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 0,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": 4,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 21,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Unconfigured regular pedestrian phase \u2014 current UI gap",
+    "explanation": "The API identifies pedestrian phase 4, but the current approach report does not offer a pedestrian-add action. Verify its mapping manually.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 21,
+        "eventParam": 4
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [
+        4
+      ],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [],
+      "reconciliationWarnings": [
+        "Pedestrian phase 4 was observed without a configured pedestrian phase assignment. Review the crosswalk mapping and one-to-one pedestrian setting manually; do not add it as a vehicle phase."
+      ],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "No events returned",
+    "explanation": "With an empty event window, all configured approaches are unobserved. Verify logging and the observation window before choosing removal.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Mock approach 1",
+          "protectedPhaseNumber": 2,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        },
+        {
+          "id": 2,
+          "description": "Mock approach 2",
+          "protectedPhaseNumber": 4,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": []
+        }
+      ]
+    },
+    "events": [],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 2,
+          "isOverlap": false
+        },
+        {
+          "approachId": 2,
+          "role": "protected",
+          "phaseNumber": 4,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "name": "Remove missing protected; keep permissive",
+    "explanation": "Remove protected phase 1 while retaining permissive phase 2, pedestrian phase 3, and detector 118.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Northbound test approach",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 21,
+        "eventParam": 3
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 1,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Remove missing permissive overlap; keep protected",
+    "explanation": "Clear only permissive overlap 2 and its flag. Preserve protected phase 1 and all detectors.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Northbound test approach",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": true,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 1
+      },
+      {
+        "eventCode": 21,
+        "eventParam": 3
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "permissive",
+          "phaseNumber": 2,
+          "isOverlap": true
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Remove missing pedestrian overlap; keep vehicle phases",
+    "explanation": "Clear only pedestrian overlap 3. Do not remove vehicle phases or detector 118.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Northbound test approach",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": true,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 1,
+        "eventParam": 1
+      },
+      {
+        "eventCode": 1,
+        "eventParam": 2
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "pedestrian",
+          "phaseNumber": 3,
+          "isOverlap": true
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Remove multiple assignments; keep remaining phase",
+    "explanation": "Remove protected phase 1 and permissive overlap 2 together, retaining pedestrian phase 3 and detector 118.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Northbound test approach",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": true,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 21,
+        "eventParam": 3
+      },
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 1,
+          "isOverlap": false
+        },
+        {
+          "approachId": 1,
+          "role": "permissive",
+          "phaseNumber": 2,
+          "isOverlap": true
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Remove last assignment; keep approach and detectors",
+    "explanation": "Removing the last assignment leaves an unassigned approach with its detector. Deleting the whole approach is a separate action.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Northbound test approach",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": null,
+          "pedestrianPhaseNumber": null,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [
+      {
+        "eventCode": 82,
+        "eventParam": 118
+      }
+    ],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 1,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": []
+    }
+  },
+  {
+    "name": "Delete entire unobserved approach explicitly",
+    "explanation": "No assignments were observed. Clearing them preserves the approach; the separate whole-approach delete removes its detectors too.",
+    "location": {
+      "id": 990001,
+      "locationIdentifier": "MOCK",
+      "approaches": [
+        {
+          "id": 1,
+          "description": "Northbound test approach",
+          "protectedPhaseNumber": 1,
+          "permissivePhaseNumber": 2,
+          "pedestrianPhaseNumber": 3,
+          "isProtectedPhaseOverlap": false,
+          "isPermissivePhaseOverlap": false,
+          "isPedestrianPhaseOverlap": false,
+          "detectors": [
+            {
+              "id": 218,
+              "detectorChannel": 118,
+              "approachId": 1
+            }
+          ]
+        }
+      ]
+    },
+    "events": [],
+    "expected": {
+      "id": "990001",
+      "locationId": 990001,
+      "loggedButUnusedProtectedOrPermissivePhases": [],
+      "loggedButUnusedOverlapPhases": [],
+      "loggedButUnusedPedestrianPhases": [],
+      "loggedButUnusedDetectorChannels": [],
+      "removedDetectors": [],
+      "missingPhaseAssignments": [
+        {
+          "approachId": 1,
+          "role": "protected",
+          "phaseNumber": 1,
+          "isOverlap": false
+        },
+        {
+          "approachId": 1,
+          "role": "permissive",
+          "phaseNumber": 2,
+          "isOverlap": false
+        },
+        {
+          "approachId": 1,
+          "role": "pedestrian",
+          "phaseNumber": 3,
+          "isOverlap": false
+        }
+      ],
+      "reconciliationWarnings": [],
+      "removedApproachIds": [
+        1
+      ]
+    }
+  }
+]

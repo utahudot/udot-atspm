@@ -74,7 +74,11 @@ interface ApproachSlice {
   setScrollToDetector: (detectorId: number | null) => void
 
   updateApproaches: (newApproaches: ConfigApproach[]) => void
-  addApproach: (protectedPhaseNumber?: number) => void
+  addApproach: (
+    protectedPhaseNumber?: number,
+    isOverlap?: boolean,
+    properties?: Partial<ConfigApproach>
+  ) => void
   updateApproach: (updatedApproach: ConfigApproach) => void
   updateSavedApproach: (updatedApproach: ConfigApproach) => void
   updateSavedApproaches: (updatedApproaches: ConfigApproach[]) => void
@@ -83,7 +87,11 @@ interface ApproachSlice {
   deleteApproach: (approach: ConfigApproach) => void
   resetStore: () => void
 
-  addDetector: (approachId: number, detectorChannel?: number) => void
+  addDetector: (
+    approachId: number,
+    detectorChannel?: number,
+    properties?: Partial<ConfigDetector>
+  ) => void
   updateDetector: (detectorId: number, name: string, val: unknown) => void
   deleteDetector: (detectorId: number) => void
 }
@@ -184,10 +192,18 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
 
     resetApproaches: () => {
       const { savedApproaches } = get()
-      set({ approaches: JSON.parse(JSON.stringify(savedApproaches)) })
+      set({
+        approaches: JSON.parse(JSON.stringify(savedApproaches)),
+        // Discard draft channel additions/edits along with the detector drafts.
+        channelMap: new Map(
+          savedApproaches.flatMap((a) =>
+            a.detectors.map((d) => [d.id, d.detectorChannel || 0] as const)
+          )
+        ),
+      })
     },
 
-    addApproach: (protectedPhaseNumber) => {
+    addApproach: (protectedPhaseNumber, isOverlap = false, properties) => {
       const { location, approaches } = get()
       const id = Math.round(Math.random() * 10000)
       const index = approaches.length
@@ -198,7 +214,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         description: 'New Approach',
         isNew: true,
         detectors: [],
-        isProtectedPhaseOverlap: false,
+        isProtectedPhaseOverlap: isOverlap,
         isPermissivePhaseOverlap: false,
         isPedestrianPhaseOverlap: false,
         permissivePhaseNumber: null,
@@ -214,6 +230,16 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         protectedPhaseNumber: protectedPhaseNumber ?? null,
       }
 
+      // Drafts may edit fields, but identity, ownership, and detector collection belong to the store.
+      const {
+        id: draftId,
+        index: draftIndex,
+        locationId: draftLocation,
+        isNew: draftNew,
+        detectors: draftDetectors,
+        ...fields
+      } = properties ?? {}
+      Object.assign(newApproach, fields)
       set({
         approaches: [newApproach, ...approaches],
         scrollToApproach: newApproach.id,
@@ -274,7 +300,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       })
     },
 
-    addDetector: (approachId, detectorChannel) => {
+    addDetector: (approachId, detectorChannel, properties) => {
       const { approaches, updateApproach, setScrollToDetector } = get()
       const approach = approaches.find((a) => a.id === approachId)
       if (!approach) return
@@ -297,10 +323,26 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         movementType: 'NA',
         laneType: 'NA',
       }
+      // Keep identity and destination controlled by the store, not the draft editor.
+      const {
+        id: draftId,
+        approachId: draftApproach,
+        isNew: draftNew,
+        ...fields
+      } = properties ?? {}
+      Object.assign(newDetector, fields)
       if (detectorChannel != null) {
         newDetector.detectorChannel = detectorChannel
       }
 
+      // Reconciliation supplies the channel before the detector reaches the editor.
+      // Include it in the same map used by edits and the regular save validation.
+      set({
+        channelMap: new Map(get().channelMap).set(
+          newDetector.id,
+          newDetector.detectorChannel || 0
+        ),
+      })
       updateApproach({
         ...approach,
         detectors: [newDetector, ...approach.detectors],
@@ -358,7 +400,6 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
       if (shouldCallApi) {
         try {
           deleteDetectorFromKey(detectorId)
-          channelMap.delete(detectorId)
         } catch (err) {
           console.error(err)
         }
@@ -366,8 +407,13 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
 
       set({
         approaches: updatedApproaches,
-        savedApproaches: toBaseline(updatedApproaches),
-        channelMap: new Map(channelMap),
+        // Only the deletion is persisted. Assignment edits and other drafts still
+        // await Save and must not be copied into the reset/unsaved-change baseline.
+        savedApproaches: get().savedApproaches.map((approach) => ({
+          ...approach,
+          detectors: approach.detectors.filter((d) => d.id !== detectorId),
+        })),
+        channelMap: new Map([...channelMap].filter(([id]) => id !== detectorId)),
       })
     },
 

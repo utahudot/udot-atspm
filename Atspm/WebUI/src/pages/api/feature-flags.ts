@@ -21,6 +21,7 @@ export default function handler(
   res: NextApiResponse<Flags>
 ) {
   res.status(200).json({
+    laneReconciliation: process.env.ENABLE_LANE_RECONCILIATION === 'true',
     speedManagementTool: Boolean(
       process.env.ENABLE_SPEED_MANAGEMENT_TOOL === 'true'
     ),

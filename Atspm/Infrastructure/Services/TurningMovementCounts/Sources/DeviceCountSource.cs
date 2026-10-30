@@ -11,6 +11,8 @@ public sealed class DeviceCountSource<TDecoder>(TDecoder decoder) : IDeviceCount
     public async Task<TmcCountSourceResult> ReadAsync(TmcCountSourceRequest request, CancellationToken token)
     {
         var selected = request.Devices.OrderBy(d => d.Id).ToList();
+        if (request.Options.ReconcileLanes && !decoder.SupportsLaneReconciliation)
+            throw new ReportException(400, $"Decoder {typeof(TDecoder).Name} does not provide lane reconciliation evidence.");
         if (selected.Count == 0) throw new ReportException(400, "Select at least one device.");
         foreach (var device in selected)
         {
@@ -22,7 +24,8 @@ public sealed class DeviceCountSource<TDecoder>(TDecoder decoder) : IDeviceCount
         var warnings = new List<string>();
         var identities = await Task.WhenAll(selected.Select(async d => (Device: d, Key: await decoder.IdentityAsync(d, token))));
         selected = identities.GroupBy(x => x.Key).Select(g => {
-            if (g.Count() > 1) warnings.Add($"Duplicate {decoder.DeviceLabel} {g.Key}; using device {g.First().Device.Id} only.");
+            // Lane review reads inventory only for SourceDeviceIds, so a resolved alias is not an incomplete-data warning.
+            if (g.Count() > 1 && !request.Options.ReconcileLanes) warnings.Add($"Duplicate {decoder.DeviceLabel} {g.Key}; using device {g.First().Device.Id} only.");
             return g.First().Device;
         }).ToList();
         var results = await Task.WhenAll(selected.Select(device => decoder.DecodeAsync(new TmcDecodeRequest(request.Location, device,
@@ -35,6 +38,9 @@ public sealed class DeviceCountSource<TDecoder>(TDecoder decoder) : IDeviceCount
         var counts = decoder.MergeCounts(results.SelectMany(r => r.Counts), warnings);
         var label = Regex.Replace(Regex.Replace(typeof(TDecoder).Name, @"([A-Z]+)([A-Z][a-z])", "$1 $2"), @"([a-z0-9])([A-Z])", "$1 $2");
         var count = responded == selected.Count ? $"{selected.Count}" : $"{responded} of {selected.Count}";
-        return new($"{label} ({count} {decoder.DeviceLabel}{(selected.Count == 1 ? "" : "s")})", counts, warnings.Distinct().ToArray());
+        return new($"{label} ({count} {decoder.DeviceLabel}{(selected.Count == 1 ? "" : "s")})", counts, warnings.Distinct().ToArray()) {
+            ZoneEvidence = results.SelectMany(r => r.ZoneEvidence).ToArray(),
+            SourceDeviceIds = selected.Select(d => d.Id).ToArray()
+        };
     }
 }

@@ -1,14 +1,14 @@
 # Turning movement counts: source data flows and limitations
 
-Updated October 6, 2026. The diagrams describe the implemented configuration boundary: only Indiana events use ATSPM approach/detector configuration for interpreting counts. Camera sources retain location grouping and location-based timezone resolution. Solid arrows carry data; dotted arrows supply configuration.
+Updated October 21, 2026. The diagrams describe the implemented configuration boundary: only Indiana events use ATSPM approach/detector configuration for interpreting counts. Camera sources retain location grouping and location-based timezone resolution. Solid arrows carry data; dotted arrows supply configuration.
 
 ## What configuration does each source use?
 
 **Indiana Events (ATSPM)** use configured approaches and detectors to interpret counts. **Vision Camera API** and **Vision Bin Statistics Stored** must not use approach/detector data for direction, movement or lane interpretation. They use camera zone names and camera movement-count fields instead.
 
-The selected ATSPM location remains the grouping mechanism for cameras. Camera/device identity, connection settings and archive keys can remain in the existing configuration/storage model. Camera report timezone is derived from the selected location's latitude/longitude. Keep this behavior; no separate camera timezone setting is needed. This distinction does not require replacing the location selector or migrating archive identities.
+The selected ATSPM location remains the grouping mechanism for cameras. Camera/device identity, connection settings and archive keys use the existing configuration/storage model. Camera report timezone is derived from the selected location's latitude/longitude. There is no separate camera timezone setting. Neither source requires a separate location selector.
 
-| Dependency | Indiana Events (ATSPM) | Vision Camera API: target | Vision Bin Statistics Stored: target |
+| Dependency | Indiana Events (ATSPM) | Vision Camera API | Vision Bin Statistics Stored |
 |---|---|---|---|
 | Count data read when generating report | Indiana event database | Camera `/bin-statistics` API | Statistics archive database |
 | ATSPM location | Required | Groups cameras and identifies the report | Groups cameras and identifies existing archives |
@@ -20,9 +20,26 @@ The selected ATSPM location remains the grouping mechanism for cameras. Camera/d
 | Logging required before reporting | Yes | No | Yes |
 | Camera reachable at report time | No | Yes | No |
 
-**Timezone decision:** retain the current implementation. Both statistics decoders interpret selected dates in the location's timezone, convert the query range to UTC, and convert returned UTC timestamps back to local report time. Legacy stored timestamps without a kind are treated as local. The Vision Indiana decoder converts timezone-aware detections using the device location's coordinates and leaves unspecified timestamps unchanged. Valid coordinates are required for conversion; no logger-timezone fallback is used. The statistics availability offset delays collection and is not a timezone adjustment.
+**Timezone handling:** Both statistics decoders interpret selected dates in the location's timezone, convert the query range to UTC, and convert returned UTC timestamps back to local report time. Legacy stored timestamps without a kind are treated as local. The Vision Indiana decoder converts timezone-aware detections using the device location's coordinates and leaves unspecified timestamps unchanged. Valid coordinates are required for conversion; no logger-timezone fallback is used. The statistics availability offset delays collection and is not a timezone adjustment.
 
 The `TmcDecoder` device property accepts a single class name or a comma-separated list, for example `VisionCameraAPI,VisionBinStatisticsStored`. Spaces, empty entries, and duplicate names are ignored. The source radio buttons group the selected location's active devices by each configured decoder. Each choice sends `source=devices`, `deviceIds`, and the selected `decoder`; the API verifies that decoder is configured on every selected device. Older requests without `decoder` still work when there is exactly one common decoder. Multiple choices use the same device ID without mixing their counts. Logging paths and logging decoders remain separate configuration; this does not combine the detections and statistics download endpoints. Labels add spaces to that name and show the distinct camera count. The WebUI shows the report's source label (beside the table heading, on each chart's info line and as the CSV `Source` column) only while device sources are enabled. There is no Live/Stored mode setting. Indiana is registered as the default `atspm` count source. All sources use the same report builder and peak calculations.
+
+## Enablement and configuration
+
+Device TMC reports require Report API `Features:TmcDeviceSources=true` (environment: `Features__TmcDeviceSources=true`). Missing configuration defaults to false. The WebUI checks the Report API flag before offering device choices. Indiana Events remains the default source without a device decoder setting. Camera-only TMC availability and discovery use existing Config API device data; no TMC flag on Config API is required.
+
+For a camera offering both report sources, set the existing device property:
+
+```json
+{
+  "TmcDecoder": "VisionCameraAPI,VisionBinStatisticsStored",
+  "TmcLayer": "StopBar"
+}
+```
+
+The stored source additionally requires logging and the statistics logging decoder described below. Report decoders do not schedule downloads. Device identity, logging endpoints, polling interval, and availability offset still use normal device configuration. Do not use the superseded `TmcSourceMode`, `TmcApproach`, or manual `TmcZoneMap` settings to select a report source or direction.
+
+[Approach and lane reconciliation](reconcile-lanes.md) documents the separate lane feature flags, zone-evidence request, and shared editors. Lane evidence is a diagnostic path through the report API; it bypasses chart-specific layer and direction filtering and does not save downloaded events.
 
 ## Shared report pipeline and future sources
 
@@ -67,9 +84,9 @@ flowchart TD
     DC -.-> REP
 ```
 
-**How directions and movements are obtained:** During import, `zoneName` must exactly match the detector's `DectectorIdentifier` field (the spelling is the existing model name). The detection's `direction` is a movement value: `Through`, `LeftTurn`, or `RightTurn`. The importer matches that value against the detector's configured movement, then writes a code-82 event for the detector channel. At report time, the approach supplies Northbound/Southbound/etc.; the detector supplies movement, lane number and lane type. The Indiana report does not infer compass direction from the camera zone name.
+**How directions and movements are obtained:** During import, `zoneName` must exactly match the detector's `DectectorIdentifier` field (the spelling is the existing model name). The detection's `direction` is a movement value: `Through`, `LeftTurn`, or `RightTurn`. The Vision Indiana decoder matches that value against the detector's configured movement, then writes a code-82 event for the detector channel. At report time, the approach supplies Northbound/Southbound/etc.; the detector supplies movement, lane number and lane type. The Indiana report does not infer compass direction from the camera zone name.
 
-For example, an `NB-18` / `RightTurn` detection becomes channel 19 in the local setup. Channel 19 is configured as Right on the Northbound approach, so the report counts one Northbound Right vehicle.
+For example, if channel 118 is configured as Right on a Northbound approach with zone identifier `NB-18`, a matching `RightTurn` detection becomes a channel-118 event and is reported as Northbound Right. The channel number is configuration, not a value inferred from the zone suffix.
 
 **Limitations:**
 
@@ -110,8 +127,6 @@ The report reads the camera's existing statistics; it does not count raw detecti
 
 The camera collection URL comes from the existing `DeviceConfiguration.Path`, with IP and port from the device configuration. Discovery reads that path; statistics requests append `/{DeviceIdentifier}/bin-statistics` and construct UTC start/end and interval parameters. A full per-camera logging path ending in `/detections` or `/bin-statistics` is also supported: its numeric camera segment (or `[Device:DeviceIdentifier]` placeholder) and endpoint are removed to obtain the collection path. Blank paths fail validation; there is no hard-coded API-path fallback. The logging `Query` templates are not used for reporting.
 
-Read-only verification on September 30, 2026: GCP `atspm-clone`, database `ATSPM-Config-V6`, configuration 15 (`Cameras!`) has path `/api/v1/cameras`, port 8080 and 229 devices. Its separate logging query templates select detections and bin statistics. Both templates lack the `=` after `end-time`; this report change neither copies those malformed queries nor modifies the clone configuration.
-
 **Limitations:**
 
 - Requires an active FIR/AI camera device with manufacturer Econolite and a model containing Vision, a valid IP/port, and a numeric camera identifier (an optional `-bins` suffix is removed).
@@ -129,7 +144,7 @@ Read-only verification on September 30, 2026: GCP `atspm-clone`, database `ATSPM
 flowchart TD
     CFG["Camera-source collection settings<br/>Endpoint, schedule and availability offset"]
     CAM["Camera /bin-statistics"]
-    LOG["Scheduled download<br/>Local setup: every 15 minutes<br/>15-minute statistics offset"]
+    LOG["Scheduled download<br/>Configured polling schedule<br/>Configured availability offset"]
     DEC["JsonToVisionCameraStatisticEventDecoder<br/>Preserve zone and movement-count fields"]
     DB[("Statistics archive database<br/>VisionCameraStatisticsEvent<br/>Location and device ID; UTC data")]
     LOC["ATSPM location coordinates<br/>Resolve reporting timezone"]
@@ -155,7 +170,7 @@ There are two different decoders here: the **logging decoder** turns downloaded 
 - Only previously imported records are available. Reporting does not contact the camera, fill gaps or trigger a backfill.
 - The current report decoder assumes stored statistics are **15-minute bins**. Report bin size must be a multiple of 15 minutes, at most 1,440 minutes; range is limited to 31 days. It cannot reconstruct five-minute or individual-vehicle detail from these bins.
 - Polling interval and source bin duration are different concepts. Configure collection to obtain 15-minute statistics; polling every 15 minutes alone does not establish the payload's interval. The stored event model has no interval field for the report to verify.
-- Statistics can arrive late. The local logger uses a 15-minute offset to query older data; delayed availability or missed polling can still leave gaps. Compare historical, fully collected periods.
+- Statistics can arrive late. Configure a collection offset appropriate to the camera to request older data; this is independent of the report timezone and source bin duration. Delayed availability or missed polling can still leave gaps. Compare historical, fully collected periods.
 - Current validation requires the device to remain active, logging-enabled and configured with `JsonToVisionCameraStatisticEventDecoder`, even when historical records exist.
 - Archive selection uses location and device ID. Recreating a device under a new ID does not automatically associate old archives with it.
 - Standard statistics retain UTC timestamps. Legacy unspecified-kind timestamps are treated as local wall time; incorrect historical timestamp conventions can shift a report.
@@ -196,19 +211,19 @@ Movement is independent of direction: a row named `NB-18` with `throughCount=5`,
 
 For recognized encoded prefixes, P means pedestrian and B means bicycle; other rows default to vehicle. Pedestrian count is `leftToRightCount + rightToLeftCount`, represented as Thru. An unrecognized name containing the word pedestrian is not sufficient to classify a pedestrian zone.
 
-The optional `TmcLayer` chooses `StopBar` (default), `Advance`, or `RedLightRunning`. Recognized A/RR prefixes identify the latter layers. Other layers are excluded with warnings; pedestrian rows are retained. For encoded advance zones with a parsed setback, the mapper/report select the nearest represented setback. This is a naming-based filter, not a measurement of camera geometry. Chart series use numbered lane labels (Lane 1, Lane 2, etc.). Zone names remain internal to direction interpretation and deduplication; suffix numbers do not become configured physical lane numbers.
+The optional `TmcLayer` chooses `StopBar` (default), `Advance`, or `RedLightRunning`. Recognized A/RR prefixes identify the latter layers. Other layers are excluded with warnings; pedestrian rows are retained. For encoded advance zones with a parsed setback, the mapper selects the nearest represented setback from the returned rows before filtering to the requested local time range. A nearer zone with bins outside the selected period prevents a farther zone from being promoted just because it has in-range bins. The normalizer then selects the nearest represented setback across the resulting camera counts. This is a naming-based filter, not a measurement of camera geometry. Chart series use numbered lane labels (Lane 1, Lane 2, etc.). Zone names remain internal to direction interpretation and deduplication; suffix numbers do not become configured physical lane numbers.
 
 ## Multiple cameras and comparison pitfalls
 
 Four distinct cameras with the same TMC decoder can be queried together and their accepted zone counts combined by direction/movement. The two decoder types remain separate source choices; they are not added to each other.
 
 - Duplicate physical-camera configuration is collapsed before reading counts. API identity discovery can resolve numeric index/serial aliases; stored selection uses configured IP/port/identifier without contacting hardware.
-- Across cameras, duplicate zone keys are assigned to the lowest device ID, with a warning. Ordinary names use the full name, case-insensitively. **Encoded names such as `N21-1` and `N21-2` share key `N21`**, so changing only their suffix does not make them distinct. This refines the earlier shorthand explanation about duplicate names.
+- Across cameras, duplicate zone keys are assigned to the lowest device ID, with a warning. Ordinary names use the full name, case-insensitively. **Encoded names such as `N21-1` and `N21-2` share key `N21`**, so changing only their suffix does not make them distinct.
 - This deduplication assumes matching keys describe the same zone. Independent zones with the same key may be undercounted; overlapping physical zones with different keys may be double-counted. No spatial overlap detection occurs.
 - Within one camera response/archive read, repeated rows for the same exact zone name and timestamp keep the last row.
 - Camera direction/movement interpretation is shared between API and stored sources, so matching results do not independently validate camera alignment or detection accuracy. Verify camera zone geometry and movement classification separately in the camera tooling.
 - **Combine Thru and Thru-Right:** both report paths combine T and TR while retaining dedicated Right counts separately. The camera statistics mapper emits separate T/L/R counts, so it does not fold standalone Right counts into Thru.
-- Use the same physical-site timezone, aligned start/end, camera coverage and bin size across the three sources. Use accurate location coordinates for both statistics sources and the Vision Indiana decoder. The tested Utah deployment uses America/Denver; an Arizona installation needs accurate Arizona location coordinates (typically America/Phoenix). A local calendar day does not always equal the same UTC window or exactly 24 hours.
+- Use the same physical-site timezone, aligned start/end, camera coverage and bin size across the three sources. Use accurate location coordinates for both statistics sources and the Vision Indiana decoder. A Utah installation typically uses America/Denver; an Arizona installation needs accurate Arizona location coordinates (typically America/Phoenix). A local calendar day does not always equal the same UTC window or exactly 24 hours.
 - Tables contain vehicles per interval. Chart lane/flow series are scaled to vehicles per hour; a 15-minute count of 5 corresponds to a flow rate of 20. Compare count fields to count fields.
 - Sources own optional plan annotations. Indiana supplies controller plans; both camera sources use Unknown plan and do not read Indiana events.
 
@@ -235,10 +250,12 @@ The importer compares timezone-aware timestamps against UTC now without changing
 
 Conversion belongs to the Vision Indiana decoder; the shared importer only validates dates. Tests cover recent and future records with differing logger/device timezones, Utah daylight saving time, Arizona, unchanged UTC statistics, and the legacy no-coordinate fallback.
 
-## Implementation status
+## Validation boundaries
 
-Both statistics sources already derive directions/movements without ATSPM approaches or detectors. Retain location-associated camera selection, location/device archive keys, and timezone resolution from location coordinates. No separate camera timezone change is planned.
+Both statistics sources derive directions/movements without ATSPM approaches or detectors. They use location-associated camera selection, location/device archive keys, and timezone resolution from location coordinates.
 
-The diagrams document the implemented shared pipeline. All sources now use the same report assembly and peak metrics; only Indiana uses approach/detector configuration to interpret counts. All report sources validate a positive range of up to 31 days and a bin size from 1 to 1,440 minutes, with additional source-specific constraints described above.
+The diagrams document the implemented shared pipeline. All sources use the same report assembly and peak metrics; only Indiana uses approach/detector configuration to interpret counts. Every source requires a positive bin size and an end after the start. Only device sources have the 31-day range and 1,440-minute bin-size caps, with additional source-specific constraints described above. Switching from another chart resets TMC options to its defaults; initially restored TMC URL options are retained.
 
 Source discovery reuses device properties already loaded by the frontend, or the existing Config API active-devices-by-location endpoint. The frontend enables camera-only TMC from that data. No TMC-specific Config API endpoints, search modifications, or device-editor changes are needed.
+
+A camera API login rejection stops the remaining daily requests for that camera while allowing other cameras to continue.

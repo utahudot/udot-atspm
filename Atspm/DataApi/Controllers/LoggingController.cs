@@ -120,7 +120,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
                             var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>(), 50000, 1, cancellationToken);
 
-                            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+                            await workflow.Initialize();
 
                             await workflow.Input.SendAsync(runtimeDevice, cancellationToken);
                             workflow.Input.Complete();
@@ -146,7 +146,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                     }
                     catch (Exception e)
                     {
-                        _log.LogError("An error was thrown " + e);
+                        _log.LogError(e, "Device {DeviceId}: event download failed", device.Id);
                         return new DeviceEventDownload
                         {
                             DeviceId = device.Id,

@@ -158,7 +158,8 @@ export function MultiSelectCell<T>({
             disableUnderline
             renderValue={renderValue}
             MenuProps={{
-              disablePortal: true,
+              // Keep menus outside a parent dialog so their options remain accessible.
+              disablePortal: false,
               onClose: closeEditor,
               MenuListProps: {
                 onKeyDown: handleSelectKeyDown,

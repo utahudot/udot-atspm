@@ -27,6 +27,7 @@ public sealed class VisionCameraAPI(IHttpClientFactory clientFactory, TmcCameraC
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(30);
     public string DeviceLabel => "camera";
     public int MinimumBinMinutes => 1;
+    public bool SupportsLaneReconciliation => true;
     public void ValidateDevice(Device device)
     {
         _ = CameraIndex(device);
@@ -115,17 +116,36 @@ public sealed class VisionCameraAPI(IHttpClientFactory clientFactory, TmcCameraC
                     warnings.Add($"Camera {device.DeviceIdentifier}: no data for {day:yyyy-MM-dd} ({reason}).");
                     // An unreachable camera would make every remaining day wait out the same failure.
                     if (stop < end && (ex is TaskCanceledException
+                        || ex is HttpRequestException { StatusCode: HttpStatusCode.Unauthorized }
                         || ex is HttpRequestException { HttpRequestError: HttpRequestError.ConnectionError or HttpRequestError.NameResolutionError }))
                     {
                         var last = stop;
                         while (last.AddDays(1) < end) last = last.AddDays(1);
-                        warnings.Add($"Camera {device.DeviceIdentifier}: unreachable; skipped {stop:yyyy-MM-dd}{(last > stop ? $" to {last:yyyy-MM-dd}" : "")}.");
+                        var failure = ex is HttpRequestException { StatusCode: HttpStatusCode.Unauthorized } ? "login rejected" : "unreachable";
+                        warnings.Add($"Camera {device.DeviceIdentifier}: {failure}; skipped {stop:yyyy-MM-dd}{(last > stop ? $" to {last:yyyy-MM-dd}" : "")}.");
                         break;
                     }
                 }
             }
         }
         if (rows.Count == 0) warnings.Add($"Camera {device.DeviceIdentifier}: no bins in the requested range.");
+        if (request.Options.ReconcileLanes)
+        {
+            // Reconciliation must see every zone, including zones absent from the location configuration.
+            // Chart layer/name conventions and closest-advance filtering would hide the very errors being reviewed.
+            var evidence = VisionZoneMapper.InRequestedRange(rows, request, zone, false)
+                .GroupBy(r => (r.ZoneId, r.ZoneName, r.Timestamp)).Select(g => g.Last()).ToArray();
+            if (evidence.Any(r => r.ThroughCount < 0 || r.LeftTurnCount < 0 || r.RightTurnCount < 0))
+                throw new ReportException(502, $"Camera {device.DeviceIdentifier} (device {device.Id}): negative movement counts.");
+            foreach (var duplicate in evidence.Where(r => !string.IsNullOrWhiteSpace(r.ZoneName)).GroupBy(r => r.ZoneName).Where(g => g.Select(r => r.ZoneId).Distinct().Count() > 1))
+                warnings.Add($"Camera {device.DeviceIdentifier}: multiple zone IDs use the name {duplicate.Key}; verify configuration changes before editing lanes.");
+            return new TmcDecodeResult(Array.Empty<MovementCount>(), warnings) {
+                Responded = responded,
+                ZoneEvidence = evidence.GroupBy(r => (r.ZoneId, r.ZoneName)).Select(g => new TmcZoneEvidence(device.Id, g.Key.ZoneName,
+                    g.Sum(r => (long)r.ThroughCount), g.Sum(r => (long)r.LeftTurnCount),
+                    g.Sum(r => (long)r.RightTurnCount), g.Select(r => r.Timestamp).Distinct().Count()) { ZoneId = g.Key.ZoneId }).ToArray()
+            };
+        }
         var mapped = VisionZoneMapper.Map(request, rows, request.Options.BinSize, zone, false);
         return mapped with { Warnings = warnings.Concat(mapped.Warnings).Distinct().ToArray(), Responded = responded };
     }

@@ -52,6 +52,17 @@ public class VisionCameraAPITests : ApplicationTests.Business.TurningMovementCou
         return new(services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>());
     }
     protected override (VisionCameraAPI, TmcDecodeRequest) Create() => (Decoder(new()), Request());
+    [Fact]
+    public async Task RejectedLoginStopsRemainingDaysForThisCamera()
+    {
+        var request = Request();
+        request.Options.End = request.Options.Start.AddDays(31);
+        var handler = new CameraHandler { Response = _ => new(HttpStatusCode.Unauthorized) { Content = new StringContent("") } };
+        var result = await Decoder(handler).DecodeAsync(request, default);
+        Assert.Single(handler.Requests);
+        Assert.Single(result.Warnings.Where(w => w.Contains("no data for") && w.Contains("login rejected")));
+        Assert.Contains(result.Warnings, w => w.Contains("skipped"));
+    }
     [Theory]
     [InlineData("/custom/v2/cameras")]
     [InlineData("/custom/v2/cameras/")]
@@ -200,6 +211,25 @@ public class VisionCameraAPITests : ApplicationTests.Business.TurningMovementCou
         var mapped=VisionZoneMapper.Map(request,new[]{Row("A221-1",4,4,0,0),Row("A231-2",7,7,0,0)},15,TimeZoneInfo.FindSystemTimeZoneById("America/Phoenix"),false);
         Assert.Equal(4,mapped.Counts.Sum(c=>c.Volume)); Assert.All(mapped.Counts,c=>Assert.Equal("A221-1",c.DirectionLabel));
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ClosestSetbackIsChosenBeforeTimeFiltering(bool stored) {
+        var request = Request();
+        request.Device.DeviceProperties["TmcLayer"] = "Advance";
+        var near = Row("A221-1", 4, 4, 0, 0);
+        var far = Row("A231-2", 7, 7, 0, 0);
+        near.Timestamp = near.Timestamp.AddHours(-1);
+        var zone = TimeZoneInfo.FindSystemTimeZoneById("America/Phoenix");
+        if (stored) {
+            near.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(near.Timestamp, zone);
+            far.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(far.Timestamp, zone);
+        }
+        var mapped = VisionZoneMapper.Map(request, new[] { near, far }, 15, zone, stored);
+        Assert.Empty(mapped.Counts);
+        Assert.Contains(mapped.Warnings, w => w.Contains("closest setback"));
+    }
+
     [Fact] public void LegacyManualMappingIsIgnoredAndRepeatedBinKeepsLastRow() {
         var request=Request(); request.Device.DeviceProperties["TmcZoneMap"]="{\"N21-1\":{\"approach\":\"Southbound\",\"lane\":2}}";
         var mapped=VisionZoneMapper.Map(request,new[]{Row("N21-1",1,1,0,0),Row("N21-1",4,4,0,0)},15,TimeZoneInfo.FindSystemTimeZoneById("America/Phoenix"),false);

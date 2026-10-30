@@ -1,5 +1,6 @@
 import { usePatchApproachFromKey, usePatchLocationFromKey } from '@/api/config'
 import { AddButton } from '@/components/addButton'
+import { useFlags } from '@/feature-flags/FeatureFlagContext'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
 import ApproachesInfo from '@/features/locations/components/ApproachesInfo/approachesInfo'
 import ApproachesReconcilationReport from '@/features/locations/components/ApproachesReconcilationReport/ApproachesReconcilationReport'
@@ -15,8 +16,6 @@ import { configAxios } from '@/lib/axios'
 import { useNotificationStore } from '@/stores/notifications'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import SyncIcon from '@mui/icons-material/Sync'
-import { LoadingButton } from '@mui/lab'
 import {
   Box,
   Button,
@@ -38,11 +37,14 @@ import { AxiosHeaders } from 'axios'
 import Cookies from 'js-cookie'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation } from 'react-query'
+import ReconcileConfigurationButton from '../ReconcileLanes/ReconcileConfigurationButton'
 
 type SyncLocationResponse = {
   loggedButUnusedProtectedOrPermissivePhases?: number[] | null
+  reconciliationWarnings?: string[]
   loggedButUnusedOverlapPhases?: number[] | null
   loggedButUnusedDetectorChannels?: number[] | null
+  missingPhaseAssignments?: LocationDiscrepancyReport['missingPhaseAssignments']
   removedApproachIds?: number[] | null
   removedDetectors?: Array<string | number> | null
 }
@@ -179,6 +181,7 @@ const ApproachOptions = () => {
   const { mutateAsync: getZones } = useGetZones()
   const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
 
+  const flags = useFlags()
   const [showSummary, setShowSummary] = useState(false)
   const [showZones, setShowZones] = useState(false)
   const [showPedsAre1To1Dialog, setShowPedsAre1To1Dialog] = useState(false)
@@ -269,7 +272,12 @@ const ApproachOptions = () => {
       const removedApproachIds = response.removedApproachIds ?? []
       const removedDetectors = (response.removedDetectors ?? []).map(String)
 
-      setBadApproaches(removedApproachIds)
+      setBadApproaches([
+        ...new Set([
+          ...removedApproachIds,
+          ...(response.missingPhaseAssignments ?? []).map((a) => a.approachId),
+        ]),
+      ])
       setBadDetectors(removedDetectors)
 
       const notFoundApproaches = removedApproachIds.map((id) => {
@@ -280,16 +288,15 @@ const ApproachOptions = () => {
         }
       })
 
-      const foundPhaseNumbers = Array.from(
-        new Set<number>([
-          ...(response.loggedButUnusedProtectedOrPermissivePhases ?? []),
-          ...(response.loggedButUnusedOverlapPhases ?? []),
-        ])
-      )
+      const foundPhaseNumbers =
+        response.loggedButUnusedProtectedOrPermissivePhases ?? []
 
       setCategories({
         foundPhaseNumbers,
+        foundOverlapNumbers: response.loggedButUnusedOverlapPhases ?? [],
+        warnings: response.reconciliationWarnings ?? [],
         notFoundApproaches,
+        missingPhaseAssignments: response.missingPhaseAssignments,
         foundDetectorChannels: response.loggedButUnusedDetectorChannels ?? [],
         notFoundDetectorChannels: removedDetectors,
       })
@@ -424,15 +431,15 @@ const ApproachOptions = () => {
             {showSummary ? 'Hide Summary' : 'Summary'}
           </Button>
 
-          <LoadingButton
-            startIcon={<SyncIcon />}
-            loading={isSyncingApproaches}
-            loadingPosition="start"
-            variant="outlined"
-            onClick={handleSyncLocation}
-          >
-            Reconcile Approaches
-          </LoadingButton>
+          <ReconcileConfigurationButton
+            onReconcileApproaches={handleSyncLocation}
+            approachesBusy={isSyncingApproaches}
+            approachReport={
+              approachVerificationStatus === 'DONE' ? (
+                <ApproachesReconcilationReport categories={categories} />
+              ) : null
+            }
+          />
 
           {hasFirCameraDevice && (
             <Button variant="outlined" onClick={handleGetZones}>
@@ -518,9 +525,10 @@ const ApproachOptions = () => {
         </Paper>
       )}
 
-      {approachVerificationStatus === 'DONE' && (
-        <ApproachesReconcilationReport categories={categories} />
-      )}
+      {flags.laneReconciliation !== true &&
+        approachVerificationStatus === 'DONE' && (
+          <ApproachesReconcilationReport categories={categories} />
+        )}
 
       {showSummary && (
         <Paper sx={{ mb: 2 }}>

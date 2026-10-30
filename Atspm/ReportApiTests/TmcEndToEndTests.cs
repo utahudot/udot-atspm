@@ -33,6 +33,7 @@ public class TmcEndToEndTests
         public int Calls, Current, Maximum;
         public string OfflineIndex = "";
         public string ZoneName;
+        public string StatisticsJson;
         public string BadRequestIndex = "";
         public List<string> Paths = new();
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
@@ -47,6 +48,7 @@ public class TmcEndToEndTests
                 if(path.EndsWith("device-info")) return Json("{\"name\":\"O420 02 NB 05 LT\"}");
                 Interlocked.Increment(ref Calls);
                 if(index==BadRequestIndex) return new(HttpStatusCode.BadRequest){Content=new StringContent("invalid camera date")};
+                if(StatisticsJson != null) return Json(StatisticsJson);
                 return Json(JsonSerializer.Serialize(new { statistics = new[] { new { zoneId=int.Parse(index), zoneName=ZoneName ?? "N2"+index+"-1", time="2026-09-25T17:15:00Z", volume=7, throughCount=4, leftTurnCount=2, rightTurnCount=1 } } }));
             } finally { Interlocked.Decrement(ref Current); }
         }
@@ -55,7 +57,7 @@ public class TmcEndToEndTests
     private sealed class Fixture : IDisposable
     {
         public TestServer Server; public HttpClient Client; public Camera Camera=new(); public List<Device> Devices;
-        public Fixture(int count=1,bool? enabled=true, IEventLogRepository statistics=null, List<IndianaEvent> indiana=null, Action<IServiceCollection> configure=null)
+        public Fixture(int count=1,bool? enabled=true, IEventLogRepository statistics=null, List<IndianaEvent> indiana=null, Action<IServiceCollection> configure=null, bool? laneReconciliation=null)
         {
             var location=new Location { Id=1,LocationIdentifier="1",PrimaryName="Test",Latitude=33.35,Longitude=-111.79 };
             Devices=Enumerable.Range(1,count).Select(i=>new Device { Id=i,LocationId=1,Location=location,DeviceIdentifier=i.ToString(),Ipaddress="127.0.0.1",DeviceType=DeviceTypes.FIRCamera,DeviceStatus=DeviceStatus.Active,
@@ -65,7 +67,9 @@ public class TmcEndToEndTests
             var events=new Mock<IIndianaEventLogRepository>(); events.Setup(r=>r.GetEventsBetweenDates(It.IsAny<string>(),It.IsAny<DateTime>(),It.IsAny<DateTime>())).Returns(indiana ?? new List<IndianaEvent>());
             Server=new TestServer(new WebHostBuilder().ConfigureAppConfiguration(c=>c.AddInMemoryCollection(enabled.HasValue
                 ? new Dictionary<string,string>{{"Features:TmcDeviceSources",enabled.Value.ToString()}}
-                : new Dictionary<string,string>()))
+                : new Dictionary<string,string>()).AddInMemoryCollection(laneReconciliation.HasValue
+                    ? new Dictionary<string,string>{{"Features:LaneReconciliation", laneReconciliation.Value.ToString()}}
+                    : new Dictionary<string,string>()))
                 .ConfigureServices(s=>{
                     s.AddLogging(); s.AddControllers().AddApplicationPart(typeof(TurningMovementCountsController).Assembly);
                     s.AddApiVersioning().AddMvc(); s.AddTmcCountSources();
@@ -82,6 +86,141 @@ public class TmcEndToEndTests
             source="devices",deviceIds=ids,locationIdentifier="1",start="2026-09-25T10:00:00",end="2026-09-25T11:00:00",binSize=15 });
         public void Dispose(){Client.Dispose();Server.Dispose();}
     }
+    [Theory]
+    [InlineData(null)]
+    [InlineData(false)]
+    public async Task LaneEvidenceIsIndependentlyDefaultOff(bool? enabled)
+    {
+        using var f = new Fixture(laneReconciliation: enabled);
+        using var response = await LaneReport(f);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Empty(f.Camera.Paths);
+    }
+
+    private static Task<HttpResponseMessage> LaneReport(Fixture f, string decoder = "VisionCameraAPI") =>
+        f.Client.PostAsJsonAsync("/api/v1/TurningMovementCounts/getReportData", new {
+            source="devices", decoder, deviceIds=f.Devices.Select(d => d.Id).ToArray(), locationIdentifier="1", reconcileLanes=true,
+            start="2026-09-25T10:00:00", end="2026-09-25T11:00:00", binSize=15 });
+
+    [Fact]
+    public async Task LaneAliasesUseOneInventoryOwnerWithoutBlockingWarning()
+    {
+        using var f = new Fixture(count: 2, laneReconciliation: true);
+        f.Devices[1].DeviceIdentifier = "523648495";
+        using var response = await LaneReport(f);
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(new[] { 1 }, json.RootElement.GetProperty("sourceDeviceIds").EnumerateArray().Select(v => v.GetInt32()));
+        Assert.Single(json.RootElement.GetProperty("zoneEvidence").EnumerateArray());
+        Assert.Empty(json.RootElement.GetProperty("warnings").EnumerateArray());
+        Assert.Equal(1, f.Camera.Calls);
+    }
+
+    [Fact]
+    public async Task UnnamedLaneZonesRemainSeparateWithSourceIds()
+    {
+        using var f = new Fixture(laneReconciliation: true);
+        f.Camera.StatisticsJson = """
+            {"statistics":[
+              {"zoneId":101,"zoneName":null,"time":"2026-09-25T17:15:00Z","throughCount":4},
+              {"zoneId":102,"zoneName":null,"time":"2026-09-25T17:15:00Z","throughCount":9}]}
+            """;
+        using var response = await LaneReport(f);
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var rows = json.RootElement.GetProperty("zoneEvidence").EnumerateArray().ToArray();
+        Assert.Equal(new long[] {101, 102}, rows.Select(r => r.GetProperty("zoneId").GetInt64()));
+        Assert.Equal(new long[] {4, 9}, rows.Select(r => r.GetProperty("through").GetInt64()));
+        Assert.Empty(json.RootElement.GetProperty("warnings").EnumerateArray());
+    }
+
+    [Fact]
+    public async Task NegativeLaneCountsIdentifyTheCamera()
+    {
+        using var f = new Fixture(laneReconciliation: true);
+        f.Devices[0].DeviceIdentifier = "523648495";
+        f.Camera.StatisticsJson = """
+            {"statistics":[{"zoneId":101,"zoneName":"Lane","time":"2026-09-25T17:15:00Z","throughCount":-1}]}
+            """;
+        using var response = await LaneReport(f);
+        Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        Assert.Contains("Camera 523648495 (device 1): negative movement counts", await response.Content.ReadAsStringAsync());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ChartAndLaneEvidenceShareExclusiveTimeRange(bool reconcileLanes)
+    {
+        using var f = new Fixture(laneReconciliation: true);
+        f.Camera.StatisticsJson = """
+            {"statistics":[
+              {"zoneId":1,"zoneName":"NB","time":"2026-09-25T16:45:00Z","throughCount":100},
+              {"zoneId":1,"zoneName":"NB","time":"2026-09-25T17:00:00Z","throughCount":4},
+              {"zoneId":1,"zoneName":"NB","time":"2026-09-25T18:00:00Z","throughCount":200}]}
+            """;
+        using var response = reconcileLanes ? await LaneReport(f) : await f.Report(1);
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(4, reconcileLanes
+            ? json.RootElement.GetProperty("zoneEvidence")[0].GetProperty("through").GetInt32()
+            : json.RootElement.GetProperty("charts").EnumerateArray().Sum(r => r.GetProperty("totalVolume").GetInt32()));
+    }
+
+    [Theory]
+    [InlineData("A231-1")]
+    [InlineData("RR5-1")]
+    [InlineData("Any town's lane name")]
+    public async Task LaneEvidenceUsesUnfilteredZonesWithoutApproachConfiguration(string zone)
+    {
+        using var f = new Fixture(enabled: false, laneReconciliation: true);
+        f.Camera.ZoneName = zone;
+        using var response = await LaneReport(f);
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var evidence = json.RootElement.GetProperty("zoneEvidence")[0];
+        Assert.Equal(zone, evidence.GetProperty("zoneName").GetString());
+        Assert.Equal(4, evidence.GetProperty("through").GetInt64());
+        Assert.Equal(2, evidence.GetProperty("left").GetInt64());
+        Assert.Equal(1, evidence.GetProperty("right").GetInt64());
+        Assert.Equal(1, evidence.GetProperty("deviceId").GetInt32());
+        Assert.Empty(json.RootElement.GetProperty("charts").EnumerateArray());
+        Assert.Contains(f.Camera.Paths, p => p.Contains("start-time=2026-09-25T17:00:00Z"));
+    }
+
+    [Fact]
+    public async Task DecoderWithoutLaneCapabilityIsRejectedBeforeCameraRead()
+    {
+        using var f = new Fixture(laneReconciliation: true);
+        f.Devices[0].DeviceProperties["TmcDecoder"] = nameof(AutomaticallyDiscoveredDecoder);
+        using var response = await LaneReport(f, nameof(AutomaticallyDiscoveredDecoder));
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Empty(f.Camera.Paths);
+    }
+
+    public sealed class FutureLaneDecoder : ITurningMovementCountDecoder
+    {
+        public int MinimumBinMinutes => 15;
+        public bool SupportsLaneReconciliation => true;
+        public bool CanDecode(Device device) => true;
+        public Task<TmcDecodeResult> DecodeAsync(TmcDecodeRequest request, CancellationToken token) =>
+            Task.FromResult(new TmcDecodeResult(Array.Empty<MovementCount>(), Array.Empty<string>()) {
+                ZoneEvidence = new[] { new TmcZoneEvidence(request.Device.Id, "Vendor-independent zone", 12, 3, 4, 1) }
+            });
+    }
+
+    [Fact]
+    public async Task FutureDecoderCanProvideEvidenceWithoutControllerOrReportServiceChanges()
+    {
+        using var f = new Fixture(laneReconciliation: true);
+        f.Devices[0].DeviceProperties["TmcDecoder"] = nameof(FutureLaneDecoder);
+        using var response = await LaneReport(f, nameof(FutureLaneDecoder));
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        using var result = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal("Vendor-independent zone", result.RootElement.GetProperty("zoneEvidence")[0].GetProperty("zoneName").GetString());
+        Assert.Empty(f.Camera.Paths);
+    }
+
     private sealed class FutureCountSource : ITurningMovementCountSource
     {
         public Task<TmcCountSourceResult> ReadAsync(TmcCountSourceRequest request, CancellationToken token) =>

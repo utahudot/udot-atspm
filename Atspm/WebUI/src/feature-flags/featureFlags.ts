@@ -18,6 +18,7 @@
 // featureFlags.ts
 export interface Flags {
   speedManagementTool: boolean
+  laneReconciliation?: boolean
 }
 
 export async function loadFlags(): Promise<Flags> {

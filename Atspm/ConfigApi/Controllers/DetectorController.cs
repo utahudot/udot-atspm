@@ -16,6 +16,10 @@
 #endregion
 
 using Asp.Versioning;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
+using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
@@ -32,7 +36,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Detector Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectorController(IDetectorRepository repository) : LocationPolicyControllerBase<Detector, int>(repository)
+    public class DetectorController(IDetectorRepository repository, IDeviceRepository devices, IEnumerable<IDeviceZoneProvider> zoneProviders) : LocationPolicyControllerBase<Detector, int>(repository)
     {
         private readonly IDetectorRepository _repository = repository;
 
@@ -66,6 +70,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             return GetNavigationProperty<IEnumerable<DetectionType>>(key);
         }
 
+        [AuthorizePermission(AtspmAuthorization.Permissions.LocationConfigurationsEdit)]
         [HttpPost("api/v1/Detector/retrieveDetectionData")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,6 +84,21 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
             try
             {
+                // Reconciliation uses the saved device configuration. Keep the legacy
+                // Get Zones request below for the editor's unsaved connection settings.
+                if (ourParams.TryGetValue("configurationDeviceId", out var configuredId))
+                {
+                    if (!int.TryParse(configuredId?.ToString(), out var id))
+                        return BadRequest("Invalid configurationDeviceId.");
+                    var device = devices.GetList().Include(d => d.DeviceConfiguration).ThenInclude(c => c.Product)
+                        .FirstOrDefault(d => d.Id == id);
+                    if (device == null) return NotFound("Device not found.");
+                    var providers = zoneProviders.Where(p => p.CanRead(device)).ToArray();
+                    if (providers.Length != 1)
+                        return BadRequest("No unique zone provider is available for this device. The built-in provider supports Econolite Vision FIR/AI cameras; other products require a compatible zone provider.");
+                    return Ok(await providers[0].ReadZonesAsync(device, HttpContext.RequestAborted));
+                }
+
                 if (!ourParams.ContainsKey("IpAddress") || !ourParams.ContainsKey("port") || !ourParams.ContainsKey("detectionType") || !ourParams.ContainsKey("deviceId"))
                 {
                     return BadRequest("Missing required parameters.");

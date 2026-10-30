@@ -92,6 +92,7 @@ builder.Host
         });
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
+        s.AddDeviceZoneProviders();
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
         s.AddScoped<ISignalTemplateService, SignalTemplateService>();

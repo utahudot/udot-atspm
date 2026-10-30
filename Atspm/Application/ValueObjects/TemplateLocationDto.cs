@@ -57,6 +57,17 @@ namespace Utah.Udot.Atspm.ValueObjects
     }
 
 
+    /// <summary>A configured assignment with no matching evidence in the observation window.
+    /// Absence is a review suggestion, not proof that the movement does not exist.</summary>
+    public class MissingPhaseAssignmentDto
+    {
+        public int ApproachId { get; set; }
+        /// <summary>protected, permissive, or pedestrian; identifies the field to clear.</summary>
+        public string Role { get; set; }
+        public int PhaseNumber { get; set; }
+        public bool IsOverlap { get; set; }
+    }
+
     public class TemplateLocationModifiedDto
     {
         public string Id { get; set; }
@@ -97,9 +108,13 @@ namespace Utah.Udot.Atspm.ValueObjects
         /// </summary>
         public List<string> RemovedDetectors { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Approaches that were removed from the location
-        /// </summary>
+        /// <summary>Individual configured fields without matching events. Removal must not delete their approach or detectors.</summary>
+        public List<MissingPhaseAssignmentDto> MissingPhaseAssignments { get; set; } = new List<MissingPhaseAssignmentDto>();
+
+        /// <summary>Observed evidence that requires manual verification rather than an inferred configuration change.</summary>
+        public List<string> ReconciliationWarnings { get; set; } = new List<string>();
+
+        /// <summary>Approaches with no matching observed phase or overlap evidence.</summary>
         public List<int> RemovedApproachIds { get; set; } = new List<int>();
     }
 }

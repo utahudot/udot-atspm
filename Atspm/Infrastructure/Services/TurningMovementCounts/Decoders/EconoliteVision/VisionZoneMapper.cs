@@ -8,6 +8,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.TurningMovementCounts.Decoders
 
 public static class VisionZoneMapper
 {
+    // Persisted local timestamps have no kind; JSON camera timestamps are UTC.
+    public static DateTime LocalTimestamp(DateTime timestamp, TimeZoneInfo zone, bool stored) =>
+        stored && timestamp.Kind == DateTimeKind.Unspecified ? timestamp
+            : TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(timestamp, DateTimeKind.Utc), zone);
+
+    public static IEnumerable<VisionCameraStatisticsEvent> InRequestedRange(
+        IEnumerable<VisionCameraStatisticsEvent> rows, TmcDecodeRequest request, TimeZoneInfo zone, bool stored) =>
+        rows.Where(row => {
+            var local = LocalTimestamp(row.Timestamp, zone, stored);
+            return local >= request.Options.Start && local < request.Options.End;
+        });
+
     public static string Setting(IReadOnlyDictionary<string, object> settings, string key, string fallback = "") =>
         settings.TryGetValue(key, out var value) && value != null ? value.ToString() ?? fallback : fallback;
 
@@ -35,7 +47,8 @@ public static class VisionZoneMapper
         int interval, TimeZoneInfo zone, bool stored)
     {
         var warnings = new List<string>();
-        var rows = events.GroupBy(e => (e.ZoneName, e.Timestamp)).Select(g => g.Last()).ToList();
+        var rows = events
+            .GroupBy(e => (e.ZoneName, e.Timestamp)).Select(g => g.Last()).ToList();
         var layer = Setting(request.Settings, "TmcLayer", "StopBar");
         if (!new[] { "StopBar", "Advance", "RedLightRunning" }.Contains(layer))
             throw new ReportException(400, $"Device {request.Device.Id}: invalid TmcLayer {layer}.");
@@ -71,9 +84,9 @@ public static class VisionZoneMapper
                 warnings.Add($"Ignored advance zone {item.Row.ZoneName}: using the closest setback.");
                 continue;
             }
-            // Persisted local timestamps have no kind; UTC timestamps from JSON retain their kind.
-            var timestamp = stored && item.Row.Timestamp.Kind == DateTimeKind.Unspecified
-                ? item.Row.Timestamp : TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(item.Row.Timestamp, DateTimeKind.Utc), zone);
+            var timestamp = LocalTimestamp(item.Row.Timestamp, zone, stored);
+            // Choose the layer and closest setback from the returned inventory before
+            // filtering time; sparse nearby bins must not promote a farther detector.
             if (timestamp < request.Options.Start || timestamp >= request.Options.End) continue;
             var movements = item.Lane == LaneTypes.Ped
                 ? new[] { (MovementTypes.T, item.Row.LeftToRightCount + item.Row.RightToLeftCount) }

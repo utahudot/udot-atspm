@@ -312,6 +312,8 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int[] DeviceIds { get; set; } = Array.Empty<int>();
         /// <summary>Selected TMC decoder; required when the selected devices share multiple configured decoders.</summary>
         public string? Decoder { get; set; }
+        /// <summary>Optional, default false. Return unfiltered decoder zone evidence for lane review instead of charts.</summary>
+        public bool ReconcileLanes { get; set; }
         public int BinSize { get; set; }
         public bool CombineThruRight { get; set; }
         public int MetricTypeId { get; internal set; } = 5;
