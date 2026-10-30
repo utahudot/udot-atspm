@@ -1,9 +1,20 @@
-name: Build Containers and Publish to GHCR (On Release)
+name: Build Gilbert Containers and Publish to GHCR
+run-name: Publish Gilbert images from ${{ github.ref_name }}
 
 on:
   release:
     types: [published]
-  workflow_dispatch:  
+  workflow_dispatch:
+    inputs:
+      image_versions:
+        description: 'JSON object mapping each Gilbert package name to its next numbered tag (for example, {"gilbertwebsite":"v16"})'
+        required: true
+        type: string
+      update_latest:
+        description: Also tag these images as latest
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -11,28 +22,60 @@ permissions:
 
 jobs:
   build:
-    name: Build Job
+    name: Publish ${{ matrix.image }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        name:
-          - atspm-webui
-          - atspm-config-api
-          - atspm-data-api
-          - atspm-identity-api
-          - atspm-report-api
-          - atspm-watchdog
-          - atspm-eventlogutil
+        include:
+          - image: gilbertwebsite
+            project: WebUI
+          - image: gilbertconfig
+            project: ConfigApi
+          - image: gilbertconfigapi
+            project: ConfigApi
+          - image: gilbertdata
+            project: DataApi
+          - image: gilbertidentity
+            project: IdentityApi
+          - image: gilbertreport
+            project: ReportApi
+          - image: gilbertwatchdog
+            project: WatchDog
+          - image: gilberteventlog
+            project: EventLogUtility
+          - image: gilbertdatabaseinstaller
+            project: DatabaseInstaller
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get Working Dir
+      - name: Compute image tags
+        id: meta
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          IMAGE_VERSIONS: ${{ inputs.image_versions }}
+          UPDATE_LATEST: ${{ inputs.update_latest }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
-          docker_dir="$(cat .github/filters.json | jq '."${{matrix.name}}"' | tr -d '**\n"')"
-          echo DOCKERFILE_DIR=${docker_dir} >> $GITHUB_ENV
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            IMAGE_TAG=$(jq -er --arg image "$IMAGE_NAME" '.[$image]' <<< "$IMAGE_VERSIONS")
+            if [[ ! "$IMAGE_TAG" =~ ^v[0-9]+$ ]]; then
+              echo "::error::Expected a numbered tag such as v16 for $IMAGE_NAME"
+              exit 1
+            fi
+          else
+            IMAGE_TAG="$GITHUB_REF_NAME"
+          fi
+
+          IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}"
+          IMAGE_TAGS="${IMAGE_REPO}:${IMAGE_TAG}"
+          if { [ "$GITHUB_EVENT_NAME" = "release" ] && [ "$IS_PRERELEASE" != "true" ]; } || [ "$UPDATE_LATEST" = "true" ]; then
+            IMAGE_TAGS="${IMAGE_TAGS},${IMAGE_REPO}:latest"
+          fi
+          echo "image_tags=$IMAGE_TAGS" >> "$GITHUB_OUTPUT"
+          echo "image_version=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         id: builder
@@ -45,43 +88,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Compute image tags (prerelease-aware)
-        id: meta
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          builder: ${{ steps.builder.outputs.name }}
+          context: ${{ matrix.project == 'WebUI' && 'Atspm/WebUI' || 'Atspm' }}
+          file: Atspm/${{ matrix.project }}/Dockerfile
+          platforms: linux/amd64
+          push: true
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+          tags: ${{ steps.meta.outputs.image_tags }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.image_version }}
+
+      - name: Record published image
+        env:
+          IMAGE_TAGS: ${{ steps.meta.outputs.image_tags }}
+          IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY}/${{ matrix.name }}"
-          IMAGE_REPO_LC=$(echo "$IMAGE_REPO" | tr '[:upper:]' '[:lower:]')
-
-          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
-            # prerelease → do NOT tag latest
-            echo "image_tags=${IMAGE_REPO_LC}:${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          else
-            # normal release → tag latest
-            echo "image_tags=${IMAGE_REPO_LC}:${GITHUB_REF_NAME},${IMAGE_REPO_LC}:latest" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Build and push (non-WebUI)
-        if: ${{ matrix.name != 'atspm-webui' }}
-        uses: docker/build-push-action@v6
-        with:
-          builder: ${{ steps.builder.outputs.name }}
-          context: Atspm/
-          file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: ${{ steps.meta.outputs.image_tags }}
-          labels: |
-            org.opencontainers.image.description=${{ github.event.release.body || '' }}
-
-      - name: Build and push (WebUI)
-        if: ${{ matrix.name == 'atspm-webui' }}
-        uses: docker/build-push-action@v6
-        with:
-          builder: ${{ steps.builder.outputs.name }}
-          context: ${{ env.DOCKERFILE_DIR }}
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: ${{ steps.meta.outputs.image_tags }}
-          labels: |
-            org.opencontainers.image.description=${{ github.event.release.body || '' }}
+          printf 'Published: `%s`\n\nDigest: `%s`\n\nCommit: `%s`\n' "$IMAGE_TAGS" "$IMAGE_DIGEST" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
