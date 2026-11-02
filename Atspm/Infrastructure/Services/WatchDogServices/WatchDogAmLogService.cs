@@ -68,16 +68,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                     try
                     {
-                        List<IndianaEvent> locationEvents = new List<IndianaEvent>();
-
-                        var AmAnalysis = controllerEventLogRepository
+                        // Remove duplicate source records before phase and pedestrian analysis.
+                        var locationEvents = controllerEventLogRepository
                             .GetEventsBetweenDates(
                                 Location.LocationIdentifier,
                                 options.AmAnalysisStart,
                                 options.AmAnalysisEnd)
+                            .Distinct()
                             .ToList();
-
-                        locationEvents.AddRange(AmAnalysis);
 
                         var tasks = new List<Task>();
                         tasks.Add(CheckLocationForPhaseErrors(Location, options, locationEvents, errors));

@@ -93,6 +93,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         locationEvents.AddRange(RampMainline);
                         locationEvents.AddRange(RampStuckQueue);
 
+                        // Queries can overlap; count each unique controller event only once.
+                        locationEvents = locationEvents.Distinct().ToList();
+
                         var recordsError = await CheckLocationRecordCount(options.PmScanDate, Location, options, locationEvents);
                         if (recordsError != null)
                         {
