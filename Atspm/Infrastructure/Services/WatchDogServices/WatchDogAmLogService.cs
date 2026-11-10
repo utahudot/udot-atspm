@@ -68,16 +68,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
                     try
                     {
-                        List<IndianaEvent> locationEvents = new List<IndianaEvent>();
-
-                        var AmAnalysis = controllerEventLogRepository
+                        // Remove duplicate source records before phase and pedestrian analysis.
+                        var locationEvents = controllerEventLogRepository
                             .GetEventsBetweenDates(
                                 Location.LocationIdentifier,
                                 options.AmAnalysisStart,
                                 options.AmAnalysisEnd)
+                            .Distinct()
                             .ToList();
-
-                        locationEvents.AddRange(AmAnalysis);
 
                         var tasks = new List<Task>();
                         tasks.Add(CheckLocationForPhaseErrors(Location, options, locationEvents, errors));
@@ -232,7 +230,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     message,
                     errors,
                     phase.PhaseNumber.ToString(),
-                    phase.PhaseNumber);
+                    phase.PhaseNumber,
+                    $"Pedestrian event count {phase.PedestrianEvents.Count} > MaximumPedestrianEvents {options.MaximumPedestrianEvents}; event codes 21,23, EventParam/phase {phase.PhaseNumber}, window [{options.AmAnalysisStart:O}, {options.AmAnalysisEnd:O}].");
             }
         }
 
@@ -253,7 +252,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     message,
                     errors,
                     phase.PhaseNumber.ToString(),
-                    phase.PhaseNumber);
+                    phase.PhaseNumber,
+                    $"Force-off fraction {phase.PercentForceOffs:R} > PercentThreshold {options.PercentThreshold:R} and non-unknown termination count {phase.TerminationEvents.Count(t => t.EventCode != 7)} > MinPhaseTerminations {options.MinPhaseTerminations}; force-off code 6, termination codes 4,5,6 (code 7 excluded), EventParam/phase {phase.PhaseNumber}, window [{options.AmAnalysisStart:O}, {options.AmAnalysisEnd:O}].");
             }
 
         }
@@ -275,7 +275,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     message,
                     errors,
                     phase.PhaseNumber.ToString(),
-                    phase.PhaseNumber);
+                    phase.PhaseNumber,
+                    $"Max-out fraction {phase.PercentMaxOuts:R} > PercentThreshold {options.PercentThreshold:R} and total phase terminations {phase.TotalPhaseTerminations} > MinPhaseTerminations {options.MinPhaseTerminations}; max-out code 5, termination codes 4,5,6, EventParam/phase {phase.PhaseNumber}, window [{options.AmAnalysisStart:O}, {options.AmAnalysisEnd:O}].");
             }
 
         }
@@ -284,7 +285,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         /////////////////////// HELPER ////////////////////////////
         ///////////////////////////////////////////////////////////
 
-        private static void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, int? phaseNumber = null)
+        private void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, int? phaseNumber, string reason)
         {
             var error = new WatchDogLogEvent(
                 location.Id,
@@ -297,8 +298,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 key,
                 phaseNumber);
 
-            if (!errors.Contains(error))
-                errors.Add(error);
+            WatchDogIssueLogMessages.AddIssue(logger, "AM", errors, error, reason);
         }
     }
 }

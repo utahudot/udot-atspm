@@ -87,6 +87,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         locationEvents.AddRange(RampMainLineLastRun);
                         locationEvents.AddRange(RampDetector);
 
+                        // Queries can overlap; count each unique controller event only once.
+                        locationEvents = locationEvents.Distinct().ToList();
+
                         CheckDetectors(Location, options, locationEvents, errors);
                         CheckRampMissedDetectorHits(Location, options, locationEvents, errors);
                     }
@@ -146,7 +149,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                             WatchDogIssueTypes.LowRampDetectorHits,
                             $"CH: {channel} - Count: {currentVolume.ToString().ToLowerInvariant()}",
                             errors,
-                            channel.ToString());
+                            channel.ToString(),
+                            $"Detector hit count {currentVolume} < LowHitRampThreshold {options.LowHitRampThreshold}; event codes [{string.Join(",", detectorEventCodes)}], EventParam/channel {channel}, window [{options.RampDetectorStart:O}, {options.RampDetectorEnd:O}].");
                     }
 
                 }
@@ -201,7 +205,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WatchDogIssueTypes.RampMissedDetectorHits,
                     "No ramp mainline events received in the configured window",
                     errors,
-                    representativeDetector.DetectorChannel.ToString());
+                    representativeDetector.DetectorChannel.ToString(),
+                    $"No events with codes [{string.Join(",", validEventCodes)}], any event parameter, in [{rampStart:O}, {rampEnd:O}); zero-data condition reports an issue regardless of RampMissedEventsThreshold {options.RampMissedEventsThreshold}. Detector {representativeDetector.Id}/channel {representativeDetector.DetectorChannel} represents this location-wide check.");
                 return;
             }
 
@@ -236,14 +241,15 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WatchDogIssueTypes.RampMissedDetectorHits,
                     $"Ramp mainline window missed {missedBuckets} intervals between {rampStart:t} and {rampEnd:t}",
                     errors,
-                    representativeDetector.DetectorChannel.ToString());
+                    representativeDetector.DetectorChannel.ToString(),
+                    $"Missed intervals {missedBuckets} > RampMissedEventsThreshold {options.RampMissedEventsThreshold}; {bucketsWithHits.Count} of {totalBuckets} intervals covered, interval size {bucketSizeSeconds}s, boundary tolerance {wiggleSeconds}s, matching event count {timestamps.Count}, event codes [{string.Join(",", validEventCodes)}], any event parameter, window [{rampStart:O}, {rampEnd:O}). Detector {representativeDetector.Id}/channel {representativeDetector.DetectorChannel} represents this location-wide check.");
             }
         }
 
         ///////////////////////////////////////////////////////////
         /////////////////////// HELPER ////////////////////////////
         ///////////////////////////////////////////////////////////
-        private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key)
+        private void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, string reason)
         {
             //This should usually have the channel as the key so that it can be used to ignore.
             var error = new WatchDogLogEvent(
@@ -257,8 +263,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 key,
                 phase: null);
 
-            if (!errors.Contains(error))
-                errors.Add(error);
+            WatchDogIssueLogMessages.AddIssue(logger, "Ramp", errors, error, reason);
         }
 
     }
