@@ -93,10 +93,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         locationEvents.AddRange(RampMainline);
                         locationEvents.AddRange(RampStuckQueue);
 
+                        // Queries can overlap; count each unique controller event only once.
+                        locationEvents = locationEvents.Distinct().ToList();
+
                         var recordsError = await CheckLocationRecordCount(options.PmScanDate, Location, options, locationEvents);
                         if (recordsError != null)
                         {
-                            errors.Add(recordsError);
+                            WatchDogIssueLogMessages.AddIssue(logger, "PM", errors, recordsError,
+                                $"Unique record count {locationEvents.Count} <= MinimumRecords {options.MinimumRecords}; all event codes and parameters counted across PM [{options.PmAnalysisStart:O}, {options.PmAnalysisEnd:O}), mainline [{options.PmScanDate.Date.AddHours(options.RampMainlineStartHour):O}, {options.PmScanDate.Date.AddHours(options.RampMainlineEndHour):O}), and queue [{options.PmScanDate.Date.AddHours(options.RampStuckQueueStartHour):O}, {options.PmScanDate.Date.AddHours(options.RampStuckQueueEndHour):O}) windows. Remaining PM checks skipped for this location.");
                             continue;
                         }
                         var tasks = new List<Task>();
@@ -174,8 +178,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         $"{additionalInfo}",
                         null);
 
-                    if (!errors.Contains(error))
-                        errors.Add(error);
+                    WatchDogIssueLogMessages.AddIssue(logger, "PM", errors, error,
+                        $"Event count {currentVolume.Count()} {(checkMissing ? "== 0 (expected mainline data)" : "> 0 (unexpected queue detections)")}; event codes [{string.Join(",", eventCodes)}], any event parameter, window [{start:O}, {end:O}].");
                 }
             }
             catch (Exception ex)
@@ -284,7 +288,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                                 WatchDogIssueTypes.LowDetectorHits,
                                 message,
                                 errors,
-                                channel.ToString());
+                                channel.ToString(),
+                                $"Detector hit count {currentVolume} < LowHitThreshold {options.LowHitThreshold}; event codes [{string.Join(",", detectorEventCodes)}], EventParam/channel {channel}, window [{options.PmAnalysisStart:O}, {options.PmAnalysisEnd:O}].");
                         }
 
                     }
@@ -315,13 +320,14 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         "No corresponding approach configured",
                         errors,
                         phaseNumber.ToString(),
-                        phaseNumber);
+                        phaseNumber,
+                        $"Event code 1 with EventParam/phase {phaseNumber} was received in [{options.PmAnalysisStart:O}, {options.PmAnalysisEnd:O}], but no corresponding phase/approach is configured.");
                 }
             }
         }
 
         //WatchDogIssueType UnconfiguredDetector - 7 - PM
-        public static void CheckForUnconfiguredDetectors(Location Location, WatchdogPmLoggingOptions options, List<IndianaEvent> LocationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<short> detectorEventCodes)
+        public void CheckForUnconfiguredDetectors(Location Location, WatchdogPmLoggingOptions options, List<IndianaEvent> LocationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<short> detectorEventCodes)
         {
             var detectorChannelsFromEvents = LocationEvents.Where(e => detectorEventCodes.Contains(e.EventCode)
             && e.Timestamp >= options.PmAnalysisStart && e.Timestamp <= options.PmAnalysisEnd)
@@ -338,7 +344,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         WatchDogIssueTypes.UnconfiguredDetector,
                         $"Unconfigured detector channel-{channel}",
                         errors,
-                        channel.ToString());
+                        channel.ToString(),
+                        $"Event codes [{string.Join(",", detectorEventCodes)}] with EventParam/channel {channel} were received in [{options.PmAnalysisStart:O}, {options.PmAnalysisEnd:O}], but no detector is configured for that channel.");
                 }
             }
         }
@@ -382,7 +389,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         ///////////////////////////////////////////////////////////
         /////////////////////// HELPER ////////////////////////////
         ///////////////////////////////////////////////////////////
-        private static void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key)
+        private void AddDetectorError(Location location, DateTime timestamp, Detector detector, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, string reason)
         {
             //This should usually have the channel as the key so that it can be used to ignore.
             var error = new WatchDogLogEvent(
@@ -396,11 +403,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 key,
                 phase: null);
 
-            if (!errors.Contains(error))
-                errors.Add(error);
+            WatchDogIssueLogMessages.AddIssue(logger, "PM", errors, error, reason);
         }
 
-        private static void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, int? phaseNumber = null)
+        private void AddApproachError(Location location, DateTime timestamp, int approachId, WatchDogIssueTypes issueType, string message, ConcurrentBag<WatchDogLogEvent> errors, string key, int? phaseNumber, string reason)
         {
             var error = new WatchDogLogEvent(
                 location.Id,
@@ -413,8 +419,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 key,
                 phaseNumber);
 
-            if (!errors.Contains(error))
-                errors.Add(error);
+            WatchDogIssueLogMessages.AddIssue(logger, "PM", errors, error, reason);
         }
     }
 }
