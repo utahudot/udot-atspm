@@ -58,7 +58,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             var events = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, tspEventCodes);
             if (events.IsNullOrEmpty())
             {
-                return await Task.FromException<PrioritySummaryResult>(new NullReferenceException("No Controller Event Logs found for Location"));
+                return await Task.FromException<PrioritySummaryResult>(new NullReferenceException(
+                    $"No Priority Event Logs found for Location. Searched event codes: {string.Join(", ", tspEventCodes)}"));
             }
 
             PrioritySummaryResult result = prioritySummaryService.GetChartData(parameter, events);

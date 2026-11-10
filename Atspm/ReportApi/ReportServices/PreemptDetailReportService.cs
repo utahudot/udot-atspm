@@ -61,8 +61,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             if (events.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for Location");
-                return await Task.FromException<PreemptDetailResult>(new NullReferenceException("No Controller Event Logs found for Location"));
+                return await Task.FromException<PreemptDetailResult>(new NullReferenceException(
+                    $"No Preemption Event Logs found for Location. Searched event codes: {string.Join(", ", codes)}"));
             }
 
 
