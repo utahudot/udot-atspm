@@ -92,6 +92,7 @@ builder.Host
         });
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
+        s.AddSystemConfigurableOptions(h);
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
         s.AddPathBaseFilter(h);

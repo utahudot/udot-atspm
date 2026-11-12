@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Configuration/DeviceDownloaderConfiguration.cs
 // 
@@ -15,11 +15,14 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Infrastructure.Attributes;
+
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
     /// Options pattern model for services that implement <see cref="IDeviceDownloader"/>
     /// </summary>
+    [SystemConfigurable]
     public class DeviceDownloaderConfiguration
     {
         /// <summary>

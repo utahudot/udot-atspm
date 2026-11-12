@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for WatchDog - %Namespace%/Program.cs
 // 
@@ -63,6 +63,7 @@ cmdBuilder.UseHost(hostBuilder =>
         s.AddEmailServices(h);
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
+        s.AddSystemConfigurableOptions(h);
         s.AddAtspmEFEventLogRepositories();
         s.AddAtspmEFAggregationRepositories();
         s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();

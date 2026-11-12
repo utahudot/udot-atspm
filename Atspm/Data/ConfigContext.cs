@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data/ConfigContext.cs
 // 
@@ -171,6 +171,11 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<UserRegion> UserRegions { get; set; }
 
         /// <summary>
+        /// System settings table
+        /// </summary>
+        public virtual DbSet<SystemSetting> SystemSettings { get; set; }
+
+        /// <summary>
         /// Watchdog log events
         /// </summary>
         public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
@@ -228,6 +233,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
+            modelBuilder.ApplyConfiguration(new SystemSettingConfiguration());
             //modelBuilder.ApplyConfiguration(new WatchDogIgnoreEventConfiguration());
 
 

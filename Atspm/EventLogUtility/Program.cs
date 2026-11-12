@@ -61,6 +61,7 @@ cmdBuilder.UseHost(a =>
     {
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
+        s.AddSystemConfigurableOptions(h);
         s.AddAtspmEFEventLogRepositories();
         s.AddAtspmEFAggregationRepositories();
         s.AddDownloaderClients();
