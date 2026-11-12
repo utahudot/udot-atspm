@@ -15,11 +15,14 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Infrastructure.Attributes;
+
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
     /// Options pattern model for services that implement <see cref="IDeviceDownloader"/>
     /// </summary>
+    [UserConfigurable]
     public class DeviceDownloaderConfiguration
     {
         /// <summary>

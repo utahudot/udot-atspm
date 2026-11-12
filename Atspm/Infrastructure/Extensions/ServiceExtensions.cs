@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Extensions/ServiceExtensions.cs
 // 
@@ -20,9 +20,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using System.Reflection;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Utility;
+using Utah.Udot.Atspm.Infrastructure.Attributes;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
@@ -174,6 +177,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IUserAreaRepository, UserAreaEFRepository>();
             services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
             services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
+            services.AddScoped<IUserSettingRepository, UserSettingEFRepository>();
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
 
@@ -283,6 +287,66 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
                 }
             }
+
+            return services;
+        }
+
+        /// <summary>
+        /// Discovers all configuration classes decorated with <see cref="UserConfigurableAttribute"/>,
+        /// builds and registers a singleton <see cref="IReadOnlyList{UserSettingDescriptor}"/> with XML documentation metadata,
+        /// and configures <see cref="DatabasePostConfigureOptions{TOptions}"/> for each discovered options type.
+        /// </summary>
+        /// <param name="services">The service collection to register options and metadata into.</param>
+        /// <param name="host">The host builder context providing access to <see cref="IConfiguration"/>.</param>
+        /// <returns>The updated <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddUserConfigurableOptions(this IServiceCollection services, HostBuilderContext host)
+        {
+            var infraAssembly = typeof(ServiceExtensions).Assembly;
+            var xmlDocs = new XmlDocReader(infraAssembly);
+            var descriptors = new List<UserSettingDescriptor>();
+
+            var configurableTypes = infraAssembly
+                .GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && t.GetCustomAttribute<UserConfigurableAttribute>() is not null)
+                .ToList();
+
+            foreach (var type in configurableTypes)
+            {
+                var attr = type.GetCustomAttribute<UserConfigurableAttribute>()!;
+                var sectionName = attr.SectionName ?? type.Name;
+                var defaultInstance = Activator.CreateInstance(type);
+
+                foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead && p.CanWrite))
+                {
+                    var defaultVal = defaultInstance is not null ? prop.GetValue(defaultInstance)?.ToString() : null;
+
+                    descriptors.Add(new UserSettingDescriptor
+                    {
+                        Key = $"{sectionName}:{prop.Name}",
+                        Section = sectionName,
+                        Name = prop.Name,
+                        ValueType = (Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType).Name,
+                        Description = xmlDocs.GetPropertyComment(prop),
+                        CodeDefaultValue = defaultVal,
+                        PropertyInfo = prop
+                    });
+                }
+
+                var configureMethod = typeof(OptionsConfigurationServiceCollectionExtensions)
+                    .GetMethods()
+                    .First(m => m.Name == nameof(OptionsConfigurationServiceCollectionExtensions.Configure)
+                        && m.GetParameters().Length == 2
+                        && m.GetParameters()[1].ParameterType == typeof(IConfiguration))
+                    .MakeGenericMethod(type);
+
+                configureMethod.Invoke(null, new object[] { services, host.Configuration.GetSection(sectionName) });
+
+                var postConfigureServiceType = typeof(IPostConfigureOptions<>).MakeGenericType(type);
+                var postConfigureImplType = typeof(DatabasePostConfigureOptions<>).MakeGenericType(type);
+                services.AddSingleton(postConfigureServiceType, postConfigureImplType);
+            }
+
+            services.AddSingleton<IReadOnlyList<UserSettingDescriptor>>(descriptors);
 
             return services;
         }
