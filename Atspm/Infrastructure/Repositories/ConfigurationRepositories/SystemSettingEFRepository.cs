@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.ATSPM.ConfigApi.DTO/UpdateUserSettingDto.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories/SystemSettingEFRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,15 @@
 // limitations under the License.
 #endregion
 
-namespace Utah.Udot.ATSPM.ConfigApi.DTO
+using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
+
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Request payload for creating or updating a user-configurable setting value.
-    /// </summary>
-    public class UpdateUserSettingDto
+    /// <inheritdoc cref="ISystemSettingRepository"/>
+    public class SystemSettingEFRepository : ATSPMRepositoryEFBase<SystemSetting>, ISystemSettingRepository
     {
-        /// <summary>
-        /// New configuration value to persist as an override.
-        /// </summary>
-        public string? Value { get; set; }
+        /// <inheritdoc/>
+        public SystemSettingEFRepository(ConfigContext db, ILogger<SystemSettingEFRepository> log) : base(db, log) { }
     }
 }

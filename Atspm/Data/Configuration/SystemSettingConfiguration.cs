@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Configuration/UserSettingConfiguration.cs
+// for Data - Utah.Udot.Atspm.Data.Configuration/SystemSettingConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
-    /// Entity Framework configuration for <see cref="UserSetting"/>.
+    /// Entity Framework configuration for <see cref="SystemSetting"/>.
     /// </summary>
-    public class UserSettingConfiguration : IEntityTypeConfiguration<UserSetting>
+    public class SystemSettingConfiguration : IEntityTypeConfiguration<SystemSetting>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<UserSetting> builder)
+        public void Configure(EntityTypeBuilder<SystemSetting> builder)
         {
-            builder.ToTable(t => t.HasComment("User Settings"));
+            builder.ToTable(t => t.HasComment("System Settings"));
 
             builder.HasIndex(e => e.Key)
                 .IsUnique();

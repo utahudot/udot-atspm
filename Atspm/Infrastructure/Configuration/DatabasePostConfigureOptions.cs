@@ -25,23 +25,23 @@ using Utah.Udot.Atspm.Infrastructure.Attributes;
 namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
-    /// Applies database-stored <see cref="UserSetting"/> overrides onto <typeparamref name="TOptions"/> after external configuration binding.
+    /// Applies database-stored <see cref="SystemSetting"/> overrides onto <typeparamref name="TOptions"/> after external configuration binding.
     /// </summary>
-    /// <typeparam name="TOptions">The configuration options class marked with <see cref="UserConfigurableAttribute"/>.</typeparam>
+    /// <typeparam name="TOptions">The configuration options class marked with <see cref="SystemConfigurableAttribute"/>.</typeparam>
     public class DatabasePostConfigureOptions<TOptions>(
         IServiceScopeFactory scopeFactory,
-        IReadOnlyList<UserSettingDescriptor> descriptors,
+        IReadOnlyList<SystemSettingDescriptor> descriptors,
         ILogger<DatabasePostConfigureOptions<TOptions>> logger) : IPostConfigureOptions<TOptions>
         where TOptions : class
     {
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-        private readonly IReadOnlyList<UserSettingDescriptor> _descriptors = descriptors;
+        private readonly IReadOnlyList<SystemSettingDescriptor> _descriptors = descriptors;
         private readonly ILogger<DatabasePostConfigureOptions<TOptions>> _logger = logger;
 
         /// <inheritdoc/>
         public void PostConfigure(string? name, TOptions options)
         {
-            var attr = typeof(TOptions).GetCustomAttribute<UserConfigurableAttribute>();
+            var attr = typeof(TOptions).GetCustomAttribute<SystemConfigurableAttribute>();
             var sectionName = attr?.SectionName ?? typeof(TOptions).Name;
 
             var sectionDescriptors = _descriptors
@@ -54,7 +54,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
             }
 
             using var scope = _scopeFactory.CreateScope();
-            var repo = scope.ServiceProvider.GetRequiredService<IUserSettingRepository>();
+            var repo = scope.ServiceProvider.GetRequiredService<ISystemSettingRepository>();
 
             var prefix = sectionName + ":";
             var overrides = repo.GetList(s => s.Key.StartsWith(prefix));
@@ -72,7 +72,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, "Failed to apply database UserSetting override for key '{Key}' with value '{Value}'.", setting.Key, setting.Value);
+                        _logger.LogWarning(ex, "Failed to apply database SystemSetting override for key '{Key}' with value '{Value}'.", setting.Key, setting.Value);
                     }
                 }
             }

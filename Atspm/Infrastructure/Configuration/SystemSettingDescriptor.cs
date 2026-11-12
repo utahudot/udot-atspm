@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.ATSPM.ConfigApi.DTO/UserSettingDto.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Configuration/SystemSettingDescriptor.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,49 +15,48 @@
 // limitations under the License.
 #endregion
 
-using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
-namespace Utah.Udot.ATSPM.ConfigApi.DTO
+namespace Utah.Udot.Atspm.Infrastructure.Configuration
 {
     /// <summary>
-    /// Data transfer object representing a user-configurable application setting, its XML documentation, and its override status.
+    /// Contains reflection and XML documentation metadata for a property on a <see cref="Utah.Udot.Atspm.Infrastructure.Attributes.SystemConfigurableAttribute"/> options class.
     /// </summary>
-    public class UserSettingDto
+    public class SystemSettingDescriptor
     {
         /// <summary>
         /// Hierarchical configuration key.
         /// </summary>
-        [Key]
-        public required string Key { get; set; }
+        public required string Key { get; init; }
 
         /// <summary>
         /// Configuration section name.
         /// </summary>
-        public string? Section { get; set; }
+        public required string Section { get; init; }
 
         /// <summary>
         /// Property name on the configuration class.
         /// </summary>
-        public string? Name { get; set; }
+        public required string Name { get; init; }
 
         /// <summary>
-        /// Current effective value of the setting.
+        /// CLR type name of the property.
         /// </summary>
-        public string? Value { get; set; }
+        public required string ValueType { get; init; }
 
         /// <summary>
-        /// Human-readable description from the configuration property's XML summary comment.
+        /// Human-readable description extracted from the property's XML documentation comment.
         /// </summary>
-        public string? Description { get; set; }
+        public string? Description { get; init; }
 
         /// <summary>
-        /// Data type name of the configuration property.
+        /// Default value defined on a new instance of the configuration class.
         /// </summary>
-        public string? ValueType { get; set; }
+        public string? CodeDefaultValue { get; init; }
 
         /// <summary>
-        /// True if the value comes from external configuration; false if overridden in the UserSettings database table.
+        /// Cached reflection property info used for type conversion and binding.
         /// </summary>
-        public bool IsDefault { get; set; }
+        public required PropertyInfo PropertyInfo { get; init; }
     }
 }

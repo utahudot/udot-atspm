@@ -171,9 +171,9 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<UserRegion> UserRegions { get; set; }
 
         /// <summary>
-        /// User settings table
+        /// System settings table
         /// </summary>
-        public virtual DbSet<UserSetting> UserSettings { get; set; }
+        public virtual DbSet<SystemSetting> SystemSettings { get; set; }
 
         /// <summary>
         /// Watchdog log events
@@ -233,7 +233,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
-            modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
+            modelBuilder.ApplyConfiguration(new SystemSettingConfiguration());
             //modelBuilder.ApplyConfiguration(new WatchDogIgnoreEventConfiguration());
 
 

@@ -177,7 +177,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IUserAreaRepository, UserAreaEFRepository>();
             services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
             services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
-            services.AddScoped<IUserSettingRepository, UserSettingEFRepository>();
+            services.AddScoped<ISystemSettingRepository, SystemSettingEFRepository>();
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
 
@@ -292,27 +292,27 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
 
         /// <summary>
-        /// Discovers all configuration classes decorated with <see cref="UserConfigurableAttribute"/>,
-        /// builds and registers a singleton <see cref="IReadOnlyList{UserSettingDescriptor}"/> with XML documentation metadata,
+        /// Discovers all configuration classes decorated with <see cref="SystemConfigurableAttribute"/>,
+        /// builds and registers a singleton <see cref="IReadOnlyList{SystemSettingDescriptor}"/> with XML documentation metadata,
         /// and configures <see cref="DatabasePostConfigureOptions{TOptions}"/> for each discovered options type.
         /// </summary>
         /// <param name="services">The service collection to register options and metadata into.</param>
         /// <param name="host">The host builder context providing access to <see cref="IConfiguration"/>.</param>
         /// <returns>The updated <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddUserConfigurableOptions(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection AddSystemConfigurableOptions(this IServiceCollection services, HostBuilderContext host)
         {
             var infraAssembly = typeof(ServiceExtensions).Assembly;
             var xmlDocs = new XmlDocReader(infraAssembly);
-            var descriptors = new List<UserSettingDescriptor>();
+            var descriptors = new List<SystemSettingDescriptor>();
 
             var configurableTypes = infraAssembly
                 .GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.GetCustomAttribute<UserConfigurableAttribute>() is not null)
+                .Where(t => t.IsClass && !t.IsAbstract && t.GetCustomAttribute<SystemConfigurableAttribute>() is not null)
                 .ToList();
 
             foreach (var type in configurableTypes)
             {
-                var attr = type.GetCustomAttribute<UserConfigurableAttribute>()!;
+                var attr = type.GetCustomAttribute<SystemConfigurableAttribute>()!;
                 var sectionName = attr.SectionName ?? type.Name;
                 var defaultInstance = Activator.CreateInstance(type);
 
@@ -320,7 +320,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 {
                     var defaultVal = defaultInstance is not null ? prop.GetValue(defaultInstance)?.ToString() : null;
 
-                    descriptors.Add(new UserSettingDescriptor
+                    descriptors.Add(new SystemSettingDescriptor
                     {
                         Key = $"{sectionName}:{prop.Name}",
                         Section = sectionName,
@@ -346,7 +346,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 services.AddSingleton(postConfigureServiceType, postConfigureImplType);
             }
 
-            services.AddSingleton<IReadOnlyList<UserSettingDescriptor>>(descriptors);
+            services.AddSingleton<IReadOnlyList<SystemSettingDescriptor>>(descriptors);
 
             return services;
         }

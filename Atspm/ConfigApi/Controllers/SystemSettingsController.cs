@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/UserSettingsController.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/SystemSettingsController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,31 +31,31 @@ using Utah.Udot.ATSPM.ConfigApi.DTO;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// OData controller for viewing and overriding user-configurable application settings.
+    /// OData controller for viewing and overriding system-configurable application settings.
     /// </summary>
     [ApiVersion(1.0)]
-    //[Authorize(Roles = AtspmAuthorization.Roles.Admin)]
+    [Authorize(Roles = AtspmAuthorization.Roles.Admin)]
     [ApiConventionType(typeof(DefaultApiConventions))]
-    public class UserSettingsController(
+    public class SystemSettingsController(
         IConfiguration configuration,
-        IUserSettingRepository repository,
-        IReadOnlyList<UserSettingDescriptor> descriptors) : ODataController
+        ISystemSettingRepository repository,
+        IReadOnlyList<SystemSettingDescriptor> descriptors) : ODataController
     {
         private readonly IConfiguration _configuration = configuration;
-        private readonly IUserSettingRepository _repository = repository;
-        private readonly IReadOnlyList<UserSettingDescriptor> _descriptors = descriptors;
+        private readonly ISystemSettingRepository _repository = repository;
+        private readonly IReadOnlyList<SystemSettingDescriptor> _descriptors = descriptors;
 
         /// <summary>
-        /// Retrieves all user-configurable settings with their effective values, XML descriptions, and default status.
+        /// Retrieves all system-configurable settings with their effective values, XML descriptions, and default status.
         /// </summary>
         /// <param name="options">OData query options.</param>
-        /// <returns>Queryable collection of <see cref="UserSettingDto"/>.</returns>
+        /// <returns>Queryable collection of <see cref="SystemSettingDto"/>.</returns>
         /// <response code="200">Items successfully retrieved.</response>
         [EnableQuery]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
-        [ProducesResponseType(typeof(IQueryable<UserSettingDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IQueryable<SystemSettingDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<IQueryable<UserSettingDto>> Get(ODataQueryOptions<UserSettingDto> options)
+        public ActionResult<IQueryable<SystemSettingDto>> Get(ODataQueryOptions<SystemSettingDto> options)
         {
             var dbSettings = _repository.GetList()
                 .ToDictionary(s => s.Key, s => (string?)s.Value, StringComparer.OrdinalIgnoreCase);
@@ -66,18 +66,18 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves a specific user-configurable setting by its hierarchical configuration key.
+        /// Retrieves a specific system-configurable setting by its hierarchical configuration key.
         /// </summary>
         /// <param name="key">Hierarchical configuration key.</param>
         /// <param name="options">OData query options.</param>
-        /// <returns>Matching <see cref="UserSettingDto"/>.</returns>
+        /// <returns>Matching <see cref="SystemSettingDto"/>.</returns>
         /// <response code="200">Item was successfully retrieved.</response>
         /// <response code="404">Item does not exist.</response>
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
-        [ProducesResponseType(typeof(UserSettingDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SystemSettingDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<UserSettingDto> Get(string key, ODataQueryOptions<UserSettingDto> options)
+        public ActionResult<SystemSettingDto> Get(string key, ODataQueryOptions<SystemSettingDto> options)
         {
             var descriptor = _descriptors.FirstOrDefault(d => string.Equals(d.Key, key, StringComparison.OrdinalIgnoreCase));
             if (descriptor is null)
@@ -95,20 +95,20 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Creates or updates a database override value for the specified user-configurable setting key.
+        /// Creates or updates a database override value for the specified system-configurable setting key.
         /// </summary>
         /// <param name="key">Hierarchical configuration key to override.</param>
         /// <param name="item">Payload containing the new value to persist as an override.</param>
         /// <returns>No content on success.</returns>
         /// <response code="204">Override was successfully created or updated.</response>
         /// <response code="400">Value cannot be converted to the setting's target data type.</response>
-        /// <response code="404">Key is not a valid user-configurable setting.</response>
-        [HttpPut("api/v{version:apiVersion}/UserSettings/{key}")]
+        /// <response code="404">Key is not a valid system-configurable setting.</response>
+        [HttpPut("api/v{version:apiVersion}/SystemSettings/{key}")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Put([FromRoute] string key, [FromBody] UpdateUserSettingDto item)
+        public async Task<IActionResult> Put([FromRoute] string key, [FromBody] UpdateSystemSettingDto item)
         {
             if (item is null)
             {
@@ -118,7 +118,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             var descriptor = _descriptors.FirstOrDefault(d => string.Equals(d.Key, key, StringComparison.OrdinalIgnoreCase));
             if (descriptor is null)
             {
-                return NotFound($"Key '{key}' is not a valid user-configurable setting.");
+                return NotFound($"Key '{key}' is not a valid system-configurable setting.");
             }
 
             if (item.Value is not null)
@@ -138,7 +138,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             var existing = _repository.GetList(s => s.Key == descriptor.Key).FirstOrDefault();
             if (existing is null)
             {
-                await _repository.AddAsync(new UserSetting
+                await _repository.AddAsync(new SystemSetting
                 {
                     Key = descriptor.Key,
                     Value = item.Value
@@ -160,7 +160,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <returns>No content on success.</returns>
         /// <response code="204">Override successfully removed.</response>
         /// <response code="404">No override exists for the specified key.</response>
-        [HttpDelete("api/v{version:apiVersion}/UserSettings/{key}")]
+        [HttpDelete("api/v{version:apiVersion}/SystemSettings/{key}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete([FromRoute] string key)
@@ -179,12 +179,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             return NoContent();
         }
 
-        private UserSettingDto MapToDto(UserSettingDescriptor descriptor, IReadOnlyDictionary<string, string?> dbSettings)
+        private SystemSettingDto MapToDto(SystemSettingDescriptor descriptor, IReadOnlyDictionary<string, string?> dbSettings)
         {
             var hasOverride = dbSettings.TryGetValue(descriptor.Key, out var dbValue);
             var externalValue = _configuration[descriptor.Key] ?? descriptor.CodeDefaultValue;
 
-            return new UserSettingDto
+            return new SystemSettingDto
             {
                 Key = descriptor.Key,
                 Section = descriptor.Section,

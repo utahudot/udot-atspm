@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Configuration/EventLogImporterConfiguration.cs
 // 
@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
     /// <summary>
     /// Options pattern model for services that implement <see cref="IEventLogImporter"/>
     /// </summary>
-    [UserConfigurable]
+    [SystemConfigurable]
     public class EventLogImporterConfiguration
     {
         /// <summary>

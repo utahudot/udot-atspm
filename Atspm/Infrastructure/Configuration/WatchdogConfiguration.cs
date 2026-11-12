@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
     /// <summary>
     /// Configuration options for the Watchdog anomaly detection and email alert service.
     /// </summary>
-    [UserConfigurable]
+    [SystemConfigurable]
     public class WatchdogConfiguration
     {
         /// <summary>

@@ -12,8 +12,8 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20261110211042_UserSettings")]
-    partial class UserSettings
+    [Migration("20261112182402_SystemSettings")]
+    partial class SystemSettings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2578,6 +2578,52 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.SystemSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("Created")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .ValueGeneratedOnAdd()
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(2048)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("SystemSettings", t =>
+                        {
+                            t.HasComment("System Settings");
+                        });
+                });
+
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UsageEntry", b =>
                 {
                     b.Property<int>("Id")
@@ -2742,52 +2788,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("UserRegions");
-                });
-
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset?>("Created")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .ValueGeneratedOnAdd()
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<string>("Value")
-                        .HasMaxLength(2048)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(2048)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.ToTable("UserSettings", t =>
-                        {
-                            t.HasComment("User Settings");
-                        });
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.WatchDogIgnoreEvent", b =>

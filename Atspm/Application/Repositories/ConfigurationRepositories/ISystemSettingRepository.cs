@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Repositories.ConfigurationRepositories/IUserSettingRepository.cs
+// for Application - Utah.Udot.Atspm.Repositories.ConfigurationRepositories/ISystemSettingRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ using Utah.Udot.NetStandardToolkit.Services;
 namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
     /// <summary>
-    /// User setting repository interface for accessing and managing <see cref="UserSetting"/> entities in <see cref="Utah.Udot.Atspm.Data.ConfigContext"/>.
+    /// System setting repository interface for accessing and managing <see cref="SystemSetting"/> entities in <see cref="Utah.Udot.Atspm.Data.ConfigContext"/>.
     /// </summary>
-    public interface IUserSettingRepository : IAsyncRepository<UserSetting>
+    public interface ISystemSettingRepository : IAsyncRepository<SystemSetting>
     {
     }
 }

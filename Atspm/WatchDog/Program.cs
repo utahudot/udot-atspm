@@ -63,7 +63,7 @@ cmdBuilder.UseHost(hostBuilder =>
         s.AddEmailServices(h);
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
-        s.AddUserConfigurableOptions(h);
+        s.AddSystemConfigurableOptions(h);
         s.AddAtspmEFEventLogRepositories();
         s.AddAtspmEFAggregationRepositories();
         s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();

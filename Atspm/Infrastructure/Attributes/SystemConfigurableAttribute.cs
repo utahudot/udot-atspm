@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Attributes/UserConfigurableAttribute.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Attributes/SystemConfigurableAttribute.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,16 +18,16 @@
 namespace Utah.Udot.Atspm.Infrastructure.Attributes
 {
     /// <summary>
-    /// Marks a configuration options class as eligible to be exposed and overridden via the UserSettings API.
+    /// Marks a configuration options class as eligible to be exposed and overridden via the SystemSettings API.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class UserConfigurableAttribute : Attribute
+    public sealed class SystemConfigurableAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserConfigurableAttribute"/> class.
+        /// Initializes a new instance of the <see cref="SystemConfigurableAttribute"/> class.
         /// </summary>
         /// <param name="sectionName">Optional explicit configuration section name. Defaults to the class name if null.</param>
-        public UserConfigurableAttribute(string? sectionName = null)
+        public SystemConfigurableAttribute(string? sectionName = null)
         {
             SectionName = sectionName;
         }

@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/UserSettingOdataConfiguration.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/SystemSettingOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ using Utah.Udot.ATSPM.ConfigApi.DTO;
 namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
     /// <summary>
-    /// UserSettings OData configuration.
+    /// SystemSettings OData configuration.
     /// </summary>
-    public class UserSettingOdataConfiguration : IModelConfiguration
+    public class SystemSettingOdataConfiguration : IModelConfiguration
     {
         /// <inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
-            builder.ComplexType<UpdateUserSettingDto>();
+            builder.ComplexType<UpdateSystemSettingDto>();
 
-            var entityType = builder.EntitySet<UserSettingDto>("UserSettings").EntityType;
+            var entityType = builder.EntitySet<SystemSettingDto>("SystemSettings").EntityType;
             entityType.HasKey(p => p.Key);
             entityType
                 .Page(default, default)

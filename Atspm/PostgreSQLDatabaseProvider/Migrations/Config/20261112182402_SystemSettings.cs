@@ -7,13 +7,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     /// <inheritdoc />
-    public partial class UserSettings : Migration
+    public partial class SystemSettings : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "UserSettings",
+                name: "SystemSettings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -27,13 +27,13 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSettings", x => x.Id);
+                    table.PrimaryKey("PK_SystemSettings", x => x.Id);
                 },
-                comment: "User Settings");
+                comment: "System Settings");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSettings_Key",
-                table: "UserSettings",
+                name: "IX_SystemSettings_Key",
+                table: "SystemSettings",
                 column: "Key",
                 unique: true);
         }
@@ -42,7 +42,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UserSettings");
+                name: "SystemSettings");
         }
     }
 }

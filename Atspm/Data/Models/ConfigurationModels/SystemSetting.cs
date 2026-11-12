@@ -1,6 +1,6 @@
 #region license
 // Copyright 2026 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Models/UserSetting.cs
+// for Data - Utah.Udot.Atspm.Data.Models/SystemSetting.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
-    /// User-configured application setting override stored in the database.
+    /// System-configured application setting override stored in the database.
     /// </summary>
-    public partial class UserSetting : AtspmConfigModelBase<int>
+    public partial class SystemSetting : AtspmConfigModelBase<int>
     {
         /// <summary>
         /// Configuration key matching the hierarchical IConfiguration path.
