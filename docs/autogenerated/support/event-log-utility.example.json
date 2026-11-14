@@ -1,0 +1,90 @@
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "DecodeEventsConfiguration": {
+    "Path": "REPLACE_ME"
+  },
+  "DeviceDownloaderConfiguration": {
+    "BasePath": "REPLACE_ME",
+    "DeleteRemoteFile": false,
+    "Ping": false
+  },
+  "DeviceEventLoggingConfiguration": {
+    "Path": "REPLACE_ME",
+    "ProcessingBatchSize": 50000,
+    "ParallelProcesses": 5,
+    "WorkflowBatchSize": 20,
+    "DevicesBatchSize": null,
+    "SignalTimingPlanOffsetHours": 12,
+    "DeviceEventLoggingQueryOptions": {}
+  },
+  "EventLogAggregateConfiguration": {
+    "AggregationType": "REPLACE_ME",
+    "Dates": [],
+    "ParallelProcesses": 1,
+    "EventAggregationQueryOptions": {}
+  },
+  "EventLogExtractConfiguration": {
+    "FileFormat": "REPLACE_ME",
+    "DateTimeFormat": "REPLACE_ME",
+    "Dates": [],
+    "Included": [],
+    "Excluded": [],
+    "Path": "REPLACE_ME",
+    "ParallelProcesses": 1
+  },
+  "EventLogImporterConfiguration": {
+    "EarliestAcceptableDate": "2026-01-01T00:00:00Z",
+    "DeleteSource": false
+  },
+  "EventLogTransferOptions": {
+    "SourceRepository": {},
+    "DestinationRepository": {},
+    "IncludedLocations": [],
+    "ExcludedLocations": [],
+    "StartDate": null,
+    "EndDate": null,
+    "IncludedDeviceIds": [],
+    "DataType": "REPLACE_ME"
+  }
+}

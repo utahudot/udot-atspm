@@ -1,0 +1,28 @@
+{
+  "Generator": "atspm-documentation-generator",
+  "ManagedFiles": [
+    "config-api.md",
+    "data-api.md",
+    "event-log-utility.md",
+    "identity-api.md",
+    "index.md",
+    "report-api.md",
+    "support/config-api.env.example",
+    "support/config-api.example.json",
+    "support/configuration-changes.md",
+    "support/configuration-snapshot.json",
+    "support/configuration-templates.md",
+    "support/data-api.env.example",
+    "support/data-api.example.json",
+    "support/event-log-utility.env.example",
+    "support/event-log-utility.example.json",
+    "support/identity-api.env.example",
+    "support/identity-api.example.json",
+    "support/log-messages.md",
+    "support/report-api.env.example",
+    "support/report-api.example.json",
+    "support/watchdog.env.example",
+    "support/watchdog.example.json",
+    "watchdog.md"
+  ]
+}

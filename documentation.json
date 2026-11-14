@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "productName": "ATSPM",
+  "sourcePaths": [
+    "Atspm/Infrastructure/Configuration",
+    "Atspm/Data/Enums",
+    "docs/configuration-models"
+  ],
+  "configurationTypes": [
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.IdentityConfiguration",
+      "sectionName": "IdentityConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.DecodeEventsConfiguration",
+      "sectionName": "DecodeEventsConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.DeviceDownloaderConfiguration",
+      "sectionName": "DeviceDownloaderConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.DeviceEventLoggingConfiguration",
+      "sectionName": "DeviceEventLoggingConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.EventLogAggregateConfiguration",
+      "sectionName": "EventLogAggregateConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.EventLogExtractConfiguration",
+      "sectionName": "EventLogExtractConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.EventLogImporterConfiguration",
+      "sectionName": "EventLogImporterConfiguration"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.EventLogTransferOptions",
+      "sectionName": "EventLogTransferOptions"
+    },
+    {
+      "typeName": "Utah.Udot.Atspm.Infrastructure.Configuration.WatchdogConfiguration",
+      "sectionName": "WatchdogConfiguration"
+    }
+  ],
+  "containers": [
+    {
+      "name": "Config API",
+      "slug": "config-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc",
+        "GitHubReleaseConfiguration"
+      ]
+    },
+    {
+      "name": "Report API",
+      "slug": "report-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc"
+      ]
+    },
+    {
+      "name": "Data API",
+      "slug": "data-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "Jwt",
+        "Oidc"
+      ]
+    },
+    {
+      "name": "Identity API",
+      "slug": "identity-api",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "IdentityConfiguration",
+        "Jwt",
+        "Oidc"
+      ]
+    },
+    {
+      "name": "Event Log Utility",
+      "slug": "event-log-utility",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "DecodeEventsConfiguration",
+        "DeviceDownloaderConfiguration",
+        "DeviceEventLoggingConfiguration",
+        "EventLogAggregateConfiguration",
+        "EventLogExtractConfiguration",
+        "EventLogImporterConfiguration",
+        "EventLogTransferOptions"
+      ]
+    },
+    {
+      "name": "Watchdog",
+      "slug": "watchdog",
+      "sections": [
+        "DatabaseConfiguration:ConfigContext",
+        "DatabaseConfiguration:AggregationContext",
+        "DatabaseConfiguration:EventLogContext",
+        "DatabaseConfiguration:IdentityContext",
+        "WatchdogConfiguration"
+      ]
+    }
+  ],
+  "logMessages": {
+    "sourcePath": "Atspm/Infrastructure/LogMessages",
+    "description": "Structured ATSPM log messages, sorted by event ID.",
+    "allowedDuplicateEventIds": [
+      201,
+      202,
+      203,
+      1000,
+      1001,
+      1002,
+      1003,
+      9001
+    ]
+  }
+}

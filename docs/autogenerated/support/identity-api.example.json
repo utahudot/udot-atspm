@@ -1,0 +1,60 @@
+{
+  "DatabaseConfiguration": {
+    "ConfigContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "AggregationContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "EventLogContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    },
+    "IdentityContext": {
+      "DBType": "InMemory",
+      "Host": "REPLACE_ME",
+      "Port": null,
+      "Database": "REPLACE_ME",
+      "User": "REPLACE_ME",
+      "Password": "REPLACE_WITH_SECRET",
+      "RunMigrations": false,
+      "Options": {}
+    }
+  },
+  "IdentityConfiguration": {
+    "Website": "REPLACE_ME",
+    "DefaultEmailAddress": "REPLACE_ME"
+  },
+  "Jwt": {
+    "Issuer": "REPLACE_ME",
+    "Audience": "REPLACE_ME",
+    "Key": "REPLACE_WITH_SECRET",
+    "ExpireDays": null
+  },
+  "Oidc": {
+    "Authority": "REPLACE_ME",
+    "ClientId": "REPLACE_ME",
+    "ClientSecret": "REPLACE_WITH_SECRET",
+    "CallbackPath": "REPLACE_ME"
+  }
+}
