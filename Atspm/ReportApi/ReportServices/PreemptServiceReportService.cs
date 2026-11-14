@@ -60,11 +60,18 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 return await Task.FromException<PreemptServiceResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
             var plans = await planService.GetPlansAsync(Location.LocationIdentifier, parameter.Start, parameter.End, controllerEventLogs, cancelToken);
-            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<short>() { 105 });
+            var preemptEventCodes = new List<short>() { 105 };
+            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, preemptEventCodes).ToList();
+            if (preemptEvents.IsNullOrEmpty())
+            {
+                return await Task.FromException<PreemptServiceResult>(new NullReferenceException(
+                    $"No Preemption Event Logs found for Location. Searched event codes: {string.Join(", ", preemptEventCodes)}"));
+            }
+
             PreemptServiceResult result = preemptServiceService.GetChartData(
                 parameter,
                 plans,
-                preemptEvents.ToList());
+                preemptEvents);
             result.LocationDescription = Location.LocationDescription();
             //return Ok(viewModel);
 
