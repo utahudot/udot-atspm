@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Workflows/SignalTimingPlansWorkflow.cs
 // 
@@ -56,12 +56,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         public GenerateSignalPlansStep GenerateSignalPlansStep { get; private set; }
 
         /// <inheritdoc/>
-        public MergeExistingSignalPlansStep MergeExistingSignalPlansStep { get; private set; }
-
-        /// <inheritdoc/>
-        public ReconcileSignalPlansStep ReconcileSignalPlansStep { get; private set; }
-
-        /// <inheritdoc/>
         public SaveSignalTimingPlansStep SaveSignalTimingPlans { get; private set; }
 
         /// <inheritdoc/>
@@ -69,8 +63,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             Steps.Add(BatchEventLogs);
             Steps.Add(GenerateSignalPlansStep);
-            Steps.Add(MergeExistingSignalPlansStep);
-            Steps.Add(ReconcileSignalPlansStep);
             Steps.Add(SaveSignalTimingPlans);
         }
 
@@ -79,8 +71,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             BatchEventLogs = new(_batchSize, new GroupingDataflowBlockOptions() { EnsureOrdered = false, CancellationToken = _cancellationToken });
             GenerateSignalPlansStep = new(new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            MergeExistingSignalPlansStep = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            ReconcileSignalPlansStep = new(new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             SaveSignalTimingPlans = new(_services, new ExecutionDataflowBlockOptions() { EnsureOrdered = false, MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
         }
 
@@ -89,12 +79,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         {
             Input.LinkTo(BatchEventLogs, new DataflowLinkOptions() { PropagateCompletion = true });
             BatchEventLogs.LinkTo(GenerateSignalPlansStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            GenerateSignalPlansStep.LinkTo(MergeExistingSignalPlansStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            MergeExistingSignalPlansStep.LinkTo(ReconcileSignalPlansStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            ReconcileSignalPlansStep.LinkTo(SaveSignalTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            GenerateSignalPlansStep.LinkTo(SaveSignalTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
             SaveSignalTimingPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 }
-
-

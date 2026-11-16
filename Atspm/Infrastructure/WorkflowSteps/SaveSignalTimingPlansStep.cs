@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.WorkflowSteps/SaveSignalTimingPlansStep.cs
 // 
@@ -15,7 +15,10 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.NetStandardToolkit.Workflows;
@@ -23,37 +26,117 @@ using Utah.Udot.NetStandardToolkit.Workflows;
 namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
 {
     /// <summary>
-    /// A workflow step responsible for persisting new signal timing plans or updating the end times of existing plans in the repository.
+    /// A workflow step responsible for atomically merging, reconciling, and persisting signal timing plans per location in the repository.
     /// </summary>
     public class SaveSignalTimingPlansStep(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<IEnumerable<SignalTimingPlan>, SignalTimingPlan>(dataflowBlockOptions)
     {
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locationLocks = new();
         private readonly IServiceScopeFactory _services = services;
 
+        /// <inheritdoc/>
         protected override async IAsyncEnumerable<SignalTimingPlan> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            if (!input.Any()) yield break;
+            var groups = input.GroupBy(p => p.LocationIdentifier).ToList();
+            if (groups.Count == 0) yield break;
 
-            using var scope = _services.CreateAsyncScope();
-            var repo = scope.ServiceProvider.GetRequiredService<ISignalTimingPlanRepository>();
-
-            foreach (var i in input)
+            foreach (var group in groups)
             {
-                var existing = await repo.LookupAsync(i);
+                var locationId = group.Key ?? string.Empty;
+                var locationLock = _locationLocks.GetOrAdd(locationId, _ => new SemaphoreSlim(1, 1));
 
-                if (existing != null)
+                List<SignalTimingPlan> savedPlans;
+
+                await locationLock.WaitAsync(cancelToken);
+                try
                 {
-                    if (existing.End != i.End)
+                    using var scope = _services.CreateAsyncScope();
+                    var repo = scope.ServiceProvider.GetRequiredService<ISignalTimingPlanRepository>();
+                    var options = scope.ServiceProvider.GetService<IOptions<DeviceEventLoggingConfiguration>>();
+                    var planOffset = options?.Value.SignalTimingPlanOffsetHours ?? 12;
+
+                    var minStart = group.Min(p => p.Start).AddHours(-planOffset);
+                    var maxStart = group.Max(p => p.Start).AddHours(planOffset);
+
+                    var existingAll = new List<SignalTimingPlan>();
+                    var queryable = repo.GetList();
+
+                    if (queryable != null)
                     {
-                        existing.End = i.End;
-                        await repo.UpdateAsync(existing);
+                        var existingInWindow = await queryable
+                            .AsNoTracking()
+                            .Where(w => w.LocationIdentifier == group.Key
+                                && w.Start >= minStart
+                                && w.Start < maxStart)
+                            .ToListAsync(cancelToken);
+
+                        var previousNeighbor = await queryable
+                            .AsNoTracking()
+                            .Where(w => w.LocationIdentifier == group.Key && w.Start < minStart)
+                            .OrderByDescending(w => w.Start)
+                            .FirstOrDefaultAsync(cancelToken);
+
+                        var nextNeighbor = await queryable
+                            .AsNoTracking()
+                            .Where(w => w.LocationIdentifier == group.Key && w.Start >= maxStart)
+                            .OrderBy(w => w.Start)
+                            .FirstOrDefaultAsync(cancelToken);
+
+                        existingAll = existingInWindow
+                            .Concat(previousNeighbor != null ? [previousNeighbor] : [])
+                            .Concat(nextNeighbor != null ? [nextNeighbor] : [])
+                            .DistinctBy(p => (p.LocationIdentifier, p.PlanNumber, p.Start))
+                            .ToList();
+                    }
+
+                    var combined = existingAll
+                        .Concat(group)
+                        .GroupBy(p => (p.LocationIdentifier, p.PlanNumber, p.Start))
+                        .Select(g => new SignalTimingPlan
+                        {
+                            LocationIdentifier = g.Key.LocationIdentifier,
+                            PlanNumber = g.Key.PlanNumber,
+                            Start = g.Key.Start,
+                            End = g.Max(x => x.End)
+                        })
+                        .OrderBy(p => p.Start)
+                        .ToList();
+
+                    savedPlans = combined.Zip(combined.Skip(1).Append(null), (current, next) =>
+                    {
+                        if (next != null)
+                        {
+                            current.End = next.Start;
+                        }
+                        return current;
+                    }).ToList();
+
+                    foreach (var plan in savedPlans)
+                    {
+                        var existing = await repo.LookupAsync(plan);
+
+                        if (existing != null)
+                        {
+                            if (existing.End != plan.End)
+                            {
+                                existing.End = plan.End;
+                                await repo.UpdateAsync(existing);
+                            }
+                        }
+                        else
+                        {
+                            await repo.AddAsync(plan);
+                        }
                     }
                 }
-                else
+                finally
                 {
-                    await repo.AddAsync(i);
+                    locationLock.Release();
                 }
 
-                yield return i;
+                foreach (var plan in savedPlans)
+                {
+                    yield return plan;
+                }
             }
         }
     }
