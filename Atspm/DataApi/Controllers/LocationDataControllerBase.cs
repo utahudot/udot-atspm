@@ -195,8 +195,6 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<DateOnly>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithData(
             [FromRoute] string locationIdentifier,
             [FromQuery, BindRequired] DateTime start,

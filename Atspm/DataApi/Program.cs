@@ -47,6 +47,13 @@ builder.Host
             o.OutputFormatters.RemoveType<StringOutputFormatter>();
         })
         .AddNewtonsoftJson();
+        s.PostConfigure<MvcOptions>(o =>
+        {
+            foreach (var formatter in o.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>())
+            {
+                formatter.SupportedMediaTypes.Remove("text/json");
+            }
+        });
         s.AddProblemDetails();
         s.AddConfiguredCompression(new[] { "application/json", "application/xml", "text/csv", "application/x-ndjson" });
         s.AddConfiguredSwagger(builder.Configuration, o =>
