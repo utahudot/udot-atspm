@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.Specifications
     /// This specification applies filtering criteria and ordering rules that can be used
     /// with repositories or query providers supporting the Specification pattern.
     /// </remarks>
-    public class CompressedDataSpecification<T> : BaseSpecification<T> where T : CompressedDataBase
+    public class CompressedDataSpecification<T> : LocationDateRangeSpecification<T> where T : CompressedDataBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CompressedDataSpecification{T}"/> class
@@ -48,13 +48,9 @@ namespace Utah.Udot.Atspm.Specifications
         /// <remarks>
         /// Results are ordered by the <c>Start</c> property of <see cref="CompressedDataBase"/>.
         /// </remarks>
-        public CompressedDataSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
+        public CompressedDataSpecification(string locationIdentifier, DateTime start, DateTime end)
+            : base(locationIdentifier, start, end)
         {
-            Criteria = c => c.LocationIdentifier == locationIdentifier &&
-                            c.End > start &&
-                            c.Start < end;
-
-            ApplyOrderBy(o => o.Start);
         }
 
         /// <summary>
@@ -76,14 +72,13 @@ namespace Utah.Udot.Atspm.Specifications
         /// <remarks>
         /// Results are ordered by the <c>Start</c> property of <see cref="CompressedDataBase"/>.
         /// </remarks>
-        public CompressedDataSpecification(string locationIdentifier, DateTime start, DateTime end, Type type) : base()
+        public CompressedDataSpecification(string locationIdentifier, DateTime start, DateTime end, Type type)
+            : base(locationIdentifier, start, end)
         {
             Criteria = c => c.LocationIdentifier == locationIdentifier &&
                             c.End > start &&
                             c.Start < end &&
                             c.DataType == type;
-
-            ApplyOrderBy(o => o.Start);
         }
     }
 

@@ -22,6 +22,6 @@ namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
     /// <summary>
     /// Signal timing plan repository
     /// </summary>
-    public interface ISignalTimingPlanRepository : IAsyncRepository<SignalTimingPlan> { }
+    public interface ISignalTimingPlanRepository : ILocationDataRepository<SignalTimingPlan> { }
 
 }

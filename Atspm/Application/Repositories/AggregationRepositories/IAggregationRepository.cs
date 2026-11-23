@@ -19,17 +19,12 @@ using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Repositories.AggregationRepositories
 {
-    public interface ICompressedDataRepository<T> : IAsyncRepository<T> where T : CompressedDataBase
+    /// <summary>
+    /// Repository interface for compressed location-scoped data models.
+    /// </summary>
+    /// <typeparam name="T">The compressed data entity type.</typeparam>
+    public interface ICompressedDataRepository<T> : ILocationDataRepository<T> where T : CompressedDataBase
     {
-        /// <summary>
-        /// Get all data that matches <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event to start with</param>
-        /// <param name="end">Archive date of event to end with</param>
-        /// <returns></returns>
-        IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end);
-
         /// <summary>
         /// Get all data that matches <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
         /// </summary>

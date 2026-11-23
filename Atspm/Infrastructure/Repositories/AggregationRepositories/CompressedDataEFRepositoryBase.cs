@@ -21,17 +21,10 @@ using Microsoft.Extensions.Logging;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     /// <inheritdoc cref="ICompressedDataRepository{T}"/>
-    public abstract class CompressedDataEFRepositoryBase<T>(DbContext db, ILogger<CompressedDataEFRepositoryBase<T>> log) : ATSPMRepositoryEFBase<T>(db, log), ICompressedDataRepository<T> where T : CompressedDataBase
+    public abstract class CompressedDataEFRepositoryBase<T>(DbContext db, ILogger<CompressedDataEFRepositoryBase<T>> log)
+        : LocationDataEFRepositoryBase<T>(db, log), ICompressedDataRepository<T> where T : CompressedDataBase
     {
         #region ICompressedDataRepository
-
-        /// <inheritdoc cref="ICompressedDataRepository{T}.GetData(string, DateTime, DateTime)"/>
-        public IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end)
-        {
-            return GetList()
-                .FromSpecification(new CompressedDataSpecification<T>(locationIdentifier, start, end))
-                .AsAsyncEnumerable();
-        }
 
         /// <inheritdoc cref="ICompressedDataRepository{T}.GetData(string, DateTime, DateTime, Type)"/>
         public IAsyncEnumerable<T> GetData(string locationIdentifier, DateTime start, DateTime end, Type dataType)

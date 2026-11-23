@@ -21,10 +21,14 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     ///<inheritdoc cref="ISignalTimingPlanRepository"/>
-    public class SignalTimingPlanEFRepository : ATSPMRepositoryEFBase<SignalTimingPlan>, ISignalTimingPlanRepository
+    public class SignalTimingPlanEFRepository(AggregationContext db, ILogger<SignalTimingPlanEFRepository> log)
+        : LocationDataEFRepositoryBase<SignalTimingPlan>(db, log), ISignalTimingPlanRepository
     {
-        ///<inheritdoc/>
-        public SignalTimingPlanEFRepository(AggregationContext db, ILogger<SignalTimingPlanEFRepository> log) : base(db, log) { }
+        /// <inheritdoc/>
+        protected override ISpecification<SignalTimingPlan> CreateDateRangeSpecification(string locationIdentifier, DateTime start, DateTime end)
+        {
+            return new SignalTimingPlanSpecification(locationIdentifier, start, end);
+        }
 
         #region ISignalTimingPlanRepository
 

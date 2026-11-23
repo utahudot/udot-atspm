@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.DataApi.CustomOperations
     /// </summary>
     /// <remarks>
     /// This filter inspects the declaring controller type, walks up the inheritance chain
-    /// to locate the generic <c>DataControllerBase&lt;T1,T2&gt;</c>, and then uses the second
+    /// to locate the generic <c>CompressedDataControllerBase&lt;T1,T2&gt;</c>, and then uses the second
     /// generic argument (<c>T2</c>) to determine all valid derived types.
     /// These derived type names are registered as the allowed values for the <c>dataType</c>
     /// parameter in Swagger UI, enabling dropdown selection and discoverability.
@@ -51,11 +51,13 @@ namespace Utah.Udot.Atspm.DataApi.CustomOperations
         /// <list type="number">
         /// <item>Finds parameters named <c>dataType</c>.</item>
         /// <item>Walks up the declaring type’s inheritance chain until it finds
-        /// <c>DataControllerBase&lt;T1,T2&gt;</c>.</item>
+        /// <c>CompressedDataControllerBase&lt;T1,T2&gt;</c>.</item>
         /// <item>Extracts the second generic argument (<c>T2</c>), which represents
         /// the model base type for the controller.</item>
         /// <item>Calls <c>ListDerivedTypes()</c> on <c>T2</c> to get all valid derived type names.</item>
-        /// <item>Registers those names as the <c>Enum</c> values for the parameter schema,
+        /// <item>Registers those names as the <c>Enum</c> values for the parameter schema.</item>
+        /// </list>
+        /// </remarks>
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             foreach (var parameter in operation.Parameters.Where(p => p.Name == "dataType"))
@@ -63,8 +65,7 @@ namespace Utah.Udot.Atspm.DataApi.CustomOperations
                 var declaringType = context.MethodInfo.DeclaringType;
                 var baseType = declaringType;
 
-                // Walk up the inheritance chain until we find DataControllerBase<,>
-                while (baseType != null && (!baseType.IsGenericType || baseType.GetGenericTypeDefinition() != typeof(DataControllerBase<,>)))
+                while (baseType != null && (!baseType.IsGenericType || baseType.GetGenericTypeDefinition() != typeof(CompressedDataControllerBase<,>)))
                 {
                     baseType = baseType.BaseType;
                 }
