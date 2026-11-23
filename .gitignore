@@ -137,3 +137,4 @@ Thumbs.db
 **/nuget.config
 *.rsp
 *.rsp
+/Atspm/ApplicationTests/Analysis/TestData

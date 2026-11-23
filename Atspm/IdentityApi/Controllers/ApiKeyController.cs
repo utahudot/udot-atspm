@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,9 +24,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.IdentityModels;
 using Utah.Udot.Atspm.Infrastructure.Attributes;
+using Utah.Udot.ATSPM.IdentityApi.Attributes;
 using Utah.Udot.ATSPM.IdentityApi.Dto;
 using Utah.Udot.NetStandardToolkit.Common;
 
@@ -35,8 +36,9 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
     /// Provides endpoints for managing API keys, including creation, retrieval, and revocation.
     /// </summary>
     [Authorize]
-    [Route("api/[controller]")]
-    public class ApiKeyController : ControllerBase
+    [RejectApiKeyAuthentication]
+    [ApiVersion("1.0")]
+    public class ApiKeyController : IdentityControllerBase
     {
         private readonly IdentityContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -53,19 +55,22 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         }
 
         /// <summary>
-        /// Generates and stores a new API key for the authenticated user.
+        /// Generates and stores a new API key for the authenticated user or on behalf of a specified user.
         /// </summary>
         /// <param name="dto">The details for the new API key.</param>
-        /// <returns>An IActionResult containing the raw API key.</returns>
-        /// <response code="200">Returns the generated raw key. Note: This is only shown once.</response>
+        /// <returns>An <see cref="ApiKeyCreatedResponseDto"/> containing the raw API key and metadata.</returns>
+        /// <response code="200">Returns the generated raw key and metadata. Note: The plaintext key is only shown once.</response>
+        /// <response code="400">Bad request if the request body is invalid.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
         /// <response code="403">Forbidden if the user attempts to grant claims they do not possess.</response>
+        /// <response code="404">Not found if the specified target user does not exist.</response>
         [AuthorizePermission(AtspmAuthorization.Permissions.ApiKeysCreate, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiKeyCreatedResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Create([FromBody] CreateApiKeyDto dto)
         {
             if (dto == null)
@@ -77,14 +82,34 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
                 );
             }
 
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
+            var currentUserId = _userManager.GetUserId(User);
+            if (currentUserId == null) return Unauthorized();
 
+            string ownerId;
+            if (dto.UserId.HasValue)
+            {
+                ownerId = dto.UserId.Value.ToString();
+                var targetUser = await _userManager.FindByIdAsync(ownerId);
+                if (targetUser == null)
+                {
+                    return Problem(
+                        detail: $"Target user with ID '{ownerId}' was not found.",
+                        statusCode: StatusCodes.Status404NotFound,
+                        title: "User Not Found"
+                    );
+                }
+            }
+            else
+            {
+                ownerId = currentUserId;
+            }
+
+            var requestedClaims = dto.Claims?.ToList() ?? new List<string>();
             var isGlobalAdmin = User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
 
             if (!isGlobalAdmin)
             {
-                foreach (var requestedClaim in dto.Claims)
+                foreach (var requestedClaim in requestedClaims)
                 {
                     if (!User.HasClaim(c => c.Type == AtspmAuthorization.RoleClaimType && c.Value == requestedClaim))
                     {
@@ -103,10 +128,10 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             {
                 Name = dto.Name,
                 KeyHash = hash,
-                OwnerId = userId,
+                OwnerId = ownerId,
                 ExpiresAt = dto.ExpiresAt,
                 IsRevoked = false,
-                Claims = dto.Claims.Select(r => new ApiKeyClaim
+                Claims = requestedClaims.Select(r => new ApiKeyClaim
                 {
                     Type = ClaimTypes.Role,
                     Value = r
@@ -116,31 +141,34 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             _context.ApiKeys.Add(apiKey);
             await _context.SaveChangesAsync();
 
-            return Ok(new
-            {
-                Key = rawKey,
-                Message = "Copy this key now. For security reasons, it cannot be retrieved again."
-            });
+            return Ok(new ApiKeyCreatedResponseDto(
+                apiKey.Name,
+                rawKey,
+                apiKey.CreatedAt,
+                apiKey.ExpiresAt
+            ));
         }
 
         /// <summary>
         /// Retrieves all active, non-revoked API keys belonging to the authenticated user.
         /// </summary>
-        /// <returns>A list of API key metadata.</returns>
+        /// <returns>A list of API key summaries.</returns>
         /// <response code="200">Returns the list of keys associated with the user.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
         /// <response code="403">Forbidden if the user lacks the required view permission.</response>
         [AuthorizePermission(AtspmAuthorization.Permissions.ApiKeysView, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("my-keys")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ApiKeySummaryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetMyKeys()
         {
             var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
             var keys = await _context.ApiKeys
                 .Where(k => k.OwnerId == userId && !k.IsRevoked)
-                .Select(k => new { k.Id, k.Name, k.CreatedAt, k.ExpiresAt })
+                .Select(k => new ApiKeySummaryDto(k.Id, k.Name, k.CreatedAt, k.ExpiresAt))
                 .ToListAsync();
 
             return Ok(keys);
@@ -149,20 +177,27 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
         /// <summary>
         /// Retrieves all active, non-revoked API keys in the system.
         /// </summary>
-        /// <returns>A list of all API key metadata.</returns>
+        /// <returns>A list of all API key details, including assigned claims.</returns>
         /// <response code="200">Returns the complete list of system keys.</response>
         /// <response code="401">Unauthorized if the user identity cannot be resolved.</response>
         /// <response code="403">Forbidden if the user lacks global view permissions.</response>
-        [AuthorizePermission(AtspmAuthorization.Permissions.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Policy = AtspmAuthorization.Roles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("all-keys")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ApiKeyDetailDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetAllKeys()
         {
             var keys = await _context.ApiKeys
                 .Where(k => !k.IsRevoked)
-                .Select(k => new { k.Id, k.Name, k.OwnerId, k.CreatedAt, k.ExpiresAt })
+                .Select(k => new ApiKeyDetailDto(
+                    k.Id,
+                    k.Name,
+                    k.OwnerId,
+                    k.CreatedAt,
+                    k.ExpiresAt,
+                    k.Claims.Select(c => c.Value)
+                ))
                 .ToListAsync();
 
             return Ok(keys);
@@ -190,8 +225,10 @@ namespace Utah.Udot.ATSPM.IdentityApi.Controllers
             var userId = _userManager.GetUserId(User);
             if (userId == null) return Unauthorized();
 
+            var isGlobalAdmin = User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
             var apiKey = await _context.ApiKeys
-                .FirstOrDefaultAsync(k => k.Id == id && k.OwnerId == userId);
+                .FirstOrDefaultAsync(k => k.Id == id && (isGlobalAdmin || k.OwnerId == userId));
 
             if (apiKey == null)
             {
