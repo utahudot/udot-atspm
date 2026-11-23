@@ -17,6 +17,8 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Annotations;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Interfaces;
@@ -92,10 +94,9 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="400">Invalid date range or malformed request.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[Action]/{locationIdentifier}")]
-        [Produces("application/x-ndjson")]
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(string), contentTypes: new[] { "application/x-ndjson" })]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
@@ -104,6 +105,9 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
             [FromQuery] DateTime end,
             CancellationToken cancellationToken)
         {
+            var acceptError = ValidateNdjsonAcceptHeader();
+            if (acceptError != null) return acceptError;
+
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
@@ -143,7 +147,6 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="400">Invalid date range or malformed request.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}")]
-        [Produces("application/json", "text/csv")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -214,16 +217,61 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <returns>An <see cref="EmptyResult"/> once streaming completes.</returns>
         protected async Task<IActionResult> StreamNdjsonAsync(IAsyncEnumerable<T> items, CancellationToken cancellationToken)
         {
+            var serializerSettings = HttpContext.RequestServices
+                .GetService<IOptions<MvcNewtonsoftJsonOptions>>()?.Value.SerializerSettings;
+
             Response.ContentType = "application/x-ndjson";
 
             await foreach (var item in items.WithCancellation(cancellationToken))
             {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item, serializerSettings);
                 await Response.WriteAsync(json + "\n", cancellationToken);
                 await Response.Body.FlushAsync(cancellationToken);
             }
 
             return new EmptyResult();
+        }
+
+        private static readonly MediaTypeHeaderValue NdjsonMediaType = MediaTypeHeaderValue.Parse("application/x-ndjson");
+
+        /// <summary>
+        /// Validates that the request <c>Accept</c> header permits <c>application/x-ndjson</c> responses.
+        /// </summary>
+        /// <returns>
+        /// Returns a <c>406 Not Acceptable</c> result if the client explicitly rejects <c>application/x-ndjson</c>,
+        /// or <c>null</c> if acceptable.
+        /// </returns>
+        protected ActionResult? ValidateNdjsonAcceptHeader()
+        {
+            var acceptHeaders = Request.GetTypedHeaders().Accept;
+            if (acceptHeaders != null && acceptHeaders.Count > 0 && !acceptHeaders.Any(h => NdjsonMediaType.IsSubsetOf(h)))
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Creates an RFC 7807 <see cref="ProblemDetails"/> response serialized as <c>application/problem+json</c>
+        /// regardless of the request's <c>Accept</c> header.
+        /// </summary>
+        /// <param name="statusCode">HTTP status code for the error response.</param>
+        /// <param name="title">Short summary of the problem.</param>
+        /// <param name="detail">Detailed explanation of the problem.</param>
+        /// <returns>An <see cref="ActionResult"/> producing <c>application/problem+json</c>.</returns>
+        protected static ActionResult CreateProblemResult(int statusCode, string title, string detail)
+        {
+            return new JsonResult(new ProblemDetails
+            {
+                Status = statusCode,
+                Title = title,
+                Detail = detail
+            })
+            {
+                StatusCode = statusCode,
+                ContentType = "application/problem+json"
+            };
         }
 
         /// <summary>
@@ -239,8 +287,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// Inclusive end date of the query range. Must be greater than or equal to <paramref name="start"/>.
         /// </param>
         /// <returns>
-        /// Returns <see cref="BadRequestObjectResult"/> if the date range is invalid,
-        /// <see cref="NotFoundObjectResult"/> if the location does not exist,
+        /// Returns a <c>400</c> <see cref="ProblemDetails"/> result if the date range is invalid,
+        /// a <c>404</c> <see cref="ProblemDetails"/> result if the location does not exist,
         /// or <c>null</c> if validation succeeds.
         /// </returns>
         /// <remarks>
@@ -251,10 +299,10 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         protected virtual async Task<ActionResult?> ValidateInputs(string locationIdentifier, DateTime start, DateTime end)
         {
             if (end <= start)
-                return BadRequest(new ProblemDetails { Title = "Invalid date range", Detail = "End must be > start" });
+                return CreateProblemResult(StatusCodes.Status400BadRequest, "Invalid date range", "End must be > start");
 
             if (!await _locations.LocationExists(locationIdentifier))
-                return NotFound(new ProblemDetails { Title = "Location not found", Detail = $"No location '{locationIdentifier}' exists." });
+                return CreateProblemResult(StatusCodes.Status404NotFound, "Location not found", $"No location '{locationIdentifier}' exists.");
 
             return null;
         }

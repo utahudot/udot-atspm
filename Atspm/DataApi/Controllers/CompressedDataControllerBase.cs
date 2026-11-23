@@ -131,10 +131,9 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}/{dataType}")]
-        [Produces("application/x-ndjson")]
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
@@ -144,6 +143,9 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
             [FromQuery] DateTime end,
             CancellationToken cancellationToken)
         {
+            var acceptError = ValidateNdjsonAcceptHeader();
+            if (acceptError != null) return acceptError;
+
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
@@ -277,10 +279,10 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         {
             if (!typeof(T2).ToDictionary().TryGetValue(dataType, out type))
             {
-                return Problem(
-                    title: "Invalid data type",
-                    detail: $"The specified data type '{dataType}' is not recognized.",
-                    statusCode: StatusCodes.Status400BadRequest
+                return CreateProblemResult(
+                    StatusCodes.Status400BadRequest,
+                    "Invalid data type",
+                    $"The specified data type '{dataType}' is not recognized."
                 );
             }
 

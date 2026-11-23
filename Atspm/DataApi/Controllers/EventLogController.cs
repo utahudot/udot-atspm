@@ -65,11 +65,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}")]
-        [Produces("application/x-ndjson")]
-        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)] // NDJSON represented as text
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
@@ -79,23 +77,16 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             [FromQuery] DateTime end,
             CancellationToken cancellationToken)
         {
+            var acceptError = ValidateNdjsonAcceptHeader();
+            if (acceptError != null) return acceptError;
+
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
             if (!await _devices.DeviceExists(deviceId))
-                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
+                return CreateProblemResult(StatusCodes.Status404NotFound, "Device not found", $"No device id '{deviceId}' exists.");
 
-            Response.ContentType = "application/x-ndjson";
-
-            await foreach (var item in _repository.GetData(locationIdentifier, start, end, deviceId)
-                                                  .WithCancellation(cancellationToken))
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-                await Response.WriteAsync(json + "\n", cancellationToken);
-                await Response.Body.FlushAsync(cancellationToken);
-            }
-
-            return new EmptyResult();
+            return await StreamNdjsonAsync(_repository.GetData(locationIdentifier, start, end, deviceId), cancellationToken);
         }
 
         /// <summary>
@@ -183,11 +174,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
         /// <response code="404">Location not found.</response>
         [HttpGet("[action]/{locationIdentifier}/{dataType}/{deviceId:int}")]
-        [Produces("application/x-ndjson")]
-        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)] // NDJSON represented as text
         [SwaggerResponse(StatusCodes.Status200OK, "Data successfully streamed", typeof(CompressedDataBase), contentTypes: new[] { "application/x-ndjson" })]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
@@ -198,26 +187,19 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             [FromQuery] DateTime end,
             CancellationToken cancellationToken)
         {
+            var acceptError = ValidateNdjsonAcceptHeader();
+            if (acceptError != null) return acceptError;
+
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
             if (!await _devices.DeviceExists(deviceId))
-                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
+                return CreateProblemResult(StatusCodes.Status404NotFound, "Device not found", $"No device id '{deviceId}' exists.");
 
             var typeError = ValidateDataType(dataType, out var type);
             if (typeError != null) return typeError;
 
-            Response.ContentType = "application/x-ndjson";
-
-            await foreach (var item in _repository.GetData(locationIdentifier, start, end, type, deviceId)
-                                                  .WithCancellation(cancellationToken))
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-                await Response.WriteAsync(json + "\n", cancellationToken);
-                await Response.Body.FlushAsync(cancellationToken);
-            }
-
-            return new EmptyResult();
+            return await StreamNdjsonAsync(_repository.GetData(locationIdentifier, start, end, type!, deviceId), cancellationToken);
         }
 
         /// <summary>
