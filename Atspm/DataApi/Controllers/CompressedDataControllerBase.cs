@@ -61,7 +61,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [HttpGet("[Action]")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IReadOnlyList<DataTypeMeta>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<IReadOnlyList<DataTypeMeta>> GetDataTypes()
@@ -191,8 +191,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [HttpGet("[action]/{locationIdentifier}/{dataType}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<T1>>> GetData(
@@ -242,8 +242,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [HttpGet("[action]/{locationIdentifier}/{dataType}")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<DateOnly>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithData(

@@ -119,8 +119,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<CompressedEventLogBase>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
@@ -134,7 +134,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (error != null) return error;
 
             if (!await _devices.DeviceExists(deviceId))
-                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
+                return CreateProblemResult(StatusCodes.Status404NotFound, "Device not found", $"No device id '{deviceId}' exists.");
 
             var list = await _repository.GetData(locationIdentifier, start, end, deviceId)
                                         .ToListAsync(cancellationToken);
@@ -235,8 +235,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [HttpGet("[action]/{locationIdentifier}/{dataType}/{deviceId:int}")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<CompressedEventLogBase>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
