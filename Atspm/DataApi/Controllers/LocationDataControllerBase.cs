@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Annotations;
@@ -101,8 +102,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> StreamData(
             [FromRoute] string locationIdentifier,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var acceptError = ValidateNdjsonAcceptHeader();
@@ -154,8 +155,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<T>>> GetData(
             [FromRoute] string locationIdentifier,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
@@ -198,8 +199,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithData(
             [FromRoute] string locationIdentifier,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end)
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end)
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;

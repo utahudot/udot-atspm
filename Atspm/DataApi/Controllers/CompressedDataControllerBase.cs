@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -139,8 +140,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         public async Task<IActionResult> StreamData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var acceptError = ValidateNdjsonAcceptHeader();
@@ -197,8 +198,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         public async Task<ActionResult<IEnumerable<T1>>> GetData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
@@ -248,8 +249,8 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         public async Task<ActionResult<IEnumerable<DateOnly>>> GetDaysWithData(
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end)
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end)
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;

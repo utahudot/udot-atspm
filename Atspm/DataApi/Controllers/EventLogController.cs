@@ -17,6 +17,7 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Annotations;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.ATSPM.DataApi.Controllers;
@@ -73,8 +74,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         public async Task<IActionResult> StreamData(
             [FromRoute] string locationIdentifier,
             [FromRoute] int deviceId,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var acceptError = ValidateNdjsonAcceptHeader();
@@ -125,8 +126,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         public async Task<ActionResult<IEnumerable<CompressedEventLogBase>>> GetData(
             [FromRoute] string locationIdentifier,
             [FromRoute] int deviceId,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
@@ -183,8 +184,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
             [FromRoute] int deviceId,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var acceptError = ValidateNdjsonAcceptHeader();
@@ -242,8 +243,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             [FromRoute] string locationIdentifier,
             [FromRoute] string dataType,
             [FromRoute] int deviceId,
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery, BindRequired] DateTime start,
+            [FromQuery, BindRequired] DateTime end,
             CancellationToken cancellationToken)
         {
             var error = await ValidateInputs(locationIdentifier, start, end);
