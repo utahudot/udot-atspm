@@ -117,9 +117,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Common
 
                     var log = new ApiUsageLogMessage(_logger, entry);
 
-                    if (entry.Success) log.CallSuccessful(entry);
-                    if (!entry.Success) log.CallWarning(entry, entry.StatusCode);
-                    if (error != null) log.CallError(entry, error);
+                    if (error != null)
+                        log.CallError(entry, error);
+                    else if (entry.Success)
+                        log.CallSuccessful(entry);
+                    else
+                        log.CallWarning(entry, entry.StatusCode);
 
                     try
                     {
@@ -201,6 +204,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Common
             long? resultSizeBytes,
             string? errorMessage)
         {
+            var statusCode = errorMessage != null && context.Response.StatusCode < 400
+                ? StatusCodes.Status500InternalServerError
+                : context.Response.StatusCode;
+
             return new UsageEntry
             {
                 ApiName = _apiName(context),
@@ -213,13 +220,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Common
                 Route = context.Request.Path,
                 QueryString = context.Request.QueryString.ToString(),
                 Method = context.Request.Method,
-                StatusCode = context.Response.StatusCode,
+                StatusCode = statusCode,
                 DurationMs = durationMs,
                 Controller = actionDescriptor?.ControllerName,
                 Action = actionDescriptor?.ActionName,
                 ResultSizeBytes = resultSizeBytes,
                 ResultCount = resultCount,
-                Success = context.Response.StatusCode is >= 200 and < 300,
+                Success = errorMessage == null && statusCode is >= 200 and < 300,
                 ErrorMessage = errorMessage
             };
         }
