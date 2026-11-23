@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows/DetectorEventCountAggregationWorkflowTests.cs
 // 
@@ -15,11 +15,8 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Utah.Udot.Atspm.Analysis.Workflows;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Attributes;
@@ -42,56 +39,10 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
         [Theory]
         [AnalysisTestData<AggregateDetectorEventCountTestData>]
         [Trait(nameof(AggregateDetectorEventCountWorkflow), "From File")]
-        //public void DetectorEventCountAggregationWorkflowTestsFromFile(object stuff)
         public void DetectorEventCountAggregationWorkflowTestsFromFile(Location config, List<IndianaEvent> input, List<DetectorEventCountAggregation> output)
         {
             _output.WriteLine($"{config} - {input} - {output}");
         }
-
-        [Fact(Skip = "only run when you need to create test data")]
-        public void CreateTestFile()
-        {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
-            var Location = JsonConvert.DeserializeObject<Location>(json);
-
-            var test = new AggregateDetectorEventCountTestData()
-            {
-                Configuration = Location,
-                Input = new List<IndianaEvent>(),
-                Output = new List<DetectorEventCountAggregation>()
-            };
-
-            var result = JsonConvert.SerializeObject(test, new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.All
-            });
-            File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\DetectorEventCountAggregationTestData1.json", result);
-        }
-
-        [Fact(Skip = "only run when you need to create test data")]
-        public void GetTestFile()
-        {
-            var dir = new DirectoryInfo(Path.Combine(Path.GetFullPath(@"..\..\..\"), "Analysis", "TestData"));
-
-            //var testMethod = System.Reflection.MethodInfo.GetCurrentMethod();
-
-            if (dir.Exists)
-            {
-                foreach (var f in dir.GetFiles("*.json").Where(f => f.Name.Contains(typeof(AggregateDetectorEventCountTestData).Name)))
-                {
-                    _output.WriteLine($"{f.FullName}");
-
-                    var json = File.ReadAllText(f.FullName);
-                    var testFile = JsonConvert.DeserializeObject<AggregateDetectorEventCountTestData>(json, new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.All
-                    });
-
-                    _output.WriteLine($"{testFile.Configuration}");
-                }
-            }
-        }
-
 
         public void Dispose()
         {

@@ -23,9 +23,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
@@ -41,9 +45,8 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
     /// <summary>
     /// Unit and integration tests for <see cref="SaveSignalTimingPlansStep"/> and <see cref="SignalTimingPlansWorkflow"/>.
     /// </summary>
-    public class SaveSignalTimingPlansStepTests : IClassFixture<EFContextFixture<AggregationContext>>
+    public class SaveSignalTimingPlansStepTests : WorkflowStepTestBase<SaveSignalTimingPlansStep, SaveSignalTimingPlansTestData, Location, IEnumerable<SignalTimingPlan>, IEnumerable<SignalTimingPlan>>, IClassFixture<EFContextFixture<AggregationContext>>
     {
-        private readonly ITestOutputHelper _output;
         private readonly AggregationContext _context;
         private readonly Mock<IServiceScopeFactory> _mockScopeFactory;
         private readonly Mock<IServiceScope> _mockScope;
@@ -54,10 +57,14 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         /// Initializes a new instance of the <see cref="SaveSignalTimingPlansStepTests"/> class.
         /// </summary>
         /// <param name="output">The test output helper.</param>
+        /// <param name="testLocationFixture">The test location fixture.</param>
         /// <param name="fixture">The database context fixture.</param>
-        public SaveSignalTimingPlansStepTests(ITestOutputHelper output, EFContextFixture<AggregationContext> fixture)
+        public SaveSignalTimingPlansStepTests(
+            ITestOutputHelper output,
+            TestLocationFixture testLocationFixture,
+            EFContextFixture<AggregationContext> fixture)
+            : base(output, testLocationFixture)
         {
-            _output = output;
             _context = fixture.Context;
             _mockScopeFactory = new Mock<IServiceScopeFactory>();
             _mockScope = new Mock<IServiceScope>();
@@ -72,6 +79,85 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             _context.SaveChanges();
 
             _mockRepo.Setup(r => r.GetList()).Returns(() => _context.SignalTimingPlans.AsQueryable());
+        }
+
+        /// <inheritdoc/>
+        protected override IEnumerable<SignalTimingPlan> DefaultTestInput => new List<SignalTimingPlan>();
+
+        /// <inheritdoc/>
+        protected override SaveSignalTimingPlansStep CreateStep(
+            Location config,
+            IEnumerable<SignalTimingPlan> input,
+            IEnumerable<SignalTimingPlan> expected)
+        {
+            return new SaveSignalTimingPlansStep(_mockScopeFactory.Object);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<IEnumerable<SignalTimingPlan>> ExecuteStepAsync(
+            SaveSignalTimingPlansStep step,
+            Location config,
+            IEnumerable<SignalTimingPlan> input,
+            CancellationToken cancelToken = default)
+        {
+            if (cancelToken.IsCancellationRequested)
+            {
+                await Task.FromCanceled(cancelToken);
+            }
+
+            _context.SignalTimingPlans.RemoveRange(_context.SignalTimingPlans);
+            _context.SaveChanges();
+
+            _mockRepo.Setup(r => r.LookupAsync(It.IsAny<SignalTimingPlan>()))
+                .ReturnsAsync((SignalTimingPlan p) => _context.SignalTimingPlans.FirstOrDefault(x => x.LocationIdentifier == p.LocationIdentifier && x.PlanNumber == p.PlanNumber && x.Start == p.Start));
+
+            _mockRepo.Setup(r => r.AddAsync(It.IsAny<SignalTimingPlan>()))
+                .Callback<SignalTimingPlan>(p =>
+                {
+                    _context.SignalTimingPlans.Add(p);
+                    _context.SaveChanges();
+                })
+                .Returns(Task.CompletedTask);
+
+            _mockRepo.Setup(r => r.UpdateAsync(It.IsAny<SignalTimingPlan>()))
+                .Callback<SignalTimingPlan>(p =>
+                {
+                    _context.SignalTimingPlans.Update(p);
+                    _context.SaveChanges();
+                })
+                .Returns(Task.CompletedTask);
+
+            step.Post(input);
+            step.Complete();
+
+            while (await step.OutputAvailableAsync(cancelToken))
+            {
+                while (step.TryReceive(out _)) { }
+            }
+
+            await step.Completion;
+
+            return _context.SignalTimingPlans
+                .AsNoTracking()
+                .OrderBy(p => p.Start)
+                .ToList();
+        }
+
+        /// <inheritdoc/>
+        protected override void AssertOutputs(IEnumerable<SignalTimingPlan> actual, IEnumerable<SignalTimingPlan> expected)
+        {
+            var actualList = actual.OrderBy(p => p.Start).ToList();
+            var expectedList = expected.OrderBy(p => p.Start).ToList();
+
+            Assert.Equal(expectedList.Count, actualList.Count);
+            for (var i = 0; i < expectedList.Count; i++)
+            {
+                Assert.Equal(expectedList[i].LocationIdentifier, actualList[i].LocationIdentifier);
+                Assert.Equal(expectedList[i].PlanNumber, actualList[i].PlanNumber);
+                Assert.Equal(expectedList[i].Start, actualList[i].Start);
+                Assert.Equal(expectedList[i].End, actualList[i].End);
+                Assert.Equal(expectedList[i].End > expectedList[i].Start, actualList[i].Valid);
+            }
         }
 
         /// <summary>
@@ -298,12 +384,12 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 .OrderBy(p => p.Start)
                 .ToList();
 
-            _output.WriteLine("STORED DATABASE ROWS:");
-            _output.WriteLine("LocationIdentifier | PlanNumber | Start                   | End                     | Valid");
-            _output.WriteLine("-------------------------------------------------------------------------------------------");
+            Output.WriteLine("STORED DATABASE ROWS:");
+            Output.WriteLine("LocationIdentifier | PlanNumber | Start                   | End                     | Valid");
+            Output.WriteLine("-------------------------------------------------------------------------------------------");
             foreach (var row in stored)
             {
-                _output.WriteLine($"{row.LocationIdentifier,-18} | {row.PlanNumber,-10} | {row.Start:yyyy-MM-dd HH:mm:ss.fff} | {row.End:yyyy-MM-dd HH:mm:ss.fff} | {row.Valid}");
+                Output.WriteLine($"{row.LocationIdentifier,-18} | {row.PlanNumber,-10} | {row.Start:yyyy-MM-dd HH:mm:ss.fff} | {row.End:yyyy-MM-dd HH:mm:ss.fff} | {row.Valid}");
             }
 
             var planService = new PlanService();
@@ -311,13 +397,13 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             var reportWindowEnd = new DateTime(2026, 7, 14, 20, 0, 0);
             var reportPlans = planService.GetPlans("7115", reportWindowStart, reportWindowEnd, stored);
 
-            _output.WriteLine("");
-            _output.WriteLine("SPLIT MONITOR / PLANSERVICE TIMELINE (6:00 AM - 8:00 PM):");
-            _output.WriteLine("PlanNumber | Start               | End");
-            _output.WriteLine("------------------------------------------------------");
+            Output.WriteLine("");
+            Output.WriteLine("SPLIT MONITOR / PLANSERVICE TIMELINE (6:00 AM - 8:00 PM):");
+            Output.WriteLine("PlanNumber | Start               | End");
+            Output.WriteLine("------------------------------------------------------");
             foreach (var p in reportPlans)
             {
-                _output.WriteLine($"{p.PlanNumber,-10} | {p.Start:yyyy-MM-dd HH:mm:ss} | {p.End:yyyy-MM-dd HH:mm:ss}");
+                Output.WriteLine($"{p.PlanNumber,-10} | {p.Start:yyyy-MM-dd HH:mm:ss} | {p.End:yyyy-MM-dd HH:mm:ss}");
             }
 
             Assert.Equal(13, stored.Count);

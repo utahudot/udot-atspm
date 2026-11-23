@@ -37,18 +37,58 @@ namespace Utah.Udot.Atspm.ApplicationTests.Attributes
         /// <inheritdoc/>
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            var dir = new DirectoryInfo(Path.Combine(Path.GetFullPath(@"..\..\..\"), "Analysis", "TestData"));
+            return AnalysisTestDataAttribute.LoadTestDataForType(typeof(T));
+        }
+    }
+
+    /// <summary>
+    /// Non-generic custom xUnit data attribute that dynamically infers the test data type
+    /// from the generic base class parameter of the declaring class.
+    /// </summary>
+    public class AnalysisTestDataAttribute : DataAttribute
+    {
+        /// <summary>
+        /// Resolves the shared <c>Analysis/TestData</c> directory across test projects in the solution.
+        /// </summary>
+        /// <returns>The resolved <see cref="DirectoryInfo"/> pointing to the test data folder.</returns>
+        public static DirectoryInfo ResolveTestDataDirectory()
+        {
+            var projectRoot = Path.GetFullPath(@"..\..\..\");
+            var localTestData = new DirectoryInfo(Path.Combine(projectRoot, "Analysis", "TestData"));
+            if (localTestData.Exists)
+            {
+                return localTestData;
+            }
+
+            var siblingAppTestsData = new DirectoryInfo(Path.Combine(Path.GetFullPath(@"..\..\..\..\ApplicationTests"), "Analysis", "TestData"));
+            if (siblingAppTestsData.Exists)
+            {
+                return siblingAppTestsData;
+            }
+
+            return localTestData;
+        }
+
+        /// <summary>
+        /// Loads all JSON test data files matching <paramref name="testDataType"/> from the test data directory.
+        /// </summary>
+        /// <param name="testDataType">The concrete <see cref="AnalysisTestDataBase"/> type.</param>
+        /// <returns>An enumerable of theory argument arrays <c>[Configuration, Input, Output]</c>.</returns>
+        public static IEnumerable<object[]> LoadTestDataForType(Type testDataType)
+        {
+            var dir = ResolveTestDataDirectory();
             var hasFiles = false;
+            var isStronglyTyped = IsStronglyTypedTestData(testDataType);
 
             if (dir.Exists)
             {
-                foreach (var f in dir.GetFiles("*.json").Where(f => f.Name.Contains(typeof(T).Name)))
+                foreach (var f in dir.GetFiles("*.json").Where(f => f.Name.Contains(testDataType.Name)).OrderBy(f => f.Name))
                 {
                     hasFiles = true;
                     var json = File.ReadAllText(f.FullName);
-                    var testFile = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings()
+                    var testFile = (AnalysisTestDataBase)JsonConvert.DeserializeObject(json, testDataType, new JsonSerializerSettings()
                     {
-                        TypeNameHandling = TypeNameHandling.All,
+                        TypeNameHandling = isStronglyTyped ? TypeNameHandling.Auto : TypeNameHandling.All,
                     });
 
                     if (testFile.Configuration is ILocationLayer config)
@@ -79,14 +119,27 @@ namespace Utah.Udot.Atspm.ApplicationTests.Attributes
                 yield return new object[] { default, default, default };
             }
         }
-    }
 
-    /// <summary>
-    /// Non-generic custom xUnit data attribute that dynamically infers the test data type
-    /// from the generic base class parameter of the declaring class.
-    /// </summary>
-    public class AnalysisTestDataAttribute : DataAttribute
-    {
+        /// <summary>
+        /// Determines whether the specified test data type inherits from the strongly-typed generic <see cref="AnalysisTestDataBase{TConfig, TInput, TOutput}"/>.
+        /// </summary>
+        /// <param name="type">The test data type to inspect.</param>
+        /// <returns><c>true</c> if the type derives from <see cref="AnalysisTestDataBase{TConfig, TInput, TOutput}"/>; otherwise, <c>false</c>.</returns>
+        public static bool IsStronglyTypedTestData(Type type)
+        {
+            var current = type;
+            while (current != null && current != typeof(object))
+            {
+                if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(AnalysisTestDataBase<,,>))
+                {
+                    return true;
+                }
+                current = current.BaseType;
+            }
+
+            return false;
+        }
+
         /// <inheritdoc/>
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
@@ -114,46 +167,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Attributes
                 yield break;
             }
 
-            var dir = new DirectoryInfo(Path.Combine(Path.GetFullPath(@"..\..\..\"), "Analysis", "TestData"));
-            var hasFiles = false;
-
-            if (dir.Exists)
+            foreach (var row in LoadTestDataForType(testDataType))
             {
-                foreach (var f in dir.GetFiles("*.json").Where(f => f.Name.Contains(testDataType.Name)))
-                {
-                    hasFiles = true;
-                    var json = File.ReadAllText(f.FullName);
-                    var testFile = (AnalysisTestDataBase)JsonConvert.DeserializeObject(json, testDataType, new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.All,
-                    });
-
-                    if (testFile.Configuration is ILocationLayer config)
-                    {
-                        if (testFile.Input is IEnumerable<ILocationLayer> input)
-                        {
-                            foreach (var i in input)
-                            {
-                                i.LocationIdentifier = config.LocationIdentifier;
-                            }
-                        }
-
-                        if (testFile.Output is IEnumerable<ILocationLayer> output)
-                        {
-                            foreach (var o in output)
-                            {
-                                o.LocationIdentifier = config.LocationIdentifier;
-                            }
-                        }
-                    }
-
-                    yield return new object[] { testFile.Configuration, testFile.Input, testFile.Output };
-                }
-            }
-
-            if (!hasFiles)
-            {
-                yield return new object[] { default, default, default };
+                yield return row;
             }
         }
     }

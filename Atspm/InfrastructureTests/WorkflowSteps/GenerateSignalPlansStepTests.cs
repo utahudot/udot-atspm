@@ -21,6 +21,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.WorkflowSteps;
@@ -32,17 +35,69 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
     /// <summary>
     /// Unit tests for <see cref="GenerateSignalPlansStep"/>.
     /// </summary>
-    public class GenerateSignalPlansStepTests : IDisposable
+    public class GenerateSignalPlansStepTests : WorkflowStepTestBase<GenerateSignalPlansStep, GenerateSignalPlansTestData, Location, IEnumerable<IndianaEvent>, IEnumerable<SignalTimingPlan>>
     {
-        private readonly ITestOutputHelper _output;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateSignalPlansStepTests"/> class.
         /// </summary>
         /// <param name="output">The test output helper.</param>
-        public GenerateSignalPlansStepTests(ITestOutputHelper output)
+        /// <param name="testLocationFixture">The test location fixture.</param>
+        public GenerateSignalPlansStepTests(ITestOutputHelper output, TestLocationFixture testLocationFixture)
+            : base(output, testLocationFixture)
         {
-            _output = output;
+        }
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IndianaEvent> DefaultTestInput => new List<IndianaEvent>();
+
+        /// <inheritdoc/>
+        protected override GenerateSignalPlansStep CreateStep(Location config, IEnumerable<IndianaEvent> input, IEnumerable<SignalTimingPlan> expected)
+        {
+            return new GenerateSignalPlansStep();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<IEnumerable<SignalTimingPlan>> ExecuteStepAsync(
+            GenerateSignalPlansStep step,
+            Location config,
+            IEnumerable<IndianaEvent> input,
+            CancellationToken cancelToken = default)
+        {
+            if (cancelToken.IsCancellationRequested)
+            {
+                await Task.FromCanceled(cancelToken);
+            }
+
+            step.Post(input);
+            step.Complete();
+
+            var results = new List<SignalTimingPlan>();
+            while (await step.OutputAvailableAsync(cancelToken))
+            {
+                while (step.TryReceive(out var chunk))
+                {
+                    results.AddRange(chunk);
+                }
+            }
+
+            await step.Completion;
+            return results;
+        }
+
+        /// <inheritdoc/>
+        protected override void AssertOutputs(IEnumerable<SignalTimingPlan> actual, IEnumerable<SignalTimingPlan> expected)
+        {
+            var actualList = actual.OrderBy(p => p.Start).ToList();
+            var expectedList = expected.OrderBy(p => p.Start).ToList();
+
+            Assert.Equal(expectedList.Count, actualList.Count);
+            for (var i = 0; i < expectedList.Count; i++)
+            {
+                Assert.Equal(expectedList[i].LocationIdentifier, actualList[i].LocationIdentifier);
+                Assert.Equal(expectedList[i].PlanNumber, actualList[i].PlanNumber);
+                Assert.Equal(expectedList[i].Start, actualList[i].Start);
+                Assert.Equal(expectedList[i].End, actualList[i].End);
+            }
         }
 
         /// <summary>
@@ -125,19 +180,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 new() { LocationIdentifier = "7115", EventParam = 7, EventCode = 131, Timestamp = date.AddHours(19).AddMinutes(22).AddSeconds(5.4) }
             };
 
-            sut.Post(inputEvents);
-            sut.Complete();
-
-            var results = new List<IEnumerable<SignalTimingPlan>>();
-            while (await sut.OutputAvailableAsync())
-            {
-                while (sut.TryReceive(out var chunk))
-                {
-                    results.Add(chunk);
-                }
-            }
-
-            var plans = results.SelectMany(c => c).ToList();
+            var plans = (await ExecuteStepAsync(sut, TestLocation, inputEvents)).ToList();
             Assert.Equal(8, plans.Count);
             Assert.Equal(new short[] { 1, 7, 7, 13, 14, 13, 7, 7 }, plans.Select(p => p.PlanNumber).ToArray());
         }
@@ -158,16 +201,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 new() { LocationIdentifier = "L1", EventParam = 99, EventCode = 1, Timestamp = startTime.AddSeconds(1) }
             };
 
-            sut.Post(inputEvents);
-            sut.Complete();
-
-            var results = new List<IEnumerable<SignalTimingPlan>>();
-            while (await sut.OutputAvailableAsync())
-            {
-                if (sut.TryReceive(out var chunk)) results.Add(chunk);
-            }
-
-            var flatPlans = results.SelectMany(c => c).ToList();
+            var flatPlans = (await ExecuteStepAsync(sut, TestLocation, inputEvents)).ToList();
             Assert.Single(flatPlans);
             Assert.Equal(1, flatPlans[0].PlanNumber);
         }
@@ -188,16 +222,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                 new() { LocationIdentifier = "L1", EventParam = 1, EventCode = 131, Timestamp = startTime }
             };
 
-            sut.Post(inputEvents);
-            sut.Complete();
-
-            var results = new List<IEnumerable<SignalTimingPlan>>();
-            while (await sut.OutputAvailableAsync())
-            {
-                if (sut.TryReceive(out var chunk)) results.Add(chunk);
-            }
-
-            var flatPlans = results.SelectMany(c => c).ToList();
+            var flatPlans = (await ExecuteStepAsync(sut, TestLocation, inputEvents)).ToList();
             Assert.Single(flatPlans);
         }
 
@@ -233,11 +258,6 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             }
 
             Assert.True(sut.Completion.IsCompletedSuccessfully);
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
         }
     }
 }

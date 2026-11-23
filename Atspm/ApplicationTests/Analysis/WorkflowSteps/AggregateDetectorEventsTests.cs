@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2026 Utah Departement of Transportation
 // for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregateDetectorEventsTests.cs
 // 
@@ -15,10 +15,8 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
@@ -43,39 +41,6 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             _output = output;
             _testLocation = testLocation.TestLocation;
-        }
-
-        [Fact(Skip = "skip")]
-        public async Task Stuff()
-        {
-            {
-                var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\TempDetectorTestData.csv");
-
-                var logs = File.ReadAllLines(file1.FullName)
-                       .Skip(1)
-                       .Select(x => x.Split(','))
-                       .Select(x => new IndianaEvent
-                       {
-                           LocationIdentifier = x[0],
-                           Timestamp = DateTime.Parse(x[1]),
-                           EventCode = short.Parse(x[2]),
-                           EventParam = short.Parse(x[3])
-                       }).ToList();
-
-                var result = new AggregateDetectorEventCountTestData()
-                {
-                    Configuration = _testLocation,
-                    Input = logs,
-                    Output = new List<DetectorEventCountAggregation>()
-                };
-
-                var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.All,
-                    Formatting = Formatting.Indented
-                });
-                File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\Analysis\TestData\AggregateDetectorEventCountTestData1.json", test);
-            }
         }
 
         [Theory]

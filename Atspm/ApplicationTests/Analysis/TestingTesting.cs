@@ -389,47 +389,5 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 
         }
 
-        //private async void TempGeneratePreemtTestData()
-        //{
-        //    var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\PreemptDetaildata.csv");
-
-        //    var logs = File.ReadAllLines(file1.FullName)
-        //           .Skip(1)
-        //           .Select(x => x.Split(','))
-        //           .Select(x => new IndianaEvent
-        //           {
-        //               LocationIdentifier = x[0],
-        //               Timestamp = DateTime.Parse(x[1]),
-        //               EventCode = int.Parse(x[2]),
-        //               EventParam = int.Parse(x[3])
-        //           }).ToList();
-
-        //    var Location = new Location()
-        //    {
-        //        LocationIdentifier = "7573",
-        //        PrimaryName = "Test Controller"
-        //    };
-
-        //    var c = new CalculateDwellTime();
-
-        //    var r = await c.ExecuteAsync(Tuple.Create(Location, logs.AsEnumerable(), 1));
-
-        //    var result = new PreemptiveProcessTestData()
-        //    {
-        //        Configuration = Location,
-        //        Input = logs,
-        //        Output = r.Item2.Cast<PreempDetailValueBase>().ToList()
-        //    };
-
-
-        //    var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
-        //    {
-        //        TypeNameHandling = TypeNameHandling.All
-        //    });
-        //    File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationCoreTests\Analysis\TestData\CalculateDwellTimeTestData1.json", test);
-        //}
     }
-
-
-
 }

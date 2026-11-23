@@ -32,13 +32,13 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
     /// xUnit Theory file loading, and assertion patterns across all steps.
     /// </summary>
     /// <typeparam name="TStep">The workflow step class under test.</typeparam>
-    /// <typeparam name="TTestData">The corresponding AnalysisTestDataBase class for file loading.</typeparam>
-    /// <typeparam name="TConfig">The configuration type passed to the step (e.g., Location or Approach).</typeparam>
-    /// <typeparam name="TInput">The input type passed to the step's Process method.</typeparam>
-    /// <typeparam name="TOutput">The expected output type returned by the step's Process method.</typeparam>
+    /// <typeparam name="TTestData">The corresponding <see cref="AnalysisTestDataBase"/> class for file loading.</typeparam>
+    /// <typeparam name="TConfig">The configuration type passed to the step (e.g., <see cref="Location"/>, <see cref="Approach"/>, or <see cref="Detector"/>).</typeparam>
+    /// <typeparam name="TInput">The input type passed to the step's execution method.</typeparam>
+    /// <typeparam name="TOutput">The expected output type returned by the step's execution method.</typeparam>
     public abstract class WorkflowStepTestBase<TStep, TTestData, TConfig, TInput, TOutput> : IClassFixture<TestLocationFixture>, IDisposable
         where TStep : class
-        where TTestData : AnalysisTestDataBase
+        where TTestData : AnalysisTestDataBase, new()
     {
         /// <summary>
         /// Logger for xUnit output.
@@ -51,7 +51,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         protected readonly Location TestLocation;
 
         /// <summary>
-        /// Initializes a new instance of the WorkflowStepTestBase class.
+        /// Initializes a new instance of the <see cref="WorkflowStepTestBase{TStep, TTestData, TConfig, TInput, TOutput}"/> class.
         /// </summary>
         /// <param name="output">The xUnit test output helper.</param>
         /// <param name="testLocationFixture">The test location class fixture.</param>
@@ -63,8 +63,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
         /// <summary>
         /// Gets a default configuration specifically for testing generic step operations.
+        /// Defaults to <see cref="TestLocation"/> when <typeparamref name="TConfig"/> is <see cref="Location"/>.
         /// </summary>
-        protected abstract TConfig DefaultTestConfig { get; }
+        protected virtual TConfig DefaultTestConfig => TestLocation is TConfig config ? config : default;
 
         /// <summary>
         /// Gets a default input packet specifically for testing generic step operations.
@@ -72,7 +73,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         protected abstract TInput DefaultTestInput { get; }
 
         /// <summary>
-        /// Generic runner that executes the step and asserts equality against expected outcomes.
+        /// Generic runner that executes the step against external JSON test data files and asserts equality against expected outcomes.
         /// </summary>
         /// <param name="config">The configuration object.</param>
         /// <param name="input">The input data packet.</param>
@@ -113,7 +114,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
         /// <summary>
         /// Asserts that the actual step output matches the expected outcome.
-        /// Defaults to xUnit's Assert.Equivalent, but can be overridden for custom tolerances or collections.
+        /// Defaults to xUnit's <see cref="Assert.Equivalent(object, object, bool)"/>, but can be overridden for custom tolerances or collections.
         /// </summary>
         /// <param name="actual">The actual output.</param>
         /// <param name="expected">The expected output.</param>
