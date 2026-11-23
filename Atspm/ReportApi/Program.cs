@@ -255,7 +255,7 @@ if (!app.Environment.IsProduction())
 }
 else
 {
-    app.UseExceptionHandler("/error");
+    app.UseExceptionHandler();
 }
 
 //Security
