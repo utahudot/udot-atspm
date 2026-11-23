@@ -193,11 +193,11 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
-            if (!await _devices.DeviceExists(deviceId))
-                return CreateProblemResult(StatusCodes.Status404NotFound, "Device not found", $"No device id '{deviceId}' exists.");
-
             var typeError = ValidateDataType(dataType, out var type);
             if (typeError != null) return typeError;
+
+            if (!await _devices.DeviceExists(deviceId))
+                return CreateProblemResult(StatusCodes.Status404NotFound, "Device not found", $"No device id '{deviceId}' exists.");
 
             return await StreamNdjsonAsync(_repository.GetData(locationIdentifier, start, end, type!, deviceId), cancellationToken);
         }
@@ -249,13 +249,13 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             var error = await ValidateInputs(locationIdentifier, start, end);
             if (error != null) return error;
 
-            if (!await _devices.DeviceExists(deviceId))
-                return NotFound(new ProblemDetails { Title = "Device not found", Detail = $"No device id '{deviceId}' exists." });
-
             var typeError = ValidateDataType(dataType, out var type);
             if (typeError != null) return typeError;
 
-            var list = await _repository.GetData(locationIdentifier, start, end, type, deviceId)
+            if (!await _devices.DeviceExists(deviceId))
+                return CreateProblemResult(StatusCodes.Status404NotFound, "Device not found", $"No device id '{deviceId}' exists.");
+
+            var list = await _repository.GetData(locationIdentifier, start, end, type!, deviceId)
                                         .ToListAsync(cancellationToken);
             return Ok(list);
         }
