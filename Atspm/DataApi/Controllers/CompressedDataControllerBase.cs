@@ -120,7 +120,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// - Clients should parse line-by-line rather than expecting a JSON array.
         ///
         /// ### Example Request
-        /// - GET /StreamData/1014?start=2024-01-01&amp;end=2024-12-31&amp;dataType=[dataType]
+        /// - GET /StreamData/1014/{dataType}?start=2024-01-01&amp;end=2024-12-31
         ///
         /// ### Example Response (NDJSON)
         /// ```
@@ -175,7 +175,7 @@ namespace Utah.Udot.ATSPM.DataApi.Controllers
         /// - Response is a JSON array of <see cref="CompressedDataBase"/> objects.
         ///
         /// ### Example Request
-        /// - GET /GetData/1014?start=2024-01-01&amp;end=2024-12-31&amp;dataType=[dataType]
+        /// - GET /GetData/1014/{dataType}?start=2024-01-01&amp;end=2024-12-31
         ///
         /// ### Example Response (JSON Array)
         /// ```json

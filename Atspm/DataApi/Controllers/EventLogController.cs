@@ -60,7 +60,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// - Clients should parse line-by-line rather than expecting a JSON array.
         ///
         /// ### Example Request
-        /// - GET /StreamData/1014?deviceId=42&amp;start=2024-01-01&amp;end=2024-12-31&amp;dataType=[dataType]
+        /// - GET /StreamData/1014/42?start=2024-01-01&amp;end=2024-12-31
         /// </remarks>
         /// <response code="200">Data successfully streamed (may be empty).</response>
         /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
@@ -169,7 +169,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// - Clients should parse line-by-line rather than expecting a JSON array.
         ///
         /// ### Example Request
-        /// - GET /StreamData/1014?deviceId=42&amp;start=2024-01-01&amp;end=2024-12-31&amp;dataType=[dataType]
+        /// - GET /StreamData/1014/{dataType}/42?start=2024-01-01&amp;end=2024-12-31
         /// </remarks>
         /// <response code="200">Data successfully streamed (may be empty).</response>
         /// <response code="400">Invalid date range, malformed request, or invalid data type.</response>
