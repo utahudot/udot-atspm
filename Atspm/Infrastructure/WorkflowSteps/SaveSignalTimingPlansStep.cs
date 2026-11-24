@@ -36,6 +36,69 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
         private static readonly long TimestampEpochTicks = new DateTime(2000, 1, 1).Ticks;
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locationLocks = new();
         private readonly IServiceScopeFactory _services = services;
+        private readonly SemaphoreSlim _writeSlots;
+
+        private SaveSignalTimingPlansStep(IServiceScopeFactory services, SemaphoreSlim writeSlots, CancellationToken cancellationToken)
+            : this(services, new ExecutionDataflowBlockOptions { CancellationToken = cancellationToken })
+        {
+            _writeSlots = writeSlots;
+        }
+
+        internal static IPropagatorBlock<IEnumerable<SignalTimingPlan>, SignalTimingPlan> CreateOrderedByLocation(
+            IServiceScopeFactory services, int parallelProcesses, CancellationToken cancellationToken)
+        {
+            var writeSlots = new SemaphoreSlim(parallelProcesses == DataflowBlockOptions.Unbounded ? int.MaxValue : parallelProcesses);
+            var workers = new Dictionary<string, SaveSignalTimingPlansStep>();
+            var output = new BufferBlock<SignalTimingPlan>(new DataflowBlockOptions { CancellationToken = cancellationToken });
+            // The router admits batches in order, and each location has one worker.
+            var input = new ActionBlock<IEnumerable<SignalTimingPlan>>(async batch =>
+            {
+                foreach (var group in batch.GroupBy(plan => plan.LocationIdentifier ?? string.Empty))
+                {
+                    if (!workers.TryGetValue(group.Key, out var worker))
+                    {
+                        worker = new SaveSignalTimingPlansStep(services, writeSlots, cancellationToken);
+                        worker.LinkTo(output);
+                        worker.LinkTo(DataflowBlock.NullTarget<SignalTimingPlan>());
+                        workers.Add(group.Key, worker);
+                    }
+
+                    if (!await worker.SendAsync(group, cancellationToken))
+                        await worker.Completion;
+                }
+            }, new ExecutionDataflowBlockOptions { CancellationToken = cancellationToken });
+
+            _ = CompleteAsync();
+            return DataflowBlock.Encapsulate(input, output);
+
+            async Task CompleteAsync()
+            {
+                try
+                {
+                    try
+                    {
+                        await input.Completion;
+                    }
+                    finally
+                    {
+                        foreach (var worker in workers.Values)
+                            worker.Complete();
+
+                        await Task.WhenAll(workers.Values.Select(worker => worker.Completion));
+                    }
+
+                    output.Complete();
+                }
+                catch (Exception exception)
+                {
+                    ((IDataflowBlock)output).Fault(exception);
+                }
+                finally
+                {
+                    writeSlots.Dispose();
+                }
+            }
+        }
 
         /// <inheritdoc/>
         protected override async IAsyncEnumerable<SignalTimingPlan> Process(IEnumerable<SignalTimingPlan> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -51,8 +114,15 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                 List<SignalTimingPlan> savedPlans;
 
                 await locationLock.WaitAsync(cancelToken);
+                var acquiredWriteSlot = false;
                 try
                 {
+                    if (_writeSlots != null)
+                    {
+                        await _writeSlots.WaitAsync(cancelToken);
+                        acquiredWriteSlot = true;
+                    }
+
                     using var scope = _services.CreateAsyncScope();
                     var repo = scope.ServiceProvider.GetRequiredService<ISignalTimingPlanRepository>();
                     var options = scope.ServiceProvider.GetService<IOptions<DeviceEventLoggingConfiguration>>();
@@ -159,6 +229,9 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                 }
                 finally
                 {
+                    if (acquiredWriteSlot)
+                        _writeSlots.Release();
+
                     locationLock.Release();
                 }
 
