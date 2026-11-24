@@ -307,17 +307,22 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             Assert.Equal(new[] { "1", "7", "13", "14", "13", "7" }, reportPlans.Select(p => p.PlanNumber).ToArray());
         }
 
-        [Fact]
-        public async Task Replay_UsesPostgreSqlPrecisionBeforeMergingKeys()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task Replay_UsesMappedTimestampPrecisionBeforeMergingKeys(bool explicitPrecision)
         {
             const string location = "7178";
             var storedStart = new DateTime(2026, 11, 10, 21, 49, 22).AddTicks(6999990);
             var next = storedStart.AddMinutes(1);
-            using var postgres = new AggregationContext(new DbContextOptionsBuilder<AggregationContext>()
-                .UseNpgsql("Host=localhost;Database=timing_plan_test")
-                .Options);
-            // Use the PostgreSQL provider for precision and the fixture repository for persistence.
-            _mockServiceProvider.Setup(x => x.GetService(typeof(AggregationContext))).Returns(postgres);
+            var options = new DbContextOptionsBuilder<AggregationContext>();
+            if (explicitPrecision)
+                options.UseMySql("Server=localhost;Database=timing_plan_test", new MySqlServerVersion(new Version(8, 0)));
+            else
+                options.UseNpgsql("Host=localhost;Database=timing_plan_test");
+            using var mappingContext = new AggregationContext(options.Options);
+            // Use the configured column mapping for precision and the fixture repository for persistence.
+            _mockServiceProvider.Setup(x => x.GetService(typeof(AggregationContext))).Returns(mappingContext);
             _context.SignalTimingPlans.Add(new SignalTimingPlan { LocationIdentifier = location, PlanNumber = 13, Start = storedStart, End = next.AddMinutes(1) });
             await _context.SaveChangesAsync();
             ConfigurePersistence();
