@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -66,7 +67,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             return settings.DBType switch
             {
                 DatabaseProvider.SqlServer => builder.UseSqlServer(connectionString,
-                    o => o.MigrationsAssembly(SqlServerProvider.Migration)),
+                    o => o.MigrationsAssembly(SqlServerProvider.Migration))
+                    .ReplaceService<IMigrationsSqlGenerator, SqlServerTimingPlanMigrationsSqlGenerator>(),
 
                 DatabaseProvider.PostgreSql => builder.UseNpgsql(connectionString,
                     o => o.MigrationsAssembly(PostgreSqlProvider.Migration)),

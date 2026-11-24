@@ -19,6 +19,8 @@
 #nullable disable
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Utah.Udot.Atspm.Data.Utility;
 
 namespace Utah.Udot.Atspm.Data
@@ -163,7 +165,23 @@ namespace Utah.Udot.Atspm.Data
                 }
                 else
                 {
-                    property.HasComputedColumnSql("[End] > [Start]");
+                    var expression = "[End] > [Start]";
+                    if (Database.IsRelational())
+                    {
+                        var booleanStoreType = this.GetService<IRelationalTypeMappingSource>().FindMapping(typeof(bool))?.StoreType;
+                        if (booleanStoreType == "bit")
+                        {
+                            // A bit computed column needs a scalar value.
+                            expression = $"CAST(CASE WHEN {expression} THEN 1 ELSE 0 END AS bit)";
+                        }
+                        else if (booleanStoreType is "tinyint(1)" or "bit(1)")
+                        {
+                            var sql = this.GetService<ISqlGenerationHelper>();
+                            expression = $"{sql.DelimitIdentifier(nameof(SignalTimingPlan.End))} > {sql.DelimitIdentifier(nameof(SignalTimingPlan.Start))}";
+                        }
+                    }
+
+                    property.HasComputedColumnSql(expression);
                 }
             });
 
