@@ -107,7 +107,25 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
             _context.SignalTimingPlans.RemoveRange(_context.SignalTimingPlans);
             _context.SaveChanges();
+            ConfigurePersistence();
 
+            step.Post(input);
+            step.Complete();
+            while (await step.OutputAvailableAsync(cancelToken))
+            {
+                while (step.TryReceive(out _)) { }
+            }
+
+            await step.Completion;
+
+            return _context.SignalTimingPlans
+                .AsNoTracking()
+                .OrderBy(p => p.Start)
+                .ToList();
+        }
+
+        private void ConfigurePersistence()
+        {
             _mockRepo.Setup(r => r.LookupAsync(It.IsAny<SignalTimingPlan>()))
                 .ReturnsAsync((SignalTimingPlan p) => _context.SignalTimingPlans.FirstOrDefault(x => x.LocationIdentifier == p.LocationIdentifier && x.PlanNumber == p.PlanNumber && x.Start == p.Start));
 
@@ -126,21 +144,6 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
                     _context.SaveChanges();
                 })
                 .Returns(Task.CompletedTask);
-
-            step.Post(input);
-            step.Complete();
-
-            while (await step.OutputAvailableAsync(cancelToken))
-            {
-                while (step.TryReceive(out _)) { }
-            }
-
-            await step.Completion;
-
-            return _context.SignalTimingPlans
-                .AsNoTracking()
-                .OrderBy(p => p.Start)
-                .ToList();
         }
 
         /// <inheritdoc/>
@@ -302,6 +305,40 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
 
             Assert.Equal(6, reportPlans.Count);
             Assert.Equal(new[] { "1", "7", "13", "14", "13", "7" }, reportPlans.Select(p => p.PlanNumber).ToArray());
+        }
+
+        [Fact]
+        public async Task Replay_UsesPostgreSqlPrecisionBeforeMergingKeys()
+        {
+            const string location = "7178";
+            var storedStart = new DateTime(2026, 11, 10, 21, 49, 22).AddTicks(6999990);
+            var next = storedStart.AddMinutes(1);
+            using var postgres = new AggregationContext(new DbContextOptionsBuilder<AggregationContext>()
+                .UseNpgsql("Host=localhost;Database=timing_plan_test")
+                .Options);
+            // Use the PostgreSQL provider for precision and the fixture repository for persistence.
+            _mockServiceProvider.Setup(x => x.GetService(typeof(AggregationContext))).Returns(postgres);
+            _context.SignalTimingPlans.Add(new SignalTimingPlan { LocationIdentifier = location, PlanNumber = 13, Start = storedStart, End = next.AddMinutes(1) });
+            await _context.SaveChangesAsync();
+            ConfigurePersistence();
+
+            var step = new SaveSignalTimingPlansStep(_mockScopeFactory.Object);
+            step.Post(new[]
+            {
+                new SignalTimingPlan { LocationIdentifier = location, PlanNumber = 13, Start = storedStart.AddTicks(9) },
+                new SignalTimingPlan { LocationIdentifier = location, PlanNumber = 13, Start = next.AddTicks(9) }
+            });
+            step.Complete();
+            while (await step.OutputAvailableAsync())
+            {
+                while (step.TryReceive(out _)) { }
+            }
+            await step.Completion;
+
+            var rows = await _context.SignalTimingPlans.AsNoTracking().OrderBy(plan => plan.Start).ToListAsync();
+            Assert.Collection(rows,
+                plan => Assert.Equal((storedStart, next), (plan.Start, plan.End)),
+                plan => Assert.Equal((next, DateTime.MinValue), (plan.Start, plan.End)));
         }
 
         /// <summary>

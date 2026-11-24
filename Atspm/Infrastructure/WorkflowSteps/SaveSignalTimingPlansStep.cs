@@ -21,6 +21,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
@@ -30,6 +31,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
     /// </summary>
     public class SaveSignalTimingPlansStep(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<IEnumerable<SignalTimingPlan>, SignalTimingPlan>(dataflowBlockOptions)
     {
+        private static readonly long PostgreSqlEpochTicks = new DateTime(2000, 1, 1).Ticks;
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locationLocks = new();
         private readonly IServiceScopeFactory _services = services;
 
@@ -53,9 +55,13 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     var repo = scope.ServiceProvider.GetRequiredService<ISignalTimingPlanRepository>();
                     var options = scope.ServiceProvider.GetService<IOptions<DeviceEventLoggingConfiguration>>();
                     var planOffset = options?.Value.SignalTimingPlanOffsetHours ?? 12;
+                    var context = scope.ServiceProvider.GetService<AggregationContext>();
+                    var plans = context?.Database.IsNpgsql() == true
+                        ? group.Select(NormalizePostgreSqlPlan).ToList()
+                        : group.ToList();
 
-                    var minStart = group.Min(p => p.Start).AddHours(-planOffset);
-                    var maxStart = group.Max(p => p.Start).AddHours(planOffset);
+                    var minStart = plans.Min(p => p.Start).AddHours(-planOffset);
+                    var maxStart = plans.Max(p => p.Start).AddHours(planOffset);
 
                     var existingAll = new List<SignalTimingPlan>();
                     var queryable = repo.GetList();
@@ -89,7 +95,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     }
 
                     var combined = existingAll
-                        .Concat(group)
+                        .Concat(plans)
                         .GroupBy(p => (p.LocationIdentifier, p.PlanNumber, p.Start))
                         .Select(g => new SignalTimingPlan
                         {
@@ -138,6 +144,24 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     yield return plan;
                 }
             }
+        }
+
+        // PostgreSQL stores microseconds. Match its precision before comparing plan keys.
+        private static SignalTimingPlan NormalizePostgreSqlPlan(SignalTimingPlan plan) => new()
+        {
+            LocationIdentifier = plan.LocationIdentifier,
+            PlanNumber = plan.PlanNumber,
+            Start = TruncateToMicroseconds(plan.Start),
+            End = TruncateToMicroseconds(plan.End)
+        };
+
+        private static DateTime TruncateToMicroseconds(DateTime timestamp)
+        {
+            if (timestamp == DateTime.MinValue || timestamp == DateTime.MaxValue)
+                return timestamp;
+
+            var subMicrosecondTicks = (timestamp.Ticks - PostgreSqlEpochTicks) % TimeSpan.TicksPerMicrosecond;
+            return timestamp.AddTicks(-subMicrosecondTicks);
         }
     }
 }
