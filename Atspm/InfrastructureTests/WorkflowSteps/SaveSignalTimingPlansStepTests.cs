@@ -308,6 +308,39 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         }
 
         [Theory]
+        [InlineData(50000, false)]
+        [InlineData(50000, true)]
+        public async Task Replay_KeepsLastControllerChangeAtSameTimestamp(int batchSize, bool repeatFirstChange)
+        {
+            const string location = "7227";
+            var start = new DateTime(2026, 11, 13, 12, 4, 23);
+            var end = start.AddSeconds(6.3);
+            _context.SignalTimingPlans.Add(new SignalTimingPlan { LocationIdentifier = location, PlanNumber = 255, Start = start, End = end });
+            await _context.SaveChangesAsync();
+            ConfigurePersistence();
+
+            var workflow = new SignalTimingPlansWorkflow(_mockScopeFactory.Object, batchSize, parallelProcesses: 4);
+            await workflow.Initialize();
+            await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = location, EventCode = 131, EventParam = 254, Timestamp = start });
+            await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = location, EventCode = 131, EventParam = 255, Timestamp = start });
+            if (repeatFirstChange)
+                await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = location, EventCode = 131, EventParam = 254, Timestamp = start });
+            await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = location, EventCode = 131, EventParam = 7, Timestamp = end });
+            workflow.Input.Complete();
+            while (await workflow.Output.OutputAvailableAsync())
+            {
+                while (workflow.Output.TryReceive(out _)) { }
+            }
+            await workflow.Output.Completion;
+
+            var rows = await _context.SignalTimingPlans.AsNoTracking().ToListAsync();
+            var (winner, other) = repeatFirstChange ? (254, 255) : (255, 254);
+            Assert.Equal(start, rows.Single(plan => plan.PlanNumber == other).End);
+            Assert.Equal(end, rows.Single(plan => plan.PlanNumber == winner).End);
+            Assert.Equal(winner.ToString(), Assert.Single(new PlanService().GetPlans(location, start, end, rows)).PlanNumber);
+        }
+
+        [Theory]
         [InlineData(false)]
         [InlineData(true)]
         public async Task Replay_UsesMappedTimestampPrecisionBeforeMergingKeys(bool explicitPrecision)

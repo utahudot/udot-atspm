@@ -29,7 +29,7 @@ using Utah.Udot.NetStandardToolkit.Workflows;
 namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
 {
     /// <summary>
-    /// A workflow step responsible for atomically merging, reconciling, and persisting signal timing plans per location in the repository.
+    /// A workflow step responsible for merging, reconciling, and persisting signal timing plans per location in the repository.
     /// </summary>
     public class SaveSignalTimingPlansStep(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<IEnumerable<SignalTimingPlan>, SignalTimingPlan>(dataflowBlockOptions)
     {
@@ -90,12 +90,16 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                             .AsNoTracking()
                             .Where(w => w.LocationIdentifier == group.Key && w.Start < minStart)
                             .OrderByDescending(w => w.Start)
+                            .ThenByDescending(w => w.End == DateTime.MinValue || w.End > w.Start)
+                            .ThenBy(w => w.PlanNumber)
                             .FirstOrDefaultAsync(cancelToken);
 
                         var nextNeighbor = await queryable
                             .AsNoTracking()
                             .Where(w => w.LocationIdentifier == group.Key && w.Start >= maxStart)
                             .OrderBy(w => w.Start)
+                            .ThenByDescending(w => w.End == DateTime.MinValue || w.End > w.Start)
+                            .ThenBy(w => w.PlanNumber)
                             .FirstOrDefaultAsync(cancelToken);
 
                         existingAll = existingInWindow
@@ -105,25 +109,33 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                             .ToList();
                     }
 
+                    // Keep a resolved stored tie in order unless incoming events supply a new order.
                     var combined = existingAll
+                        .OrderBy(p => p.End == DateTime.MinValue || p.End > p.Start)
+                        .ThenBy(p => p.PlanNumber)
                         .Concat(plans)
-                        .GroupBy(p => (p.LocationIdentifier, p.PlanNumber, p.Start))
-                        .Select(g => new SignalTimingPlan
+                        .Select((plan, index) => (Plan: plan, Index: index))
+                        .GroupBy(item => (item.Plan.LocationIdentifier, item.Plan.PlanNumber, item.Plan.Start))
+                        .Select(g => (Order: g.Last().Index, Plan: new SignalTimingPlan
                         {
                             LocationIdentifier = g.Key.LocationIdentifier,
                             PlanNumber = g.Key.PlanNumber,
                             Start = g.Key.Start,
-                            End = g.Max(x => x.End)
-                        })
-                        .OrderBy(p => p.Start)
+                            End = g.Max(item => item.Plan.End)
+                        }))
+                        .OrderBy(item => item.Plan.Start)
+                        .ThenBy(item => item.Order)
+                        .Select(item => item.Plan)
                         .ToList();
 
+                    var lastStart = combined[^1].Start;
+                    var lastEnd = combined.Where(p => p.Start == lastStart && p.End > lastStart)
+                        .Select(p => p.End)
+                        .DefaultIfEmpty(DateTime.MinValue)
+                        .Max();
                     savedPlans = combined.Zip(combined.Skip(1).Append(null), (current, next) =>
                     {
-                        if (next != null)
-                        {
-                            current.End = next.Start;
-                        }
+                        current.End = next?.Start ?? lastEnd;
                         return current;
                     }).ToList();
 
