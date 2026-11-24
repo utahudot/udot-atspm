@@ -36,7 +36,8 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
 
             foreach (var g in groups)
             {
-                var unique = g.Distinct().ToList();
+                // The last occurrence matters when a controller repeats a change at the same timestamp.
+                var unique = g.Reverse().Distinct().Reverse().ToList();
 
                 if (unique.Count > 0)
                 {

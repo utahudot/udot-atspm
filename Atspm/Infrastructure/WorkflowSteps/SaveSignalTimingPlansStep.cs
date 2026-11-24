@@ -21,15 +21,17 @@ using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
 {
     /// <summary>
-    /// A workflow step responsible for atomically merging, reconciling, and persisting signal timing plans per location in the repository.
+    /// A workflow step responsible for merging, reconciling, and persisting signal timing plans per location in the repository.
     /// </summary>
     public class SaveSignalTimingPlansStep(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<IEnumerable<SignalTimingPlan>, SignalTimingPlan>(dataflowBlockOptions)
     {
+        private static readonly long PostgreSqlEpochTicks = new DateTime(2000, 1, 1).Ticks;
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locationLocks = new();
         private readonly IServiceScopeFactory _services = services;
 
@@ -53,9 +55,13 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     var repo = scope.ServiceProvider.GetRequiredService<ISignalTimingPlanRepository>();
                     var options = scope.ServiceProvider.GetService<IOptions<DeviceEventLoggingConfiguration>>();
                     var planOffset = options?.Value.SignalTimingPlanOffsetHours ?? 12;
+                    var context = scope.ServiceProvider.GetService<AggregationContext>();
+                    var plans = context?.Database.IsNpgsql() == true
+                        ? group.Select(NormalizePostgreSqlPlan).ToList()
+                        : group.ToList();
 
-                    var minStart = group.Min(p => p.Start).AddHours(-planOffset);
-                    var maxStart = group.Max(p => p.Start).AddHours(planOffset);
+                    var minStart = plans.Min(p => p.Start).AddHours(-planOffset);
+                    var maxStart = plans.Max(p => p.Start).AddHours(planOffset);
 
                     var existingAll = new List<SignalTimingPlan>();
                     var queryable = repo.GetList();
@@ -73,12 +79,16 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                             .AsNoTracking()
                             .Where(w => w.LocationIdentifier == group.Key && w.Start < minStart)
                             .OrderByDescending(w => w.Start)
+                            .ThenByDescending(w => w.End == DateTime.MinValue || w.End > w.Start)
+                            .ThenBy(w => w.PlanNumber)
                             .FirstOrDefaultAsync(cancelToken);
 
                         var nextNeighbor = await queryable
                             .AsNoTracking()
                             .Where(w => w.LocationIdentifier == group.Key && w.Start >= maxStart)
                             .OrderBy(w => w.Start)
+                            .ThenByDescending(w => w.End == DateTime.MinValue || w.End > w.Start)
+                            .ThenBy(w => w.PlanNumber)
                             .FirstOrDefaultAsync(cancelToken);
 
                         existingAll = existingInWindow
@@ -88,25 +98,33 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                             .ToList();
                     }
 
+                    // Keep a resolved stored tie in order unless incoming events supply a new order.
                     var combined = existingAll
-                        .Concat(group)
-                        .GroupBy(p => (p.LocationIdentifier, p.PlanNumber, p.Start))
-                        .Select(g => new SignalTimingPlan
+                        .OrderBy(p => p.End == DateTime.MinValue || p.End > p.Start)
+                        .ThenBy(p => p.PlanNumber)
+                        .Concat(plans)
+                        .Select((plan, index) => (Plan: plan, Index: index))
+                        .GroupBy(item => (item.Plan.LocationIdentifier, item.Plan.PlanNumber, item.Plan.Start))
+                        .Select(g => (Order: g.Last().Index, Plan: new SignalTimingPlan
                         {
                             LocationIdentifier = g.Key.LocationIdentifier,
                             PlanNumber = g.Key.PlanNumber,
                             Start = g.Key.Start,
-                            End = g.Max(x => x.End)
-                        })
-                        .OrderBy(p => p.Start)
+                            End = g.Max(item => item.Plan.End)
+                        }))
+                        .OrderBy(item => item.Plan.Start)
+                        .ThenBy(item => item.Order)
+                        .Select(item => item.Plan)
                         .ToList();
 
+                    var lastStart = combined[^1].Start;
+                    var lastEnd = combined.Where(p => p.Start == lastStart && p.End > lastStart)
+                        .Select(p => p.End)
+                        .DefaultIfEmpty(DateTime.MinValue)
+                        .Max();
                     savedPlans = combined.Zip(combined.Skip(1).Append(null), (current, next) =>
                     {
-                        if (next != null)
-                        {
-                            current.End = next.Start;
-                        }
+                        current.End = next?.Start ?? lastEnd;
                         return current;
                     }).ToList();
 
@@ -138,6 +156,24 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     yield return plan;
                 }
             }
+        }
+
+        // PostgreSQL stores microseconds. Match its precision before comparing plan keys.
+        private static SignalTimingPlan NormalizePostgreSqlPlan(SignalTimingPlan plan) => new()
+        {
+            LocationIdentifier = plan.LocationIdentifier,
+            PlanNumber = plan.PlanNumber,
+            Start = TruncateToMicroseconds(plan.Start),
+            End = TruncateToMicroseconds(plan.End)
+        };
+
+        private static DateTime TruncateToMicroseconds(DateTime timestamp)
+        {
+            if (timestamp == DateTime.MinValue || timestamp == DateTime.MaxValue)
+                return timestamp;
+
+            var subMicrosecondTicks = (timestamp.Ticks - PostgreSqlEpochTicks) % TimeSpan.TicksPerMicrosecond;
+            return timestamp.AddTicks(-subMicrosecondTicks);
         }
     }
 }
