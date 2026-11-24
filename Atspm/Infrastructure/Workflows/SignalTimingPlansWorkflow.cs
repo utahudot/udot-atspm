@@ -55,8 +55,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         /// <inheritdoc/>
         public GenerateSignalPlansStep GenerateSignalPlansStep { get; private set; }
 
-        /// <inheritdoc/>
-        public SaveSignalTimingPlansStep SaveSignalTimingPlans { get; private set; }
+        /// <summary>
+        /// Saves plan batches in input order within each location.
+        /// </summary>
+        public IPropagatorBlock<IEnumerable<SignalTimingPlan>, SignalTimingPlan> SaveSignalTimingPlans { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
@@ -69,10 +71,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Workflows
         /// <inheritdoc/>
         protected override void InstantiateSteps()
         {
-            // Simultaneous changes can straddle batches. Save them in input order.
+            // Preserve batch order through plan generation so each location receives its changes in input order.
             BatchEventLogs = new(_batchSize, new GroupingDataflowBlockOptions() { CancellationToken = _cancellationToken });
             GenerateSignalPlansStep = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            SaveSignalTimingPlans = new(_services, new ExecutionDataflowBlockOptions() { CancellationToken = _cancellationToken });
+            SaveSignalTimingPlans = SaveSignalTimingPlansStep.CreateOrderedByLocation(_services, _parallelProcesses, _cancellationToken);
         }
 
         /// <inheritdoc/>
