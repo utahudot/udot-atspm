@@ -308,6 +308,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
         }
 
         [Theory]
+        [InlineData(1, false)]
         [InlineData(50000, false)]
         [InlineData(50000, true)]
         public async Task Replay_KeepsLastControllerChangeAtSameTimestamp(int batchSize, bool repeatFirstChange)
@@ -338,6 +339,53 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowSteps
             Assert.Equal(start, rows.Single(plan => plan.PlanNumber == other).End);
             Assert.Equal(end, rows.Single(plan => plan.PlanNumber == winner).End);
             Assert.Equal(winner.ToString(), Assert.Single(new PlanService().GetPlans(location, start, end, rows)).PlanNumber);
+        }
+
+        [Fact]
+        public async Task Workflow_SavesOtherLocationsWhileKeepingBatchesInLocationOrder()
+        {
+            var firstStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var secondStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var otherStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var releaseFirst = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var timeout = TimeSpan.FromSeconds(10);
+            _mockRepo.Setup(r => r.GetList()).Returns((IQueryable<SignalTimingPlan>)null);
+            _mockRepo.Setup(r => r.LookupAsync(It.IsAny<SignalTimingPlan>())).ReturnsAsync((SignalTimingPlan)null);
+            _mockRepo.Setup(r => r.AddAsync(It.IsAny<SignalTimingPlan>())).Returns((SignalTimingPlan plan) => plan.PlanNumber switch
+            {
+                1 => WaitForRelease(firstStarted, releaseFirst),
+                2 => WaitForRelease(secondStarted),
+                3 => WaitForRelease(otherStarted),
+                _ => throw new InvalidOperationException()
+            });
+
+            var workflow = new SignalTimingPlansWorkflow(_mockScopeFactory.Object, batchSize: 1, parallelProcesses: 2);
+            await workflow.Initialize();
+            workflow.Output.LinkTo(DataflowBlock.NullTarget<SignalTimingPlan>());
+            var start = new DateTime(2026, 11, 13, 12, 4, 23);
+            try
+            {
+                await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = "L1", EventCode = 131, EventParam = 1, Timestamp = start });
+                await firstStarted.Task.WaitAsync(timeout);
+                await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = "L1", EventCode = 131, EventParam = 2, Timestamp = start });
+                await workflow.Input.SendAsync(new IndianaEvent { LocationIdentifier = "L2", EventCode = 131, EventParam = 3, Timestamp = start });
+                await otherStarted.Task.WaitAsync(timeout);
+                Assert.False(secondStarted.Task.IsCompleted);
+            }
+            finally
+            {
+                releaseFirst.TrySetResult();
+                workflow.Input.Complete();
+            }
+
+            await workflow.Output.Completion.WaitAsync(timeout);
+            Assert.True(secondStarted.Task.IsCompletedSuccessfully);
+
+            static Task WaitForRelease(TaskCompletionSource started, TaskCompletionSource release = null)
+            {
+                started.SetResult();
+                return release?.Task ?? Task.CompletedTask;
+            }
         }
 
         [Theory]
