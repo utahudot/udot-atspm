@@ -16,11 +16,14 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
@@ -30,6 +33,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
     /// </summary>
     public class SaveSignalTimingPlansStep(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : TransformManyProcessStepBaseAsync<IEnumerable<SignalTimingPlan>, SignalTimingPlan>(dataflowBlockOptions)
     {
+        private static readonly long TimestampEpochTicks = new DateTime(2000, 1, 1).Ticks;
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locationLocks = new();
         private readonly IServiceScopeFactory _services = services;
 
@@ -53,9 +57,22 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     var repo = scope.ServiceProvider.GetRequiredService<ISignalTimingPlanRepository>();
                     var options = scope.ServiceProvider.GetService<IOptions<DeviceEventLoggingConfiguration>>();
                     var planOffset = options?.Value.SignalTimingPlanOffsetHours ?? 12;
+                    var context = scope.ServiceProvider.GetService<AggregationContext>();
+                    var planType = context?.Model.FindEntityType(typeof(SignalTimingPlan));
+                    var startStorage = GetTimestampStorage(planType?.FindProperty(nameof(SignalTimingPlan.Start)));
+                    var endStorage = GetTimestampStorage(planType?.FindProperty(nameof(SignalTimingPlan.End)));
+                    var plans = startStorage.TickResolution == 1 && endStorage.TickResolution == 1
+                        ? group.ToList()
+                        : group.Select(plan => new SignalTimingPlan
+                        {
+                            LocationIdentifier = plan.LocationIdentifier,
+                            PlanNumber = plan.PlanNumber,
+                            Start = NormalizeTimestamp(plan.Start, startStorage),
+                            End = NormalizeTimestamp(plan.End, endStorage)
+                        }).ToList();
 
-                    var minStart = group.Min(p => p.Start).AddHours(-planOffset);
-                    var maxStart = group.Max(p => p.Start).AddHours(planOffset);
+                    var minStart = plans.Min(p => p.Start).AddHours(-planOffset);
+                    var maxStart = plans.Max(p => p.Start).AddHours(planOffset);
 
                     var existingAll = new List<SignalTimingPlan>();
                     var queryable = repo.GetList();
@@ -89,7 +106,7 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     }
 
                     var combined = existingAll
-                        .Concat(group)
+                        .Concat(plans)
                         .GroupBy(p => (p.LocationIdentifier, p.PlanNumber, p.Start))
                         .Select(g => new SignalTimingPlan
                         {
@@ -138,6 +155,25 @@ namespace Utah.Udot.Atspm.Infrastructure.WorkflowSteps
                     yield return plan;
                 }
             }
+        }
+
+        private static (long TickResolution, long EpochTicks) GetTimestampStorage(IProperty property)
+        {
+            var mapping = property?.GetTypeMapping() as RelationalTypeMapping;
+            // The unqualified timestamp mapping uses signed microseconds relative to 2000-01-01.
+            var usesTimestampEpoch = string.Equals(mapping?.StoreType, "timestamp", StringComparison.OrdinalIgnoreCase);
+            var fractionalDigits = property?.GetPrecision() ?? mapping?.Precision ?? (usesTimestampEpoch ? 6 : 7);
+            var tickResolution = (long)Math.Pow(10, Math.Max(0, 7 - fractionalDigits));
+            return (tickResolution, usesTimestampEpoch ? TimestampEpochTicks : 0);
+        }
+
+        private static DateTime NormalizeTimestamp(DateTime timestamp, (long TickResolution, long EpochTicks) storage)
+        {
+            if (timestamp == DateTime.MinValue || timestamp == DateTime.MaxValue)
+                return timestamp;
+
+            var extraTicks = (timestamp.Ticks - storage.EpochTicks) % storage.TickResolution;
+            return timestamp.AddTicks(-extraTicks);
         }
     }
 }
